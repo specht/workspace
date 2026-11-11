@@ -7,7 +7,7 @@ duration: 8 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Fourier-Transformation, Huffman-Codierung), Vertiefung Technische Informatik (Abtastung, Quantisierung, Audiokompression)"
 topics: [kompression, codierung, zahlensysteme]
 requires: [huffman]
-reference: [bits-und-bytes, ffmpeg]
+reference: [bits-und-bytes, ffmpeg, numpy]
 </div>
 
 <div
@@ -331,7 +331,7 @@ def wav_header(n, rate):
 
 _task(wav-header)
 
-Nach dem Header kommen die Samples. Im Programm sind sie Kommazahlen von −1 bis 1, damit es beim Rechnen egal ist, wie viele Bits die Datei hat; erst beim Schreiben werden sie zu ganzen Zahlen mit 16 Bit. Schreib zwei Funktionen dazu, eine zum Schreiben und eine zum Lesen, und oben die Zeilen für `wave` und `numpy`:
+Nach dem Header kommen die Samples. Im Programm sind sie Kommazahlen von −1 bis 1, damit es beim Rechnen egal ist, wie viele Bits die Datei hat; erst beim Schreiben werden sie zu ganzen Zahlen mit 16 Bit. Schreib zwei Funktionen dazu, eine zum Schreiben und eine zum Lesen, und oben die Zeilen für `wave` und `numpy` (was numpy kann, steht im Handbuch unter [numpy](/reference/numpy)):
 
 ```python
 ~ import struct

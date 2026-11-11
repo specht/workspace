@@ -45,9 +45,11 @@
   description: |
     Dasselbe in beiden Sprachen nebeneinander: Ausgabe, Zahlen, Text,
     Listen, Hashes und Dictionaries, Funktionen, Dateien und Bytes, und was
-    die Fehlermeldungen sagen.
+    die Fehlermeldungen sagen. Dazu numpy, um in Python mit ganzen Arrays zu
+    rechnen.
   entries:
     - ruby-python
+    - numpy
 
 - key: reference-dart-java
   label: Dart und Java

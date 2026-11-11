@@ -7,7 +7,7 @@ duration: 3 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Suche, Fixpunktiteration), Vertiefung Computergrafik (Bildkompression)"
 topics: [digitale-bilder, kompression, bildalgorithmen]
 requires: [kata-lists]
-reference: [vektoren, bits-und-bytes]
+reference: [vektoren, bits-und-bytes, numpy]
 </div>
 
 <div

@@ -7,7 +7,7 @@ duration: 3 Doppelstunden
 curriculum: "Oberstufe: Vertiefung Computergrafik (Splats statt Dreiecke, Projektion mit einer Kamera, Sortieren nach der Tiefe, Alpha-Blending), Vertiefung Künstliche Intelligenz (Gradientenabstieg: ein Bild aus Splats lernen)"
 topics: [computergrafik, ki]
 requires: [webgl, kata-lists]
-reference: [vektoren, matrizen, gradientenabstieg, sortieren, bits-und-bytes]
+reference: [vektoren, matrizen, gradientenabstieg, sortieren, bits-und-bytes, numpy]
 </div>
 
 <div

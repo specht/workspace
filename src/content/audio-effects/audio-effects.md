@@ -7,7 +7,7 @@ duration: 6 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Fourier-Transformation, Faltung), Vertiefung Technische Informatik (digitale Signalverarbeitung)"
 topics: [codierung, listen]
 requires: [audio-compression]
-reference: [bits-und-bytes]
+reference: [bits-und-bytes, numpy]
 </div>
 
 <script src='/include/effect_widget.js'></script>
