@@ -420,8 +420,9 @@ only to look nice.
   (Y − 128, rounded to multiples of data-quantize) and starts its steps
   anew; data-coef shows the first block until the picture has loaded.
 - **Block matching** (`motion_widget.js`, »Video komprimieren«): the frame
-  now and the frame before (two PNGs inside the div, 288 × 192 from
-  `bilder/motion_widget.py`); the block (16 × 16) is dragged over the frame
+  now and the frame before (two PNGs inside the div, 512 × 352 from
+  `bilder/motion_widget.py`, cut from the film at its full 2048 pixels so
+  the girl is large and crisp); the block (16 × 16) is dragged over the frame
   now and snaps to the grid, the square over the frame before, within the
   search area of ±16 that stays bright, without an onion skin (the
   maintainer); grid and frames on canvases in device pixels, the block
