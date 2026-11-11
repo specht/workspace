@@ -23,6 +23,40 @@ activity. Being built from 11 November 2026.
 - **Python and Ruby** for the two functions (contrast ratio, link
   checker), with the page's language switch.
 
+## Two layers (the maintainer, 11 November 2026)
+
+The topic matters for everyone, younger students included, and the
+technology behind it is computer science. Each part has two layers:
+
+- **Erkennen, for everyone:** the demos and widgets (the mail viewer, the
+  banner, the colour simulation) with predictions and choice tasks, no
+  code; from about grade 5.
+- **Verstehen und bauen, for computer science:** the link checker, the
+  contrast function, the HTML repaired; marked as optional chapters
+  (»Extra«) or the other way round, decided when the page stands.
+
+What others already provide well (rules of behaviour, the »Surfschein« of
+Internet-ABC, klicksafe, the BSI's pages for citizens) is linked, not
+copied; the Workspace shows the technology behind it, with something to try
+on every topic.
+
+## More topics later, in the same two layers
+
+- **Passwörter:** how long guessing takes (a widget), why a site must not
+  store them readable (hashing, salt), password managers, two factors.
+- **Cookies und Tracking:** what HTTP really sends; links the existing
+  activity »Was eine Webseite über dich erfährt«.
+- **Schadsoftware:** viruses, worms, trojans, ransomware; a worm spreading
+  through a network as a simulation; how a scanner recognises malware
+  (signatures as fingerprints, behaviour); the double extension
+  (`.pdf.exe`); Morris worm 1988 and WannaCry 2017 as history boxes. The
+  maintainer's observation: many laptops carry a pre-installed security
+  suite that slows them down, while Windows has a protection program of
+  its own; to be checked against the BSI before it goes on a page, and
+  said without naming a product.
+- **Manipulierte Bilder** and **Urheberrecht:** both still missing in the
+  curriculum lines (`docs/plan-lehrplan-luecken.md`).
+
 ## The idea
 
 Students get a small website that looks fine and is hard to use: the sign-up
