@@ -4,7 +4,7 @@ at 395 s, the girl and her dog on a path in the evening sun, cut to 16 : 9
 around them, and over it the blocks a codec might choose: a block of 100
 pixels is split in four while its brightness varies a lot (the standard
 deviation above a threshold, the same share of blocks split at each size),
-down to 25 pixels. Large blocks where the sky
+down to 25 pixels, each edge a light and a dark line. Large blocks where the sky
 and the blurred mountain are calm, small ones at rocks, grass and figures.
 1600 × 900, a photo, so one WebP for both themes.
 
@@ -29,6 +29,7 @@ SOURCE_W, SOURCE_H = 2048, 858
 LEFT = 488                                  # the 16 : 9 cut: 1525 of the 2048 columns
 SIZES = [100, 50, 25]
 SPLIT = [0.4, 0.2]                          # the share of all blocks of 100, of all blocks of 50 split
+LIGHT, DARK = (255, 255, 255, 130), (0, 0, 0, 120)
 
 
 def frame(path):
@@ -67,7 +68,12 @@ def main(path):
         for x in range(0, W, SIZES[0]):
             for bx, by, size in blocks(luma, thresholds, x, y):
                 counts[size] += 1
-                draw.rectangle([bx, by, bx + size, by + size], outline=(255, 255, 255, 110), width=2)
+                # the top and left edge of each block, a light and a dark
+                # line side by side: seen on bright grass and dark rock alike,
+                # without washing the picture out
+                for k, colour in ((0, LIGHT), (1, DARK)):
+                    draw.line([bx, by + k, bx + size, by + k], fill=colour)
+                    draw.line([bx + k, by, bx + k, by + size], fill=colour)
     picture = Image.alpha_composite(picture.convert('RGBA'), overlay).convert('RGB')
     picture.save(OUT, quality=86)
     print(OUT, counts)
