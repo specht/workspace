@@ -65,3 +65,9 @@ examples:
       - { files: { effects/gain.py: fehler/gain-zehn.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }
       - { files: { effects/gain.py: fehler/gain-mal-db.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }
       - { files: { effects/gain.py: fehler/gain-plus.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }
+  ring:
+    pass:
+      - { files: { effects/voices.py: stufen/voices.py, effects/pitch.py: stufen/pitch.py, effects/chorus.py: stufen/chorus.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/voices.py: fehler/ring-plus.py, effects/pitch.py: stufen/pitch.py, effects/chorus.py: stufen/chorus.py, effects/wav.py: stufen/wav.py }, say: 'multiplizierst' }
+      - { files: { effects/voices.py: fehler/ring-ohne-rate.py, effects/pitch.py: stufen/pitch.py, effects/chorus.py: stufen/chorus.py, effects/wav.py: stufen/wav.py }, say: 'n / rate' }

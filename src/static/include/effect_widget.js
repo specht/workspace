@@ -12,7 +12,7 @@
 //   <div class='effect-widget' data-effect='eq'></div>
 //   <div class='effect-widget' data-effect='echo' data-clip='stimme'></div>
 //
-// The effects (EFFECTS below): gain, eq, echo, chorus, reverb, compressor, pitch, autotune, vocoder. Each has its knobs, its picture
+// The effects (EFFECTS below): gain, eq, echo, chorus, reverb, compressor, pitch, autotune, vocoder, voices. Each has its knobs, its picture
 // and its function in WORKER, written like the Python of the page.
 (function () {
     'use strict';
@@ -264,6 +264,33 @@
             caption: 'Wie stark jedes Band gerade ist, von 100 Hz bis 8 kHz: grau in der Stimme, lila im Ergebnis, dem Träger mit der Stärke der Stimme.',
             line: (p) => `${p.bands} Bänder, jedes ${de(80 ** (1 / p.bands), 2)}-mal so breit wie das darunter; der Träger: ${{ chord: 'ein Akkord aus drei Sägezahnschwingungen', melody: 'eine Sägezahnschwingung auf den Tönen der Melodie', noise: 'Rauschen' }[p.carrier]}.`,
             draw: drawVocoder,
+        },
+        voices: {
+            chip: 'Zum Ausprobieren: abspielen und regeln',
+            clips: ['stimme', 'kennedy'],
+            knobs: [
+                { key: 'semitones', label: 'Halbtöne', min: -12, max: 12, step: 1, value: 0,
+                  marks: [[-12, '−12'], [-7, '−7'], [0, '0'], [7, '+7'], [12, '+12']],
+                  show: (v) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}` },
+                { key: 'ring', label: 'Ringmodulator', min: 0, max: 200, step: 1, value: 30,
+                  marks: [[0, 'aus'], [30, '30'], [50, '50'], [100, '100'], [150, '150'], [200, '200 Hz']],
+                  show: (v) => (v ? `${v} Hz` : 'aus') },
+            ],
+            presets: [
+                ['Streifenhörnchen', { semitones: 12, ring: 0 }],
+                ['Riese', { semitones: -8, ring: 0 }],
+                ['Dalek', { semitones: 0, ring: 30 }],
+            ],
+            live: true,
+            neutral: (p) => p.semitones === 0 && p.ring === 0,
+            caption: 'Vierzig Millisekunden der Welle an der Stelle, die gerade spielt: grau ohne Effekt, lila mit, gestrichelt der Sinus des Ringmodulators.',
+            line: (p) => {
+                const parts = [];
+                if (p.semitones) parts.push(`${Math.abs(p.semitones)} Halbtöne ${p.semitones > 0 ? 'höher' : 'tiefer'}`);
+                if (p.ring) parts.push(`mal einer Sinusschwingung von ${p.ring} Hz: ein Ton von 150 Hz wird zu ${150 - p.ring} und ${150 + p.ring} Hz`);
+                return parts.length ? `Die Stimme ${parts.join(', dann ')}.` : 'Die Stimme, wie sie ist.';
+            },
+            draw: drawVoices,
         },
         compressor: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
@@ -564,6 +591,9 @@ onmessage = (e) => {
             melody = mc.track;
         }
         out = vocoder(clip.x, carrierFor(m.params.carrier, clip.x.length, clip.rate, melody), clip.rate, m.params.bands);
+    } else if (m.effect === 'voices') {
+        out = m.params.semitones ? shift(clip.x, clip.rate, () => 2 ** (m.params.semitones / 12), 0.05) : Float32Array.from(clip.x);
+        if (m.params.ring) for (let n = 0; n < out.length; n++) out[n] *= Math.sin(2 * Math.PI * m.params.ring * n / clip.rate);
     } else if (m.effect === 'pitch' || m.effect === 'autotune') {
         if (!clip.track) clip.track = track(clip.x, clip.rate);
         found = clip.track;
@@ -763,6 +793,37 @@ onmessage = (e) => {
             if (m > 0) { g.moveTo(LABEL_W + px + 0.5, yOf(0)); g.lineTo(LABEL_W + px + 0.5, yOf(p.mix * m / top * 0.8)); }
         }
         g.stroke();
+    }
+
+    // forty milliseconds of the wave where the sound is: grey without, lila
+    // with, the ring modulator's sine dashed
+    function drawVoices(g, w, h, col, p, on, live) {
+        frame(g, w, h, col);
+        const plotW = w - LABEL_W, plotH = h - AXIS, mid = plotH / 2, T = 0.04;
+        g.strokeStyle = col.quiet; g.lineWidth = 1;
+        g.beginPath(); g.moveTo(LABEL_W, mid + 0.5); g.lineTo(w, mid + 0.5); g.stroke();
+        g.fillStyle = col.ink; g.textAlign = 'center'; g.textBaseline = 'bottom';
+        for (const ms of [0, 10, 20, 30, 40]) g.fillText(`${ms} ms`, Math.min(w - 20, Math.max(LABEL_W + 16, LABEL_W + ms / 40 * plotW)), h);
+        if (!live || !live.before) {
+            g.textBaseline = 'middle';
+            g.fillText('Spiel den Klang ab, dann erscheint hier die Welle.', LABEL_W + plotW / 2, plotH / 4);
+            return;
+        }
+        const { before, after, at, rate } = live, L = before.length, n = Math.round(T * rate);
+        let top = 1e-6;
+        for (let i = 0; i < n; i++) top = Math.max(top, Math.abs(before[(at + i) % L]), Math.abs(after[(at + i) % L]));
+        const curve = (value, colour, width, dash) => {
+            g.setLineDash(dash || []); g.strokeStyle = colour; g.lineWidth = width;
+            g.beginPath();
+            for (let px = 0; px <= plotW; px++) {
+                const i = Math.floor(px / plotW * n), y = mid - value(i) * (plotH / 2 - 6);
+                if (px === 0) g.moveTo(LABEL_W, y); else g.lineTo(LABEL_W + px, y);
+            }
+            g.stroke(); g.setLineDash([]);
+        };
+        if (on && p.ring) curve((i) => Math.sin(2 * Math.PI * p.ring * ((at + i) % L) / rate), col.ink, 1, [4, 4]);
+        curve((i) => before[(at + i) % L] / top, col.sound, 1.5);
+        if (on) curve((i) => after[(at + i) % L] / top, col.mark, 2);
     }
 
     // dB above, the factor below, on one ruler: the factor 10^(dB/20)
@@ -1134,6 +1195,8 @@ onmessage = (e) => {
                 const plain = (effect.plain || []).includes(clipId);
                 live = { found, factors: tuned && !plain ? (k) => tuned[k] : () => constant, at: sampleNow(), rate, length: original.length,
                     melody: melody && params.target === 'melody' ? melody : null, plain };
+            } else if (name === 'voices' && original) {
+                live = { before: original, after: current || original, at: sampleNow(), rate };
             } else if (name === 'compressor' && original) {
                 // the level as the compressor follows it, from half a second
                 // before the window on, and per column of the right picture its gain

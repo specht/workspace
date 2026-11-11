@@ -201,3 +201,31 @@ filter-house:
         quote: "It reached number two on the UK singles chart"
   - text: Wo klingt die Musik dumpf, und wann wird sie wieder hell
     none: eine Frage zum Anhören; der Link ist das offizielle Video auf Stardusts Kanal
+
+film-voices:
+  - text: Streifenhörnchen und Daleks, 1958 und 1963
+    sources:
+      - url: https://en.wikipedia.org/wiki/Alvin_and_the_Chipmunks
+        quote: "The Chipmunks first officially appeared in a novelty record released in late fall 1958 by Bagdasarian."
+      - url: https://en.wikipedia.org/wiki/Dalek
+        quote: "They first appeared in the 1963 Doctor Who serial The Daleks."
+  - text: Ross Bagdasarian sang die Stimmen seiner Streifenhörnchen selbst, langsam, und nahm sie mit halber Geschwindigkeit auf Tonband auf
+    sources:
+      - url: https://en.wikipedia.org/wiki/Alvin_and_the_Chipmunks
+        quote: "sung slowly but recorded at half speed on the tape recorder"
+  - text: Mit normaler Geschwindigkeit abgespielt, klangen sie eine ganze Oktave höher, im richtigen Tempo
+    sources:
+      - url: https://en.wikipedia.org/wiki/Alvin_and_the_Chipmunks
+        quote: "When the tape was played back at normal speed, they would sound a full octave higher in pitch, at normal tempo."
+  - text: »The Chipmunk Song« verkaufte sich in sieben Wochen 4,5 Millionen Mal
+    sources:
+      - url: https://en.wikipedia.org/wiki/Alvin_and_the_Chipmunks
+        quote: "The novelty record was highly successful, selling 4.5 million copies in seven weeks."
+  - text: Die Daleks aus der britischen Serie »Doctor Who« tauchten 1963 zum ersten Mal auf
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dalek
+        quote: "They first appeared in the 1963 Doctor Who serial The Daleks."
+  - text: ihre Stimmen machte Brian Hodgson vom BBC Radiophonic Workshop mit einem Ringmodulator
+    sources:
+      - url: https://en.wikipedia.org/wiki/Ring_modulation
+        quote: "One of the best-known applications of the ring modulator may be its use by Brian Hodgson of the BBC Radiophonic Workshop to produce the distinctive voice of the Daleks in the television series Doctor Who"
