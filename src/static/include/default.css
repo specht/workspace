@@ -2327,6 +2327,10 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     body.has-autotoc-secondary .autotoc-toc {
         display: flex;
     }
+    /* the contents at the left, where the panel opens, »Nach oben« at the right */
+    body.has-autotoc-secondary .autotoc-toc { order: 0; }
+    body.has-autotoc-secondary .autotoc > .items { order: 1; }
+    body.has-autotoc-secondary .autotoc > .autotoc-up { order: 2; }
 }
 
 .autotoc-toc {
