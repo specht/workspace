@@ -71,13 +71,6 @@ examples:
       - answer: '03023125368'
       - answer: '0302312538'
       - answer: 030 23125386 1
-  eq-bell:
-    pass:
-      - { files: { audio/eq.py: stufen/eq.py, audio/wav.py: stufen/wav.py } }
-    fail:
-      - { files: { audio/eq.py: fehler/eq-energie.py, audio/wav.py: stufen/wav.py }, say: '10 ** (db / 20)' }
-      - { files: { audio/eq.py: fehler/eq-nur-db.py, audio/wav.py: stufen/wav.py }, say: '10 ** (db / 20)' }
-      - { files: { audio/eq.py: fehler/eq-hertz.py, audio/wav.py: stufen/wav.py }, say: 'Oktaven' }
   hoerschwelle:
     pass:
       - { files: { audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }

@@ -1,0 +1,161 @@
+# Aufgaben zu »Audioeffekte«. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/effects; die Funktionen der Lernenden rechnen mit numpy.
+format: 1
+activity: audio-effects
+tasks:
+  - id: eq-factor
+    title: Zwölf Dezibel mehr
+    prediction: true
+    prompt: |
+      Ein EQ gibt den Frequenzen um 80 Hz 12 dB dazu. Mit welchem Faktor
+      wird dort die Höhe der Schwingung multipliziert? Zwei Stellen hinter
+      dem Komma genügen.
+    check:
+      type: number
+      expect: 3.98
+      tolerance: 0.05
+    feedback:
+      - when: { equals: 12 }
+        say: 12 ist die Zahl in Dezibel. Dezibel sind ein Logarithmus; welcher Faktor steckt dahinter?
+      - when: { between: [15.8, 15.9] }
+        say: 10 hoch 12/10 ist der Faktor für die Energie. Die Höhe der Schwingung wächst langsamer, die Energie ist ihr Quadrat.
+      - when: { equals: 2 }
+        say: 6 dB verdoppeln die Höhe. 12 dB sind zweimal 6 dB.
+    solution: |
+      Fast 4, genauer 10 hoch 12/20 = 3,98: 6 dB verdoppeln die Höhe der
+      Schwingung, 12 dB verdoppeln sie zweimal.
+
+  - id: eq-bell
+    title: Die Glocke des EQ
+    prompt: |
+      Schreib in `effects/eq.py` die Funktion `bell(freqs, centre, width, gain)`:
+      für jede Frequenz in `freqs` der Faktor, mit dem das EQ ihre Schwingung
+      multipliziert. `width` Oktaven neben `centre` wirkt noch die Hälfte der
+      Verstärkung `gain` in dB.
+    check:
+      type: python
+      file: effects/eq.py
+      cases:
+        - call: round(float(bell(np.array([1000.0]), 1000, 1, 12)[0]), 2)
+          expect: 3.98
+          say: In der Mitte wirkt die ganze Verstärkung, 12 dB, und der Faktor ist 10 hoch 12/20, etwa 3,98. Rechnet deine Funktion die Dezibel mit `10 ** (db / 20)` in einen Faktor um?
+        - call: round(float(bell(np.array([2000.0]), 1000, 1, 12)[0]), 2)
+          expect: 2.0
+          say: 2.000 Hz liegt eine Oktave über 1.000 Hz, eine Breite weit weg; dort wirkt die halbe Verstärkung, 6 dB, fast der Faktor 2.
+        - call: round(float(bell(np.array([500.0]), 1000, 1, 12)[0]), 2)
+          expect: 2.0
+          say: 500 Hz liegt eine Oktave unter 1.000 Hz, genauso weit weg wie 2.000 Hz. Zählt deine Funktion den Abstand in Oktaven, mit `np.log2(freqs / centre)`?
+        - call: round(float(bell(np.array([100.0]), 1000, 1, 12)[0]), 2)
+          expect: 1.0
+          say: Weit weg von der Mitte, mehr als drei Oktaven, ändert das EQ fast nichts; der Faktor ist dort 1.
+        - call: round(float(bell(np.array([1000.0]), 1000, 1, -12)[0]), 2)
+          expect: 0.25
+          say: Mit −12 dB wird die Schwingung leiser, Faktor 10 hoch −12/20, etwa 0,25.
+        - call: '[round(float(v), 2) for v in bell(np.array([0.0, 1000.0]), 1000, 1, 12)]'
+          expect: '[1.0, 3.98]'
+          say: Die erste Frequenz der FFT ist 0 Hz, und `np.log2(0)` ist minus unendlich. Mit `np.maximum(freqs, 1)` wird aus 0 erst 1.
+    solution: |
+      ```python
+      def bell(freqs, centre, width, gain):
+          octaves = np.log2(np.maximum(freqs, 1) / centre)
+          db = gain * 2 ** (-(octaves / width) ** 2)
+          return 10 ** (db / 20)
+      ```
+
+  - id: echo-height
+    title: Das Echo nach einer Sekunde
+    prediction: true
+    prompt: |
+      Ein Knall der Höhe 1, ein Echo mit 0,25 Sekunden Verzögerung, der
+      Rückkopplung 0,5 und der Mischung 1. Wie hoch ist das Echo, das genau
+      eine Sekunde nach dem Knall kommt?
+    check:
+      type: number
+      expect: 0.0625
+      tolerance: 0.001
+    feedback:
+      - when: { equals: 0.125 }
+        say: Nach 0,25 Sekunden kommt das erste Echo mit 0,5, nach 0,5 das zweite. Das wievielte kommt nach einer Sekunde?
+      - when: { equals: 0.5 }
+        say: 0,5 hat das erste Echo. Jedes weitere ist halb so hoch wie das vorige.
+    solution: |
+      0,0625: Nach einer Sekunde kommt das vierte Echo, und jedes ist halb so
+      hoch wie das vorige, 0,5 hoch 4.
+
+  - id: echo
+    title: Ein Echo mit Rückkopplung
+    prompt: |
+      Schreib in `effects/echo.py` die Funktion `echo(x, rate, delay, feedback, mix)`:
+      der Klang `x` mit seinen Echos, `delay` Sekunden auseinander, jedes
+      `feedback`-mal so hoch wie das vorige, mit `mix` dazugemischt.
+    check:
+      type: python
+      file: effects/echo.py
+      cases:
+        - call: echo(np.array([1.0, 0, 0, 0, 0, 0]), 1, 2, 0.5, 1).tolist()
+          expect: '[1.0, 0.0, 0.5, 0.0, 0.25, 0.0]'
+          say: Mit der Abtastrate 1 und 2 Sekunden Verzögerung kommt alle zwei Samples ein Echo, halb so hoch wie das vorige. Zählt deine Funktion `y[n - D]` dazu, also auch die Echos selbst?
+        - call: '(lambda x: (echo(x, 1, 2, 0.5, 1), x.tolist())[1])(np.array([1.0, 0, 0, 0]))'
+          expect: '[1.0, 0.0, 0.0, 0.0]'
+          say: '`x` soll sich nicht ändern: Fang mit `y = x.copy()` an, nicht mit `y = x`.'
+        - call: echo(np.array([1.0, 0, 0, 0, 0, 0]), 1, 2, 0.5, 0.5).tolist()
+          expect: '[1.0, 0.0, 0.25, 0.0, 0.125, 0.0]'
+          say: Mit der Mischung 0,5 kommen die Echos halb so laut dazu, der Klang selbst bleibt. Gibt deine Funktion `x + mix * (y - x)` zurück?
+    solution: |
+      ```python
+      def echo(x, rate, delay, feedback, mix):
+          D = round(delay * rate)
+          y = x.copy()
+          for n in range(D, len(y)):
+              y[n] += feedback * y[n - D]
+          return x + mix * (y - x)
+      ```
+
+  - id: chorus-read
+    title: Zwischen zwei Samples lesen
+    prompt: |
+      Schreib in `effects/chorus.py` die Funktion `read(x, pos)`: für jede
+      Stelle in `pos` den Wert zwischen den beiden Samples daneben, auf der
+      Geraden zwischen ihnen.
+    check:
+      type: python
+      file: effects/chorus.py
+      cases:
+        - call: read(np.array([0.0, 10, 20, 30]), np.array([0.0, 1.5, 2.25])).tolist()
+          expect: '[0.0, 15.0, 22.5]'
+          say: An der Stelle 1,5 liegt der Wert genau in der Mitte zwischen 10 und 20, an der Stelle 2,25 ein Viertel des Wegs von 20 nach 30. Mischt deine Funktion die beiden Samples daneben, `(1 - f) * x[i] + f * x[i + 1]`?
+        - call: read(np.array([0.0, 10, 20, 30]), np.array([3.0])).tolist()
+          expect: '[30.0]'
+          say: Die Stelle 3 ist das letzte Sample. Ein `x[i + 1]` gibt es dort nicht; mit `np.clip(…, 0, len(x) - 2)` ist `i` das vorletzte und `f` 1.
+    solution: |
+      ```python
+      def read(x, pos):
+          i = np.clip(np.floor(pos).astype(int), 0, len(x) - 2)
+          f = pos - i
+          return (1 - f) * x[i] + f * x[i + 1]
+      ```
+
+  - id: allpass
+    title: Ein Allpass
+    prompt: |
+      Schreib in `effects/reverb.py` die Funktion `allpass(x, rate, delay, g)`:
+      `y[n] = -g * x[n] + x[n - D] + g * y[n - D]` mit `D = round(delay * rate)`,
+      für die Samples vor `D` nur `-g * x[n]`.
+    check:
+      type: python
+      file: effects/reverb.py
+      cases:
+        - call: allpass(np.array([1.0, 0, 0, 0, 0]), 1, 2, 0.5).tolist()
+          expect: '[-0.5, 0.0, 0.75, 0.0, 0.375]'
+          say: Ein Knall der Höhe 1 durch einen Allpass mit D = 2 und g = 0,5 gibt −0,5, dann 1 − 0,25 = 0,75, dann 0,375. Steht `g * y[n - D]` in deiner Formel, und das Minus vor `g * x[n]`?
+    solution: |
+      ```python
+      def allpass(x, rate, delay, g):
+          D = round(delay * rate)
+          y = np.zeros_like(x)
+          for n in range(len(x)):
+              y[n] = -g * x[n]
+              if n >= D:
+                  y[n] += x[n - D] + g * y[n - D]
+          return y
+      ```

@@ -1,0 +1,64 @@
+# Plan: »Audioeffekte« (audio effects)
+
+A new activity, `src/content/audio-effects`, decided by the maintainer on
+11 November 2026: the effects of a studio and of a phone app, each built in
+Python with numpy and each with a widget to listen to while turning its
+knobs. It builds on »Audio komprimieren« (`requires: [audio-compression]`):
+samples as numbers from −1 to 1, WAV files, Dezibel, the FFT. Until it is
+finished it stands in the catalog with a dot (`- .audio-effects`), only in
+development.
+
+## Chapters (one Doppelstunde each, roughly)
+
+1. **Einrichten, Lautstärke.** The sounds (`musik.wav`, `stimme.wav` and the
+   instruments of the music from »Audio komprimieren«), `wav.py` given;
+   gain in dB as a factor (10^(dB/20)), fading in and out.
+2. **Equalizer.** Moved here from »Audio komprimieren«, where it was
+   written first (the widget, `bell` of one's own, the band-pass with
+   `rest`). The compression page keeps a sentence and a link.
+3. **Echo.** A delayed copy: y[n] = x[n] + g · y[n − D], with feedback;
+   numpy block by block (each block of D samples from the one before), so
+   no loop over single samples.
+4. **Chorus and flanger.** A copy whose delay wobbles: d(t) = base +
+   depth · sin(2π · rate · t), read between samples with linear
+   interpolation (the quarter pixel of »Video komprimieren« in time).
+5. **Hall.** Many echoes: Schroeder's reverberator (1962), four comb
+   filters side by side and two all-pass filters after them; the room's
+   size scales the delays, the feedback the length of the hall.
+6. **Kompressor.** Loud parts quieter: an envelope follower (attack,
+   release), above a threshold the level divided by the ratio, make-up
+   gain. One loop over the samples (the only one, and why it cannot be
+   avoided: each value needs the one before).
+7. **Tonhöhe.** Finding the pitch of the voice per block by
+   autocorrelation; shifting the pitch without changing the length with
+   grains (short windowed pieces, each resampled, added back at their old
+   places); then autotune: every block's pitch moved to the nearest
+   semitone.
+8. **Vocoder.** The voice's loudness in each band (the bands of »Audio
+   komprimieren«) given to a chord of saw waves: the robot voice.
+
+Each chapter: a widget first (to hear the effect and find what its knobs
+do), a prediction, the function of one's own with tips in steps and a
+check, a file to listen to, an »Ausprobieren« box that says what to listen
+for. Persons and papers where they belong (Schroeder, the vocoder of Homer
+Dudley 1938, Auto-Tune by Andy Hildebrand 1997, …), every fact checked.
+
+## The widget
+
+One widget for all effects, `effect_widget.js`, `<div class='effect-widget'
+data-effect='echo'>`: a choice of sound, play and stop, »Effekt an« to
+compare, the knobs of the effect as sliders with marks, and a picture that
+shows what the knobs do (the EQ's curve, the echoes as spikes over time,
+the compressor's curve of input against output level, the pitch over
+time). The sound is computed in a worker with the same algorithm as the
+Python of the page; a change crosses over exactly where the old sound is,
+also while a knob is dragged (as the EQ widget of »Audio komprimieren«
+does already: `eq_widget.js`, which becomes the first effect of it).
+
+## Open for the maintainer
+
+- The title: »Audioeffekte« (the maintainer: the activity is about effects; »Klang bearbeiten« was too general).
+- A topic key for sound processing (`themen.yaml` has none; for now
+  `codierung` and `listen`).
+- A recording of a singing voice under a free licence for autotune; until
+  then the spoken `stimme.wav`, which autotune turns into a melody.

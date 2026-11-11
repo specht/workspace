@@ -650,7 +650,7 @@ document.addEventListener('keydown', (event) => {
 // window and again on a new window size; the lightbox clears it.
 (function () {
     'use strict';
-    const WIDGETS = 'div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .eq-widget, .hearing-widget, .abx-widget, .motion-widget, .growth-widget';
+    const WIDGETS = 'div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .growth-widget';
     // the picture of a widget that may give up height
     const PICTURES = [
         ['.gop-stepper', 'canvas.gop-view'],

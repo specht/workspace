@@ -164,6 +164,7 @@
     - gif
     - jpeg
     - audio-compression
+    - .audio-effects
     - video-compression
     - fraktale-kompression
     - steganography
