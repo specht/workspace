@@ -1,6 +1,6 @@
 <div class='meta'>
-image: licht-alles.webp
-image_alt: "Der Saal im warmen Licht der Leuchten: gelbe Tapete, die Säulen mit ihren weichen Schatten, in der Mitte der Schreibtisch mit dem Stuhl, rechts das Regal, links die Treppe, hinten der Vorgang und durch den Bogen der grüne Salon; die Decke aus Platten hell."
+image: kammer-lampen.webp
+image_alt: "Die Kammer, nur von zwei Wandlampen beleuchtet: an der linken und an der rechten Wand je eine ovale Lampe mit Gitter, dazwischen an der Südwand ein braunes Sofa mit gemusterten Kissen; die Decke ist hell."
 kind: projekt
 duration: 1 Doppelstunde
 curriculum: "Sek I: Digitale Bilder und Visualisierung; Oberstufe: Vertiefung Computergrafik (Lightmap, weiche Schatten, indirektes Licht)"

@@ -54,6 +54,9 @@ address from `credentials.rb` and the code `123456`.
   the next activities)
 - `/picture-rights` (`src/ruby/include/picture_rights.rb`, `src/content/picture-rights.yaml`): pictures that are
   someone else's without a free licence, with a letter asking for permission; off the pages until granted
+- [docs/plan-audio-video.md](docs/plan-audio-video.md): two activities planned, not built: audio and
+  video compression from uncompressed data to Opus and AV2, with history, widgets and tasks;
+  numpy, ffmpeg and Pillow for the image; the maintainer's open decisions
 - [docs/plan-telefonspiel.md](docs/plan-telefonspiel.md): the Telefonspiel, a game behind a real phone
   number: the old Hackschule's version and why it was flaky, the decisions (Asterisk with any SIP trunk,
   several languages, one number for many games and calls), the protocol, the steps

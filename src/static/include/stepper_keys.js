@@ -1,24 +1,27 @@
 // ← and → step through a step-by-step widget: the Huffman tree, the LZW
-// tables, the GIF decoder, the JPEG decoder. A widget built after the page
+// tables, the GIF decoder, the JPEG decoder; Pos1 and Ende go to its start
+// and its end. A widget built after the page
 // has loaded sends document the event stepper-added (detail: the widget),
 // so that it gets the lightbox, play, the timeline and its reserved heights. A widget is an element with
 // data-stepper; its buttons say what they do with data-go (first, prev,
 // next, last), and the keys press them, so a widget does nothing extra.
 //
-// With several widgets on a page, the keys step the one that takes up most
-// of the window. They leave alone a text field (the cursor moves there), a
-// key with Ctrl, Alt or Cmd, and an open dialog such as a picture opened
-// large, which steps with the arrow keys itself.
-document.addEventListener('keydown', (event) => {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-    if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return;
-    const target = event.target;
-    if (target instanceof HTMLElement &&
-        (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
-    if (document.querySelector('dialog[open]')) return;
-
+// ← and → go to the widget that takes up most of the window; it gets the
+// class stepper-has-keys (its left edge in the purple of »current«,
+// default.css), so that the reader sees where they go. Pos1 and Ende go to
+// it only while it has the window, showing at least half of itself or
+// filling at least half of the window; otherwise they scroll the page to
+// its start and end, as they do without a widget. The keys
+// leave alone a text field (the cursor moves there), a key with Ctrl, Alt
+// or Cmd, and an open dialog such as a picture opened large, which steps
+// with the arrow keys itself.
+// the widget that takes up most of the window, and whether it has the
+// window (half of itself visible, or half of the window filled)
+const stepperWithKeys = () => {
     let best = null;
     let bestArea = 0;
+    let holds = false;
+    const windowArea = window.innerWidth * window.innerHeight;
     for (const widget of document.querySelectorAll('[data-stepper]')) {
         const rect = widget.getBoundingClientRect();
         const width = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0);
@@ -27,15 +30,51 @@ document.addEventListener('keydown', (event) => {
         if (area > bestArea) {
             best = widget;
             bestArea = area;
+            holds = area >= 0.5 * rect.width * rect.height || area >= 0.5 * windowArea;
         }
     }
-    if (!best) return;
+    return { widget: best, holds };
+};
 
-    const button = best.querySelector(`[data-go='${event.key === 'ArrowLeft' ? 'prev' : 'next'}']`);
-    if (!button || button.disabled) return;
+document.addEventListener('keydown', (event) => {
+    const which = { ArrowLeft: 'prev', ArrowRight: 'next', Home: 'first', End: 'last' }[event.key];
+    if (!which) return;
+    if (event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.defaultPrevented) return;
+    const target = event.target;
+    if (target instanceof HTMLElement &&
+        (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
+    if (document.querySelector('dialog[open]')) return;
+
+    const { widget: best, holds } = stepperWithKeys();
+    if (!best) return;
+    if ((which === 'first' || which === 'last') && !holds) return;
+    const button = best.querySelector(`[data-go='${which}']`);
+    if (!button) return;
+    // at the start or the end already: the key is still the widget's, so
+    // that Pos1 does not throw the page to its top
     event.preventDefault();
-    button.click();
+    if (!button.disabled) button.click();
 });
+
+// the widget that has the keys, marked; again when the page scrolls, the
+// window changes or a widget is added
+(() => {
+    let marked = null;
+    let waiting = 0;
+    const mark = () => {
+        waiting = 0;
+        const best = stepperWithKeys().widget;
+        if (best === marked) return;
+        if (marked) marked.classList.remove('stepper-has-keys');
+        if (best) best.classList.add('stepper-has-keys');
+        marked = best;
+    };
+    const soon = () => { if (!waiting) waiting = requestAnimationFrame(mark); };
+    window.addEventListener('scroll', soon, { passive: true });
+    window.addEventListener('resize', soon);
+    document.addEventListener('stepper-added', soon);
+    if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon);
+})();
 
 // On a touch screen a swipe to the left or right across a widget steps it,
 // like turning a page: next to the left, back to the right. Not in a text
@@ -287,6 +326,7 @@ document.addEventListener('keydown', (event) => {
     });
     window.addEventListener('resize', () => fitSoon(true));
     const show = (widget) => {
+        if (window.stepperWindowFit) window.stepperWindowFit.clear(widget);
         if (open) { open.classList.remove('stepper-lightbox'); open.style.fontSize = ''; unfit(open); setLabel(open.querySelector(':scope > .stepper-full'), false); putBack(open); }
         lift(widget);
         open = widget;
@@ -318,6 +358,7 @@ document.addEventListener('keydown', (event) => {
         setLabel(open.querySelector(':scope > .stepper-full'), false);
         putBack(open);
         open.scrollIntoView({ block: 'center' });
+        if (window.stepperWindowFit) window.stepperWindowFit.fit(open);
         open = null;
         document.documentElement.classList.remove('stepper-lightbox-open');
         if (nav) nav.hidden = true;
@@ -469,7 +510,11 @@ document.addEventListener('keydown', (event) => {
         const render = () => {
             const steps = Number(widget.dataset.steps) || 0;
             const at = Number(widget.dataset.step) || 0;
-            box.hidden = steps < 2;
+            // with a single step the timeline is invisible but keeps its place,
+            // so that a widget whose steps change (a block with only its DC
+            // coefficient) does not jump
+            box.hidden = steps < 1;
+            box.style.visibility = steps < 2 ? 'hidden' : '';
             if (box.children.length !== steps) box.replaceChildren(...Array.from({ length: steps }, () => document.createElement('span')));
             [...box.children].forEach((tick, i) => { tick.className = i < at ? 'done' : i === at ? 'current' : ''; });
             box.setAttribute('aria-valuemax', Math.max(0, steps - 1));
@@ -594,4 +639,93 @@ document.addEventListener('keydown', (event) => {
     // a widget that changed its layout without the window changing (the
     // Algo Stepper going narrow) measures again
     document.addEventListener('stepper-layout', (event) => setTimeout(() => reserve(event.detail), 50));
+})();
+
+// Every widget fits in the window under the page's sticky bar, on a tablet
+// or a desktop (from 768 px wide; on a phone the lightbox shows a widget
+// whole). A widget too tall first shrinks its picture, with CSS zoom, so
+// that canvases laid over it shrink with it and its text stays as it is,
+// down to 60 %; if that is not enough (code beside the picture, a table),
+// the whole widget shrinks, down to 80 %. Fitted when it comes near the
+// window and again on a new window size; the lightbox clears it.
+(function () {
+    'use strict';
+    const WIDGETS = 'div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .growth-widget';
+    // the picture of a widget that may give up height
+    const PICTURES = [
+        ['.gop-stepper', 'canvas.gop-view'],
+        ['.idct-stepper', '.idct-picture-wrap'],
+        ['.motion-widget', '.motion-frames'],
+        ['.algo-stepper', ':scope > .algo-body > svg.algo-picture'],
+    ];
+    const LEAST_PICTURE = 0.6;
+    const LEAST_WIDGET = 0.8;
+    const NARROWEST = 768;
+    const MARGIN = 16;
+    const picture = (widget) => {
+        for (const [kind, sel] of PICTURES) {
+            if (!widget.matches(kind)) continue;
+            // canvases placed over the picture by script (Pip) would not follow it
+            if (widget.querySelector(':scope > .algo-body > canvas')) return null;
+            return widget.querySelector(sel);
+        }
+        return null;
+    };
+    const room = () => window.innerHeight - (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0) - MARGIN;
+    const clear = (widget) => {
+        widget.style.zoom = '';
+        const pic = picture(widget);
+        if (pic) pic.style.zoom = '';
+    };
+    const fit = (widget) => {
+        clear(widget);
+        if (window.innerWidth < NARROWEST || widget.classList.contains('stepper-lightbox') || !widget.offsetParent) return;
+        const limit = room();
+        let height = widget.getBoundingClientRect().height;
+        if (height <= limit) { fitted.set(widget, height); return; }
+        const pic = picture(widget);
+        if (pic) {
+            // twice: a smaller picture can change how the rest wraps
+            for (let round = 0; round < 2 && height > limit; round++) {
+                const own = pic.getBoundingClientRect().height;
+                const zoom = Number(pic.style.zoom) || 1;
+                const natural = own / zoom;
+                const wanted = Math.max(LEAST_PICTURE, (own - (height - limit)) / natural);
+                if (wanted >= zoom) break;
+                pic.style.zoom = String(wanted);
+                height = widget.getBoundingClientRect().height;
+            }
+        }
+        if (height > limit) widget.style.zoom = String(Math.max(LEAST_WIDGET, limit / height));
+        fitted.set(widget, widget.getBoundingClientRect().height);
+    };
+    // the height a widget had after its last fit: a change of size that is
+    // not the fit's own (a picture loaded, a layout changed) fits it again
+    const fitted = new WeakMap();
+    const grown = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver((entries) => {
+        for (const e of entries) {
+            const was = fitted.get(e.target);
+            if (was !== undefined && Math.abs(e.target.getBoundingClientRect().height - was) > 2) fit(e.target);
+        }
+    });
+    window.stepperWindowFit = { fit, clear };
+    const near = typeof IntersectionObserver === 'undefined' ? null
+        : new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) fit(e.target); }), { rootMargin: '50% 0px' });
+    const watch = (widget) => {
+        if (widget.dataset.windowFit) return;
+        widget.dataset.windowFit = '1';
+        if (near) near.observe(widget);
+        else fit(widget);
+        if (grown) grown.observe(widget);
+    };
+    const all = () => document.querySelectorAll(WIDGETS).forEach((w) => { if (!w.parentElement.closest(WIDGETS)) watch(w); });
+    let waiting = 0;
+    window.addEventListener('resize', () => {
+        clearTimeout(waiting);
+        waiting = setTimeout(() => document.querySelectorAll('[data-window-fit]').forEach(fit), 200);
+    });
+    document.addEventListener('stepper-added', (event) => setTimeout(() => { watch(event.detail); fit(event.detail); }, 60));
+    document.addEventListener('stepper-layout', (event) => setTimeout(() => fit(event.detail), 60));
+    if (document.readyState === 'complete') all();
+    else window.addEventListener('load', all);
 })();

@@ -318,16 +318,16 @@ mit `play` statt Thorsten sprechen.
 Ton ist schwingende Luft: Der Luftdruck steigt und fällt, viele Male in der
 Sekunde, und dein Trommelfell schwingt mit. Ein Mikrofon macht daraus eine
 elektrische Spannung, die genauso steigt und fällt. Der Computer misst diese
-Spannung in gleichen Abständen und speichert jede Messung als Zahl. Das heißt
-Abtasten, auf Englisch Sampling; jede Messung ist ein Sample, und wie oft in
+Spannung in gleichen Abständen und speichert jeden Messwert als Zahl. Das heißt
+Abtasten, auf Englisch Sampling; jeder Messwert ist ein **Sample**, und wie oft in
 der Sekunde gemessen wird, ist die Abtastrate (Sample Rate), angegeben in
 Hertz (Hz).
 
-<img class='drawing' src='abtastung.svg' alt='Zwei Bilder derselben grauen Welle über einer Zeitachse: eine langsame Schwingung, auf der eine schnelle, kleine sitzt. Oben, »Oft gemessen: 48 Messungen«: blaue Punkte auf senkrechten Strichen, durch eine blaue Linie verbunden, die der Welle mit allen kleinen Zacken folgt. Unten, »Selten gemessen: 12 Messungen«: nur wenige Punkte, und die blaue Linie zwischen ihnen zeigt die langsame Schwingung, die kleinen Wellen dazwischen fehlen.'>
+<img class='drawing' src='abtastung.svg' alt='Zwei Bilder derselben grauen Welle über einer Zeitachse: eine langsame Schwingung, auf der eine schnelle, kleine sitzt. Oben, »Oft gemessen: 48 Samples«: blaue Punkte auf senkrechten Strichen, durch eine blaue Linie verbunden, die der Welle mit allen kleinen Zacken folgt. Unten, »Selten gemessen: 12 Samples«: nur wenige Punkte, und die blaue Linie zwischen ihnen zeigt die langsame Schwingung, die kleinen Wellen dazwischen fehlen.'>
 
-Was zwischen zwei Messungen geschieht, weiß der Computer nicht. Eine
+Was zwischen zwei Samples geschieht, weiß der Computer nicht. Eine
 Schwingung bleibt nur erhalten, wenn er sie mehr als zweimal pro Schwingung
-misst: Mit 8.000 Messungen in der Sekunde kommen Töne bis 4.000 Hz an, alles
+misst: Mit 8.000 Samples in der Sekunde kommen Töne bis 4.000 Hz an, alles
 Höhere fehlt. Der tiefe Ton der Höhlenmusik schwingt 55-mal in der Sekunde,
 also mit 55 Hz; das Zischen eines »s« liegt zum großen Teil über 4.000 Hz.
 
@@ -349,14 +349,14 @@ in »Felswand« und auf das helle Glöckchen am Ende. Ab welcher Abtastrate
 kannst du »s« und »f« nicht mehr auseinanderhalten?
 </div>
 
-Das Telefonspiel rechnet mit 16.000 Messungen in der Sekunde, so kommen
+Das Telefonspiel rechnet mit 16.000 Samples in der Sekunde, so kommen
 Thorsten und die Musik beim Telefon an. Das alte Telefonnetz übertrug nur
 8.000; am Telefon buchstabiert man darum mit Wörtern, »S wie Samuel«, weil
 »s« und »f« dort ähnlich klingen. Eine CD misst 44.100-mal in der Sekunde,
 etwas mehr als doppelt so oft wie die höchsten Töne, die Menschen hören, um
 20.000 Hz.
 
-Jede Messung ist eine Zahl, auf einer CD 2 Byte groß, und eine WAV-Datei
+Jedes Sample ist eine Zahl, auf einer CD 2 Byte groß, und eine WAV-Datei
 speichert jede einzeln: In einer Sekunde Ton mit 44.100 Hz stecken 88.200
 Byte, für zwei Lautsprecher doppelt so viel. `hoehle.mp3` dauert 48 Sekunden
 und ist 0,6 MB groß; als WAV wären es 4,2 MB. MP3 lässt weg, was man kaum

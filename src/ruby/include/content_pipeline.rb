@@ -810,6 +810,40 @@ class Main < Sinatra::Base
                 if page_tasks
                     parsed_content[slug][:tasks] = page_tasks.merge(:on_page => task_slots & page_tasks[:by_id].keys)
                 end
+                # parts: true (ActivityParts): one page per chapter, each with
+                # the row of parts and the link to the next
+                if page_meta['parts'] && !entry[:kenney]
+                    pieces = ActivityParts.split(root, slug)
+                    if pieces.empty?
+                        STDERR.puts "#{path}: parts: needs at least two chapters (##)"
+                    else
+                        # parts: as a list, a picture for each part (image:,
+                        # image_alt:) for the carousel on the catalog card
+                        pictures = page_meta['parts'].is_a?(Array) ? page_meta['parts'] : []
+                        unless pictures.empty? || pictures.size == pieces.size
+                            STDERR.puts "#{path}: parts: lists #{pictures.size} pictures for #{pieces.size} chapters"
+                        end
+                        parsed_content[slug][:parts] = pieces.each_with_index.map do |(part_root, title), i|
+                            part_html = part_root.to_html.gsub(%r{(<script src=['"]/include/[a-z_]+\.js)(['"])}) do
+                                "#{$1}?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}#{$2}"
+                            end
+                            part = { :title => title, :html => part_html }
+                            picture = pictures[i]
+                            if picture.is_a?(Hash) && picture['image']
+                                image_path = File.join(File.dirname(path), picture['image'])
+                                if File.file?(image_path)
+                                    part[:image] = "/cache/#{convert_image(image_path)}.webp"
+                                    dark_path = image_path.sub(/(\.\w+)\z/) { "-dark#{$1}" }
+                                    part[:image_dark] = "/cache/#{convert_image(dark_path)}.webp" if File.file?(dark_path)
+                                    part[:image_alt] = picture['image_alt']
+                                else
+                                    STDERR.puts "#{path}: parts: no picture #{picture['image']}"
+                                end
+                            end
+                            part
+                        end
+                    end
+                end
                 # class_repo: group (ClassRepos): the variant for people without a
                 # class repository, with its own HTML and tasks.
                 parsed_content[slug][:class_repo] = ClassRepos.page?(page_meta)

@@ -1,0 +1,810 @@
+# Aufgaben zu »Audio komprimieren«. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/audio; die Funktionen der Lernenden rechnen mit numpy, das im
+# Workspace-Image ist. Die Zahlen gehören zu den Programmen in stufen/.
+format: 1
+activity: audio-compression
+tasks:
+  - id: cd-lied
+    title: Ein Lied auf der CD
+    prompt: |
+      Ein Lied ist 3 Minuten und 30 Sekunden lang und steht auf einer CD:
+      Stereo, je Kanal 44.100 Samples in der Sekunde mit 16 Bit. Wie viele
+      Megabytes brauchen seine Samples? Ein Megabyte sind 1.000.000 Bytes.
+    check:
+      type: number
+      expect: 37.044
+      tolerance: 0.05
+    feedback:
+      - when: { between: [18.4, 18.6] }
+        say: Das ist ein Kanal. Stereo sind zwei, links und rechts.
+      - when: { between: [296.2, 296.5] }
+        say: Das sind Megabits. Ein Byte hat 8 Bits.
+      - when: { between: [35.2, 35.4] }
+        say: So viele Mebibytes sind es, 1.048.576 Bytes je MiB. Gefragt ist das Megabyte mit 1.000.000 Bytes.
+      - when: { between: [10.5, 10.7] }
+        say: Das ist eine Minute. Das Lied ist dreieinhalb Minuten lang.
+    solution: |
+      44.100 Samples · 2 Bytes · 2 Kanäle = 176.400 Bytes in der Sekunde,
+      mal 210 Sekunden sind 37.044.000 Bytes, also etwa 37 MB. Als MP3 mit
+      128 kbit/s wären es 210 · 128.000 / 8 = 3.360.000 Bytes, ein Elftel.
+
+  - id: wav-header
+    title: Der Header einer WAV-Datei
+    prompt: |
+      Schreib in `audio/wav.py` die Funktion `wav_header(n, rate)`: Sie gibt
+      die 44 Bytes des Headers einer WAV-Datei mit `n` Samples in Mono mit
+      16 Bit und `rate` Samples in der Sekunde zurück. Die Prüfung ruft sie
+      mit 8 Samples bei 8.000 Hz auf, wie die Datei auf der Seite, und mit
+      44.100 Samples bei 44.100 Hz, und vergleicht die Bytes als Hexzahlen.
+    check:
+      type: python
+      file: audio/wav.py
+      cases:
+        - call: len(wav_header(8, 8000))
+          expect: 44
+          say: Der Header hat 44 Bytes, 12 für den RIFF-Chunk, 24 für den fmt-Chunk und 8 für den Anfang des data-Chunks.
+        - call: wav_header(8, 8000)[:12].hex()
+          expect: "'524946463400000057415645'"
+          say: Der RIFF-Chunk wie auf der Seite. Chunk Size ist 36 plus die Bytes der Samples, hier 36 + 16 = 52 = 0x34.
+        - call: wav_header(8, 8000)[12:36].hex()
+          expect: "'666d74201000000001000100401f0000803e000002001000'"
+          say: Der fmt-Chunk sollte genau so aussehen wie auf der Seite. Stehen die Bytes einer Zahl andersherum, fehlt das `<` für Little Endian; ist er zu lang oder zu kurz, passt ein `I` oder `H` nicht zur Länge des Felds.
+        - call: wav_header(8, 8000)[36:].hex()
+          expect: "'6461746110000000'"
+          say: Der data-Chunk beginnt mit `data` und der Zahl der Bytes der Samples, 2 je Sample, hier 16.
+        - call: wav_header(44100, 44100)[4:8].hex()
+          expect: "'ac580100'"
+          say: Bei 44.100 Samples sind es 88.200 Bytes Samples, und Chunk Size ist 36 + 88.200 = 88.236 = 0x158ac.
+        - call: wav_header(44100, 44100)[24:32].hex()
+          expect: "'44ac000088580100'"
+          say: Abtastrate 44.100 = 0xac44 und Byte Rate 2 · 44.100 = 88.200 = 0x15888. Hängt die Byte Rate von `rate` ab?
+    solution: |
+      ```python
+      def wav_header(n, rate):
+          size = 2 * n
+          riff = struct.pack('<4sI4s', b'RIFF', 36 + size, b'WAVE')
+          fmt = struct.pack('<4sIHHIIHH', b'fmt ', 16, 1, 1, rate, 2 * rate, 2, 16)
+          data = struct.pack('<4sI', b'data', size)
+          return riff + fmt + data
+      ```
+
+  - id: ton
+    title: Ein Ton aus Zahlen
+    prompt: |
+      Schreib in `audio/tones.py` die Funktion `tone(freq, seconds, rate)`:
+      die Samples eines Sinustons mit `freq` Hz, halb so laut, wie es geht,
+      `seconds` Sekunden lang, bei `rate` Samples in der Sekunde, als
+      numpy-Array. Die Prüfung ruft sie mit Tönen von 1.000, 440 und 250 Hz
+      auf.
+    check:
+      type: python
+      file: audio/tones.py
+      cases:
+        - call: len(tone(1000, 0.001, 8000))
+          expect: 8
+          say: Eine Millisekunde bei 8.000 Samples in der Sekunde sind 8 Samples.
+        - call: len(tone(440, 2, 44100))
+          expect: 88200
+          say: Zwei Sekunden bei 44.100 Samples in der Sekunde sind 88.200 Samples.
+        - call: round(float(tone(1000, 0.001, 8000)[0]), 4)
+          expect: 0.0
+          say: Das erste Sample ist zur Zeit 0, und sin(0) = 0.
+        - call: round(float(tone(1000, 0.001, 8000)[2]), 4)
+          expect: 0.5
+          say: Das Sample mit dem Index 2 ist zur Zeit 2 / 8.000 s, einer Viertelschwingung bei 1.000 Hz, also am höchsten Punkt, 0,5. Wird `t` durch `rate` geteilt?
+        - call: round(float(abs(tone(250, 1, 8000)).max()), 4)
+          expect: 0.5
+          say: Halb so laut, wie es geht, heißt, die Schwingung geht bis 0,5 und −0,5.
+    solution: |
+      ```python
+      def tone(freq, seconds, rate):
+          t = np.arange(round(seconds * rate)) / rate
+          return 0.5 * np.sin(2 * np.pi * freq * t)
+      ```
+
+  - id: drei-toene
+    title: Drei Töne auf einmal
+    prediction: true
+    prompt: |
+      Jeder der drei Töne schwingt bis 0,5. Was hörst du in `akkord.wav`?
+    check:
+      type: choice
+      options:
+        - Den Akkord aus drei Tönen, sauber und lauter als ein Ton allein.
+        - Den Akkord, aber kratzig und verzerrt.
+        - Nur den höchsten der drei Töne, weil er die anderen übertönt.
+        - Nichts, weil `write_wav` die Datei bei zu großen Zahlen nicht schreibt.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Rechne nach, wie weit die Summe an einer Stelle gehen kann, an der alle drei Töne oben sind. Was macht `write_wav` mit einer Zahl über 1?
+      - when: { picked: 2 }
+        say: Die drei Töne sind gleich laut. In der Summe steckt jeder von ihnen ganz.
+      - when: { picked: 3 }
+        say: Lies `write_wav` noch einmal. `np.clip` lässt keine Zahl durch, die nicht in 16 Bit passt; abgebrochen wird nichts.
+    solution: |
+      Kratzig: Die Summe der drei Töne geht an manchen Stellen bis fast 1,5,
+      und `np.clip` schneidet alles über 1 ab. Die flachen Stellen in der
+      Welle hört man als Verzerrung, das Clipping.
+
+  - id: unmulaw
+    title: μ-law rückgängig machen
+    prompt: |
+      Schreib in `audio/mulaw.py` die Funktion `unmulaw(y)`, die `mulaw`
+      rückgängig macht, für ein ganzes numpy-Array auf einmal. Die Prüfung
+      ruft sie mit einzelnen Zahlen auf und mit allen Werten von −1 bis 1 in
+      Schritten von 0,02, die vorher durch `mulaw` gegangen sind.
+    check:
+      type: python
+      file: audio/mulaw.py
+      cases:
+        - call: round(float(unmulaw(0.0)), 4)
+          expect: 0.0
+          say: Aus 0 wird mit `mulaw` 0, also muss auch `unmulaw(0)` 0 ergeben.
+        - call: round(float(unmulaw(1.0)), 4)
+          expect: 1.0
+          say: Aus 1 wird mit `mulaw` 1, also muss auch `unmulaw(1)` 1 ergeben. Ist (1 + MU) hoch 1, minus 1, durch MU gleich 1?
+        - call: round(float(unmulaw(0.5)), 4)
+          expect: 0.0588
+          say: Aus 0,5 wird (256 hoch 0,5 − 1) / 255 = 15 / 255, etwa 0,0588. Rechnest du mit `1 + MU` als Basis?
+        - call: round(float(unmulaw(-1.0)), 4)
+          expect: -1.0
+          say: Eine negative Zahl wird zur negativen Zahl mit demselben Betrag. Rechne mit dem Betrag `np.abs(y)` und multipliziere zum Schluss mit `np.sign(y)`.
+        - call: round(float(np.abs(unmulaw(mulaw(np.linspace(-1, 1, 101))) - np.linspace(-1, 1, 101)).max()), 6)
+          expect: 0.0
+          say: Für jede Zahl eines Arrays muss `unmulaw(mulaw(x))` wieder `x` ergeben. Rechnet die Funktion mit numpy (`np.abs`, `np.sign`, `**`) statt mit `math`?
+    solution: |
+      ```python
+      def unmulaw(y):
+          return np.sign(y) * ((1 + MU) ** np.abs(y) - 1) / MU
+      ```
+
+  - id: viermal-leiser
+    title: Viermal leiser
+    prediction: true
+    prompt: |
+      Bei voller Lautstärke liegt der Fehler der gleichmäßigen Stufen etwa
+      35 dB unter der Stimme. Um wie viel ändert sich diese Zahl, wenn die
+      Stimme viermal leiser ist, also bei `level` 0,25?
+    check:
+      type: choice
+      options:
+        - Gar nicht, denn an den Stufen ändert sich nichts.
+        - Sie sinkt um etwa 6 dB.
+        - Sie sinkt um etwa 12 dB.
+        - Sie sinkt auf ein Viertel, etwa 9 dB.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Die Stufen bleiben, und darum bleibt auch der Fehler gleich groß. Aber die Stimme ist leiser; was heißt das für das Verhältnis?
+      - when: { picked: 1 }
+        say: 6 dB weniger wäre eine halb so hohe Welle. Viermal leiser ist zweimal halb so hoch.
+      - when: { picked: 3 }
+        say: Dezibel sind ein Logarithmus. Ein Viertel der Höhe ist ein Sechzehntel der Energie; wie viele dB sind das?
+    solution: |
+      Um etwa 12 dB: Der Fehler bleibt gleich groß, die Stimme hat ein
+      Viertel der Höhe und damit ein Sechzehntel der Energie, und
+      10 · log₁₀(16) ist etwa 12.
+
+  - id: residual
+    title: Die Reste der Vorhersage
+    prompt: |
+      Schreib in `audio/predict.py` die Funktion `residual(x)`: Sie gibt ein
+      gleich langes Array zurück, die ersten beiden Zahlen wie in `x`, ab dem
+      Index 2 das Sample minus `2 * x[n - 1] - x[n - 2]`. `x` selbst bleibt
+      unverändert.
+    check:
+      type: python
+      file: audio/predict.py
+      cases:
+        - call: len(residual(np.array([1, 4, 9, 16, 25])))
+          expect: 5
+          say: Das Array der Reste ist so lang wie das der Samples; die ersten beiden Zahlen bleiben, wie sie sind.
+        - call: '[int(v) for v in residual(np.array([3, 5, 7, 9, 11]))]'
+          expect: '[3, 5, 0, 0, 0]'
+          say: Auf einer Geraden stimmt jede Schätzung genau, und die Reste sind 0. Die ersten beiden Zahlen bleiben.
+        - call: '[int(v) for v in residual(np.array([1, 4, 9, 16, 25]))]'
+          expect: '[1, 4, 2, 2, 2]'
+          say: Für die 9 ist die Schätzung 2 · 4 − 1 = 7, der Rest also 2.
+        - call: '[int(v) for v in residual(np.array([6445, 6866, 7298, 7730, 8163]))]'
+          expect: '[6445, 6866, 11, 0, 1]'
+          say: Die Samples aus der Tabelle auf der Seite.
+        - call: x = np.array([1, 4, 9, 16]); residual(x); [int(v) for v in x]
+          expect: '[1, 4, 9, 16]'
+          say: '`residual` darf `x` nicht verändern: Fang mit einer Kopie an, `r = x.copy()`.'
+    solution: |
+      ```python
+      def residual(x):
+          r = x.copy()
+          r[2:] = x[2:] - (2 * x[1:-1] - x[:-2])
+          return r
+      ```
+
+  - id: rice
+    title: Ein Rice-Code
+    prompt: |
+      Schreib in `audio/rice.py` die Funktion `rice(u, k)`: der Rice-Code
+      der Zahl `u ≥ 0` mit dem Parameter `k ≥ 1` als Text aus Nullen und
+      Einsen, erst `u // 2**k` Nullen und eine 1, dann `u % 2**k` mit genau
+      `k` Stellen.
+    check:
+      type: python
+      file: audio/rice.py
+      cases:
+        - call: rice(0, 2)
+          expect: "'100'"
+          say: Für 0 gibt es keine Nullen vorn, dann die 1 und die beiden Stellen von 0, also `'1'` und `'00'`.
+        - call: rice(5, 2)
+          expect: "'0101'"
+          say: 5 // 4 = 1 Null und die 1, dann 5 % 4 = 1 mit zwei Stellen, `'01'`. Hat der zweite Teil genau `k` Stellen, auch mit führenden Nullen?
+        - call: rice(13, 3)
+          expect: "'01101'"
+          say: 13 // 8 = 1, 13 % 8 = 5 = `'101'`.
+        - call: rice(40, 3)
+          expect: "'000001000'"
+          say: 40 // 8 = 5 Nullen und die 1, dann 40 % 8 = 0 mit drei Stellen.
+        - call: len(rice(1000, 4))
+          expect: 67
+          say: 1000 // 16 = 62 Nullen, die 1 und 4 Stellen.
+    solution: |
+      ```python
+      def rice(u, k):
+          return '0' * (u // 2 ** k) + '1' + format(u % 2 ** k, f'0{k}b')
+      ```
+
+  - id: je-block
+    title: Ein k je Block
+    prediction: true
+    prompt: |
+      Mit einem `k` für die ganze Datei braucht die Stimme 58 % und die Musik
+      70 % ihrer Bits. Jetzt bekommt jeder Block von 4.096 Samples sein
+      eigenes `k`. Welche Datei wird dadurch deutlich kleiner?
+    check:
+      type: choice
+      options:
+        - Die Stimme.
+        - Die Musik.
+        - Beide etwa gleich viel.
+        - Keine, die 4 Bit für jedes `k` fressen den Gewinn auf.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Hör dir beide Dateien noch einmal an. Wo wechseln laute und leise Stellen, wo bleibt es ungefähr gleich laut?
+      - when: { picked: 2 }
+        say: Ein eigenes `k` hilft dort, wo die Reste mal klein und mal groß sind. Bei welcher Datei ist das so?
+      - when: { picked: 3 }
+        say: Ein Block hat 4.096 Samples; 4 Bit für sein `k` sind weniger als ein Tausendstel Bit je Sample.
+    solution: |
+      Die Stimme, von 58 auf 46 %: Sie hat Pausen und leise Silben, in denen
+      ein kleines `k` reicht. Die Musik ist überall ungefähr gleich laut und
+      schrumpft nur von 70 auf 67 %.
+
+  - id: von-hand
+    title: Eine Frequenz von Hand
+    prompt: |
+      Rechne für die acht Samples aus der Tabelle \(c_2\), \(s_2\) und
+      daraus die Stärke \(A_2\) aus. Wie groß ist \(A_2\)?
+    check:
+      type: number
+      expect: 1
+      tolerance: 0.01
+    feedback:
+      - when: { between: [3.99, 4.01] }
+        say: Das ist \(\sqrt{c_2^2 + s_2^2}\). Die Stärke ist das noch mal \(2 / N\), bei acht Samples also mal 2/8.
+      - when: { between: [0.49, 0.51] }
+        say: Geteilt durch 8 ist nur die halbe Höhe; die Formel teilt durch \(N\) und multipliziert mit 2.
+      - when: { between: [-0.01, 0.01] }
+        say: Mit dem Kosinus heben sich die Produkte auf, aber nicht mit dem Sinus. Beide gehören in die Wurzel.
+    solution: |
+      \(c_2 = 1 - 1 + 1 - 1 = 0\) und \(s_2 = 2 + 2 = 4\), also
+      \(A_2 = \frac{2}{8}\sqrt{0^2 + 4^2} = 1\).
+
+  - id: dft
+    title: Die DFT
+    prompt: |
+      Schreib in `audio/freq.py` die Funktion `dft(x)`, die für jedes `k` von
+      0 bis `N - 1` die Summe \(X_k\) ausrechnet und alle als numpy-Array
+      zurückgibt. Die Prüfung vergleicht mit der FFT von numpy.
+    check:
+      type: python
+      file: audio/freq.py
+      cases:
+        - call: len(dft(np.zeros(8)))
+          expect: 8
+          say: Für `N` Samples gibt es `N` Ergebnisse, eines für jedes `k` von 0 bis `N - 1`.
+        - call: round(float(abs(dft(np.array([1.0, 2, 1, 0, 1, 2, 1, 0]))[0])), 4)
+          expect: 8.0
+          say: Für `k = 0` ist der Testton überall 1, und die Summe ist die Summe aller Samples, hier 8.
+        - call: round(float(abs(dft(np.array([1.0, 2, 1, 0, 1, 2, 1, 0]))[2])), 4)
+          expect: 4.0
+          say: Für die Samples aus der Tabelle ist der Betrag von \(X_2\) gleich \(\sqrt{c_2^2 + s_2^2} = 4\). Steht im Testton `k * n / N`, mit dem Array `n` der Indizes?
+        - call: bool(np.allclose(dft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6])), np.fft.fft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6]))))
+          expect: true
+          say: Die Beträge stimmen, aber nicht die Zahlen selbst. Hat der Testton das Minus, `np.exp(-2j * np.pi * k * n / N)`?
+    solution: |
+      ```python
+      def dft(x):
+          N = len(x)
+          n = np.arange(N)
+          X = np.zeros(N, dtype=complex)
+          for k in range(N):
+              X[k] = np.sum(x * np.exp(-2j * np.pi * k * n / N))
+          return X
+      ```
+
+  - id: doppelt
+    title: Doppelt so viele Samples
+    prediction: true
+    prompt: |
+      `dft` braucht für 4.096 Samples etwa eine halbe Sekunde. Wie lange
+      braucht es für 8.192?
+    check:
+      type: choice
+      options:
+        - Etwa genauso lange, die Töne sind ja dieselben.
+        - Etwa doppelt so lange, eine Sekunde.
+        - Etwa viermal so lange, zwei Sekunden.
+        - Etwa achtmal so lange, vier Sekunden.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Gerechnet wird mit jedem Sample, ob es zu einem Ton gehört oder nicht. Wie viele Samples sind es jetzt?
+      - when: { picked: 1 }
+        say: Es sind doppelt so viele Samples, aber auch doppelt so viele `k`. Wie oft läuft die Zeile in der Schleife, und mit wie vielen Zahlen rechnet sie jedes Mal?
+      - when: { picked: 3 }
+        say: Zähl, was sich verdoppelt, die Zahl der `k` und die Zahl der Samples, mit denen für jedes `k` gerechnet wird.
+    solution: |
+      Etwa viermal so lange: Die Schleife läuft `N`-mal, und jedes Mal wird
+      mit allen `N` Samples gerechnet, \(N^2\) Multiplikationen.
+
+  - id: fft
+    title: Die FFT
+    prompt: |
+      Schreib in `audio/freq.py` die Funktion `fft(x)` für ein `x`, dessen
+      Länge eine Zweierpotenz ist: Sie ruft sich für die geraden und die
+      ungeraden Samples selbst auf und setzt das Ergebnis daraus zusammen.
+      Die Prüfung vergleicht mit der FFT von numpy und misst, ob 16.384
+      Samples in weniger als einer Sekunde gehen.
+    check:
+      type: python
+      file: audio/freq.py
+      timeout: 30
+      cases:
+        - call: '[complex(v) for v in fft(np.array([5.0]))]'
+          expect: '[5 + 0j]'
+          say: Die FFT eines einzigen Samples ist das Sample selbst.
+        - call: len(fft(np.zeros(16)))
+          expect: 16
+          say: Für `N` Samples gibt es `N` Ergebnisse, die erste Hälfte mit `+`, die zweite mit `-`.
+        - call: bool(np.allclose(fft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6])), np.fft.fft(np.array([3.0, 1, 4, 1, 5, 9, 2, 6]))))
+          expect: true
+          say: Das Ergebnis passt nicht zur FFT von numpy. Wird `odd` mit dem Faktor `np.exp(-2j * np.pi * np.arange(N // 2) / N)` multipliziert, und steht `even + w` vorn und `even - w` hinten?
+        - call: bool(np.allclose(fft(np.sin(np.arange(1024) * 0.3)), np.fft.fft(np.sin(np.arange(1024) * 0.3))))
+          expect: true
+          say: Bei acht Samples stimmt es, bei 1.024 nicht mehr. Kommen die Hälften aus `x[0::2]` und `x[1::2]`?
+        - call: t = time.perf_counter(); fft(np.zeros(16384)); time.perf_counter() - t < 1
+          expect: true
+          say: Für 16.384 Samples braucht `fft` länger als eine Sekunde. Ruft sie sich selbst für die beiden Hälften auf, statt `dft`?
+    solution: |
+      ```python
+      def fft(x):
+          N = len(x)
+          if N == 1:
+              return x.astype(complex)
+          even = fft(x[0::2])
+          odd = fft(x[1::2])
+          w = np.exp(-2j * np.pi * np.arange(N // 2) / N) * odd
+          return np.concatenate([even + w, even - w])
+      ```
+
+  - id: staerke
+    title: Wie stark eine Frequenz ist
+    prompt: |
+      Schreib in `audio/dial.py` die Funktion `strength(block, freq, rate)`:
+      wie hoch die Schwingung mit `freq` Hz in den Samples `block` ist, bei
+      `rate` Samples in der Sekunde. Die Prüfung gibt ihr Sinustöne der
+      Tasten.
+    check:
+      type: python
+      file: audio/dial.py
+      cases:
+        - call: round(float(strength(0.5 * np.sin(2 * np.pi * 770 * np.arange(800) / 8000), 770, 8000)), 2)
+          expect: 0.5
+          say: Ein Sinus mit 770 Hz und der Höhe 0,5 ergibt bei 770 Hz die Stärke 0,5. Steht im Testton `freq * n / rate`, und wird der Betrag der Summe mit 2 multipliziert und durch die Zahl der Samples geteilt?
+        - call: round(float(strength(0.5 * np.sin(2 * np.pi * 770 * np.arange(800) / 8000), 1336, 8000)), 2)
+          expect: 0.0
+          say: Ein Ton mit 770 Hz enthält keine 1.336 Hz. Steht im Testton `freq * n / rate`?
+        - call: round(float(strength(0.5 * np.sin(2 * np.pi * 697 * np.arange(800) / 8000), 697, 8000)), 2)
+          expect: 0.5
+          say: 697 Hz machen in 800 Samples keine ganze Zahl von Schwingungen; der Testton muss trotzdem genau 697 Hz haben.
+        - call: round(float(strength(0.3 * np.sin(2 * np.pi * 1209 * np.arange(4410) / 44100), 1209, 44100)), 2)
+          expect: 0.3
+          say: Bei 44.100 Samples in der Sekunde ist das Sample mit dem Index `n` zur Zeit `n / 44100`. Rechnet der Testton mit `rate`?
+        - call: key(0.25 * np.sin(2 * np.pi * 852 * np.arange(1000) / 8000) + 0.25 * np.sin(2 * np.pi * 1336 * np.arange(1000) / 8000), 8000)
+          expect: "'8'"
+          say: 852 Hz und 1.336 Hz sind die Taste 8. Steht `key` so in der Datei wie auf der Seite?
+    solution: |
+      ```python
+      def strength(block, freq, rate):
+          n = np.arange(len(block))
+          return 2 * abs(np.sum(block * np.exp(-2j * np.pi * freq * n / rate))) / len(block)
+      ```
+
+  - id: nummer
+    title: Die gewählte Nummer
+    prompt: |
+      Welche Telefonnummer wird in `waehlen.wav` gewählt? Leerzeichen,
+      Schrägstriche und Bindestriche sind egal.
+    check:
+      type: answer
+      compare: regex
+      expect: '^\D*0\D*3\D*0\D*2\D*3\D*1\D*2\D*5\D*3\D*8\D*6\D*$'
+    solution: |
+      030 23125386, eine Nummer, die in Berlin für Filme, Bücher und
+      Aufgaben frei gehalten wird.
+
+  - id: am-besten
+    title: Wo das Ohr am besten hört
+    prediction: true
+    prompt: |
+      Vier Töne, alle gleich laut und sehr leise. Welchen hörst du am ehesten?
+    check:
+      type: choice
+      options:
+        - 100 Hz
+        - 1.000 Hz
+        - 3.500 Hz
+        - 12.000 Hz
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Tiefe Töne braucht das Ohr deutlich lauter; ein tiefer Bass ist eher zu spüren als zu hören.
+      - when: { picked: 1 }
+        say: Bei 1.000 Hz hört das Ohr gut, aber nicht am besten. Denk an den Gehörgang, ein Rohr von etwa 2,5 cm.
+      - when: { picked: 3 }
+        say: Hohe Töne hört man mit dem Alter immer schlechter, und schon bei jungen Menschen steigt die Schwelle über 10.000 Hz steil an.
+    solution: |
+      3.500 Hz: Der Gehörgang verstärkt um diese Frequenz, und dort ist die
+      Hörschwelle am niedrigsten.
+
+  - id: hoerschwelle
+    title: Die Hörschwelle als Formel
+    prompt: |
+      Schreib in `audio/ear.py` die Funktion `threshold(f)`: die Hörschwelle
+      nach Terhardt in dB SPL für `f` in Hz, auch für ein ganzes numpy-Array.
+    check:
+      type: python
+      file: audio/ear.py
+      cases:
+        - call: round(float(threshold(1000)), 1)
+          expect: 3.4
+          say: Bei 1.000 Hz ist `f` in Kilohertz 1, und die Formel ergibt 3,64 − 6,5 · e^(−0,6 · 2,3²) + 0,001, etwa 3,4. Wird `f` durch 1.000 geteilt?
+        - call: round(float(threshold(100)), 1)
+          expect: 23.0
+          say: Bei 100 Hz sind es 0,1 kHz, und 3,64 · 0,1 hoch −0,8 ist etwa 23. Steht das Minus im Exponenten, `** -0.8`?
+        - call: round(float(threshold(3300)), 1)
+          expect: -5.0
+          say: Bei 3.300 Hz hat die Hörschwelle ihr Tal, etwa −5 dB SPL. Steht in `np.exp` der Exponent `-0.6 * (k - 3.3) ** 2`?
+        - call: round(float(threshold(16000)), 1)
+          expect: 65.9
+          say: Bei 16.000 Hz steigt die Hörschwelle steil, durch den letzten Teil `0.001 * k ** 4`.
+        - call: '[round(float(v), 1) for v in threshold(np.array([100.0, 1000.0]))]'
+          expect: '[23.0, 3.4]'
+          say: '`threshold` soll auch ein ganzes Array auf einmal nehmen: mit `np.exp` statt `math.exp`.'
+    solution: |
+      ```python
+      def threshold(f):
+          k = f / 1000
+          return 3.64 * k ** -0.8 - 6.5 * np.exp(-0.6 * (k - 3.3) ** 2) + 0.001 * k ** 4
+      ```
+
+  - id: hoerbar
+    title: Was über der Hörschwelle liegt
+    prompt: |
+      Schreib in `audio/ear.py` die Funktion `audible(block, rate)`: für
+      jede Frequenz der FFT `True`, wenn sie mindestens so laut ist wie die
+      Hörschwelle bei ihrer Frequenz. Die Prüfung gibt ihr Töne, die genau
+      auf eine Frequenz der FFT fallen, laut, leise und tief.
+    check:
+      type: python
+      file: audio/ear.py
+      cases:
+        - call: len(audible(np.zeros(2048), 44100))
+          expect: 1025
+          say: Die FFT von `np.fft.rfft` hat für 2.048 Samples 1.025 Zahlen, und für jede gibt es ein `True` oder `False`.
+        - call: int(audible(0.5 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100).sum())
+          expect: 1
+          say: Ein lauter Ton mit 43 Schwingungen im Block ist genau eine Frequenz der FFT, und nur sie ist hörbar.
+        - call: int(np.argmax(audible(0.5 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100)))
+          expect: 43
+          say: Hörbar ist die Frequenz mit dem Index 43, etwa 926 Hz.
+        - call: int(audible(0.0001 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100).sum())
+          expect: 1
+          say: Ein Ton der Höhe 0,0001 hat 96 − 80 = 16 dB SPL und liegt bei 926 Hz über der Hörschwelle von etwa 4 dB. Wird mit der Hörschwelle bei der Frequenz in Hz verglichen, aus `np.fft.rfftfreq`?
+        - call: int(audible(0.00001 * np.sin(2 * np.pi * 43 * np.arange(2048) / 2048), 44100).sum())
+          expect: 0
+          say: Ein Ton der Höhe 0,00001 hat nur −4 dB SPL und liegt unter der Hörschwelle.
+        - call: int(audible(0.001 * np.sin(2 * np.pi * 2 * np.arange(2048) / 2048), 44100).sum())
+          expect: 0
+          say: Ein Ton mit 2 Schwingungen im Block hat 43 Hz. Mit 36 dB SPL wäre er bei 926 Hz hörbar, bei 43 Hz liegt die Schwelle aber über 45 dB. Bekommt `threshold` die Frequenzen in Hz, aus `np.fft.rfftfreq`?
+    solution: |
+      ```python
+      def audible(block, rate):
+          freqs = np.fft.rfftfreq(len(block), 1 / rate)
+          return levels(block) >= threshold(np.maximum(freqs, 20))
+      ```
+
+  - id: welche-seite
+    title: Nach oben oder nach unten
+    prediction: true
+    prompt: |
+      Ein lautes Rauschen um 1.000 Hz. Daneben spielt ein leiser Ton, einmal
+      mit 700 Hz, einmal mit 1.400 Hz, beide gleich leise und gleich weit
+      vom Rauschen entfernt, wenn man in Frequenzgruppen zählt. Welcher
+      verschwindet eher im Rauschen?
+    check:
+      type: choice
+      options:
+        - Der Ton mit 700 Hz.
+        - Der Ton mit 1.400 Hz.
+        - Beide gleich, sie sind gleich weit entfernt.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Denk an die Basilarmembran. Eine Welle von einem Ton läuft von den Stellen für hohe Frequenzen zu denen für tiefe; wo schwingt sie bei 1.000 Hz noch mit?
+      - when: { picked: 2 }
+        say: Gleich weit ist nicht gleich verdeckt. Die Welle auf der Basilarmembran ist nicht symmetrisch.
+    solution: |
+      Der Ton mit 1.400 Hz: Die Verdeckung reicht nach oben viel weiter als
+      nach unten.
+
+  - id: mdct
+    title: Die MDCT
+    prompt: |
+      Schreib in `audio/mdct.py` die Funktion `mdct(x)`: aus `2N` Samples
+      die `N` Zahlen der MDCT nach der Formel auf der Seite. Die Prüfung
+      vergleicht mit Zahlen, die die Formel ergibt.
+    check:
+      type: python
+      file: audio/mdct.py
+      cases:
+        - call: len(mdct(np.zeros(16)))
+          expect: 8
+          say: Aus `2N` Samples werden `N` Zahlen, aus 16 also 8. Läuft die Schleife über `range(N)` mit `N = len(x) // 2`?
+        - call: '[round(float(v), 4) for v in mdct(np.array([1.0, 0, 0, 0, 0, 0, 0, 0]))]'
+          expect: '[0.5556, -0.9808, 0.1951, 0.8315]'
+          say: 'Für eine 1 am Anfang ist jede Zahl der Testton bei `n = 0`: `np.cos(np.pi / N * (0.5 + N / 2) * (k + 0.5))`. Stehen `+ 0.5 + N / 2` und `k + 0.5` in der Formel?'
+        - call: '[round(float(v), 4) for v in mdct(np.arange(4.0))]'
+          expect: '[-5.0021, -0.9895]'
+          say: Für die Samples 0, 1, 2, 3 ergibt die Formel etwa −5,0021 und −0,9895. Wird jedes Sample mit seinem Testton multipliziert und alles zusammengezählt?
+        - call: '[round(float(v), 2) for v in imdct(mdct(np.arange(16.0)))]'
+          expect: '[-7.0, -5.0, -3.0, -1.0, 1.0, 3.0, 5.0, 7.0, 23.0, 23.0, 23.0, 23.0, 23.0, 23.0, 23.0, 23.0]'
+          say: Mit `imdct` von der Seite muss ein einzelner Block die Spiegelbilder zeigen. Steht `imdct` so in der Datei wie auf der Seite?
+    solution: |
+      ```python
+      def mdct(x):
+          N = len(x) // 2
+          n = np.arange(2 * N)
+          X = np.zeros(N)
+          for k in range(N):
+              X[k] = np.sum(x * np.cos(np.pi / N * (n + 0.5 + N / 2) * (k + 0.5)))
+          return X
+      ```
+
+  - id: ein-block
+    title: Ein einziger Block
+    prediction: true
+    prompt: |
+      Was gibt `print(np.round(imdct(mdct(np.arange(16.0))), 2))` aus, für
+      einen einzigen Block mit den Zahlen 0 bis 15, ohne Fenster und ohne
+      Nachbarn?
+    check:
+      type: choice
+      options:
+        - Die Zahlen 0 bis 15, denn `imdct` macht `mdct` rückgängig.
+        - Die Zahlen 0 bis 7, dann achtmal 0, denn es sind nur acht Zahlen übrig.
+        - Andere Zahlen, in die ein Spiegelbild des Blocks gemischt ist.
+        - Lauter Nullen, denn ohne Fenster geht es nicht.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Aus 16 Samples werden acht Zahlen. Können acht Zahlen 16 beliebige Samples zurückgeben?
+      - when: { picked: 1 }
+        say: Die acht Zahlen gehören nicht zu den ersten acht Samples. In jeder von ihnen steckt jede der 16 Samples.
+      - when: { picked: 3 }
+        say: Das Fenster braucht es erst, wenn die Blöcke sich überlappen. Ein Block allein gibt auch ohne Fenster etwas zurück, nur nicht das Original.
+    solution: |
+      Andere Zahlen: In der ersten Hälfte steht jede Zahl minus ihr
+      Spiegelbild, in der zweiten plus ihr Spiegelbild. Erst der nächste
+      Block hebt die Spiegelbilder auf.
+
+  - id: vorecho
+    title: Wo das Rauschen hingeht
+    prediction: true
+    prompt: |
+      `vorecho.py` rundet die Kastagnetten in langen Blöcken grob. Wo hörst
+      du in `kastagnetten-lang.wav` das Rauschen vom Runden?
+    check:
+      type: choice
+      options:
+        - Nur während der Schläge, dort sind die Zahlen groß.
+        - Schon vor den Schlägen, in der leisen Stelle davor.
+        - Erst lange nach jedem Schlag.
+        - Gar nicht, 17 Stufen je Block reichen.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Jede Zahl der MDCT gehört zum ganzen Block, nicht zu einer Stelle in ihm. Wohin verteilt sich ein Fehler in einer dieser Zahlen?
+      - when: { picked: 2 }
+        say: Ein Fehler in einer Zahl der MDCT verteilt sich über den ganzen Block, vorn wie hinten. Wie lang ist ein Block von 2.048 Samples?
+      - when: { picked: 3 }
+        say: Die Stufen richten sich nach der größten Zahl im Block, und die gehört zum lauten Schlag. Wie fein sind sie dann für die leise Stelle?
+    solution: |
+      Schon vor den Schlägen: Der Fehler verteilt sich über den ganzen Block
+      von 46 Millisekunden, auch in die leise Stelle vor dem Schlag, wo
+      nichts ihn verdeckt. Das heißt Vorecho.
+
+  - id: mithoerschwelle
+    title: Die Mithörschwelle der Bänder
+    prompt: |
+      Schreib in `audio/codec.py` die Funktion `allowed(level)`: für jedes
+      Band die Energie aller Verdecker zusammen, in dB, aber nie unter der
+      Hörschwelle `QUIET`. Die Prüfung gibt ihr Bänder, die still sind, ein
+      lautes Band und zwei laute Bänder.
+    check:
+      type: python
+      file: audio/codec.py
+      cases:
+        - call: len(allowed(np.full(len(BANDS), -100.0)))
+          expect: 25
+          say: Für jedes der 25 Bänder gibt es einen Wert.
+        - call: bool(np.allclose(allowed(np.full(len(BANDS), -100.0)), QUIET))
+          expect: true
+          say: Sind alle Bänder still, bleibt in jedem nur die Hörschwelle, `np.maximum(out, QUIET)`.
+        - call: round(float(allowed(np.where(np.arange(len(BANDS)) == 10, 80.0, -100.0))[10]), 1)
+          expect: 65.0
+          say: Ein Band mit 80 dB verdeckt sich selbst bis 80 + spread(0) − 15, etwa 65 dB. Wird `OFFSET` abgezogen, und steht `CENTRES[i] - CENTRES[j]` in `spread`?
+        - call: '[round(float(v), 1) for v in allowed(np.where(np.arange(len(BANDS)) == 10, 80.0, -100.0))[9:12]]'
+          expect: '[56.7, 65.0, 60.8]'
+          say: Neben dem lauten Band liegt die Schwelle darüber höher als darunter, 60,8 und 56,7 dB. Ist es `CENTRES[i] - CENTRES[j]`, die Entfernung vom Verdecker `j` zum Band `i`, und nicht umgekehrt?
+        - call: round(float(allowed(np.where((np.arange(len(BANDS)) == 10) | (np.arange(len(BANDS)) == 12), 80.0, -100.0))[11]), 1)
+          expect: 62.3
+          say: Zwei laute Bänder verdecken das Band zwischen ihnen gemeinsam. Ihre Energien zählen zusammen, `10 ** (dB / 10)`, und erst die Summe wird mit `10 * np.log10` wieder zu dB; der größere der beiden Werte allein ist zu wenig.
+    solution: |
+      ```python
+      def allowed(level):
+          out = np.zeros(len(level))
+          for i in range(len(level)):
+              power = 0
+              for j in range(len(level)):
+                  power += 10 ** ((level[j] + spread(CENTRES[i] - CENTRES[j]) - OFFSET) / 10)
+              out[i] = 10 * np.log10(power)
+          return np.maximum(out, QUIET)
+      ```
+
+  - id: der-rest
+    title: Was weggelassen wurde
+    prediction: true
+    prompt: |
+      `musik-rest.wav` ist das Original minus das, was dein Codec übrig
+      lässt. Was hörst du darin?
+    check:
+      type: choice
+      options:
+        - Stille, denn was fehlt, hört man nicht.
+        - Ein leises Rauschen, das mit der Musik lauter und leiser wird.
+        - Ein gleichmäßiges Rauschen, immer gleich laut, wie bei wenigen Bits.
+        - Die Musik, fast so laut wie das Original.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Unhörbar ist der Fehler nur unter der Musik, die ihn verdeckt. Allein, ohne die Musik, verdeckt ihn nichts.
+      - when: { picked: 2 }
+        say: Die Stufen sind nicht überall gleich. Wo ist der Codec grob, wo fein?
+      - when: { picked: 3 }
+        say: Der Fehler darf nur so laut sein wie die Mithörschwelle, und die liegt unter der Musik, bei dir 15 dB darunter und mehr.
+    solution: |
+      Ein leises Rauschen, das mit der Musik lauter und leiser wird: Der
+      Codec lässt den Fehler so laut werden, wie die Mithörschwelle erlaubt,
+      und die folgt der Musik.
+
+  - id: entropie
+    title: Die Entropie
+    prompt: |
+      Schreib in `audio/codec.py` die Funktion `entropy(values)`: die
+      Entropie der Zahlen in `values`, in Bits je Zahl.
+    check:
+      type: python
+      file: audio/codec.py
+      cases:
+        - call: entropy(np.array([0, 0, 0, 0])) == 0
+          expect: true
+          say: Kommt immer dieselbe Zahl, braucht man keine Bits, sie zu nennen. Sind die Wahrscheinlichkeiten `counts / counts.sum()`, so dass sie zusammen 1 ergeben?
+        - call: round(entropy(np.array([0, 1])), 4)
+          expect: 1.0
+          say: Zwei Zahlen, jede in der Hälfte der Fälle, brauchen 1 Bit je Zahl. Rechnest du mit `np.log2`, dem Logarithmus zur Basis 2?
+        - call: round(entropy(np.arange(8)), 4)
+          expect: 3.0
+          say: Acht verschiedene Zahlen, jede gleich oft, brauchen 3 Bits je Zahl. Rechnest du mit `np.log2`, dem Logarithmus zur Basis 2?
+        - call: round(entropy(np.array([0, 0, 0, 1])), 4)
+          expect: 0.8113
+          say: Bei drei Nullen und einer Eins sind es 0,75 · log₂(1/0,75) + 0,25 · log₂(4), etwa 0,81 Bits je Zahl. Sind die Wahrscheinlichkeiten `counts / counts.sum()`?
+    solution: |
+      ```python
+      def entropy(values):
+          _, counts = np.unique(values, return_counts=True)
+          p = counts / counts.sum()
+          return float(np.sum(p * np.log2(1 / p)))
+      ```
+
+  - id: frame-bytes
+    title: Wie lang ist dieser Frame?
+    prompt: |
+      Ein Frame beginnt mit den Bytes `ff fb 54 c4`. Wie viele Bytes ist er
+      lang?
+    check:
+      type: number
+      expect: 192
+    feedback:
+      - when: { between: [208, 209] }
+        say: Die Bitrate stimmt, aber schau dir die beiden Bits für die Abtastrate in 0x54 noch einmal an.
+      - when: { between: [384, 385] }
+        say: Die Abtastrate stimmt, aber der Index der Bitrate sind die oberen vier Bits von 0x54.
+      - when: { between: [192.5, 193.5] }
+        say: Ist das Padding-Bit in 0x54 gesetzt?
+    solution: |
+      0x54 ist binär `0101 0100`: Bitrate-Index 5, also 64 kbit/s,
+      Abtastrate-Index `01`, also 48.000 Hz, Padding 0. Die Länge ist
+      144 · 64.000 / 48.000 = 192 Bytes.
+
+  - id: frame-laenge
+    title: Die Länge eines Frames
+    prompt: |
+      Schreib in `audio/mp3.py` die Funktion `frame_length(header)`: wie
+      viele Bytes der Frame mit diesem Header lang ist, mit dem Padding. Die
+      Prüfung gibt ihr Header mit verschiedenen Bitraten und Abtastraten.
+    check:
+      type: python
+      file: audio/mp3.py
+      cases:
+        - call: frame_length(bytes([0xFF, 0xFB, 0x90, 0xC0]))
+          expect: 417
+          say: Der erste Frame von `musik.mp3`, 128 kbit/s bei 44.100 Hz, ohne Padding, ist 144 · 128.000 / 44.100 = 417,96, abgerundet 417 Bytes lang. Wird die Bitrate mit 1.000 multipliziert und mit `//` geteilt?
+        - call: frame_length(bytes([0xFF, 0xFB, 0x92, 0xC0]))
+          expect: 418
+          say: Mit dem Padding-Bit, `(header[2] >> 1) & 1`, ist der Frame ein Byte länger.
+        - call: frame_length(bytes([0xFF, 0xFB, 0x54, 0xC4]))
+          expect: 192
+          say: 64 kbit/s bei 48.000 Hz sind 192 Bytes. Kommt die Abtastrate aus `RATES[(header[2] >> 2) & 3]`?
+        - call: frame_length(bytes([0xFF, 0xFB, 0xE8, 0x00]))
+          expect: 1440
+          say: 320 kbit/s bei 32.000 Hz sind 1.440 Bytes. Kommt die Bitrate aus den oberen vier Bits, `header[2] >> 4`?
+    solution: |
+      ```python
+      def frame_length(header):
+          bitrate = BITRATES[header[2] >> 4] * 1000
+          rate = RATES[(header[2] >> 2) & 3]
+          padding = (header[2] >> 1) & 1
+          return 144 * bitrate // rate + padding
+      ```
+
+  - id: erfundene-details
+    title: Ein Codec, der ergänzt
+    prompt: |
+      Ein neuronaler Decoder ergänzt, was ihm fehlt, so dass es echt klingt,
+      auch wo es nicht stimmt. Wo wäre das in Ordnung, und wo nicht? Nenne
+      je ein Beispiel und begründe.
+    check:
+      type: reflection
+      min_words: 25
+    examples:
+      - |
+        Bei einem Videoanruf mit Freunden ist es in Ordnung: Es kommt darauf
+        an, dass man sich versteht, und ein erfundenes Detail im Hintergrund
+        stört nicht. Bei einer Aufnahme, die als Beweis vor Gericht dienen
+        soll, nicht: Dort muss das, was man hört, wirklich gesagt worden sein.
+      - |
+        Für Musik im Bus finde ich es in Ordnung, weil es nur gut klingen
+        muss. Bei einem Interview für die Zeitung nicht, denn wenn der
+        Decoder ein undeutliches Wort ergänzt, steht vielleicht etwas im
+        Artikel, das niemand gesagt hat.

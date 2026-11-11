@@ -264,13 +264,21 @@
     // --- The picker -----------------------------------------------------------
     //
     // The photo with the chosen MCU marked, the rest a little darker, and
-    // beside it a magnifier: five by five MCUs around the chosen one, two
-    // times larger. A click on either chooses an MCU, the arrow keys move
-    // it by one. picker(element, image, { mx, my, onPick(mx, my), mark }),
-    // mark(ctx, scale): draws more into the chosen MCU of the magnifier (the
-    // block the iDCT stepper shows). Returns { set(mx, my), redraw() }.
+    // beside it a magnifier: three by three MCUs around the chosen one, eight
+    // times larger. A click on either chooses an MCU, dragging over the
+    // photo moves it along, the arrow keys move it by one. Dragging the
+    // magnifier moves its view like a map and leaves it there; a choice in
+    // the magnifier keeps the view, a choice on the photo or by the keys
+    // centres it on the chosen MCU. With options.blockSize() (the
+    // size of a block in photo pixels) and options.onBlock(px, py), the
+    // magnifier draws the blocks too, lights the block under the pointer,
+    // and a click on the photo or in the magnifier chooses that block;
+    // without them a tap in the magnifier chooses the MCU tapped.
+    // picker(element, image, { mx, my, onPick(mx, my), blockSize, onBlock,
+    // markBlock }), markBlock(): the block to frame in yellow (x, y, width,
+    // height in photo pixels). Returns { set(mx, my), redraw() }.
 
-    const AROUND = 2;
+    const AROUND = 1;
 
     function picker(element, image, options) {
         const mcuW = 8 * image.hmax, mcuH = 8 * image.vmax;
@@ -278,61 +286,111 @@
         element.classList.add('jpeg-picker');
         element.innerHTML = `
             <canvas class='jpeg-picker-photo' tabindex='0' data-no-swipe role='img'></canvas>
-            <canvas class='jpeg-picker-lens' tabindex='-1' data-no-swipe aria-hidden='true'></canvas>
+            <div class='jpeg-picker-lens-box'><canvas class='jpeg-picker-lens' tabindex='-1' data-no-swipe aria-hidden='true'></canvas><canvas class='jpeg-picker-grid' aria-hidden='true'></canvas></div>
             <div class='jpeg-picker-where' aria-live='polite'></div>`;
         const photo = element.querySelector('.jpeg-picker-photo');
         const lens = element.querySelector('.jpeg-picker-lens');
+        // the grid over the magnifier, in device pixels, so that its lines stay put
+        const grid = element.querySelector('.jpeg-picker-grid');
         const where = element.querySelector('.jpeg-picker-where');
         photo.width = image.width;
         photo.height = image.height;
         const span = 2 * AROUND + 1;
-        const zoom = 4;
+        const zoom = 8;
+        // the magnifier's view: its top left corner in pixels of the photo
+        let vx = (mx - AROUND) * mcuW, vy = (my - AROUND) * mcuH;
+        const centre = () => { vx = (mx - AROUND) * mcuW; vy = (my - AROUND) * mcuH; };
+        let hover = null;              // the photo pixel under the pointer in the magnifier, for the block lit there
         lens.width = span * mcuW * zoom;
         lens.height = span * mcuH * zoom;
+
+        // Everything drawn over the magnifier is on its own canvas, as large as
+        // the device pixels it covers, at whole device pixels, so that nothing
+        // wavers or blurs while the view moves: the grid (each line a light and
+        // a dark device pixel, the blocks fainter than the MCUs, across the
+        // whole view), the frame of the chosen MCU, the
+        // chosen block (options.markBlock()) in yellow, the block under the
+        // pointer dashed. Frames lie just outside the pixels they mark.
+        function drawOverlay(sx, sy, bw, bh) {
+            const box = lens.getBoundingClientRect();
+            const ratio = window.devicePixelRatio || 1;
+            const w = Math.round(box.width * ratio), h = Math.round(box.height * ratio);
+            if (!w || !h) return;
+            if (grid.width !== w || grid.height !== h) { grid.width = w; grid.height = h; }
+            const g = grid.getContext('2d');
+            g.clearRect(0, 0, w, h);
+            const scale = w / lens.width * zoom;   // device pixels per pixel of the photo
+            const X = (px) => Math.round((px - sx) * scale), Y = (py) => Math.round((py - sy) * scale);
+            const viewW = w / scale, viewH = h / scale;
+            const lines = (step, alpha, skip) => {
+                for (let n = Math.floor(sx / step); n * step <= sx + viewW + step; n++) {
+                    if (skip && (n * step) % skip === 0) continue;
+                    const at = X(n * step);
+                    g.fillStyle = `rgba(255, 255, 255, ${alpha})`; g.fillRect(at - 1, 0, 1, h);
+                    g.fillStyle = `rgba(0, 0, 0, ${alpha})`; g.fillRect(at, 0, 1, h);
+                }
+                for (let n = Math.floor(sy / step); n * step <= sy + viewH + step; n++) {
+                    if (skip && (n * step) % skip === 0) continue;
+                    const at = Y(n * step);
+                    g.fillStyle = `rgba(255, 255, 255, ${alpha})`; g.fillRect(0, at - 1, w, 1);
+                    g.fillStyle = `rgba(0, 0, 0, ${alpha})`; g.fillRect(0, at, w, 1);
+                }
+            };
+            if (bw < mcuW) lines(bw, 0.16, mcuW);
+            lines(mcuW, 0.38, 0);
+            const m = [X(mx * mcuW), Y(my * mcuH), X((mx + 1) * mcuW), Y((my + 1) * mcuH)];
+            // a frame of `width` device pixels just outside a rectangle, with a
+            // dark edge of one device pixel outside it
+            const frame = (r, colour, width, dash) => {
+                g.setLineDash([]);
+                g.lineWidth = 1;
+                g.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+                g.strokeRect(r[0] - width - 0.5, r[1] - width - 0.5, r[2] - r[0] + 2 * width + 1, r[3] - r[1] + 2 * width + 1);
+                g.lineWidth = width;
+                g.strokeStyle = colour;
+                g.setLineDash(dash ? [3 * width, 2 * width] : []);
+                g.strokeRect(r[0] - width / 2, r[1] - width / 2, r[2] - r[0] + width, r[3] - r[1] + width);
+                g.setLineDash([]);
+            };
+            const thick = Math.max(2, Math.round(ratio * 1.5));
+            frame(m, '#ffffff', thick, false);
+            const yellow = '#ffd43b';
+            let chosen = null;
+            if (options.markBlock) {
+                const [bx, by, cw, ch] = options.markBlock();
+                chosen = [X(bx), Y(by), X(bx + cw), Y(by + ch)];
+                frame(chosen, yellow, thick, false);
+            }
+            if (hover && options.onBlock) {
+                const hx = Math.floor(hover[0] / bw) * bw, hy = Math.floor(hover[1] / bh) * bh;
+                const r = [X(hx), Y(hy), X(hx + bw), Y(hy + bh)];
+                if (!chosen || r.some((v, i) => v !== chosen[i])) frame(r, yellow, thick, true);
+            }
+        }
+        // a new size of the magnifier (window, zoom): the grid anew
+        if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => draw()).observe(lens);
 
         function draw() {
             const ctx = photo.getContext('2d');
             ctx.drawImage(image.photo(), 0, 0);
             const x = mx * mcuW, y = my * mcuH;
-            // darker around the MCU, so that it stands out at any size
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
-            ctx.beginPath();
-            ctx.rect(0, 0, image.width, image.height);
-            ctx.rect(x - 6, y - 6, mcuW + 12, mcuH + 12);
-            ctx.fill('evenodd');
+            // the chosen MCU: a white frame with a thin dark edge, the photo
+            // undimmed around it
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.strokeRect(x - 5, y - 5, mcuW + 10, mcuH + 10);
             ctx.lineWidth = 3;
             ctx.strokeStyle = '#fff';
-            ctx.strokeRect(x - 4.5, y - 4.5, mcuW + 9, mcuH + 9);
+            ctx.strokeRect(x - 2.5, y - 2.5, mcuW + 5, mcuH + 5);
 
             const lctx = lens.getContext('2d');
             lctx.imageSmoothingEnabled = false;
             lctx.fillStyle = '#777';
             lctx.fillRect(0, 0, lens.width, lens.height);
-            const sx = (mx - AROUND) * mcuW, sy = (my - AROUND) * mcuH;
+            const sx = vx, sy = vy;
             lctx.drawImage(image.photo(), sx, sy, span * mcuW, span * mcuH, 0, 0, lens.width, lens.height);
-            // the MCU grid, faint, and the chosen MCU
-            lctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-            lctx.lineWidth = 1;
-            for (let i = 1; i < span; i++) {
-                lctx.beginPath();
-                lctx.moveTo(i * mcuW * zoom + 0.5, 0);
-                lctx.lineTo(i * mcuW * zoom + 0.5, lens.height);
-                lctx.moveTo(0, i * mcuH * zoom + 0.5);
-                lctx.lineTo(lens.width, i * mcuH * zoom + 0.5);
-                lctx.stroke();
-            }
-            lctx.lineWidth = 3;
-            lctx.strokeStyle = '#000';
-            lctx.strokeRect(AROUND * mcuW * zoom - 1.5, AROUND * mcuH * zoom - 1.5, mcuW * zoom + 3, mcuH * zoom + 3);
-            lctx.strokeStyle = '#fff';
-            lctx.lineWidth = 2;
-            lctx.strokeRect(AROUND * mcuW * zoom + 1, AROUND * mcuH * zoom + 1, mcuW * zoom - 2, mcuH * zoom - 2);
-            if (options.mark) {
-                lctx.save();
-                lctx.translate(AROUND * mcuW * zoom, AROUND * mcuH * zoom);
-                options.mark(lctx, zoom);
-                lctx.restore();
-            }
+            const [bw, bh] = options.blockSize ? options.blockSize() : [mcuW, mcuH];
+            drawOverlay(sx, sy, bw, bh);
 
             const x1 = Math.min(x + mcuW, image.width) - 1, y1 = Math.min(y + mcuH, image.height) - 1;
             const label = `MCU in Spalte ${mx}, Reihe ${my}: x = ${x} bis ${x1}, y = ${y} bis ${y1}`;
@@ -340,12 +398,13 @@
             photo.setAttribute('aria-label', `Das Foto. Die Pfeiltasten wählen eine andere MCU. Gewählt: ${label}.`);
         }
 
-        function set(x, y, quiet) {
+        function set(x, y, quiet, keepView) {
             x = Math.max(0, Math.min(image.mcusX - 1, x));
             y = Math.max(0, Math.min(image.mcusY - 1, y));
             if (x === mx && y === my) return;
             mx = x;
             my = y;
+            if (!keepView) centre();
             draw();
             if (!quiet) options.onPick(mx, my);
         }
@@ -353,14 +412,70 @@
             const rect = canvas.getBoundingClientRect();
             return [(event.clientX - rect.left) * canvas.width / rect.width, (event.clientY - rect.top) * canvas.height / rect.height];
         };
-        photo.addEventListener('click', (event) => {
+        // a click or a drag over the photo: the MCU follows the pointer
+        let holding = false;
+        const pickPixel = (px, py, keepView) => {
+            px = Math.max(0, Math.min(image.width - 1, px));
+            py = Math.max(0, Math.min(image.height - 1, py));
+            set(Math.floor(px / mcuW), Math.floor(py / mcuH), true, keepView);
+            options.onBlock(px, py);
+            draw();
+        };
+        const follow = (event) => {
             const [x, y] = at(photo, event);
-            set(Math.floor(x / mcuW), Math.floor(y / mcuH));
+            if (options.onBlock) pickPixel(x, y);
+            else set(Math.floor(x / mcuW), Math.floor(y / mcuH));
+        };
+        photo.addEventListener('pointerdown', (event) => {
+            holding = true;
+            photo.setPointerCapture(event.pointerId);
+            follow(event);
+            event.preventDefault();
         });
-        lens.addEventListener('click', (event) => {
+        photo.addEventListener('pointermove', (event) => { if (holding) follow(event); });
+        photo.addEventListener('pointerup', () => { holding = false; });
+        photo.addEventListener('pointercancel', () => { holding = false; });
+        // the magnifier: dragged like a map, smoothly, or tapped
+        let grab = null;
+        // the photo pixel under a point of the magnifier
+        const lensPixel = (x, y) => [vx + x / zoom, vy + y / zoom];
+        lens.addEventListener('pointerdown', (event) => {
             const [x, y] = at(lens, event);
-            set(mx - AROUND + Math.floor(x / (mcuW * zoom)), my - AROUND + Math.floor(y / (mcuH * zoom)));
+            grab = { x, y, vx, vy, moved: false };
+            lens.setPointerCapture(event.pointerId);
+            event.preventDefault();
         });
+        lens.addEventListener('pointermove', (event) => {
+            const [x, y] = at(lens, event);
+            if (!grab) {
+                if (options.onBlock) { hover = lensPixel(x, y); draw(); }
+                return;
+            }
+            // dragging moves the view only, up to an MCU beyond the photo
+            const dx = (grab.x - x) / zoom, dy = (grab.y - y) / zoom;
+            if (Math.abs(dx) > 1 || Math.abs(dy) > 1) grab.moved = true;
+            if (!grab.moved) return;
+            vx = Math.max(-AROUND * mcuW, Math.min(image.width - (AROUND + 1) * mcuW, grab.vx + dx));
+            vy = Math.max(-AROUND * mcuH, Math.min(image.height - (AROUND + 1) * mcuH, grab.vy + dy));
+            hover = null;
+            draw();
+        });
+        lens.addEventListener('pointerup', (event) => {
+            if (!grab) return;
+            const tap = !grab.moved;
+            grab = null;
+            if (!tap) return;
+            const [x, y] = at(lens, event);
+            const [px, py] = lensPixel(x, y);
+            if (px < 0 || py < 0 || px >= image.width || py >= image.height) return;
+            if (options.onBlock) {
+                pickPixel(px, py, true);
+                return;
+            }
+            set(Math.floor(px / mcuW), Math.floor(py / mcuH), false, true);
+        });
+        lens.addEventListener('pointercancel', () => { grab = null; draw(); });
+        lens.addEventListener('pointerleave', () => { if (hover) { hover = null; draw(); } });
         photo.addEventListener('keydown', (event) => {
             const moves = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
             const move = moves[event.key];

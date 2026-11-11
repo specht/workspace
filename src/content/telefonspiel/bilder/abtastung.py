@@ -62,7 +62,7 @@ def main():
     render = 'src/scripts/render-svg.rb src/content/telefonspiel/abtastung.svg'
     head = ap.svg_head(W, h, 'Abtasten: dieselbe Welle oft und selten gemessen; gemacht von bilder/abtastung.py, als Bild:', render)
     head = head.replace('<svg ', f"<svg font-family='{FONT}' ", 1)
-    parts = panel(0, 48, 'Oft gemessen: 48 Messungen') + panel(PANEL_H + 10, 12, 'Selten gemessen: 12 Messungen')
+    parts = panel(0, 48, 'Oft gemessen: 48 Samples') + panel(PANEL_H + 10, 12, 'Selten gemessen: 12 Samples')
     with open(os.path.join(OUT, 'abtastung.svg'), 'w') as f:
         f.write(head + ''.join(parts) + '</svg>\n')
 

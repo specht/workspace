@@ -1739,9 +1739,19 @@ details.solution.hint-step-new > summary {
                     border-top: 0;
                     border-left: 1px solid #eee;
 
-                    /* never taller than the picture, so no bars */
+                    /* never taller than the picture, so no bars: two lines
+                       in a narrow column, more where the column is wide
+                       (half of a wide row) and the picture tall */
                     .abstract {
                         -webkit-line-clamp: 2;
+                    }
+                    @container (min-width: 600px) {
+                        .abstract {
+                            -webkit-line-clamp: 4;
+                        }
+                        &:has(.card-requires) .abstract {
+                            -webkit-line-clamp: 3;
+                        }
                     }
                     .card-requires {
                         overflow: hidden;
@@ -1818,8 +1828,8 @@ h2 > .squircle {
     flex: 0 0 calc(2.415em + 0.9em + 2px);
 }
 
-/* »Nach oben«: a small round button, centred on the line of the chapter
-   labels; quiet until it is pointed at. */
+/* »Nach oben«: a plain chevron, no circle, centred on the line of the
+   chapter labels; quiet until it is pointed at. */
 .autotoc-up {
     flex: 0 0 auto;
     display: flex;
@@ -1829,12 +1839,12 @@ h2 > .squircle {
     height: 2.3em;
     margin: 0.6em 0.45em 0 0.45em;
     padding: 0;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 50%;
-    color: #495057;
-    background: #f1f3f5;
+    border: none;
+    border-radius: 0.4em;
+    color: #868e96;
+    background: none;
     font: inherit;
-    font-size: 1.05em;
+    font-size: 1.15em;
     line-height: 1;
     position: relative;
     cursor: pointer;
@@ -1843,8 +1853,8 @@ h2 > .squircle {
 
 .autotoc-up:hover {
     color: #212529;
-    background: #e2e6ea;
-    transform: translateY(-1px);
+    background: none;
+    transform: translateY(-2px);
 }
 
 .autotoc-up:focus-visible {
@@ -2210,7 +2220,8 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     font-size: 0.92em;
 }
 
-.autotoc-secondary a:hover {
+.autotoc-secondary a:hover,
+.autotoc-secondary .toc-entry:hover > a {
     opacity: 0.95;
     background: rgba(var(--bs-body-color-rgb), 0.055);
 }
@@ -2545,10 +2556,16 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     margin: 0;
 }
 
-.gallery img {
+.gallery img,
+.gallery video {
     display: block;
     width: 100%;
     border-radius: 0.3em;
+}
+
+/* a video before it loads has the size of its poster */
+.gallery video {
+    height: auto;
 }
 
 .gallery img.full-shadow {
@@ -2613,6 +2630,17 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
    would look oversized at 16em (raycaster: the dot product) */
 .gallery.centered.small figure {
     flex-basis: 11em;
+}
+
+/* .side-by-side: parts of one picture to compare at a glance (Y, Cb and
+   Cr of a frame), in one row at every width, also on a phone, never a
+   carousel; each opens large */
+.gallery.side-by-side {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+}
+@media (max-width: 576px) {
+    .gallery.side-by-side { gap: 0.8em 0.4em; }
+    .gallery.side-by-side figcaption { font-size: 0.8em; }
 }
 
 .gallery.tiles {
@@ -3706,13 +3734,25 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        its colour bar, and a code block gains the whole width. Boxes inside
        a box stay as they are; pictures and previews keep their frame. */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
-        :is(.task-card, .hint, .person, .book, .reference-include, .code-copy-box, pre):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        :is(.task-card, .hint, .person, .book, .history, .reference-include, .code-copy-box, pre):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         border-left-width: 0;
         border-right-width: 0;
         border-radius: 0;
         padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    /* the widgets likewise (their slate card, div[data-stepper] and the
+       others): from edge to edge, the colour bar at the screen's edge,
+       their content where the paragraphs start */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
+        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        border-right-width: 0;
+        border-radius: 0;
+        padding-left: calc(1rem - 5px);
         padding-right: 1rem;
     }
     /* the hits of the Handbuch search likewise */
@@ -3729,7 +3769,7 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        its box too from edge to edge, the picture starting where the text
        starts; scrolled, it uses the whole width of the screen instead of
        ending at the column's right margin */
-    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .scroll-x:has(> img.full):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .scroll-x:has(> img.full):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         max-width: none;
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
@@ -3738,24 +3778,24 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     }
     /* a code block's cut and its shadow reach across that padding to the
        screen's edges (pre .code-cut) */
-    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > :is(pre, .code-copy-box):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > :is(pre, .code-copy-box):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         --cut-reach: 1rem;
     }
     /* the card's colour bar stays, at the screen's edge */
-    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .task-card:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .task-card:not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         border-left-width: 5px;
         padding-left: calc(1rem - 5px);
     }
     /* the person box's ⓘ keeps its corner */
-    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .person:has(> .person-sources):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .person:has(> .person-sources):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         padding-right: 2.2em;
     }
     /* a code block with a copy button: the box goes wide, its block with it */
-    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .code-copy-box:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .code-copy-box:not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         padding-left: 0;
         padding-right: 0;
     }
-    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .code-copy-box:not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) > pre {
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) > .code-copy-box:not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) > pre {
         border-radius: 0;
         padding-left: 1rem;
     }
@@ -6708,6 +6748,10 @@ html[data-bs-theme="dark"] .usage-charts {
     margin-top: 0.5em;
 }
 
+/* only in development: the mark of a page not yet in the catalog, over the
+   top left corner of the picture, taking no room from the text */
+.tutorial_card3 .card-dev { position: absolute; top: 0.6em; left: 0.6em; z-index: 3; }
+
 .tutorial_card3 .card-content .card-title-row {
     margin-bottom: 6px;
 
@@ -8561,8 +8605,11 @@ h3:has(+ .person) {
    beside its title, author and year, two sentences on what is in it and
    where to read it; like a person box. A cover only where it is free or
    offered by the publisher for coverage (picture-rights.yaml): then the box
-   is .with-cover and the cover takes the icon's place, with a credit line */
-.book {
+   is .with-cover and the cover takes the icon's place, with a credit line.
+   Historic context (.history: Let It Be's tape echo, Cher and Auto-Tune) is
+   the same box without an icon, text only, or with a picture at the left as
+   in a person box (and a credit line under the text) */
+.book, .history {
     display: grid;
     grid-template-columns: 2.2em minmax(0, 1fr);
     gap: 0 0.9em;
@@ -8577,7 +8624,7 @@ h3:has(+ .person) {
     text-align: left;
     hyphens: auto;
 }
-.book > .bi {
+.book > .bi, .history > .bi {
     grid-column: 1;
     grid-row: 1 / span 20;
     margin: 0;
@@ -8585,10 +8632,17 @@ h3:has(+ .person) {
     line-height: 1;
     color: var(--bs-secondary-color);
 }
-.book > .bi::before { vertical-align: 0; }
-.book p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
-.book p:last-child { margin-bottom: 0; }
+.book > .bi::before, .history > .bi::before { vertical-align: 0; }
+.book p, .history p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
+.book p:last-child, .history p:last-child { margin-bottom: 0; }
 .book.with-cover { grid-template-columns: 5.5em minmax(0, 1fr); }
+.history { display: block; }
+.history:has(> img) { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 0 1.1em; }
+.history > img { grid-column: 1; grid-row: 1 / span 20; width: 100%; height: auto; border-radius: 0.3em; }
+/* a group that 4:5 would cut: a wide picture (3:2 or 16:10) in a wider column */
+.history:has(> img.wide) { grid-template-columns: 13em minmax(0, 1fr); }
+@media (max-width: 576px) { .history:has(> img.wide) { grid-template-columns: 9em minmax(0, 1fr); } }
+.history p.history-credit { font-size: 0.82em; color: var(--bs-secondary-color); }
 .book > .book-cover {
     grid-column: 1;
     grid-row: 1 / span 20;
@@ -8715,6 +8769,12 @@ div[data-stepper],
 .bitplane-widget,
 .qr-damage,
 .dtmf-widget,
+.sampling-widget,
+.spectrum-widget,
+.effect-widget,
+.hearing-widget,
+.abx-widget,
+.motion-widget,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8733,12 +8793,26 @@ html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget,
 html[data-bs-theme="dark"] .qr-damage,
 html[data-bs-theme="dark"] .dtmf-widget,
+html[data-bs-theme="dark"] .sampling-widget,
+html[data-bs-theme="dark"] .spectrum-widget,
+html[data-bs-theme="dark"] .effect-widget,
+html[data-bs-theme="dark"] .hearing-widget,
+html[data-bs-theme="dark"] .abx-widget,
+html[data-bs-theme="dark"] .motion-widget,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
     --widget-chip: #25272b;
     --widget-line: #2a2e34;
     --widget-tint: #1a1b1b;
+}
+/* the widget that has the keys (← →, Pos1, Ende; stepper_keys.js): its
+   left edge in the purple of »current« */
+div[data-stepper] {
+    transition: border-left-color 0.25s ease;
+}
+div[data-stepper].stepper-has-keys {
+    border-left-color: var(--stepper-current);
 }
 /* the lightbox for a demo (stepper_keys.js): the square button at the top
    right; the widget larger over the page; arrows at the edges to the
@@ -9444,6 +9518,11 @@ div[data-stepper] .stepper-word { display: none; }
     min-height: 3em;
     margin-top: 0.6em;
 }
+/* the row of the picture and its goal (data-picture) has the cells of the
+   panels, so that the goal is as large as the blocks under it */
+.idct-stepper .idct-picture-row {
+    --idct-cell: clamp(1.5em, calc((100cqi - 2px) / 8), 1.9em);
+}
 .idct-stepper .idct-panels {
     --idct-cell: clamp(1.5em, calc((100cqi - 2px) / 8), 1.9em);
     display: grid;
@@ -9452,12 +9531,18 @@ div[data-stepper] .stepper-word { display: none; }
     align-items: start;
 }
 @container (min-width: 26em) {
+    .idct-stepper .idct-picture-row {
+        --idct-cell: clamp(1.5em, calc((100cqi - 1.2em - 4px) / 16), 1.9em);
+    }
     .idct-stepper .idct-panels {
         --idct-cell: clamp(1.5em, calc((100cqi - 1.2em - 4px) / 16), 1.9em);
         grid-template-columns: repeat(2, max-content);
     }
 }
 @container (min-width: 54em) {
+    .idct-stepper .idct-picture-row {
+        --idct-cell: clamp(1.55em, calc((100cqi - 3.6em - 8px) / 32), 1.9em);
+    }
     .idct-stepper .idct-panels {
         --idct-cell: clamp(1.55em, calc((100cqi - 3.6em - 8px) / 32), 1.9em);
         grid-template-columns: repeat(4, max-content);
@@ -9484,7 +9569,7 @@ div[data-stepper] .stepper-word { display: none; }
     justify-content: center;
     overflow: hidden;
 }
-.idct-stepper .idct-coef span, .idct-stepper .idct-numbers span {
+.idct-stepper .idct-coef span, .idct-stepper .idct-numbers span, .idct-stepper .idct-error span {
     font-family: '0xProto Nerd Font Mono', monospace;
     font-size: calc(var(--idct-cell) * 0.36);
 }
@@ -9535,11 +9620,75 @@ div[data-stepper] .stepper-word { display: none; }
 
 /* the iDCT stepper with the photo (idct_stepper.js, data-src): the picker,
    then the blocks of the chosen MCU */
+.idct-stepper .idct-picture-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75em 1.25em;
+    margin: 0 0 0.75em;
+}
+.idct-stepper .idct-picture-box {
+    flex: 1 1 18em;
+    width: auto;
+    max-width: 32em;
+    margin: 0;
+}
+.idct-stepper .idct-target-box {
+    flex: 0 0 auto;
+    margin: 0;
+}
+.idct-stepper .idct-target-box figcaption {
+    margin-top: 0.25em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.idct-stepper .idct-picture {
+    display: block;
+    width: 100%;
+    max-width: 32em;
+    height: auto;
+    border-radius: 0.3em;
+    image-rendering: pixelated;
+    cursor: grab;
+    touch-action: none;
+}
+.idct-stepper .idct-picture:focus-visible {
+    outline: 3px solid #ffd43b;
+    outline-offset: 2px;
+}
+.idct-stepper .idct-picture-box figcaption {
+    margin-top: 0.25em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
 .idct-stepper .idct-choose {
-    margin-bottom: 1em;
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
 }
 .idct-stepper .jpeg-picker {
-    max-width: 32em;
+    /* the magnifier as large as the blocks under it: under the photo on a
+       narrow widget, beside it on a wide one */
+    grid-template-columns: minmax(0, 1fr);
+    max-width: none;
+}
+.idct-stepper .jpeg-picker .jpeg-picker-lens-box {
+    width: calc(8 * var(--idct-cell) + 2px);
+}
+@container (min-width: 40em) {
+    /* the photo as high as the blocks, its width from its proportions */
+    .idct-stepper .jpeg-picker {
+        grid-template-columns: auto calc(8 * var(--idct-cell) + 2px);
+        justify-content: start;
+    }
+    /* the picker as wide as photo and magnifier; the lines under them wrap */
+    .idct-stepper .idct-choose {
+        width: min-content;
+    }
+    .idct-stepper .jpeg-picker .jpeg-picker-photo {
+        width: auto;
+        height: calc(8 * var(--idct-cell) + 2px);
+    }
 }
 .idct-stepper .idct-blocks {
     display: flex;
@@ -10307,6 +10456,99 @@ html[data-bs-theme="dark"] .automaton-stepper {
     width: 100%;
     height: auto;
     margin: 0.4em auto 0;
+}
+
+/* The block-matching widget (motion_widget.js): the frame now and the frame
+   before side by side (one under the other on a phone), under them the
+   block, the square, their difference and the map of all shifts, enlarged
+   with sharp pixels */
+.motion-widget {
+    --motion-accent: #6741d9;
+}
+.motion-widget::before {
+    content: 'Zum Ausprobieren: ziehen, dann ← ↑ → ↓';
+    display: inline-block;
+    margin-bottom: 0.6em;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.motion-widget .motion-frames {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75em;
+}
+@media (max-width: 575.98px) {
+    .motion-widget .motion-frames {
+        grid-template-columns: 1fr;
+    }
+}
+.motion-widget .motion-figure {
+    margin: 0;
+}
+.motion-widget .motion-figure figcaption {
+    margin-top: 0.25em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.motion-widget canvas {
+    display: block;
+    border-radius: 0.3em;
+    image-rendering: pixelated;
+}
+.motion-widget .motion-frame {
+    width: 100%;
+    height: auto;
+}
+.motion-widget .motion-drag {
+    cursor: grab;
+    touch-action: none;
+}
+.motion-widget .motion-drag:focus-visible {
+    outline: 3px solid var(--motion-accent);
+    outline-offset: 2px;
+}
+.motion-widget .motion-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1em;
+    margin: 0.75em 0;
+}
+.motion-widget .motion-say,
+.motion-widget .motion-compare {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+.motion-widget .motion-compare {
+    font-weight: 600;
+}
+.motion-widget .motion-zooms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
+}
+.motion-widget .motion-zoom {
+    width: 8em;
+    height: 8em;
+}
+.motion-widget .motion-zooms .motion-figure {
+    width: 8em;
+}
+.motion-widget .motion-map.motion-clickable {
+    cursor: pointer;
+}
+.motion-widget .motion-legend {
+    margin: 0.5em 0 0;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.motion-widget .motion-figure[hidden] {
+    display: none;
 }
 
 /* The bit-plane widget (bitplane_widget.js): the bits 7 to 0 as cells, the
@@ -14029,6 +14271,13 @@ td :is(.m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg) code {
     background: transparent;
     color: inherit;
 }
+/* a table of fields (table.bytes): the bytes of a field stay on one line,
+   also on a phone; the explanation beside them wraps (the longest field on
+   the site has 12 characters) */
+table.bytes td:first-child {
+    width: 1%;
+    white-space: nowrap;
+}
 
 /* A small note under a picture or a row: a photo credit, a detail */
 p.expl {
@@ -15083,6 +15332,261 @@ html[data-bs-theme="dark"] .splat-viewer {
 html:not([data-bs-theme="dark"]) .table code.code-chip { background-color: #f6f7f8 !important; }
 html[data-bs-theme="dark"] .table code.code-chip { background-color: rgba(255, 255, 255, .06) !important; }
 
+/* Sampling and quantising (sampling_widget.js, »Audio komprimieren«): the
+   choices above, 5 ms of the clip with the wave before measuring (faint),
+   the measurements and the wave that is heard (purple, what is current),
+   the whole clip as a strip to choose the place */
+.sampling-widget {
+    --sampling-ink: var(--widget-ink);
+    --sampling-quiet: var(--widget-line);
+    --sampling-orig: #9aa1ae;
+    --sampling-heard: #6741d9;
+    --sampling-ground: #f1f2f5;
+}
+html[data-bs-theme="dark"] .sampling-widget {
+    --sampling-orig: #6b7280;
+    --sampling-heard: #b197fc;
+    --sampling-ground: #111213;
+}
+.sampling-widget::before {
+    content: 'Zum Ausprobieren: abspielen und umschalten';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.sampling-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1.2em;
+    margin-bottom: 0.6em;
+}
+.sampling-group { display: flex; align-items: center; gap: 0.5em; }
+.sampling-label { font-size: 0.9em; color: var(--widget-ink); white-space: nowrap; }
+.sampling-group .btn { font-variant-numeric: tabular-nums; }
+@media (max-width: 576px) {
+    .sampling-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
+}
+.sampling-figure { margin: 0.4em 0 0; }
+.sampling-figure figcaption { font-size: 0.85em; color: var(--sampling-ink); margin-bottom: 0.25em; }
+.sampling-picture { display: block; width: 100%; height: 190px; }
+.sampling-strip { display: block; width: 100%; height: 44px; cursor: ew-resize; border-radius: 0.2em; touch-action: pan-y; }
+.sampling-strip:focus-visible { outline: 2px solid var(--sampling-heard); outline-offset: 2px; }
+.sampling-legend { display: flex; flex-wrap: wrap; gap: 0.2em 1.2em; margin-top: 0.3em; font-size: 0.85em; color: var(--sampling-ink); }
+.sampling-legend > span { display: inline-flex; align-items: center; gap: 0.4em; }
+.sampling-legend i { display: inline-block; width: 1.4em; border-top: 2px solid; }
+.sampling-l-orig i { border-color: var(--sampling-orig); }
+.sampling-l-heard i { border-color: var(--sampling-heard); border-top-width: 3px; }
+.sampling-l-dots i { width: 0.6em; height: 0.6em; border: none; border-radius: 50%; background: var(--sampling-heard); }
+.sampling-rate { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+
+/* Frequencies (spectrum_widget.js, »Audio komprimieren«): the clip as a
+   spectrogram (the louder, the stronger the colour), the spectrum at the
+   chosen moment in purple, what is current */
+.spectrum-widget {
+    --spectrum-ink: var(--widget-ink);
+    --spectrum-quiet: var(--widget-line);
+    --spectrum-mark: #6741d9;
+    --spectrum-ground: #f1f2f5;
+    --spectrum-hot: #2d1680;
+}
+html[data-bs-theme="dark"] .spectrum-widget {
+    --spectrum-mark: #b197fc;
+    --spectrum-ground: #111213;
+    --spectrum-hot: #e5dbff;
+}
+.spectrum-widget::before {
+    content: 'Zum Ausprobieren: abspielen und klicken';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.spectrum-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1.2em; margin-bottom: 0.6em; }
+.spectrum-group { display: flex; align-items: center; gap: 0.5em; }
+.spectrum-instruments { display: flex; flex-wrap: wrap; gap: 0.35em; }
+.spectrum-label { font-size: 0.9em; color: var(--widget-ink); white-space: nowrap; }
+@media (max-width: 576px) {
+    .spectrum-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
+    .spectrum-group .btn-group { flex-wrap: wrap; }
+}
+.spectrum-figure { margin: 0.4em 0 0; }
+.spectrum-figure figcaption { font-size: 0.85em; color: var(--spectrum-ink); margin-bottom: 0.25em; }
+.spectrum-gram { display: block; width: 100%; height: 260px; cursor: ew-resize; touch-action: pan-y; }
+.spectrum-gram:focus-visible { outline: 2px solid var(--spectrum-mark); outline-offset: 2px; }
+.spectrum-chart { display: block; width: 100%; height: 170px; }
+.spectrum-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+@media (max-width: 576px) {
+    .spectrum-gram { height: 200px; }
+    .spectrum-chart { height: 150px; }
+}
+
+/* Audio effects (effect_widget.js, »Audioeffekte«): the sound, the
+   knobs of an effect as sliders with marks, a picture of what they do in
+   purple (what is set), the sound playing grey; the chip says what to do */
+.effect-widget {
+    --fx-ink: var(--widget-ink);
+    --fx-quiet: var(--widget-line);
+    --fx-mark: #6741d9;
+    --fx-ground: #f1f2f5;
+    --fx-sound: #8a90a0;
+}
+html[data-bs-theme="dark"] .effect-widget {
+    --fx-mark: #b197fc;
+    --fx-ground: #111213;
+    --fx-sound: #6b7280;
+}
+.effect-widget::before {
+    content: attr(data-chip);
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.fx-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1.2em; margin-bottom: 0.6em; }
+.fx-switch { margin: 0; display: flex; align-items: center; gap: 0.4em; }
+.fx-switch .form-check-input:checked { background-color: var(--fx-mark); border-color: var(--fx-mark); }
+.fx-row { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 7.5em; gap: 0.75em; margin: 0.1em 0; align-items: start; }
+.fx-label { font-size: 0.9em; color: var(--widget-ink); margin: 0; padding-top: 0.15em; }
+.fx-value { font-variant-numeric: tabular-nums; text-align: right; padding-top: 0.15em; }
+.fx-track { min-width: 0; }
+.fx-track .fx-slider { display: block; width: 100%; margin: 0; }
+.fx-slider::-webkit-slider-thumb { background-color: var(--fx-mark); }
+.fx-slider::-moz-range-thumb { background-color: var(--fx-mark); }
+.fx-scale { position: relative; height: 1.5em; margin-top: 0.1em; }
+.fx-mark { position: absolute; top: 0; transform: translateX(-50%); padding-top: 5px; font-size: 0.75em; color: var(--widget-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fx-mark::before { content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 4px; background: var(--widget-ink); opacity: 0.6; }
+.fx-figure { margin: 0.6em 0 0; }
+.fx-figure figcaption { font-size: 0.85em; color: var(--fx-ink); margin-bottom: 0.25em; }
+.fx-chart { display: block; width: 100%; height: 200px; }
+.fx-wave { display: block; width: 100%; height: 110px; }
+.fx-draggable { cursor: grab; touch-action: pan-y; }
+.fx-draggable:active { cursor: grabbing; }
+.fx-clock { font-variant-numeric: tabular-nums; font-size: 0.9em; color: var(--bs-secondary-color); min-width: 8.5em; }
+.fx-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+.fx-presets { display: flex; flex-wrap: wrap; gap: 0.4em; }
+.fx-credit { font-size: 0.8em; color: var(--bs-secondary-color); margin: -0.3em 0 0.6em; }
+@media (max-width: 576px) {
+    /* label and value on a line, the slider with its marks across the width under them */
+    .fx-row { grid-template-columns: minmax(0, 1fr) auto; gap: 0 0.5em; margin-bottom: 0.3em; }
+    .fx-track { grid-column: 1 / -1; grid-row: 2; }
+    .fx-chart { height: 160px; }
+    .fx-wave { height: 90px; }
+}
+
+/* What the ear hears (hearing_widget.js, »Audio komprimieren«): a tone
+   made quieter until it is gone, alone or beside a band of noise; the
+   levels noted in purple (what is current), the model dashed */
+.hearing-widget {
+    --hearing-ink: var(--widget-ink);
+    --hearing-quiet: var(--widget-line);
+    --hearing-mark: #6741d9;
+    --hearing-model: #5c677d;
+    --hearing-noise: #b45309;
+    --hearing-ground: #f1f2f5;
+}
+html[data-bs-theme="dark"] .hearing-widget {
+    --hearing-mark: #b197fc;
+    --hearing-model: #a5abb7;
+    --hearing-noise: #f59f00;
+    --hearing-ground: #111213;
+}
+.hearing-widget::before {
+    content: 'Zum Ausprobieren, mit Kopfhörern';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.hearing-step { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4em 1.2em; margin-bottom: 0.8em; }
+.hearing-step p { margin: 0; flex: 1 1 20em; }
+.hearing-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 0.6em; }
+.hearing-group { display: flex; align-items: center; gap: 0.5em; }
+.hearing-group .btn-group { flex-wrap: wrap; }
+.hearing-label { font-size: 0.9em; color: var(--widget-ink); white-space: nowrap; margin: 0; }
+.hearing-slider { flex: 1 1 12em; max-width: 26em; }
+.hearing-slider::-webkit-slider-thumb { background-color: var(--hearing-mark); }
+.hearing-slider::-moz-range-thumb { background-color: var(--hearing-mark); }
+.hearing-slider:focus::-webkit-slider-thumb { box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--hearing-mark) 30%, transparent); }
+.hearing-slider:focus::-moz-range-thumb { box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--hearing-mark) 30%, transparent); }
+.hearing-level { font-variant-numeric: tabular-nums; min-width: 4.5em; }
+.hearing-clear { color: var(--widget-ink); }
+.hearing-switch { margin: 0; display: flex; align-items: center; gap: 0.4em; }
+.hearing-switch .form-check-input:checked { background-color: var(--hearing-mark); border-color: var(--hearing-mark); }
+@media (max-width: 576px) {
+    .hearing-group { flex-direction: column; align-items: flex-start; gap: 0.15em; }
+}
+.hearing-figure { margin: 0.4em 0 0; }
+.hearing-chart { display: block; width: 100%; height: 240px; }
+.hearing-legend { display: flex; flex-wrap: wrap; gap: 0.2em 1.2em; margin-top: 0.3em; font-size: 0.85em; color: var(--hearing-ink); }
+.hearing-legend > span { display: inline-flex; align-items: center; gap: 0.4em; }
+.hearing-legend i { display: inline-block; width: 1.4em; border-top: 2px solid; }
+.hearing-l-notes i { border-color: var(--hearing-mark); border-top-width: 3px; }
+.hearing-l-model i { border-color: var(--hearing-model); border-top-style: dashed; }
+.hearing-l-noise i { height: 0.8em; border: none; background: var(--hearing-noise); opacity: 0.35; }
+.hearing-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+
+/* A listening test (abx_widget.js, »Audio komprimieren«): codec and bit
+   rate, A, B and X to play, the answer, the tally; what plays in purple */
+.abx-widget {
+    --abx-mark: #6741d9;
+    --abx-mark-ink: #ffffff;
+    --abx-right: #2b8a3e;
+}
+html[data-bs-theme="dark"] .abx-widget {
+    --abx-mark: #b197fc;
+    --abx-mark-ink: #1a1b1b;
+    --abx-right: #69db7c;
+}
+.abx-widget::before {
+    content: 'Zum Ausprobieren, mit Kopfhörern';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.abx-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1em; margin-bottom: 0.6em; }
+.abx-label { font-size: 0.9em; color: var(--widget-ink); min-width: 4.5em; }
+.abx-play { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.6em; margin: 0.9em 0; }
+.abx-play-button { min-width: 9em; padding-block: 0.6em; }
+.abx-listen { flex: 1 1 24em; }
+.abx-listen .btn { flex: 1 1 0; padding-block: 0.6em; }
+.abx-listen .btn-check:checked + .btn { background-color: var(--abx-mark); border-color: var(--abx-mark); color: var(--abx-mark-ink); }
+.abx-answer { margin-top: 0.4em; }
+.abx-again { color: var(--widget-ink); }
+.abx-verdict { margin: 0.5em 0 0; min-height: 1.5em; }
+.abx-verdict.abx-right { color: var(--abx-right); }
+.abx-tally { margin: 0.3em 0 0.2em; font-variant-numeric: tabular-nums; }
+@media (max-width: 575.98px) {
+    .abx-play-button { flex: 1 1 100%; }
+}
+
 /* The keys of a telephone as sound (dtmf_widget.js, »Ein Spiel am
    Telefon«): the keypad with the frequencies of its rows (amber) and
    columns (teal), the wave of the two tones and their sum (purple, what is
@@ -15174,3 +15678,657 @@ html[data-bs-theme="dark"] .dtmf-widget {
 .dtmf-r { color: var(--dtmf-row); font-weight: 600; }
 .dtmf-c { color: var(--dtmf-col); font-weight: 600; }
 .dtmf-actions { display: flex; flex-wrap: wrap; gap: 0.5em; }
+
+/* An activity in parts (ActivityParts): the row of parts under the title,
+   the current one in purple (what is current), and the link to the next
+   part at the end of each; on phones the row scrolls sideways */
+.activity-parts {
+    --part-mark: #6741d9;
+    --part-mark-ink: #ffffff;
+}
+html[data-bs-theme="dark"] .activity-parts {
+    --part-mark: #b197fc;
+    --part-mark-ink: #1a1b1b;
+}
+.activity-parts ol {
+    list-style: none;
+    padding: 0;
+    margin: 0.75em 0 0.5em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em;
+}
+/* on tablets and phones one line that scrolls sideways, with room for the
+   frame of the current part */
+@media (max-width: 991.98px) {
+    .activity-parts ol {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding: 3px 3px 0.4em;
+        margin-inline: -3px;
+    }
+}
+.activity-parts ol::-webkit-scrollbar { display: none; }
+/* faded at a side where more parts are hidden (follow_part_anchor) */
+.activity-parts ol.more-right { mask-image: linear-gradient(to right, #000 calc(100% - 3em), transparent); }
+.activity-parts ol.more-left { mask-image: linear-gradient(to left, #000 calc(100% - 3em), transparent); }
+.activity-parts ol.more-left.more-right { mask-image: linear-gradient(to right, transparent, #000 3em, #000 calc(100% - 3em), transparent); }
+.activity-parts li { flex: 0 0 auto; }
+.activity-part {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.25em 0.7em 0.25em 0.35em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 2em;
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.85em;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+a.activity-part:hover { background-color: var(--bs-tertiary-bg); color: inherit; }
+a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-offset: 2px; }
+.activity-part.current { border-color: var(--part-mark); box-shadow: inset 0 0 0 1px var(--part-mark); font-weight: 600; }
+.activity-part-number {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    background-color: var(--bs-secondary-bg);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+}
+.activity-series .activity-part { padding-left: 0.8em; }
+.activity-part.current .activity-part-number { background-color: var(--part-mark); color: var(--part-mark-ink); }
+.activity-part-next { margin: 2.5em 0 1em; }
+
+/* The card of a series (card_series.js): a link over the whole card to the
+   member shown, and small dots at the foot of its picture to show another
+   (placed by the script, as the picture is on top or beside the text) */
+.tutorial_card3.card-series { cursor: pointer; touch-action: pan-y; user-select: none; }
+/* while dragging: a frame of the picture's size with the picture and its
+   neighbours side by side, moved as one */
+.card-series-stage { display: block; position: absolute; z-index: 1; overflow: hidden; }
+/* the real pictures stay hidden under the frame while it is dragged */
+.card-series-dragging .card-series-slide img { visibility: hidden; }
+.card-series-strip { display: block; position: absolute; inset: 0; }
+.tutorial_card3 .card-series-strip img { position: absolute; top: 0; max-width: none; aspect-ratio: auto; object-fit: cover; }
+.card-series-link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+}
+.card-series-link:focus-visible { outline: 3px solid #6741d9; outline-offset: -3px; }
+.card-series-dots {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    display: inline-flex;
+    gap: 0;
+}
+.card-series-dots button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.1em;
+    height: 1.1em;
+    padding: 0;
+    border: none;
+    background: none;
+}
+.card-series-dots button::before {
+    content: '';
+    width: 0.38em;
+    height: 0.38em;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+.card-series-dots button.active::before {
+    width: 0.5em;
+    height: 0.5em;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.6);
+}
+.card-series-dots button:focus-visible { outline: 2px solid #ffffff; outline-offset: -2px; border-radius: 50%; }
+
+/* the part shown on the card of an activity in parts */
+.tutorial_card3 .card-content .card-part { font-weight: 600; font-size: 0.9em; color: #6741d9; margin: -0.15em 0 0.2em; }
+html[data-bs-theme="dark"] .tutorial_card3 .card-content .card-part { color: #b197fc; }
+
+/* the magnifier is dragged like a map */
+.jpeg-picker .jpeg-picker-lens {
+    cursor: grab;
+    touch-action: none;
+}
+.jpeg-picker .jpeg-picker-photo {
+    touch-action: none;
+}
+
+/* the legend under the picker of the iDCT stepper on the JPEG page */
+.idct-stepper .idct-lens-legend {
+    margin: 0.4em 0 0;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.idct-stepper .idct-block-name {
+    align-self: center;
+    margin-left: 0.4em;
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}
+/* the channels Y, Cb and Cr as buttons of one width */
+.idct-stepper .idct-blocks button {
+    min-width: 2.8em;
+}
+
+/* the magnifier and, over it, its grid in device pixels (jpeg_image.js) */
+.jpeg-picker .jpeg-picker-lens-box {
+    position: relative;
+}
+.jpeg-picker .jpeg-picker-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 0.3em;
+}
+
+/* the picture of the iDCT stepper (data-picture) and, over it, its grid and
+   frames in device pixels */
+.idct-stepper .idct-picture-wrap {
+    position: relative;
+}
+.idct-stepper .idct-picture-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 0.3em;
+}
+
+/* A gallery as a carousel (.carousel, tutorial-preview.js): at every width a
+   row of as many pictures as fit, aligned left, ‹ and › beside them,
+   vertically in the middle of the pictures; it ends where the last picture
+   is whole */
+.gallery-carousel {
+    position: relative;
+    /* room for ‹ and › beside the pictures, not over them */
+    padding: 0 3em;
+    --carousel-gap: 1.5em;
+    --carousel-per-view: 3;
+}
+@media (max-width: 991.98px) {
+    .gallery-carousel { --carousel-per-view: 2; }
+}
+@media (max-width: 480px) {
+    .gallery-carousel { --carousel-per-view: 1; }
+}
+.gallery.carousel.swipe {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--carousel-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    margin: 0 0 1.5em;
+    padding: 0;
+    scroll-padding: 0;
+    cursor: grab;
+}
+.gallery.carousel.swipe.dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+    user-select: none;
+}
+.gallery.carousel.swipe::-webkit-scrollbar {
+    display: none;
+}
+.gallery.carousel.swipe > figure {
+    flex: 0 0 calc((100% - (var(--carousel-per-view) - 1) * var(--carousel-gap)) / var(--carousel-per-view));
+    scroll-snap-align: start;
+}
+.gallery-carousel-step {
+    position: absolute;
+    /* the middle of the pictures, above their captions */
+    top: calc(50% - 1.5em);
+    transform: translateY(-50%);
+    width: 2.4em;
+    height: 3em;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--bs-secondary-color);
+    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+.gallery-carousel-step:hover {
+    color: var(--bs-body-color);
+}
+.gallery-carousel-step:disabled {
+    opacity: 0;
+    pointer-events: none;
+}
+.gallery-carousel-prev { left: 0; width: 2em; }
+.gallery-carousel-next { right: 0; width: 2em; }
+
+/* the pictures of the block-matching widget and, over each, its grid and
+   frames in device pixels */
+.motion-widget .motion-wrap {
+    position: relative;
+}
+.motion-widget .motion-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 0.3em;
+}
+
+/* the block-matching widget's places to start, and its table of the reader's
+   square and the best shift: one size whatever it holds */
+.motion-widget .motion-presets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35em;
+    margin: 0.75em 0 0;
+}
+.motion-widget .motion-presets-label {
+    margin-right: 0.25em;
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}
+.motion-widget .motion-stats {
+    display: grid;
+    grid-template-columns: auto 6.5em auto;
+    column-gap: 1.25em;
+    row-gap: 0.1em;
+    font-variant-numeric: tabular-nums;
+}
+.motion-widget .motion-head {
+    font-size: 0.8em;
+    color: var(--widget-ink);
+}
+.motion-widget .motion-row {
+    color: var(--widget-ink);
+}
+.motion-widget .motion-same {
+    color: #2f9e44;
+}
+.motion-widget .motion-explain {
+    margin: 0 0 0.75em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.motion-widget .motion-controls {
+    align-items: flex-start;
+}
+/* a carousel leaves room for the focus ring of its pictures */
+.gallery.carousel.swipe {
+    padding-top: 0.35em;
+    padding-bottom: 0.35em;
+}
+/* the map is drawn in device pixels: no scaling, so not pixelated */
+.motion-widget .motion-zooms .motion-figure:last-child canvas {
+    image-rendering: auto;
+}
+
+/* Bookmarks in the table of contents on the left (bookmarks.js): the entry
+   keeps its look, a bookmark at its right edge, shown on hover or focus and
+   always when set */
+.autotoc-secondary .toc-entry {
+    position: relative;
+}
+.autotoc-secondary .toc-entry > a {
+    padding-right: 1.5rem;
+}
+.autotoc-secondary .toc-bookmark {
+    position: absolute;
+    top: 0.05rem;
+    right: 0.1rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font-size: 0.75rem;
+    line-height: 1;
+    opacity: 0;
+    /* no fading: a fading bookmark leaves a trail down the list */
+}
+.autotoc-secondary .toc-entry:hover .toc-bookmark,
+.autotoc-secondary .toc-bookmark:focus-visible {
+    opacity: 0.55;
+}
+.autotoc-secondary .toc-bookmark:hover {
+    opacity: 0.9;
+}
+.autotoc-secondary .toc-entry .toc-bookmark.set,
+.autotoc-secondary .toc-entry:hover .toc-bookmark.set {
+    opacity: 1;
+    color: #c2410c;
+}
+html[data-bs-theme="dark"] .autotoc-secondary .toc-bookmark.set {
+    color: #fb923c;
+}
+/* on a touch screen there is no hover: the bookmarks stay faintly visible */
+@media (hover: none) {
+    .autotoc-secondary .toc-bookmark {
+        opacity: 0.35;
+    }
+}
+/* hovering the bookmark itself: in the bookmark colour, with the sign of
+   what a click does (bookmarks.js) */
+.autotoc-secondary .toc-entry .toc-bookmark.preview {
+    opacity: 1;
+    color: #c2410c;
+}
+html[data-bs-theme="dark"] .autotoc-secondary .toc-entry .toc-bookmark.preview {
+    color: #fb923c;
+}
+
+/* »Ein Decoder bei der Arbeit« (gop_stepper.js, »Video komprimieren«): a
+   film strip of what the file stores, five slots wide, moving along. The frames
+   together three ways, the buttons, the jog (the stepper timeline, a dot a
+   frame), the steps of the frame as a segmented control of three that
+   keeps its size, the frame being built, the message. Frames around
+   pictures lie outside them (outline-offset). */
+.gop-stepper {
+    container-type: inline-size;
+    /* the kinds of frame: I the strongest, B between I and P in hue (it is
+       predicted from both); a lighter, more vivid step of each in dark mode,
+       checked for colour blindness against both grounds */
+    --gop-i: #0d60ae;
+    --gop-b: #12959f;
+    --gop-p: #c98500;
+}
+html[data-bs-theme="dark"] .gop-stepper {
+    --gop-i: #118cfc;
+    --gop-b: #14bbc2;
+    --gop-p: #f4a938;
+}
+.gop-stepper .gop-strip-head {
+    margin: 0.2em 0 0.3em;
+    font-size: 0.85em;
+    color: var(--widget-ink);
+}
+.gop-stepper .gop-strip {
+    position: relative;
+    margin: 0 -0.25em;
+}
+/* the cover flow: every card as large as one that pops out, placed and
+   turned by gop_stepper.js; the room for the arrows above them */
+.gop-stepper .gop-track {
+    position: relative;
+    overflow: hidden;
+    padding-top: 3em;
+    height: 10em;
+}
+.gop-stepper .gop-arcs {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 200;
+    overflow: visible;
+    color: var(--widget-ink);
+    pointer-events: none;
+}
+.gop-stepper .gop-slot {
+    position: absolute;
+    left: 0;
+    top: 3em;
+    width: var(--gop-card, 12em);
+    margin: 0;
+    padding: 0 0.25em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    cursor: pointer;
+    transform-origin: 50% 40%;
+    transition: transform 0.5s ease;
+}
+.gop-stepper .gop-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 960 / 400;
+    border-radius: 0.2em;
+    background: #808080;
+    outline: 1.5px solid color-mix(in srgb, var(--gop-kind) 70%, transparent);
+    outline-offset: 1px;
+    transition: filter 0.3s ease;
+}
+.gop-stepper .gop-slot:not(.popped) .gop-thumb {
+    filter: brightness(0.82);
+    box-shadow: 0 0.2em 0.6em rgba(0, 0, 0, 0.25);
+}
+.gop-stepper .gop-slot:not(.popped) figcaption,
+.gop-stepper .gop-slot:not(.popped) .gop-bar {
+    visibility: hidden;
+}
+.gop-stepper .gop-slot:hover:not(.current) .gop-thumb,
+.gop-stepper .gop-slot:focus-visible:not(.current) .gop-thumb {
+    filter: none;
+    outline: 2px solid color-mix(in srgb, var(--stepper-current) 55%, transparent);
+    outline-offset: 2px;
+}
+.gop-stepper .gop-slot:focus-visible {
+    outline: none;
+}
+.gop-stepper .gop-slot.current .gop-thumb {
+    outline: 3px solid var(--stepper-current);
+    outline-offset: 2px;
+}
+.gop-stepper .gop-slot figcaption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.2em;
+    margin-top: 0.25em;
+    font-size: 0.8em;
+    line-height: 1.2;
+}
+.gop-stepper .gop-name {
+    font-size: 1.1em;
+}
+.gop-stepper .gop-name sub {
+    font-size: 0.7em;
+}
+.gop-stepper .gop-bytes,
+.gop-stepper .gop-total-bytes {
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+.gop-stepper .gop-bar {
+    display: block;
+    height: 0.3em;
+    border-radius: 0.15em;
+    background: var(--widget-chip);
+    overflow: hidden;
+}
+.gop-stepper .gop-bar > span {
+    display: block;
+    height: 100%;
+}
+.gop-stepper .gop-totals {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    gap: 0.2em 0.7em;
+    align-items: center;
+    margin: 0.8em 0 0.8em;
+    font-size: 0.8em;
+    color: var(--widget-ink);
+}
+.gop-stepper .gop-total-bar {
+    display: flex;
+    gap: 1px;
+    height: 0.6em;
+    border-radius: 0.15em;
+    background: var(--widget-chip);
+    overflow: hidden;
+}
+.gop-stepper .gop-total-bar > span {
+    flex: none;
+    min-width: 1px;
+    height: 100%;
+}
+.gop-stepper .gop-controls {
+    display: flex;
+    gap: 0.3em;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0.7em;
+}
+.gop-stepper .gop-count {
+    margin-left: 0.6em;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+/* the switch for the steps in between, beside the count; the count keeps
+   its width, so that the switch stays where it is. The row
+   (stepper_keys.js) gives every part that is not a step button an auto
+   margin on the right; only the switch takes the room here */
+.gop-stepper .gop-count {
+    display: inline-block;
+    min-width: 9.5em;
+}
+.gop-stepper .gop-controls > .gop-count {
+    margin-right: 0 !important;
+}
+.gop-stepper .gop-steps-toggle {
+    margin: 0 auto 0 0.6rem !important;
+}
+.gop-stepper .gop-steps-toggle .bi {
+    margin-right: 0.3em;
+    font-size: 1.15em;
+    vertical-align: -0.12em;
+}
+.gop-stepper .gop-steps-toggle[aria-pressed='true'] .bi {
+    color: var(--stepper-current);
+}
+/* the steps of the frame: three equal parts, one wide label for an I-frame */
+.gop-stepper .gop-build {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0.5em 0 0.7em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.4em;
+    overflow: hidden;
+    background: var(--bs-body-bg);
+}
+.gop-stepper .gop-build-step {
+    min-height: 2.2em;
+    padding: 0.3em 0.5em;
+    border: 0;
+    border-left: 1px solid var(--widget-line);
+    background: transparent;
+    color: var(--widget-ink);
+    font-size: 0.9em;
+    line-height: 1.2;
+}
+.gop-stepper .gop-build-step:first-child {
+    border-left: 0;
+}
+.gop-stepper .gop-build-step.done {
+    background: color-mix(in srgb, var(--stepper-current) 10%, transparent);
+}
+.gop-stepper .gop-build-step.current {
+    background: var(--stepper-current);
+    color: var(--stepper-current-ink);
+}
+.gop-stepper .gop-build-step.current .gop-name {
+    color: inherit !important;
+}
+.gop-stepper .gop-build-step:focus-visible {
+    outline: 2px solid var(--stepper-current);
+    outline-offset: -3px;
+}
+.gop-stepper .gop-build-alone {
+    display: none;
+}
+.gop-stepper .gop-build.alone .gop-build-step {
+    display: none;
+}
+.gop-stepper .gop-build.alone .gop-build-alone {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.2em;
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}
+.gop-stepper .gop-view {
+    display: block;
+    width: 100%;
+    max-width: 52em;
+    margin: 0 auto;
+    aspect-ratio: 960 / 400;
+    border-radius: 0.25em;
+    background: #808080;
+}
+.gop-stepper .gop-say {
+    margin-top: 0.6em;
+}
+/* while the pictures load: a light picture of the first frame where the
+   frame being built will be, a bar and the share over it; about as tall
+   as the widget will be, so that nothing below it moves much */
+.gop-stepper .gop-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 52em;
+}
+.gop-stepper .gop-preview {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6em;
+    width: 100%;
+    max-width: 52em;
+    margin: 0 auto;
+    aspect-ratio: 960 / 400;
+    border-radius: 0.25em;
+    background: #808080 center / cover no-repeat;
+}
+.gop-stepper .gop-progress {
+    width: min(60%, 24em);
+    height: 0.5em;
+    border-radius: 0.25em;
+    background: rgba(255, 255, 255, 0.45);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.gop-stepper .gop-progress-bar {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: var(--stepper-current);
+    transition: width 0.2s ease;
+}
+.gop-stepper .gop-progress-label {
+    padding: 0.15em 0.7em;
+    border-radius: 1em;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 0.9em;
+}

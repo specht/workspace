@@ -1,0 +1,67 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): angenommen wird der Code aus stufen/, abgelehnt je ein
+# typischer Fehler aus fehler/.
+format: 1
+activity: audio-effects
+examples:
+  eq-bell:
+    pass:
+      - { files: { effects/eq.py: stufen/eq.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/eq.py: fehler/eq-energie.py, effects/wav.py: stufen/wav.py }, say: '10 ** (db / 20)' }
+      - { files: { effects/eq.py: fehler/eq-nur-db.py, effects/wav.py: stufen/wav.py }, say: '10 ** (db / 20)' }
+      - { files: { effects/eq.py: fehler/eq-hertz.py, effects/wav.py: stufen/wav.py }, say: 'Oktaven' }
+  echo:
+    pass:
+      - { files: { effects/echo.py: stufen/echo.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/echo.py: fehler/echo-ohne-rueckkopplung.py, effects/wav.py: stufen/wav.py }, say: 'y[n - D]' }
+      - { files: { effects/echo.py: fehler/echo-mix-falsch.py, effects/wav.py: stufen/wav.py }, say: 'x + mix * (y - x)' }
+      - { files: { effects/echo.py: fehler/echo-ohne-kopie.py, effects/wav.py: stufen/wav.py }, say: 'x.copy()' }
+  chorus-read:
+    pass:
+      - { files: { effects/chorus.py: stufen/chorus.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/chorus.py: fehler/read-gerundet.py, effects/wav.py: stufen/wav.py }, say: 'Mitte' }
+      - { files: { effects/chorus.py: fehler/read-abgeschnitten.py, effects/wav.py: stufen/wav.py }, say: 'Mitte' }
+      - { files: { effects/chorus.py: fehler/read-vertauscht.py, effects/wav.py: stufen/wav.py }, say: 'Mitte' }
+  allpass:
+    pass:
+      - { files: { effects/reverb.py: stufen/reverb.py, effects/echo.py: stufen/echo.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/reverb.py: fehler/allpass-ohne-rueckkopplung.py, effects/echo.py: stufen/echo.py, effects/wav.py: stufen/wav.py }, say: 'g * y[n - D]' }
+      - { files: { effects/reverb.py: fehler/allpass-ohne-minus.py, effects/echo.py: stufen/echo.py, effects/wav.py: stufen/wav.py }, say: 'g * y[n - D]' }
+  gain-db:
+    pass:
+      - { files: { effects/compressor.py: stufen/compressor.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/compressor.py: fehler/gain-vorzeichen.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
+      - { files: { effects/compressor.py: fehler/gain-geteilt.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
+      - { files: { effects/compressor.py: fehler/gain-ausgang.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
+  pitch:
+    pass:
+      - { files: { effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py } }
+    fail:
+      - { files: { effects/pitch.py: fehler/pitch-ohne-null.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: 'negativ' }
+      - { files: { effects/pitch.py: fehler/pitch-lag.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: 'rate / best_lag' }
+  nearest-note:
+    pass:
+      - { files: { effects/autotune.py: stufen/autotune.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py } }
+    fail:
+      - { files: { effects/autotune.py: fehler/note-abgerundet.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: 'round' }
+      - { files: { effects/autotune.py: fehler/note-oktaven.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: '466,16' }
+      - { files: { effects/autotune.py: fehler/note-hertz.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: '466,16' }
+  vocode-frame:
+    pass:
+      - { files: { effects/vocoder.py: stufen/vocoder.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/vocoder.py: fehler/vocode-ohne-wurzel.py, effects/wav.py: stufen/wav.py }, say: 'Wurzel' }
+      - { files: { effects/vocoder.py: fehler/vocode-ohne-teilen.py, effects/wav.py: stufen/wav.py }, say: 'Wurzel' }
+      - { files: { effects/vocoder.py: fehler/vocode-ohne-kopie.py, effects/wav.py: stufen/wav.py }, say: 'carrier.copy()' }
+  gain:
+    pass:
+      - { files: { effects/gain.py: stufen/gain.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/gain.py: fehler/gain-zehn.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }
+      - { files: { effects/gain.py: fehler/gain-mal-db.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }
+      - { files: { effects/gain.py: fehler/gain-plus.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }

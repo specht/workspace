@@ -1440,17 +1440,17 @@ Da die resultierenden Werte nach der iDCT noch im Bereich von -128 bis 127 liege
 
 Was die Formel tut, siehst du, wenn du sie Koeffizient für Koeffizient ausrechnest. Jeder Koeffizient gehört zu einem **Basisbild**, einem Muster aus Kosinuswellen: (0, 0) ist überall gleich hell, (1, 0) ein Verlauf von links nach rechts, (0, 1) einer von oben nach unten, und je größer u und v, desto feiner das Muster. Der Block ist die Summe aller Basisbilder, jedes mit seinem Koeffizienten multipliziert. Unten wird der Block aus dem Beispiel so zusammengesetzt, in der Zick-Zack-Reihenfolge, mit den Koeffizienten nach der Dequantisierung von oben. Die meisten sind 0 und tragen nichts bei:
 
-<div class='idct-stepper' data-stepper data-src='/jpeg/44-baseline.jpg' data-coef='-600 27 9 0 7 0 0 0 -88 -12 4 6 0 0 0 0 24 -20 -10 0 0 0 0 0 8 5 -14 -9 0 0 0 0 0 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'></div>
+<div class='idct-stepper' data-stepper data-src='/jpeg/44-baseline.jpg' data-start='56 1 0 2' data-coef='105 345 36 -140 49 12 0 -18 -104 100 -20 -54 64 -17 0 0 112 -92 -10 35 0 -17 0 0 -88 80 -21 0 -15 26 0 0 20 0 -33 17 0 0 0 0 7 -11 17 0 0 0 0 0 -15 19 0 0 0 0 0 0 0 0 0 0 0 0 0 0'></div>
 
-Schon nach wenigen Schritten sieht der Block fast fertig aus: Die großen Koeffizienten stehen vorn, die feinen Muster am Ende tragen wenig bei. Genau das nutzt JPEG aus. Die Quantisierung macht die hinteren Koeffizienten klein oder 0, und das Auge vermisst sie kaum.
+Nach wenigen Schritten steht schon die grobe Form, und der Fehler unten rechts wird kleiner: Die großen Koeffizienten stehen vorn, die feinen Muster am Ende tragen wenig bei. Genau das nutzt JPEG aus. Die Quantisierung macht die hinteren Koeffizienten klein oder 0, und das Auge vermisst sie kaum.
 
-Über der Zeitlupe kannst du auf dem Foto eine andere MCU wählen, mit einem Klick oder den Pfeiltasten, und darin einen ihrer sechs Blöcke; wählst du oben bei den AC-Koeffizienten einen Block, kommt er auch hierher. Vergleiche einen Block aus dem Himmel mit einem, in dem eine Kante der Schrift auf der roten Tafel liegt: Wie viele Koeffizienten sind nicht 0, und wie weit hinten im Zick-Zack stehen sie?
+Die Zeitlupe beginnt bei der 5 auf der Tafel mit den Fahrplänen, dunkel auf hell. Über ihr wählst du Y, Cb oder Cr und dann einen Block: in der Lupe mit der Maus darüber und klicken, oder auf dem Foto; die Lupe lässt sich ziehen. Wählst du oben bei den AC-Koeffizienten einen Block, kommt er auch hierher. Vergleiche einen Block aus dem Himmel mit einem, in dem eine Kante der Schrift auf der roten Tafel liegt: Wie viele Koeffizienten sind nicht 0, und wie weit hinten im Zick-Zack stehen sie?
 
 <div class='hint'>
 <strong>Für deinen Decoder:</strong> Die Formel hat vier Summen über je 8 Werte, für jedes der 64 Pixel. Die Kosinuswerte hängen nur von x und u (und y und v) ab: Rechne sie einmal am Anfang in ein Array <code>double idct_cos[8][8]</code>, dann geht es schnell genug. Noch schneller wird es, wenn du erst jede Zeile und dann jede Spalte transformierst, aber das ist nicht nötig. Runde das Ergebnis, verschiebe es um 128 und begrenze es auf 0 bis 255. <code>M_PI</code> gibt es mit <code>-std=c11</code> nicht; schreib dir π als Konstante hin.
 </div>
 
-Ob deine iDCT stimmt, prüfst du am Beispiel: Für den ersten Y-Block von `44-baseline.jpg` muss die erste Zeile `40 41 43 46 46 43 41 42` herauskommen, wie oben in der Zeitlupe am Ende.
+Ob deine iDCT stimmt, prüfst du am Beispiel: Für den ersten Y-Block von `44-baseline.jpg` muss die erste Zeile `40 41 43 46 46 43 41 42` herauskommen.
 
 _task(idct)
 

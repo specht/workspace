@@ -216,6 +216,12 @@ module TaskExamples
             result = TaskCheck.check(task, example['answer'], :workspace => WorkspaceFiles.new(root),
                 :runner => local_runner(root), :guest_runner => local_runner(root), :kata => local_kata(root),
                 :variables => example['variables'] || {}, :turtle => turtle)
+            # a Python check that runs ffmpeg or ffprobe (Video komprimieren)
+            # on a machine without them (the Ruby container; the Workspace
+            # image has both): its example waits for a machine that has
+            # them, like a module it does not have
+            missing = result.message.to_s[/No such file or directory: '(ffmpeg|ffprobe)'/, 1]
+            return nil if task['check']['type'] == 'python' && missing && !tool?(missing)
             expected = kind == 'pass' ? %i[correct] : %i[wrong invalid]
             outcome.ok = expected.include?(result.status)
             if outcome.ok && kind == 'fail' && example['say'] && !result.message.to_s.include?(example['say'].to_s)

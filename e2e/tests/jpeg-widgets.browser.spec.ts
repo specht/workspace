@@ -12,18 +12,55 @@ test('the iDCT stepper and the MCU on the demo photo', async ({ page }) => {
   await page.goto('/jpeg');
 
   const stepper = page.locator('.idct-stepper');
+  // it starts on the 5 on the sign, block Y2 of MCU (56, 1)
+  await expect(stepper.locator('.jpeg-picker-where')).toHaveText('MCU in Spalte 56, Reihe 1: x = 896 bis 911, y = 16 bis 31.');
+  await expect(stepper.locator('.idct-block-name')).toHaveText('Block Y2 der MCU');
+  await expect(stepper.locator('.idct-count')).toHaveText('Schritt 1 von 31');
+  // a click into the corner of the photo: the first block, as the page's decoder reads it
+  const corner = stepper.locator('.jpeg-picker-photo');
+  await corner.scrollIntoViewIfNeeded();
+  const cornerBox = await corner.boundingBox();
+  if (!cornerBox) throw new Error('no photo');
+  await page.mouse.click(cornerBox.x + 3, cornerBox.y + 3);
   await expect(stepper.locator('.jpeg-picker-where')).toHaveText('MCU in Spalte 0, Reihe 0: x = 0 bis 15, y = 0 bis 15.');
   await expect(stepper.locator('.idct-count')).toHaveText('Schritt 1 von 16');
   await stepper.locator("[data-go='last']").click();
-  await expect(stepper.locator('.idct-numbers span').first()).toHaveText('40');
-  const row = await stepper.locator('.idct-numbers span').evaluateAll((spans) => spans.slice(0, 8).map((s) => s.textContent).join(' '));
-  expect(row).toBe('40 41 43 46 46 43 41 42');
+  // the finished block in its greys, and no error left to the finished block
+  await expect.poll(() => stepper.locator('.idct-block span').evaluateAll((spans) => spans.slice(0, 8)
+    .map((s) => (s.getAttribute('style') || '').match(/rgb\((\d+)/)?.[1]).join(' '))).toBe('40 41 43 46 46 43 41 42');
+  await expect(stepper.locator('.idct-error-caption')).toHaveText('Fehler, im Mittel 0');
 
-  await test.step('another block of the same MCU', async () => {
-    await stepper.locator("button[data-block='1']").click();
-    await expect(stepper.locator("button[data-block='1']")).toHaveAttribute('aria-pressed', 'true');
+  await test.step('another block of the same MCU: hovered and clicked in the magnifier', async () => {
+    const lens = stepper.locator('.jpeg-picker-lens');
+    await lens.scrollIntoViewIfNeeded();
+    const box = await lens.boundingBox();
+    if (!box) throw new Error('no magnifier');
+    // the magnifier shows 3 × 3 MCUs around MCU (0, 0); Y1 is its upper right block
+    await page.mouse.move(box.x + 0.583 * box.width, box.y + 0.417 * box.height);
+    await page.mouse.down();
+    await page.mouse.up();
+    await expect(stepper.locator('.idct-block-name')).toHaveText('Block Y1 der MCU');
+    await expect(stepper.locator("button[data-comp='0']")).toHaveAttribute('aria-pressed', 'true');
     await expect(stepper.locator('.idct-count')).toContainText('Schritt 1 von');
     await expect(stepper.locator('.idct-coef span').first()).toHaveText('-690');
+  });
+
+  await test.step('another MCU by dragging over the photo', async () => {
+    const photo = stepper.locator('.jpeg-picker-photo');
+    await photo.scrollIntoViewIfNeeded();
+    const box = await photo.boundingBox();
+    if (!box) throw new Error('no photo');
+    const width = await photo.evaluate((c) => (c as HTMLCanvasElement).width);
+    const scale = box.width / width;
+    await page.mouse.move(box.x + 8 * scale, box.y + 8 * scale);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 40 * scale, box.y + 8 * scale, { steps: 6 });
+    await page.mouse.up();
+    await expect(stepper.locator('.jpeg-picker-where')).toHaveText('MCU in Spalte 2, Reihe 0: x = 32 bis 47, y = 0 bis 15.');
+    await page.mouse.move(box.x + 8 * scale, box.y + 8 * scale);
+    await page.mouse.down();
+    await page.mouse.up();
+    await expect(stepper.locator('.jpeg-picker-where')).toHaveText('MCU in Spalte 0, Reihe 0: x = 0 bis 15, y = 0 bis 15.');
   });
 
   await test.step('another MCU with the arrow keys, the stepper stays where it is', async () => {

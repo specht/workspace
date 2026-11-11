@@ -1,0 +1,382 @@
+# Aufgaben zu »Audioeffekte«. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/effects; die Funktionen der Lernenden rechnen mit numpy.
+format: 1
+activity: audio-effects
+tasks:
+  - id: db-half
+    title: Halb so hoch
+    prediction: true
+    prompt: |
+      Jede Schwingung eines Klangs wird halb so hoch, jedes Sample mal 0,5.
+      Um wie viele Dezibel ändert sich der Klang? Eine Stelle hinter dem
+      Komma genügt.
+    check:
+      type: number
+      expect: -6.02
+      tolerance: 0.1
+    feedback:
+      - when: { between: [5.9, 6.1] }
+        say: Der Klang wird leiser, nicht lauter; die Dezibel sind negativ.
+      - when: { between: [-3.1, -2.9] }
+        say: −3 dB halbieren die Leistung. Die Höhe der Schwingung wird mit 10^(dB/20) multipliziert, nicht mit 10^(dB/10).
+      - when: { equals: -50 }
+        say: Dezibel sind kein Prozent. Gesucht ist die Zahl dB, für die 10^(dB/20) = 0,5 ist.
+    solution: |
+      Etwa −6,0 dB: 20 · log10(0,5) = −6,02. Darum heißen 6 dB oft
+      »doppelt so hoch«.
+
+  - id: gain
+    title: Dezibel als Faktor
+    prompt: |
+      Schreib in `effects/gain.py` die Funktion `gain(x, db)`: `x` mit dem
+      Faktor zu `db` Dezibel multipliziert.
+    check:
+      type: python
+      file: effects/gain.py
+      cases:
+        - call: '[round(v, 4) for v in gain(np.array([1.0, -0.5]), -20)]'
+          expect: '[0.1, -0.05]'
+          say: '−20 dB sind ein Zehntel: 10^(−20/20) = 0,1. Rechnest du `10 ** (db / 20)`, durch 20?'
+        - call: gain(np.array([0.3, -0.7]), 0).tolist()
+          expect: '[0.3, -0.7]'
+          say: 0 dB lassen alles, wie es ist, ein Faktor von 1. Multiplizierst du `x` mit dem Faktor, statt etwas dazuzuzählen?
+        - call: '[round(v, 3) for v in gain(np.array([0.5]), 6.0206)]'
+          expect: '[1.0]'
+          say: Etwa +6 dB verdoppeln die Schwingung.
+    solution: |
+      ```python
+      def gain(x, db):
+          return x * 10 ** (db / 20)
+      ```
+
+  - id: compressor-level
+    title: Gestaucht
+    prediction: true
+    prompt: |
+      Ein Compressor mit dem Threshold −20 dB und der Ratio 4 : 1, ohne
+      Make-up Gain. Ein Ton kommt mit einem Pegel von −8 dB an. Mit wie vielen dB
+      kommt er heraus?
+    check:
+      type: number
+      expect: -17
+      tolerance: 0.1
+    feedback:
+      - when: { equals: -8 }
+        say: −8 dB liegt über dem Threshold von −20 dB; dort wird der Compressor tätig.
+      - when: { equals: -11 }
+        say: 'Du hast ein Viertel der 12 dB über dem Threshold weggenommen. Bei 4 : 1 bleibt ein Viertel übrig.'
+      - when: { equals: -20 }
+        say: 'Genau auf den Threshold drückt nur eine Ratio ohne Ende, ein Limiter. Bei 4 : 1 bleibt ein Teil über dem Threshold.'
+      - when: { equals: -2 }
+        say: Der Ton kommt leiser heraus, als er ankommt, nicht lauter.
+    solution: |
+      −17 dB: Der Ton liegt 12 dB über dem Threshold, davon bleibt ein
+      Viertel, 3 dB, also −20 + 3 = −17 dB.
+
+  - id: gain-db
+    title: Wie viel leiser
+    prompt: |
+      Schreib in `effects/compressor.py` die Funktion `gain_db(level, threshold, ratio)`:
+      0, wenn der Pegel `level` höchstens beim Threshold liegt, sonst die
+      Dezibel, die der Compressor wegnimmt, als negative Zahl.
+    check:
+      type: python
+      file: effects/compressor.py
+      cases:
+        - call: float(gain_db(-30, -20, 4))
+          expect: '0.0'
+          say: −30 dB liegt unter dem Threshold von −20 dB; dort gibt der Compressor 0 dB dazu.
+        - call: round(gain_db(-8, -20, 4), 6)
+          expect: '-9.0'
+          say: '12 dB über dem Threshold; bei 4 : 1 bleiben 3 dB übrig, also nimmt der Compressor 9 dB weg und `gain_db` gibt −9 zurück. Rechnest du `(threshold - level) * (1 - 1 / ratio)`?'
+        - call: round(gain_db(0, -24, 2), 6)
+          expect: '-12.0'
+          say: '24 dB über dem Threshold, bei 2 : 1 bleibt die Hälfte; weggenommen werden 12 dB.'
+    solution: |
+      ```python
+      def gain_db(level, threshold, ratio):
+          if level <= threshold:
+              return 0
+          return (threshold - level) * (1 - 1 / ratio)
+      ```
+
+  - id: eq-octave
+    title: Eine Oktave daneben
+    prediction: true
+    prompt: |
+      Ein Regler des EQ gibt bei 1.000 Hz 20 dB dazu, mit einer Breite von
+      einer Oktave. Mit welchem Faktor multipliziert er die Schwingung bei
+      2.000 Hz? Zwei Stellen hinter dem Komma genügen.
+    check:
+      type: number
+      expect: 3.16
+      tolerance: 0.03
+    feedback:
+      - when: { equals: 10 }
+        say: Der Faktor 10 gehört zu 20 dB, und die gibt der Regler nur in der Mitte, bei 1.000 Hz. Wie viele dB sind es eine Oktave daneben?
+      - when: { equals: 5 }
+        say: Zur Hälfte wirken eine Oktave daneben die Dezibel, nicht der Faktor. Welcher Faktor gehört zu 10 dB?
+      - when: { equals: 1 }
+        say: Eine Oktave neben der Mitte wirkt der Regler noch, nur schwächer.
+    solution: |
+      Etwa 3,16: 2.000 Hz liegt eine Oktave über der Mitte. Dort gibt der
+      Regler 20 · 2^(−1) = 10 dB dazu, und 10^(10/20) = √10 ≈ 3,16.
+
+  - id: eq-bell
+    title: Die Glocke des EQ
+    prompt: |
+      Schreib in `effects/eq.py` die Funktion `bell(freqs, centre, width, gain)`:
+      für jede Frequenz in `freqs` der Faktor, mit dem der EQ ihre Schwingung
+      multipliziert. `width` Oktaven neben `centre` wirkt noch die Hälfte der
+      Verstärkung `gain` in dB.
+    check:
+      type: python
+      file: effects/eq.py
+      cases:
+        - call: round(float(bell(np.array([1000.0]), 1000, 1, 12)[0]), 2)
+          expect: 3.98
+          say: In der Mitte wirkt die ganze Verstärkung, 12 dB, und der Faktor ist 10 hoch 12/20, etwa 3,98. Rechnet deine Funktion die Dezibel mit `10 ** (db / 20)` in einen Faktor um?
+        - call: round(float(bell(np.array([2000.0]), 1000, 1, 12)[0]), 2)
+          expect: 2.0
+          say: 2.000 Hz liegt eine Oktave über 1.000 Hz, eine Breite weit weg; dort wirkt die halbe Verstärkung, 6 dB, fast der Faktor 2.
+        - call: round(float(bell(np.array([500.0]), 1000, 1, 12)[0]), 2)
+          expect: 2.0
+          say: 500 Hz liegt eine Oktave unter 1.000 Hz, genauso weit weg wie 2.000 Hz. Zählt deine Funktion den Abstand in Oktaven, mit `np.log2(freqs / centre)`?
+        - call: round(float(bell(np.array([100.0]), 1000, 1, 12)[0]), 2)
+          expect: 1.0
+          say: Weit weg von der Mitte, mehr als drei Oktaven, ändert der EQ fast nichts; der Faktor ist dort 1.
+        - call: round(float(bell(np.array([1000.0]), 1000, 1, -12)[0]), 2)
+          expect: 0.25
+          say: Mit −12 dB wird die Schwingung leiser, Faktor 10 hoch −12/20, etwa 0,25.
+        - call: '[round(float(v), 2) for v in bell(np.array([0.0, 1000.0]), 1000, 1, 12)]'
+          expect: '[1.0, 3.98]'
+          say: Die erste Frequenz der FFT ist 0 Hz, und `np.log2(0)` ist minus unendlich. Mit `np.maximum(freqs, 1)` wird aus 0 erst 1.
+    solution: |
+      ```python
+      def bell(freqs, centre, width, gain):
+          octaves = np.log2(np.maximum(freqs, 1) / centre)
+          db = gain * 2 ** (-(octaves / width) ** 2)
+          return 10 ** (db / 20)
+      ```
+
+  - id: echo-height
+    title: Das Echo nach einer Sekunde
+    prediction: true
+    prompt: |
+      Ein Knall der Höhe 1, ein Echo mit 0,25 Sekunden Verzögerung, der
+      Rückkopplung 0,5 und der Mischung 1. Wie hoch ist das Echo, das genau
+      eine Sekunde nach dem Knall kommt?
+    check:
+      type: number
+      expect: 0.0625
+      tolerance: 0.001
+    feedback:
+      - when: { equals: 0.125 }
+        say: Nach 0,25 Sekunden kommt das erste Echo mit 0,5, nach 0,5 das zweite. Das wievielte kommt nach einer Sekunde?
+      - when: { equals: 0.5 }
+        say: 0,5 hat das erste Echo. Jedes weitere ist halb so hoch wie das vorige.
+    solution: |
+      0,0625: Nach einer Sekunde kommt das vierte Echo, und jedes ist halb so
+      hoch wie das vorige, 0,5 hoch 4.
+
+  - id: echo
+    title: Ein Echo mit Rückkopplung
+    prompt: |
+      Schreib in `effects/echo.py` die Funktion `echo(x, rate, delay, feedback, mix)`:
+      der Klang `x` mit seinen Echos, `delay` Sekunden auseinander, jedes
+      `feedback`-mal so hoch wie das vorige, mit `mix` dazugemischt.
+    check:
+      type: python
+      file: effects/echo.py
+      cases:
+        - call: echo(np.array([1.0, 0, 0, 0, 0, 0]), 1, 2, 0.5, 1).tolist()
+          expect: '[1.0, 0.0, 0.5, 0.0, 0.25, 0.0]'
+          say: Mit der Abtastrate 1 und 2 Sekunden Verzögerung kommt alle zwei Samples ein Echo, halb so hoch wie das vorige. Zählt deine Funktion `y[n - D]` dazu, also auch die Echos selbst?
+        - call: '(lambda x: (echo(x, 1, 2, 0.5, 1), x.tolist())[1])(np.array([1.0, 0, 0, 0]))'
+          expect: '[1.0, 0.0, 0.0, 0.0]'
+          say: '`x` soll sich nicht ändern: Fang mit `y = x.copy()` an, nicht mit `y = x`.'
+        - call: echo(np.array([1.0, 0, 0, 0, 0, 0]), 1, 2, 0.5, 0.5).tolist()
+          expect: '[1.0, 0.0, 0.25, 0.0, 0.125, 0.0]'
+          say: Mit der Mischung 0,5 kommen die Echos halb so laut dazu, der Klang selbst bleibt. Gibt deine Funktion `x + mix * (y - x)` zurück?
+    solution: |
+      ```python
+      def echo(x, rate, delay, feedback, mix):
+          D = round(delay * rate)
+          y = x.copy()
+          for n in range(D, len(y)):
+              y[n] += feedback * y[n - D]
+          return x + mix * (y - x)
+      ```
+
+  - id: chorus-read
+    title: Zwischen zwei Samples lesen
+    prompt: |
+      Schreib in `effects/chorus.py` die Funktion `read(x, pos)`: für jede
+      Stelle in `pos` den Wert zwischen den beiden Samples daneben, auf der
+      Geraden zwischen ihnen.
+    check:
+      type: python
+      file: effects/chorus.py
+      cases:
+        - call: read(np.array([0.0, 10, 20, 30]), np.array([0.0, 1.5, 2.25])).tolist()
+          expect: '[0.0, 15.0, 22.5]'
+          say: An der Stelle 1,5 liegt der Wert genau in der Mitte zwischen 10 und 20, an der Stelle 2,25 ein Viertel des Wegs von 20 nach 30. Mischt deine Funktion die beiden Samples daneben, `(1 - f) * x[i] + f * x[i + 1]`?
+        - call: read(np.array([0.0, 10, 20, 30]), np.array([3.0])).tolist()
+          expect: '[30.0]'
+          say: Die Stelle 3 ist das letzte Sample. Ein `x[i + 1]` gibt es dort nicht; mit `np.clip(…, 0, len(x) - 2)` ist `i` das vorletzte und `f` 1.
+    solution: |
+      ```python
+      def read(x, pos):
+          i = np.clip(np.floor(pos).astype(int), 0, len(x) - 2)
+          f = pos - i
+          return (1 - f) * x[i] + f * x[i + 1]
+      ```
+
+  - id: allpass
+    title: Ein Allpass
+    prompt: |
+      Schreib in `effects/reverb.py` die Funktion `allpass(x, rate, delay, g)`:
+      `y[n] = -g * x[n] + x[n - D] + g * y[n - D]` mit `D = round(delay * rate)`,
+      für die Samples vor `D` nur `-g * x[n]`.
+    check:
+      type: python
+      file: effects/reverb.py
+      cases:
+        - call: allpass(np.array([1.0, 0, 0, 0, 0]), 1, 2, 0.5).tolist()
+          expect: '[-0.5, 0.0, 0.75, 0.0, 0.375]'
+          say: Ein Knall der Höhe 1 durch einen Allpass mit D = 2 und g = 0,5 gibt −0,5, dann 1 − 0,25 = 0,75, dann 0,375. Steht `g * y[n - D]` in deiner Formel, und das Minus vor `g * x[n]`?
+    solution: |
+      ```python
+      def allpass(x, rate, delay, g):
+          D = round(delay * rate)
+          y = np.zeros_like(x)
+          for n in range(len(x)):
+              y[n] = -g * x[n]
+              if n >= D:
+                  y[n] += x[n - D] + g * y[n - D]
+          return y
+      ```
+
+  - id: speed-length
+    title: Schneller abgespielt
+    prediction: true
+    prompt: |
+      Ein Klang von 3 Sekunden soll 7 Halbtöne höher werden, ohne Grains:
+      Man spielt ihn einfach schneller ab, 2^(7/12)-mal so schnell, etwa
+      1,5-mal. Wie viele Sekunden dauert er dann?
+    check:
+      type: number
+      expect: 2.0
+      tolerance: 0.05
+    feedback:
+      - when: { equals: 3 }
+        say: Schneller abgespielt ist der Klang früher zu Ende. Nur ein Pitch Shifter mit Grains hält ihn gleich lang.
+      - when: { between: [4.4, 4.6] }
+        say: Schneller heißt kürzer, nicht länger. Teile die Länge durch den Faktor.
+    solution: |
+      Etwa 2 Sekunden: 3 / 2^(7/12) = 3 / 1,498 ≈ 2,0.
+
+  - id: pitch
+    title: Die Tonhöhe eines Blocks
+    prompt: |
+      Schreib in `effects/pitch.py` die Funktion `pitch(block, rate)`: die
+      Frequenz der größten Autokorrelation nach dem ersten negativen Wert,
+      für `lag` von 1 bis `rate // 60`; 0, wenn keine gefunden.
+    check:
+      type: python
+      file: effects/pitch.py
+      cases:
+        - call: pitch(((np.arange(800) * 200 / 8000) % 1) - 0.5, 8000)
+          expect: '200.0'
+          say: 'Eine Sägezahnschwingung mit 200 Hz, 8000 Samples in der Sekunde: Sie wiederholt sich alle 40 Samples. Gibt deine Funktion `rate / best_lag` zurück?'
+        - call: pitch(np.sin(2 * np.pi * 100 * np.arange(800) / 8000), 8000)
+          expect: '100.0'
+          say: 'Bei einer tiefen Schwingung ist die Autokorrelation bei `lag` 1 fast so groß wie bei 0, größer als nach einer ganzen Schwingung. Nimmst du den größten Wert erst, nachdem einer negativ war?'
+        - call: float(pitch(np.zeros(800), 8000))
+          expect: '0.0'
+          say: In der Stille gibt es keine Tonhöhe; dann soll `pitch` 0 zurückgeben.
+    solution: |
+      ```python
+      def pitch(block, rate):
+          best, best_lag, dipped = 0, 0, False
+          for lag in range(1, rate // 60):
+              r = np.dot(block[:-lag], block[lag:])
+              if r < 0:
+                  dipped = True
+              elif dipped and r > best:
+                  best, best_lag = r, lag
+          return rate / best_lag if best_lag else 0
+      ```
+
+  - id: nearest-note
+    title: Der nächste Halbton
+    prompt: |
+      Schreib in `effects/autotune.py` die Funktion `nearest_note(f)`: die
+      Frequenz des Halbtons, der `f` am nächsten liegt, von 440 Hz aus gezählt.
+    check:
+      type: python
+      file: effects/autotune.py
+      cases:
+        - call: round(float(nearest_note(450)), 2)
+          expect: '440.0'
+          say: 450 Hz liegt näher an 440 Hz als am nächsten Halbton darüber, 466,16 Hz.
+        - call: round(float(nearest_note(470)), 2)
+          expect: '466.16'
+          say: 470 Hz liegt näher an 466,16 Hz, einen Halbton über 440. Rechnest du in Halbtönen, `12 * np.log2(f / 440)`, und teilst nach dem Runden wieder durch 12?
+        - call: round(float(nearest_note(420)), 2)
+          expect: '415.3'
+          say: 420 Hz liegt näher an 415,30 Hz, einen Halbton unter 440. Rundest du mit `round`? `int` schneidet zur Null hin ab und macht aus −0,8 Halbtönen 0.
+    solution: |
+      ```python
+      def nearest_note(f):
+          return 440 * 2 ** (round(12 * np.log2(f / 440)) / 12)
+      ```
+
+  - id: vocoder-numbers
+    title: Weniger Zahlen
+    prediction: true
+    prompt: |
+      Eine Stimme am Telefon hat 8000 Samples in der Sekunde. Ein Vocoder
+      schickt stattdessen 25-mal in der Sekunde die Stärken von 10 Bändern.
+      Wie viel Mal weniger Zahlen sind das?
+    check:
+      type: number
+      expect: 32
+      tolerance: 0.1
+    feedback:
+      - when: { equals: 250 }
+        say: 250 Zahlen in der Sekunde schickt der Vocoder. Wie oft passen sie in die 8000 Samples?
+      - when: { equals: 320 }
+        say: Der Vocoder schickt 10 Stärken je Block, nicht eine.
+    solution: |
+      32: Der Vocoder schickt 25 · 10 = 250 Zahlen in der Sekunde statt
+      8000, und 8000 / 250 = 32.
+
+  - id: vocode-frame
+    title: Der Träger mit der Stärke der Stimme
+    prompt: |
+      Schreib in `effects/vocoder.py` die Funktion `vocode_frame(voice, carrier, edges)`:
+      eine Kopie von `carrier`, jedes Band so stark wie dasselbe Band in `voice`.
+    check:
+      type: python
+      file: effects/vocoder.py
+      cases:
+        - call: vocode_frame(np.array([6.0, 8, 0, 0]), np.array([3.0, 4, 1, 1]), [0, 2, 4]).tolist()
+          expect: '[6.0, 8.0, 0.0, 0.0]'
+          say: 'Im ersten Band ist die Stimme 10 stark (die Wurzel aus 36 + 64), der Träger 5 (die Wurzel aus 9 + 16): Er wird mit 2 multipliziert. Im zweiten ist die Stimme still, also auch das Ergebnis. Rechnest du die Stärke als Wurzel aus der Summe der Quadrate und teilst durch die des Trägers?'
+        - call: vocode_frame(np.array([1.0, 1]), np.array([0.0, 0]), [0, 2]).tolist()
+          expect: '[0.0, 0.0]'
+          say: Ist der Träger in einem Band still, gibt es nichts zu multiplizieren, und durch 0 teilen geht nicht. Dann bleibt das Band 0.
+        - call: '(lambda c: (vocode_frame(np.array([2.0, 0]), c, [0, 2]), c.tolist())[1])(np.array([1.0, 0]))'
+          expect: '[1.0, 0.0]'
+          say: '`carrier` soll sich nicht ändern: Fang mit `out = carrier.copy()` an.'
+    solution: |
+      ```python
+      def vocode_frame(voice, carrier, edges):
+          out = carrier.copy()
+          for lo, hi in zip(edges[:-1], edges[1:]):
+              v = np.sqrt(np.sum(np.abs(voice[lo:hi]) ** 2))
+              c = np.sqrt(np.sum(np.abs(carrier[lo:hi]) ** 2))
+              out[lo:hi] *= v / c if c > 0 else 0
+          return out
+      ```

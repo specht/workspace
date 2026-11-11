@@ -1,0 +1,115 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Angenommen wird der Code der Seite aus stufen/, abgelehnt das Gerüst der
+# Seite und in fehler/ je ein typischer Fehler.
+format: 1
+activity: audio-compression
+examples:
+  wav-header:
+    pass:
+      - { files: { audio/wav.py: stufen/wav.py } }
+    fail:
+      - files: { audio/wav.py: { text: "import struct\n\n\ndef wav_header(n, rate):\n    size = 2 * n\n    riff = struct.pack('<4sI4s', b'RIFF', 36 + size, b'WAVE')\n    # hier: fmt und data\n    return riff + fmt + data\n" } }
+        say: fmt
+      - { files: { audio/wav.py: fehler/wav-big-endian.py }, say: Little Endian }
+      - { files: { audio/wav.py: fehler/wav-groesse-messungen.py }, say: 'Bytes der Samples' }
+      - { files: { audio/wav.py: fehler/wav-byte-rate-fest.py }, say: Byte Rate }
+  ton:
+    pass:
+      - { files: { audio/tones.py: stufen/tones-1.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/tones.py: fehler/tone-ohne-rate.py, audio/wav.py: stufen/wav.py }, say: '`rate`' }
+      - { files: { audio/tones.py: fehler/tone-zu-laut.py, audio/wav.py: stufen/wav.py }, say: '0,5' }
+  unmulaw:
+    pass:
+      - { files: { audio/mulaw.py: stufen/mulaw.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/mulaw.py: fehler/unmulaw-ohne-vorzeichen.py, audio/wav.py: stufen/wav.py }, say: 'np.sign(y)' }
+      - { files: { audio/mulaw.py: fehler/unmulaw-exp.py, audio/wav.py: stufen/wav.py }, say: '1 + MU' }
+  residual:
+    pass:
+      - { files: { audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/predict.py: fehler/residual-in-place.py, audio/wav.py: stufen/wav.py }, say: 'x.copy()' }
+      - { files: { audio/predict.py: fehler/residual-ohne-anfang.py, audio/wav.py: stufen/wav.py }, say: 'ersten beiden' }
+      - { files: { audio/predict.py: fehler/residual-differenz.py, audio/wav.py: stufen/wav.py }, say: 'Geraden' }
+  rice:
+    pass:
+      - { files: { audio/rice.py: stufen/rice-1.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/rice.py: stufen/rice-2.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/rice.py: fehler/rice-ohne-fuehrende-nullen.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py }, say: 'beiden Stellen' }
+      - { files: { audio/rice.py: fehler/rice-einsen-vorn.py, audio/predict.py: stufen/predict.py, audio/wav.py: stufen/wav.py }, say: 'keine Nullen vorn' }
+  dft:
+    pass:
+      - { files: { audio/freq.py: stufen/freq-1.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/freq.py: stufen/freq-2.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/freq.py: fehler/dft-plus.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'Minus' }
+      - { files: { audio/freq.py: fehler/dft-ohne-n.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'Array `n`' }
+  fft:
+    pass:
+      - { files: { audio/freq.py: stufen/freq-2.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/freq.py: stufen/freq-1.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'fft' }
+      - { files: { audio/freq.py: fehler/fft-ohne-faktor.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'Faktor' }
+      - { files: { audio/freq.py: fehler/fft-vertauscht.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'even + w' }
+      - { files: { audio/freq.py: fehler/fft-mit-dft.py, audio/tones.py: stufen/tones-3.py, audio/wav.py: stufen/wav.py }, say: 'statt `dft`' }
+  staerke:
+    pass:
+      - { files: { audio/dial.py: stufen/dial.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/dial.py: fehler/staerke-ohne-zwei.py, audio/wav.py: stufen/wav.py }, say: 'mit 2 multipliziert' }
+      - { files: { audio/dial.py: fehler/staerke-ohne-rate.py, audio/wav.py: stufen/wav.py }, say: 'freq * n / rate' }
+  nummer:
+    pass:
+      - answer: '03023125386'
+      - answer: 030 23125386
+      - answer: 030/23125-386
+    fail:
+      - answer: '03023125368'
+      - answer: '0302312538'
+      - answer: 030 23125386 1
+  hoerschwelle:
+    pass:
+      - { files: { audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/ear.py: fehler/schwelle-hz.py, audio/wav.py: stufen/wav.py }, say: 'durch 1.000 geteilt' }
+      - { files: { audio/ear.py: fehler/schwelle-exp-plus.py, audio/wav.py: stufen/wav.py }, say: 'durch 1.000 geteilt' }
+  hoerbar:
+    pass:
+      - { files: { audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/ear.py: fehler/hoerbar-index.py, audio/wav.py: stufen/wav.py }, say: 'np.fft.rfftfreq' }
+      - { files: { audio/ear.py: fehler/hoerbar-ohne-schwelle.py, audio/wav.py: stufen/wav.py }, say: 'liegt die Schwelle aber über 45 dB' }
+  mdct:
+    pass:
+      - { files: { audio/mdct.py: stufen/mdct-1.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/mdct.py: stufen/mdct-2.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/mdct.py: stufen/mdct-3.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/mdct.py: fehler/mdct-ohne-verschiebung.py, audio/wav.py: stufen/wav.py }, say: 'k + 0.5' }
+      - { files: { audio/mdct.py: fehler/mdct-ganz-n.py, audio/wav.py: stufen/wav.py }, say: 'range(N)' }
+  mithoerschwelle:
+    pass:
+      - { files: { audio/codec.py: stufen/codec-1.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+      - { files: { audio/codec.py: stufen/codec-2.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/codec.py: fehler/mithoer-maximum.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'Energien zählen zusammen' }
+      - { files: { audio/codec.py: fehler/mithoer-ohne-ruhe.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'np.maximum(out, QUIET)' }
+      - { files: { audio/codec.py: fehler/mithoer-vertauscht.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'nicht umgekehrt' }
+  entropie:
+    pass:
+      - { files: { audio/codec.py: stufen/codec-2.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { audio/codec.py: stufen/codec-1.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'entropy' }
+      - { files: { audio/codec.py: fehler/entropie-ln.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'np.log2' }
+      - { files: { audio/codec.py: fehler/entropie-counts.py, audio/mdct.py: stufen/mdct-3.py, audio/ear.py: stufen/ear.py, audio/wav.py: stufen/wav.py }, say: 'counts / counts.sum()' }
+  frame-laenge:
+    pass:
+      - { files: { audio/mp3.py: stufen/mp3.py } }
+    fail:
+      - { files: { audio/mp3.py: fehler/frame-ohne-padding.py }, say: 'Padding-Bit' }
+      - { files: { audio/mp3.py: fehler/frame-feste-rate.py }, say: 'RATES[(header[2] >> 2) & 3]' }
+      - { files: { audio/mp3.py: fehler/frame-kbit.py }, say: 'mit 1.000 multipliziert' }

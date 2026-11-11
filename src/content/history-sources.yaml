@@ -1,0 +1,245 @@
+# Sources for the claims in the history boxes of the activities
+# (<div class='history' id='history-…'>), keyed by the box's id without
+# »history-«; the format of reference/personen/sources.yaml. Shown on the
+# development page /person-sources (src/ruby/include/person_sources.rb);
+# history_sources_test.rb wants a source for every sentence.
+
+let-it-be:
+  - text: Das Bandecho auf der Hi-Hat von »Let It Be«, 1970
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "On 26 March 1970, Phil Spector remixed the song for the Let It Be album."
+  - text: Phil Spector mischte »Let It Be« von den Beatles für das Album neu und gab Ringo Starrs Hi-Hat in der zweiten Strophe ein Bandecho, so viel, dass sie fast alle Aufmerksamkeit auf sich zieht
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "Starr's drumming was augmented by Spector's \"tape-delay-effect\" to his hi-hats during the song's second verse"
+      - url: https://beatlesanswers.org/songs/let-it-be
+        quote: "adding such a degree of tape echo to Ringo's hi-hat that this instrument becomes virtually the sole focus of attention"
+  - text: Starr gefiel Spectors Fassung nicht
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "Ringo Starr disliked Phil Spector's version"
+  - text: 2003 erschien auf »Let It Be... Naked« eine Fassung ohne Spectors Zutaten, mit Starrs einfachem Schlagzeug
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "Still another version of the song appeared on the Let It Be... Naked album in 2003. … features his original \"stripped-down-approach\" drumming"
+  - text: Hör dir die zweite Strophe in beiden Fassungen an
+    none: eine Einladung zum Anhören, die Links sind die offiziellen Aufnahmen auf dem Kanal »The Beatles - Topic«
+
+believe:
+  - text: Cher, »Believe«, 1998
+    sources:
+      - url: https://en.wikipedia.org/wiki/Believe_(Cher_song)
+        quote: "\"Believe\" was released as the lead single from Cher's 22nd studio album, Believe (1998), on October 19, 1998."
+  - text: Ein Jahr zuvor brachte die Firma Antares Auto-Tune heraus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "released on September 19, 1997, by the American company Antares Audio Technologies"
+  - text: Erfunden hatte es Andy Hildebrand, der für Exxon aus den Echos von Schall im Boden herausgelesen hatte, wo man nach Öl bohren soll, mit denselben Verfahren, auch der Autokorrelation
+    sources:
+      - url: https://priceonomics.com/the-inventor-of-auto-tune/
+        quote: "Upon graduating, he was plucked up by oil conglomerate Exxon, and tasked with using seismic data to pinpoint drill locations. … you emit sounds on the surface of the Earth (or in the ocean), listen to reverberations that come up … he could utilize some of the very same processing methods he'd used in the oil industry"
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "Hildebrand's method for detecting pitch involved autocorrelation"
+  - text: »Believe« war die erste Aufnahme, die Auto-Tune hörbar als Effekt nutzt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "was the first commercial recording to use AutoTune as a stylistic effect"
+  - text: Die Produzenten stellten es so extrem ein, dass Chers Stimme sofort von Ton zu Ton springt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "the \"Believe\" producers used extreme settings to create unnaturally rapid corrections"
+  - text: Der Effekt wurde als »Cher-Effekt« bekannt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "used AutoTune to deliberately distort vocals, a technique that became known as the \"Cher effect\""
+  - text: Um ihren Trick zu schützen, behaupteten die Produzenten zuerst, es sei ein Vocoder gewesen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "In an attempt to protect their method, the producers initially claimed the effect was achieved with a vocoder."
+  - text: Hör dir »Believe« auf YouTube an und achte darauf, wo Chers Stimme von Ton zu Ton springt, statt zu gleiten
+    none: eine Einladung zum Anhören, der Link ist das offizielle Video auf Chers Kanal
+
+loudness-war:
+  - text: Der Loudness War, 2008
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "a trend of increasing audio levels in recorded music"
+    note: 2008 ist das Jahr von »Death Magnetic«, des Beispiels im Kasten; der Trend selbst ist älter
+  - text: Lange wurde Musik immer lauter aufgenommen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "a trend of increasing audio levels in recorded music"
+  - text: Ist der höchste Wert erreicht, den ein Sample auf einer CD haben kann, geht es nur noch mit einem Compressor weiter, mit immer höherer Ratio
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "Once the maximum amplitude of a CD is reached … Engineers can apply an increasingly high ratio of compression to a recording"
+  - text: Metallicas Album »Death Magnetic« ist auf der CD so laut, dass die Spitzen über den höchsten Wert hinausgehen und abgeschnitten werden, was verzerrt klingt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "The CD version of the album has a high average loudness that pushes peaks beyond the point of digital clipping"
+  - text: Dieselben Lieder im Spiel »Guitar Hero« haben viel mehr Abstand zwischen leise und laut und sind weniger abgeschnitten
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "The Guitar Hero version of the album songs exhibit much higher dynamic range and less clipping"
+  - text: Heute machen die meisten großen Streamingdienste jedes Lied von sich aus gleich laut, Spotify und YouTube auf −14 LUFS, ein Maß dafür, wie laut Menschen einen Klang hören
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "most major streaming services began normalizing audio by default, which can be turned off if not wanted. … Spotify −14 LUFS … YouTube −14 LUFS"
+  - text: aus »Death Magnetic« auf YouTube an und achte darauf, wie die lauten Stellen klingen
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Day_That_Never_Comes
+        quote: "the lead single from their ninth studio album, Death Magnetic"
+    note: eine Einladung zum Anhören; der Link ist das offizielle Video auf Metallicas Kanal
+
+vocoder:
+  - text: Der Vocoder, 1937
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "The vocoder was invented in 1937 by Homer Dudley at Bell Labs as a means of synthesizing human speech."
+  - text: Homer Dudley erfand ihn bei den Bell Labs, um Sprache mit weniger Bandbreite durch Telefonleitungen zu schicken
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "The vocoder was invented in 1937 by Homer Dudley at Bell Labs … used as a voice codec for telecommunications … to conserve bandwidth in transmission"
+  - text: Statt der Welle gehen nur die Stärken der Bänder durch die Leitung, und am anderen Ende macht ein Vocoder daraus wieder Sprache
+    none: wie ein Vocoder als Codec arbeitet, das Verfahren des Abschnitts
+  - text: Im Zweiten Weltkrieg verschlüsselte das System SIGSALY damit Telefongespräche
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "SIGSALY was used for encrypted voice communications during World War II."
+  - text: 1939 zeigten die Bell Labs auf der Weltausstellung in New York den Voder, der Sprache aus zehn Bändern erzeugte, gespielt mit Tasten
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "was introduced to the public at the AT&T building at the 1939–1940 New York World's Fair … 10 bands of resonator filters"
+      - url: https://en.wikipedia.org/wiki/Voder
+        quote: "The Voder … was operated by a keyboard"
+  - text: Kraftwerk nahmen in den Siebzigern für ihre Alben »Ralf & Florian« und »Autobahn« einen eigens gebauten Vocoder, und Florian Schneider sang auf der Bühne durch ihn
+    sources:
+      - url: https://en.wikipedia.org/wiki/Kraftwerk
+        quote: "Kraftwerk used a custom-built vocoder on its albums Ralf & Florian and Autobahn … Schneider processing his voice with a vocoder live"
+  - text: vom Electric Light Orchestra auf YouTube an, 1977
+    sources:
+      - url: https://en.wikipedia.org/wiki/Mr._Blue_Sky
+        quote: "The song features a heavily vocoded voice singing the phrase \"Mr. Blue Sky\""
+    note: das Album »Out of the Blue« erschien 1977; der Link ist das offizielle Video auf ELOVEVO, in Deutschland abspielbar (geprüft)
+  - text: Wo singt eine Stimme durch den Vocoder, und was singt sie
+    none: eine Frage zum Anhören
+  - text: Imogen Heap sang »Hide and Seek« 2004 durch die Einstellung »Vocoder« eines Harmonizers, als ihr Rechner keinen Strom mehr hatte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Hide_and_Seek_(Imogen_Heap_song)
+        quote: "\"Hide and Seek\" was recorded during a late-night studio session, where Heap decided to record her voice using the \"vocoder\" setting on a DigiTech Vocalist Workstation harmonizer after her computer lost power."
+    note: aufgenommen 2004 nach dem Kasten der Wikipedia (»Recorded 2004«), erschienen am 19. Mai 2005
+  - text: Welche Töne ihre Stimme singt, bestimmte ein Keyboard
+    sources:
+      - url: https://en.wikipedia.org/wiki/Hide_and_Seek_(Imogen_Heap_song)
+        quote: "Heap uses a keyboard-controlled digital harmonizer (similar to a vocoder) on the song to generate distorted harmonies of her voice"
+  - text: Der Harmonizer setzt die Stimme auf jeden Ton, den sie dort spielte, so dass sie mehrstimmig mit sich selbst singt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Hide_and_Seek_(Imogen_Heap_song)
+        quote: "Heap uses a keyboard-controlled digital harmonizer (similar to a vocoder) on the song to generate distorted harmonies of her voice, lending the song its altered a cappella sound."
+  - text: auf YouTube an
+    none: der Link
+    note: das offizielle Video auf ImogenHeapVEVO (oEmbed); ob es in Deutschland abspielbar ist, war am 11. November 2026 von hier nicht zu prüfen (YouTube antwortete mit einem Captcha)
+  - text: Wo wechseln die Töne, während sie ein Wort singt
+    none: eine Frage zum Anhören
+
+sped-up:
+  - text: Nightcore, »sped up« und »slowed«, 2001
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "The term \"nightcore\" was first used in 2001 as the name for a school project"
+  - text: »Nightcore« war der Name eines Schulprojekts
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "The term \"nightcore\" was first used in 2001 as the name for a school project"
+  - text: Lieder, etwa 35 % schneller abgespielt, und damit höher
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "speeds up its source material by approximately 35%, which also raises the pitch"
+  - text: In den frühen 2020er-Jahren wurde das durch TikTok wieder beliebt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Nightcore
+        quote: "Nightcore saw a general resurgence in popularity in the early 2020s due to TikTok"
+  - text: Bei FIFTY FIFTYs »Cupid« wurde 2023 zuerst die schnellere Fassung eines Fans auf TikTok bekannt, dann brachte die Plattenfirma eine eigene heraus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Cupid_(Fifty_Fifty_song)
+        quote: "a user-generated sped-up version became popular on TikTok due to a dance challenge started by the group … an official sped-up rendition of \"Twin\" version was released on various streaming platforms"
+  - text: 'Den umgekehrten Weg geht »slowed and reverb«: ein Lied langsamer abgespielt, also tiefer, und mit Hall dazu, beliebt auf YouTube und TikTok'
+    sources:
+      - url: https://en.wikipedia.org/wiki/Slowed_and_reverb
+        quote: "slowing down and adding reverb to a previously existing song … The style became especially popular on YouTube. … Remixes using the technique also became popular on the video-sharing service TikTok."
+  - text: Hör dir »Cupid« in drei Fassungen an
+    none: eine Einladung zum Anhören; die Links sind die offiziellen Aufnahmen auf »FIFTY FIFTY - Topic«
+  - text: Achte auf die Stimmen
+    none: eine Frage zum Anhören
+
+songify:
+  - text: Auto-Tune the News, 2009
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Gregory_Brothers
+        quote: "National television networks featured the Gregory Brothers' early political satires in the spring of 2009"
+  - text: Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Gregory_Brothers
+        quote: "using the YouTube username 'schmoyoho' … recorded voices of politicians, news anchors, and political pundits were digitally manipulated to conform to a melody"
+  - text: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Gregory_Brothers
+        quote: "recorded voices of politicians, news anchors, and political pundits were digitally manipulated to conform to a melody"
+  - text: Ab 2011 hieß die Reihe »Songify the News«
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Gregory_Brothers
+        quote: "rebranded in 2011 as Songify the News"
+  - text: Hör dir zwei ihrer Lieder auf YouTube an
+    sources:
+      - url: https://en.wikipedia.org/wiki/Double_Rainbow_(viral_video)
+        quote: "the Gregory Brothers auto-tuned the video under the name \"Double Rainbow Song\""
+      - url: https://knowyourmeme.com/videos/10446-eharmony-video-bio
+        quote: "Songify This - CAN'T HUG EVERY CAT -- a song about loving cats"
+    note: beide Links sind Uploads auf dem Kanal »schmoyoho« (YouTube oEmbed geprüft)
+  - text: Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben
+    none: eine Frage zum Anhören
+
+around-the-world:
+  - text: Daft Punk, »Around the World«, 1997
+    sources:
+      - url: https://en.wikipedia.org/wiki/Around_the_World_(Daft_Punk_song)
+        quote: "The song was written and released on April 1997 by Virgin as the second single from their debut studio album, Homework (1997)."
+  - text: Das Lied lebt von einer gleichmäßigen Basslinie und einer Roboterstimme, die immer wieder »Around the world« singt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Around_the_World_(Daft_Punk_song)
+        quote: "The key hook is a steady bassline and a robotic voice singing"
+  - text: Im Video von Michel Gondry tanzen fünf Gruppen auf einer Bühne, die eine Schallplatte darstellt, und jede Gruppe ist ein Instrument
+    sources:
+      - url: https://en.wikipedia.org/wiki/Around_the_World_(Daft_Punk_song)
+        quote: "Michel Gondry's music video for the song features five groups of characters on a platform representing a vinyl record."
+  - text: die Roboter die Stimme, die Sportler die Bassgitarre, die auf und ab steigt, die Discotänzerinnen das hohe Keyboard, die Skelette die Gitarre und die Mumien den Drumcomputer
+    sources:
+      - url: https://en.wikipedia.org/wiki/Around_the_World_(Daft_Punk_song)
+        quote: "According to Gondry's notes, the robots represent the vocals. … the athletes symbolizes the ascending/descending bass guitar. … The femininity of the disco girls represents the high-pitched keyboard. … The skeletons dance to the guitar, and the mummies represent the drum machine."
+  - text: So sieht man, was ein EQ trennt
+    none: der Bezug zum Abschnitt
+  - text: Schau dir das Video auf YouTube an und folge einer Gruppe
+    none: eine Einladung zum Ansehen; der Link ist das offizielle Video auf dem Kanal von Daft Punk
+
+drop:
+  - text: Martin Garrix, »Animals«, 2013
+    sources:
+      - url: https://en.wikipedia.org/wiki/Animals_(Martin_Garrix_song)
+        quote: "released as a digital download on 17 June 2013 on iTunes"
+  - text: Der Breakdown ist zuerst gefiltert, damit die Energie sinkt; im Build-up steigert sich alles bis zu einem letzten Takt fast ohne Musik, dann setzt der Drop mit einer gewaltigen Kick-Drum ein
+    sources:
+      - url: https://www.musicradar.com/tuition/tech/anatomy-of-a-hit-martin-garrix-animals-636619
+        quote: "it's initially filtered to lower the energy level … leading into a final one-bar gap with a practically naked spoken vocal sample … a monstrous 4/4 kick"
+    note: die Worte stammen aus dem Auszug der Suchmaschine; der Artikel selbst ließ sich nicht abrufen
+  - text: Am Ende nimmt Garrix den Bass noch einmal heraus, als Gegensatz
+    sources:
+      - url: https://www.musicradar.com/tuition/tech/anatomy-of-a-hit-martin-garrix-animals-636619
+        quote: "Garrix again filters the bass from the mix to strip away weight and provide contrast"
+    note: aus dem Auszug der Suchmaschine
+  - text: Mit »Animals« wurde er der jüngste Produzent, dessen Lied auf Platz eins des Musikladens Beatport kam
+    sources:
+      - url: https://en.wikipedia.org/wiki/Animals_(Martin_Garrix_song)
+        quote: "the youngest producer to ever have a song reach number one on the electronic music store Beatport"
+  - text: Wann wird die Musik dünner, und wie wirkt der Drop danach
+    none: eine Frage zum Anhören; der Link ist das offizielle Video auf dem Kanal STMPD RCRDS

@@ -343,7 +343,7 @@ function render_group(group, admin) {
     const add = $(`<div class='group-add'>
         <label class='form-label small' for='ti_find_${field}'>Hinzufügen: schon Eingeladene suchen (Name oder Adresse), oder neue Adressen unten eintragen, eine pro Zeile, mit oder ohne Namen (»Lena Muster &lt;lena@example.org&gt;«, »lena@example.org« oder aus einer Tabelle kopiert)</label>
         <input class='form-control form-control-sm mb-1' id='ti_find_${field}' placeholder='Name oder Adresse suchen …' aria-label='Eingeladene suchen'>
-        <textarea class='form-control mb-2' rows='2' spellcheck='false' id='ta_${field}' aria-label='Adressen, eine pro Zeile'></textarea>
+        <textarea class='form-control mb-2' rows='3' spellcheck='false' id='ta_${field}' aria-label='Adressen, eine pro Zeile' placeholder='Neue Lernende, eine Person pro Zeile, zum Beispiel:&#10;Lena Muster &lt;lena.muster@example.org&gt;&#10;jonas.beispiel@example.org'></textarea>
     </div>`);
     // A suggestion goes into the box as a line; »Hinzufügen« adds them all.
     attach_suggestions(add.find('input'), (q, show) => suggest_people(group, 'member', q, show), function (person) {

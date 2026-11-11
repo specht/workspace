@@ -384,6 +384,48 @@ def duration(source):
         return None
 
 
+# Whether YouTube still lets this server download, for »Betrieb« on /admin
+# (include/server_health.rb asks once a day): the first five seconds
+# of »Me at the zoo«, the first video on YouTube (2005, 19 s), which will
+# not go away; with the cookies, as music is fetched, and like fetch once
+# more with the newest yt-dlp after a failure. Not cached, so it is a real
+# download each time. The error is yt-dlp's last line, which names the
+# reason (»Sign in to confirm you're not a bot« means the cookies).
+CHECK_VIDEO = 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+
+
+def youtube_check():
+    tmp = f'/tmp/youtube-check-{os.getpid()}-{threading.get_ident()}'
+    started = time.monotonic()
+
+    def attempt():
+        return subprocess.run([sys.executable, '-m', 'yt_dlp', '--no-playlist', '--no-warnings', '--no-progress',
+                               '-f', 'bestaudio', '--download-sections', '*0-5', *cookies_args(), '-o', tmp, CHECK_VIDEO],
+                              capture_output=True, text=True, timeout=180, stdin=subprocess.DEVNULL, env=yt_dlp_env())
+
+    def written():
+        return any(os.path.getsize(p) > 0 for p in glob.glob(glob.escape(tmp) + '*') if not p.endswith('.part'))
+
+    error = ''
+    try:
+        result = attempt()
+        if (result.returncode != 0 or not written()) and update_yt_dlp('YouTube check failed'):
+            result = attempt()
+        ok = result.returncode == 0 and written()
+        if not ok:
+            lines = [line.strip() for line in (result.stderr or '').splitlines() if line.strip()]
+            errors = [line for line in lines if line.startswith('ERROR')]
+            error = (errors or lines or [f'yt-dlp endete mit {result.returncode}, ohne Datei'])[-1]
+    except subprocess.TimeoutExpired:
+        ok, error = False, 'yt-dlp war nach 180 s nicht fertig'
+    finally:
+        for name in glob.glob(glob.escape(tmp) + '*'):
+            os.remove(name)
+    log(f'YouTube check: {"ok" if ok else "failed"} in {time.monotonic() - started:.1f} s{": " + error if error else ""}')
+    return {'ok': ok, 'seconds': round(time.monotonic() - started, 1), 'yt_dlp': yt_dlp_version(),
+            'cookies': bool(cookies_args()), 'error': error[:300]}
+
+
 def fetch_youtube(source, raw):
     """the video's audio as YouTube sends it, kept beside the pieces cut
     from it, so another start or stop needs no second download; for a
@@ -648,6 +690,10 @@ class Service:
         with open(path, encoding='utf-8') as f:
             return web.json_response({'text': f.read()})
 
+    async def youtube_check(self, request):
+        result = await asyncio.get_running_loop().run_in_executor(self.music_pool, youtube_check)
+        return web.json_response(result)
+
     async def health(self, request):
         return web.json_response({'ok': True, 'workers': WORKERS, 'waiting': self.waiting})
 
@@ -657,7 +703,8 @@ def main():
     app = web.Application()
     app.on_startup.append(service.warm_up)
     app.add_routes([web.get('/speech', service.speech), web.get('/music', service.music),
-                    web.get('/health', service.health), web.post('/prepared', service.prepared),
+                    web.get('/health', service.health), web.get('/youtube-check', service.youtube_check),
+                    web.post('/prepared', service.prepared),
                     web.post('/transcribe', service.transcribe)])
     log(f'speech service: {WORKERS} workers, voice {os.path.basename(VOICE)}')
     web.run_app(app, port=8000, print=None, access_log=None)

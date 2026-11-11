@@ -18,11 +18,17 @@
 // picture below it, the one in view filled. Galleries that already suit a
 // phone stay as they are: tiles, a few small drawings (centered), a single
 // picture to read, four columns (a grid of two there).
+//
+// A gallery with class 'carousel' is such a row at every width: as many
+// pictures as fit (three on a desktop, two on a tablet, one on a phone),
+// aligned left, ‹ and › beside them, no dots; on a desktop the row is
+// dragged with the mouse; it snaps to a picture and ends where the last one
+// is whole, and a drag does not open the picture large.
 document.addEventListener('DOMContentLoaded', () => {
-    const KEEP = '.columns-4, .tiles, .centered, .single, .er-pair';
+    const KEEP = '.columns-4, .tiles, .centered, .single, .er-pair, .side-by-side';
     for (const gallery of document.querySelectorAll('.gallery')) {
         const figures = [...gallery.children].filter((child) => child.tagName === 'FIGURE');
-        if (gallery.matches(KEEP) || figures.length < 2) continue;
+        if ((gallery.matches(KEEP) && !gallery.matches('.carousel')) || figures.length < 2) continue;
         gallery.classList.add('swipe');
         const dots = document.createElement('div');
         dots.className = 'gallery-dots';
@@ -37,6 +43,65 @@ document.addEventListener('DOMContentLoaded', () => {
         gallery.addEventListener('scroll', update, { passive: true });
         window.addEventListener('resize', update);
         update();
+        if (gallery.matches('.carousel')) carousel(gallery, figures, dots);
+    }
+
+    function carousel(gallery, figures, dots) {
+        const index = () => {
+            const step = figures[1].offsetLeft - figures[0].offsetLeft;
+            return step > 0 ? Math.round(gallery.scrollLeft / step) : 0;
+        };
+        const go = (i) => {
+            const target = figures[Math.max(0, Math.min(figures.length - 1, i))];
+            gallery.scrollTo({ left: target.offsetLeft - figures[0].offsetLeft, behavior: 'smooth' });
+        };
+        dots.remove();
+        // ‹ and › beside the row
+        const wrap = document.createElement('div');
+        wrap.className = 'gallery-carousel';
+        gallery.before(wrap);
+        wrap.append(gallery);
+        for (const [cls, label, icon, delta] of [['prev', 'Voriges Bild', 'bi-chevron-left', -1], ['next', 'Nächstes Bild', 'bi-chevron-right', 1]]) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = `gallery-carousel-step gallery-carousel-${cls}`;
+            button.setAttribute('aria-label', label);
+            button.innerHTML = `<i class='bi ${icon}' aria-hidden='true'></i>`;
+            button.addEventListener('click', () => go(index() + delta));
+            wrap.append(button);
+        }
+        const steps = () => {
+            const i = index();
+            wrap.querySelector('.gallery-carousel-prev').disabled = gallery.scrollLeft <= 2;
+            wrap.querySelector('.gallery-carousel-next').disabled = gallery.scrollLeft >= gallery.scrollWidth - gallery.clientWidth - 2;
+        };
+        gallery.addEventListener('scroll', steps, { passive: true });
+        steps();
+        // dragging with the mouse; a drag is no click on a picture
+        let drag = null;
+        gallery.addEventListener('pointerdown', (event) => {
+            if (event.pointerType !== 'mouse' || event.button !== 0) return;
+            drag = { x: event.clientX, left: gallery.scrollLeft, moved: false };
+            gallery.classList.add('dragging');
+        });
+        window.addEventListener('pointermove', (event) => {
+            if (!drag) return;
+            const dx = event.clientX - drag.x;
+            if (Math.abs(dx) > 4) drag.moved = true;
+            if (drag.moved) gallery.scrollLeft = drag.left - dx;
+        });
+        window.addEventListener('pointerup', () => {
+            if (!drag) return;
+            const moved = drag.moved;
+            drag = null;
+            gallery.classList.remove('dragging');
+            if (moved) {
+                // settle on the picture nearest the middle
+                go(index());
+                gallery.addEventListener('click', (event) => { event.stopPropagation(); event.preventDefault(); }, { capture: true, once: true });
+            }
+        });
+        gallery.addEventListener('dragstart', (event) => event.preventDefault());
     }
 });
 

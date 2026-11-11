@@ -10,6 +10,11 @@ class Main < Sinatra::Base
     # successful run); BACKUP_MAX_AGE_HOURS in credentials.rb, default 26.
     BACKUP_STAMP_FILE = '/internal/backup-done'
     HEALTH_ALERT_FILE = '/internal/health-alerts.json'
+    # the last test download from YouTube (youtube_check!), once a day: often
+    # enough to find dead cookies before the next lesson, rarely enough not
+    # to bother YouTube
+    YOUTUBE_CHECK_FILE = '/internal/youtube-check.json'
+    YOUTUBE_CHECK_EVERY = 24 * 3600
     PROBE_SECONDS = 3
 
     @@process_started_at = Time.now
@@ -87,6 +92,27 @@ class Main < Sinatra::Base
         nil
     end
 
+    # Asks the speech service to download a few seconds from YouTube (its
+    # /youtube-check, src/phone/speech/server.py), at most every
+    # YOUTUBE_CHECK_EVERY, and keeps the answer for »Betrieb«.
+    def self.youtube_check!
+        last = (JSON.parse(File.read(YOUTUBE_CHECK_FILE)) rescue nil)
+        return if last && Time.now.to_i - last['at'].to_i < YOUTUBE_CHECK_EVERY - 600
+
+        uri = URI("#{PHONE_SPEECH_URL}/youtube-check")
+        result = begin
+            response = Net::HTTP.start(uri.host, uri.port, :open_timeout => 5, :read_timeout => 420) { |http| http.get(uri.path) }
+            raise "HTTP #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+
+            JSON.parse(response.body)
+        rescue StandardError => e
+            { 'ok' => false, 'error' => "Der Sprachdienst antwortet nicht (#{e.message[0, 80]})" }
+        end
+        result['at'] = Time.now.to_i
+        AtomicFile.write(YOUTUBE_CHECK_FILE, JSON.generate(result))
+        STDERR.puts "YouTube check: #{result['ok'] ? 'ok' : "failed: #{result['error']}"}"
+    end
+
     def health_checks
         now = Time.now
         queued, running = Main.server_start_queue_state
@@ -114,6 +140,7 @@ class Main < Sinatra::Base
             *probes.map { |key, (label, _)| Health.probe(key, label, results[key]) },
             Health.disk(Main.disk_status),
             Health.jobs(@@hourly_ran_at, workspace_disk_usage[:measured_at], :now => now, :since => @@process_started_at),
+            Health.youtube((JSON.parse(File.read(YOUTUBE_CHECK_FILE)) rescue nil), :now => now, :every => YOUTUBE_CHECK_EVERY),
         ]
     end
 

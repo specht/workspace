@@ -83,13 +83,12 @@ html[data-bs-theme="dark"] {
         color: #f5a35c;
     }
     .autotoc-up {
-        color: #c9c8c3;
-        background: #2a2a28;
-        border-color: rgba(255, 255, 255, 0.1);
+        color: #9a9994;
+        background: none;
     }
     .autotoc-up:hover {
         color: #ffffff;
-        background: #383836;
+        background: none;
     }
     .autotoc-up:focus-visible {
         outline-color: #7fbfe3;

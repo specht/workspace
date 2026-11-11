@@ -1,0 +1,427 @@
+# Audio and video compression: a plan
+
+Two activities, one for sound and one for moving pictures, each a ride from
+uncompressed data through the ideas of compression to the codecs of today,
+with programming tasks, listening and watching at every step, and the
+history beside it. Not a reimplementation of MP3 or H.264: the students build
+small coders that work on the same principles, and read real files where a
+real format is the point. Written 10 November 2026 for the maintainer to
+check before anything is built; nothing of it exists yet.
+
+## What the Workspace needs
+
+Checked in the current image (`hs_code_server`, Ubuntu 24.04):
+
+- **Listening and watching work already.** code-server brings VS Code's
+  `media-preview`: a WAV, MP3, MP4 or WebM file opens in the editor and plays
+  in the student's browser. Every step can end with »open the file and
+  listen«.
+- **Missing: numpy, ffmpeg, Pillow.** Without numpy a naive Fourier
+  transform of a few seconds of sound takes minutes in Python or Ruby;
+  without ffmpeg there is no way to read or write a real video, to make MP3,
+  AAC and Opus files of a clip, or to show a real encoder's motion vectors.
+- **numpy needs no compiler** (it ships binary wheels), and »Fraktale
+  Bildkompression« already has students run `pip install numpy pillow`
+  themselves. It belongs in the image anyway: nothing to download in class,
+  the same version for every student and for the task checks (which run in
+  the Workspace), and it works without network. Fraktale Bildkompression
+  would then lose its install step.
+
+Proposed for the image:
+
+- `ffmpeg` (with `ffprobe`) from Ubuntu's packages.
+- `numpy` and `Pillow` for Python, pinned like `pytest`.
+- A note in CHANGELOG (new Workspace image) and the size it adds, measured.
+
+## Activity 1: sound (`audio-compression`)
+
+Title proposals: »Audio komprimieren«, after »Komprimieren mit Huffman« and
+»Komprimieren mit LZW«; or »Von der CD bis Opus«. Oberstufe, about five
+double lessons, Python. Builds on »Komprimieren mit Huffman«; the
+section on sampling in »Ein Spiel am Telefon« is the short version for Sek I
+and links here.
+
+Each part: a little history where it belongs, an idea, a widget to hear or
+see it, and a small function to write first (»Jetzt bist du dran«), then
+listening to what it does.
+
+1. **Ton als Zahlen (PCM).** Sampling and bit depth, the sizes (a minute of
+   CD audio is about 10 MB). Write a WAV file by hand: the 44-byte header,
+   then 16-bit samples; a sine tone, two tones mixed, what happens when the
+   sum leaves the range (clipping). Widget: one clip at several sample rates
+   and bit depths, 16 down to 4 bits (the noise of quantisation).
+   History: PCM (Alec Reeves, 1938), the CD (1982, 44,1 kHz, 16 bit).
+2. **Kleine Tricks ohne Ohr.** Before any model of hearing: μ-law and A-law
+   (G.711, 1972), 8 logarithmic bits instead of 16 linear ones, the
+   telephone's 64 kbit/s; storing differences and predicting the next
+   sample (ADPCM). Lossless with prediction and Rice codes, the idea of FLAC
+   (link to Huffman: the residuals are small numbers). Tasks: μ-law there
+   and back, compare the error with 8 linear bits; a predictor and the size
+   of its residuals.
+3. **Frequenzen.** What a sound is made of: the DFT on a few samples by hand,
+   then an FFT of one's own (the reason it exists: a second of sound in
+   milliseconds instead of minutes), compared with numpy's. Widget: a live
+   spectrum and spectrogram of the clips. Task linked to the Telefonspiel:
+   read a phone number from a WAV of DTMF tones.
+4. **Was das Ohr nicht hört.** The threshold in quiet (a formula of Terhardt
+   for it), critical bands (Bark), masking at the same time and shortly
+   before and after a loud sound. Widgets: find one's own threshold at a few
+   frequencies (with a clear word on volume), and a masking experiment: a
+   loud tone and a quieter one beside it, the quieter one disappears. Task:
+   remove what lies below the threshold, listen, count what is left.
+5. **Blöcke und Fenster.** Frames, windows and overlap; the MDCT, whose
+   overlapping blocks cancel each other's errors (TDAC). Task: an MDCT and
+   its inverse with a sine window, and the check that nothing is lost. Pre-echo:
+   castanets in long blocks, the noise smeared before the click; short
+   blocks against it (block switching).
+6. **Quantisieren nach Gehör.** Fewer bits where the ear masks the error:
+   bands, scale factors, the bit allocation that keeps the noise under the
+   masking threshold. Task: quantise per band, listen to the result and to
+   the difference, the sound of what was thrown away. Then the bits: an
+   entropy estimate and Huffman codes of the quantised values, the bit rate
+   of one's own coder.
+7. **Echte Dateien.** An MP3 frame header byte by byte (sync word, bit rate,
+   sample rate, padding, frame length), the number of frames and the
+   duration of a real file, the ID3 tag. ffmpeg makes the same clip as MP3,
+   AAC and Opus at several bit rates: sizes beside each other, and a
+   listening test in the browser (ABX: A, B and an unknown X; who can tell
+   at 128 kbit/s?).
+8. **Heute.** MP3 (Fraunhofer IIS and Karlheinz Brandenburg, MPEG-1 Layer III
+   1992/93, the name ».mp3« in July 1995, the patents ended in 2017, tuned
+   on Suzanne Vega's »Tom's Diner«); AAC (1997); Vorbis; Opus (2012,
+   RFC 6716: SILK for speech and CELT for music in one codec, the codec of
+   WebRTC); LC3 for Bluetooth LE Audio; Opus 1.5 (March 2024) with machine
+   learning for lost packets and for speech at 6 kbit/s; neural codecs
+   (SoundStream 2021, EnCodec 2022) that send a few kilobits and let a
+   network make the sound again. What that means: a codec that invents
+   details.
+
+Person boxes: Karlheinz Brandenburg (photo with a free licence to find);
+perhaps Alec Reeves and Jean-Marc Valin (Opus).
+
+Material, all ours or freely licensed: Thorsten (CC0) for speech, music and
+castanets synthesised as for the cave (`telefonspiel/sounds/make.py`), DTMF
+tones, recordings under CC0 where a real instrument matters (Freesound),
+each with its source in a README beside it.
+
+## Activity 2: moving pictures (`video-compression`)
+
+Title proposals: »Video komprimieren«; or »Von H.261 bis AV2«. Oberstufe,
+about nine double lessons, Python. The JPEG decoder (C, four double
+lessons) is too heavy as a requirement: the parts about blocks and the DCT
+come again in short, with the existing iDCT widget (`idct_stepper.js`), and
+link to JPEG for those who did it.
+
+1. **Bilder pro Sekunde.** What a second of video is uncompressed (1080p at
+   25 frames, 24 bit: about 1,2 Gbit/s), against what a stream gets (a few
+   Mbit/s). Read frames of a real video into an array (ffmpeg through a
+   pipe), change them, write a video, watch it in VS Code. History: film at
+   24 frames, television's interlacing.
+2. **Farbe sparen.** YCbCr and chroma subsampling (4:2:0): a quarter of the
+   colour, and the eye hardly sees it. Task: convert and subsample a frame,
+   look at the three planes.
+3. **Innerhalb eines Bildes.** Blocks, DCT and quantisation in short (iDCT
+   widget, a quality slider), then what video adds: predicting a block from
+   its neighbours (intra prediction, the directions of H.264). Task: predict
+   blocks from the row above and the column to the left, measure the
+   residual.
+4. **Von Bild zu Bild.** Most of a frame is the frame before: difference
+   images, small when the camera stands still, large when it pans. Task:
+   difference images and their size after compression.
+5. **Bewegung schätzen.** Block matching: for each block the shift that fits
+   best (sum of absolute differences), full search against a faster search.
+   Widget: drag a block over the next frame and watch the error. Task: motion
+   vectors of a clip, drawn as arrows; then ffmpeg's `codecview` shows the
+   vectors a real H.264 encoder found in the same clip.
+6. **I-, P- und B-Frames.** Groups of pictures, frames that predict from
+   later ones, why a player can only jump to a key frame. Task: the frame
+   types of a real file with ffprobe. Datamoshing: a clip whose key frame is
+   removed, the movement of one scene painted over the next.
+   The maintainer's idea (10 November 2026): show how many bytes each I-,
+   P- and B-frame of a sequence takes, from `ffprobe -show_frames`
+   (`pict_type`, `pkt_size`), as a bar chart the students draw; the I-frames
+   stand out. Done, with a widget that decodes five frames step by step
+   (11 November 2026).
+7. **Artefakte und Filter.** Blocks, banding, the deblocking filter, film
+   grain that AV1 removes before coding and adds again in the player.
+8. **Bitrate steuern.** Constant quality against constant rate, two passes,
+   the ladder of an adaptive stream (HLS, DASH). Task: the same clip at
+   several qualities with ffmpeg, size against PSNR and SSIM, as a curve.
+9. **Geschichte und heute.** H.120 (1984), H.261 (1988, the start of
+   macroblocks, DCT and motion compensation together), MPEG-1 (Video CD),
+   MPEG-2 (DVD, digital television), H.264/AVC (2003), HEVC (2013), VP9,
+   AV1 (2018, royalty-free, AOMedia), VVC (2020), AV2 (specification 1.0 on
+   28 May 2026, according to AOMedia about 30 % smaller than AV1; hardware
+   not before about 2028). Patents and licences as the reason for the
+   royalty-free codecs; neural video codecs as research.
+
+Material: our own clips rendered for the purpose (a still camera, a pan, a
+fast movement, fine texture, noise), and the Blender open movies (Big Buck
+Bunny, Sintel, Tears of Steel: CC BY, with a credit line). Kept small: a few
+seconds at 720p each.
+
+## Order of work
+
+1. The image: ffmpeg, numpy, Pillow; build, measure, test in a
+   Workspace; CHANGELOG. Done on 10 November 2026: ffmpeg 6.1.1 with lame,
+   Opus, x264 and libaom-av1, numpy 2.5.4, Pillow 13.0.0, 248 MB; tested as
+   the student user. Once the image is in production, »Fraktale
+   Bildkompression« can drop its `pip install numpy pillow`.
+2. Sound: the material and its generator, the widgets, the page part by
+   part, tasks with checks and `task-examples.yaml`, teacher note,
+   `curriculum:` and `topics:` (docs/lehrplan.md, docs/bundeslaender.md),
+   `sections.yaml`, the /lehrplan graph, the review of docs/checkliste.md.
+   Begun on 10 November 2026, dev-only (`.audio-compression` after `jpeg`
+   in `sections.yaml`), working title »Audio komprimieren«. Part 1 is
+   written: the clips (`sounds/make.py`: `stimme.wav`, Thorsten's pangram,
+   and `musik.wav`, a synthesised band, in `src/static/audio/`), the
+   sampling widget (`sampling_widget.js`: rate, bits, μ-law with
+   `data-mulaw`, a quiet clip with `data-level`), a WAV file of 60 bytes in
+   the style of the GIF and JPEG pages (hexdump, field diagrams, byte
+   tables), `wav_header` and `tone` as »Jetzt bist du dran«, the chord that
+   clips; the teaser is the spectrogram of the music, computed by `bilder/teaser.py`. Part 2 is written:
+   the quiet voice in the widget with even steps and μ-law, a drawing of
+   the levels (`bilder/mulaw-stufen.py`), `unmulaw` and the signal-to-noise
+   ratio in dB, the line through the last two samples (`residual`, FLAC's
+   fixed predictor of order 2), zigzag and Rice codes (`rice`), one `k` per
+   block of 4.096, FLAC from ffmpeg for comparison (voice 33 %, music 60 %;
+   ours 46 % and 67 %). The recipes fetch the clips from
+   `http://workspace_nginx_1/audio/`, which a Workspace on the development
+   machine reaches. Part 3 is written: the spectrogram widget
+   (`spectrum_widget.js`: music, voice, the chord, a gliding tone; the
+   spectrum at the chosen moment), the DFT by hand on eight samples, `dft`
+   and `fft` of one's own against `np.fft.fft` (4.096 samples 0,6 s, 8.192
+   2,2 s; fft 0,05 s; numpy 5 ms; measured in the Workspace image), Cooley
+   and Tukey with Gauß, `strength` and the number in `waehlen.wav` (a Drama
+   Number of the Bundesnetzagentur, 030 23125386). The person box for
+   Fourier came when the page went public (11 November 2026): the engraving
+   by Geille after Boilly, »Fourier2 - restoration1.jpg« on Wikimedia
+   Commons, PD-art-100, cropped 1200 × 1500 from (230, 140).
+   Part 4 is written: cochlea and Bark, the
+   threshold-in-quiet widget and the masking widget (`hearing_widget.js`,
+   right after their predictions; the masking model waits for its switch
+   »Modell zeigen«, the threshold curve for the student's own note at
+   1.000 Hz, so neither gives the prediction away; nothing plays louder than -20 dBFS, a reference tone sets the
+   volume once), `threshold` after Terhardt (via Painter and Spanias 2000)
+   and `audible` with the 96 dB assumption (music keeps 53 % of the
+   frequencies, the voice 39 %; what goes is mostly bass under 60 Hz and
+   highs over 14 kHz), masking in time in text. Part 5 is written: why
+   blocks side by side crack, windows and overlap, `mdct` of one's own
+   (`imdct`, `window`, `encode`, `decode` on the page), a single block and
+   its mirror images as a prediction, a drawing of TDAC (`bilder/tdac.py`,
+   computed with the stage), the castanets (`kastagnetten.wav` from
+   `sounds/make.py`) rounded per block in long and short blocks, a drawing
+   of the pre-echo (`bilder/vorecho.py`), block switching in AAC (1.024 and
+   8 × 128) and MP3 (576 and 3 × 192). Part 6 is written: the MDCT as a
+   matrix (`tones` with `functools.cache`), 25 bands after Bark, `allowed`
+   of one's own (Schroeder's spreading, energies added, never under the
+   threshold in quiet), one step per band from the noise it may have
+   (`step ** 2 / 12`), the rest as a prediction, `entropy` of one's own and
+   the bit rate (music 76 kbit/s mono at `OFFSET` 15 against 706; 70 % of
+   the numbers are 0; the rest is 14 dB under the music, 61 % of its
+   energy under 200 Hz). Not yet listened to by a person: whether 15 dB is
+   transparent. Part 7 is written: `musik.mp3` from
+   ffmpeg in a hexdump (ID3 tag with its synchsafe size, the frame header
+   bit by bit), `frame_length` of one's own, all 309 frames walked and the
+   Info frame, the duration against ffprobe; MP3, AAC and Opus at three
+   rates each and their sizes (Opus takes the rate as a target: 50 kbit/s
+   for 32 here); the ABX widget (`abx_widget.js`, Munson and Gardner 1950)
+   with pieces made by `sounds/abx.py`: coded, decoded by ffmpeg, cut to the
+   same five seconds as lossless FLAC (4,4 MB for ten pieces), checked to
+   start at the same sample. The page was split into parts for a while
+   (`parts:`), then put back on one page at the maintainer's word: eight
+   chapters do not need it. Part 8
+   is written: MP3's history (Seitzer's jukebox over ISDN, Brandenburg's
+   thesis 1989, MPEG-1 1992/93, Tom's Diner, .mp3 in 1995, the patents to
+   2017), AAC, Vorbis, Opus (SILK and CELT, WebRTC), LC3, Opus at 6 kbit/s
+   as a try box, Opus 1.5, SoundStream and EnCodec, a reflection on codecs
+   that invent details; the picture is a timeline. The audio activity is
+   complete in its eight parts. Open: listening by a person (the clips, the
+   codec at OFFSET 15, the pre-echo), the titles. Brandenburg has a person
+   box since 11 November 2026 (»Karlheinz Brandenburg cropped.jpg«, CC BY
+   2.0, Christliches Medienmagazin pro). On 11 November 2026 the maintainer took both activities
+   out of development: the section is »Bilder, Ton und Kompression«, the
+   /lehrplan graph recomputed, Fourier's box placed, and the video page
+   says 6 Doppelstunden until parts 7 to 9 are written.
+3. Moving pictures the same way. Begun on 10 November 2026, dev-only
+   (`.video-compression` after `.audio-compression` in `sections.yaml`),
+   working title »Video komprimieren«, nine parts planned (`duration: 9
+   Doppelstunden`). The material: four clips of four seconds from »Spring«
+   (Blender Foundation, CC BY 4.0), made by `clips/make.py` from the film on
+   Wikimedia Commons, 960 × 400 at 24 frames, in `src/static/video/`
+   (`glance`, `pan`, `slope`, `tilt`); Muybridge's plate of 1878
+   (`muybridge.jpg`, public domain). The teaser is a frame of the slope with
+   the blocks a codec might choose, split by the spread of the brightness
+   (`bilder/teaser.py`). Part 1 is written: a second of Full HD in Mbit/s,
+   `read_frames` and `write_video` through a pipe to ffmpeg (`video.py`),
+   Muybridge's horse cut from the plate into a film (`horse.py`), `held` of
+   one's own (fewer frames, each shown longer; 24 frames as the compromise
+   of the sound film), `interlace` of one's own (fields, the prediction of
+   Combing, the larger file). The order is Muybridge first, then Python,
+   then Spring; the four clips play on the page in a gallery
+   (`video_in_view.js`: nothing loads before a clip is in view, stills from
+   `clips/make.py`). Part 2 is written: colour television as the origin,
+   `to_ycbcr` of one's own (JPEG's formulas), the three planes of
+   `portrait.png` (a close-up at 68,5 s, frame 72 of `glance.mp4`, made
+   from the film without H.264, so crisp and with nearly all its colour; it
+   replaced a frame of the slope, where the girl was small, also for part 3)
+   and the prediction of the red jacket (Cr 150, Cb 121 on average), a drawing of 4:4:4, 4:2:2 and 4:2:0 (`bilder/subsampling.py`),
+   the bytes of a frame in 4:2:0, `subsample` of one's own, colour made
+   coarser against brightness made coarser in a detail, and why a frame
+   from an MP4 has nothing left to subsample.
+   Part 3 is written: the iDCT stepper of the JPEG page with a picture to
+   pick blocks from (`data-picture`; the goal in Y beside it, the error in
+   place of the pixel values; it starts on the glowing rim at the back of
+   the girl's head, 56 of 64 coefficients after rounding to multiples of
+   8, at the maintainer's choice; Y, Cb and Cr to switch),
+   `blocks.py` with the DCT as a matrix for blocks of any size, `bits` with
+   one table per position, `quantize` and `restore` of one's own (step 8,
+   32, 64: 33 %, 11,5 %, 5,4 % of the coefficients not 0; 0,67 bits per
+   pixel at 32), the tiles at 64 as a prediction, a drawing of vertical,
+   horizontal and dc (`bilder/intra.py`), `predict` and `best_mode` of
+   one's own, the residual as a prediction and the bits: 8 × 8 without
+   prediction 0,67, 4 × 4 without 0,79, 4 × 4 with 0,60. Predicted from the
+   original neighbours, not the decoded ones, which the page says. A map of
+   the chosen modes was tried and left out: in calm areas the choice is
+   close to chance, and the map shows noise.
+   Part 4 is written: R. D. Kell 1929 (Wikipedia, »Video coding format«),
+   bytes that wrap (3 − 5 = 254) as a prediction, `differences` of one's
+   own, the four clips as numbers (0,46, 3,94, 5,57, 12,51 per value) and
+   difference pictures, what the difference costs against the frame alone
+   (glance 0,00 against 0,18, pan 0,33 against 0,32, slope 0,55 against
+   0,62, tilt 0,98 against 0,74 bits per pixel; pan as a prediction), drift
+   as a prediction and `encode` of one's own (the error of `encode_naive`
+   grows from 3,3 to 13,2 in a second, `encode` stays at 3,4). For part 5:
+   in 1959 NHK researchers (Taki, Hatori, Tanaka) proposed motion
+   compensation between frames (Wikipedia, »Motion compensation«).
+   Part 5 is written: NHK 1959, the block-matching widget
+   (`motion_widget.js`, block and square dragged, the map of all sums, the
+   reader's square against the search, frames 5 and 6 of the slope:
+   neighbours, as the maintainer asked; 0 and 12 had been chosen first for
+   larger shifts, which no codec predicts across), vectors as (dx, dy) at
+   the maintainer's word, `best_vector` of one's own (full search,
+   radius 4, blocks of 16; pan mostly (−2, 0), tilt (0, −1)), the direction
+   of the vectors as a prediction, the vectors of x264 in `tilt.mp4` from
+   ffmpeg's `codecview` (frame 13, a P-frame; drawn the other way round),
+   `compensate` of one's own and, at the maintainer's wish, the frame
+   before, the prediction, the rest and the decoded frame with their bytes
+   (alone 29.694, difference 26.294, with motion 6.127 of which vectors
+   239; our own search and estimate, not the bytes of the H.264 file,
+   which the page says).
+   Part 6 is written: drawings of the references (`bilder/gop.py`:
+   arrows from a frame to the frames it looks to, at the maintainer's word;
+   above the row to an earlier frame, below to a later one), of the order in
+   the file (after `decode-order`), of the B-pyramid, of a jump to frame 13
+   and of datamoshing; `frame_sizes` of one's own (ffprobe as JSON), the
+   bars of bytes per frame (glance: I 93.849, P 11.737, B 610 on average;
+   tilt: I 181.021, P 58.457, B 7.831), `decode_order` of one's own against
+   the order in the file (x264's B-pyramid: 0 4 2 1 3), the widget »Ein
+   Decoder bei der Arbeit« (`gop_stepper.js`, data from
+   `bilder/gop_steps.py` in `/video/gop-steps.json` and a sheet named by
+   its hash: 17 frames of the slope from frame 24, I B B B P B B B I … I,
+   encoded with PyAV in a throwaway container, ref=1 so that each vector
+   names its frame, open-gop, qp=23 because crf moved bytes between
+   frames; x264's vectors, our rebuilt pieces and residual). The
+   maintainer's design (11 November 2026): frames in the order shown, a
+   film strip of what the file stores (an I-frame as picture, P and B as
+   residual) with their bytes, all 17 from the start (frames sliding in
+   when decoded were tried and dropped), »Bild« buttons from finished
+   frame to finished frame, one slider for the frames and one for the steps of a frame (reference,
+   blocks sliding to their place, residual), arrows to the references
+   coming on with their step, all of it on one Full HD screen; no block
+   selection. The 17 together: uncompressed 9.792.000, as I-frames
+   1.434.644, as they are 323.428 bytes), jumping (`-g 24`, `-bf 0`, `-g 1` at crf 18: 1.287.764,
+   1.477.186, 4.685.365 against 1.037.368) and datamoshing (pan and tilt
+   without B-frames, every I-frame but the first dropped with
+   `noise=drop=key*gt(n,0)`).
+   Part 7 is written: blocks and banding at `-qp 42`, with and without
+   x264's deblocking filter (`no-deblock=1`; 63.460 against 60.309 bytes,
+   the filter is in the loop), `smooth_edges` of one's own (a small step
+   at a block edge becomes a ramp over eight pixels, a large one stays; a
+   drawing of the ramp, `bilder/deblock.py`), four details compared; film
+   grain with ffmpeg's `noise` (146.408 against 6.929.524 bytes, the seed
+   is fixed) and AV1's film grain synthesis with `libaom-av1`,
+   `-denoise-noise-level 60` (37.941 bytes smooth, 55.341 with grain;
+   5 to 15 s each in the Workspace image). A measure of blockiness was
+   tried and dropped: the ratio of jumps at block edges to jumps inside was
+   1,08 against 1,01, too weak to teach with.
+   Part 8 is written: `psnr` of one's own (checks for the squared error,
+   bytes as input, equal pictures), fixed quality against fixed rate at
+   glance and tilt (crf 28: 71.407 and 327.850 bytes at 40,8 and 34,1 dB;
+   400k: 135.496 and 170.631 at 41,4 and 30,4 dB), two passes, SSIM and
+   VMAF in text, ffmpeg's PSNR (y 42,33 against our 40,78: Y from 16 to
+   235), the curves of H.264, H.265 and SVT-AV1 at five crf each (AV1 a
+   third less at 38 dB, over half at 34 dB; about 30 s in the Workspace
+   image), and adaptive streaming: a drawing (`bilder/ladder.py`) and an
+   HLS ladder of three rungs with ffmpeg (`master.m3u8`, 2 s segments,
+   `-g 48 -sc_threshold 0`).
+   SVT-AV1 needs `-svtav1-params lp=1` in a Workspace: without it it starts
+   more threads than the pids limit of 256 allows (VS Code uses almost 80)
+   and stops with »insufficient resources«; found when the recipes ran.
+   Part 9 is written: H.120, H.261, MPEG-1 and 2, H.264, H.265 with dates
+   checked on Wikipedia (Video coding format, AV1), five codecs at 500
+   kbit/s with `history.py` (MPEG-1 29,36 dB at 477.184 bytes, AV1 37,55 dB
+   at 250.156; MPEG-1 and 2 overshoot, their encoders round at most with
+   step 31), patents, AOMedia (1 September 2015, seven founders), AV1
+   (2018, from VP9, VP10, Daala, Thor), VVC (2020), AV2, neural codecs, and
+   »Wie geht es weiter?«. Nasir Ahmed's box in part 3. The video activity is
+   complete in its nine parts.
+   The clips come from the YouTube copy of Spring on Commons; Blender Studio
+   keeps its masters for subscribers. The Spring dataset of the University
+   of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,
+   [spring-benchmark.org](https://spring-benchmark.org/download)) has
+   lossless Full HD frames rendered from the film's files, 24 frames a
+   second, and the true optical flow; two of its sequences are our shots
+   (0006 is `glance` from its frame 58, 0047 is `tilt` from its frame
+   32, the band of 2,4 : 1 from row 138). But the frames are the render
+   before compositing: no grading, no depth of field, no glow, so the clips
+   stay the film's. The flow may serve part 5 (motion vectors against the
+   truth). The left frames lie in the Docker volume `spring-dataset`
+   (13,4 GB, `train_frame_left.zip`).
+
+Each activity is several sessions of work; the widgets (spectrum and
+spectrogram, threshold and masking, quantisation with listening, ABX, block
+matching) are most of it.
+
+## Facts checked so far
+
+- MP3: MPEG-1 Layer III standardised 1992 to 1993 (ISO/IEC 11172-3); ».mp3«
+  chosen by Fraunhofer researchers in July 1995 (sources differ on the 12th
+  and the 14th); the licensing programme ended on 23 April 2017; Brandenburg
+  tested with »Tom's Diner«.
+  [mp3-history.com](https://www.mp3-history.com/en/timeline.html),
+  [Wikipedia](https://en.wikipedia.org/wiki/MP3)
+- Opus 1.5, 4 March 2024: Deep Redundancy (DRED), Deep PLC, LACE and NoLACE
+  for speech down to 6 kbit/s, all switched off by default.
+  [opus-codec.org](https://opus-codec.org/demo/opus-1.5/)
+- AV2: specification 1.0.0 on 28 May 2026, announced 9 June 2026, about
+  30 % more efficient than AV1 according to AOMedia.
+  [AOMedia](http://aomedia.org/press%20releases/Alliance-for-Open-Media-Releases-AV2-Codec/)
+
+- Muybridge: Palo Alto, June 1878, on Stanford's track, the mare Sallie
+  Gardner, twelve cameras released by wires; the plate says the photos are
+  »about the twenty-fifth part of a second« apart; the zoopraxiscope from
+  1880. [Wikipedia](https://en.wikipedia.org/wiki/The_Horse_in_Motion)
+- Spring (2019): CC BY 4.0, credit »© Blender Foundation |
+  cloud.blender.org/spring«; the file on Commons comes from the studio's
+  YouTube channel and was compressed once before.
+
+Every other date above is from memory and gets a source when its page is
+written.
+
+## Decided (10 November 2026)
+
+- **Python only**, like »Fraktale Bildkompression«: numpy is what signal
+  processing uses, one version of every task. The numo gems are not needed.
+- **The section** »Bilder und Kompression« becomes »Bilder, Ton und
+  Kompression«; both activities go after JPEG.
+- **The titles** are still open; the folders are `audio-compression` and
+  `video-compression` whatever the titles become.
+
+## Open decisions for the maintainer
+
+- **The titles** (proposals above).
+- **The hearing threshold widget** plays quiet and loud tones: a warning to
+  start quietly, and a maximum level in the code.
+- **A real MP3 decoder in C** (like JPEG) stays out; perhaps later for strong
+  courses.

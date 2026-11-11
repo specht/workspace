@@ -36,6 +36,8 @@ module AccountDeletion
         # submitted and published Telefonspiele (PhoneGames); their copies
         # under /internal/phone-games go in Main#delete_account
         'PhoneGame' => '(n:PhoneGame)-[:BY]->(u)',
+        # bookmarks in the table of contents (Bookmarks)
+        'Bookmark' => '(n:Bookmark)-[:BY]->(u)',
     }.freeze
 
     # Linked to a User, but not the person's own: the exam a student takes

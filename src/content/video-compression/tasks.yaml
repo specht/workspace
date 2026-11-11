@@ -1,0 +1,966 @@
+# Aufgaben zu »Video komprimieren«. Format: docs/aufgaben.md. Alles liegt in
+# /workspace/video; die Funktionen der Lernenden rechnen mit numpy, das im
+# Workspace-Image ist. Die Zahlen gehören zu den Programmen in stufen/.
+format: 1
+activity: video-compression
+tasks:
+  - id: full-hd
+    title: Eine Sekunde Full HD
+    prompt: |
+      Ein Video in Full HD hat Bilder mit 1.920 × 1.080 Pixeln, jedes Pixel
+      3 Bytes, und 25 Bilder in der Sekunde. Wie viele Megabit braucht eine
+      Sekunde, unkomprimiert? Ein Megabit sind 1.000.000 Bit.
+    check:
+      type: number
+      expect: 1244.16
+      tolerance: 1
+    feedback:
+      - when: { between: [155, 156] }
+        say: Das sind Megabytes. Ein Byte hat 8 Bits.
+      - when: { between: [414, 415] }
+        say: Jedes Pixel hat drei Bytes, eines für Rot, eines für Grün und eines für Blau.
+      - when: { between: [49.5, 50.5] }
+        say: Das ist ein einziges Bild. In der Sekunde kommen 25.
+      - when: { between: [1186, 1187] }
+        say: So viele Mebibit sind es, 1.048.576 Bit je Mebibit. Gefragt ist das Megabit mit 1.000.000 Bit.
+    solution: |
+      1.920 · 1.080 · 3 = 6.220.800 Bytes je Bild, mal 25 sind 155.520.000
+      Bytes in der Sekunde, mal 8 sind 1.244.160.000 Bit, also etwa 1.244
+      Mbit/s. Ein Stream in Full HD hat meist nur einige Mbit/s, ein
+      Zweihundertstel davon oder weniger.
+
+  - id: held
+    title: Weniger Bilder
+    prompt: |
+      Schreib in `video/frames.py` die Funktion `held(frames, step)`: genauso
+      viele Bilder wie `frames`, die Bilder 0, `step`, `2 * step`, … je
+      `step`-mal hintereinander. Die Prüfung gibt ihr kleine Arrays, in denen
+      jedes »Bild« eine Zahl ist, und eines aus echten Bildern.
+    check:
+      type: python
+      file: video/frames.py
+      cases:
+        - call: '[int(f) for f in held(np.arange(6), 2)]'
+          expect: '[0, 0, 2, 2, 4, 4]'
+          say: Aus den Bildern 0 bis 5 werden bei `step = 2` die Bilder 0, 2 und 4, jedes zweimal. Wird jedes Bild wiederholt, `np.repeat`, und nicht die ganze Folge, `np.tile`?
+        - call: '[int(f) for f in held(np.arange(7), 3)]'
+          expect: '[0, 0, 0, 3, 3, 3, 6]'
+          say: Bei 7 Bildern und `step = 3` bleiben 0, 3 und 6; das Ergebnis hat wieder 7 Bilder, das letzte nur einmal. Wird es mit `[:len(frames)]` abgeschnitten?
+        - call: held(np.zeros((5, 4, 4, 3)), 2).shape
+          expect: (5, 4, 4, 3)
+          say: Bei echten Bildern bleibt jedes Bild ganz, nur ihre Folge ändert sich. Wiederholt `np.repeat` entlang der ersten Achse, `axis=0`?
+    solution: |
+      ```python
+      def held(frames, step):
+          return np.repeat(frames[::step], step, axis=0)[:len(frames)]
+      ```
+
+  - id: interlace
+    title: Halbbilder
+    prompt: |
+      Schreib in `video/frames.py` die Funktion `interlace(frames)`: Bild `k`
+      des Ergebnisses hat die geraden Zeilen von Bild `k` und die ungeraden
+      von Bild `k + 1`; das Ergebnis hat ein Bild weniger, und `frames`
+      bleibt unverändert. Die Prüfung gibt ihr Bilder, in denen jedes Pixel
+      die Nummer seines Bildes ist.
+    check:
+      type: python
+      file: video/frames.py
+      cases:
+        - call: interlace(np.zeros((5, 4, 2, 3))).shape
+          expect: (4, 4, 2, 3)
+          say: Aus 5 Bildern werden 4, denn das letzte hat kein Bild nach sich.
+        - call: '[int(v) for v in interlace(np.arange(4).reshape(4, 1, 1, 1) * np.ones((4, 4, 1, 1), dtype=int))[0, :, 0, 0]]'
+          expect: '[0, 1, 0, 1]'
+          say: Die Zeilen von Bild 0 des Ergebnisses kommen abwechselnd aus Bild 0 (die geraden, 0 und 2) und Bild 1 (die ungeraden, 1 und 3), dem nächsten, nicht dem vorigen.
+        - call: '[int(v) for v in interlace(np.arange(4).reshape(4, 1, 1, 1) * np.ones((4, 4, 1, 1), dtype=int))[2, :, 0, 0]]'
+          expect: '[2, 3, 2, 3]'
+          say: Bild 2 des Ergebnisses hat die geraden Zeilen von Bild 2 und die ungeraden von Bild 3, dem nächsten, nicht dem vorigen.
+        - call: f = np.arange(3).reshape(3, 1, 1, 1) * np.ones((3, 2, 1, 1), dtype=int); interlace(f); [int(v) for v in f[:, 1, 0, 0]]
+          expect: '[0, 1, 2]'
+          say: '`interlace` darf `frames` nicht verändern: Fang mit einer Kopie an, `frames[:-1].copy()`.'
+    solution: |
+      ```python
+      def interlace(frames):
+          out = frames[:-1].copy()
+          out[:, 1::2] = frames[1:, 1::2]
+          return out
+      ```
+
+  - id: combing
+    title: Halbbilder einer schnellen Fahrt
+    prediction: true
+    prompt: |
+      Die Kamera fährt schnell die Felswand hinauf. Wie sieht ein einzelnes
+      Bild aus `interlace(fast)` aus, dort wo sich etwas bewegt?
+    check:
+      type: choice
+      options:
+        - Unscharf, wie verwischt.
+        - Wie vorher, man sieht keinen Unterschied.
+        - Die Kanten sind in feine waagerechte Streifen zerfranst.
+        - Nur halb so hoch.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Verwischt würde es, wenn man zwei Bilder mischt. Hier kommt jede Zeile ganz aus einem der beiden Bilder.
+      - when: { picked: 1 }
+        say: Die beiden Bilder sind eine vierundzwanzigstel Sekunde auseinander, und die Kamera fährt schnell. Liegt eine Kante in beiden an derselben Stelle?
+      - when: { picked: 3 }
+        say: Das Bild hat alle Zeilen, die geraden aus einem Bild, die ungeraden aus dem nächsten.
+    solution: |
+      In feine Streifen zerfranst: Die geraden Zeilen zeigen die Felswand ein
+      Stück tiefer als die ungeraden, und jede Kante sieht aus wie ein Kamm: Das heißt Combing.
+
+  - id: ycbcr
+    title: Helligkeit und Farbe
+    prompt: |
+      Schreib in `video/chroma.py` die Funktion `to_ycbcr(rgb)`: Die letzte
+      Achse von `rgb` sind R, G und B, die letzte Achse des Ergebnisses Y, Cb
+      und Cr, nach den Formeln auf der Seite. Die Prüfung gibt ihr einzelne
+      Pixel, auch als Bytes wie aus einem Bild, und ein Array mit vier Achsen.
+    check:
+      type: python
+      file: video/chroma.py
+      cases:
+        - call: '[round(float(v), 1) for v in to_ycbcr(np.array([100, 100, 100]))]'
+          expect: '[100.0, 128.0, 128.0]'
+          say: Ein Grau mit R = G = B = 100 hat Y = 100, und Cb und Cr sind 128. Steht in den Formeln für Cb und Cr die 128 am Anfang?
+        - call: '[round(float(v), 1) for v in to_ycbcr(np.array([200, 100, 50]))]'
+          expect: '[124.2, 86.1, 182.1]'
+          say: Für R = 200, G = 100, B = 50 ergeben die Formeln Y = 124,2, Cb = 86,1 und Cr = 182,1. Stimmen die Zahlen und die Vorzeichen in deinen Formeln?
+        - call: '[round(float(v), 1) for v in to_ycbcr(np.array([200, 100, 50], dtype=np.uint8))]'
+          expect: '[124.2, 86.1, 182.1]'
+          say: Mit Bytes aus einem Bild (`uint8`) kommt etwas anderes heraus. Rechnet deine Funktion mit Kommazahlen, etwa `0.299 * r`?
+        - call: to_ycbcr(np.zeros((2, 3, 4, 3))).shape
+          expect: (2, 3, 4, 3)
+          say: Das Ergebnis hat dieselbe Form wie `rgb`, Y, Cb und Cr in der letzten Achse. Legt `np.stack` die drei mit `axis=-1` zusammen?
+    solution: |
+      ```python
+      def to_ycbcr(rgb):
+          r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+          y = 0.299 * r + 0.587 * g + 0.114 * b
+          cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b
+          cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b
+          return np.stack([y, cb, cr], axis=-1)
+      ```
+
+  - id: jacket
+    title: Die rote Jacke
+    prediction: true
+    prompt: |
+      `chroma.py` speichert Y, Cb und Cr als drei Graubilder: 0 ist schwarz,
+      255 weiß, 128 ein mittleres Grau. Wie sieht die rote Jacke des Mädchens
+      in `cb.png` und in `cr.png` aus?
+    check:
+      type: choice
+      options:
+        - In beiden heller als das mittlere Grau.
+        - In Cb dunkler als das mittlere Grau, in Cr heller.
+        - In Cb heller als das mittlere Grau, in Cr dunkler.
+        - In beiden mittelgrau, wie der Rest des Bildes.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Cr sagt, wie viel röter das Pixel ist als ein Grau derselben Helligkeit, Cb, wie viel blauer. Hat die Jacke viel Blau?
+      - when: { picked: 2 }
+        say: Andersherum. In der Formel für Cr steht R mit + 0,5, in der für Cb mit einem Minus.
+      - when: { picked: 3 }
+        say: Mittelgrau, 128, haben Cb und Cr bei einem Grau. Die Jacke ist kräftig rot.
+    solution: |
+      In Cr heller, weil die Jacke viel röter ist als ein Grau derselben
+      Helligkeit (im Mittel 150), in Cb ein wenig dunkler, weil sie kaum
+      Blau hat (im Mittel 121).
+
+  - id: bytes-420
+    title: Ein Bild in 4:2:0
+    prompt: |
+      Ein Bild hat 960 × 400 Pixel. Y bleibt für jedes Pixel, Cb und Cr gibt es
+      nur einmal für jedes Quadrat aus 2 × 2 Pixeln, und jeder Wert ist ein
+      Byte. Wie viele Bytes hat das Bild?
+    check:
+      type: number
+      expect: 576000
+    feedback:
+      - when: { between: [1152000, 1152000] }
+        say: So viele sind es mit drei Bytes für jedes Pixel, wie in RGB. Cb und Cr gibt es aber nur für jedes vierte Pixel.
+      - when: { between: [384000, 384000] }
+        say: Das ist Y allein. Cb und Cr kommen dazu, je einmal für 2 × 2 Pixel.
+      - when: { between: [480000, 480000] }
+        say: Cb und Cr sind zwei Ebenen, und beide gibt es für jedes Quadrat aus 2 × 2 Pixeln.
+      - when: { between: [768000, 768000] }
+        say: Das wäre 4:2:2, mit Cb und Cr halb so breit wie das Bild. Bei 4:2:0 sind sie auch halb so hoch.
+      - when: { between: [144000, 144000] }
+        say: Das ist die Zahl aller Werte geteilt durch vier. Y bleibt aber für jedes Pixel.
+    solution: |
+      Y: 960 · 400 = 384.000 Bytes. Cb und Cr: je 480 · 200 = 96.000 Bytes.
+      Zusammen 576.000 Bytes, halb so viel wie die 1.152.000 Bytes in RGB:
+      anderthalb Bytes je Pixel statt drei.
+
+  - id: subsample
+    title: Chroma Subsampling
+    prompt: |
+      Schreib in `video/chroma.py` die Funktion `subsample(plane, n)`: eine
+      Ebene, `n`-mal kleiner in jeder Richtung, jeder Wert der Mittelwert eines
+      Quadrats aus `n` × `n` Werten.
+    check:
+      type: python
+      file: video/chroma.py
+      cases:
+        - call: subsample(np.arange(16).reshape(4, 4)).tolist()
+          expect: '[[2.5, 4.5], [10.5, 12.5]]'
+          say: 'Aus 0 bis 15 in vier Zeilen wird bei `n = 2` der Mittelwert jedes Quadrats: oben links (0 + 1 + 4 + 5) / 4 = 2,5. Bildet deine Funktion den Mittelwert aus vier Werten, die in einem Quadrat beieinander liegen, mit `reshape(height // n, n, width // n, n)`?'
+        - call: subsample(np.arange(36).reshape(6, 6), 3).tolist()
+          expect: '[[7.0, 10.0], [25.0, 28.0]]'
+          say: Bei `n = 3` mittelt jedes Quadrat neun Werte. Rechnet deine Funktion mit `n` statt mit 2?
+        - call: subsample(np.zeros((400, 960))).shape
+          expect: (200, 480)
+          say: Eine Ebene von 400 × 960 Werten wird bei `n = 2` zu 200 × 480.
+    solution: |
+      ```python
+      def subsample(plane, n=2):
+          height, width = plane.shape
+          return plane.reshape(height // n, n, width // n, n).mean(axis=(1, 3))
+      ```
+
+  - id: quantize
+    title: Quantisieren
+    prompt: |
+      Schreib in `video/blocks.py` die Funktionen `quantize(blocks, step)`
+      (die Koeffizienten aller Blöcke, durch `step` geteilt und gerundet) und
+      `restore(levels, step)` (zurück zu Pixeln). Die Prüfung gibt ihnen
+      Blöcke aus 8 × 8 und 4 × 4 Pixeln.
+    check:
+      type: python
+      file: video/blocks.py
+      cases:
+        - call: round(float(quantize(np.full((1, 1, 8, 8), 40.0), 10)[0, 0, 0, 0]), 6)
+          expect: '32.0'
+          say: Ein Block, in dem überall 40 steht, hat oben links den Koeffizienten 40 · 8 = 320, durch 10 geteilt 32. Teilt `quantize` die Koeffizienten aus `dct(blocks)` durch `step`?
+        - call: int(np.count_nonzero(quantize(np.full((1, 1, 8, 8), 40.0), 10)))
+          expect: '1'
+          say: Bei einem Block mit überall 40 bleibt nur der Koeffizient oben links; die anderen sind fast 0 und werden mit `np.round` genau 0.
+        - call: '[int(v) for v in quantize(np.arange(16.0).reshape(1, 1, 4, 4), 4).flatten()][:5]'
+          expect: '[8, -1, 0, 0, -4]'
+          say: Die Koeffizienten werden auf ganze Zahlen gerundet, mit `np.round`.
+        - call: float(quantize(np.full((1, 1, 4, 4), 7.0), 8)[0, 0, 0, 0])
+          expect: '4.0'
+          say: 7 · 4 / 8 = 3,5 wird gerundet zu 4. Rundet `quantize` mit `np.round`?
+        - call: 'lv = np.zeros((1, 1, 8, 8)); lv[0, 0, 0, 0] = 32; [round(float(v), 6) for v in np.unique(restore(lv, 10))]'
+          expect: '[40.0]'
+          say: Aus dem Koeffizienten 32 bei Schritt 10 wird wieder 320, und das ist ein Block, in dem überall 40 steht. Multipliziert `restore` mit `step`, bevor es `idct` aufruft?
+        - call: restore(quantize(np.zeros((2, 3, 4, 4)), 5), 5).shape
+          expect: (2, 3, 4, 4)
+          say: '`restore` gibt Blöcke derselben Form zurück, die `quantize` bekam.'
+    solution: |
+      ```python
+      def quantize(blocks, step):
+          return np.round(dct(blocks) / step)
+
+
+      def restore(levels, step):
+          return idct(levels * step)
+      ```
+
+  - id: tiles
+    title: Grob gerundet
+    prediction: true
+    prompt: |
+      Bei Schritt 64 bleiben von den Koeffizienten nur 3 % übrig, die
+      anderen werden 0. Wie sieht der Ausschnitt um das Gesicht dann aus?
+    check:
+      type: choice
+      options:
+        - Wie das Original, nur dunkler.
+        - Gleichmäßig unscharf, wie durch Milchglas.
+        - Aus Kacheln von 8 × 8 Pixeln, mit Kanten dazwischen.
+        - Verrauscht, mit hellen und dunklen Punkten überall.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Die mittlere Helligkeit jedes Blocks bleibt fast immer erhalten; sie steckt im größten Koeffizienten.
+      - when: { picked: 1 }
+        say: Jeder Block wird für sich gerundet. Treffen sich dann zwei Blöcke glatt?
+      - when: { picked: 3 }
+        say: Wo Koeffizienten 0 werden, fehlen feine Muster. Wird ein Block dadurch unruhiger oder ruhiger?
+    solution: |
+      Aus Kacheln: In vielen Blöcken bleibt nur die mittlere Helligkeit, und
+      zwei benachbarte Blöcke treffen sich mit einer Kante.
+
+  - id: predict
+    title: Vorhersage aus den Nachbarn
+    prompt: |
+      Schreib in `video/blocks.py` die Funktion `predict(above, left, mode)`:
+      einen Block aus `n` × `n` Pixeln, bei `'vertical'` in jeder Zeile
+      `above`, bei `'horizontal'` in jeder Spalte `left`, bei `'dc'` überall
+      der Mittelwert aller `2 * n` Nachbarn.
+    check:
+      type: python
+      file: video/blocks.py
+      cases:
+        - call: predict(np.array([1., 2., 3., 4.]), np.array([5., 6., 7., 8.]), 'vertical').tolist()
+          expect: '[[1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 3.0, 4.0]]'
+          say: Bei `'vertical'` wiederholt jede Spalte den Wert über ihr, jede Zeile ist also `above`.
+        - call: predict(np.array([1., 2., 3., 4.]), np.array([5., 6., 7., 8.]), 'horizontal').tolist()
+          expect: '[[5.0, 5.0, 5.0, 5.0], [6.0, 6.0, 6.0, 6.0], [7.0, 7.0, 7.0, 7.0], [8.0, 8.0, 8.0, 8.0]]'
+          say: Bei `'horizontal'` wiederholt jede Zeile den Wert links von ihr. Wird `left` mit `left[:, None]` zu einer Spalte?
+        - call: predict(np.array([1., 2., 3., 4.]), np.array([5., 6., 7., 8.]), 'dc').tolist()
+          expect: '[[4.5, 4.5, 4.5, 4.5], [4.5, 4.5, 4.5, 4.5], [4.5, 4.5, 4.5, 4.5], [4.5, 4.5, 4.5, 4.5]]'
+          say: Bei `'dc'` ist jedes Pixel der Mittelwert aller acht Nachbarn, (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8) / 8 = 4,5.
+        - call: predict(np.zeros(8), np.zeros(8), 'dc').shape
+          expect: (8, 8)
+          say: Bei 8 Nachbarn oben und 8 links ist der Block 8 × 8 groß. Nimmt `predict` die Größe aus `len(above)`?
+    solution: |
+      ```python
+      def predict(above, left, mode):
+          n = len(above)
+          if mode == 'vertical':
+              return np.tile(above, (n, 1))
+          if mode == 'horizontal':
+              return np.tile(left[:, None], (1, n))
+          return np.full((n, n), (above.sum() + left.sum()) / (2 * n))
+      ```
+
+  - id: best-mode
+    title: Die beste Vorhersage
+    prompt: |
+      Schreib in `video/blocks.py` die Funktion `best_mode(block, above,
+      left)`: die Art aus `MODES`, bei der die Summe der Beträge von `block -
+      predict(above, left, mode)` am kleinsten ist.
+    check:
+      type: python
+      file: video/blocks.py
+      cases:
+        - call: "a = np.array([10., 20., 30., 40.]); l = np.array([90., 80., 70., 60.]); best_mode(np.tile(a, (4, 1)), a, l)"
+          expect: "'vertical'"
+          say: Ein Block, dessen Zeilen alle `above` sind, wird von `'vertical'` genau vorhergesagt, der Rest ist 0. Nimmt `best_mode` die Art mit dem kleinsten Fehler?
+        - call: "a = np.array([10., 20., 30., 40.]); l = np.array([90., 80., 70., 60.]); best_mode(np.tile(l[:, None], (1, 4)), a, l)"
+          expect: "'horizontal'"
+          say: Ein Block, dessen Spalten alle `left` sind, passt am besten zu `'horizontal'`. Nimmt `best_mode` den kleinsten Fehler, nicht den größten?
+        - call: best_mode(np.full((4, 4), 5.0), np.array([0., 10., 0., 10.]), np.array([10., 0., 10., 0.]))
+          expect: "'dc'"
+          say: Ein ruhiger Block mit überall 5 neben Nachbarn, die abwechselnd 0 und 10 sind, passt am besten zu ihrem Mittelwert, `'dc'`.
+    solution: |
+      ```python
+      def best_mode(block, above, left):
+          best, best_error = None, None
+          for mode in MODES:
+              error = np.abs(block - predict(above, left, mode)).sum()
+              if best is None or error < best_error:
+                  best, best_error = mode, error
+          return best
+      ```
+
+  - id: residual-look
+    title: Was übrig bleibt
+    prediction: true
+    prompt: |
+      `residual.png` zeigt für jedes Pixel den Rest nach der besten
+      Vorhersage, 128 heißt Rest 0. Wie sieht das Bild aus?
+    check:
+      type: choice
+      options:
+        - Wie die Nahaufnahme, nur blasser.
+        - Fast überall mittelgrau, nur an Kanten hell oder dunkel.
+        - Überall gleichmäßig verrauscht.
+        - Fast ganz schwarz.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Die mittlere Helligkeit eines Blocks sagen die Nachbarn meist gut voraus. Bleibt sie im Rest?
+      - when: { picked: 2 }
+        say: Wo das Bild ruhig ist, passen die Nachbarn gut. Wo passen sie schlecht?
+      - when: { picked: 3 }
+        say: Schwarz wäre ein Rest von −128. Ein Rest von 0 ist mittelgrau.
+    solution: |
+      Fast überall mittelgrau: In ruhigen Flächen sagen die Nachbarn den Block
+      gut voraus. Hell und dunkel bleiben Kanten und feine Muster wie Haare.
+
+  - id: wrap
+    title: Bytes voneinander abziehen
+    prediction: true
+    prompt: |
+      `a = np.array([3], dtype=np.uint8)` und `b = np.array([5], dtype=np.uint8)`
+      sind zwei Bytes, wie sie in einem Bild aus `read_frames` stehen. Was
+      ergibt `a - b`?
+    check:
+      type: choice
+      options:
+        - '`[-2]`'
+        - '`[0]`'
+        - '`[254]`'
+        - Eine Fehlermeldung.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Ein Byte kann nicht negativ sein. Was macht numpy dann mit −2?
+      - when: { picked: 1 }
+        say: numpy schneidet nicht bei 0 ab. Denk an eine Uhr mit 256 Stunden.
+      - when: { picked: 3 }
+        say: numpy rechnet ohne Fehlermeldung weiter, auch wenn das Ergebnis nicht in ein Byte passt.
+    solution: |
+      `[254]`: Bytes rechnen modulo 256, und −2 + 256 = 254.
+
+  - id: differences
+    title: Unterschiede von Bild zu Bild
+    prompt: |
+      Schreib in `video/difference.py` die Funktion `differences(frames)`: ein
+      Bild weniger als `frames`, Bild `k` ist Bild `k + 1` minus Bild `k`, als
+      ganze Zahlen, auch negative.
+    check:
+      type: python
+      file: video/difference.py
+      cases:
+        - call: differences(np.array([3, 5, 4], dtype=np.uint8)).tolist()
+          expect: '[2, -1]'
+          say: Aus den Bytes 3, 5 und 4 werden die Unterschiede 2 und −1. Kommt 255 heraus statt −1, rechnet numpy mit Bytes modulo 256; wandle vorher mit `astype(int)` um.
+        - call: differences(np.zeros((5, 2, 2, 3), dtype=np.uint8)).shape
+          expect: (4, 2, 2, 3)
+          say: Aus 5 Bildern werden 4 Unterschiede, jeder so groß wie ein Bild.
+    solution: |
+      ```python
+      def differences(frames):
+          return frames[1:].astype(int) - frames[:-1]
+      ```
+
+  - id: pan-bits
+    title: Der Unterschied beim Schwenk
+    prediction: true
+    prompt: |
+      Beim langsamen Schwenk am Bergkamm entlang, `pan.mp4`: Wie viele Bits
+      kostet der gerundete Unterschied von Bild 11 zu Bild 12, verglichen mit
+      Bild 12 allein?
+    check:
+      type: choice
+      options:
+        - Fast nichts, der Schwenk ist ja langsam.
+        - Etwa halb so viel.
+        - Etwa gleich viel.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Fast nichts kostet er beim Blick, wo sich nichts bewegt. Beim Schwenk verschiebt sich das ganze Bild ein wenig. Was steht nach dem Verschieben an jeder Kante?
+      - when: { picked: 1 }
+        say: Schau dir `pan-diff.png` an. Wo ist der Unterschied nicht mittelgrau?
+    solution: |
+      Etwa gleich viel, 0,33 gegen 0,32 Bits je Pixel. Der Schwenk verschiebt
+      jede Kante ein Stück, und an jeder Kante bleibt im Unterschied etwas
+      stehen.
+
+  - id: drift
+    title: Unterschiede zum Original
+    prediction: true
+    prompt: |
+      `encode_naive` baut jedes Bild aus dem zuletzt gebauten und dem
+      gerundeten Unterschied zwischen den Originalen. Wie entwickelt sich der
+      Fehler der gebauten Bilder über eine Sekunde?
+    check:
+      type: choice
+      options:
+        - Er bleibt etwa gleich.
+        - Er wächst von Bild zu Bild.
+        - Er wird kleiner, weil jeder Unterschied etwas korrigiert.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Jeder gerundete Unterschied hat einen kleinen Fehler. Was passiert mit diesen Fehlern, wenn der Decoder alle Unterschiede zusammenzählt?
+      - when: { picked: 2 }
+        say: Der Unterschied zwischen den Originalen weiß nichts vom Fehler im gebauten Bild. Kann er ihn korrigieren?
+    solution: |
+      Er wächst: Jeder Unterschied ist etwas falsch gerundet, und der Decoder
+      zählt alle Fehler zusammen, beim Schwenk von 3,3 auf 13,2 in einer
+      Sekunde.
+
+  - id: encode
+    title: Der Encoder enthält einen Decoder
+    prompt: |
+      Schreib in `video/difference.py` die Funktion `encode(planes, step)` wie
+      `encode_naive`, aber mit dem Unterschied zum zuletzt gebauten Bild,
+      `decoded[-1]`. Die Prüfung gibt ihr Ebenen aus 4 × 4 Pixeln, die mit
+      jedem Bild um 3 heller werden.
+    check:
+      type: python
+      file: video/difference.py
+      cases:
+        - call: encode(np.zeros((3, 8, 8)), 10).shape
+          expect: (3, 8, 8)
+          say: '`encode` gibt alle gebauten Bilder als Array zurück, mit `np.array(decoded)`.'
+        - call: 'p = np.array([np.full((4, 4), 128.0 + 3 * k) for k in range(10)]); bool(np.abs(encode(p, 32)[-1] - p[-1]).max() < 6)'
+          expect: 'True'
+          say: Zehn Ebenen, jede um 3 heller als die vorige. Bei Schritt 32 wird jeder einzelne Unterschied von 3 zu 0 gerundet; beim letzten Bild ist der Fehler 27, wenn `encode` zum vorigen Original rechnet. Rechnet es den Unterschied zu `decoded[-1]`?
+    solution: |
+      ```python
+      def encode(planes, step):
+          decoded = [code(planes[0] - 128, step) + 128]
+          for plane in planes[1:]:
+              decoded.append(decoded[-1] + code(plane - decoded[-1], step))
+          return np.array(decoded)
+      ```
+
+  - id: best-vector
+    title: Den Block wiederfinden
+    prompt: |
+      Schreib in `video/motion.py` die Funktion `best_vector(current,
+      reference, y, x, n, radius)`: die Verschiebung `(dx, dy)` mit der
+      kleinsten Summe der Unterschiede zwischen dem Block
+      `current[y:y + n, x:x + n]` und dem Stück von `reference`, das bei
+      `y + dy` und `x + dx` beginnt. Stücke über den Rand lässt sie aus.
+    check:
+      type: python
+      file: video/motion.py
+      cases:
+        - call: 'ref = np.arange(400.0).reshape(20, 20) * 37 % 101; cur = np.roll(ref, (1, -2), axis=(0, 1)); best_vector(cur, ref, 8, 8, 4, 3)'
+          expect: (2, -1)
+          say: Die Prüfung verschiebt ein Muster um eine Zeile nach unten und zwei Spalten nach links. Der Block bei (8, 8) war vorher also zwei Spalten weiter rechts und eine Zeile höher, `(2, -1)`, erst `dx`, dann `dy`. Nimmt `best_vector` die kleinste Summe, und beginnt das Stück bei `y + dy` und `x + dx`?
+        - call: 'ref = np.arange(400.0).reshape(20, 20) * 37 % 101; best_vector(ref, ref, 0, 0, 4, 3)'
+          expect: (0, 0)
+          say: Ein Block oben links, im selben Bild gesucht, passt am besten ohne Verschiebung. Verschiebungen nach oben und links gehen über den Rand; lässt `best_vector` sie mit `continue` aus? Ein negativer Index zählt in numpy von hinten.
+        - call: 'ref = np.arange(400.0).reshape(20, 20) * 37 % 101; cur = np.roll(ref, (1, -2), axis=(0, 1)); all(abs(int(v)) <= 1 for v in best_vector(cur, ref, 8, 8, 4, 1))'
+          expect: 'True'
+          say: Mit `radius = 1` probiert `best_vector` nur Verschiebungen von −1 bis 1, auch wenn die beste weiter weg liegt.
+    solution: |
+      ```python
+      def best_vector(current, reference, y, x, n, radius):
+          block = current[y:y + n, x:x + n]
+          height, width = reference.shape
+          best, best_sad = (0, 0), None
+          for dy in range(-radius, radius + 1):
+              for dx in range(-radius, radius + 1):
+                  top, left = y + dy, x + dx
+                  if top < 0 or left < 0 or top + n > height or left + n > width:
+                      continue
+                  sad = np.abs(block - reference[top:top + n, left:left + n]).sum()
+                  if best_sad is None or sad < best_sad:
+                      best, best_sad = (dx, dy), sad
+          return best
+      ```
+
+  - id: arrows
+    title: Wohin die Vektoren zeigen
+    prediction: true
+    prompt: |
+      In `tilt.mp4` fährt die Kamera die Felswand hinauf. Ein Vektor zeigt
+      vom Block dorthin, wo sein Inhalt im vorigen Bild war. Wohin zeigen die
+      meisten gelben Striche in `tilt-vectors.png`?
+    check:
+      type: choice
+      options:
+        - Nach oben.
+        - Nach unten.
+        - Nach links.
+        - Kreuz und quer.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Fährt die Kamera nach oben, wandert die Wand im Bild nach unten. Wo war ein Stück der Wand also im vorigen Bild?
+      - when: { picked: 2 }
+        say: Die Kamera fährt nach oben, nicht zur Seite.
+      - when: { picked: 3 }
+        say: Kreuz und quer zeigen sie nur, wo sich etwas anders bewegt als die Kamera. Der größte Teil des Bildes ist die Wand.
+    solution: |
+      Nach oben: Die Kamera fährt hinauf, das Bild wandert nach unten, und
+      was jetzt an einer Stelle ist, war im vorigen Bild weiter oben.
+
+  - id: compensate
+    title: Die Vorhersage aus dem vorigen Bild
+    prompt: |
+      Schreib in `video/motion.py` die Funktion `compensate(reference, vectors,
+      n)`: eine Ebene so groß wie `reference`, jeder Block das Stück von
+      `reference`, das um seinen Vektor verschoben liegt.
+    check:
+      type: python
+      file: video/motion.py
+      cases:
+        - call: 'r = np.arange(36.0).reshape(6, 6); compensate(r, np.zeros((3, 3, 2), dtype=int), 2).tolist() == r.tolist()'
+          expect: 'True'
+          say: Sind alle Vektoren `(0, 0)`, ist die Vorhersage `reference` selbst.
+        - call: 'r = np.arange(36.0).reshape(6, 6); v = np.zeros((3, 3, 2), dtype=int); v[1, 1] = (-1, 1); compensate(r, v, 2)[2:4, 2:4].tolist()'
+          expect: '[[19.0, 20.0], [25.0, 26.0]]'
+          say: Der Block in Reihe 1 und Spalte 1 beginnt bei (2, 2); mit dem Vektor `(-1, 1)`, eine Spalte nach links und eine Zeile nach unten, kommt er aus `reference[3:5, 1:3]`. Ist der erste Wert `dx`, die Verschiebung der Spalten?
+    solution: |
+      ```python
+      def compensate(reference, vectors, n):
+          predicted = np.zeros_like(reference)
+          for r, c in np.ndindex(vectors.shape[:2]):
+              dx, dy = vectors[r, c]
+              y, x = r * n, c * n
+              predicted[y:y + n, x:x + n] = reference[y + dy:y + dy + n, x + dx:x + dx + n]
+          return predicted
+      ```
+
+  - id: mc-bytes
+    title: Was die Bewegung spart
+    prediction: true
+    prompt: |
+      Bild 12 vom Hang allein kostet bei Schritt 32 etwa 29.700 Bytes, der
+      Unterschied zu Bild 11 etwa 26.300. Wie viel kosten die Vektoren und der
+      Rest nach der Bewegungskompensation zusammen?
+    check:
+      type: choice
+      options:
+        - Etwa so viel wie der Unterschied, 25.000 Bytes.
+        - Etwa ein Viertel davon, 6.000 Bytes.
+        - Fast nichts, unter 500 Bytes.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Der Unterschied kostet so viel, weil jede Kante ein Stück verschoben ist. Was bleibt, wenn jeder Block erst an seine Stelle geschoben wird?
+      - when: { picked: 2 }
+        say: So wenig wäre es, wenn sich nur die Kamera bewegte. Das Mädchen und der Hund ändern aber ihre Form.
+    solution: |
+      Etwa 6.100 Bytes, ein Fünftel des Bildes allein: Die Vektoren kosten
+      kaum etwas, und übrig bleiben vor allem die Beine des Mädchens und der
+      Hund.
+
+  - id: block-size
+    title: Kleinere Blöcke
+    prediction: true
+    prompt: |
+      In `motion.py` hat jeder Block 16 × 16 Pixel und einen Vektor, und
+      Bild 12 vom Hang braucht mit Bewegung etwa 6.100 Bytes. Was passiert,
+      wenn jeder Block nur 8 × 8 Pixel hat?
+    check:
+      type: choice
+      options:
+        - Das Bild braucht deutlich weniger Bytes, weil der Rest kleiner wird.
+        - Das Bild braucht etwas mehr Bytes, weil die Vektoren mehr kosten, als der kleinere Rest spart.
+        - Es ändert sich nichts, weil sich dieselben Pixel bewegen.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Der Rest wird kleiner, das stimmt. Aber wie viele Vektoren braucht das Bild jetzt?
+      - when: { picked: 2 }
+        say: Mit kleineren Blöcken passen die Vektoren besser, besonders am Mädchen. Es ändert sich also etwas, beim Rest und bei den Vektoren.
+    solution: |
+      Etwas mehr: 6.404 statt 6.127 Bytes. Der Rest sinkt von 5.888 auf
+      5.221 Bytes, aber es gibt viermal so viele Vektoren, und sie kosten
+      1.182 statt 239 Bytes.
+  - id: frame-sizes
+    title: Die Größe jedes Bildes
+    prompt: |
+      Schreib in `video/gop.py` die Funktion `frame_sizes(path)`: eine Liste
+      mit einem Paar `(Art, Bytes)` für jedes Bild der Datei, die Bytes als
+      ganze Zahl. Die Prüfung macht mit ffmpeg ein kleines Video aus acht
+      Bildern, I P P P I P P P, und liest es mit deiner Funktion.
+    check:
+      type: python
+      file: video/gop.py
+      cases:
+        - call: "subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=64x48:rate=8:duration=1', '-c:v', 'libx264', '-x264-params', 'keyint=4:min-keyint=4:bframes=0:scenecut=0', '/tmp/frame-sizes-check.mp4'], check=True); [k for k, _ in frame_sizes('/tmp/frame-sizes-check.mp4')]"
+          expect: "['I', 'P', 'P', 'P', 'I', 'P', 'P', 'P']"
+          say: Die Arten der acht Bilder sind I P P P I P P P. Steht im Paar zuerst die Art, `frame['pict_type']`, dann die Bytes?
+        - call: "subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc=size=64x48:rate=8:duration=1', '-c:v', 'libx264', '-x264-params', 'keyint=4:min-keyint=4:bframes=0:scenecut=0', '/tmp/frame-sizes-check.mp4'], check=True); all(isinstance(s, int) and s > 0 for _, s in frame_sizes('/tmp/frame-sizes-check.mp4'))"
+          expect: 'True'
+          say: Die Bytes stehen in ffprobes JSON als Text. Macht `int(...)` eine Zahl daraus?
+    solution: |
+      ```python
+      def frame_sizes(path):
+          command = ['ffprobe', '-v', 'error', '-select_streams', 'v', '-show_entries', 'frame=pict_type,pkt_size',
+                     '-of', 'json', path]
+          data = json.loads(subprocess.run(command, capture_output=True, text=True, check=True).stdout)
+          return [(frame['pict_type'], int(frame['pkt_size'])) for frame in data['frames']]
+      ```
+
+  - id: biggest
+    title: Welche Bilder sind groß?
+    prediction: true
+    prompt: |
+      Was meinst du: Welche Bilder eines Ausschnitts brauchen die meisten
+      Bytes, welche die wenigsten?
+    check:
+      type: choice
+      options:
+        - I-Frames die meisten, B-Frames die wenigsten.
+        - P-Frames die meisten, I-Frames die wenigsten.
+        - B-Frames die meisten, weil sie zwei Bilder brauchen.
+        - Alle etwa gleich viele.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ein I-Frame hat keine Vorlage, jeder Block steht für sich. Wie viel kostet ein Bild allein, verglichen mit einem Unterschied?
+      - when: { picked: 2 }
+        say: Ein B-Frame braucht zwei Bilder als Vorlage, speichert aber selbst nur Vektoren und einen kleinen Rest.
+      - when: { picked: 3 }
+        say: "Denk an »Von Bild zu Bild«: Wie viel kostete der Blick als Bild allein, wie viel als Unterschied?"
+    solution: |
+      I-Frames die meisten, sie stehen für sich allein; B-Frames die
+      wenigsten, sie dürfen aus zwei Bildern vorhersagen und werden gröber
+      gerundet.
+
+  - id: decode-order
+    title: Die Reihenfolge in der Datei
+    prompt: |
+      Schreib in `video/gop.py` die Funktion `decode_order(kinds)`: die
+      Nummern der Bilder in der Reihenfolge, in der der Decoder sie braucht,
+      jedes I- und P-Frame vor den B-Frames, die vor ihm gezeigt werden.
+    check:
+      type: python
+      file: video/gop.py
+      cases:
+        - call: decode_order('IBBBP')
+          expect: '[0, 4, 1, 2, 3]'
+          say: Die B-Frames 1, 2 und 3 brauchen Bild 4, also kommt es vor ihnen, und jedes Bild kommt genau einmal vor.
+        - call: decode_order('IPPP')
+          expect: '[0, 1, 2, 3]'
+          say: Ohne B-Frames bleibt die Reihenfolge, wie sie ist.
+        - call: decode_order('IBBPBBP')
+          expect: '[0, 3, 1, 2, 6, 4, 5]'
+          say: Nach jedem I- oder P-Frame kommen die B-Frames, die vor ihm gezeigt werden, und keine anderen. Leert deine Funktion die wartende Liste danach?
+        - call: decode_order('IPBB')
+          expect: '[0, 1, 2, 3]'
+          say: B-Frames am Ende ohne ein Bild danach kommen zuletzt. Hängt deine Funktion die wartenden am Schluss an?
+    solution: |
+      ```python
+      def decode_order(kinds):
+          order = []
+          waiting = []
+          for k, kind in enumerate(kinds):
+              if kind == 'B':
+                  waiting.append(k)
+              else:
+                  order.append(k)
+                  order += waiting
+                  waiting = []
+          return order + waiting
+      ```
+
+  - id: intra-size
+    title: Nur I-Frames
+    prediction: true
+    prompt: |
+      `slope-intra.mp4` besteht nur aus I-Frames, bei derselben Qualität wie
+      `slope-default.mp4`. Wie groß wird es?
+    check:
+      type: choice
+      options:
+        - Etwa gleich groß.
+        - Etwa doppelt so groß.
+        - Mehr als viermal so groß.
+        - Kleiner, weil I-Frames einfacher sind.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: In `slope-default.mp4` ist ein Bild von 96 ein I-Frame. Wie groß ist eines davon, verglichen mit einem P-Frame?
+      - when: { picked: 1 }
+        say: Ein I-Frame von `slope.mp4` braucht fast dreimal so viel wie ein P-Frame und über zwanzigmal so viel wie ein B-Frame.
+      - when: { picked: 3 }
+        say: Einfacher zu rechnen ja, aber jedes I-Frame speichert das ganze Bild, nicht nur, was sich geändert hat.
+    solution: |
+      Mehr als viermal so groß, 4,7 statt 1,0 MB: Jedes Bild speichert alles,
+      nichts kommt aus dem vorigen.
+
+  - id: mosh
+    title: Ein fehlendes I-Frame
+    prediction: true
+    prompt: |
+      Beim Übergang vom Schwenk zur Fahrt die Wand hinauf fehlt das I-Frame
+      der Fahrt. Was zeigt `mosh.mp4` danach?
+    check:
+      type: choice
+      options:
+        - Die Fahrt die Wand hinauf wie im Original.
+        - Ein schwarzes Bild, bis wieder ein I-Frame kommt.
+        - Den Bergkamm, über den die Bewegung der Felswand malt.
+        - Nichts, das Video bricht ab.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Die P-Frames der Fahrt speichern nur Vektoren und Reste. Woher soll der Decoder das Bild der Felswand haben?
+      - when: { picked: 1 }
+        say: Der Decoder hat noch ein Bild, das letzte des Schwenks. Was macht er mit den Vektoren des nächsten P-Frames?
+      - when: { picked: 3 }
+        say: Die Pakete der P-Frames sind alle noch da, nur das I-Frame fehlt.
+    solution: |
+      Den Bergkamm: Der Decoder setzt die Vektoren und Reste der Fahrt auf das
+      letzte Bild des Schwenks, und die Felswand malt über ihn.
+
+  - id: deblock-size
+    title: Mit Filter oder ohne
+    prediction: true
+    prompt: |
+      Beide Dateien sind mit demselben groben Quantisierer codiert, eine
+      mit dem Deblocking-Filter von H.264, eine ohne. Welche ist kleiner?
+    check:
+      type: choice
+      options:
+        - Die mit Filter, glance-deblock.mp4.
+        - Die ohne Filter, glance-blocky.mp4, denn der Filter ist zusätzliche Arbeit.
+        - Beide sind gleich groß, der Filter ändert nur, wie das Bild aussieht.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Arbeit kostet Rechenzeit, keine Bytes. Woraus sagt der Encoder das nächste Bild vorher, aus dem gefilterten Bild oder aus dem ungefilterten?
+      - when: { picked: 2 }
+        say: Der Filter ändert das Bild, das der Decoder hat, und aus genau diesem Bild wird das nächste vorhergesagt.
+    solution: |
+      Die mit Filter: Der Filter steht im Decoder-Loop, und weil das
+      gefilterte Bild dem Original näher ist, bleibt bei den nächsten Bildern
+      weniger Rest.
+
+  - id: smooth-edges
+    title: Ein Filter für die Kanten
+    prompt: |
+      Schreib in `video/artifacts.py` die Funktion `smooth_edges(plane,
+      limit, n=8)`: An jeder Kante zwischen zwei Blöcken verteilt sie eine
+      Stufe, die kleiner als `limit` ist, gleichmäßig auf die acht Pixel
+      daneben, vier auf jeder Seite, zwischen Spalten und zwischen Zeilen.
+      Größere Stufen bleiben, und das Array, das sie bekommt, auch.
+    check:
+      type: python
+      file: video/artifacts.py
+      cases:
+        - call: smooth_edges(np.array([[100.0] * 8 + [108.0] * 8] * 16), 20)[0].round(2).tolist()
+          expect: '[100.0, 100.0, 100.0, 100.0, 100.5, 101.5, 102.5, 103.5, 104.5, 105.5, 106.5, 107.5, 108.0, 108.0, 108.0, 108.0]'
+          say: Eine Stufe von 8 zwischen Spalte 7 und 8 wird eine Rampe über die acht Pixel daneben. Spalte 7 bis 4 steigen um 7/16, 5/16, 3/16 und 1/16 der Stufe, Spalte 8 bis 11 sinken um dieselben Anteile. Stimmen die Gewichte, das größte direkt an der Kante?
+        - call: smooth_edges(np.array([[100.0] * 8 + [200.0] * 8] * 16), 20)[0].tolist() == [100.0] * 8 + [200.0] * 8
+          expect: 'True'
+          say: Eine Stufe von 100 ist größer als `limit`, eine echte Kante im Bild, und bleibt, wie sie ist. Setzt `np.where` die Stufe dort auf 0?
+        - call: smooth_edges(np.array([[100.0] * 16] * 8 + [[108.0] * 16] * 8), 20)[:, 0].round(2).tolist()
+          expect: '[100.0, 100.0, 100.0, 100.0, 100.5, 101.5, 102.5, 103.5, 104.5, 105.5, 106.5, 107.5, 108.0, 108.0, 108.0, 108.0]'
+          say: Auch zwischen zwei Zeilen von Blöcken liegt eine Kante. `plane.T` ist dasselbe Array mit Zeilen und Spalten vertauscht; machst du dort dasselbe?
+        - call: 'p = np.full((16, 16), 100.0); p[:, 8:] = 108; smooth_edges(p, 20); float(p[0, 7])'
+          expect: '100.0'
+          say: Deine Funktion ändert das Array, das sie bekommt. `plane.astype(float)` macht eine Kopie, auch wenn die Zahlen schon Kommazahlen sind.
+        - call: float(smooth_edges(np.array([[100] * 8 + [108] * 8] * 16, dtype=np.uint8), 20)[0, 7])
+          expect: '103.5'
+          say: Bilder kommen als Bytes, `uint8`. Rechnet deine Funktion mit Kommazahlen, `plane.astype(float)`?
+    solution: |
+      ```python
+      def smooth_edges(plane, limit, n=8):
+          plane = plane.astype(float)
+          for view in (plane, plane.T):
+              edges = np.arange(n, view.shape[1], n)
+              step = view[:, edges] - view[:, edges - 1]
+              step = np.where(np.abs(step) < limit, step, 0)
+              for j in range(4):
+                  view[:, edges - 1 - j] += step * (7 - 2 * j) / 16
+                  view[:, edges + j] -= step * (7 - 2 * j) / 16
+          return plane
+      ```
+
+  - id: grain-size
+    title: Was Korn kostet
+    prediction: true
+    prompt: |
+      `glance-grain.mp4` ist derselbe Ausschnitt mit Rauschen, das sich von
+      Bild zu Bild ändert, mit derselben Qualität codiert wie
+      `glance-clean.mp4`. Wie viel größer wird die Datei?
+    check:
+      type: choice
+      options:
+        - Etwa gleich groß, das Rauschen ist schwach.
+        - Etwa doppelt so groß.
+        - Etwa zehnmal so groß.
+        - Über vierzigmal so groß.
+      correct: 3
+    feedback:
+      - when: { picked: 0 }
+        say: Schwach heißt nicht billig. Lässt sich Rauschen aus den Nachbarn oder aus dem Bild davor vorhersagen?
+      - when: { picked: 1 }
+        say: Beim Blick kostete ein B-Frame ein Zwanzigstel eines P-Frames, weil fast alles aus anderen Bildern kam. Was davon gilt noch, wenn jedes Pixel in jedem Bild ein neues Rauschen hat?
+      - when: { picked: 2 }
+        say: Noch mehr. Jedes Pixel hat in jedem Bild einen neuen Zufall, und gleiche Qualität heißt, ihn so genau zu speichern wie das Bild.
+    solution: |
+      Über vierzigmal so groß: Rauschen ist Zufall, es lässt sich weder aus
+      den Nachbarn noch aus dem Bild davor vorhersagen.
+
+  - id: psnr
+    title: Wie gut ist ein Bild?
+    prompt: |
+      Schreib in `video/quality.py` die Funktion `psnr(original, decoded)`:
+      den mittleren quadrierten Fehler zwischen den beiden Arrays, und
+      daraus 10 · log10(255² / Fehler) in dB. Sind beide gleich, gibt sie
+      `float('inf')` zurück.
+    check:
+      type: python
+      file: video/quality.py
+      cases:
+        - call: round(psnr(np.zeros((4, 4)), np.full((4, 4), 5.0)), 2)
+          expect: '34.15'
+          say: Jeder Wert ist um 5 falsch, der quadrierte Fehler also überall 25, und 10 · log10(255² / 25) = 34,15. Rechnest du mit `np.log10` und mit 255², nicht mit 255?
+        - call: round(psnr(np.array([10.0, 20.0]), np.array([13.0, 16.0])), 2)
+          expect: '37.16'
+          say: Die Fehler sind 3 und −4, quadriert 9 und 16, im Mittel 12,5. Quadrierst du die Unterschiede, bevor du den Mittelwert nimmst?
+        - call: round(psnr(np.array([0], dtype=np.uint8), np.array([255], dtype=np.uint8)), 2)
+          expect: '0.0'
+          say: Bilder kommen als Bytes, `uint8`, und 0 − 255 ist in Bytes 1, nicht −255. Macht `astype(float)` vor dem Abziehen Kommazahlen daraus?
+        - call: psnr(np.zeros((4, 4)), np.zeros((4, 4))) == float('inf')
+          expect: 'True'
+          say: Zwei gleiche Bilder haben den Fehler 0. Dann gibt `psnr` `float('inf')` zurück, statt durch 0 zu teilen.
+    solution: |
+      ```python
+      def psnr(original, decoded):
+          error = np.mean((original.astype(float) - decoded.astype(float)) ** 2)
+          if error == 0:
+              return float('inf')
+          return 10 * np.log10(255 ** 2 / error)
+      ```
+
+  - id: same-rate
+    title: Dieselbe Rate für beide
+    prediction: true
+    prompt: |
+      `glance.mp4` und `tilt.mp4` werden beide mit 400 kbit/s codiert.
+      Welcher Ausschnitt hat danach die höhere PSNR?
+    check:
+      type: choice
+      options:
+        - glance.mp4, der Blick des Mädchens.
+        - tilt.mp4, die Fahrt die Wand hinauf.
+        - Beide etwa gleich, sie haben ja dieselbe Rate.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Denk an die Bytes der P-Frames in »I-, P- und B-Frames«. Welcher Ausschnitt braucht für dieselbe Qualität mehr?
+      - when: { picked: 2 }
+        say: Dieselbe Rate heißt dieselbe Zahl von Bytes, nicht dieselbe Qualität. Braucht ein Bild, in dem sich fast nichts bewegt, so viele Bytes wie eine schnelle Fahrt?
+    solution: |
+      glance.mp4: Dort ändert sich fast nichts, und dieselben Bytes reichen
+      für eine viel genauere Kopie als bei der schnellen Fahrt.
+
+  - id: av1-saves
+    title: Was AV1 spart
+    prediction: true
+    prompt: |
+      Bei derselben PSNR: Wie viel weniger Bytes braucht AV1 für
+      `slope.mp4` als H.264?
+    check:
+      type: choice
+      options:
+        - Kaum weniger, die Codecs sind sich zu ähnlich.
+        - Etwa ein Drittel bis die Hälfte weniger.
+        - Neun Zehntel weniger.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: AV1 kam 15 Jahre nach H.264, mit größeren Blöcken, mehr Arten der Vorhersage im Bild und besseren Filtern. Lohnt sich das nicht?
+      - when: { picked: 2 }
+        say: So viel schafft ein neuer Codec nicht. Jede Generation spart einen Teil, und die meisten Bytes sind schon bei H.264 gespart.
+    solution: |
+      Etwa ein Drittel bis die Hälfte weniger, je nach Qualität: bei 38 dB
+      gut ein Drittel, bei 34 dB über die Hälfte.
+
+  - id: history-gain
+    title: Dreißig Jahre
+    prediction: true
+    prompt: |
+      Bei 500 kbit/s: Um wie viel ist das PSNR von AV1 (2018) höher als
+      das von MPEG-1 (1993)?
+    check:
+      type: choice
+      options:
+        - Kaum, etwa 1 dB.
+        - Etwa 3 dB.
+        - Etwa 8 dB.
+        - Über 20 dB.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Seit MPEG-1 kamen Blöcke in vielen Größen dazu, neun und mehr Arten der Vorhersage im Bild, Vektoren auf Viertelpixel und ein Filter in der Schleife. Lohnt sich das so wenig?
+      - when: { picked: 1 }
+        say: So viel liegt schon zwischen H.264 und AV1 in deiner Kurve. Und MPEG-1 ist zehn Jahre älter als H.264.
+      - when: { picked: 3 }
+        say: So viel nicht, 20 dB mehr hieße hundertmal kleinere quadrierte Fehler. Bei 500 kbit/s rechnet auch AV1 noch mit spürbaren Fehlern.
+    solution: |
+      Etwa 8 dB, 37,5 statt 29,4, und MPEG-1 braucht dafür sogar fast
+      doppelt so viele Bytes.

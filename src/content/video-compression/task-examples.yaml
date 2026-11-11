@@ -1,0 +1,109 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): was jede Prüfung annehmen und was sie ablehnen muss.
+# Angenommen wird der Code der Seite aus stufen/, abgelehnt in fehler/ je ein
+# typischer Fehler.
+format: 1
+activity: video-compression
+examples:
+  held:
+    pass:
+      - { files: { video/frames.py: stufen/frames-1.py, video/video.py: stufen/video.py } }
+      - { files: { video/frames.py: stufen/frames-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/frames.py: fehler/held-tile.py, video/video.py: stufen/video.py }, say: 'np.tile' }
+      - { files: { video/frames.py: fehler/held-too-long.py, video/video.py: stufen/video.py }, say: '[:len(frames)]' }
+  interlace:
+    pass:
+      - { files: { video/frames.py: stufen/frames-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/frames.py: stufen/frames-1.py, video/video.py: stufen/video.py }, say: 'interlace' }
+      - { files: { video/frames.py: fehler/interlace-previous.py, video/video.py: stufen/video.py }, say: 'nicht dem vorigen' }
+      - { files: { video/frames.py: fehler/interlace-without-copy.py, video/video.py: stufen/video.py }, say: 'Kopie' }
+  ycbcr:
+    pass:
+      - { files: { video/chroma.py: stufen/chroma-1.py } }
+      - { files: { video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/chroma.py: fehler/ycbcr-without-128.py }, say: '128' }
+      - { files: { video/chroma.py: fehler/ycbcr-axis-0.py }, say: 'axis=-1' }
+  subsample:
+    pass:
+      - { files: { video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/chroma.py: stufen/chroma-1.py }, say: 'subsample' }
+      - { files: { video/chroma.py: fehler/subsample-every-second.py }, say: 'Mittelwert' }
+      - { files: { video/chroma.py: fehler/subsample-wrong-axes.py }, say: 'Quadrat' }
+  quantize:
+    pass:
+      - { files: { video/blocks.py: stufen/blocks-1.py, video/chroma.py: stufen/chroma-2.py } }
+      - { files: { video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/blocks.py: fehler/quantize-without-round.py, video/chroma.py: stufen/chroma-2.py }, say: 'np.round' }
+      - { files: { video/blocks.py: fehler/restore-without-step.py, video/chroma.py: stufen/chroma-2.py }, say: 'step' }
+  predict:
+    pass:
+      - { files: { video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/blocks.py: stufen/blocks-1.py, video/chroma.py: stufen/chroma-2.py }, say: 'predict' }
+      - { files: { video/blocks.py: fehler/predict-horizontal-as-rows.py, video/chroma.py: stufen/chroma-2.py }, say: 'left[:, None]' }
+  best-mode:
+    pass:
+      - { files: { video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py } }
+    fail:
+      - { files: { video/blocks.py: fehler/best-mode-largest.py, video/chroma.py: stufen/chroma-2.py }, say: 'kleinsten' }
+  differences:
+    pass:
+      - { files: { video/difference.py: stufen/difference-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py } }
+      - { files: { video/difference.py: stufen/difference-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/difference.py: fehler/differences-bytes.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'astype(int)' }
+  encode:
+    pass:
+      - { files: { video/difference.py: stufen/difference-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/difference.py: stufen/difference-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'encode' }
+      - { files: { video/difference.py: fehler/encode-from-original.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py }, say: 'decoded[-1]' }
+  best-vector:
+    pass:
+      - { files: { video/motion.py: stufen/motion-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py } }
+      - { files: { video/motion.py: stufen/motion-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py } }
+    fail:
+      - { files: { video/motion.py: fehler/best-vector-largest.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'kleinste' }
+      - { files: { video/motion.py: fehler/best-vector-no-edge.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'continue' }
+  compensate:
+    pass:
+      - { files: { video/motion.py: stufen/motion-2.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py } }
+    fail:
+      - { files: { video/motion.py: stufen/motion-1.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'compensate' }
+      - { files: { video/motion.py: fehler/compensate-swapped.py, video/blocks.py: stufen/blocks-2.py, video/chroma.py: stufen/chroma-2.py, video/video.py: stufen/video.py, video/difference.py: stufen/difference-2.py }, say: 'dx' }
+  frame-sizes:
+    pass:
+      - { files: { video/gop.py: stufen/gop-1.py } }
+      - { files: { video/gop.py: stufen/gop-2.py } }
+    fail:
+      - { files: { video/gop.py: fehler/frame-sizes-text.py }, say: 'int(' }
+      - { files: { video/gop.py: fehler/frame-sizes-swapped.py }, say: 'pict_type' }
+  decode-order:
+    pass:
+      - { files: { video/gop.py: stufen/gop-2.py } }
+    fail:
+      - { files: { video/gop.py: stufen/gop-1.py }, say: 'decode_order' }
+      - { files: { video/gop.py: fehler/decode-order-lost-end.py }, say: 'am Schluss' }
+      - { files: { video/gop.py: fehler/decode-order-not-emptied.py }, say: 'genau einmal' }
+  smooth-edges:
+    pass:
+      - { files: { video/artifacts.py: stufen/artifacts-1.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/artifacts.py: fehler/smooth-edges-columns-only.py, video/video.py: stufen/video.py }, say: 'plane.T' }
+      - { files: { video/artifacts.py: fehler/smooth-edges-no-limit.py, video/video.py: stufen/video.py }, say: 'echte Kante' }
+      - { files: { video/artifacts.py: fehler/smooth-edges-in-place.py, video/video.py: stufen/video.py }, say: 'Kopie' }
+      - { files: { video/artifacts.py: fehler/smooth-edges-reversed.py, video/video.py: stufen/video.py }, say: 'Gewichte' }
+  psnr:
+    pass:
+      - { files: { video/quality.py: stufen/quality-1.py, video/video.py: stufen/video.py } }
+      - { files: { video/quality.py: stufen/quality-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/quality.py: fehler/psnr-bytes.py, video/video.py: stufen/video.py }, say: 'astype(float)' }
+      - { files: { video/quality.py: fehler/psnr-absolute.py, video/video.py: stufen/video.py }, say: 'quadrierte Fehler' }
+      - { files: { video/quality.py: fehler/psnr-natural-log.py, video/video.py: stufen/video.py }, say: 'np.log10' }
+      - { files: { video/quality.py: fehler/psnr-peak.py, video/video.py: stufen/video.py }, say: '255²' }

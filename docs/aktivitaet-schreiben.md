@@ -162,7 +162,7 @@ einzelnes Bild, das man lesen muss, ein Diagramm mit Beschriftungen oder eine
 Karte (höchstens 36em breit und nie höher als der größte Teil des
 Bildschirms, in der Mitte), `wide-narrow` für ein
 breites Bild neben einem schmaleren, etwa gleich hoch (ein Blick in den Raum
-und die flache Textur daneben; auf dem Handy untereinander). Mit `hide-lone` fällt von vier Bildern das vierte
+und die flache Textur daneben; auf dem Handy untereinander). Mit `carousel` wird die Galerie bei jeder Breite eine Reihe zum Durchblättern: so viele Bilder, wie Platz haben (drei, auf dem Tablet zwei, auf dem Handy eins), ‹ und › daneben, mit der Maus ziehbar, und sie endet, wo das letzte Bild ganz zu sehen ist; für viele gleichartige Bilder, die man nacheinander ansieht (die neun Arten der Vorhersage in »Video komprimieren«). Mit `hide-lone` fällt von vier Bildern das vierte
 weg, wenn drei in eine Reihe passen und es allein in der nächsten stünde: für
 Beispiele, bei denen drei genügen. Ein Bild mit der Klasse `inspect`
 (`<img class='inspect' …>`) ist zum genauen Hinsehen da, etwa eine ganze
@@ -416,6 +416,29 @@ gut zum Abschnitt passt, nicht zu jedem Thema irgendein Aufsatz.
 Nur Bücher, die man lesen kann, ohne sie zu kaufen, oder die so bekannt
 sind, dass eine Bibliothek sie hat; jeder Link ist geprüft.
 
+### Geschichte
+
+Wo ein Verfahren eine Geschichte hat, die man hören, sehen oder nachlesen
+kann (das Bandecho auf der Hi-Hat von »Let It Be«, Chers »Believe« und
+Auto-Tune), bekommt sie einen Kasten wie ein Buch, ohne Icon: der Titel fett, das
+Jahr, dann wenige Sätze, was geschah und wie es mit dem Abschnitt
+zusammenhängt. Gibt es ein freies Bild (ein Foto der Menschen, des Geräts,
+des Orts), steht es links wie in einem Kasten für eine Person, mit einer
+Zeile `<p class='history-credit'>` darunter; zwei Kästen zur Geschichte
+stehen nie direkt nacheinander. Jede Angabe ist geprüft; wo Quellen sich
+widersprechen, steht nur, worin sie übereinstimmen. Links zum Anhören
+oder Ansehen stehen im Kasten selbst, auf die Stelle, um die es geht
+(`&t=45s` bei YouTube). Die Quellen jedes Satzes stehen in
+`src/content/history-sources.yaml` unter der `id` des Kastens ohne
+»history-«, im Format von `reference/personen/sources.yaml`; die
+Entwicklungsseite /person-sources zeigt, was belegt ist und was offen.
+
+```html
+<div class='history' id='history-believe'>
+<p><strong>Cher, »Believe«</strong>, 1998. Was geschah, und wie es mit dem Abschnitt zusammenhängt.</p>
+</div>
+```
+
 ### Zum Ausprobieren einladen
 
 Wie etwas funktioniert, versteht man oft erst, wenn man es ändert und sieht,
@@ -578,6 +601,40 @@ kein `_task()` in einem Extra steht. Markiert werden nur ganze Kapitel
 (`##`), keine Abschnitte, und die Notiz für Lehrkräfte nennt die Extras im
 Ablauf.
 
+
+### Eine Aktivität in Teilen
+
+Eine Aktivität über viele Doppelstunden, die ein Kurs bleibt (eine
+`tasks.yaml`, eine Notiz für Lehrkräfte, eine Karte, ein Kasten auf
+/lehrplan), wird mit `parts: true` im Meta-Block auf mehrere Seiten
+verteilt, eine für jedes Kapitel (`##`). Das erste Kapitel steht unter
+`/slug`, die anderen unter `/slug/2`, `/slug/3` und so weiter. Jede Seite hat
+unter dem Titel eine Reihe mit allen Teilen, der aktuelle lila umrandet, und
+am Ende »Weiter mit Teil n: …«; die Kurzfassung (`abstract`) steht nur auf
+dem ersten Teil. Die Leiste der Kapitel oben nennt alle Teile und öffnet sie,
+die Liste am Rand nur die Abschnitte des aktuellen. Ein alter Link auf eine
+Überschrift (`/slug#ein-ton-aus-zahlen`) führt zu dem Teil, der sie hat.
+
+Geschrieben wird weiter in einer einzigen Markdown-Datei: Rezepte, Stufen,
+Aufgaben und Tests sehen sie wie vorher, geteilt wird erst die fertige Seite
+(`src/ruby/include/activity_parts.rb`). Darum muss jedes Kapitel für sich
+lesbar sein: Was ein späteres braucht, steht in den Stufen oder wird dort
+kurz wiederholt, und ein Verweis nennt das Kapitel (»wie im Kapitel
+Frequenzen«) statt »oben«. `parts:` lohnt sich erst, wenn eine Seite wirklich zu lang ist, um sie
+zu lesen; »Audio komprimieren« mit acht Doppelstunden ist es nicht und
+steht auf einer Seite. Als Liste (`- image: …` und `image_alt: …` je
+Teil) gibt `parts:` jedem Teil ein Bild, und die Karte im Katalog blättert
+wie bei einer Reihe durch die Teile.
+
+Mehrere Aktivitäten, die aufeinander aufbauen und doch jede für sich stehen
+(eigene Aufgaben, eigene Notiz, einzeln einer Klasse zuzuweisen), werden in
+`sections.yaml` zu einer **Reihe**: Unter den Einträgen ihres Abschnitts steht
+`series:` mit der Liste ihrer Slugs in der Reihenfolge, in der man sie
+macht. Im Katalog zeigt dann eine einzige Karte, an der Stelle der ersten,
+die Bilder aller mit Pfeilen und Punkten zum Blättern (`card_series.js`;
+nichts bewegt sich von selbst), und über jeder Seite der Reihe steht die
+Reihe ihrer Titel, ohne Nummern, weil die Titel ihre eigenen tragen (»Level
+1: Die Tiefe«). Beispiel: die Backrooms, Level 0 bis 3.
 
 ### Wie geht es weiter?
 

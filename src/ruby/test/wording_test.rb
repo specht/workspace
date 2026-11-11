@@ -83,6 +83,14 @@ class WordingTest < Minitest::Test
         assert_empty found
     end
 
+    # a value of a sound taken at one moment is a »Sample«, the English term
+    # like String or Stack, not a »Messung«; on the pages about sound
+    # (messen as a verb stays: sampling is measuring)
+    def test_samples_not_messungen
+        sound = %w[audio-compression telefonspiel].flat_map { |dir| Dir.glob(File.join(CONTENT, dir, '*.{md,yaml}')) }
+        assert_empty hits(/\bMessung(en)?\b/, sound)
+    end
+
     def test_multiplizieren_not_malnehmen
         assert_empty hits(/\bmal\s?(nehmen|genommen|nimmt|nimm)\b/i)
     end
@@ -110,6 +118,11 @@ class WordingTest < Minitest::Test
     # Stack, Queue, Priority Queue, Hash Table stay English
     def test_english_data_structure_names
         assert_empty hits(/Warteschlange|Vorrangwarteschlange|Prioritätswarteschlange|Hashtabelle|Stapelspeicher/)
+    end
+
+    # video terms German developers say in English: Combing, not Kammeffekt
+    def test_english_video_terms
+        assert_empty hits(/Kammeffekt|Kamm-Effekt/)
     end
 
     # the server opens links to other sites in a new tab (ExternalLinks)

@@ -89,6 +89,16 @@
     - raycaster
     - raylib
     - level-0-c1d8a2f7
+    - level-1-7e3a91c4
+    - level-2-b52d0f18
+    - level-3-4c9e6a2d
+  # Activities that belong together, in this order: one card in the
+  # catalog (the first member's; its carousel of all their pictures is
+  # shelved, Main::SERIES_CAROUSEL), and over each page a row of
+  # all of them (ActivityParts.nav_html, Main#series_of). The Backrooms:
+  # Level 0 to 3, each building on the one before.
+  series:
+    - [level-0-c1d8a2f7, level-1-7e3a91c4, level-2-b52d0f18, level-3-4c9e6a2d]
 
 - key: writing
   compact: true
@@ -137,20 +147,25 @@
 
 - key: compression
   compact: true
-  label: Bilder und Kompression
-  short: Mach Daten kleiner und lies echte GIF- und JPEG-Dateien Byte für Byte.
+  label: Bilder, Ton und Kompression
+  short: Mach Daten kleiner, lies echte GIF- und JPEG-Dateien und lass weg, was Ohr und Auge nicht merken.
   icon: /images/clamp.png
   description: |
     Daten kleiner machen, ohne etwas zu verlieren: Lauflängen, Huffman-Codes
     und LZW, jedes Verfahren selbst geschrieben. Danach Decoder in C für GIF
     und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen, und
-    Botschaften, die in den Pixeln eines Fotos verschwinden.
+    Botschaften, die in den Pixeln eines Fotos verschwinden. Bei Ton und
+    Video lässt ein Codec weg, was Ohr und Auge nicht merken, und speichert
+    von Bild zu Bild nur, was sich ändert.
   entries:
     - rle
     - huffman
     - lzw
     - gif
     - jpeg
+    - audio-compression
+    - .audio-effects
+    - video-compression
     - fraktale-kompression
     - steganography
 
@@ -280,21 +295,6 @@
     - working-with-files
     - git
     - terminal-mystery
-
-# Hidden: not in the catalog and not pinnable; the pages are found by their
-# address. Levels 1 to 3 of the series that begins with level-0-c1d8a2f7
-# (in »Spiele & 3D-Welten«, also reached by typing noclip on the 404 page):
-# each is linked only from the level before it.
-
-- key: hidden
-  hidden: true
-  label: Verborgen
-  icon: /images/bookmark.png
-  entrance: level-0-c1d8a2f7
-  entries:
-    - level-1-7e3a91c4
-    - level-2-b52d0f18
-    - level-3-4c9e6a2d
 
 - key: programming_languages
   compact: true

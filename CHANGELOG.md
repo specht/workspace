@@ -21,6 +21,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- »Betrieb« auf `/admin` prüft einmal am Tag, ob der Sprachdienst noch von YouTube laden kann (fünf Sekunden eines Videos, mit `PHONE_YOUTUBE_COOKIES`); misslingt es, bekommt die Administration einmal am Tag eine Mail. Gespeichert wird nur das letzte Ergebnis in `data/internal/youtube-check.json`. Nach dem Update `./config.rb restart phone_speech`.
+
+- Lesezeichen im Inhaltsverzeichnis links: Angemeldete Personen können Überschriften einer Seite markieren. Gespeichert werden Seite, Überschrift und Zeitpunkt (`Bookmark`-Knoten in Neo4j, am Konto); sie stehen im Export des Kontos, werden mit ihm gelöscht und in der Datenschutzerklärung genannt.
+- Neues Workspace-Image: ffmpeg (mit ffprobe), numpy und Pillow für Ton, Bilder und Video in Python, etwa 250 MB mehr. Nach dem Update `./build-image.sh` (oder das Image hochladen, wie gewohnt).
 - Telefonspiel: Musik aus sehr langen YouTube-Videos (mehr als 80 MB Ton) schlug fehl; jetzt holt der Sprachdienst davon nur das Stück, das das Spiel spielt. Nach dem Update `./config.rb restart phone_speech`.
 - Etikettendrucker für den Tag der offenen Tür (`docs/etiketten.md`): zunächst aus; unter »Administration«, »Etikettendrucker« für einige Stunden einschalten. Besucher malen auf `/etiketten` (QR-Code, ohne Konto), ein Ruby-Skript auf einem Laptop mit dem ZPL-Drucker am USB holt die Etiketten ab. Gespeichert wird nur das Bild, zwei Tage lang (in der Datenschutzerklärung eingetragen).
 - Die Auslastung des Servers (Prozessoren, Arbeitsspeicher, Festplatten) wird alle fünf Minuten gemessen und auf `/statistik` gezeigt: je Stunde dauerhaft, jede Messung 90 Tage.

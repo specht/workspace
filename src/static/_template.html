@@ -32,6 +32,7 @@
     <script src="/include/stepper_keys.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
     <script src="/include/stepper_motion.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
     <script src="/include/hint_steps.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
+    #{user_logged_in? ? "<script src='/include/bookmarks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}
     #{DEVELOPMENT ? '<script defer src="/include/tutorial-screenshot-live.js?' + CACHE_BUSTER + Time.now.to_i.to_s + '"></script>' : ''}
     <script src="/include/bootstrap-5.3.3/dist/js/bootstrap.bundle.min.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}"></script>
     <script src="/include/clipboard.min.js"></script>
@@ -469,7 +470,12 @@ function install_autotoc() {
         if (div.hasClass('extra')) item.addClass('extra').prepend(extra_chapter_mark());
         item.data('autotoc-index', i);
         item[0].addEventListener('click', function(e) {
-            $('html')[0].scrollTop = $(containers[i]).find('h2')[0].offsetTop - 80;
+            // another part of an activity in parts (ActivityParts): its page
+            if (containers[i].dataset.href) {
+                window.location.href = containers[i].dataset.href;
+                return;
+            }
+            window.scrollTo({ top: heading_top($(containers[i]).find('h2')[0]), behavior: 'smooth' });
         });
         autotoc_items.push(item[0]);
         autotoc_items_visible.push(false);
@@ -481,6 +487,16 @@ function install_autotoc() {
         spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
     }
     $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
+}
+
+// Where to scroll so that a heading stands at the top of the window: its
+// place in the page (offsetTop counts from the nearest positioned box, not
+// the page), less the bar of chapters where it covers the window (it is not
+// shown beside the side navigation on a wide screen) and a little air.
+function heading_top(heading) {
+    let bar = document.querySelector('.autotoc');
+    let covering = bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().height : 0;
+    return heading.getBoundingClientRect().top + window.scrollY - covering - 20;
 }
 
 // The mark of an optional chapter (ExtraChapters) in both tables of
@@ -512,6 +528,33 @@ function heading_content(heading) {
     let fragment = document.createDocumentFragment();
     fragment.append(...copy.childNodes);
     return fragment;
+}
+
+// An activity in parts (ActivityParts): a link to an anchor that is in
+// another part (/slug#ein-ton-aus-zahlen) goes to that part. Each other
+// part is an empty container that lists its anchors.
+function follow_part_anchor() {
+    // on a phone the row of parts scrolls sideways: the current one in view
+    let current = document.querySelector('.activity-parts .current');
+    if (current) {
+        let row = current.closest('ol');
+        row.scrollLeft = current.parentElement.offsetLeft - row.offsetLeft - (row.clientWidth - current.offsetWidth) / 2;
+        const fade = function() {
+            row.classList.toggle('more-left', row.scrollLeft > 1);
+            row.classList.toggle('more-right', row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
+        };
+        row.addEventListener('scroll', fade, { passive: true });
+        window.addEventListener('resize', fade);
+        fade();
+    }
+    let id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id || document.getElementById(id)) return;
+    for (let stub of document.querySelectorAll('.autotoc-container[data-href]')) {
+        if ((stub.dataset.anchors || '').split(' ').includes(id)) {
+            window.location.replace(`${stub.dataset.href}#${encodeURIComponent(id)}`);
+            return;
+        }
+    }
 }
 
 var autotoc_secondary = null;
@@ -591,7 +634,7 @@ function install_secondary_autotoc() {
     up.className = 'autotoc-up autotoc-secondary-up';
     up.title = 'Nach oben';
     up.setAttribute('aria-label', 'Nach oben');
-    up.innerHTML = "<i class='bi bi-arrow-up' aria-hidden='true'></i>";
+    up.innerHTML = "<i class='bi bi-chevron-double-up' aria-hidden='true'></i>";
     up.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     title_element.append(up);
 
@@ -619,7 +662,7 @@ function install_secondary_autotoc() {
             e.preventDefault();
 
             window.scrollTo({
-                top: heading.offsetTop - 90,
+                top: heading_top(heading),
                 behavior: 'smooth'
             });
 
@@ -796,6 +839,7 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     });
     install_secondary_autotoc();
+    follow_part_anchor();
 });
 
 const ALT_REVIEW_STORAGE_KEY = 'hackschule-alt-review-enabled';
@@ -1181,7 +1225,7 @@ window.addEventListener('load', function() {
     #{CONTENT}
 
     <nav class="autotoc hidden" aria-label="Seitennavigation" inert>
-        <button type="button" class="autotoc-up" aria-label="Nach oben" title="Nach oben"><i class='bi bi-arrow-up' aria-hidden='true'></i></button>
+        <button type="button" class="autotoc-up" aria-label="Nach oben" title="Nach oben"><i class='bi bi-chevron-double-up' aria-hidden='true'></i></button>
         <div class="items"></div>
         <div class="progress_spots_sm"></div>
         <div class="progress_sm"></div>

@@ -33,6 +33,15 @@ in doubt, do it the way it does.
   input of a task. Choosing one sets the widget up anew (`setUp`, the old
   listeners and timers go with `algoTeardown`).
 
+- **Choosing a place in a picture** (a block, an MCU, a pixel, a search
+  square; the maintainer, November 2026): what is chosen can be dragged with
+  the mouse and a finger, a tap or click chooses where it lands, and the
+  arrow keys move it; a magnifier is dragged like a map and keeps its view
+  when something in it is clicked; hovering shows what a click would
+  choose. The widget starts on an interesting place (an edge, an eye, a
+  moving head; not the corner of the picture), and a frame marking the
+  choice runs outside the chosen pixels, never over them. Small labels say
+  what the frames mean.
 - **A title says what can be seen** (`data-title`), above the buttons, short
   and not too specific: »Suchbaum: einfügen«, »AVL-Baum: entfernen«,
   »Heap: pop«, »Merge Sort«.
@@ -385,6 +394,59 @@ only to look nice.
   printed label, white in both modes. No steps, no timeline: the reader
   paints. `test/static/qr_code.test.cjs` checks the layout against
   qrencode and the page's stickers against jsQR.
+- **The iDCT stepper on the JPEG page** (`data-src`): one button per
+  channel (Y, Cb, Cr), the photo and a magnifier of 3 × 3 MCUs (picker in
+  jpeg_image.js, as large as the blocks under it). The magnifier draws the
+  MCU grid and, finer, the channel's blocks; the block under the pointer
+  lights up, a click chooses it, a click or drag on the photo chooses the
+  block under the pointer; dragging the magnifier moves it like a map and
+  it settles on the MCU in its middle; beside the picker the
+  finished block as the goal, and the error to it in place of the pixel
+  values (0 everywhere after the last step).
+- **The iDCT stepper with a picture** (`idct_stepper.js`,
+  `data-picture data-quantize='8' data-block='88 40'` and an `<img>` inside, »Video
+  komprimieren«): above the steps the picture, four times as large with
+  sharp pixels, in a grid of 8 × 8 blocks; the chosen block dashed yellow
+  as in the JPEG picker, dragged, tapped or moved with the arrow keys while
+  the picture has the focus, the block under the mouse dashed, grid and
+  frames on a canvas in device pixels; Y, Cb and Cr to switch (the formulas
+  of »Farbe sparen«; a block of Cb or Cr covers 16 × 16 pixels, each value
+  the mean of 2 × 2, as in 4:2:0, at the maintainer's question); beside the picture the block alone in the channel, as
+  large as the blocks under it, as the goal of the steps; the panel of
+  pixel values becomes the error, the goal minus the block so far (orange
+  still too dark, blue too bright, black right) with its mean in the
+  caption. Without a picture (the JPEG page) the pixel values stay. »Der Block bisher« shows the true greys,
+  without stretching the contrast (the maintainer, November 2026). The widget computes the block's DCT itself
+  (Y − 128, rounded to multiples of data-quantize) and starts its steps
+  anew; data-coef shows the first block until the picture has loaded.
+- **Block matching** (`motion_widget.js`, »Video komprimieren«): the frame
+  now and the frame before (two PNGs inside the div, 512 × 352 from
+  `bilder/motion_widget.py`, cut from the film at its full 2048 pixels so
+  the girl is large and crisp); the block (16 × 16) is dragged over the frame
+  now and snaps to the grid, the square over the frame before, within the
+  search area of ±16 that stays bright, without an onion skin (the
+  maintainer); grid and frames on canvases in device pixels, the block
+  under the mouse dashed; mouse or finger on either. Once the reader has
+  touched or focused the widget, the arrow keys move the square by a pixel
+  and with Shift the block by a block, wherever the focus is, until a click
+  elsewhere; before that they scroll the page (the widget takes them in the
+  capture phase, so stepper_keys.js leaves them alone). Enlarged
+  under them: the block, the square, their difference with its sign
+  (orange brighter, blue darker, black 0) and, after »Beste Verschiebung suchen«, the sum for every
+  shift as a map from deep purple (small) to pale, the best ringed in
+  yellow, the reader's own square in white. The search leaves the reader's
+  square where it is (the maintainer: otherwise the guess is gone and the
+  comparison means nothing); the best shift gets a yellow frame in the frame
+  before, just outside the purple one where both agree, and a click on the
+  map puts the square on that shift. Places to start (data-presets,
+  buttons above the controls: background, head, staff, dog, leg) put the
+  block where the motion differs. A small table of fixed size gives the
+  reader's square and the best shift with vector and sum (»–« before a
+  search, a check mark where they agree), a sentence says how many shifts
+  the search tries; the map keeps its place before the search, so that
+  nothing moves. No steps, no timeline: the reader drags.
+  Frames 5 and 6 of the slope, neighbours as a P-frame and the frame it is
+  predicted from, not the frames of the tasks.
 - **What grows comes first**: in a step that also sprouts a pointer, an
   element that grows in does so at the start (`early` in
   `stepper_motion.js`), so that its pointers sprout from something.
@@ -523,8 +585,13 @@ only to look nice.
   the step at once. A click during a movement finishes it first.
 - `prefers-reduced-motion` shows every step at once. `?motion=slow` in the
   address makes every movement six times slower, to look at it closely.
-- Four buttons with `data-go` (first, prev, next, last) and ← → through
-  `stepper_keys.js` (`data-stepper` on the widget); on a touch screen a
+- Four buttons with `data-go` (first, prev, next, last) and ← →, Pos1 and
+  Ende through `stepper_keys.js` (`data-stepper` on the widget). ← → go to
+  the widget that takes up most of the window, which shows it with its left
+  edge in the purple of »current« (`stepper-has-keys`); Pos1 and Ende go to
+  it only while it has the window (at least half of it visible, or filling
+  at least half of the window), otherwise they scroll the page (the
+  maintainer, November 2026). On a touch screen a
   sideways swipe across the picture steps it too (not on the timeline,
   `data-no-swipe`). On a touch screen (tablet, phone) the controls sit on
   the right, where the thumb is: back and next large and finger-sized
@@ -554,6 +621,17 @@ only to look nice.
   many), and no frame, label or lightbox of its own: the task card is the
   frame. The current line of the plan is marked purple in the editor, its
   number brighter.
+- **Every widget fits in the window** (`stepper_keys.js`, `stepperWindowFit`),
+  from 768 px wide: the school's screen is 1920 × 1080, which leaves a page
+  of about 1920 × 900 under the browser's bars and the taskbar. A widget
+  taller than the window under the sticky bar first shrinks its picture
+  with CSS zoom (the decoder's view, the DCT widget's picture with its grid,
+  the two frames of block matching, an Algo Stepper's SVG; not Pip, whose
+  canvases lie over the SVG), down to 60 %, so its text keeps its size;
+  if that is not enough, the whole widget, down to 80 %. Fitted when it
+  comes near the window, when it changes size on its own (a picture
+  loaded) and on a new window size; the lightbox clears it. On a phone the
+  lightbox shows a widget whole.
 - **A lightbox for a demo**: every widget has a square button at its top
   right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
   lightbox on a black background, for the big screen. The keys and the

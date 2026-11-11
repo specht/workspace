@@ -30,7 +30,7 @@ Lernende schreiben in C einen Decoder für Baseline-JPEG, der das Bild mit Pixel
 - »Dequantisiert« (−48 für den ersten Y-Block von `91-baseline.jpg`) erkennt −16, den Wert aus der Datei ohne Multiplizieren.
 - »Nach der iDCT« (110 ± 1, oben links im selben Block) erkennt −18 (ohne die Verschiebung um 128) und 122 (nur der DC-Koeffizient).
 - »Die Blöcke in der MCU« (Y = 70 bei x = 0, y = 8 in `44-baseline.jpg`) erkennt 37: den zweiten Block unter den ersten gelegt statt daneben.
-- Die Zeitlupe zur iDCT setzt den Beispielblock Koeffizient für Koeffizient aus seinen Basisbildern zusammen; nach dem letzten stimmen die Werte genau mit dem Referenzdecoder überein (`test/static/idct_stepper.test.cjs`). Sie eignet sich auch, um über die Quantisierung zu sprechen: Nach wenigen Schritten sieht der Block schon fast fertig aus.
+- Die Zeitlupe zur iDCT setzt den Beispielblock Koeffizient für Koeffizient aus seinen Basisbildern zusammen; nach dem letzten stimmen die Werte genau mit dem Referenzdecoder überein (`test/static/idct_stepper.test.cjs`), und der Fehler zum fertigen Block, unten rechts in Orange und Blau, ist überall 0. Sie eignet sich auch, um über die Quantisierung zu sprechen: Nach wenigen Schritten sieht der Block schon fast fertig aus.
 
 #### Die Aufgaben
 

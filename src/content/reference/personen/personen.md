@@ -100,6 +100,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1768 -->
+<!-- part: fourier -->
+### Joseph Fourier
+
+<div class='person'>
+<img src='fourier.webp' alt='Joseph Fourier als Stich, farbig getönt: ein Mann mit dichten, lockigen Haaren und rundem Gesicht, der leicht lächelt, in einem dunklen Rock mit gestickten Blättern am Kragen und einem weißen Halstuch.'>
+<p><strong>Joseph Fourier</strong> (1768–1830), französischer Mathematiker und Physiker. Er untersuchte, wie sich Wärme in einem Körper ausbreitet, und schrieb dafür Temperaturverläufe als Summen von Sinus- und Kosinusschwingungen. 1822 erschien sein Buch <em>Théorie analytique de la chaleur</em>. Darauf geht alles zurück, was ein Signal in seine Frequenzen zerlegt: deine <code>dft</code>, die FFT und die DCT von JPEG und den Videocodecs.</p>
+<p>Fourier war der Sohn eines Schneiders aus Auxerre und wurde früh Waise. Er begleitete Napoleon 1798 nach Ägypten und war danach Präfekt in Grenoble, wo er die Wärme erforschte. Dass sich fast jede Kurve so zerlegen lässt, glaubten Lagrange und andere zunächst nicht; unter welchen Bedingungen genau, zeigte Dirichlet 1829.</p>
+<p class='person-credit'>Stich: A. F. B. Geille nach Julien Léopold Boilly, frühes 19. Jahrhundert, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Fourier2_-_restoration1.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1777 -->
 <!-- part: gauss -->
 ### Carl Friedrich Gauß
@@ -154,6 +166,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='boole.webp' alt='Stich von George Boole um 1864: ein Mann mit zurückgekämmtem dunklem Haar, hohem Kragen und Halsbinde, den Blick zur Seite.'>
 <p><strong>George Boole</strong> (1815–1864), englischer Mathematiker, Professor in Cork in Irland. In seinem Buch <em>The Laws of Thought</em> von 1854 rechnete er mit Aussagen, die wahr oder falsch sind, wie mit Zahlen. Nach ihm heißen <code>true</code> und <code>false</code> in vielen Sprachen Boolean, in Python ist es der Typ <code>bool</code>.</p>
 <p class='person-credit'>Bild: unbekannter Künstler, um 1864, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:George_Boole.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1830 -->
+<!-- part: muybridge -->
+### Eadweard Muybridge
+
+<div class='person'>
+<img src='muybridge.webp' alt='Eadweard Muybridge im Alter: ein Mann mit wildem weißem Haar und langem weißem Vollbart in einem dunklen Anzug, der ernst zur Seite blickt.'>
+<p><strong>Eadweard Muybridge</strong> (1830–1904), englischer Fotograf aus Kingston upon Thames, hieß eigentlich Edward James Muggeridge; »Eadweard« hielt er für die alte angelsächsische Form von Edward. Mit 20 Jahren wanderte er in die USA aus, verkaufte Bücher in New York und San Francisco und stellte 1868 große Fotos aus dem Yosemite-Tal aus.</p>
+<p>Von 1883 bis 1886 machte er an der University of Pennsylvania in Philadelphia über 100.000 Fotos von Menschen und Tieren in Bewegung. Sein Zoopraxiskop, das gemalte Bilder von Glasscheiben auf eine Leinwand warf, war eines der Vorbilder für das Kinetoskop von Thomas Edison und William Kennedy Dickson, das erste Gerät, mit dem man Filme gegen Geld zeigte.</p>
+<p class='person-credit'>Foto: Frances Benjamin Johnston, zwischen 1890 und 1910, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Eadweard_Muybridge_by_Frances_Benjamin_Johnston_(cph_3b02731).tif'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -251,6 +275,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1899 -->
+<!-- part: bekesy -->
+### Georg von Békésy
+
+<div class='person'>
+<img src='bekesy.webp' alt='Georg von Békésy 1963: ein älterer Mann mit Glatze und Brille, in dunklem Anzug und schwarzer Krawatte, der auf ein Blatt Papier in seinen Händen blickt.'>
+<p><strong>Georg von Békésy</strong> (1899–1972), ungarischer Physiker. Im Forschungslabor der ungarischen Post in Budapest ging es um Telefongespräche über weite Strecken, und er untersuchte dafür auch das Ohr, das am Ende jeder Leitung zuhört. In der Werkstatt der Post fand man morgens die Bohrmaschine voller Staub aus menschlichen Knochen.</p>
+<p>Er präparierte die Schnecke aus den Ohren Verstorbener so, dass sie zum Teil erhalten blieb, streute Silberflocken auf die Basilarmembran und sah ihr im Licht schneller Blitze beim Schwingen zu: Sie bewegt sich wie eine Welle. Dafür bekam er 1961 den Nobelpreis für Medizin. Ab 1947 forschte er an der Harvard University, ab 1966 in Hawaii.</p>
+<p class='person-credit'>Foto: Willy Pragher, 1963, Landesarchiv Baden-Württemberg, Staatsarchiv Freiburg W 134 Nr. 073043c, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:13._Tagung_1963_Medizin;_Er%C3%B6ffnung_Lindau_1.7.63-_Georg_v._B%C3%A9k%C3%A9sy,_H._Athenstaedt_-_LABW_-_Staatsarchiv_Freiburg_W_134_Nr._073043c.jpeg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1902 -->
 <!-- part: menger -->
 ### Karl Menger
@@ -340,6 +376,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Alan Turing</strong> (1912–1954), britischer Mathematiker. Was einem endlichen Automaten fehlt, gab er 1936 seiner Turingmaschine: ein Band ohne Ende, auf dem sie lesen und schreiben kann. Was ein Computer berechnen kann, kann auch sie, und er bewies, dass es Fragen gibt, die keine Maschine beantworten kann.</p>
 <p>Im Zweiten Weltkrieg half er in Bletchley Park, die verschlüsselten Funksprüche der deutschen Wehrmacht zu entziffern. Der wichtigste Preis der Informatik heißt nach ihm Turing Award.</p>
 <p class='person-credit'>Foto: um 1928, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Alan_Turing_Aged_16.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1915 -->
+<!-- part: cooley-tukey -->
+### James Cooley und John Tukey
+
+<div class='person'>
+<p><strong>James Cooley</strong> (1926–2016) und <strong>John Tukey</strong> (1915–2000), amerikanische Mathematiker, veröffentlichten 1965 die FFT. Cooley hatte von 1953 bis 1956 in Princeton den Computer von John von Neumann programmiert und forschte ab 1962 bei IBM; Tukey lehrte in Princeton und arbeitete zugleich bei den Bell Labs. Richard Garwin von IBM hatte die beiden zusammengebracht. Cooley sagte er nicht, wofür Tukey die FFT brauchte, sondern nur, es gehe um Spins in einem Kristall aus Helium-3.</p>
+<p>Das Wort <em>Bit</em>, kurz für <em>binary digit</em>, prägte Tukey 1947 in einer Notiz bei den Bell Labs. Auch den Boxplot, den du vielleicht aus dem Mathematikunterricht kennst, führte er 1970 ein.</p>
 </div>
 <!-- /part -->
 
@@ -540,6 +586,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Michael O. Rabin</strong> (1931–2026, im Bild), in Breslau geboren und in Haifa aufgewachsen, und <strong>Dana Scott</strong> (geboren 1932), amerikanischer Logiker, schrieben 1959 als junge Forscher bei IBM einen Aufsatz über endliche Automaten. Darin darf ein Automat zum ersten Mal raten: der NEA. Sie zeigten auch, wie man aus jedem NEA einen DEA baut, der dieselben Wörter annimmt; die Potenzmengenkonstruktion heißt darum auch Rabin-Scott-Konstruktion.</p>
 <p>1976 bekamen beide dafür den Turing Award, den wichtigsten Preis der Informatik. Rabin machte später aus einem Primzahltest von Gary Miller einen schnellen Zufallstest: Wenn <code>openssl</code> ein RSA-Schlüsselpaar erzeugt, prüft es seine Primzahlen mit dem Test von Miller und Rabin.</p>
 <p class='person-credit'>Foto: Andrej Bauer, 2004, CC BY-SA 2.5 si, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Michael_O._Rabin_2004.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1932 -->
+<!-- part: golomb -->
+### Solomon W. Golomb
+
+<div class='person'>
+<img src='golomb.webp' alt='Solomon W. Golomb um 2011: ein alter Mann mit weißem Haar und weißem Vollbart, in dunklem Sakko über einem gemusterten Pullover, vor dunklem Hintergrund.'>
+<p><strong>Solomon W. Golomb</strong> (1932–2016), amerikanischer Mathematiker und Ingenieur, am Jet Propulsion Laboratory und ab 1963 an der University of Southern California. 1966 beschrieb er die Golomb-Codes für Zahlen, unter denen kleine häufig sind. Die Rice-Codes, mit denen FLAC die Reste seiner Vorhersage schreibt, sind die unter ihnen, bei denen man durch eine Zweierpotenz teilt.</p>
+<p>Du hast Tetris gespielt? Figuren aus Quadraten, die an ihren Kanten zusammenhängen, gab Golomb 1953 den Namen Polyominos. Tetris ist aus den sieben Figuren aus vier Quadraten gebaut, und Alexei Paschitnow kam auf das Spiel mit einem Puzzle aus Pentominos, Figuren aus fünf Quadraten.</p>
+<p class='person-credit'>Foto: National Science Foundation, um 2011, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Solomon_Wolf_Golomb.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -958,6 +1016,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Ken Perlin</strong>, Informatiker in New York. Nach den Computerbildern für den Film <em>Tron</em> (1982) störte ihn, wie glatt und sauber Oberflächen aus dem Computer aussahen, und er erfand das Rauschen, das seinen Namen trägt. Dafür bekam er 1997 einen Oscar für technische Leistungen.</p>
 <p>Wolken, Feuer und ganze Landschaften in Spielen wie Minecraft entstehen aus Perlin-Rauschen und seinen Verwandten.</p>
 <p class='person-credit'>Foto: Ambuj Saxena, 2007, CC BY 2.5, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Ken_Perlin.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1954 -->
+<!-- part: brandenburg -->
+### Karlheinz Brandenburg
+
+<div class='person'>
+<img src='brandenburg.webp' alt='Karlheinz Brandenburg, 2010: ein Mann mit grauem Haar, grauem Bart und randloser Brille, der freundlich lächelt, in einem schwarzen Sakko über einem roten Hemd, vor einer hellen Wand.'>
+<p><strong>Karlheinz Brandenburg</strong> (geboren 1954), Elektroingenieur aus Erlangen. In seiner Doktorarbeit von 1989 codierte er Musik nach dem, was das Ohr wahrnimmt, und mit seinem Team am Fraunhofer-Institut für Integrierte Schaltungen in Erlangen entwickelte er daraus das Verfahren, das als MP3 bekannt wurde.</p>
+<p>Später lehrte er an der Technischen Universität Ilmenau und leitete dort das Fraunhofer-Institut für Digitale Medientechnologie. 2014 kam er in die Internet Hall of Fame.</p>
+<p class='person-credit'>Foto: Christliches Medienmagazin pro, 2010, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Karlheinz_Brandenburg_cropped.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

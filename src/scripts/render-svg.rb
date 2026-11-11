@@ -47,7 +47,12 @@ DARK = {
     '#fdfdfd' => '#fdfdfd', # a printed label (a barcode): white in both modes
     '#fde68a' => '#fde68a', # a yellow sticker on a printed label (a QR code): the same in both modes
     '#7c3aed' => '#a78bfa', # purple: a fourth colour beside blue, green and amber (branches in a commit graph)
+    '#ede9fe' => '#2a2140', # pale purple areas (pixels sharing a colour value)
+    '#ddd6fe' => '#3a2d5c', # a second, slightly stronger pale purple beside it
     '#eab308' => '#facc15', # yellow: a colour by name beside red, green and blue (a map in four colours)
+    '#0d60ae' => '#118cfc', # I-frames (»Video komprimieren«): the strongest of the three kinds
+    '#12959f' => '#14bbc2', # B-frames: between I and P
+    '#c98500' => '#f4a938', # P-frames
 }.freeze
 
 # in docker/drawings, the same fonts and tools on every machine: started
