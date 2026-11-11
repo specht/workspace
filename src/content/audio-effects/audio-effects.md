@@ -973,7 +973,7 @@ Im Film sprechen Streifenhörnchen, Riesen und Roboter, und oft steckt dahinter 
 <div class='effect-widget' data-effect='voices'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Probier die drei Knöpfe unter den Reglern und schau im Bild, was mit der Welle geschieht. Stell dann den Ringmodulator langsam von 0 auf 200 Hz: Ab wann hörst du ein Flattern, ab wann einen metallischen Klang? Was passiert, wenn du die Stimme zusätzlich tiefer machst?
+<strong>Ausprobieren:</strong> Probier die Knöpfe unter den Reglern und schau im Bild, was mit der Welle geschieht. Wodurch unterscheiden sich Darth Vader und General Grievous? Stell dann den Ringmodulator langsam von 0 auf 200 Hz: Ab wann hörst du ein Flattern, ab wann einen metallischen Klang? Was passiert, wenn du die Stimme zusätzlich tiefer machst?
 </div>
 
 <div class='history' id='history-film-voices'>
@@ -1034,4 +1034,8 @@ wait-for-text: stimme-dalek.wav
 -->
 
 Hör dir die drei Dateien an. Das Streifenhörnchen ist mit `shift` gemacht, nicht schneller abgespielt wie bei Bagdasarian: Es spricht im Tempo der Stimme.
+
+<div class='history' id='history-star-wars'>
+<p><strong>Darth Vader und General Grievous</strong>, 1977 und 2005. Darth Vader spricht in allen Filmen mit der Stimme von James Earl Jones, die kaum verändert ist; was ihn ausmacht, ist sein Atmen. Das machte der Sounddesigner Ben Burtt aus veränderten Aufnahmen eines Tauchgeräts. General Grievous dagegen, ein Cyborg aus »Die Rache der Sith«, sollte nach dem Wunsch von George Lucas klingen, als spräche er durch einen künstlichen Kehlkopf. Matthew Wood sprach ihn mit rauer, harter Stimme, die Bearbeitung am Rechner gab ihr etwas Kratziges, und Lucas wünschte sich dazu einen Husten wie bei Asthma.</p>
+</div>
 

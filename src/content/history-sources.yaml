@@ -229,3 +229,30 @@ film-voices:
     sources:
       - url: https://en.wikipedia.org/wiki/Ring_modulation
         quote: "One of the best-known applications of the ring modulator may be its use by Brian Hodgson of the BBC Radiophonic Workshop to produce the distinctive voice of the Daleks in the television series Doctor Who"
+
+star-wars:
+  - text: Darth Vader und General Grievous, 1977 und 2005
+    sources:
+      - url: https://en.wikipedia.org/wiki/Darth_Vader
+        quote: "first appeared in the original Star Wars film (1977)"
+      - url: https://en.wikipedia.org/wiki/Star_Wars:_Episode_III_%E2%80%93_Revenge_of_the_Sith
+        quote: "Star Wars: Episode III – Revenge of the Sith is a 2005 American epic space opera film written and directed by George Lucas."
+  - text: Darth Vader spricht in allen Filmen mit der Stimme von James Earl Jones, die kaum verändert ist
+    sources:
+      - url: https://en.wikipedia.org/wiki/Darth_Vader
+        quote: "James Earl Jones provides his voice in all of the films and in other media."
+    note: der Artikel nennt keine Bearbeitung der Stimme; »kaum verändert« daher vorsichtig
+  - text: was ihn ausmacht, ist sein Atmen
+    none: Bewertung, die zum nächsten Satz führt
+  - text: Das machte der Sounddesigner Ben Burtt aus veränderten Aufnahmen eines Tauchgeräts
+    sources:
+      - url: https://en.wikipedia.org/wiki/Darth_Vader
+        quote: "The sound of Vader's breathing was created by the film's sound designer, Ben Burtt, using modified recordings of a scuba breathing apparatus."
+  - text: General Grievous dagegen, ein Cyborg aus »Die Rache der Sith«, sollte nach dem Wunsch von George Lucas klingen, als spräche er durch einen künstlichen Kehlkopf
+    sources:
+      - url: https://en.wikipedia.org/wiki/General_Grievous
+        quote: "He is a powerful Kaleesh cyborg. … Lucas wanted Grievous to sound as if he was speaking through a cybernetic voice box."
+  - text: Matthew Wood sprach ihn mit rauer, harter Stimme, die Bearbeitung am Rechner gab ihr etwas Kratziges, und Lucas wünschte sich dazu einen Husten wie bei Asthma
+    sources:
+      - url: https://en.wikipedia.org/wiki/General_Grievous
+        quote: "Wood approached Grievous as a \"classic villain\" and used a gruff and harsh voice. … A \"gravelly quality\" was added to Wood's voice when it was processed. … he instructed Wood to give Grievous an asthmatic cough."

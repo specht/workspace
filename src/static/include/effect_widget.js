@@ -275,19 +275,25 @@
                 { key: 'ring', label: 'Ringmodulator', min: 0, max: 200, step: 1, value: 30,
                   marks: [[0, 'aus'], [30, '30'], [50, '50'], [100, '100'], [150, '150'], [200, '200 Hz']],
                   show: (v) => (v ? `${v} Hz` : 'aus') },
+                { key: 'drive', label: 'Verzerrung', min: 0, max: 1, step: 0.05, value: 0,
+                  marks: [[0, 'aus'], [0.25, '¼'], [0.5, '½'], [0.75, '¾'], [1, 'ganz']],
+                  show: (v) => (v ? `${Math.round(v * 100)} %` : 'aus') },
             ],
             presets: [
-                ['Streifenhörnchen', { semitones: 12, ring: 0 }],
-                ['Riese', { semitones: -8, ring: 0 }],
-                ['Dalek', { semitones: 0, ring: 30 }],
+                ['Streifenhörnchen', { semitones: 12, ring: 0, drive: 0 }],
+                ['Riese', { semitones: -8, ring: 0, drive: 0 }],
+                ['Dalek', { semitones: 0, ring: 30, drive: 0 }],
+                ['Darth Vader', { semitones: -4, ring: 0, drive: 0 }],
+                ['Grievous', { semitones: -2, ring: 0, drive: 0.7 }],
             ],
             live: true,
-            neutral: (p) => p.semitones === 0 && p.ring === 0,
+            neutral: (p) => p.semitones === 0 && p.ring === 0 && p.drive === 0,
             caption: 'Vierzig Millisekunden der Welle an der Stelle, die gerade spielt: grau ohne Effekt, lila mit, gestrichelt der Sinus des Ringmodulators.',
             line: (p) => {
                 const parts = [];
                 if (p.semitones) parts.push(`${Math.abs(p.semitones)} Halbtöne ${p.semitones > 0 ? 'höher' : 'tiefer'}`);
                 if (p.ring) parts.push(`mal einer Sinusschwingung von ${p.ring} Hz: ein Ton von 150 Hz wird zu ${150 - p.ring} und ${150 + p.ring} Hz`);
+                if (p.drive) parts.push(`verzerrt: Was laut ist, wird platt gedrückt, und es kratzt`);
                 return parts.length ? `Die Stimme ${parts.join(', dann ')}.` : 'Die Stimme, wie sie ist.';
             },
             draw: drawVoices,
@@ -594,6 +600,13 @@ onmessage = (e) => {
     } else if (m.effect === 'voices') {
         out = m.params.semitones ? shift(clip.x, clip.rate, () => 2 ** (m.params.semitones / 12), 0.05) : Float32Array.from(clip.x);
         if (m.params.ring) for (let n = 0; n < out.length; n++) out[n] *= Math.sin(2 * Math.PI * m.params.ring * n / clip.rate);
+        // distortion: the wave through tanh, loud parts flattened (a gravelly voice)
+        if (m.params.drive) {
+            let peak = 1e-6;
+            for (let n = 0; n < out.length; n++) peak = Math.max(peak, Math.abs(out[n]));
+            const k = 1 + 30 * m.params.drive, norm = Math.tanh(k);
+            for (let n = 0; n < out.length; n++) out[n] = Math.tanh(k * out[n] / peak) / norm * peak;
+        }
     } else if (m.effect === 'pitch' || m.effect === 'autotune') {
         if (!clip.track) clip.track = track(clip.x, clip.rate);
         found = clip.track;
