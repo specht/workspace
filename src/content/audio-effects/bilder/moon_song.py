@@ -94,13 +94,13 @@ SIXTEENTH = BEAT / 4
 # the line of each phrase: semitones above his own pitch, per syllable; a
 # note may lie at most LIMIT semitones from his voice
 CONTOUR = {
-    'moon1': [0, 2, 0, 3, 2, 0, -2], 'moon2': [0, 2, 0, 3, 2, 0, 3], 'moon3': [0, 2, 0, 3, 5, 3, 0],
-    'decade': [0, 2, 3, -2], 'the-moon': [2, 0],
-    'easy': [0, -2, 0, 2, 0, -2, -4], 'hard': [3, 3, 2, 0, -1, -4], 'because-hard': [0, 2, 3, 2, 0],
-    'hard-word': [-2],
-    'we-choose1': [0, 2, 0, 3, 5, 3], 'we-choose2': [0, 2, 0, 3, 2, 0], 'moon-word1': [2], 'moon-word2': [-2],
+    'moon1': [0, 3, 0, 5, 3, 0, -2], 'moon2': [0, 3, 0, 5, 3, 0, 5], 'moon3': [0, 3, 0, 5, 7, 5, 0],
+    'decade': [0, 3, 5, -2], 'the-moon': [3, 0],
+    'easy': [0, -3, 0, 3, 0, -3, -5], 'hard': [5, 5, 3, 0, -2, -5], 'because-hard': [0, 3, 5, 3, 0],
+    'hard-word': [-3],
+    'we-choose1': [0, 3, 0, 5, 7, 5], 'we-choose2': [0, 3, 0, 5, 3, 0], 'moon-word1': [3], 'moon-word2': [-2],
 }
-LIMIT = 4
+LIMIT = 6
 STEP = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
 C2, C3 = 65.41, 130.81
 BARS = len(CHORDS)
@@ -257,7 +257,7 @@ def hold(piece, n):
 
 voice = np.zeros(LENGTH + 2 * RATE)
 melody = np.zeros(LENGTH + 2 * RATE)
-shifts, sung = [], []
+shifts, sung, syllables = [], [], []
 for bar, sixteenth, name, lengths in SHEET:
     times = PIECES[name]
     assert len(lengths) == len(times) - 1, name
@@ -281,6 +281,7 @@ for bar, sixteenth, name, lengths in SHEET:
         if f:
             shifts.append(note - mine)
         sung.append(note)
+        syllables.append((slot, held, f, note))
         place(melody, 0.3 * fade(tone(semis_hz(note), n), 12, 30), slot)
         slot += units * SIXTEENTH
 voice = voice[:LENGTH] * 0.85 / np.abs(voice).max()
@@ -326,6 +327,7 @@ def pad(chord, n):
 
 kick, snare, clap = sample('kick'), sample('snare'), sample('clap')
 hat, open_hat, rim = sample('hat-closed'), sample('hat-open'), sample('rim')
+crash = sample('crash')
 open_short = open_hat[:int(0.25 * RATE)] * np.linspace(1, 0, int(0.25 * RATE))
 drums = np.zeros(LENGTH + 5 * RATE)
 keys = np.zeros(LENGTH + 3 * RATE)
@@ -382,14 +384,80 @@ noise = rng.uniform(-1, 1, n)
 noise = noise - np.concatenate([[0], noise[:-1]])
 place(drums, noise * np.linspace(0, 1, n) ** 2, 7 * BAR, 0.1)
 
-band = drums[:LENGTH] + keys[:LENGTH] + low[:LENGTH] + (pads * duck)[:LENGTH]
+
+
+def shift(x, factor):
+    """x factor-times as high, as long as it is: grains of 40 ms, each read
+    factor-times as fast and moved by up to one period to fit (shift() of
+    the page, with a constant factor)"""
+    G = int(0.04 * RATE)
+    D = RATE // 60
+    window = np.hanning(G)
+    offsets = np.arange(-G // 2 - D, G - G // 2 + D)
+    padded = np.concatenate([np.zeros(G * 3), x, np.zeros(G * 3)])
+    y = np.zeros(len(padded))
+    weight = np.zeros(len(padded))
+    for c in range(3 * G, 3 * G + len(x), G // 4):
+        pos = np.clip(c + offsets * factor, 0, len(padded) - 1)
+        piece = np.interp(pos, np.arange(len(padded)), padded)
+        here = y[c - G // 2:c - G // 2 + G]
+        k = int(np.argmax(np.correlate(piece, here, 'valid'))) if here.any() else D
+        y[c - G // 2:c - G // 2 + G] += window * piece[k:k + G]
+        weight[c - G // 2:c - G // 2 + G] += window
+    return (y / np.maximum(weight, 1e-3))[3 * G:3 * G + len(x)]
+
+
+def scale_step(note, steps):
+    """the note steps notes of the scale higher"""
+    ladder = sorted(o * 12 + c for o in range(-1, 4) for c in SCALE)
+    k = min(range(len(ladder)), key=lambda i: abs(ladder[i] - note))
+    return ladder[min(len(ladder) - 1, k + steps)]
+
+
+extras = np.zeros(LENGTH + 3 * RATE)
+# harmonies in the chorus: Kennedy a third and a fifth above his melody, exactly on the notes
+for slot, held, f, note in syllables:
+    if 8 * BAR <= slot < 15 * BAR and f:
+        for steps, level, delay in ((2, 0.32, 0.012), (4, 0.22, 0.021)):
+            target = semis_hz(scale_step(note, steps))
+            place(extras, fade(shift(held, target / f), 5, 30), slot + delay, level)
+# vocal chops: »Moon« as an instrument on eighths, through the build and the last bar
+moon = PIECES['moon-word1']
+m0, m1 = int(round((moon[0] - 515) * RATE)), int(round((moon[1] - 515) * RATE))
+chop = speech[m0:m0 + int(0.22 * RATE)]
+chop_f = own_pitch(speech[m0:m1]) or 240
+RIFF = [0, 2, 4, 2, 5, 4, 2, 1]                       # steps of the scale above the chord's root
+for bar in list(range(4, 7)) + [15]:
+    root = CHORDS[bar][0] + 12
+    for k, steps in enumerate(RIFF):
+        target = semis_hz(scale_step(root, steps))
+        place(extras, fade(shift(chop, target / chop_f), 3, 40), bar * BAR + k * 2 * SIXTEENTH, 0.3)
+# a lead of detuned saws doubling the melody an octave up in the chorus
+for slot, held, f, note in syllables:
+    if 8 * BAR <= slot < 15 * BAR:
+        n = len(held)
+        t = np.arange(n) / RATE
+        f0 = semis_hz(note) * 2
+        saw = sum(np.sin(2 * np.pi * f0 * d * k * t) / k for d in (0.993, 1.0, 1.007) for k in range(1, 8) if f0 * k < 9000)
+        place(extras, fade(saw * np.exp(-t * 1.5), 5, 40), slot, 0.025)
+# ear candy: a crash played backwards into the chorus, an impact on its first beat, a shaker in the chorus
+place(drums, crash[::-1][-int(1.5 * RATE):], 8 * BAR - 1.5, 0.3)
+t = np.arange(int(0.6 * RATE)) / RATE
+place(drums, np.sin(2 * np.pi * np.cumsum(40 + 80 * np.exp(-t * 20)) / RATE) * np.exp(-t * 5), 8 * BAR, 0.6)
+n = int(0.03 * RATE)
+for bar in range(8, 15):
+    for k in range(16):
+        shaker = np.diff(rng.uniform(-1, 1, n + 1)) * np.exp(-np.arange(n) / RATE * 120)
+        place(drums, shaker, bar * BAR + k * SIXTEENTH + (0.012 if k % 2 else 0), 0.06 if k % 2 else 0.1)
+
+band = drums[:LENGTH] + keys[:LENGTH] + low[:LENGTH] + (pads * duck)[:LENGTH] + extras[:LENGTH]
 # room for the voice: 1 to 4 kHz 4 dB quieter in the band
 spec = np.fft.rfft(band)
 freq = np.fft.rfftfreq(len(band), 1 / RATE)
 spec *= 10 ** (-4 * np.exp(-(np.log2(np.maximum(freq, 1) / 2000) / 0.9) ** 2) / 20)
 band = np.fft.irfft(spec, len(band))
 band *= 0.8 / np.abs(band).max()
-print('band: drums %.3f keys %.3f 808 %.3f pad %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, keys, low, pads)))
+print('band: drums %.3f keys %.3f 808 %.3f pad %.3f extras %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, keys, low, pads, extras)))
 
 write('kennedy.flac', voice)
 write('kennedy-melodie.flac', melody)
