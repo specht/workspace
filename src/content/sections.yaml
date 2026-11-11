@@ -163,10 +163,10 @@
     - lzw
     - gif
     - jpeg
+    - fraktale-kompression
     - audio-compression
     - audio-effects
     - video-compression
-    - fraktale-kompression
     - steganography
 
 - key: networks
