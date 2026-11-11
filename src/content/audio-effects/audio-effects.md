@@ -890,6 +890,7 @@ Ein **Vocoder** lässt ein Instrument sprechen. Er zerlegt die Stimme in Bänder
 <div class='history' id='history-vocoder'>
 <img src='geschichte/vocoder.webp' alt='Die Vorführung des Voders auf der Weltausstellung 1939: eine Halle mit der Aufschrift »The Voder«, davor viele Zuschauer um ein Pult'>
 <p><strong>Der Vocoder</strong>, 1937. Homer Dudley erfand ihn bei den Bell Labs, um Sprache mit weniger Bandbreite durch Telefonleitungen zu schicken: Statt der Welle gehen nur die Stärken der Bänder durch die Leitung, und am anderen Ende macht ein Vocoder daraus wieder Sprache. Im Zweiten Weltkrieg verschlüsselte das System SIGSALY damit Telefongespräche. 1939 zeigten die Bell Labs auf der Weltausstellung in New York den Voder, der Sprache aus zehn Bändern erzeugte, gespielt mit Tasten. Kraftwerk nahmen in den Siebzigern für ihre Alben »Ralf & Florian« und »Autobahn« einen eigens gebauten Vocoder, und Florian Schneider sang auf der Bühne durch ihn.</p>
+<p>Hör dir <a href='https://www.youtube.com/watch?v=vkOZNJYAZ7c'>»Autobahn«</a> von Kraftwerk auf YouTube an: Welche Stimmen kommen durch den Vocoder, und woran hörst du es?</p>
 <p class='history-credit'>Der Voder auf der Weltausstellung. Bild: Bell System Technical Journal, 1940, keine bekannten Rechte, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Homer_Dudley_(October_1940)._%22The_Carrier_Nature_of_Speech%22._Bell_System_Technical_Journal,_XIX(4);495-515._--_Fig.5_The_voder_being_demonstrated_at_the_New_York_World%27s_Fair.jpg'>Wikimedia Commons</a>)</p>
 </div>
 

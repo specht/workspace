@@ -117,6 +117,11 @@ vocoder:
     sources:
       - url: https://en.wikipedia.org/wiki/Kraftwerk
         quote: "Kraftwerk used a custom-built vocoder on its albums Ralf & Florian and Autobahn … Schneider processing his voice with a vocoder live"
+  - text: Welche Stimmen kommen durch den Vocoder, und woran hörst du es
+    sources:
+      - url: https://en.wikipedia.org/wiki/Autobahn_(song)
+        quote: "It also included use of a vocoder to process some of the vocals"
+    note: eine Frage zum Anhören; der Link ist die offizielle Aufnahme auf »Kraftwerk - Topic«
 
 sped-up:
   - text: Nightcore, »sped up« und »slowed«, 2001
