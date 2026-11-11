@@ -99,8 +99,9 @@
     const CALM = 'Hier ist nichts Verdächtiges.';
     const STATUS_IDLE = 'Zeig auf einen Link, um zu sehen, wohin er führt.';
 
-    const cluesOf = (mail) => [mail.senderClue, mail.attachment && mail.attachment.clue,
-        ...mail.body.flat().map((p) => typeof p === 'object' && p.clue)].filter(Boolean);
+    // in the order they stand in the mail: sender, text, attachment
+    const cluesOf = (mail) => [mail.senderClue, ...mail.body.flat().map((p) => typeof p === 'object' && p.clue),
+        mail.attachment && mail.attachment.clue].filter(Boolean);
 
     function setUp(root) {
         root.dataset.chip = 'Zum Ausprobieren: Hinweise finden';
@@ -118,13 +119,33 @@
             const status = el('div', { class: 'mail-status' }, [STATUS_IDLE]);
             const verdict = el('div', { class: 'mail-verdict', 'aria-live': 'polite' });
 
-            const mark = (clue) => (sentences[clue] || []).forEach((n) => n.classList.add('mail-found'));
+            // a found clue: its place in the mail and its note carry the same
+            // number, and pointing at one lights up the other
+            const numberOf = (clue) => [...s.found].indexOf(clue) + 1;
+            const pair = (clue, on) => {
+                (sentences[clue] || []).forEach((n) => n.classList.toggle('mail-paired', on));
+                notes.querySelectorAll(`[data-clue="${clue}"]`).forEach((n) => n.classList.toggle('mail-paired', on));
+            };
+            const mark = (clue) => (sentences[clue] || []).forEach((n) => {
+                n.classList.add('mail-found');
+                n.dataset.n = numberOf(clue);
+                n.addEventListener('mouseenter', () => pair(clue, true));
+                n.addEventListener('mouseleave', () => pair(clue, false));
+            });
+            const note = (clue, text) => {
+                const li = el('li', { class: 'mail-note-clue', 'data-clue': clue }, [
+                    el('span', { class: 'mail-num', text: String(numberOf(clue)), 'aria-hidden': 'true' }),
+                    el('span', { text: text || CLUES[clue] })]);
+                li.addEventListener('mouseenter', () => pair(clue, true));
+                li.addEventListener('mouseleave', () => pair(clue, false));
+                notes.append(li);
+            };
             const addClue = (clue, text) => {
                 calmLine.replaceChildren();
                 if (s.found.has(clue)) return;
                 s.found.add(clue);
                 mark(clue);
-                notes.append(el('li', { class: 'mail-note-clue' }, [icon('search'), el('span', { text: text || CLUES[clue] })]));
+                note(clue, text);
                 showVerdict();
             };
             // what is not a clue: one line above the clues, replaced each time
@@ -203,7 +224,7 @@
                 verdict, calmLine, notes);
             for (const clue of s.found) {
                 mark(clue);
-                notes.append(el('li', { class: 'mail-note-clue' }, [icon('search'), el('span', { text: CLUES[clue] })]));
+                note(clue);
             }
             showVerdict();
         }

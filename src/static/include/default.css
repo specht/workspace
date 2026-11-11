@@ -16842,6 +16842,8 @@ html[data-bs-theme="dark"] .dp-result-half { color: #ffe066; background: #2b2410
     --mail-found: #ffe8cc;
     --mail-found-line: #f76707;
     --mail-url: #1864ab;
+    --mail-num: #c2410c;
+    --mail-num-ink: #ffffff;
 }
 html[data-bs-theme="dark"] .mail-demo {
     --mail-paper: #212327;
@@ -16849,6 +16851,8 @@ html[data-bs-theme="dark"] .mail-demo {
     --mail-found: #3d2511;
     --mail-found-line: #ff922b;
     --mail-url: #74c0fc;
+    --mail-num: #ff922b;
+    --mail-num-ink: #1a1b1b;
 }
 .mail-app {
     display: grid;
@@ -16957,6 +16961,39 @@ html[data-bs-theme="dark"] .mail-mark.bi-x-circle-fill { color: #ff6b6b; }
     background: var(--mail-found);
     box-shadow: inset 0 -2px 0 var(--mail-found-line);
 }
+/* the number of a found clue, at the end of its place and before its note */
+.mail-found::after,
+.mail-num {
+    display: inline-block;
+    min-width: 1.35em;
+    height: 1.35em;
+    padding: 0 0.3em;
+    border-radius: 1em;
+    background: var(--mail-num);
+    color: var(--mail-num-ink);
+    font-size: 0.72em;
+    font-weight: 700;
+    line-height: 1.35em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+.mail-found::after {
+    content: attr(data-n);
+    margin-left: 0.3em;
+    vertical-align: 0.15em;
+}
+.mail-num {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    margin-top: 0.2em;
+}
+.mail-found.mail-paired,
+.mail-notes li.mail-paired {
+    background: var(--mail-hover);
+}
+.mail-notes li.mail-paired {
+    border-radius: 0.3em;
+}
 .mail-link {
     color: var(--mail-url);
     text-decoration: underline;
@@ -17022,9 +17059,6 @@ html[data-bs-theme="dark"] .mail-mark.bi-x-circle-fill { color: #ff6b6b; }
     padding: 0.45em 0;
     border-top: 1px dashed var(--widget-line);
     font-size: 0.93em;
-}
-.mail-note-clue .bi {
-    color: var(--mail-found-line);
 }
 .mail-calm {
     display: flex;
