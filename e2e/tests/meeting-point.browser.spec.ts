@@ -72,8 +72,8 @@ test('a meeting point reaches the open page, counts the student as there and goe
   expect(errors).toEqual([]);
 });
 
-// The teacher sets and lifts it right on the activity page, for the group
-// chosen on the class page.
+// The teacher sets and lifts it right on the activity page; teaching more
+// than one group (E2E and the test group), they choose the group.
 test('a teacher places the meeting point on the activity page', async ({ page, browser, e2eEmail }, testInfo) => {
   test.setTimeout(90_000);
   await loginAsE2eUser(page, e2eEmail, testInfo);
@@ -85,13 +85,21 @@ test('a teacher places the meeting point on the activity page', async ({ page, b
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
   await teacher.goto('/klasse?group=E2E&tab=fortschritt&activity=crypto');
   await teacher.goto('/crypto');
-  const slot = teacher.locator('.meeting-slot:not([hidden])').filter({ hasText: 'Treffpunkt für E2E' });
+  const slot = teacher.locator('.meeting-slot:not([hidden])').filter({ hasText: 'Treffpunkt hier setzen' });
   await expect(slot.first()).toBeVisible();
-  // after the second task
-  await teacher.locator('.meeting-slot').nth(1).getByRole('button').click();
+  // after the second task, for E2E
+  const second = teacher.locator('.meeting-slot').nth(1);
+  await second.locator('.meeting-slot-button').click();
+  await expect(second.locator('.meeting-slot-menu')).toBeVisible();
+  await second.locator(".meeting-slot-menu button[data-group='E2E']").click();
   await expect(teacher.locator('aside.meeting-point')).toContainText(/von E2E: \d+ von \d+ da/);
-  await expect(teacher.locator('.meeting-slot').nth(1)).toBeHidden();
-  await expect(teacher.locator('.meeting-slot').first()).toContainText('hierher verschieben');
+  // the other group may still meet there; E2E's entry says it is here already
+  await second.locator('.meeting-slot-button').click();
+  await expect(second.locator(".meeting-slot-menu button[data-group='E2E']")).toBeDisabled();
+  await teacher.keyboard.press('Escape');
+  await teacher.locator('.meeting-slot').first().locator('.meeting-slot-button').click();
+  await expect(teacher.locator('.meeting-slot').first().locator(".meeting-slot-menu button[data-group='E2E']")).toContainText('hierher verschieben');
+  await teacher.keyboard.press('Escape');
   await expect(box).toBeVisible({ timeout: 10_000 });
   await expect(box).toHaveCount(1);
 

@@ -472,10 +472,19 @@ sobald jemand eine Aufgabe löst; wer heute fehlt, nimmt die Lehrkraft mit
 »fehlt heute« aus der Zählung (nur ihr Browser merkt es sich, bis
 Mitternacht). Sind alle da, wird die Zeile grün. Die Tabelle hat nach der
 Spalte der Aufgabe eine gestrichelte Linie. Auf der Seite der Aktivität setzt,
-verschiebt und hebt die Lehrkraft den Treffpunkt auch direkt auf (für die
-Gruppe, die auf der Klassenseite gewählt ist). Wer in zwei Gruppen ist, sieht
-den früheren Treffpunkt. Aufgehoben ist aufgehoben, auch für alle, die gerade
-nicht da sind.
+verschiebt und hebt die Lehrkraft den Treffpunkt auch direkt auf: Unterrichtet
+sie mehrere Gruppen, fragt der Knopf, für welche (der Maintainer, 11. November
+2026), und sie sieht den Treffpunkt jeder ihrer Gruppen auf der Seite, jeden
+mit eigener Zählung. Eine Administratorin sieht dort nur die Gruppen, die sie
+selbst unterrichtet, nicht jede Gruppe des Servers. Wer als Lernende in zwei
+Gruppen ist, sieht den früheren Treffpunkt. Aufgehoben ist aufgehoben, auch
+für alle, die gerade nicht da sind.
+
+Ein Treffpunkt bleibt, bis jemand ihn aufhebt; er läuft nicht von selbst ab.
+Damit keiner vergessen wird, stehen alle offenen Treffpunkte der eigenen
+Gruppen auf der Startseite der Lehrkraft und über der Klassenseite
+(»Offene Treffpunkte«: Gruppe, Aktivität, Aufgabe, seit wann, »Aufheben«;
+`meeting_reminder_html`, `meeting_reminder.js`).
 
 So entschieden (28. Oktober 2026): Der Treffpunkt ist eine Schranke, die
 sagt »hier sprechen wir«, keine Sperre; jede Seite bleibt ganz lesbar, auch

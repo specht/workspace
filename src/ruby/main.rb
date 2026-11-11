@@ -1861,28 +1861,73 @@ class Main < Sinatra::Base
     end
 
     # What meeting_point.js needs on an activity page: the points of the
-    # person's groups (a teacher's: of the group chosen on the class page)
-    # and, for a student who has arrived, the next set of Katas. nil
+    # person's groups (a teacher's: of every group they teach, the one
+    # chosen on the class page first; they pick the group when setting a
+    # point) and, for a student who has arrived, the next set of Katas. nil
     # without a group: then no point can concern the page.
     def meeting_page_config(tasks)
         teacher = teacher_logged_in?
-        # a teacher: the group chosen on the class page, or the only one
         groups = if teacher
             own = own_class_groups
-            chosen = [class_prefs['group']].compact & own
-            chosen.empty? && own.size == 1 ? own : chosen
+            ([class_prefs['group']].compact & own) + own
         else
             my_groups
-        end
+        end.uniq
         return nil if groups.empty?
 
         config = { :points => meeting_points(groups, tasks[:activity]), :groups => groups, :teacher => teacher }
-        if teacher
-            config[:classUrl] = "/klasse?group=#{CGI.escape(groups.first)}&tab=fortschritt&activity=#{CGI.escape(tasks[:activity])}"
-        else
-            config[:kata] = next_kata_set
-        end
+        config[:kata] = next_kata_set unless teacher
         config
+    end
+
+    # The meeting points of the groups a teacher teaches, oldest first:
+    # [{ group:, activity:, task:, ts: }]. A point stays until someone lifts
+    # it; this list (start page, class page) keeps it from being forgotten.
+    def open_meeting_points(groups)
+        return [] if groups.empty?
+
+        neo4j_query(<<~END_OF_QUERY, :groups => groups).map { |row| { :group => row['group'], :activity => row['activity'], :task => row['task'], :ts => row['ts'].to_i } }
+            MATCH (m:MeetingPoint) WHERE m.group IN $groups
+            RETURN m.group AS group, m.activity AS activity, m.task AS task, m.ts AS ts ORDER BY m.ts;
+        END_OF_QUERY
+    end
+
+    # »Offene Treffpunkte« for a teacher: each with its group, activity and
+    # task, since when, a link to the page and »Aufheben«
+    # (meeting_reminder.js); '' when none is open.
+    def meeting_reminder_html
+        return '' unless user_logged_in? && (teacher_account_logged_in? || admin_logged_in?)
+
+        points = open_meeting_points(own_class_groups)
+        return '' if points.empty?
+
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        slugs = activities_with_tasks.to_h { |a| [a[:activity], a[:slug]] }
+        today = Date.today
+        rows = points.filter_map do |p|
+            _, title, tasks = class_activities(p[:group]).find { |a, _, _| a == p[:activity] }
+            next unless title
+
+            index = tasks.index { |t| t[:id] == p[:task] }
+            task = index ? " nach Aufgabe #{index + 1}, »#{h.(tasks[index][:title])}«" : ''
+            set = Time.at(p[:ts])
+            days = (today - set.to_date).to_i
+            since = case days
+                    when 0 then "seit #{set.strftime('%-H:%M')} Uhr"
+                    when 1 then 'seit gestern'
+                    else "seit #{days} Tagen"
+                    end
+            slug = slugs[p[:activity]]
+            name = slug ? "<a href='/#{h.(slug)}'>#{h.(title)}</a>" : h.(title)
+            "<li><span><strong>#{h.(p[:group])}</strong> in #{name}#{task}, <span class='text-body-secondary'>#{since}</span></span>" \
+                "<button type='button' class='btn btn-sm btn-outline-secondary meeting-reminder-lift' data-group='#{h.(p[:group])}' data-activity='#{h.(p[:activity])}'>" \
+                "<i class='bi bi-x-lg' aria-hidden='true'></i>Aufheben</button></li>"
+        end
+        return '' if rows.empty?
+
+        "<aside class='meeting-reminder' aria-label='Offene Treffpunkte'><div class='meeting-reminder-head'><i class='bi bi-flag-fill' aria-hidden='true'></i>" \
+            "<strong>Offene Treffpunkte</strong><span>Ein Treffpunkt bleibt, bis du ihn aufhebst.</span></div><ul>#{rows.join}</ul></aside>" \
+            "<script src='/include/meeting_reminder.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}' defer></script>"
     end
 
     # Handbuch boxes (_include) this person has already been through on
@@ -2544,7 +2589,7 @@ class Main < Sinatra::Base
         # the link of an activity page to its class repository (/klasse?repos=SLUG)
         wanted = 'einstellungen' if params['repos'].to_s != ''
         tab = CLASS_TABS.any? { |key, _, _| key == wanted } ? wanted : 'fortschritt'
-        io = +"<form class='class-board-select' method='get' action='/klasse'>"
+        io = +"#{meeting_reminder_html}<form class='class-board-select' method='get' action='/klasse'>"
         # a search field (class_board.js), with the schools as headings
         io << "<label>Gruppe <select class='form-select class-group-choice' name='group'>"
         option = ->(g) { "<option value='#{h.(g)}'#{g == group ? ' selected' : ''}>#{h.(g)} (#{(@@group_members[g] || []).size})</option>" }

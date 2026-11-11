@@ -1,7 +1,8 @@
 // The meeting point on an activity page (docs/teacher-access.md, »Treffpunkt«). The page
 // sets window.TASK_PAGE.meeting = { points: { group => task id }, groups,
-// teacher, kata, classUrl } (main.rb, meeting_page_config). Of the points
-// of one's groups the earliest on the page counts. The box stands after
+// teacher, kata } (main.rb, meeting_page_config). For a student, of the
+// points of their groups the earliest on the page counts; a teacher sees
+// the point of every group they teach, and chooses the group when setting one. The box stands after
 // the task's card and what reveals its answer, or, when no other task
 // follows in that chapter, before the next chapter's heading. Nothing is hidden: the box only says where
 // the class meets. A student has arrived when every task up to the point
@@ -101,19 +102,32 @@
             ways.map(function (way) { return '<li>' + way + '</li>'; }).join('') + '</ul></div>';
     }
 
+    // ------------------------------------------------------------------
+    // A teacher sees the point of each of their groups that has one on
+    // this page, each box with its count and »Aufheben«, and sets, moves
+    // and lifts points right on the page: below every task that is not an
+    // Extra a small dashed button, faint until pointed at. With several
+    // groups the button asks which group the point is for.
+    const classUrl = function (group) {
+        return '/klasse?group=' + encodeURIComponent(group) + '&tab=fortschritt&activity=' + encodeURIComponent(page.activity);
+    };
+
+    function teacherPoints() {
+        const ids = order();
+        return config.groups.map(function (group) {
+            return { group: group, task: points[group], index: ids.indexOf(points[group]) };
+        }).filter(function (point) { return point.index >= 0; }).sort(function (a, b) { return a.index - b.index; });
+    }
+
     function teacherHtml(point) {
         return "<div class='meeting-head'><i class='bi bi-flag' aria-hidden='true'></i><strong>Treffpunkt</strong>" +
             '<span>von ' + esc(point.group) + "<span class='meeting-count'></span></span>" +
             "<button type='button' class='btn btn-sm btn-outline-secondary meeting-lift'><i class='bi bi-x-lg' aria-hidden='true'></i>Aufheben</button>" +
-            "<a href='" + esc(config.classUrl) + "' target='_blank' rel='noopener'>Auf der Klassenseite</a></div>" +
+            "<a href='" + esc(classUrl(point.group)) + "' target='_blank' rel='noopener'>Auf der Klassenseite</a></div>" +
             "<div class='meeting-body meeting-status'></div>";
     }
 
-    // A teacher sets, moves and lifts the point right on the page: below
-    // every task that is not an Extra a small dashed button, faint until
-    // pointed at; for the group chosen on the class page.
-    function setPoint(task) {
-        const group = config.groups[0];
+    function setPoint(group, task) {
         api_call('/api/class/meeting', { group: group, activity: page.activity, task: task }, function (data) {
             if (!data.success) return;
             if (data.task) points[group] = data.task;
@@ -123,14 +137,45 @@
     }
 
     const slots = {};
+    let openMenu = null;
+    function closeMenu() {
+        if (!openMenu) return;
+        openMenu.menu.hidden = true;
+        openMenu.button.setAttribute('aria-expanded', 'false');
+        openMenu = null;
+    }
+    document.addEventListener('click', function (e) { if (openMenu && !openMenu.slot.contains(e.target)) closeMenu(); });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && openMenu) { const button = openMenu.button; closeMenu(); button.focus(); }
+    });
+
     function placeSlots() {
         order().forEach(function (id) {
             const mine = cards().filter(function (card) { return idOf(card) === id; });
             if (mine.some(function (card) { return card.querySelector('.task-extra'); })) return;
             const slot = document.createElement('div');
             slot.className = 'meeting-slot';
-            slot.innerHTML = "<button type='button' class='meeting-slot-button'><i class='bi bi-flag' aria-hidden='true'></i><span></span></button>";
-            slot.querySelector('button').addEventListener('click', function () { setPoint(id); });
+            slot.innerHTML = "<button type='button' class='meeting-slot-button'><i class='bi bi-flag' aria-hidden='true'></i><span></span></button>" +
+                "<div class='meeting-slot-menu' hidden></div>";
+            const button = slot.querySelector('.meeting-slot-button');
+            const menu = slot.querySelector('.meeting-slot-menu');
+            button.addEventListener('click', function () {
+                if (config.groups.length === 1) { setPoint(config.groups[0], id); return; }
+                const open = openMenu && openMenu.slot === slot;
+                closeMenu();
+                if (open) return;
+                menu.hidden = false;
+                button.setAttribute('aria-expanded', 'true');
+                openMenu = { slot: slot, menu: menu, button: button };
+                const first = menu.querySelector('button:not([disabled])');
+                if (first) first.focus();
+            });
+            menu.addEventListener('click', function (e) {
+                const choice = e.target.closest('button[data-group]');
+                if (!choice) return;
+                closeMenu();
+                setPoint(choice.dataset.group, id);
+            });
             const at = place({ task: id });
             if (at.before) at.before.before(slot);
             else at.after.after(slot);
@@ -138,40 +183,60 @@
         });
     }
 
-    function labelSlots(point) {
+    // the label of each button, and with several groups the list it opens
+    function labelSlots() {
+        const several = config.groups.length > 1;
         Object.keys(slots).forEach(function (id) {
             const slot = slots[id];
-            slot.hidden = !!point && point.task === id;
-            slot.querySelector('span').textContent = 'Treffpunkt für ' + config.groups[0] + (point ? ' hierher verschieben' : ' hier setzen');
+            const button = slot.querySelector('.meeting-slot-button');
+            if (!several) {
+                const group = config.groups[0];
+                slot.hidden = points[group] === id;
+                button.querySelector('span').textContent = 'Treffpunkt für ' + group + (points[group] ? ' hierher verschieben' : ' hier setzen');
+                return;
+            }
+            slot.hidden = config.groups.every(function (group) { return points[group] === id; });
+            button.querySelector('span').textContent = 'Treffpunkt hier setzen …';
+            button.setAttribute('aria-haspopup', 'true');
+            if (!button.hasAttribute('aria-expanded')) button.setAttribute('aria-expanded', 'false');
+            slot.querySelector('.meeting-slot-menu').innerHTML = "<p class='meeting-slot-menu-title'>Für welche Gruppe?</p>" +
+                config.groups.map(function (group) {
+                    const here = points[group] === id;
+                    const what = here ? 'ist schon hier' : points[group] ? 'hierher verschieben' : 'hier setzen';
+                    return "<button type='button' data-group='" + esc(group) + "'" + (here ? ' disabled' : '') + '><strong>' + esc(group) + '</strong> ' + what + '</button>';
+                }).join('');
         });
     }
 
-    // the teacher's count and who is missing (meeting_status.js, with who
-    // is absent today); the box turns green once everyone present is there
-    let status = null;
-    function drawStatus() {
+    // each box's count and who is missing (meeting_status.js, with who is
+    // absent today); a box turns green once everyone present is there
+    const statuses = {};
+    let boxes = {};
+    function drawStatus(group) {
+        const box = boxes[group];
         const target = box && box.querySelector('.meeting-status');
-        if (!target || !status) return;
-        const s = MeetingStatus.summary(status, config.groups[0]);
+        if (!target || !statuses[group]) return;
+        const s = MeetingStatus.summary(statuses[group], group);
         box.classList.toggle('meeting-all', s.all);
         box.querySelector('.meeting-head .bi').className = 'bi ' + (s.all ? 'bi-check-circle-fill' : 'bi-flag');
         box.querySelector('.meeting-count').textContent = ': ' + MeetingStatus.countText(s) + (s.all ? ', alle da' : '');
         const open = !!target.querySelector('.class-meeting-waiting[open]');
         target.innerHTML = MeetingStatus.detailsHtml(s, open);
-        MeetingStatus.bind(target, config.groups[0], drawStatus);
+        MeetingStatus.bind(target, group, function () { drawStatus(group); });
     }
+    const drawAll = function () { Object.keys(boxes).forEach(drawStatus); };
 
-    function loadStatus(point) {
-        if (!box || !box.querySelector('.meeting-status')) return;
-        api_call('/api/class/meeting_status', { group: point.group, activity: page.activity }, function (data) {
+    function loadStatus(group) {
+        if (!boxes[group]) return;
+        api_call('/api/class/meeting_status', { group: group, activity: page.activity }, function (data) {
             if (!data.success) return;
-            status = data.status;
-            drawStatus();
+            statuses[group] = data.status;
+            drawStatus(group);
         }, { no_please_wait: true });
     }
-    if (config.teacher) MeetingStatus.onChange(drawStatus);
+    if (config.teacher) MeetingStatus.onChange(drawAll);
 
-    // What comes after the point is the next lesson's: dimmed, readable
+    // What comes after the (first) point is the next lesson's: dimmed, readable
     function dimLater() {
         document.querySelectorAll('.meeting-later').forEach(function (el) { el.classList.remove('meeting-later'); });
         if (!box) return;
@@ -180,39 +245,54 @@
         let node = box;
         while (node && node.parentElement) {
             for (let el = node.nextElementSibling; el; el = el.nextElementSibling) {
-                if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') el.classList.add('meeting-later');
+                if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE' && !el.matches('.meeting-point')) el.classList.add('meeting-later');
             }
             if (!node.parentElement.closest('.autotoc-container')) break;
             node = node.parentElement;
         }
     }
 
+    function putBox(point, html, className) {
+        const element = document.createElement('aside');
+        element.className = className;
+        element.setAttribute('aria-label', 'Treffpunkt');
+        element.innerHTML = html;
+        const at = place(point);
+        if (at.before) at.before.before(element);
+        else at.after.after(element);
+        return element;
+    }
+
     let box = null;
     let shown = '';
+    function renderTeacher() {
+        labelSlots();
+        const list = teacherPoints();
+        const key = list.map(function (point) { return point.group + '|' + point.task; }).join(',');
+        if (key === shown) return;
+        shown = key;
+        Object.values(boxes).forEach(function (element) { element.remove(); });
+        boxes = {};
+        list.forEach(function (point) {
+            const element = putBox(point, teacherHtml(point), 'meeting-point');
+            element.querySelector('.meeting-lift').addEventListener('click', function () { setPoint(point.group, ''); });
+            boxes[point.group] = element;
+            loadStatus(point.group);
+        });
+        box = list.length ? boxes[list[0].group] : null;
+        dimLater();
+    }
+
     function render() {
+        if (config.teacher) { renderTeacher(); return; }
         const point = current();
-        if (config.teacher) labelSlots(point);
-        const key = point ? point.group + '|' + point.task + '|' + (config.teacher ? 't' : arrived(point)) : '';
+        const key = point ? point.group + '|' + point.task + '|' + arrived(point) : '';
         if (key === shown) return;
         shown = key;
         if (box) box.remove();
         box = null;
-        if (!point) {
-            dimLater();
-            return;
-        }
-        box = document.createElement('aside');
-        box.className = 'meeting-point' + (!config.teacher && arrived(point) ? ' meeting-arrived' : '');
-        box.setAttribute('aria-label', 'Treffpunkt');
-        box.innerHTML = config.teacher ? teacherHtml(point) : studentHtml(point);
-        const at = place(point);
-        if (at.before) at.before.before(box);
-        else at.after.after(box);
+        if (point) box = putBox(point, studentHtml(point), 'meeting-point' + (arrived(point) ? ' meeting-arrived' : ''));
         dimLater();
-        if (config.teacher) {
-            box.querySelector('.meeting-lift').addEventListener('click', function () { setPoint(''); });
-            loadStatus(point);
-        }
     }
 
     // Solved cards move a student past the point
@@ -225,8 +305,7 @@
     // the count also follows the class without a message (a lost one)
     if (config.teacher) {
         setInterval(function () {
-            const point = current();
-            if (point && !document.hidden) loadStatus(point);
+            if (!document.hidden) Object.keys(boxes).forEach(loadStatus);
         }, 60000);
     }
 
@@ -250,8 +329,7 @@
                 else delete points[data.group];
             } else if (data.action === 'progress') {
                 // a student of the group solved a task: count again
-                const point = current();
-                if (config.teacher && point && point.group === data.group) loadStatus(point);
+                if (config.teacher) loadStatus(data.group);
                 return;
             } else {
                 return;
