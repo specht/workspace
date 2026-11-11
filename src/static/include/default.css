@@ -3811,7 +3811,7 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        others): from edge to edge, the colour bar at the screen's edge,
        their content where the paragraphs start */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
-        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
+        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .a11y-demo, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         border-right-width: 0;
@@ -8846,6 +8846,7 @@ div[data-stepper],
 .hearing-widget,
 .abx-widget,
 .motion-widget,
+.a11y-demo,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8870,6 +8871,7 @@ html[data-bs-theme="dark"] .effect-widget,
 html[data-bs-theme="dark"] .hearing-widget,
 html[data-bs-theme="dark"] .abx-widget,
 html[data-bs-theme="dark"] .motion-widget,
+html[data-bs-theme="dark"] .a11y-demo,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -16533,4 +16535,167 @@ html[data-bs-theme="dark"] .gop-stepper {
     background: rgba(0, 0, 0, 0.55);
     color: #fff;
     font-size: 0.9em;
+}
+
+/* Barrierefreiheit (Handbuch, a11y_demo.js): only colour seen otherwise, a
+   grey and its contrast, what a screen reader says; in the slate frame of
+   the widgets, with their pill */
+.a11y-demo {
+    --a11y-ok: #2b8a3e;
+    --a11y-bad: #e03131;
+}
+html[data-bs-theme="dark"] .a11y-demo {
+    --a11y-ok: #51cf66;
+    --a11y-bad: #ff6b6b;
+}
+.a11y-demo::before {
+    content: attr(data-chip);
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.a11y-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 0.9em;
+    margin-bottom: 0.8em;
+}
+.a11y-label {
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}
+.a11y-choice {
+    flex-wrap: wrap;
+}
+.a11y-slider {
+    flex: 1 1 12em;
+    max-width: 22em;
+}
+.a11y-value {
+    font-variant-numeric: tabular-nums;
+}
+.a11y-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem 1.5rem;
+}
+.a11y-panel {
+    margin: 0;
+}
+.a11y-panel > figcaption {
+    font-weight: 600;
+    margin-bottom: 0.4em;
+}
+.a11y-sample {
+    padding: 0.8em 1em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.4em;
+    background: var(--bs-body-bg);
+}
+.a11y-results {
+    list-style: none;
+    margin: 0 0 0.8em;
+    padding: 0;
+}
+.a11y-results li {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.15em 0;
+}
+.a11y-dot {
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+}
+.a11y-dot.a11y-ok { background: var(--a11y-ok); }
+.a11y-dot.a11y-bad { background: var(--a11y-bad); }
+.a11y-ok-text { color: var(--a11y-ok); }
+.a11y-bad-text { color: var(--a11y-bad); }
+.a11y-field {
+    display: grid;
+    gap: 0.25em;
+}
+.a11y-field-label {
+    font-size: 0.9em;
+}
+.a11y-input {
+    display: block;
+    height: 2em;
+    max-width: 16em;
+    border: 2px solid var(--widget-line);
+    border-radius: 0.3em;
+}
+.a11y-input-error {
+    border-color: var(--a11y-bad);
+}
+.a11y-field-error {
+    font-size: 0.9em;
+}
+.a11y-contrast-sample {
+    padding: 0.8em 1em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.4em;
+    background: #ffffff;
+}
+.a11y-contrast-sample p {
+    margin: 0.2em 0;
+}
+.a11y-large {
+    font-size: 1.5em;
+}
+.a11y-verdict {
+    list-style: none;
+    margin: 0.7em 0 0;
+    padding: 0;
+}
+.a11y-card {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+}
+.a11y-card img {
+    width: 3em;
+    height: 3em;
+}
+.a11y-card-title {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+.a11y-fake-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    background: var(--widget-chip);
+}
+.a11y-code {
+    font-family: var(--bs-font-monospace);
+    margin: 0.6em 0;
+    padding: 0.6em 0.8em;
+    border-radius: 0.4em;
+    background: var(--widget-chip);
+    font-size: 0.8em;
+    white-space: pre-wrap;
+}
+.a11y-said-title {
+    margin: 0.4em 0 0.2em;
+    font-size: 0.9em;
+    color: var(--widget-ink);
+}
+.a11y-said {
+    margin: 0;
+    padding-left: 1.4em;
+    font-size: 0.95em;
 }
