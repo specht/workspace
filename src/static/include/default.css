@@ -10506,6 +10506,9 @@ html[data-bs-theme="dark"] .automaton-stepper {
 .motion-widget .motion-zooms .motion-figure {
     width: 8em;
 }
+.motion-widget .motion-map.motion-clickable {
+    cursor: pointer;
+}
 .motion-widget .motion-legend {
     margin: 0.5em 0 0;
     font-size: 0.85em;

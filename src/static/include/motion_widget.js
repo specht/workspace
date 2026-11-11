@@ -10,13 +10,15 @@
 // their difference with its sign (orange where the block is brighter, blue
 // where it is darker, black where they agree), with the sum of the differences (SAD) and the vector (dx, dy)
 // from the block to the square. »Beste Verschiebung suchen« tries every
-// shift in the search area, puts the square on the best one and shows the
+// shift in the search area and leaves the reader's square where it is: the
+// best shift gets a yellow frame of its own in the frame before, and the
+// sum of every shift shows as a small map, the darker the smaller, the best
+// ringed yellow and the reader's own square white; a click on the map puts
+// the square on that shift. A second line compares the reader's square
+// with the search.
 // Once the reader has touched the widget (until they click elsewhere), the
 // arrow keys move the square by a pixel and, with Shift, the block by a
 // block, wherever the focus is; before that they scroll the page as usual.
-// sum of every shift as a small map, the darker the smaller, the best ringed
-// yellow and the reader's own square white; a second line compares the
-// reader's square with the search.
 //
 //   <div class='motion-widget' data-block='96 48'>
 //   <img data-noconvert src='motion-after.png' alt='…' data-label='jetzt'>
@@ -64,7 +66,7 @@
         const zoomBlock = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Der Block, vergrößert' });
         const zoomCandidate = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Das Quadrat im Bild davor, vergrößert' });
         const zoomDiff = html('canvas', { class: 'motion-zoom', width: N * ZOOM, height: N * ZOOM, role: 'img', 'aria-label': 'Der Unterschied, vergrößert' });
-        const map = html('canvas', { class: 'motion-zoom', width: (2 * R + 1) * 4, height: (2 * R + 1) * 4, role: 'img', 'aria-label': 'Die Summe der Unterschiede für jede Verschiebung' });
+        const map = html('canvas', { class: 'motion-zoom motion-map', width: (2 * R + 1) * 4, height: (2 * R + 1) * 4, role: 'img', 'aria-label': 'Die Summe der Unterschiede für jede Verschiebung; ein Klick setzt das Quadrat auf diese Verschiebung' });
         const mapFigure = html('figure', { class: 'motion-figure' }, [map, html('figcaption', { text: 'Karte' })]);
         const search = html('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary', text: 'Beste Verschiebung suchen' });
         // the reader's square and the best shift, in a small table that keeps
@@ -87,7 +89,7 @@
             button.addEventListener('click', () => { if (now) choose(x, y); });
             return button;
         });
-        const legend = html('p', { class: 'motion-legend', text: 'Unterschied: orange ist der Block heller, blau dunkler, schwarz gleich. Karte: die Summe für jede Verschiebung, dunkel ist klein, gelb die beste, weiß dein Quadrat.' });
+        const legend = html('p', { class: 'motion-legend', text: 'Unterschied: orange ist der Block heller, blau dunkler, schwarz gleich. Karte: die Summe für jede Verschiebung, dunkel ist klein, gelb die beste, weiß dein Quadrat; ein Klick setzt dein Quadrat dorthin.' });
         el.replaceChildren(
             html('div', { class: 'motion-frames' }, [
                 html('figure', { class: 'motion-figure' }, [html('div', { class: 'motion-wrap' }, [nowCanvas, nowOverlay]), html('figcaption', { text: `${nowImg.dataset.label || 'jetzt'}: den Block ziehen` })]),
@@ -123,7 +125,7 @@
 
         // the picture on its canvas; grid and frames on the canvas over it, in
         // device pixels at whole pixels
-        function drawFrame(canvas, overlay, source, square, before) {
+        function drawFrame(canvas, overlay, source, square, before, best) {
             canvas.getContext('2d').drawImage(source.canvas, 0, 0);
             const box = canvas.getBoundingClientRect();
             const ratio = window.devicePixelRatio || 1;
@@ -136,8 +138,10 @@
             const P = (v) => Math.round(v * k);
             const thick = Math.max(2, Math.round(ratio * 1.5));
             // a frame of `width` device pixels just outside a rectangle, with a dark edge outside it
-            const frame = (x, y, size, colour, width, dash) => {
-                const r = [P(x), P(y), P(x + size), P(y + size)];
+            // (outset: that many device pixels further out, so that two frames
+            // on the same place are both seen)
+            const frame = (x, y, size, colour, width, dash, outset = 0) => {
+                const r = [P(x) - outset, P(y) - outset, P(x + size) + outset, P(y + size) + outset];
                 g.setLineDash([]);
                 g.lineWidth = 1;
                 g.strokeStyle = 'rgba(0, 0, 0, 0.55)';
@@ -164,6 +168,8 @@
                 }
                 if (hover && (hover[0] !== bx || hover[1] !== by)) frame(hover[0], hover[1], N, purple, thick, true);
             }
+            // the best shift, yellow, just outside where the reader's square would be
+            if (best) frame(best[0], best[1], N, '#facc15', thick, false, best[0] === square[0] && best[1] === square[1] ? thick + 1 : 0);
             frame(square[0], square[1], N, purple, thick, false);
         }
 
@@ -237,11 +243,12 @@
         function draw() {
             if (!now) return;
             drawFrame(nowCanvas, nowOverlay, now, [bx, by], false);
-            drawFrame(beforeCanvas, beforeOverlay, before, [bx + vx, by + vy], true);
+            drawFrame(beforeCanvas, beforeOverlay, before, [bx + vx, by + vy], true, found ? [bx + found.vx, by + found.vy] : null);
             drawZoom(zoomBlock, (x, y) => now.luma[(by + y) * now.width + bx + x]);
             drawZoom(zoomCandidate, (x, y) => before.luma[(by + vy + y) * before.width + bx + vx + x]);
             drawSigned(zoomDiff, (x, y) => now.luma[(by + y) * now.width + bx + x] - before.luma[(by + vy + y) * before.width + bx + vx + x]);
             drawMap();
+            map.classList.toggle('motion-clickable', !!found);
             const vector = (x, y) => `(${signed(x)}, ${signed(y)})`;
             mineVector.textContent = vector(vx, vy);
             mineSum.textContent = de(sad(vy, vx));
@@ -341,8 +348,17 @@
         search.addEventListener('click', () => {
             if (!now) return;
             runSearch();
-            vy = found.vy; vx = found.vx;
             draw();
+        });
+        // a click on the map: the square on that shift
+        map.addEventListener('click', (event) => {
+            if (!now || !found) return;
+            const box = map.getBoundingClientRect();
+            const count = 2 * R + 1;
+            const dx = Math.floor((event.clientX - box.left) / box.width * count) - R;
+            const dy = Math.floor((event.clientY - box.top) / box.height * count) - R;
+            engaged = el;
+            move(dy, dx);
         });
 
         const ready = (img) => (img.complete && img.naturalWidth ? Promise.resolve() : new Promise((done) => img.addEventListener('load', done, { once: true })));

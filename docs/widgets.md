@@ -433,7 +433,11 @@ only to look nice.
   under them: the block, the square, their difference with its sign
   (orange brighter, blue darker, black 0) and, after »Beste Verschiebung suchen«, the sum for every
   shift as a map from deep purple (small) to pale, the best ringed in
-  yellow, the reader's own square in white. Places to start (data-presets,
+  yellow, the reader's own square in white. The search leaves the reader's
+  square where it is (the maintainer: otherwise the guess is gone and the
+  comparison means nothing); the best shift gets a yellow frame in the frame
+  before, just outside the purple one where both agree, and a click on the
+  map puts the square on that shift. Places to start (data-presets,
   buttons above the controls: background, head, staff, dog, leg) put the
   block where the motion differs. A small table of fixed size gives the
   reader's square and the best shift with vector and sum (»–« before a
