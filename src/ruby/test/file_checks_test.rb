@@ -319,4 +319,69 @@ class FileChecksTest < Minitest::Test
         File.write(File.join(site, 'index.html'), "<main><ul><li>a</li><li>b</li></ul><p><a href=\"x.html\">x</a></p></main>")
         assert FileChecks.html(check, @ws).ok
     end
+
+    # the checks for a page that everyone can use (fair-web): no clickable
+    # div, a label for every field, a name for every button and link,
+    # headings in order, alt texts that describe, enough contrast
+    def site_check(html, expect)
+        site = File.join(@root, 'fair-web')
+        FileUtils.mkdir_p(site)
+        File.write(File.join(site, 'index.html'), html)
+        FileChecks.html({ 'type' => 'html', 'file' => 'fair-web/index.html', 'expect' => expect }, @ws)
+    end
+
+    def test_html_elements_max
+        expect = { 'elements' => [{ 'selector' => 'div', 'attr' => 'onclick', 'max' => 0 }] }
+        outcome = site_check("<main>\n<div onclick=\"go()\">Weiter</div>\n</main>", expect)
+        assert_equal :too_many_elements, outcome.problem
+        assert_includes outcome.message, 'Zeile 2'
+        assert site_check('<main><button>Weiter</button><div>Text</div></main>', expect).ok
+    end
+
+    def test_html_labels
+        expect = { 'labels' => 'required' }
+        outcome = site_check("<form>\n<input id=\"name\" type=\"text\">\n<input type=\"submit\">\n</form>", expect)
+        assert_equal :label_missing, outcome.problem
+        assert_includes outcome.message, '<label for="name">'
+        assert site_check('<form><label for="name">Name</label><input id="name"><input type="submit"></form>', expect).ok
+        assert site_check('<form><label>Name <input type="text"></label><textarea aria-label="Nachricht"></textarea></form>', expect).ok
+    end
+
+    def test_html_names
+        expect = { 'names' => 'required' }
+        assert_equal :name_missing, site_check('<p><button><i class="bi bi-arrow-right"></i></button></p>', expect).problem
+        assert_equal :name_missing, site_check('<p><a href="x.html"><img src="pfeil.png" alt=""></a></p>', expect).problem
+        assert site_check('<p><button aria-label="Weiter"><i></i></button><a href="x.html"><img src="logo.png" alt="Startseite"></a><a href="y.html">Termine</a></p>', expect).ok
+    end
+
+    def test_html_headings_in_order
+        expect = { 'headings' => 'in_order' }
+        outcome = site_check("<h1>Hacker-AG</h1>\n<h4>Termine</h4>", expect)
+        assert_equal :heading_skipped, outcome.problem
+        assert_includes outcome.message, 'fehlt `h2`'
+        assert site_check('<h1>A</h1><h2>B</h2><h3>C</h3><h2>D</h2>', expect).ok
+    end
+
+    def test_html_alt_descriptive
+        expect = { 'img' => { 'alt' => 'descriptive' } }
+        assert_equal :alt_file_name, site_check('<img src="bilder/ag.jpg" alt="ag.jpg">', expect).problem
+        assert_equal :alt_missing, site_check('<img src="ag.jpg">', expect).problem
+        assert site_check('<img src="ag.jpg" alt="Sechs Lernende an Laptops">', expect).ok
+    end
+
+    def test_css_contrast
+        site = File.join(@root, 'fair-web')
+        FileUtils.mkdir_p(site)
+        check = { 'type' => 'css', 'file' => 'fair-web/style.css', 'expect' => { 'contrast' => { 'min' => 4.5 } } }
+        File.write(File.join(site, 'style.css'), "body { background: #ffffff; }\n.hinweis {\n  color: #aaa;\n}\n")
+        outcome = FileChecks.css(check, @ws)
+        assert_equal :low_contrast, outcome.problem
+        assert_includes outcome.message, '`.hinweis` in Zeile 2'
+        assert_includes outcome.message, '2,3 : 1'
+        # dark enough on white, light text on its own dark background, a page background from body
+        File.write(File.join(site, 'style.css'), "body { background-color: rgb(250, 250, 250); color: #333; }\n.knopf { color: white; background: #1a5fb4; }\n")
+        assert FileChecks.css(check, @ws).ok
+        File.write(File.join(site, 'style.css'), "body { background: navy; }\np { color: #555; }\n")
+        assert_equal :low_contrast, FileChecks.css(check, @ws).problem
+    end
 end

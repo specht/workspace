@@ -543,8 +543,27 @@ expect:
     - { selector: a, attr: href, say: "So sieht ein Link aus: …" }
 ```
 
-`css` kennt `after_marker`, `linked_from`, `parses`, `min_rules` und
-`declares`. `linked_from: website-test/index.html` verlangt, dass diese Seite
+Für eine Seite, die alle benutzen können (`fair-web`), prüft `html` außerdem:
+
+```yaml
+expect:
+  img: { alt: descriptive }            # wie required, aber kein Dateiname als alt
+  elements:
+    - { selector: div, attr: onclick, max: 0 }   # max: höchstens so viele, 0: keins
+  labels: required                     # jedes Eingabefeld mit <label for>, in <label> oder aria-label
+  names: required                      # jeder Knopf und Link mit Text, aria-label oder einem Bild mit alt
+  headings: in_order                   # keine Ebene übersprungen (h1, dann h3)
+```
+
+Jede Rückmeldung nennt die Zeile und sagt, was ein Screenreader dort hören
+würde.
+
+`css` kennt `after_marker`, `linked_from`, `parses`, `min_rules`,
+`declares` und `contrast`. `contrast: { min: 4.5 }` misst jede Regel, die
+eine Schriftfarbe setzt, gegen ihren eigenen Hintergrund, sonst den von
+`body`, sonst Weiß, so wie die WCAG den Kontrast berechnen; Farben als
+`#rgb`, `#rrggbb`, `rgb()` oder ein paar Namen, alles andere (Variablen,
+Verläufe) überspringt die Prüfung. `linked_from: website-test/index.html` verlangt, dass diese Seite
 das Stylesheet mit `<link rel="stylesheet">` lädt. `declares` verlangt
 Angaben, die wirklich in einer Regel stehen, statt nur ihre Zahl:
 die Eigenschaft, wahlweise ihr Wert, der Selektor (einer aus der Liste vor

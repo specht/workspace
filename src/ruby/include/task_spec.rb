@@ -93,7 +93,7 @@ module TaskSpec
     EXTRACTOR_WITH_ARGUMENT = /\Ahttp_header:[A-Za-z0-9-]+\z/
 
     FILES_EXPECT_KEYS = %w[exists executable format new_files name format_matches_extension max_size contains compile].freeze
-    HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img elements].freeze
+    HTML_EXPECT_KEYS = %w[parses slides first_slide_changed img elements labels names headings].freeze
     SCENE_MATCHER_KEYS = %w[
         shape name at count min rows size bottom_y rotate_z lattice min_spacing moves orbits
         color label
@@ -424,8 +424,8 @@ module TaskSpec
                 if expect.key?('elements')
                     if expect['elements'].is_a?(Array) && !expect['elements'].empty?
                         expect['elements'].each do |want|
-                            unless want.is_a?(Hash) && want['selector'].is_a?(String) && (want.keys - %w[selector min attr say]).empty?
-                                errors << 'expect.elements: each needs a selector (and may have min, attr, say)'
+                            unless want.is_a?(Hash) && want['selector'].is_a?(String) && (want.keys - %w[selector min max attr say]).empty?
+                                errors << 'expect.elements: each needs a selector (and may have min, max, attr, say)'
                                 next
                             end
                             begin
@@ -438,13 +438,16 @@ module TaskSpec
                         errors << 'expect.elements must be a list'
                     end
                 end
+                errors << 'expect.labels must be required' if expect.key?('labels') && expect['labels'] != 'required'
+                errors << 'expect.names must be required' if expect.key?('names') && expect['names'] != 'required'
+                errors << 'expect.headings must be in_order' if expect.key?('headings') && expect['headings'] != 'in_order'
                 if expect.key?('img')
                     img = expect['img']
                     if img.is_a?(Hash)
                         extra = img.keys - %w[min local src_exists alt]
                         errors << "expect.img: unknown keys: #{extra.join(', ')}" unless extra.empty?
                         errors << 'expect.img.src_exists must be case_sensitive or false' if img.key?('src_exists') && !['case_sensitive', false].include?(img['src_exists'])
-                        errors << 'expect.img.alt must be required or optional' if img.key?('alt') && !%w[required optional].include?(img['alt'])
+                        errors << 'expect.img.alt must be required, descriptive or optional' if img.key?('alt') && !%w[required descriptive optional].include?(img['alt'])
                         errors << 'expect.img.local must be a number' if img.key?('local') && !img['local'].is_a?(Integer)
                     else
                         errors << 'expect.img must be a mapping'
@@ -465,8 +468,11 @@ module TaskSpec
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(path_errors(check['linked_from'], 'linked_from')) if check.key?('linked_from')
             expect = check['expect']
-            unless expect.is_a?(Hash) && !expect.empty? && (expect.keys - %w[parses min_rules declares]).empty?
-                errors << 'expect knows parses, min_rules and declares'
+            unless expect.is_a?(Hash) && !expect.empty? && (expect.keys - %w[parses min_rules declares contrast]).empty?
+                errors << 'expect knows parses, min_rules, declares and contrast'
+            end
+            if expect.is_a?(Hash) && expect.key?('contrast') && !(expect['contrast'].is_a?(Hash) && expect['contrast']['min'].is_a?(Numeric) && expect['contrast'].keys == ['min'])
+                errors << 'expect.contrast must be { min: <ratio> }'
             end
             if expect.is_a?(Hash) && expect.key?('declares')
                 ok = expect['declares'].is_a?(Array) && !expect['declares'].empty? && expect['declares'].all? do |want|

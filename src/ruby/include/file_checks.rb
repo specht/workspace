@@ -346,8 +346,13 @@ module FileChecks
             end
             images.each do |img|
                 src = img.attrs['src'].to_s.strip
-                if spec['alt'] == 'required' && img.attrs['alt'].to_s.strip.empty?
+                if %w[required descriptive].include?(spec['alt']) && img.attrs['alt'].to_s.strip.empty?
                     return failed(:alt_missing, "Das Bild in Zeile #{img.line} (#{code(src)}) hat keinen `alt`-Text. Beschreibe darin, was auf dem Bild zu sehen ist.", :read => read)
+                end
+                # descriptive: a file name is no description (alt="bild1.jpg")
+                alt = img.attrs['alt'].to_s.strip
+                if spec['alt'] == 'descriptive' && (alt =~ /\.(jpe?g|png|gif|webp|svg|avif)\z/i || alt.casecmp?(File.basename(src)))
+                    return failed(:alt_file_name, "Das Bild in Zeile #{img.line} hat als `alt` nur einen Dateinamen, #{code(alt)}. Ein Screenreader liest ihn vor, aber er sagt nicht, was auf dem Bild ist.", :read => read)
                 end
                 next unless spec['src_exists']
 
@@ -375,18 +380,77 @@ module FileChecks
         Array(expect['elements']).each do |want|
             found = doc.select(want['selector'])
             found = found.reject { |e| e.attrs[want['attr']].to_s.strip.empty? } if want['attr']
-            min = (want['min'] || 1).to_i
             what = "`#{want['selector']}`#{want['attr'] ? " mit `#{want['attr']}`" : ''}"
             read_lines << "#{found.size} × #{what} in #{code(file)}."
+            # max: at most so many (0: none at all), where they are
+            if want.key?('max') && found.size > want['max'].to_i
+                where = found.first(MAX_SHOWN).map { |e| "Zeile #{e.line}" }.join(', ')
+                message = want['say'] || "In #{code(file)} finde ich #{found.size} × #{what} (#{where}), erlaubt #{want['max'].to_i.zero? ? 'ist keins' : "sind höchstens #{want['max']}"}."
+                return failed(:too_many_elements, message, :read => read_lines.join("\n\n"))
+            end
+            next if want.key?('max') && !want.key?('min')
+
+            min = (want['min'] || 1).to_i
             next if found.size >= min
 
             message = want['say'] || "In #{code(file)} finde ich #{found.size} × #{what}, verlangt #{min == 1 ? 'ist eins' : "sind #{min}"}."
             return failed(:missing_element, message, :read => read_lines.join("\n\n"))
         end
 
+        # labels: required: every field someone fills in has a label (a
+        # <label for> with its id, a <label> around it, or aria-label)
+        if expect['labels'] == 'required'
+            labelled = doc.select('label').filter_map { |l| l.attrs['for'] }.to_set
+            fields = doc.select('input').reject { |f| %w[hidden submit button reset image].include?(f.attrs['type'].to_s.downcase) } +
+                     doc.select('select') + doc.select('textarea')
+            read_lines << "#{fields.size} Eingabefelder in #{code(file)}."
+            bare = fields.sort_by(&:line).find do |f|
+                !(f.attrs['id'] && labelled.include?(f.attrs['id'])) && !inside?(f, 'label') && f.attrs['aria-label'].to_s.strip.empty?
+            end
+            if bare
+                tag = "<#{bare.name}#{bare.attrs['type'] ? " type=\"#{bare.attrs['type']}\"" : ''}#{bare.attrs['id'] ? " id=\"#{bare.attrs['id']}\"" : ''}>"
+                hint = bare.attrs['id'] ? "`<label for=\"#{bare.attrs['id']}\">`" : 'ein `id` und ein `<label for=\"…\">` mit demselben Namen'
+                return failed(:label_missing, "Das Feld #{code(tag)} in Zeile #{bare.line} hat keine Beschriftung. Ein Screenreader sagt dann nur »Eingabefeld«. Gib ihm #{hint}.", :read => read_lines.join("\n\n"))
+            end
+        end
+
+        # names: required: every button and every link says what it does (its
+        # text, aria-label, or the alt of an image inside)
+        if expect['names'] == 'required'
+            controls = (doc.select('button') + doc.select('a')).sort_by(&:line)
+            nameless = controls.find do |c|
+                c.text.strip.empty? && c.attrs['aria-label'].to_s.strip.empty? && c.attrs['title'].to_s.strip.empty? &&
+                    c.select('img').none? { |img| !img.attrs['alt'].to_s.strip.empty? }
+            end
+            if nameless
+                return failed(:name_missing, "#{nameless.name == 'a' ? 'Der Link' : 'Der Knopf'} in Zeile #{nameless.line} hat keinen Text, nur ein Zeichen oder Bild. Ein Screenreader sagt dann nur »#{nameless.name == 'a' ? 'Link' : 'Schalter'}«. Schreib ein Wort hinein oder gib ihm `aria-label=\"…\"`.", :read => read_lines.join("\n\n"))
+            end
+        end
+
+        # headings: in_order: no level skipped on the way down (h1, then h3)
+        if expect['headings'] == 'in_order'
+            heads = []
+            doc.root.each_element { |e| heads << e if e.name =~ /\Ah[1-6]\z/ }
+            read_lines << "Überschriften in #{code(file)}: #{heads.empty? ? 'keine' : heads.map(&:name).join(', ')}."
+            heads.each_cons(2) do |a, b|
+                next unless b.name[1].to_i > a.name[1].to_i + 1
+
+                return failed(:heading_skipped, "Auf »#{a.text.strip}« (`#{a.name}`, Zeile #{a.line}) folgt »#{b.text.strip}« als `#{b.name}` in Zeile #{b.line}: Dazwischen fehlt `h#{a.name[1].to_i + 1}`. Wer mit einem Screenreader von Überschrift zu Überschrift springt, denkt, es fehlt etwas. Wähl die Ebene nach dem Aufbau und die Größe mit CSS.", :read => read_lines.join("\n\n"))
+            end
+        end
+
         ok(:read => read_lines.empty? ? "#{code(file)}: #{lines_text(source.lines.size)}, Tags passen zusammen." : read_lines.join("\n\n"), :warnings => warnings)
     rescue WorkspaceFiles::Refused => e
         refused(e)
+    end
+
+    def self.inside?(node, name)
+        p = node.parent
+        while p
+            return true if p.name == name
+            p = p.parent
+        end
+        false
     end
 
     # Workspace-relative path for src as seen from base, or nil if it leaves
@@ -461,6 +525,22 @@ module FileChecks
 
             return failed(:missing_declaration, want['say'] || "In #{code(file)} fehlt #{declaration_text(want)}.", :read => read)
         end
+        # contrast: { min: 4.5 }: every rule that sets a text colour against
+        # its own background, or that of body, or white (as WCAG computes it)
+        if (spec = expect['contrast'])
+            min = spec['min'].to_f
+            page_bg = rules.filter_map { |r| r.selector.split(',').map(&:strip).include?('body') && background_of(r) }.last || [255, 255, 255]
+            rules.each do |rule|
+                fg = rule.declarations.reverse.find { |name, _| name.downcase == 'color' }
+                next unless fg && (fg_rgb = parse_color(fg[1]))
+
+                bg_rgb = background_of(rule) || page_bg
+                ratio = contrast_ratio(fg_rgb, bg_rgb)
+                next if ratio + 1e-9 >= min
+
+                return failed(:low_contrast, "Die Regel `#{rule.selector}` in Zeile #{rule.line} setzt Text in #{code(fg[1].strip)} auf #{code(hex(bg_rgb))}: #{format('%.1f', ratio).sub('.', ',')} : 1, verlangt #{format('%.1f', min).sub('.', ',')} : 1. Mach die Schrift dunkler oder den Hintergrund heller.", :read => read)
+            end
+        end
         if (page = check['linked_from'])
             unless stylesheet_linked?(ws, page, file)
                 return failed(:not_linked, "#{code(File.basename(file))} ist in #{code(page)} nicht eingebunden. Schreib in den `<head>`: `<link rel=\"stylesheet\" href=\"#{relative_to(File.dirname(page), file)}\">`", :read => read)
@@ -469,6 +549,45 @@ module FileChecks
         ok(:read => read)
     rescue WorkspaceFiles::Refused => e
         refused(e)
+    end
+
+    # A CSS colour as [r, g, b]: #rgb, #rrggbb, rgb(r, g, b), a few names;
+    # nil for anything else (a variable, a gradient)
+    COLOR_NAMES = {
+        'white' => [255, 255, 255], 'black' => [0, 0, 0], 'gray' => [128, 128, 128], 'grey' => [128, 128, 128],
+        'silver' => [192, 192, 192], 'lightgray' => [211, 211, 211], 'lightgrey' => [211, 211, 211],
+        'darkgray' => [169, 169, 169], 'darkgrey' => [169, 169, 169], 'red' => [255, 0, 0], 'green' => [0, 128, 0],
+        'blue' => [0, 0, 255], 'yellow' => [255, 255, 0], 'orange' => [255, 165, 0], 'navy' => [0, 0, 128],
+    }.freeze
+
+    def self.parse_color(value)
+        v = value.to_s.downcase.sub(/!important/, '').strip
+        if (m = v.match(/#([0-9a-f]{6}|[0-9a-f]{3})\b/))
+            h = m[1].size == 3 ? m[1].chars.map { |c| c * 2 }.join : m[1]
+            return h.scan(/../).map { |x| x.to_i(16) }
+        end
+        if (m = v.match(/rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/))
+            return m.captures.map { |x| x.to_i.clamp(0, 255) }
+        end
+        v.scan(/[a-z]+/).each { |word| return COLOR_NAMES[word] if COLOR_NAMES[word] }
+        nil
+    end
+
+    def self.background_of(rule)
+        decl = rule.declarations.reverse.find { |name, _| %w[background-color background].include?(name.downcase) }
+        decl && parse_color(decl[1])
+    end
+
+    def self.hex(rgb) = format('#%02x%02x%02x', *rgb)
+
+    # WCAG: relative luminance of each, (lighter + 0.05) / (darker + 0.05)
+    def self.contrast_ratio(a, b)
+        lum = lambda do |rgb|
+            r, g, bl = rgb.map { |c| c / 255.0 }.map { |c| c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055)**2.4 }
+            0.2126 * r + 0.7152 * g + 0.0722 * bl
+        end
+        hi, lo = [lum.(a), lum.(b)].minmax.reverse
+        (hi + 0.05) / (lo + 0.05)
     end
 
     def self.css_value(text)
