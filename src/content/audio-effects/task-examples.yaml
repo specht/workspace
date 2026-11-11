@@ -51,3 +51,10 @@ examples:
       - { files: { effects/autotune.py: fehler/note-abgerundet.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: 'round' }
       - { files: { effects/autotune.py: fehler/note-oktaven.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: '466,16' }
       - { files: { effects/autotune.py: fehler/note-hertz.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: '466,16' }
+  vocode-frame:
+    pass:
+      - { files: { effects/vocoder.py: stufen/vocoder.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/vocoder.py: fehler/vocode-ohne-wurzel.py, effects/wav.py: stufen/wav.py }, say: 'Wurzel' }
+      - { files: { effects/vocoder.py: fehler/vocode-ohne-teilen.py, effects/wav.py: stufen/wav.py }, say: 'Wurzel' }
+      - { files: { effects/vocoder.py: fehler/vocode-ohne-kopie.py, effects/wav.py: stufen/wav.py }, say: 'carrier.copy()' }

@@ -1,9 +1,9 @@
 """The two sounds of the autotune widget: »Ode an die Freude« (Beethoven,
 1824) in its own rhythm, E E F G | G F E D | C C D E | E. D D, as a soft
-tone with a few overtones in the range of the voice; and stimme.wav timed
-to it: every voiced stretch of the voice (its pitch found as pitch() of
-the page finds it) sings one or more notes, made as long as them with
-the grains of shift() of the page.
+tone with a few overtones in the range of the voice; and a voice timed
+to it: the words of the tune, »Freude, schöner Götterfunken, Tochter aus
+Elysium«, spoken by Thorsten (lyrics_words.py), one syllable per note,
+made as long as it with the grains of shift() of the page.
 Both files have the same length, so the widget plays them in the same
 loop and takes the melody's pitch as the target of autotune.
 
@@ -44,27 +44,39 @@ def pitch(block, rate):
     return rate / best_lag if best_lag else 0
 
 
-x, rate = read(os.path.join(AUDIO, 'stimme.wav'))
-voiced = []
-for start in range(0, len(x) - SIZE, HOP):
-    block = x[start:start + SIZE]
-    f = pitch(block, rate) if np.sqrt(np.mean(block ** 2)) > 0.02 else 0
-    voiced.append(60 < f < 400)
+rate = 44100
+LYRICS = os.path.join(HERE, 'lyrics')
+# the words (lyrics_words.py) and their syllables, one per note
+WORDS = [('0-freude', 2), ('1-schoener', 2), ('2-goetterfunken', 4), ('3-tochter', 2), ('4-aus', 1), ('5-elysium', 4)]
 
-# stretches of voiced blocks; gaps of one block are closed, stretches shorter
-# than three blocks dropped
-stretches, k = [], 0
-while k < len(voiced):
-    if not voiced[k]:
-        k += 1
-        continue
-    first = k
-    while k < len(voiced) and (voiced[k] or (k + 1 < len(voiced) and voiced[k + 1])):
-        k += 1
-    if k - first >= 3:
-        stretches.append((first * HOP + SIZE // 4, (k - 1) * HOP + 3 * SIZE // 4))
-print(len(stretches), 'stretches:', [(round(a / rate, 2), round(b / rate, 2)) for a, b in stretches])
 
+def syllables(word, n):
+    """the word without the silence around it, cut into n pieces at the n - 1
+    deepest dips of its loudness (10 ms steps), each at least 60 ms long"""
+    loud = np.abs(word) > 0.02 * np.abs(word).max()
+    word = word[np.argmax(loud):len(word) - np.argmax(loud[::-1])]
+    step = int(0.01 * rate)
+    env = np.array([np.sqrt(np.mean(word[i:i + step] ** 2)) for i in range(0, len(word) - step, step)])
+    env = np.convolve(env, np.ones(3) / 3, 'same')
+    dips = [i for i in range(1, len(env) - 1) if env[i] <= env[i - 1] and env[i] <= env[i + 1]]
+    cuts = []
+    for i in sorted(dips, key=lambda i: env[i]):
+        if len(cuts) == n - 1:
+            break
+        if 6 <= i <= len(env) - 6 and all(abs(i - c) >= 6 for c in cuts):
+            cuts.append(i)
+    edges = [0] + [c * step for c in sorted(cuts)] + [len(word)]
+    return [word[a:b] for a, b in zip(edges[:-1], edges[1:])]
+
+
+pieces = []
+for name, n in WORDS:
+    w, r = read(os.path.join(LYRICS, name + '.wav'))
+    w = np.interp(np.arange(len(w) * rate // r) * r / rate, np.arange(len(w)), w)
+    parts = syllables(w, n)
+    print(name, [round(len(p) / rate, 2) for p in parts])
+    pieces += parts
+assert len(pieces) == len(TUNE), (len(pieces), len(TUNE))
 
 
 def stretch(piece, n):
@@ -90,29 +102,22 @@ def stretch(piece, n):
     return out
 
 
-# each stretch gets consecutive notes, the longer ones more: the notes are
-# shared out so that the voice's own time in front of each stretch decides
-# on which note it starts
-BEAT = 0.42
+# each syllable sings its note, made as long as the note; within a word
+# the syllables follow without a gap, between words a short one
+BEAT = 0.4
 total_beats = sum(d for _, d in TUNE)
 onsets = np.cumsum([0] + [d for _, d in TUNE])[:-1] * BEAT
-lengths = np.array([b - a for a, b in stretches], float)
-share = np.concatenate([[0], np.cumsum(lengths) / lengths.sum()])
-first_note = [int(round(f * len(TUNE))) for f in share[:-1]]
-for k in range(1, len(first_note)):
-    first_note[k] = max(first_note[k], first_note[k - 1] + 1)
 length = int(round((total_beats * BEAT + 0.3) * rate))
 print(f'beat {BEAT} s, {60 / BEAT:.0f} beats a minute, {length / rate:.2f} s')
+word_ends = set(np.cumsum([n for _, n in WORDS]) - 1)
 
-voice = np.zeros(length)
-for k, (a, b) in enumerate(stretches):
-    start = onsets[first_note[k]]
-    end = onsets[first_note[k + 1]] if k + 1 < len(stretches) else total_beats * BEAT
-    n = int((end - start) * 0.92 * rate)
-    at = int(round(start * rate))
-    voice[at:at + n] += stretch(x[a:b], n)
-    notes = ' '.join(t[0] for t in TUNE[first_note[k]:first_note[k + 1] if k + 1 < len(stretches) else None])
-    print(f'stretch {a / rate:.2f}–{b / rate:.2f} s ({(b - a) / rate:.2f} s) on {notes}: {n / rate:.2f} s')
+voice = np.zeros(length + rate)
+for k, piece in enumerate(pieces):
+    beats = TUNE[k][1]
+    n = int(beats * BEAT * (0.9 if k in word_ends else 1.0) * rate)
+    at = int(round(onsets[k] * rate))
+    voice[at:at + n] += stretch(piece, n)
+voice = voice[:length] * 0.8 / np.abs(voice).max()
 
 y = np.zeros(length)
 for (note, beats), t in zip(TUNE, onsets):

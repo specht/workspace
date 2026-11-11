@@ -568,6 +568,7 @@ Hör dir `stimme-komprimiert.wav` an und dann noch einmal `stimme.wav`: In der k
 <div class='history' id='history-loudness-war'>
 <i class='bi bi-calendar3'></i>
 <p><strong>Der Loudness War</strong>, 2008. Lange wurde Musik immer lauter aufgenommen. Ist der höchste Wert erreicht, den ein Sample auf einer CD haben kann, geht es nur noch mit einem Compressor weiter, mit immer höherer Ratio. Metallicas Album »Death Magnetic« ist auf der CD so laut, dass die Spitzen über den höchsten Wert hinausgehen und abgeschnitten werden, was verzerrt klingt. Dieselben Lieder im Spiel »Guitar Hero« haben viel mehr Abstand zwischen leise und laut und sind weniger abgeschnitten. Heute machen die meisten großen Streamingdienste jedes Lied von sich aus gleich laut, Spotify und YouTube auf −14 LUFS, ein Maß dafür, wie laut Menschen einen Klang hören.</p>
+<p>Hör dir <a href='https://www.youtube.com/watch?v=K6AJuRK2NE4'>»The Day That Never Comes«</a> aus »Death Magnetic« auf YouTube an und achte darauf, wie die lauten Stellen klingen, wenn die ganze Band einsetzt.</p>
 </div>
 
 <div class='hint try'>
@@ -711,7 +712,7 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir die Stimme und die Melodie zuerst einzeln an, die Stimme mit <strong>Effekt an</strong> aus. Schalt den Effekt dann ein: Die Stimme singt jetzt die Melodie, jede Silbe auf ihrem Ton. Welches Lied ist es? Schalt <strong>Melodie dazu</strong> ein und hör, ob die Stimme den Ton trifft. Stell dann das Ziel auf den nächsten Halbton und schau, wie die lila Punkte auf den Linien der Halbtöne liegen. Dreh die Retune Speed langsam auf: Ab wann klingt die Stimme wieder wie gesprochen, und woran siehst du das im Bild?
+<strong>Ausprobieren:</strong> Hör dir den Liedtext und die Melodie zuerst einzeln an, den Liedtext mit <strong>Effekt an</strong> aus: gesprochen, jede Silbe so lang wie ihr Ton. Schalt den Effekt dann ein: Jetzt singt die Stimme die Melodie. Welches Lied ist es? Schalt <strong>Melodie dazu</strong> ein und hör, ob die Stimme den Ton trifft. Stell dann das Ziel auf den nächsten Halbton und schau, wie die lila Punkte auf den Linien der Halbtöne liegen. Dreh die Retune Speed langsam auf: Ab wann klingt die Stimme wieder wie gesprochen, und woran siehst du das im Bild?
 </div>
 
 Ein Halbton ist ein Zwölftel einer Oktave: zwölf Halbtöne verdoppeln die Frequenz, ein Halbton multipliziert sie mit \\(2^{1/12} \approx 1{,}0595\\). Von einem Ton \\(f\\) bis zum Kammerton A mit 440 Hz sind es also \\(12 \cdot \log\_2(f / 440)\\) Halbtöne. Rundet man diese Zahl, hat man den nächsten Halbton.
@@ -779,5 +780,112 @@ Hör dir `stimme-autotune.wav` an: Jede Silbe liegt jetzt auf einem Halbton und 
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Gib <code>autotune</code> eine Retune Speed: Merk dir in <code>factor</code> den Faktor des vorigen Blocks und geh von ihm aus nur ein Stück auf den neuen zu, zum Beispiel ein Fünftel des Wegs. Wie klingt die Stimme jetzt?
+</div>
+
+## Vocoder
+
+Ein **Vocoder** lässt ein Instrument sprechen. Er zerlegt die Stimme in Bänder, von tief bis hoch, und misst in jedem Block, wie stark sie in jedem Band ist. Dann nimmt er einen zweiten Klang, den **Träger**, etwa einen Akkord, und macht ihn in jedem Band genau so stark wie die Stimme. Was man hört, hat die Tonhöhe des Akkords, aber die Laute der Stimme: Ein »a« und ein »i« unterscheiden sich nicht in der Tonhöhe, sondern darin, welche Bänder stark sind.
+
+<div class='effect-widget' data-effect='vocoder'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Hör dir die Stimme mit dem Akkord an und schalt den Effekt aus und an. Nimm dann die Melodie als Träger: Was singt der Roboter? Mit Rauschen als Träger flüstert die Stimme: Warum, wenn Rauschen keine Tonhöhe hat? Zieh die Bänder zum Schluss auf 4 herunter und dann auf 32: Ab wie vielen Bändern verstehst du die Wörter?
+</div>
+
+<div class='history' id='history-vocoder'>
+<i class='bi bi-calendar3'></i>
+<p><strong>Der Vocoder</strong>, 1937. Homer Dudley erfand ihn bei den Bell Labs, um Sprache mit weniger Bandbreite durch Telefonleitungen zu schicken: Statt der Welle gehen nur die Stärken der Bänder durch die Leitung, und am anderen Ende macht ein Vocoder daraus wieder Sprache. Im Zweiten Weltkrieg verschlüsselte das System SIGSALY damit Telefongespräche. 1939 zeigten die Bell Labs auf der Weltausstellung in New York den Voder, der Sprache aus zehn Bändern erzeugte, gespielt mit Tasten. Kraftwerk nahmen in den Siebzigern für ihre Alben »Ralf & Florian« und »Autobahn« einen eigens gebauten Vocoder, und Florian Schneider sang auf der Bühne durch ihn.</p>
+</div>
+
+_task(vocoder-numbers)
+
+Lege `vocoder.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav, write_wav
+
+SIZE, HOP = 2048, 512
+
+
+def saw(freqs, n, rate):
+    t = np.arange(n) / rate
+    return sum(2 * ((f * t) % 1) - 1 for f in freqs) / len(freqs)
+
+
+def vocode_frame(voice, carrier, edges):
+    # hier: das Spektrum des Trägers, in jedem Band so stark wie das der Stimme
+
+
+def vocoder(x, carrier, rate, bands=16):
+    hz = np.geomspace(100, 8000, bands + 1)
+    edges = np.round(hz * SIZE / rate).astype(int)
+    window = np.hanning(SIZE)
+    y = np.zeros(len(x) + SIZE)
+    for start in range(0, len(x) - SIZE, HOP):
+        v = np.fft.rfft(x[start:start + SIZE] * window)
+        c = np.fft.rfft(carrier[start:start + SIZE] * window)
+        y[start:start + SIZE] += np.fft.irfft(vocode_frame(v, c, edges)) * window
+    return y[:len(x)] / 1.5
+
+
+def save(path, y, rate):
+    peak = np.abs(y).max()
+    write_wav(path, y / max(1, peak), rate)
+    print(f'{path}: lauteste Stelle {peak:.2f}')
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('stimme.wav')
+    chord = saw([130.8, 164.8, 196.0], len(x), rate)
+    save('stimme-roboter.wav', vocoder(x, chord, rate), rate)
+    save('stimme-fluestern.wav', vocoder(x, np.random.uniform(-1, 1, len(x)), rate), rate)
+```
+
+`vocoder` geht in Blöcken von 2048 Samples über die Stimme, je 512 weiter, wie `pitches`, und nimmt von beiden Klängen das Spektrum mit `np.fft.rfft`. Die Grenzen der Bänder `edges` sind Indizes in diesem Spektrum, von 100 bis 8000 Hz, jedes Band gleich viele Male breiter als das darunter: So hat das tiefe Ende so viele Bänder wie das hohe, wie beim Hören. `np.fft.irfft` macht aus dem Spektrum wieder einen Block, und die Blöcke überlappen sich wie die Grains.
+
+<div class='hint own' data-check='vocode-frame'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>vocode_frame(voice, carrier, edges)</code>: Gib eine Kopie des Spektrums <code>carrier</code> zurück, in der jedes Band von <code>edges[i]</code> bis vor <code>edges[i + 1]</code> mit einem Faktor multipliziert ist, so dass es so stark ist wie dasselbe Band in <code>voice</code>. Die Stärke eines Bands ist die Wurzel aus der Summe der Quadrate seiner Beträge.
+</div>
+
+<!-- hint -->
+Die Paare von Grenzen bekommst du mit `zip(edges[:-1], edges[1:])`. Die Stärke eines Bands von `lo` bis vor `hi` ist `np.sqrt(np.sum(np.abs(voice[lo:hi]) ** 2))`; die Werte sind komplexe Zahlen, `np.abs` gibt ihren Betrag.
+<!-- /hint -->
+<!-- hint -->
+Ist die Stimme in einem Band 10 stark und der Träger 5, multiplizierst du das Band des Trägers mit 2. Ist der Träger in einem Band 0, gibt es nichts zu multiplizieren: Dann bleibt es 0.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def vocode_frame(voice, carrier, edges):
+    out = carrier.copy()
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        v = np.sqrt(np.sum(np.abs(voice[lo:hi]) ** 2))
+        c = np.sqrt(np.sum(np.abs(carrier[lo:hi]) ** 2))
+        out[lo:hi] *= v / c if c > 0 else 0
+    return out
+```
+<!-- /solution -->
+
+_task(vocode-frame)
+
+```bash
+python3 vocoder.py
+```
+
+<!-- tutorial-step
+write-file: effects/vocoder.py <- file:stufen/vocoder.py
+check-task: vocode-frame
+terminal-run: cd /workspace/effects && python3 vocoder.py
+terminal-wait-for-prompt: 60
+wait-for-text: stimme-fluestern.wav
+-->
+
+Hör dir `stimme-roboter.wav` und `stimme-fluestern.wav` an. Der Roboter spricht auf dem Akkord C-Dur, die Flüsterstimme auf Rauschen: Sie hat keine Tonhöhe, aber man versteht sie, denn die Laute stecken in den Bändern.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ändere in <code>vocoder</code> die Zahl der Bänder: Mit <code>bands=4</code> verstehst du kaum noch etwas, mit 64 klingt der Roboter fast wieder wie die Stimme. Und wie klingt die Stimme mit <code>saw([65.4], …)</code>, einer einzigen tiefen Sägezahnschwingung, als Träger?
 </div>
 

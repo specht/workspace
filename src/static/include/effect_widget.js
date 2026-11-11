@@ -37,8 +37,8 @@
     const CLIPS = {
         musik: { label: 'Musik', url: '/audio/musik.wav' },
         stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
-        // stimme.wav timed to »Ode an die Freude« of stimmeMelodie (bilder/voice_melody.py)
-        stimmeImTakt: { label: 'Stimme', url: '/audio/stimme-im-takt.wav' },
+        // the words of »Ode an die Freude«, timed to stimmeMelodie (bilder/voice_melody.py)
+        stimmeImTakt: { label: 'Liedtext', url: '/audio/stimme-im-takt.wav' },
         melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
         schlagzeug: { label: 'Schlagzeug', url: '/audio/musik/snare.flac' },
         // »Ode an die Freude«, as long as stimme-im-takt.wav (bilder/voice_melody.py)
@@ -182,6 +182,23 @@
                     : `Jeder Block geht in etwa ${de(p.speed * 1000)} ms auf ${goal} zu.`;
             },
             draw: drawPitch,
+        },
+        vocoder: {
+            chip: 'Zum Ausprobieren: abspielen und regeln',
+            clips: ['stimmeImTakt', 'stimme'],
+            melody: 'stimmeMelodie',
+            choices: [
+                { key: 'carrier', label: 'Träger', value: 'chord', options: [['chord', 'Akkord'], ['melody', 'Melodie'], ['noise', 'Rauschen']] },
+            ],
+            knobs: [
+                { key: 'bands', label: 'Bänder', min: 2, max: 32, step: 1, value: 16,
+                  marks: [[2, '2'], [4, '4'], [8, '8'], [16, '16'], [24, '24'], [32, '32']], show: (v) => `${v}` },
+            ],
+            live: true,
+            neutral: () => false,
+            caption: 'Wie stark jedes Band gerade ist, von 100 Hz bis 8 kHz: grau in der Stimme, lila im Ergebnis, dem Träger mit der Stärke der Stimme.',
+            line: (p) => `${p.bands} Bänder, jedes ${de(80 ** (1 / p.bands), 2)}-mal so breit wie das darunter; der Träger: ${{ chord: 'ein Akkord aus drei Sägezahnschwingungen', melody: 'eine Sägezahnschwingung auf den Tönen der Melodie', noise: 'Rauschen' }[p.carrier]}.`,
+            draw: drawVocoder,
         },
         compressor: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
@@ -337,6 +354,63 @@
         for (let i = 0; i < L; i++) y[i] /= Math.max(wsum[i], 1e-3);
         return y;
     }
+    // the vocoder of the page: per block of SIZE (every HOP, around the end
+    // of the clip back to its start) the carrier's spectrum, in each band as
+    // strong as the voice's; the bands from 100 to 8000 Hz, each the same
+    // number of times wider than the one below
+    function vocoder(x, carrier, rate, bands) {
+        const L = x.length, N = SIZE, half = N / 2;
+        const edges = [];
+        for (let b = 0; b <= bands; b++) edges.push(Math.round(100 * 80 ** (b / bands) * N / rate));
+        const win = new Float64Array(N);
+        for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
+        const y = new Float32Array(L);
+        const vr = new Float64Array(N), vi = new Float64Array(N), cr = new Float64Array(N), ci = new Float64Array(N);
+        for (let start = 0; start < L; start += HOP) {
+            for (let i = 0; i < N; i++) {
+                const j = (start + i) % L;
+                vr[i] = x[j] * win[i]; vi[i] = 0;
+                cr[i] = carrier[j] * win[i]; ci[i] = 0;
+            }
+            fft(vr, vi, false); fft(cr, ci, false);
+            const scale = new Float64Array(half + 1);
+            for (let b = 0; b < bands; b++) {
+                let v = 0, c = 0;
+                for (let k = edges[b]; k < edges[b + 1]; k++) { v += vr[k] * vr[k] + vi[k] * vi[k]; c += cr[k] * cr[k] + ci[k] * ci[k]; }
+                const f = c > 0 ? Math.sqrt(v / c) : 0;
+                for (let k = edges[b]; k < edges[b + 1]; k++) scale[k] = f;
+            }
+            for (let k = 0; k <= half; k++) {
+                cr[k] *= scale[k]; ci[k] *= scale[k];
+                if (k > 0 && k < half) { cr[N - k] = cr[k]; ci[N - k] = -ci[k]; }
+            }
+            fft(cr, ci, true);
+            for (let i = 0; i < N; i++) y[(start + i) % L] += cr[i] / N * win[i] / 1.5;
+        }
+        return y;
+    }
+    // the carriers: a chord of saw waves (C, E, G), a saw wave on the
+    // melody's notes (each held until the next), noise
+    function carrierFor(kind, n, rate, melody) {
+        const out = new Float32Array(n);
+        if (kind === 'noise') { for (let i = 0; i < n; i++) out[i] = Math.random() * 2 - 1; return out; }
+        const freqs = kind === 'melody' && melody ? null : [130.8, 164.8, 196.0];
+        const phase = [0, 0, 0];
+        let held = 130.8;
+        for (let i = 0; i < n; i++) {
+            if (freqs) {
+                let sum = 0;
+                for (let k = 0; k < 3; k++) { phase[k] = (phase[k] + freqs[k] / rate) % 1; sum += 2 * phase[k] - 1; }
+                out[i] = sum / 3;
+            } else {
+                const f = melody[Math.min(melody.length - 1, Math.max(0, Math.floor((i - SIZE / 2) / HOP)))];
+                if (f > 60 && f < 1000) held = f;
+                phase[0] = (phase[0] + held / rate) % 1;
+                out[i] = 2 * phase[0] - 1;
+            }
+        }
+        return out;
+    }
     const blockAt = (c, n) => Math.min(n - 1, Math.max(0, Math.floor((c - SIZE / 2) / HOP)));
     function chorus(x, rate, p) {
         const out = new Float32Array(x.length);
@@ -395,6 +469,8 @@ ${track.toString()}
 ${bendLag.toString()}
 ${tuneFactors.toString()}
 ${shift.toString()}
+${vocoder.toString()}
+${carrierFor.toString()}
 const SIZE = ${SIZE}, HOP = ${HOP};
 const blockAt = ${blockAt.toString()};
 const gainDb = ${gainDb.toString()};
@@ -406,7 +482,15 @@ onmessage = (e) => {
     const clip = clips[m.clip];
     let out;
     let found = null;
-    if (m.effect === 'pitch' || m.effect === 'autotune') {
+    if (m.effect === 'vocoder') {
+        let melody = null;
+        if (m.params.carrier === 'melody' && clips[m.melody]) {
+            const mc = clips[m.melody];
+            if (!mc.track) mc.track = track(mc.x, mc.rate);
+            melody = mc.track;
+        }
+        out = vocoder(clip.x, carrierFor(m.params.carrier, clip.x.length, clip.rate, melody), clip.rate, m.params.bands);
+    } else if (m.effect === 'pitch' || m.effect === 'autotune') {
         if (!clip.track) clip.track = track(clip.x, clip.rate);
         found = clip.track;
         const n = found.length;
@@ -657,6 +741,42 @@ onmessage = (e) => {
         g.beginPath(); g.moveTo(xm, 0); g.lineTo(xm, plotH); g.stroke();
     }
 
+    // per band its strength in dB: grey the voice, lila the result
+    function drawVocoder(g, w, h, col, p, on, live) {
+        frame(g, w, h, col);
+        const plotW = w - LABEL_W, plotH = h - AXIS, F0 = 100, F1 = 8000;
+        const xOf = (f) => LABEL_W + Math.log(f / F0) / Math.log(F1 / F0) * plotW;
+        const yOf = (db) => plotH - Math.max(0, Math.min(1, (db + 60) / 60)) * (plotH - 6);
+        g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillStyle = col.ink; g.strokeStyle = col.quiet; g.lineWidth = 1;
+        for (const db of [0, -20, -40]) {
+            const y = Math.round(yOf(db)) + 0.5;
+            g.beginPath(); g.moveTo(LABEL_W, y); g.lineTo(w, y); g.stroke();
+            g.fillText(`${db === 0 ? '0' : '−' + -db} dB`, LABEL_W - 4, y);
+        }
+        g.textAlign = 'center'; g.textBaseline = 'bottom';
+        for (const f of [100, 200, 500, 1000, 2000, 5000]) g.fillText(f >= 1000 ? `${f / 1000} kHz` : `${f} Hz`, Math.max(LABEL_W + 18, xOf(f)), h);
+        const edges = [];
+        for (let b = 0; b <= p.bands; b++) edges.push(F0 * (F1 / F0) ** (b / p.bands));
+        g.strokeStyle = col.quiet;
+        for (const f of edges) { const x = Math.round(xOf(f)) + 0.5; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, plotH); g.stroke(); }
+        if (!live || !live.before) {
+            g.fillStyle = col.ink; g.textBaseline = 'middle';
+            g.fillText('Spiel den Klang ab, dann erscheinen hier die Bänder.', LABEL_W + plotW / 2, plotH / 2);
+            return;
+        }
+        const level = (dbs, lo, hi) => {
+            let sum = 0;
+            for (let k = Math.max(1, Math.round(lo / live.binHz)); k < Math.max(2, Math.round(hi / live.binHz)); k++) sum += 10 ** (dbs[k] / 10);
+            return 10 * Math.log10(Math.max(sum, 1e-12));
+        };
+        for (let b = 0; b < p.bands; b++) {
+            const x0 = xOf(edges[b]) + 1, x1 = xOf(edges[b + 1]) - 1, mid = (x0 + x1) / 2;
+            const v = level(live.before, edges[b], edges[b + 1]), o = level(live.after, edges[b], edges[b + 1]);
+            g.fillStyle = col.sound; g.fillRect(x0, yOf(v), mid - x0, plotH - yOf(v));
+            if (on) { g.fillStyle = col.mark; g.fillRect(mid, yOf(o), x1 - mid, plotH - yOf(o)); }
+        }
+    }
+
     // left the curve (input level against output level, with the make-up
     // gain), right the gain over four seconds: each knob changes one of them
     const compressorLayout = (w) => {
@@ -858,7 +978,7 @@ onmessage = (e) => {
             const c = prepare(chart);
             if (!c) return;
             let live = null;
-            if (name === 'eq' && original) {
+            if ((name === 'eq' || name === 'vocoder') && original) {
                 const at = sampleNow();
                 smooth = { before: spectrum(original, at, smooth && smooth.before), after: spectrum(current || original, at, smooth && smooth.after) };
                 live = { ...smooth, binHz: rate / N };

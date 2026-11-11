@@ -86,3 +86,34 @@ loudness-war:
     sources:
       - url: https://en.wikipedia.org/wiki/Loudness_war
         quote: "most major streaming services began normalizing audio by default, which can be turned off if not wanted. … Spotify −14 LUFS … YouTube −14 LUFS"
+  - text: aus »Death Magnetic« auf YouTube an und achte darauf, wie die lauten Stellen klingen
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Day_That_Never_Comes
+        quote: "the lead single from their ninth studio album, Death Magnetic"
+    note: eine Einladung zum Anhören; der Link ist das offizielle Video auf Metallicas Kanal
+
+vocoder:
+  - text: Der Vocoder, 1937
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "The vocoder was invented in 1937 by Homer Dudley at Bell Labs as a means of synthesizing human speech."
+  - text: Homer Dudley erfand ihn bei den Bell Labs, um Sprache mit weniger Bandbreite durch Telefonleitungen zu schicken
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "The vocoder was invented in 1937 by Homer Dudley at Bell Labs … used as a voice codec for telecommunications … to conserve bandwidth in transmission"
+  - text: Statt der Welle gehen nur die Stärken der Bänder durch die Leitung, und am anderen Ende macht ein Vocoder daraus wieder Sprache
+    none: wie ein Vocoder als Codec arbeitet, das Verfahren des Abschnitts
+  - text: Im Zweiten Weltkrieg verschlüsselte das System SIGSALY damit Telefongespräche
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "SIGSALY was used for encrypted voice communications during World War II."
+  - text: 1939 zeigten die Bell Labs auf der Weltausstellung in New York den Voder, der Sprache aus zehn Bändern erzeugte, gespielt mit Tasten
+    sources:
+      - url: https://en.wikipedia.org/wiki/Vocoder
+        quote: "was introduced to the public at the AT&T building at the 1939–1940 New York World's Fair … 10 bands of resonator filters"
+      - url: https://en.wikipedia.org/wiki/Voder
+        quote: "The Voder … was operated by a keyboard"
+  - text: Kraftwerk nahmen in den Siebzigern für ihre Alben »Ralf & Florian« und »Autobahn« einen eigens gebauten Vocoder, und Florian Schneider sang auf der Bühne durch ihn
+    sources:
+      - url: https://en.wikipedia.org/wiki/Kraftwerk
+        quote: "Kraftwerk used a custom-built vocoder on its albums Ralf & Florian and Autobahn … Schneider processing his voice with a vocoder live"

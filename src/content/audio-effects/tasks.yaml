@@ -285,3 +285,52 @@ tasks:
       def nearest_note(f):
           return 440 * 2 ** (round(12 * np.log2(f / 440)) / 12)
       ```
+
+  - id: vocoder-numbers
+    title: Weniger Zahlen
+    prediction: true
+    prompt: |
+      Eine Stimme am Telefon hat 8000 Samples in der Sekunde. Ein Vocoder
+      schickt stattdessen 25-mal in der Sekunde die Stärken von 10 Bändern.
+      Wie viel Mal weniger Zahlen sind das?
+    check:
+      type: number
+      expect: 32
+      tolerance: 0.1
+    feedback:
+      - when: { equals: 250 }
+        say: 250 Zahlen in der Sekunde schickt der Vocoder. Wie oft passen sie in die 8000 Samples?
+      - when: { equals: 320 }
+        say: Der Vocoder schickt 10 Stärken je Block, nicht eine.
+    solution: |
+      32: Der Vocoder schickt 25 · 10 = 250 Zahlen in der Sekunde statt
+      8000, und 8000 / 250 = 32.
+
+  - id: vocode-frame
+    title: Der Träger mit der Stärke der Stimme
+    prompt: |
+      Schreib in `effects/vocoder.py` die Funktion `vocode_frame(voice, carrier, edges)`:
+      eine Kopie von `carrier`, jedes Band so stark wie dasselbe Band in `voice`.
+    check:
+      type: python
+      file: effects/vocoder.py
+      cases:
+        - call: vocode_frame(np.array([6.0, 8, 0, 0]), np.array([3.0, 4, 1, 1]), [0, 2, 4]).tolist()
+          expect: '[6.0, 8.0, 0.0, 0.0]'
+          say: 'Im ersten Band ist die Stimme 10 stark (die Wurzel aus 36 + 64), der Träger 5 (die Wurzel aus 9 + 16): Er wird mit 2 multipliziert. Im zweiten ist die Stimme still, also auch das Ergebnis. Rechnest du die Stärke als Wurzel aus der Summe der Quadrate und teilst durch die des Trägers?'
+        - call: vocode_frame(np.array([1.0, 1]), np.array([0.0, 0]), [0, 2]).tolist()
+          expect: '[0.0, 0.0]'
+          say: Ist der Träger in einem Band still, gibt es nichts zu multiplizieren, und durch 0 teilen geht nicht. Dann bleibt das Band 0.
+        - call: '(lambda c: (vocode_frame(np.array([2.0, 0]), c, [0, 2]), c.tolist())[1])(np.array([1.0, 0]))'
+          expect: '[1.0, 0.0]'
+          say: '`carrier` soll sich nicht ändern: Fang mit `out = carrier.copy()` an.'
+    solution: |
+      ```python
+      def vocode_frame(voice, carrier, edges):
+          out = carrier.copy()
+          for lo, hi in zip(edges[:-1], edges[1:]):
+              v = np.sqrt(np.sum(np.abs(voice[lo:hi]) ** 2))
+              c = np.sqrt(np.sum(np.abs(carrier[lo:hi]) ** 2))
+              out[lo:hi] *= v / c if c > 0 else 0
+          return out
+      ```
