@@ -1,55 +1,150 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" width="640" height="300">
-  <!-- the club room: a long table, three laptops, a small robot, a game on a screen -->
-  <rect width="640" height="300" fill="#e7f5ff"/>
-  <rect x="0" y="210" width="640" height="90" fill="#d0bfa0"/>
-  <rect x="30" y="196" width="590" height="16" rx="3" fill="#8d6e48"/>
-  <!-- a window -->
-  <rect x="450" y="30" width="150" height="110" rx="4" fill="#ffffff" stroke="#adb5bd" stroke-width="4"/>
-  <line x1="525" y1="30" x2="525" y2="140" stroke="#adb5bd" stroke-width="4"/>
-  <circle cx="490" cy="70" r="18" fill="#ffd43b"/>
-  <!-- laptop 1: code -->
-  <g transform="translate(55 104)">
-    <rect width="120" height="80" rx="4" fill="#343a40"/>
-    <rect x="8" y="8" width="104" height="64" fill="#1c3a5e"/>
-    <rect x="16" y="18" width="50" height="6" fill="#ffd43b"/>
-    <rect x="24" y="32" width="70" height="6" fill="#74c0fc"/>
-    <rect x="24" y="46" width="40" height="6" fill="#8ce99a"/>
-    <path d="M-10 92 H130 L120 80 H0 Z" fill="#868e96"/>
+  <!-- the club room: a pinboard and a window on the wall, a lamp over a long
+       table, three laptops (code, a game, a website), a plant, a mug and a
+       small robot sitting at the right end -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#74c0fc"/>
+      <stop offset="1" stop-color="#d0ebff"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3f0ea"/>
+      <stop offset="1" stop-color="#e9e3d8"/>
+    </linearGradient>
+    <radialGradient id="light" cx="0.5" cy="0" r="0.8">
+      <stop offset="0" stop-color="#fff3bf" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#fff3bf" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- wall, floor, the light of the lamp -->
+  <rect width="640" height="300" fill="url(#wall)"/>
+  <rect x="0" y="232" width="640" height="68" fill="#b08968"/>
+  <rect x="0" y="232" width="640" height="5" fill="#9c7656"/>
+  <path d="M0 252 H640 M0 274 H640" stroke="#a67c5b" stroke-width="2"/>
+  <ellipse cx="300" cy="90" rx="260" ry="150" fill="url(#light)"/>
+
+  <!-- the pinboard with sticky notes and a small poster -->
+  <g transform="translate(36 28)">
+    <rect width="150" height="96" rx="4" fill="#c99a66" stroke="#8d6e48" stroke-width="4"/>
+    <rect x="12" y="12" width="34" height="30" fill="#ffe066" transform="rotate(-4 29 27)"/>
+    <rect x="54" y="10" width="34" height="30" fill="#ffa8a8" transform="rotate(3 71 25)"/>
+    <rect x="18" y="52" width="34" height="30" fill="#a5d8ff" transform="rotate(2 35 67)"/>
+    <rect x="98" y="14" width="40" height="66" fill="#1c3a5e"/>
+    <path d="M110 40 L104 47 L110 54 M126 40 L132 47 L126 54 M121 37 L115 57" fill="none" stroke="#ffd43b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="29" cy="15" r="2.5" fill="#e03131"/>
+    <circle cx="71" cy="13" r="2.5" fill="#1971c2"/>
+    <circle cx="35" cy="55" r="2.5" fill="#2f9e44"/>
+    <path d="M18 22 H40 M18 28 H36 M60 20 H82 M60 26 H76 M24 62 H46 M24 68 H40" stroke="#495057" stroke-width="1.5" opacity="0.5"/>
   </g>
-  <!-- laptop 2: a game -->
-  <g transform="translate(220 104)">
-    <rect width="120" height="80" rx="4" fill="#343a40"/>
-    <rect x="8" y="8" width="104" height="64" fill="#2b8a3e"/>
-    <rect x="20" y="50" width="20" height="14" fill="#ffd43b"/>
-    <circle cx="80" cy="30" r="10" fill="#ff8787"/>
-    <rect x="8" y="64" width="104" height="8" fill="#8d6e48"/>
-    <path d="M-10 92 H130 L120 80 H0 Z" fill="#868e96"/>
+
+  <!-- the window: sky, sun, two clouds -->
+  <g transform="translate(452 26)">
+    <rect width="154" height="112" rx="4" fill="url(#sky)"/>
+    <circle cx="40" cy="38" r="16" fill="#ffd43b"/>
+    <g fill="#ffffff">
+      <ellipse cx="104" cy="34" rx="22" ry="9"/>
+      <ellipse cx="94" cy="28" rx="12" ry="10"/>
+      <ellipse cx="60" cy="76" rx="18" ry="7"/>
+      <ellipse cx="68" cy="71" rx="10" ry="8"/>
+    </g>
+    <rect width="154" height="112" rx="4" fill="none" stroke="#f8f9fa" stroke-width="7"/>
+    <line x1="77" y1="0" x2="77" y2="112" stroke="#f8f9fa" stroke-width="6"/>
+    <rect x="-6" y="110" width="166" height="8" rx="2" fill="#dee2e6"/>
   </g>
-  <!-- laptop 3: a website -->
-  <g transform="translate(385 104)">
-    <rect width="120" height="80" rx="4" fill="#343a40"/>
-    <rect x="8" y="8" width="104" height="64" fill="#ffffff"/>
-    <rect x="8" y="8" width="104" height="14" fill="#5c7cfa"/>
-    <rect x="16" y="30" width="40" height="34" fill="#dee2e6"/>
-    <rect x="62" y="30" width="42" height="6" fill="#adb5bd"/>
-    <rect x="62" y="42" width="34" height="6" fill="#adb5bd"/>
-    <path d="M-10 92 H130 L120 80 H0 Z" fill="#868e96"/>
+
+  <!-- the lamp over the table -->
+  <line x1="300" y1="0" x2="300" y2="40" stroke="#495057" stroke-width="2"/>
+  <path d="M276 58 Q300 30 324 58 Z" fill="#364fc7"/>
+  <ellipse cx="300" cy="58" rx="24" ry="4" fill="#fff3bf"/>
+
+  <!-- the table: top, edge, two legs, a shadow on the floor -->
+  <ellipse cx="320" cy="262" rx="300" ry="10" fill="#7f5539" opacity="0.35"/>
+  <rect x="44" y="204" width="20" height="56" fill="#7f5539"/>
+  <rect x="576" y="204" width="20" height="56" fill="#7f5539"/>
+  <rect x="24" y="192" width="592" height="14" rx="3" fill="#99582a"/>
+  <rect x="24" y="204" width="592" height="5" fill="#7f5539"/>
+
+  <!-- the plant at the left end -->
+  <g transform="translate(36 132)">
+    <path d="M20 26 C4 14 2 0 14 -2 C18 10 20 18 20 26 Z" fill="#40c057"/>
+    <path d="M22 26 C34 10 46 8 46 18 C36 20 28 24 22 26 Z" fill="#2f9e44"/>
+    <path d="M21 26 C16 8 22 -10 30 -8 C28 6 24 16 21 26 Z" fill="#51cf66"/>
+    <path d="M6 26 H38 L34 60 H10 Z" fill="#e8590c"/>
+    <rect x="4" y="24" width="36" height="6" rx="2" fill="#d9480f"/>
   </g>
-  <!-- the robot sitting at the right end of the table: head with eyes and mouth, antenna, arms with grippers -->
-  <g transform="translate(530 100)">
+
+  <!-- three laptops with a soft shadow each: code, a game, a website -->
+  <g fill="#000000" opacity="0.12">
+    <ellipse cx="160" cy="194" rx="72" ry="4"/>
+    <ellipse cx="315" cy="194" rx="72" ry="4"/>
+    <ellipse cx="470" cy="194" rx="72" ry="4"/>
+  </g>
+  <g transform="translate(100 104)">
+    <rect width="120" height="80" rx="5" fill="#343a40"/>
+    <rect x="7" y="7" width="106" height="66" rx="2" fill="#1c3a5e"/>
+    <rect x="16" y="16" width="44" height="5" rx="2" fill="#ffd43b"/>
+    <rect x="24" y="27" width="66" height="5" rx="2" fill="#74c0fc"/>
+    <rect x="24" y="38" width="48" height="5" rx="2" fill="#8ce99a"/>
+    <rect x="24" y="49" width="58" height="5" rx="2" fill="#74c0fc"/>
+    <rect x="16" y="60" width="20" height="5" rx="2" fill="#ffd43b"/>
+    <path d="M-10 90 H130 L120 80 H0 Z" fill="#868e96"/>
+    <rect x="-10" y="88" width="140" height="3" fill="#495057"/>
+  </g>
+  <g transform="translate(255 104)">
+    <rect width="120" height="80" rx="5" fill="#343a40"/>
+    <rect x="7" y="7" width="106" height="66" rx="2" fill="#4dabf7"/>
+    <ellipse cx="30" cy="22" rx="12" ry="5" fill="#ffffff"/>
+    <rect x="7" y="58" width="106" height="15" fill="#2f9e44"/>
+    <rect x="62" y="44" width="24" height="14" fill="#d9480f"/>
+    <rect x="62" y="44" width="24" height="4" fill="#e8590c"/>
+    <rect x="24" y="44" width="12" height="14" rx="2" fill="#ffd43b"/>
+    <circle cx="30" cy="40" r="5" fill="#ffd43b"/>
+    <circle cx="98" cy="30" r="5" fill="#fa5252"/>
+    <path d="M-10 90 H130 L120 80 H0 Z" fill="#868e96"/>
+    <rect x="-10" y="88" width="140" height="3" fill="#495057"/>
+  </g>
+  <g transform="translate(410 104)">
+    <rect width="120" height="80" rx="5" fill="#343a40"/>
+    <rect x="7" y="7" width="106" height="66" rx="2" fill="#ffffff"/>
+    <rect x="7" y="7" width="106" height="13" fill="#5c7cfa"/>
+    <circle cx="16" cy="13.5" r="3" fill="#ffffff"/>
+    <rect x="14" y="27" width="38" height="38" rx="2" fill="#dee2e6"/>
+    <path d="M18 60 L28 46 L36 54 L42 48 L50 60 Z" fill="#91a7ff"/>
+    <rect x="58" y="28" width="46" height="5" rx="2" fill="#495057"/>
+    <rect x="58" y="38" width="40" height="4" rx="2" fill="#adb5bd"/>
+    <rect x="58" y="46" width="44" height="4" rx="2" fill="#adb5bd"/>
+    <rect x="58" y="56" width="26" height="8" rx="3" fill="#5c7cfa"/>
+    <path d="M-10 90 H130 L120 80 H0 Z" fill="#868e96"/>
+    <rect x="-10" y="88" width="140" height="3" fill="#495057"/>
+  </g>
+
+  <!-- a mouse beside the first laptop, a mug between the second and third -->
+  <ellipse cx="240" cy="188" rx="8" ry="5" fill="#495057"/>
+  <g transform="translate(386 162)">
+    <path d="M0 4 H18 V26 Q18 30 14 30 H4 Q0 30 0 26 Z" fill="#f8f9fa" stroke="#495057" stroke-width="2"/>
+    <path d="M18 9 Q26 9 26 16 Q26 23 18 23" fill="none" stroke="#495057" stroke-width="2"/>
+    <path d="M5 0 Q8 -4 5 -8 M12 0 Q15 -4 12 -8" fill="none" stroke="#adb5bd" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- the robot sitting at the right end: antenna, head with eyes and mouth, arms with grippers, one waving -->
+  <ellipse cx="582" cy="194" rx="30" ry="4" fill="#000000" opacity="0.12"/>
+  <g transform="translate(552 100)">
     <line x1="30" y1="4" x2="30" y2="-10" stroke="#495057" stroke-width="3"/>
     <circle cx="30" cy="-13" r="5" fill="#ff6b6b"/>
     <rect x="10" y="4" width="40" height="30" rx="6" fill="#dee2e6" stroke="#495057" stroke-width="3"/>
     <circle cx="22" cy="17" r="5" fill="#1c7ed6"/>
     <circle cx="38" cy="17" r="5" fill="#1c7ed6"/>
-    <rect x="21" y="26" width="18" height="3" rx="1.5" fill="#495057"/>
+    <circle cx="23.5" cy="15.5" r="1.5" fill="#ffffff"/>
+    <circle cx="39.5" cy="15.5" r="1.5" fill="#ffffff"/>
+    <path d="M22 26 Q30 31 38 26" fill="none" stroke="#495057" stroke-width="2.5" stroke-linecap="round"/>
     <rect x="22" y="34" width="16" height="6" fill="#868e96"/>
-    <rect x="6" y="40" width="48" height="56" rx="8" fill="#dee2e6" stroke="#495057" stroke-width="3"/>
+    <rect x="6" y="40" width="48" height="52" rx="8" fill="#dee2e6" stroke="#495057" stroke-width="3"/>
     <circle cx="30" cy="58" r="6" fill="#ffd43b" stroke="#495057" stroke-width="2"/>
     <rect x="18" y="72" width="24" height="5" rx="2" fill="#74c0fc"/>
-    <path d="M6 50 L-10 66 L-6 80" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M-12 80 L-6 84 L0 80" fill="none" stroke="#495057" stroke-width="3" stroke-linecap="round"/>
-    <path d="M54 50 L70 62 L66 76" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M60 76 L66 80 L72 76" fill="none" stroke="#495057" stroke-width="3" stroke-linecap="round"/>
+    <path d="M6 50 L-8 64 L-4 78" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-10 78 L-4 82 L2 78" fill="none" stroke="#495057" stroke-width="3" stroke-linecap="round"/>
+    <path d="M54 50 L66 40 L72 28" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M67 24 L72 28 L78 24" fill="none" stroke="#495057" stroke-width="3" stroke-linecap="round"/>
   </g>
 </svg>
