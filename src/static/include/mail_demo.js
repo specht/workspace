@@ -13,6 +13,12 @@
 // Under the mail: »Phishing« or »Echt«, then how many clues were found and a
 // button that shows the rest.
 //
+// On a phone the page shows a box »Postfach öffnen«; the mail program then
+// fills the screen like an app: the inbox, a tap opens a mail, »Posteingang«
+// goes back, »Schließen« leaves. The phone's own back gesture does the same
+// (each step is an entry in the history), so it never leaves the page by
+// accident. No swiping: the phone uses it at the edges to go back a page.
+//
 // The sentences are spans with role=button, not buttons: a button does not
 // wrap across lines, and a sentence has to flow like text. They take the
 // focus (Tab) and answer Enter and Space as a button does.
@@ -97,7 +103,10 @@
         attachment: 'Die Datei endet auf .exe: Das ist ein Programm, kein PDF. Windows blendet bekannte Endungen oft aus; dann sieht man nur »Zustellung.pdf«. Ein Doppelklick startet das Programm.',
     };
     const CALM = 'Hier ist nichts Verdächtiges.';
-    const STATUS_IDLE = 'Zeig auf einen Link, um zu sehen, wohin er führt.';
+    let counter = 0;
+    // without a pointer (a phone) a tap on the link shows its target
+    const touch = window.matchMedia('(hover: none)').matches;
+    const STATUS_IDLE = touch ? 'Tipp einen Link an: Hier steht dann, wohin er führt.' : 'Zeig auf einen Link, um zu sehen, wohin er führt.';
 
     // in the order they stand in the mail: sender, text, attachment
     const cluesOf = (mail) => [mail.senderClue, ...mail.body.flat().map((p) => typeof p === 'object' && p.clue),
@@ -108,10 +117,73 @@
         const state = {};                           // mail id → { found: Set, verdict }
         const list = el('ul', { class: 'mail-list' });
         const pane = el('div', { class: 'mail-pane' });
-        root.append(el('div', { class: 'mail-app' }, [list, pane]));
         const items = {};
+        const uid = ++counter;
 
-        function open(mail) {
+        // the bar of the app on a phone: back to the inbox, its title, close
+        const backButton = el('button', { type: 'button', class: 'mail-back btn btn-link' }, [icon('chevron-left'), ' Posteingang']);
+        const closeButton = el('button', { type: 'button', class: 'mail-close btn btn-link' }, ['Schließen']);
+        const appbar = el('div', { class: 'mail-appbar' }, [backButton, el('span', { class: 'mail-appbar-title', text: 'Posteingang' }), closeButton]);
+        const app = el('div', { class: 'mail-app', 'aria-label': 'Postfach der Hacker-AG' }, [appbar, list, pane]);
+        const launchButton = el('button', { type: 'button', class: 'btn btn-success' }, [icon('envelope-open'), ' Postfach öffnen']);
+        const progress = el('span', { class: 'mail-launch-progress' });
+        const launch = el('div', { class: 'mail-launch' }, [
+            el('div', {}, [el('strong', { text: 'Postfach der Hacker-AG' }), el('br'), progress]), launchButton]);
+        root.append(launch, app);
+        const showProgress = () => {
+            const done = Object.values(state).filter((x) => x.verdict !== null).length;
+            progress.textContent = done ? `${MAILS.length} Mails, ${done} davon eingeschätzt` : `${MAILS.length} Mails`;
+        };
+
+        const narrow = window.matchMedia('(max-width: 640px)');
+        let full = false;
+        // the variables of the frame go along when the app leaves it for the body
+        const VARS = ['--widget', '--widget-ink', '--widget-chip', '--widget-line', '--widget-tint', '--mail-paper',
+            '--mail-hover', '--mail-found', '--mail-found-line', '--mail-url', '--mail-num', '--mail-num-ink'];
+        const view = (reading) => {
+            app.classList.toggle('mail-reading', reading);
+            (reading ? pane : list).scrollTop = 0;
+        };
+        function enter() {
+            const style = getComputedStyle(root);
+            for (const name of VARS) app.style.setProperty(name, style.getPropertyValue(name));
+            document.body.append(app);
+            app.classList.add('mail-fullscreen');
+            app.setAttribute('role', 'dialog');
+            app.setAttribute('aria-modal', 'true');
+            document.body.classList.add('mail-app-open');
+            full = true;
+            view(false);
+            history.pushState({ mailApp: uid, view: 'inbox' }, '');
+            (list.querySelector('[aria-current="true"]') || list.querySelector('button')).focus();
+        }
+        function leave() {
+            full = false;
+            app.classList.remove('mail-fullscreen', 'mail-reading');
+            app.removeAttribute('role');
+            app.removeAttribute('aria-modal');
+            document.body.classList.remove('mail-app-open');
+            root.append(app);
+            showProgress();
+            launchButton.focus({ preventScroll: true });
+        }
+        launchButton.addEventListener('click', enter);
+        // back and close go through the history, so the phone's gesture does the same
+        backButton.addEventListener('click', () => history.back());
+        closeButton.addEventListener('click', () => history.go(app.classList.contains('mail-reading') ? -2 : -1));
+        window.addEventListener('popstate', (e) => {
+            if (!full) return;
+            const st = e.state;
+            if (st && st.mailApp === uid && st.view === 'inbox') {
+                view(false);
+                const item = list.querySelector('[aria-current="true"]');
+                if (item) item.focus({ preventScroll: true });
+            } else leave();
+        });
+        app.addEventListener('keydown', (e) => { if (full && e.key === 'Escape') closeButton.click(); });
+        narrow.addEventListener('change', () => { if (full && !narrow.matches) leave(); });
+
+        function open(mail, byTap) {
             const s = state[mail.id] || (state[mail.id] = { found: new Set(), verdict: null });
             for (const [id, b] of Object.entries(items)) b.setAttribute('aria-current', String(id === mail.id));
             const sentences = {};                   // clue → the spans that show it
@@ -172,6 +244,7 @@
                 a.addEventListener('blur', hide);
                 a.addEventListener('click', (e) => {
                     e.preventDefault();
+                    show();
                     if (part.clue) addClue(part.clue, `Gut, dass das nur eine Übung ist: Der Link führt zu ${part.href}. ${CLUES[part.clue]}`);
                     else calm(`Der Link führt zu ${part.href}, also dorthin, wo sein Text sagt.`);
                 });
@@ -227,6 +300,11 @@
                 note(clue);
             }
             showVerdict();
+            if (byTap && full) {
+                view(true);
+                history.pushState({ mailApp: uid, view: 'mail' }, '');
+                backButton.focus({ preventScroll: true });
+            }
         }
 
         for (const mail of MAILS) {
@@ -234,11 +312,13 @@
                 el('span', { class: 'mail-item-from', text: mail.name }),
                 el('span', { class: 'mail-item-time', text: mail.time }),
                 el('span', { class: 'mail-item-subject', text: mail.subject })]);
-            b.addEventListener('click', () => open(mail));
+            b.addEventListener('click', () => open(mail, true));
             items[mail.id] = b;
             list.append(el('li', {}, [b]));
         }
+        // the first mail stands open beside the inbox; the app on a phone starts with the inbox
         open(MAILS[0]);
+        showProgress();
     }
 
     const start = () => document.querySelectorAll('.mail-demo').forEach((root) => {

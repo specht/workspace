@@ -423,7 +423,7 @@ den Mails ist ausgedacht.
 <div class='mail-demo'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Öffne jede Mail und klick auf alles, was dir seltsam vorkommt: den Absender, Sätze, den Anhang. Zeig mit der Maus auf jeden Link und lies unten in der Leiste, wohin er führt. Entscheide dann: Phishing oder echt? Findest du in beiden Phishing-Mails alle Hinweise?
+<strong>Ausprobieren:</strong> Öffne jede Mail und klick auf alles, was dir seltsam vorkommt: den Absender, Sätze, den Anhang. Zeig mit der Maus auf jeden Link, auf dem Handy tipp ihn an, und lies in der Leiste unter der Mail, wohin er führt. Entscheide dann: Phishing oder echt? Findest du in beiden Phishing-Mails alle Hinweise?
 </div>
 
 _task(hinweise)

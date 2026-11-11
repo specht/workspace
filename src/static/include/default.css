@@ -17085,12 +17085,86 @@ html[data-bs-theme="dark"] .mail-mark.bi-x-circle-fill { color: #ff6b6b; }
 .mail-calm:empty {
     display: none;
 }
+.mail-appbar,
+.mail-launch {
+    display: none;
+}
+/* on a phone: a box in the text, and the mail program over the whole
+   screen once it is opened (mail_demo.js moves it to the body) */
 @media (max-width: 640px) {
-    .mail-app {
-        grid-template-columns: 1fr;
+    .mail-launch {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6em 1em;
     }
-    .mail-list {
-        border-right: 0;
+    .mail-launch-progress {
+        color: var(--widget-ink);
+        font-size: 0.92em;
+    }
+    .mail-demo .mail-app {
+        display: none;
+    }
+    .mail-app.mail-fullscreen {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        border: 0;
+        border-radius: 0;
+        padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+    }
+    .mail-fullscreen .mail-appbar {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 52px;
+        padding: 0 0.25em;
         border-bottom: 1px solid var(--widget-line);
+        background: var(--widget-tint);
     }
+    .mail-appbar .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2em;
+        min-height: 44px;
+        text-decoration: none;
+    }
+    .mail-appbar-title {
+        flex: 1 1 auto;
+        padding-left: 0.75em;
+        font-weight: 700;
+    }
+    .mail-fullscreen:not(.mail-reading) .mail-back,
+    .mail-fullscreen.mail-reading .mail-appbar-title {
+        display: none;
+    }
+    .mail-fullscreen .mail-list,
+    .mail-fullscreen .mail-pane {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    .mail-fullscreen .mail-list {
+        border-right: 0;
+        background: var(--mail-paper);
+    }
+    .mail-fullscreen:not(.mail-reading) .mail-pane,
+    .mail-fullscreen.mail-reading .mail-list {
+        display: none;
+    }
+    .mail-fullscreen .mail-item {
+        padding: 0.8em 1em;
+    }
+    .mail-fullscreen .mail-item[aria-current="true"] {
+        border-left-color: transparent;
+        background: none;
+    }
+}
+body.mail-app-open {
+    overflow: hidden;
 }
