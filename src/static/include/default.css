@@ -1942,7 +1942,8 @@ h2 > .squircle {
     display: inline-block;
     position: relative;
 
-    width: 20em;
+    /* the parts or the series share the row, at most 20em each */
+    width: min(20em, calc(100% / var(--entries, 1)));
     margin-bottom: 0.5em;
     padding: 1em 2em;
     border: 0;
@@ -2062,6 +2063,19 @@ h2 > .squircle {
     .autotoc > .progress_sm {
         display: block;
     }
+}
+
+/* A page that is neither in parts nor in a series: the bar shows its
+   title, without a line or dots under it. */
+.autotoc.autotoc-title-only > .items > button {
+    width: auto;
+    max-width: 100%;
+    font-weight: 600;
+}
+.autotoc.autotoc-title-only > .items > button::after,
+.autotoc.autotoc-title-only > .progress_sm,
+.autotoc.autotoc-title-only > .progress_spots_sm {
+    display: none;
 }
 
 /* Optional chapters (ExtraChapters, <!-- extra --> before ##): a small

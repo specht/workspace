@@ -580,9 +580,9 @@ einem Kapitel `<!-- extra -->` auf der Zeile direkt vor der Überschrift:
 ```
 
 Die Überschrift bekommt dann ein kleines Schild »Extra« mit Sternen
-(`bi-stars`), und in beiden Inhaltsverzeichnissen, der Leiste oben und der
-Liste am Rand, stehen dieselben Sterne neben dem Kapitel; auf dem Handy ist
-sein Strich in der Leiste blasser. Unter dem ersten von mehreren
+(`bi-stars`), und in der Liste am Rand stehen dieselben Sterne neben dem
+Kapitel (bei einer Aktivität in Teilen auch in der Leiste oben, wenn ein Teil
+ein Extra ist). Unter dem ersten von mehreren
 aufeinanderfolgenden Extras steht eine Zeile, die die Seite selbst
 ausrechnet: Gehen die Extras bis zum Ende, »Ab hier Extras für Schnelle: Die
 Seite ist ohne sie vollständig.«; kommt danach noch ein Kapitel für alle,
@@ -612,7 +612,7 @@ verteilt, eine für jedes Kapitel (`##`). Das erste Kapitel steht unter
 unter dem Titel eine Reihe mit allen Teilen, der aktuelle lila umrandet, und
 am Ende »Weiter mit Teil n: …«; die Kurzfassung (`abstract`) steht nur auf
 dem ersten Teil. Ein letztes Kapitel »Wie geht es weiter?« ist kein eigener
-Teil: Es schließt den letzten ab, ohne Nummer. Die Leiste der Kapitel oben nennt alle Teile und öffnet sie,
+Teil: Es schließt den letzten ab, ohne Nummer. Die Leiste oben nennt alle Teile und öffnet sie,
 die Liste am Rand nur die Abschnitte des aktuellen. Ein alter Link auf eine
 Überschrift (`/slug#ein-ton-aus-zahlen`) führt zu dem Teil, der sie hat.
 
@@ -626,6 +626,13 @@ zu lesen; »Audio komprimieren« mit acht Doppelstunden ist es nicht und
 steht auf einer Seite. Als Liste (`- image: …` und `image_alt: …` je
 Teil) gibt `parts:` jedem Teil ein Bild, und die Karte im Katalog blättert
 wie bei einer Reihe durch die Teile.
+
+Die Leiste, die oben erscheint, sobald der Kopf der Seite weggescrollt ist,
+ist auf jeder Seite gleich gebaut (der Maintainer, 11. November 2026): links
+das Inhaltsverzeichnis (wo die Liste am Rand keinen Platz hat), rechts
+»Nach oben«, dazwischen die Teile einer Aktivität in Teilen oder die
+Aktivitäten einer Reihe, die aktuelle markiert, und auf jeder anderen Seite
+ihr Titel. Die Kapitel einer Seite stehen nur in der Liste am Rand.
 
 Mehrere Aktivitäten, die aufeinander aufbauen und doch jede für sich stehen
 (eigene Aufgaben, eigene Notiz, einzeln einer Klasse zuzuweisen), werden in

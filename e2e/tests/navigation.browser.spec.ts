@@ -3,8 +3,9 @@ import type { Page } from '@playwright/test';
 import { loginAsE2eUser } from './workspace';
 
 // Pages with chapters show a bar once the header has scrolled away: the
-// chapters, and on its left edge »Nach oben«, back to the header with the
-// way home and the whole menu. While hidden, the bar is out of the Tab
+// parts of an activity in parts or the activities of a series, else the
+// page's title, and »Nach oben«, back to the header with the way home and
+// the whole menu. While hidden, the bar is out of the Tab
 // order. Pages without chapters (the Handbuch overview) have no bar.
 
 async function scrollDown(page: Page) {
@@ -32,6 +33,17 @@ test('pages with chapters have a bar with »Nach oben«', async ({ page, e2eEmai
   await page.goto('/reference');
   await scrollDown(page);
   await expect(page.locator('nav.autotoc')).toHaveClass(/hidden/);
+});
+
+test('the bar lists the parts, the series, or else the title', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.setViewportSize({ width: 1200, height: 1000 });
+  const labels = async () => page.locator('nav.autotoc .items button').allTextContents();
+  await page.goto('/prolog');
+  expect(await labels()).toEqual(['Logisch programmieren mit Prolog']);
+  await page.goto('/level-1-7e3a91c4');
+  expect(await labels()).toEqual(['Die Backrooms', 'Level 1: Die Tiefe', 'Level 2: Das Bad', 'Level 3: Das Licht']);
+  await expect(page.locator('nav.autotoc .items button[aria-current=page]')).toHaveText('Level 1: Die Tiefe');
 });
 
 test('on a wide screen the chapters stand beside the text, with »Nach oben«', async ({ page, e2eEmail }, testInfo) => {

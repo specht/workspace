@@ -393,16 +393,13 @@ function check_server_tag_update(server_tag) {
     }
 }
 
-var autotoc_containers = [];
-var autotoc_items = [];
-var autotoc_items_visible = [];
 var autotoc = null;
 var autotoc_showing = false;
 var got_autotoc = false;
 
 function install_autotoc() {
     autotoc = $('.autotoc');
-    got_autotoc = $('.autotoc-container').toArray().length > 0;
+    got_autotoc = $('.autotoc-container').toArray().length > 0 || !!document.querySelector('nav.activity-series');
 
     function fix_autotoc() {
         if (window.scrollY < 100) {
@@ -420,8 +417,8 @@ function install_autotoc() {
         );
     }
 
-    // Every page gets the bar once its header has scrolled away: the way
-    // back to the start page, and the chapters or else the page's title.
+    // A page with chapters or in a series gets the bar once its header has
+    // scrolled away: »Nach oben«, the parts or the series, else the title.
     if (got_autotoc) {
         window.addEventListener('scroll', function(e) {
             fix_autotoc();
@@ -441,52 +438,49 @@ function install_autotoc() {
         window.addEventListener('resize', fadeEdges);
         setTimeout(fadeEdges, 0);
     }
-    let observer = new IntersectionObserver((entries, observer) => {
-        let found_entry = false;
-        entries.forEach(entry => {
-            let index = $(entry.target).data('autotoc-index');
-            autotoc_items_visible[index] = entry.isIntersecting;
-        });
-        for (let i = 0; i < autotoc_containers.length; i++) {
-            let item = autotoc_items[i];
-            $(item).removeClass('active');
-            if (autotoc_items_visible[i]) {
-                found_entry = true;
-                let container = $(item).parent()[0];
-                container.scrollTo({ left: item.offsetLeft - (container.offsetWidth / 2) + (item.offsetWidth / 2), behavior: 'smooth' });
-                $('.autotoc .progress_sm').css('left', `${100.0 * i / autotoc_containers.length}%`);
-                $(item).addClass('active');
-            }
-        }
-    }, { root: null, rootMargin: '-30% 0% -70% 0%' });
+    // What the bar lists (the maintainer, 11 November 2026): the parts of an
+    // activity in parts (ActivityParts), or the activities of a series
+    // (sections.yaml series:), the current one marked; on any other page
+    // its title. The chapters of a page are in the side navigation.
+    let entries = [];
     let containers = $('.autotoc-container').toArray();
-    for (let i = 0; i < containers.length; i++) {
-        let div = $(containers[i]);
-        div.data('autotoc-index', i);
-        autotoc_containers.push(div[0]);
-        let item = $('<button>', { type: 'button' }).text(div.data('label'));
-        // An optional chapter (ExtraChapters): its mark before the label,
-        // which the bar may cut off, and a fainter spot on phones.
-        if (div.hasClass('extra')) item.addClass('extra').prepend(extra_chapter_mark());
-        item.data('autotoc-index', i);
-        item[0].addEventListener('click', function(e) {
-            // another part of an activity in parts (ActivityParts): its page
-            if (containers[i].dataset.href) {
-                window.location.href = containers[i].dataset.href;
-                return;
-            }
-            window.scrollTo({ top: heading_top($(containers[i]).find('h2')[0]), behavior: 'smooth' });
+    let series = document.querySelector('nav.activity-series');
+    if (containers.some((c) => c.dataset.href)) {
+        entries = containers.map((c) => ({ label: c.dataset.label, href: c.dataset.href || null, extra: c.classList.contains('extra') }));
+    } else if (series) {
+        entries = Array.from(series.querySelectorAll('li')).map((li) => {
+            let a = li.querySelector('a');
+            return { label: li.querySelector('.activity-part-title').textContent, href: a ? a.getAttribute('href') : null };
         });
-        autotoc_items.push(item[0]);
-        autotoc_items_visible.push(false);
-        $('.autotoc > .items').append(item);
-        observer.observe(div[0]);
-        let spot_sm = $('<div>');
-        if (div.hasClass('extra')) spot_sm.addClass('extra');
-        spot_sm.css('width', `${100.0 / containers.length}%`);
-        spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
+    } else {
+        let h1 = document.querySelector('h1');
+        entries = [{ label: h1 ? heading_label(h1) : document.title, href: null }];
+        autotoc.addClass('autotoc-title-only');
     }
-    $('.autotoc .progress_sm').css('width', `calc(${100.0 / autotoc_containers.length}% - 0.3em)`);
+    let current = Math.max(0, entries.findIndex((entry) => !entry.href));
+    autotoc[0].style.setProperty('--entries', entries.length);
+    entries.forEach((entry, i) => {
+        let item = $('<button>', { type: 'button' }).text(entry.label);
+        if (entry.extra) item.addClass('extra').prepend(extra_chapter_mark());
+        if (i === current) item.addClass('active').attr('aria-current', 'page');
+        item[0].addEventListener('click', function() {
+            if (entry.href) window.location.href = entry.href;
+            else window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        $('.autotoc > .items').append(item);
+        let spot_sm = $('<div>');
+        if (entry.extra) spot_sm.addClass('extra');
+        spot_sm.css('width', `${100.0 / entries.length}%`);
+        spot_sm.appendTo($('.autotoc > .progress_spots_sm'));
+    });
+    $('.autotoc .progress_sm').css({ width: `calc(${100.0 / entries.length}% - 0.3em)`, left: `${100.0 * current / entries.length}%` });
+    // the current one in the middle of its row (a phone shows one at a time)
+    setTimeout(() => {
+        let item = $('.autotoc > .items > button')[current];
+        if (!item) return;
+        let row = item.parentElement;
+        row.scrollLeft = item.offsetLeft - (row.offsetWidth / 2) + (item.offsetWidth / 2);
+    }, 0);
 }
 
 // Where to scroll so that a heading stands at the top of the window: its
