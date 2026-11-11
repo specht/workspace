@@ -102,6 +102,16 @@
     - farben
     - farbraeume
 
+- key: reference-media
+  label: Ton und Video
+  icon: /images/clamp.png
+  description: |
+    Ton- und Videodateien mit ffmpeg umwandeln, komprimieren, schneiden und
+    vergleichen, mit ffprobe hineinsehen und Pixel oder Samples an Python
+    weitergeben.
+  entries:
+    - ffmpeg
+
 - key: reference-network
   label: Netzwerk, Daten und Sicherheit
   icon: /images/handshake.png

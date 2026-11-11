@@ -7,7 +7,7 @@ duration: 9 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Diskrete Kosinustransformation, Bewegungsschätzung), Vertiefung Technische Informatik (Videokompression)"
 topics: [kompression, codierung]
 requires: [jpeg, audio-compression]
-reference: [bits-und-bytes]
+reference: [bits-und-bytes, ffmpeg]
 </div>
 
 <div
@@ -56,7 +56,7 @@ wait-for-text: muybridge.jpg
 
 ### Bilder in Python
 
-Python liest kein Video, aber ffmpeg kann es: Es packt die Bilder aus und schreibt die Pixel, ein Byte nach dem anderen, in eine **Pipe**, aus der Python liest. Umgekehrt nimmt ffmpeg Pixel aus einer Pipe und macht daraus ein Video. Lege `video.py` an:
+Python liest kein Video, aber [ffmpeg](/reference/ffmpeg) kann es: Es packt die Bilder aus und schreibt die Pixel, ein Byte nach dem anderen, in eine **Pipe**, aus der Python liest. Umgekehrt nimmt ffmpeg Pixel aus einer Pipe und macht daraus ein Video. Lege `video.py` an:
 
 ```python
 import subprocess
