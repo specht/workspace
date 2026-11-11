@@ -12,7 +12,7 @@
 //   <div class='effect-widget' data-effect='eq'></div>
 //   <div class='effect-widget' data-effect='echo' data-clip='stimme'></div>
 //
-// The effects (EFFECTS below): eq, echo, chorus, reverb, compressor, pitch, autotune. Each has its knobs, its picture
+// The effects (EFFECTS below): gain, eq, echo, chorus, reverb, compressor, pitch, autotune, vocoder. Each has its knobs, its picture
 // and its function in WORKER, written like the Python of the page.
 (function () {
     'use strict';
@@ -20,6 +20,8 @@
     const LABEL_W = 46, AXIS = 18;
     const de = (n, digits = 0) => n.toLocaleString('de-DE', { minimumFractionDigits: digits, maximumFractionDigits: digits });
     const signedDb = (v) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)} dB`;
+    // a factor as people read it: from 1 on one decimal (4,0), below two digits (0,5, 0,032)
+    const factor = (f) => (f >= 1 ? de(f, 1) : f.toLocaleString('de-DE', { maximumSignificantDigits: 2 }));
     const hz = (f) => (f >= 1000 ? `${(f / 1000).toLocaleString('de-DE', { maximumFractionDigits: f < 10000 ? 1 : 0 })} kHz` : `${de(Math.round(f))} Hz`);
 
     const el = (tag, attrs = {}, children = []) => {
@@ -100,6 +102,27 @@
     const gainDb = (level, threshold, ratio) => (level <= threshold ? 0 : (threshold - level) * (1 - 1 / ratio));
 
     const EFFECTS = {
+        gain: {
+            chip: 'Zum Ausprobieren: abspielen und regeln',
+            clips: ['musik', 'stimme', 'klavier', 'rock'],
+            knobs: [
+                { key: 'db', label: 'Verstärkung', min: -40, max: 12, step: 1, value: -6,
+                  marks: [[-40, '−40'], [-30, '−30'], [-20, '−20'], [-12, '−12'], [-6, '−6'], [0, '0'], [6, '+6'], [12, '+12 dB']], show: signedDb },
+            ],
+            clip: true,                          // too loud is cut off, as a converter does
+            neutral: (p) => p.db === 0,
+            caption: 'Oben die Dezibel, darunter der Faktor, mit dem jedes Sample multipliziert wird; der Strich ist die Einstellung.',
+            line: (p) => {
+                const f = 10 ** (p.db / 20);
+                const words = p.db === 0 ? 'alles bleibt, wie es ist'
+                    : p.db === -6 ? 'jede Schwingung etwa halb so hoch'
+                    : p.db === -20 ? 'jede Schwingung ein Zehntel so hoch'
+                    : p.db === 6 ? 'jede Schwingung etwa doppelt so hoch'
+                    : p.db > 0 ? 'was über 1 hinausginge, wird abgeschnitten' : 'leiser';
+                return `${signedDb(p.db)}: jedes Sample mal ${factor(f)}, ${words}; die Leistung mal ${factor(f * f)}.`;
+            },
+            draw: drawGain,
+        },
         eq: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
             clips: ['musik', 'stimme', 'jazz', 'elektronik', 'orchester', 'funk'],
@@ -115,9 +138,15 @@
                   marks: [[-24, '−24'], [-12, '−12'], [0, '0']], show: signedDb },
             ],
             neutral: (p) => p.gain === 0 && p.rest === 0,
+            // settings to start from: the knobs move there and show how
+            presets: [
+                ['Altes Radio', { centre: 1000, width: 1.4, gain: 0, rest: -24 }],
+                ['Telefon', { centre: 1000, width: 0.9, gain: 0, rest: -24 }],
+                ['Party nebenan', { centre: 80, width: 1.6, gain: 0, rest: -24 }],
+            ],
             caption: 'Lila Linie: wie viel dB das EQ jeder Frequenz gibt. Graue Linie: das Spektrum des Klangs ohne EQ, lila Fläche: mit EQ.',
             line: (p) => (p.rest === 0
-                ? `Um ${hz(p.centre)} ${signedDb(p.gain)}, die Schwingung dort mal ${de(10 ** (p.gain / 20), 1)}; ${de(p.width, 1)} Oktaven daneben noch die Hälfte.`
+                ? `Um ${hz(p.centre)} ${signedDb(p.gain)}, die Schwingung dort mal ${factor(10 ** (p.gain / 20))}; ${de(p.width, 1)} Oktaven daneben noch die Hälfte.`
                 : `Um ${hz(p.centre)} ${signedDb(p.gain)}, weit weg ${signedDb(p.rest)}; ${de(p.width, 1)} Oktaven daneben genau dazwischen.`),
             draw: drawEq,
         },
@@ -513,7 +542,8 @@ const SIZE = ${SIZE}, HOP = ${HOP};
 const blockAt = ${blockAt.toString()};
 const gainDb = ${gainDb.toString()};
 const COMBS = ${JSON.stringify(COMBS)}, ALLPASS = ${JSON.stringify(ALLPASS)};
-const EFFECTS = { echo, chorus, reverb, compressor };
+const gain = (x, rate, p) => { const f = 10 ** (p.db / 20); return x.map((v) => v * f); };
+const EFFECTS = { echo, chorus, reverb, compressor, gain };
 onmessage = (e) => {
     const m = e.data;
     if (m.load) { clips[m.load] = { x: m.x, rate: m.rate }; return; }
@@ -557,6 +587,12 @@ onmessage = (e) => {
     for (const [id, level] of m.mixes || []) {
         const other = clips[id] && clips[id].x;
         if (other) for (let i = 0; i < out.length; i++) out[i] += level * other[i % other.length];
+    }
+    if (m.cut) {
+        // as a converter does: what is above full scale is cut off
+        for (let i = 0; i < out.length; i++) out[i] = Math.max(-1, Math.min(1, out[i]));
+        postMessage({ out, id: m.id, track: null, melodyTrack: null });
+        return;
     }
     // never louder than full scale: quieter as a whole instead of clipped
     let peak = 0;
@@ -729,6 +765,45 @@ onmessage = (e) => {
         g.stroke();
     }
 
+    // dB above, the factor below, on one ruler: the factor 10^(dB/20)
+    function drawGain(g, w, h, col, p, on) {
+        const D0 = -40, D1 = 12, left = LABEL_W + 10, right = w - 24;
+        const xOf = (db) => left + (db - D0) / (D1 - D0) * (right - left);
+        const top = 34, bottom = h - 46;
+        g.font = '12px system-ui, sans-serif';
+        g.strokeStyle = col.ink; g.lineWidth = 1.5;
+        for (const y of [top, bottom]) { g.beginPath(); g.moveTo(left, y + 0.5); g.lineTo(right, y + 0.5); g.stroke(); }
+        g.fillStyle = col.ink; g.textAlign = 'right'; g.textBaseline = 'middle';
+        g.fillText('dB', LABEL_W - 6, top); g.fillText('Faktor', LABEL_W - 6, bottom);
+        g.textAlign = 'center';
+        g.lineWidth = 1;
+        for (const db of [-40, -30, -20, -12, -6, 0, 6, 12]) {
+            const x = Math.round(xOf(db)) + 0.5;
+            g.beginPath(); g.moveTo(x, top - 6); g.lineTo(x, top); g.stroke();
+            g.textBaseline = 'bottom'; g.fillText(db > 0 ? `+${db}` : db < 0 ? `−${-db}` : '0', x, top - 8);
+        }
+        for (const [f, text] of [[0.01, '0,01'], [0.03, '0,03'], [0.1, '0,1'], [0.25, '¼'], [0.5, '½'], [1, '1'], [2, '2'], [4, '4']]) {
+            const x = Math.round(xOf(20 * Math.log10(f))) + 0.5;
+            g.beginPath(); g.moveTo(x, bottom); g.lineTo(x, bottom + 6); g.stroke();
+            g.textBaseline = 'top'; g.fillText(text, x, bottom + 8);
+        }
+        // between the rulers: a line from each dB down to its factor, faint
+        g.strokeStyle = col.quiet;
+        for (const db of [-40, -20, -6, 0, 6, 12]) { const x = Math.round(xOf(db)) + 0.5; g.beginPath(); g.moveTo(x, top); g.lineTo(x, bottom); g.stroke(); }
+        // full scale: above 0 dB a loud sound can be cut off
+        g.fillStyle = col.ground; g.fillRect(xOf(0), top + 1, right - xOf(0), bottom - top - 1);
+        g.fillStyle = col.ink; g.textBaseline = 'middle'; g.textAlign = 'center';
+        g.fillText('kann übersteuern', (xOf(0) + right) / 2, (top + bottom) / 2);
+        const db = on ? p.db : 0, x = xOf(db);
+        g.strokeStyle = col.mark; g.lineWidth = 3;
+        g.beginPath(); g.moveTo(x, top - 4); g.lineTo(x, bottom + 4); g.stroke();
+        g.fillStyle = col.mark;
+        for (const y of [top, bottom]) { g.beginPath(); g.arc(x, y, 5, 0, 2 * Math.PI); g.fill(); }
+        const f = 10 ** (db / 20);
+        g.textBaseline = 'top'; g.font = '600 13px system-ui, sans-serif';
+        g.fillText(`mal ${factor(f)}`, Math.min(right - 30, Math.max(left + 30, x)), bottom + 26);
+    }
+
     // the pitch over four seconds: grey the voice, lila with the effect
     function drawPitch(g, w, h, col, p, on, live) {
         frame(g, w, h, col);
@@ -899,6 +974,8 @@ onmessage = (e) => {
     }
 
     // ------------------------------------------------------------------
+    // the widgets that play: starting one stops the others
+    const players = new Set();
     function setUp(root) {
         const effect = EFFECTS[root.dataset.effect] || EFFECTS.eq;
         const name = root.dataset.effect in EFFECTS ? root.dataset.effect : 'eq';
@@ -914,7 +991,7 @@ onmessage = (e) => {
         root.dataset.chip = effect.chip;
 
         // a slider with marks under it, each centred on the thumb's place (the thumb is 1rem wide)
-        const resets = [];
+        const resets = [], setters = {};
         // a choice of a few values as buttons, and a switch
         const choice = (c) => {
             const group = el('div', { class: 'btn-group btn-group-sm', role: 'group', 'aria-label': c.label });
@@ -929,6 +1006,15 @@ onmessage = (e) => {
             params[c.key] = c.value;
             resets.push(() => { params[c.key] = c.value; inputs.forEach(([v, input]) => { input.checked = v === c.value; }); });
             return el('div', { class: 'fx-row' }, [el('span', { class: 'fx-label', text: c.label }), el('div', { class: 'fx-track' }, [group]), el('span')]);
+        };
+        // buttons that move the knobs to a setting
+        const presetRow = () => {
+            const buttons = effect.presets.map(([text, values]) => {
+                const b = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary', text });
+                b.addEventListener('click', () => { for (const [k, v] of Object.entries(values)) setters[k](v); changed(); });
+                return b;
+            });
+            return el('div', { class: 'fx-row' }, [el('span', { class: 'fx-label', text: 'So klingt' }), el('div', { class: 'fx-track fx-presets' }, buttons), el('span')]);
         };
         const toggle = (t) => {
             const id = `fx-${t.key}-${uid}`;
@@ -955,6 +1041,7 @@ onmessage = (e) => {
             const update = () => { params[knob.key] = read(); out.textContent = knob.show(params[knob.key]); };
             input.addEventListener('input', () => { update(); changed(); });
             resets.push(() => { input.value = knob.value; update(); });
+            setters[knob.key] = (v) => { input.value = knob.scale ? knob.scale.from(v) : v; update(); };
             update();
             return el('div', { class: 'fx-row' }, [el('label', { class: 'fx-label', for: id, text: knob.label }),
                 el('div', { class: 'fx-track' }, [input, scale]), out]);
@@ -994,6 +1081,7 @@ onmessage = (e) => {
             credit,
             ...(effect.choices || []).map(choice),
             ...effect.knobs.map(slider),
+            ...(effect.presets ? [presetRow()] : []),
             el('figure', { class: 'fx-figure' }, [el('figcaption', { text: effect.caption }), chart]),
             line,
             el('figure', { class: 'fx-figure' }, [el('figcaption', { text: 'Der Klang, vier Sekunden um die Stelle, die gerade spielt (Strich): oben ohne Effekt, unten mit. Zum Spulen ziehen.' }), wave]));
@@ -1151,8 +1239,13 @@ onmessage = (e) => {
             fadeOut(voice, when);
             voice = { source, gain: gainNode };
             offset = place; startedAt = when;
-            if (!playing) { playing = true; showPlay(); requestAnimationFrame(tick); }
+            if (!playing) {
+                for (const other of players) if (other !== me) other();
+                playing = true; showPlay(); requestAnimationFrame(tick);
+            }
         }
+        const me = () => { if (playing) stop(); };
+        players.add(me);
         function stop() {
             offset = positionAt(ctx.currentTime);
             if (voice) fadeOut(voice, ctx.currentTime);
@@ -1175,7 +1268,7 @@ onmessage = (e) => {
         const effectNow = () => on && !effect.neutral(params) && !(effect.plain || []).includes(clipId);
         function message() {
             return { effect: name, clip: clipId, melody: melodyNow(), params: { ...params }, twice: !!effect.twice, id: ++asked,
-                on: effectNow(), mixes: mixesNow() };
+                on: effectNow(), mixes: mixesNow(), cut: !!effect.clip };
         }
         function ask() {
             if (!effectNow() && !mixesNow().length) { current = original; if (playing) start(); return; }

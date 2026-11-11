@@ -334,3 +334,49 @@ tasks:
               out[lo:hi] *= v / c if c > 0 else 0
           return out
       ```
+
+  - id: db-half
+    title: Halb so hoch
+    prediction: true
+    prompt: |
+      Jede Schwingung eines Klangs wird halb so hoch, jedes Sample mal 0,5.
+      Um wie viele Dezibel ändert sich der Klang? Eine Stelle hinter dem
+      Komma genügt.
+    check:
+      type: number
+      expect: -6.02
+      tolerance: 0.1
+    feedback:
+      - when: { between: [5.9, 6.1] }
+        say: Der Klang wird leiser, nicht lauter; die Dezibel sind negativ.
+      - when: { between: [-3.1, -2.9] }
+        say: −3 dB halbieren die Leistung. Die Höhe der Schwingung wird mit 10^(dB/20) multipliziert, nicht mit 10^(dB/10).
+      - when: { equals: -50 }
+        say: Dezibel sind kein Prozent. Gesucht ist die Zahl dB, für die 10^(dB/20) = 0,5 ist.
+    solution: |
+      Etwa −6,0 dB: 20 · log10(0,5) = −6,02. Darum heißen 6 dB oft
+      »doppelt so hoch«.
+
+  - id: gain
+    title: Dezibel als Faktor
+    prompt: |
+      Schreib in `effects/gain.py` die Funktion `gain(x, db)`: `x` mit dem
+      Faktor zu `db` Dezibel multipliziert.
+    check:
+      type: python
+      file: effects/gain.py
+      cases:
+        - call: '[round(v, 4) for v in gain(np.array([1.0, -0.5]), -20)]'
+          expect: '[0.1, -0.05]'
+          say: '−20 dB sind ein Zehntel: 10^(−20/20) = 0,1. Rechnest du `10 ** (db / 20)`, durch 20?'
+        - call: gain(np.array([0.3, -0.7]), 0).tolist()
+          expect: '[0.3, -0.7]'
+          say: 0 dB lassen alles, wie es ist, ein Faktor von 1. Multiplizierst du `x` mit dem Faktor, statt etwas dazuzuzählen?
+        - call: '[round(v, 3) for v in gain(np.array([0.5]), 6.0206)]'
+          expect: '[1.0]'
+          say: Etwa +6 dB verdoppeln die Schwingung.
+    solution: |
+      ```python
+      def gain(x, db):
+          return x * 10 ** (db / 20)
+      ```

@@ -73,6 +73,72 @@ terminal-wait-for-prompt: 30
 wait-for-text: stimme.wav
 -->
 
+## Lautstärke in Dezibel
+
+Wie laut ein Klang ist, gibt man in **Dezibel** an, kurz dB. Dezibel zählen nicht, wie viel lauter etwas wird, sondern womit es multipliziert wird: Jedes Sample wird mit dem Faktor \\(10^{dB / 20}\\) multipliziert. +20 dB ist also mal 10, −20 dB mal ein Zehntel, und etwa −6 dB halbiert jede Schwingung. Das passt zum Ohr: Es hört nicht, um wie viel ein Klang lauter wird, sondern um welchen Faktor. Zwischen dem leisesten Klang, den man gerade noch hört, und einem, der wehtut, liegen etwa 120 dB: ein Faktor von einer Million in der Höhe der Schwingung, in Dezibel eine handliche Zahl.
+
+Warum 20? Dezibel waren zuerst für die Leistung gedacht, und die wächst mit dem Quadrat der Schwingung: +10 dB sind die zehnfache Leistung, und dafür reicht eine Schwingung, die etwa 3,16-mal so hoch ist, die Wurzel aus 10. Für die Höhe der Schwingung teilt man darum durch 20 statt durch 10.
+
+<div class='effect-widget' data-effect='gain'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Stell −6 dB ein und schalt <strong>Effekt an</strong> aus und ein: Klingt die Musik halb so laut? Dann −20 dB und −40 dB: Wie viel hörst du noch? Viele Menschen hören erst etwa 10 dB weniger als halb so laut. Zum Schluss Rock mit +12 dB: Was hörst du, und wie sieht die Welle unten aus?
+</div>
+
+_task(db-half)
+
+Lege `gain.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav, write_wav
+
+
+def gain(x, db):
+    # hier: x mit dem Faktor zu db Dezibel multipliziert
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('musik.wav')
+    for db in (-20, -6, 6):
+        y = gain(x, db)
+        write_wav(f'musik{db:+d}db.wav', y, rate)
+        print(f'{db:+d} dB: lauteste Stelle {np.abs(y).max():.2f}')
+```
+
+<div class='hint own' data-check='gain'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>gain(x, db)</code>: <code>x</code> mit dem Faktor zu <code>db</code> Dezibel multipliziert.
+</div>
+
+<!-- hint -->
+In Python ist \\(10^{dB / 20}\\) `10 ** (db / 20)`. numpy multipliziert damit das ganze Array auf einmal.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def gain(x, db):
+    return x * 10 ** (db / 20)
+```
+<!-- /solution -->
+
+_task(gain)
+
+```bash
+python3 gain.py
+```
+
+<!-- tutorial-step
+write-file: effects/gain.py <- file:stufen/gain.py
+check-task: gain
+terminal-run: cd /workspace/effects && python3 gain.py
+terminal-wait-for-prompt: 60
+wait-for-text: +6 dB
+-->
+
+Hör dir die drei Dateien an. Bei +6 dB ist die lauteste Stelle über 1: Eine WAV-Datei mit 16 Bit kann das nicht speichern, und `write_wav` schneidet ab, was darüber hinausgeht. Die Schwingung bekommt flache Spitzen, und das klingt kratzig: Das heißt **Übersteuern**, englisch Clipping.
+
 ## Equalizer
 
 In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Frequenzen kennt, kann sie auch verändern. Ein **Equalizer**, kurz EQ, macht einen Bereich von Frequenzen lauter oder leiser: der Bassregler am Lautsprecher, die Klangregler im Musikprogramm, im Tonstudio Dutzende davon. Ein Regler des EQ hat drei Einstellungen: um welche Frequenz es geht, wie breit der Bereich ist und wie viele Dezibel dazukommen oder wegfallen. Die Breite zählt man in Oktaven, denn das Ohr hört Frequenzen auf einer logarithmischen Skala: Von 100 bis 200 Hz ist es so weit wie von 1.000 bis 2.000 Hz.
@@ -80,7 +146,7 @@ In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Fr
 <div class='effect-widget' data-effect='eq'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Am Anfang ist alles weit weg von der Mitte 12 dB leiser, <strong>Übrige</strong>: Was hörst du von der Musik noch? Stell <strong>Übrige</strong> auf 0 dB und dann 60 Hz, eine Oktave und +12 dB ein: Welches Instrument wird lauter? Dann −24 dB bei 10 kHz mit zwei Oktaven: Was verschwindet? Schalt mit <strong>Effekt an</strong> hin und her und achte darauf, was sich ändert. Schieb bei +12 dB die Frequenz langsam von unten nach oben und hör, wann die Melodie lauter wird. Zum Schluss ein Bandpass, der nur einen Bereich durchlässt: Stell <strong>Übrige</strong>, was weit weg von der Mitte geschieht, auf −24 dB, die Verstärkung auf 0 dB, die Mitte auf 1 kHz und die Breite auf eine Oktave. Wie klingt die Musik jetzt, und woran erinnert sie dich?
+<strong>Ausprobieren:</strong> Am Anfang ist alles weit weg von der Mitte 12 dB leiser, <strong>Übrige</strong>: Was hörst du von der Musik noch? Stell <strong>Übrige</strong> auf 0 dB und dann 60 Hz, eine Oktave und +12 dB ein: Welches Instrument wird lauter? Dann −24 dB bei 10 kHz mit zwei Oktaven: Was verschwindet? Schalt mit <strong>Effekt an</strong> hin und her und achte darauf, was sich ändert. Schieb bei +12 dB die Frequenz langsam von unten nach oben und hör, wann die Melodie lauter wird. Zum Schluss ein Bandpass, der nur einen Bereich durchlässt: Stell <strong>Übrige</strong>, was weit weg von der Mitte geschieht, auf −24 dB, die Verstärkung auf 0 dB, die Mitte auf 1 kHz und die Breite auf eine Oktave. Wie klingt die Musik jetzt, und woran erinnert sie dich? Probier dann die Knöpfe unter den Reglern: Wie klingt Musik aus einem alten Radio, am Telefon, aus einer Party nebenan? Schau, wo die Regler dann stehen, und such eine Einstellung, die nach etwas anderem klingt, das du kennst.
 </div>
 
 <div class='history' id='history-filter-house'>

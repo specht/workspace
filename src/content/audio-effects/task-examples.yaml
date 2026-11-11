@@ -58,3 +58,10 @@ examples:
       - { files: { effects/vocoder.py: fehler/vocode-ohne-wurzel.py, effects/wav.py: stufen/wav.py }, say: 'Wurzel' }
       - { files: { effects/vocoder.py: fehler/vocode-ohne-teilen.py, effects/wav.py: stufen/wav.py }, say: 'Wurzel' }
       - { files: { effects/vocoder.py: fehler/vocode-ohne-kopie.py, effects/wav.py: stufen/wav.py }, say: 'carrier.copy()' }
+  gain:
+    pass:
+      - { files: { effects/gain.py: stufen/gain.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/gain.py: fehler/gain-zehn.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }
+      - { files: { effects/gain.py: fehler/gain-mal-db.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }
+      - { files: { effects/gain.py: fehler/gain-plus.py, effects/wav.py: stufen/wav.py }, say: 'durch 20' }

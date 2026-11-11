@@ -15477,6 +15477,7 @@ html[data-bs-theme="dark"] .effect-widget {
 .fx-draggable:active { cursor: grabbing; }
 .fx-clock { font-variant-numeric: tabular-nums; font-size: 0.9em; color: var(--bs-secondary-color); min-width: 8.5em; }
 .fx-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+.fx-presets { display: flex; flex-wrap: wrap; gap: 0.4em; }
 .fx-credit { font-size: 0.8em; color: var(--bs-secondary-color); margin: -0.3em 0 0.6em; }
 @media (max-width: 576px) {
     /* label and value on a line, the slider with its marks across the width under them */
