@@ -167,6 +167,8 @@ class TaskCardTest < Minitest::Test
     def test_every_task_on_a_page_exists
         root = File.expand_path('../../content', __dir__)
         Dir[File.join(root, '**/*.md')].each do |page|
+            # a shelved chapter (content/…/shelved/) is no page and has no tasks of its own
+            next if page.split('/').include?('shelved')
             _, ids = TaskCard.mark_slots(File.read(page, encoding: 'UTF-8'))
             next if ids.empty?
             tasks_path = File.join(File.dirname(page), 'tasks.yaml')

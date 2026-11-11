@@ -1427,6 +1427,7 @@ x264 geht genauer vor. Für jede Art, einen Makroblock zu teilen, rechnet er aus
 <img class='full fit-width inspect' src='partitions.webp' alt='Ein Ausschnitt aus Bild 12 vom Hang, viermal vergrößert: das Mädchen mit dem Stab, der Hund, ein Felsen und Gras, darüber die Blöcke von x264 als eingeschnittene Linien. Die meisten Makroblöcke sind ganze Quadrate. Einzelne sind in zwei Hälften oder in vier Viertel geteilt, im Gras, am Felsen, am Hund und am Hang; einige am Mädchen sind schraffiert.'>
 
 Im ganzen Bild bleiben 1.266 der 1.500 Makroblöcke ganz, 194 sind geteilt. Sie liegen am Mädchen, das sich anders bewegt als der Hang hinter ihr, an den Rändern der Felsen und im Gras: Wo ein Bild viele Einzelheiten hat, kostet jeder kleine Fehler der Vorhersage viele Bits, und ein eigener Vektor für ein kleineres Stück lohnt sich eher. Die 40 schraffierten hat x264 im Bild selbst vorhergesagt wie in einem I-Frame, weil das billiger war als jeder Vektor. Mit `-crf 18`, der Qualität der Ausschnitte, teilt x264 fast überall: Bits sind dann billig, und schon ein wenig weniger Rest ist die Vektoren wert.
+<!-- /after -->
 
 ## I-, P- und B-Frames
 
