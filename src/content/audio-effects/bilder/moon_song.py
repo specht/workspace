@@ -169,27 +169,15 @@ speech /= np.abs(speech).max()
 
 
 def clean(x):
-    """the recording of 1962 made easier to understand, in blocks of 2048
-    with half overlap: the noise (its spectrum from the quietest tenth of the
-    blocks) taken away gently, never below a tenth of what was there; below
-    90 Hz out, around 300 Hz 3 dB less, around 3 kHz 4 dB more"""
-    N, H = 2048, 1024
-    window = np.hanning(N)
-    frames = [x[i:i + N] * window for i in range(0, len(x) - N, H)]
-    spectra = [np.fft.rfft(f) for f in frames]
-    power = np.array([np.sum(np.abs(s) ** 2) for s in spectra])
-    quiet = np.argsort(power)[:max(1, len(power) // 10)]
-    noise = np.mean([np.abs(spectra[i]) for i in quiet], axis=0)
-    freq = np.fft.rfftfreq(N, 1 / RATE)
+    """the recording of 1962 a little clearer, with one FFT over the whole of
+    it (no blocks, so nothing becomes choppy): below 90 Hz out, around
+    300 Hz 3 dB less, around 3 kHz 3 dB more; the noise stays as it is"""
+    spec = np.fft.rfft(x)
+    freq = np.fft.rfftfreq(len(x), 1 / RATE)
     octaves = lambda f0: np.log2(np.maximum(freq, 1) / f0)
-    eq_db = -3 * np.exp(-(octaves(300) / 0.7) ** 2) + 4 * np.exp(-(octaves(3000) / 0.8) ** 2)
-    eq = 10 ** (eq_db / 20) * (1 / (1 + (90 / np.maximum(freq, 1)) ** 4))
-    out = np.zeros(len(x) + N)
-    for k, spec in enumerate(spectra):
-        size = np.abs(spec)
-        keep = np.maximum(1 - 1.5 * noise / np.maximum(size, 1e-9), 0.1)
-        out[k * H:k * H + N] += np.fft.irfft(spec * keep * eq) * window
-    out = out[:len(x)] / 1.5
+    eq_db = -3 * np.exp(-(octaves(300) / 0.7) ** 2) + 3 * np.exp(-(octaves(3000) / 0.8) ** 2)
+    spec *= 10 ** (eq_db / 20) / (1 + (90 / np.maximum(freq, 1)) ** 4)
+    out = np.fft.irfft(spec, len(x))
     return out / np.abs(out).max()
 
 
@@ -203,7 +191,7 @@ def snr(x):
 
 before = snr(speech)
 speech = clean(speech)
-print(f'noise below speech: {before:.1f} dB before, {snr(speech):.1f} dB after cleaning')
+print(f'noise below speech: {before:.1f} dB before, {snr(speech):.1f} dB after the EQ')
 
 
 
@@ -220,6 +208,14 @@ def pitch(block):
 
 def at(t):
     return int(round((t - 515) * RATE))
+
+
+def zero_crossing(i):
+    """the sample nearest to i (within 3 ms) where the wave crosses zero"""
+    w = int(0.003 * RATE)
+    seg = speech[max(0, i - w):i + w]
+    z = np.where(np.sign(seg[:-1]) != np.sign(seg[1:]))[0]
+    return max(0, i - w) + int(z[np.argmin(np.abs(z - (i - max(0, i - w))))]) if len(z) else i
 
 
 def refine(t):
@@ -244,15 +240,25 @@ def own_pitch(piece):
 
 def hold(piece, n):
     """a syllable n samples long: the start and the end as spoken, only the
-    middle (the vowel) stretched or squeezed"""
-    if n <= len(piece) * 1.15 and n >= len(piece) * 0.85:
+    middle (the vowel) stretched or squeezed, joined with crossfades of
+    10 ms so that nothing clicks"""
+    if len(piece) * 0.85 <= n <= len(piece) * 1.15:
         out = np.zeros(n)
         out[:min(n, len(piece))] = piece[:n]
-        return out
-    head, tail = int(len(piece) * 0.25), int(len(piece) * 0.2)
-    head, tail = min(head, n // 3), min(tail, n // 3)
-    middle = stretch(piece[head:len(piece) - tail], n - head - tail)
-    return np.concatenate([piece[:head], middle, piece[len(piece) - tail:]])
+        return fade(out, 3, 30) if n < len(piece) else out
+    x = int(0.01 * RATE)
+    head, tail = min(int(len(piece) * 0.25), n // 3), min(int(len(piece) * 0.2), n // 3)
+    middle = stretch(piece[max(0, head - x):len(piece) - tail + x], n - head - tail + 2 * x)
+    out = np.zeros(n + 2 * x)
+    ramp = np.linspace(0, 1, x)
+    out[:head] = piece[:head]
+    out[head - x:head] = piece[head - x:head] * (1 - ramp) + middle[:x] * ramp
+    out[head:head + len(middle) - 2 * x] = middle[x:len(middle) - x]
+    end = head + len(middle) - 2 * x
+    tail_piece = piece[len(piece) - tail - x:]
+    out[end - x:end] = middle[-x:] * (1 - ramp) + tail_piece[:x] * ramp
+    out[end:end + len(tail_piece) - x] = tail_piece[x:]
+    return out[:n]
 
 
 voice = np.zeros(LENGTH + 2 * RATE)
@@ -264,12 +270,12 @@ for bar, sixteenth, name, lengths in SHEET:
     bounds = [times[0]] + [refine(t) for t in times[1:-1]] + [times[-1]]
     slot = bar * BAR + sixteenth * SIXTEENTH
     for (t0, t1), units, step in zip(zip(bounds[:-1], bounds[1:]), lengths, CONTOUR[name]):
-        piece = speech[at(t0):at(t1)]
+        piece = speech[zero_crossing(at(t0)):zero_crossing(at(t1))]
         n = int(units * SIXTEENTH * (0.92 if units > 2 else 0.98) * RATE)
         held = hold(piece, n)
         rms = np.sqrt(np.mean(held ** 2)) + 1e-9
         held *= (0.12 / rms) ** 0.5                    # quiet syllables up, loud ones down, halfway
-        place(voice, fade(held, 5, 25), slot)
+        place(voice, fade(held, 8, 35), slot)
         # the note: of the scale, nearest to his own pitch, a chord tone on long ones
         f = own_pitch(piece)
         chord = CHORDS[min(BARS - 1, int(slot / BAR))]
@@ -304,6 +310,22 @@ def piano(f, n):
     out = sum(np.sin(2 * np.pi * f * k * np.sqrt(1 + 0.0004 * k * k) * t) / k ** 1.3 * np.exp(-t * (0.8 + 0.9 * k))
               for k in range(1, 9) if f * k < 6000)
     return fade(out * np.minimum(1, t / 0.006), 1, 40)
+
+
+def clav(f, n):
+    """a clavinet: a plucked string with many bright harmonics that fade
+    fast, the odd ones a little stronger, a hard start"""
+    t = np.arange(n) / RATE
+    out = sum(np.sin(2 * np.pi * f * k * t) / k ** 0.8 * (1.3 if k % 2 else 0.8) * np.exp(-t * (7 + 4 * k))
+              for k in range(1, 16) if f * k < 9000)
+    return fade(out, 1, 15)
+
+
+def brass(f, n):
+    """a short brass stab: detuned saws that swell in 15 ms and fall"""
+    t = np.arange(n) / RATE
+    out = sum(np.sin(2 * np.pi * f * d * k * t) / k for d in (0.995, 1.005) for k in range(1, 10) if f * k < 7000)
+    return fade(out * np.minimum(1, t / 0.015) * np.exp(-t * 6), 1, 30)
 
 
 def bass_808(f, n):
@@ -370,12 +392,19 @@ for bar, chord in enumerate(CHORDS):
     hits = [k for k in KICKS.get(part, (0,)) if not (stop and k > 8)]
     for a, b in zip(hits, hits[1:] + [16]):
         place(low, bass_808(root, int((b - a) * SIXTEENTH * RATE)), t0 + a * SIXTEENTH, 0.2)
-    # piano: the chord on 1, struck again on the »and« of 2
-    for k, level in ((0, 0.16), (6, 0.11)):
+    # clavinet: the chord in syncopated sixteenths, a ghost note between
+    CLAV = {0: 0.09, 3: 0.07, 6: 0.09, 7: 0.035, 10: 0.08, 12: 0.04, 14: 0.08}
+    for k, level in CLAV.items():
         if stop and k > 8:
             continue
-        n = int((BAR - k * SIXTEENTH) * RATE)
-        place(keys, sum(piano(semis_hz(c) * (2 if c < 6 else 1), n) for c in chord), t0 + k * SIXTEENTH, level)
+        n = int(SIXTEENTH * (1.6 if level > 0.05 else 0.6) * RATE)
+        place(keys, sum(clav(semis_hz(c + 12 if c < 6 else c), n) for c in chord), t0 + k * SIXTEENTH + (0.008 if k % 2 else 0), level)
+    # the piano only as a soft bed under it
+    place(keys, sum(piano(semis_hz(c) * (2 if c < 6 else 1), int(BAR * RATE)) for c in chord), t0, 0.04)
+    # brass stabs in the chorus, on the »and« of 2 and of 4
+    if part == 'chorus':
+        for k in (6, 14):
+            place(keys, sum(brass(semis_hz(c + 12), int(0.18 * RATE)) for c in chord), t0 + k * SIXTEENTH, 0.035)
     if part == 'chorus':
         place(pads, pad(chord, int(BAR * RATE)), t0, 0.03)
 # a rise of noise through the build's last bar

@@ -422,15 +422,27 @@
     // (moved by transpose), approached in the time speed
     // (or, with the target melody, to the melody's pitch in that block)
     function tuneFactors(found, rate, p, melody) {
-        const out = new Float32Array(found.length), move = 2 ** (p.transpose / 12);
+        const n = found.length, out = new Float32Array(n), move = 2 ** (p.transpose / 12);
         const step = p.speed > 0 ? 1 - Math.exp(-HOP / rate / p.speed) : 1;
         const toMelody = p.target === 'melody' && melody;
-        let now = move;
-        for (let k = 0; k < found.length; k++) {
-            const f = found[k], voiced = f > 60 && f < 1000;
-            let want = move;
-            if (voiced && !toMelody) want = 440 * 2 ** (Math.round(12 * Math.log2(f * move / 440)) / 12) / f;
-            else if (voiced && melody[k] > 0) want = melody[k] * move / f;
+        // the voice's pitch, the median of five blocks: a block an octave off is not followed
+        const voice = new Float32Array(n);
+        for (let k = 0; k < n; k++) {
+            const near = [];
+            for (let j = Math.max(0, k - 2); j <= Math.min(n - 1, k + 2); j++) if (found[j] > 60 && found[j] < 1000) near.push(found[j]);
+            near.sort((a, b) => a - b);
+            voice[k] = found[k] > 60 && found[k] < 1000 && near.length ? near[near.length >> 1] : 0;
+        }
+        let now = move, note = 0;
+        for (let k = 0; k < n; k++) {
+            const f = voice[k];
+            if (toMelody && melody[k] > 60) note = melody[k];          // the melody's gaps keep the last note
+            let want = now;
+            if (f && !toMelody) want = 440 * 2 ** (Math.round(12 * Math.log2(f * move / 440)) / 12) / f;
+            else if (f && note) want = note * move / f;
+            else if (!f) want = now;                                   // no voice: stay where it is
+            // more than 7 semitones away from where it is: a wrong pitch, not followed
+            if (Math.abs(12 * Math.log2(want / now)) > 7 && Math.abs(12 * Math.log2(want / move)) > 7) want = now;
             now += (want - now) * step;
             out[k] = now;
         }
@@ -1301,8 +1313,12 @@ onmessage = (e) => {
                 g.fillText(label, LABEL_W - 6, mid);
                 g.strokeStyle = colour; g.lineWidth = 1;
                 g.beginPath();
+                // each column looks at least 10 ms around its place, so that a
+                // steady tone does not beat against the columns (moiré)
+                const reach = Math.max(span / plotW, 0.01 * rate) / 2;
                 for (let px = 0; px < plotW; px++) {
-                    const a = Math.floor(from + px / plotW * span), b = Math.max(a + 1, Math.floor(from + (px + 1) / plotW * span));
+                    const mid = from + (px + 0.5) / plotW * span;
+                    const a = Math.floor(mid - reach), b = Math.max(a + 1, Math.floor(mid + reach));
                     let lo = 0, hi = 0;
                     for (let i = a; i < b; i++) {
                         const v = x[(i % L + L) % L];
