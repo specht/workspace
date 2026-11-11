@@ -29,7 +29,8 @@ SOURCE_W, SOURCE_H = 2048, 858
 LEFT = 488                                  # the 16 : 9 cut: 1525 of the 2048 columns
 SIZES = [100, 50, 25]
 SPLIT = [0.4, 0.2]                          # the share of all blocks of 100, of all blocks of 50 split
-LIGHT, DARK = (255, 255, 255, 130), (0, 0, 0, 120)
+LIGHT, DARK = (255, 255, 255, 150), (0, 0, 0, 110)
+LINE = 2                                    # pixels of each: the card shows the picture at about 60 %
 
 
 def frame(path):
@@ -71,9 +72,9 @@ def main(path):
                 # the top and left edge of each block, a light and a dark
                 # line side by side: seen on bright grass and dark rock alike,
                 # without washing the picture out
-                for k, colour in ((0, LIGHT), (1, DARK)):
-                    draw.line([bx, by + k, bx + size, by + k], fill=colour)
-                    draw.line([bx + k, by, bx + k, by + size], fill=colour)
+                for k, colour in ((0, LIGHT), (LINE, DARK)):
+                    draw.rectangle([bx, by + k, bx + size, by + k + LINE - 1], fill=colour)
+                    draw.rectangle([bx + k, by, bx + k + LINE - 1, by + size], fill=colour)
     picture = Image.alpha_composite(picture.convert('RGBA'), overlay).convert('RGB')
     picture.save(OUT, quality=86)
     print(OUT, counts)
