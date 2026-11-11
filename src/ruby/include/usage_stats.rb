@@ -455,7 +455,28 @@ module UsageStats
     # titles: { activity => [title, slug] }, tasks: { 'activity/id' => title },
     # schools: { key => name }; server: { periods:, rhythm:, since:, today: }
     # of the server (ServerLoad), nil without
-    def self.html(summary, titles:, tasks:, schools:, server: nil)
+    # »Angepinnt«: what teachers pinned for which class (shown first on its
+    # students' start page), newest first; pins: [{ group:, school:, pages:
+    # [{ title:, href:, ts: }] }]
+    def self.pins_html(pins, school_name)
+        io = +"<h2 class='mt-4'>Angepinnt</h2>"
+        io << '<p>Was Lehrkräfte für ihre Klassen angepinnt haben; es steht bei den Lernenden zuerst auf der Startseite. Die zuletzt angepinnten zuerst.</p>'
+        if pins.empty?
+            io << "<p class='text-muted'>Keine Klasse hat etwas angepinnt.</p>"
+            return io
+        end
+        io << "<div class='table-responsive'><table class='table table-sm usage-table usage-pins'><thead><tr><th>Klasse</th><th>angepinnt</th></tr></thead><tbody>"
+        pins.each do |g|
+            pages = g[:pages].map do |pg|
+                "<span class='usage-pin'><a href='#{h(pg[:href])}'>#{h(pg[:title])}</a> <span class='text-muted'>seit #{date(day_of(pg[:ts]))}</span></span>"
+            end
+            io << "<tr><td><span class='usage-class-name'>#{h(g[:group])}</span> <span class='usage-place-school'>#{h(school_name.(g[:school]))}</span></td>" \
+                  "<td><div class='usage-pins-list'>#{pages.join}</div></td></tr>"
+        end
+        io << '</tbody></table></div>'
+    end
+
+    def self.html(summary, titles:, tasks:, schools:, server: nil, pins: nil)
         min = summary[:min]
         activity_link = lambda do |activity|
             title, slug = titles[activity] || [activity, nil]
@@ -520,6 +541,8 @@ module UsageStats
             io << '</tbody></table></div>'
         end
         io << "<p class='text-muted'>#{classes[:small]} #{classes[:small] == 1 ? 'Klasse' : 'Klassen'} mit weniger als #{min}.</p>" if classes[:small].to_i.positive?
+
+        io << pins_html(pins, school_name) unless pins.nil?
 
         io << "<h2 class='mt-4'>Stolpersteine</h2>"
         io << "<p>Aufgaben, die mindestens #{min} Lernende versucht haben, die mit dem kleinsten Anteil Gelöster zuerst: " \

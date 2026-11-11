@@ -14715,6 +14715,14 @@ html[data-bs-theme="dark"] .interleaving .il-wait {
 .usage-class-name {
     font-weight: 500;
 }
+.usage-pins-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25em 1.2em;
+}
+.usage-pin {
+    white-space: nowrap;
+}
 .usage-classes-strip {
     width: 34%;
     min-width: 10rem;

@@ -66,13 +66,23 @@ class Main < Sinatra::Base
         first_server = neo4j_query('MATCH (h:ServerHour) RETURN min(h.hour) AS first;').first&.dig('first')
         server_periods = ServerLoad.periods(server, days, now)
         today = UsageStats.day_of(now)
+        # what each class has pinned (no test groups), the newest first
+        pins = neo4j_query('MATCH (p:Pin) RETURN p.group AS group, p.slug AS slug, p.ts AS ts;')
+            .reject { |r| @@test_groups.include?(r['group']) || @@content[r['slug']].nil? }
+            .group_by { |r| r['group'] }
+            .map do |group, list|
+                pages = list.sort_by { |r| -r['ts'].to_i }.map { |r| { :title => plain_title(r['slug']), :href => "/#{r['slug']}", :ts => r['ts'].to_i } }
+                { :group => group, :school => school_of_group.fetch(group, HOME_SCHOOL) || HOME_SCHOOL, :pages => pages }
+            end
+            .sort_by { |g| -g[:pages].first[:ts] }
         "<h1 class='mt-4'>Nutzung</h1>" \
             "<p class='abstract'>Welche Aktivitäten und Aufgaben an welcher Schule und in welcher Klasse bearbeitet werden und wo sie haken, " \
             'aus den Ergebnissen der automatischen Prüfung, ohne Namen, und was der Server dabei leistet. Zahlen, die auf weniger als fünf Lernenden beruhen, ' \
             'stehen hier nicht; Lehrkräfte, die Administration und die Testgruppen zählen nicht mit.</p>' +
             UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours),
                         :titles => titles, :tasks => tasks, :schools => school_names,
-                        :server => { :periods => server_periods, :rhythm => ServerLoad.rhythm(server), :since => first_server, :today => today }) +
+                        :server => { :periods => server_periods, :rhythm => ServerLoad.rhythm(server), :since => first_server, :today => today },
+                        :pins => pins) +
             ServerLoad.html(server_periods, :since => first_server, :today => today)
     end
 

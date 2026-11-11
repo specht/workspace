@@ -175,4 +175,14 @@ class UsageStatsTest < Minitest::Test
         assert_includes html, 'höchstens 6 Workspaces in einer Stunde, 5 gleichzeitig'
         refute_includes html, 'Noch keine Zahlen'
     end
+
+    def test_the_pins_of_each_class
+        pins = [{ :group => '11-d', :school => 'hhg', :pages => [{ :title => 'Fair, barrierefrei, sicher', :href => '/fair-web', :ts => Time.new(2026, 11, 3).to_i }] }]
+        html = UsageStats.pins_html(pins, ->(key) { key == 'hhg' ? 'Heinrich-Hertz-Gymnasium' : 'ohne Schule' })
+        assert_includes html, 'Angepinnt'
+        assert_includes html, "<a href='/fair-web'>Fair, barrierefrei, sicher</a>"
+        assert_includes html, 'seit 3.11.'
+        assert_includes html, 'Heinrich-Hertz-Gymnasium'
+        assert_includes UsageStats.pins_html([], ->(_) { '' }), 'Keine Klasse hat etwas angepinnt.'
+    end
 end
