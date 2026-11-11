@@ -55,9 +55,45 @@ Python of the page; a change crosses over exactly where the old sound is,
 also while a knob is dragged (as the EQ widget of »Audio komprimieren«
 does already: `eq_widget.js`, which becomes the first effect of it).
 
+## State (11 November 2026)
+
+Built, each with a widget, a prediction, a function of one's own with
+checks and examples, a file to listen to: Lautstärke in Dezibel (gain),
+Equalizer (bell, with presets old radio, phone, party next door), Echo,
+Chorus (read between samples), Hall (allpass), Compressor (gain_db),
+Pitch Shifting (pitch by autocorrelation, grains aligned with
+np.correlate), Autotune (nearest_note; in the widget Kennedy's »We choose
+to go to the Moon« as a Songify song, bilder/moon_song.py), Vocoder
+(vocode_frame), Stimmen für Filme (ring; chipmunk, giant, Dalek, Vader,
+Grievous). History boxes with sources in content/history-sources.yaml.
+The widget plays fifteen recordings under free licences (audio/effects/,
+credits in CLIPS of effect_widget.js); one widget plays at a time.
+
+## Real sounds instead of generated ones
+
+The maintainer (11 November 2026): remove the generated music wherever
+possible and replace the Thorsten voice samples with a modern, clear
+recording. What that touches:
+
+- »Audioeffekte«: musik.wav and stimme.wav are clips and the files students
+  fetch in »Einrichten«; easy to swap.
+- »Audio komprimieren«: musik.wav and its six stems (the spectrogram's
+  switches), stimme.wav (a pangram rich in s, f, sch, z), kastagnetten.wav
+  (pre-echo) are read by the stages, tasks and examples, and many numbers
+  in the text are measured from them (sizes, ratios, frames). Swapping means
+  measuring again and correcting every number; screenshots from recipes.
+  waehlen.wav (DTMF) stays generated: the synthesis is the subject.
+- Telefonspiel: Thorsten stays as the speech of the games (what students
+  hear is what their game will say); only its listening examples and the
+  cave music hoehle.mp3 could change.
+- Candidates being searched: a German voice from »Gesprochene Wikipedia«
+  (CC BY-SA), a free multitrack song with stems, or else musik.wav arranged
+  from real samples (DRSKit drums in audio/drums, a sampled piano, a bass),
+  real castanets.
+
 ## Open for the maintainer
 
-- The title: »Audioeffekte« (the maintainer: the activity is about effects; »Klang bearbeiten« was too general).
+- The title is »Audioeffekte« (decided).
 - A topic key for sound processing (`themen.yaml` has none; for now
   `codierung` and `listen`).
 - A recording of a singing voice under a free licence for autotune; until
