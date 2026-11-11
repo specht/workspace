@@ -296,32 +296,36 @@ def hold(piece, n):
 # »royal road« of Japanese pop and anime, IV V iii vi (Gmaj7 A7 F#7 Bm7),
 # with F#7 instead of F#m7, which pulls to Bm
 BM7, GMAJ7, EM7, FS7, A7 = [11, 2, 6, 9], [7, 11, 2, 6], [4, 7, 11, 2], [6, 10, 1, 4], [9, 1, 4, 7]
-CHORDS = ([BM7, GMAJ7, EM7, FS7] * 2 + [GMAJ7, A7, FS7, BM7] * 2
-          + [GMAJ7, A7, FS7, BM7, A7, FS7, BM7, GMAJ7])
+# the chorus two bars per chord, twice
+CHORUS = [GMAJ7, GMAJ7, A7, A7, FS7, FS7, BM7, BM7]
+CHORDS = [BM7, GMAJ7, EM7, FS7] * 2 + [GMAJ7, A7, FS7, BM7] * 2 + CHORUS * 2
 SCALE = [11, 1, 2, 4, 6, 7, 9]
 BARS = len(CHORDS)
 LENGTH = int(round(BARS * BAR * RATE))
 SIXTEENTH = BEAT / 4
-VERSE, BUILD, DROP = range(0, 8), range(8, 16), range(16, 24)
+VERSE, BUILD, DROP = range(0, 8), range(8, 16), range(16, 32)
 # the spoken part, as it was said, over the verse and the build: (where in
 # the song, from, to), in seconds; the countdown so placed that »lift«
 # (OFFSET + 12.94 s) falls on the first beat of the drop
 SPOKEN = [
-    (5.5, 2.40, 8.90),                  # … ready to ride the most powerful rocket
-    (12.3, 11.25, 13.60),               # NASA has ever launched: without the pause of 2,4 s
+    (4 * BAR, 2.40, 8.90),              # after four bars of the chords alone: … ready to ride the most powerful rocket
+    (4 * BAR + 6.75, 11.25, 13.60),     # NASA has ever launched: without the pause of 2,4 s
     (16 * BAR - 12.94, OFFSET + 0.0, OFFSET + 13.80),   # … and liftoff, spoken, »lift« on the drop
-    (19 * BAR, OFFSET + 17.98, OFFSET + 20.30),         # humanity's next great voyage begins, spoken, as an answer
-    (22 * BAR, OFFSET + 17.98, OFFSET + 20.30),
+    (22 * BAR, OFFSET + 17.98, OFFSET + 20.30),         # humanity's next great voyage begins, spoken, as an answer
+    (24 * BAR - 0.54, OFFSET + 12.40, OFFSET + 13.80),  # and liftoff, again into the second chorus
+    (30 * BAR, OFFSET + 17.98, OFFSET + 20.30),
 ]
 # the chorus, sung, after the drop: (bar, sixteenth in the bar, piece, sixteenths per syllable,
 # None for the length it was spoken, rounded to whole sixteenths, or 'hold'
 # for that and the last syllable held to the end of the bar; a note per syllable)
 SHEET = [
-    # the hook, written first: its rhythm and notes; the syllables are laid on them
-    (17, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B C#+'),    # over A7, held on its third
-    (18, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A# F# B'),         # over F#7, A# leading, held B into Bm7
-    (20, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B C#+'),
-    (21, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A# F# B'),
+    # the hook as the maintainer set it: »The *crew of AR-te-mis *twooooo *ooo / * * * * /
+    # Now *bound for *the *moooooon« (lengths in sixteenths; the line starts on
+    # the »and« of 4 before its first bar)
+    (17, 14, 'crew-two', [2, 2, 2, 2, 1, 1, 8], 'F# A B C#+ B A C#+'),
+    (19, 14, 'bound-moon', [2, 2, 2, 4, 22], 'C#+ D+ C#+ A# F#+'),
+    (25, 14, 'crew-two', [2, 2, 2, 2, 1, 1, 8], 'F# A B C#+ B A C#+'),
+    (27, 14, 'bound-moon', [2, 2, 2, 4, 22], 'C#+ D+ C#+ A# F#+'),
 ]
 NOTES = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
 
@@ -371,8 +375,7 @@ for bar, sixteenth, name, lengths, notes in SHEET:
         if f:
             mine = 12 * np.log2(f / C3)
             voice_pitch.append(f)
-            # the same note an octave up or down, whichever is nearer to the voice
-            note = min((note - 12, note, note + 12), key=lambda k: abs(k - mine))
+            # the note as written, so that the melody keeps its direction
             shifts.append(note - mine)
         syllables.append((slot, held, f, note))
         place(melody, 0.3 * fade(tone(semis_hz(note), int(units * SIXTEENTH * RATE)), 12, 30), slot)
@@ -423,15 +426,17 @@ def chord_at(seconds):
     return CHORDS[min(BARS - 1, int(seconds / BAR))]
 
 
-kick, snare, clap = sample('kick'), sample('snare'), sample('clap')
+rng = np.random.default_rng(1962)
+DRUMS = os.path.join(AUDIO, 'drums-electronic')
+kick, snare, roll, clap = sample('kick'), sample('snare'), sample('snare-roll'), sample('clap')
 hat, open_hat, crash = sample('hat-closed'), sample('hat-open'), sample('crash')
+riser, reverse, shaker = sample('riser'), sample('reverse-cymbal'), sample('perc')
 open_short = open_hat[:int(0.2 * RATE)] * np.linspace(1, 0, int(0.2 * RATE))
 drums = np.zeros(LENGTH + 5 * RATE)
 keys = np.zeros(LENGTH + 3 * RATE)
 low = np.zeros(LENGTH + 3 * RATE)
 lead = np.zeros(LENGTH + 3 * RATE)
 pump = np.ones(LENGTH + 3 * RATE)                  # what the kick ducks in the drop
-rng = np.random.default_rng(1962)
 # the hook of the drop: a riff of eighths, steps of the scale above the chord's root
 RIFF = [0, 4, 7, 4, 9, 7, 4, 2]
 for bar, chord in enumerate(CHORDS):
@@ -456,13 +461,15 @@ for bar, chord in enumerate(CHORDS):
         k = 0.0
         while k < (12 if bar == 15 else 16):
             progress = ((bar - 8) * 16 + k) / (8 * 16)
-            place(drums, snare, t0 + k * SIXTEENTH, 0.12 + 0.33 * progress)
+            place(drums, snare if int(k * 4) % 2 == 0 else roll, t0 + k * SIXTEENTH, 0.12 + 0.33 * progress)
             k += step
         for c in chord:                          # the chord held high and thin
             place(keys, saws(semis_hz(c) * 4, int(BAR * RATE), top=12000) * np.linspace(0.3, 1, int(BAR * RATE)), t0, 0.006 + 0.001 * (bar - 8) if bar < 15 else 0.0)
     else:
-        if bar in (16, 20):
+        if bar in (16, 24):
             place(drums, crash, t0, 0.4)
+        for k in range(1, 16, 2):                    # the shaker on the off-sixteenths
+            place(drums, shaker, t0 + k * SIXTEENTH, 0.12)
         for k in range(0, 16, 4):
             place(drums, kick, t0 + k * SIXTEENTH, 0.95)
             a = int((t0 + k * SIXTEENTH) * RATE)
@@ -484,11 +491,11 @@ for bar, chord in enumerate(CHORDS):
             note = scale_step(base, [0, 2, 4, 2, 5, 4, 2, 1][k], chord)
             place(lead, fade(saws(semis_hz(note), int(2 * SIXTEENTH * 0.8 * RATE), voices=(0.995, 1.0, 1.005)), 3, 30), t0 + k * 2 * SIXTEENTH, 0.13)
 # a rise of noise through the build, brighter as it goes
-n = int((8 * BAR - BEAT) * RATE)
-noise = rng.uniform(-1, 1, n)
-noise = noise - np.concatenate([[0], noise[:-1]])
-place(drums, noise * np.linspace(0, 1, n) ** 3, 8 * BAR, 0.05)
-place(drums, crash[::-1][-int(1.5 * RATE):], 16 * BAR - 1.5, 0.3)
+# the riser through the build, its top a beat before the drop; the reverse cymbal into the drop
+place(drums, riser, 16 * BAR - BEAT - len(riser) / RATE, 0.35)
+peak = int(np.argmax(np.abs(reverse)))
+place(drums, reverse[:peak], 16 * BAR - peak / RATE, 0.3)
+place(drums, reverse[:peak], 24 * BAR - peak / RATE, 0.25)
 
 
 def shift(x, factor):
@@ -521,7 +528,7 @@ lift = PIECES['liftoff']
 c0, c1 = int(round(lift[0] * RATE)), int(round(lift[-1] * RATE))
 chop = speech[c0:c1]
 chop_f = own_pitch(speech[c0:int(round(lift[1] * RATE))]) or 120
-for bar in (17, 19, 21, 23):
+for bar in (17, 25, 31):
     for k, steps in ((10, 4), (14, 2)):
         target = semis_hz(scale_step(CHORDS[bar][0] + 12, steps // 2, CHORDS[bar]))
         place(extras, fade(shift(chop, target / chop_f), 3, 40), bar * BAR + k * SIXTEENTH, 0.3)
