@@ -59,12 +59,35 @@ Der erste Befehl gibt nur die Länge in Sekunden, der zweite Codec, Abtastrate u
 <!-- part: codecs -->
 ### Was ffmpeg kann
 
+ffmpeg zeigt selbst, was es kann. Jede Liste erklärt am Anfang ihre Buchstaben; mit `grep` findest du darin, was du suchst.
+
+<div class='scroll-x'>
+<table class='table table-sm reference-table'>
+<thead>
+<tr><th>Befehl</th><th>Was er zeigt</th></tr>
+</thead>
+<tbody>
+<tr><td><code>ffmpeg -hide_banner -codecs</code></td><td>alle Codecs, die ffmpeg kennt, über 500, und welche Encoder und Decoder es für jeden hat</td></tr>
+<tr><td><code>ffmpeg -hide_banner -encoders</code></td><td>womit ffmpeg schreiben kann: die Namen für <code>-c:a</code> und <code>-c:v</code></td></tr>
+<tr><td><code>ffmpeg -hide_banner -decoders</code></td><td>womit ffmpeg lesen kann</td></tr>
+<tr><td><code>ffmpeg -hide_banner -formats</code></td><td>die Dateiformate, etwa <code>mp4</code>, <code>wav</code>, <code>matroska</code>; D heißt lesen, E schreiben</td></tr>
+<tr><td><code>ffmpeg -hide_banner -filters</code></td><td>alle Filter für <code>-vf</code> (Bild) und <code>-af</code> (Ton)</td></tr>
+<tr><td><code>ffmpeg -hide_banner -pix_fmts</code></td><td>die Pixelformate, etwa <code>rgb24</code> und <code>yuv420p</code></td></tr>
+<tr><td><code>ffmpeg -hide_banner -h encoder=libx264</code></td><td>alle Einstellungen eines Encoders; <code>-h filter=scale</code> die eines Filters</td></tr>
+</tbody>
+</table>
+</div>
+
 ```bash
-ffmpeg -hide_banner -encoders | grep -E 'libx264|libopus|libmp3lame|libaom-av1|aac'
-ffmpeg -hide_banner -h encoder=libx264
+ffmpeg -hide_banner -codecs | grep -E ' h264 | opus '
 ```
 
-Der erste Befehl zeigt die Encoder, die ffmpeg im Workspace hat, der zweite alle Einstellungen eines Encoders.
+```text
+ DEV.LS h264    H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (decoders: h264 …) (encoders: libx264 …)
+ DEAIL. opus    Opus (Opus Interactive Audio Codec) (decoders: opus libopus) (encoders: opus libopus)
+```
+
+Die sechs Zeichen vorn: D, ffmpeg kann ihn lesen; E, schreiben; V oder A, Video oder Ton; I, jedes Bild für sich; L, mit Verlust; S, ohne Verlust. Ein **Codec** ist die Art, die Daten zu codieren, etwa H.264; ein **Encoder** ist ein Programm, das sie so schreibt. Für H.264 gibt es mehrere, `libx264` ist das bekannteste, und sein Name ist es, der hinter `-c:v` steht.
 <!-- /part -->
 
 ## Ton
