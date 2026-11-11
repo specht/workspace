@@ -150,10 +150,10 @@ In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Fr
 </div>
 
 <div class='history' id='history-around-the-world'>
-<img src='geschichte/around-the-world.webp' alt='Thomas Bangalter von Daft Punk 2025 beim Filmfestival in Venedig: ein Mann mit Bart, schwarzer Mütze und grauem Sakko lächelt'>
+<img class='wide' src='geschichte/around-the-world.webp' alt='Daft Punk 2013: zwei Gestalten in schwarzen Glitzeranzügen und glänzenden Helmen, der eine silbern, der andere golden, vor dunklem Grund'>
 <p><strong>Daft Punk, »Around the World«</strong>, 1997. Das Lied lebt von einer gleichmäßigen Basslinie und einer Roboterstimme, die immer wieder »Around the world« singt. Im Video von Michel Gondry tanzen fünf Gruppen auf einer Bühne, die eine Schallplatte darstellt, und jede Gruppe ist ein Instrument: die Roboter die Stimme, die Sportler die Bassgitarre, die auf und ab steigt, die Discotänzerinnen das hohe Keyboard, die Skelette die Gitarre und die Mumien den Drumcomputer. So sieht man, was ein EQ trennt: Jedes Instrument hat seinen eigenen Bereich, tief oder hoch.</p>
 <p>Schau dir <a href='https://www.youtube.com/watch?v=K0HSD_i2DvA'>das Video</a> auf YouTube an und folge einer Gruppe: Hörst du ihr Instrument aus den anderen heraus, und liegt es tief oder hoch?</p>
-<p class='history-credit'>Thomas Bangalter von Daft Punk. Foto: LucaFazPhoto, 2025, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Thomas_Bangalter_at_82nd_Venice_International_Film_Festival-2_(cropped).jpg'>Wikimedia Commons</a>)</p>
+<p class='history-credit'>Daft Punk. Foto: Sony Music Entertainment, 2013, CC BY 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Daft_Punk_in_2013_2-_centered.jpg'>Wikimedia Commons</a>)</p>
 </div>
 
 In elektronischer Tanzmusik hilft ein Filter beim **Drop**: Vor dem Moment, in dem das ganze Lied mit voller Kraft einsetzt, nimmt ein **Hochpass** über einige Takte nach und nach den Bass heraus, und mit dem Drop kommt er auf einen Schlag zurück. Weil der Bass eine Weile fehlte, wirkt er danach umso gewaltiger ([Icon Collective](https://www.iconcollective.edu/edm-drop-tips) beschreibt es für Produzenten). Im Widget kannst du die **Form** auf Hochpass stellen und die Frequenz langsam nach oben schieben: Was bleibt von der Musik, wenn der Bass fehlt?
