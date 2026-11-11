@@ -557,6 +557,53 @@ function follow_part_anchor() {
     }
 }
 
+// Where the side navigation has no room (below 1400 px, phones): a button at
+// the right of the bar of chapters opens it over the page, with all its
+// headings; a heading, the backdrop or Escape closes it again.
+function install_secondary_autotoc_button(nav, items) {
+    let bar_items = document.querySelector('.autotoc > .items');
+    if (!bar_items) return;
+    let button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'autotoc-toc';
+    button.title = nav.getAttribute('aria-label');
+    button.setAttribute('aria-label', nav.getAttribute('aria-label'));
+    button.setAttribute('aria-expanded', 'false');
+    button.innerHTML = "<i class='bi bi-list-ul' aria-hidden='true'></i>";
+    bar_items.after(button);
+    // open, it stands at the end of the body: inside the layout (z-index 0)
+    // it could not cover the bar
+    let backdrop = null, home = null, home_next = null;
+    function close() {
+        nav.classList.remove('open');
+        button.setAttribute('aria-expanded', 'false');
+        if (backdrop) backdrop.remove();
+        backdrop = null;
+        if (home) home.insertBefore(nav, home_next);
+        home = null;
+    }
+    function open() {
+        home = nav.parentNode;
+        home_next = nav.nextSibling;
+        document.body.appendChild(nav);
+        nav.classList.add('open');
+        button.setAttribute('aria-expanded', 'true');
+        backdrop = document.createElement('div');
+        backdrop.className = 'autotoc-secondary-backdrop';
+        backdrop.addEventListener('click', close);
+        document.body.appendChild(backdrop);
+        let active = items.querySelector('a.active') || items.querySelector('a');
+        if (active) {
+            active.scrollIntoView({ block: 'center' });
+            active.focus({ preventScroll: true });
+        }
+    }
+    button.addEventListener('click', () => nav.classList.contains('open') ? close() : open());
+    items.addEventListener('click', (e) => { if (e.target.closest('a')) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && nav.classList.contains('open')) { close(); button.focus(); } });
+    window.addEventListener('resize', () => { if (window.innerWidth >= 1400) close(); });
+}
+
 var autotoc_secondary = null;
 var autotoc_secondary_headings = [];
 var autotoc_secondary_links = [];
@@ -689,6 +736,7 @@ function install_secondary_autotoc() {
     }
 
     autotoc_secondary = nav;
+    install_secondary_autotoc_button(nav, items);
     // the teacher note can take its place beside the text (teacher_note.js)
     document.dispatchEvent(new CustomEvent('autotoc-secondary-ready'));
 

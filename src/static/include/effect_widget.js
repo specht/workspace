@@ -312,7 +312,7 @@
                 { key: 'attack', label: 'Attack', min: 0, max: 1000, step: 1, value: ATTACK.from(0.005), scale: ATTACK,
                   marks: [[0.001, '1'], [0.003, '3'], [0.01, '10'], [0.03, '30'], [0.1, '100 ms']], show: ms },
                 { key: 'release', label: 'Release', min: 0, max: 1000, step: 1, value: RELEASE.from(0.1), scale: RELEASE,
-                  marks: [[0.02, '20'], [0.05, '50'], [0.1, '100'], [0.2, '200'], [0.5, '500'], [1, '1000 ms']], show: ms },
+                  marks: [[0.02, '20'], [0.05, '50'], [0.1, '100'], [0.2, '200'], [0.5, '500'], [1, '1 s']], show: ms },
                 { key: 'makeup', label: 'Make-up Gain', min: 0, max: 24, step: 1, value: 9,
                   marks: [[0, '0'], [6, '+6'], [12, '+12'], [18, '+18'], [24, '+24 dB']], show: signedDb },
             ],
