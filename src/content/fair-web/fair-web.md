@@ -1,4 +1,6 @@
 <div class='meta'>
+image: teaser.webp:100:50
+image_alt: "Der Raum der Hacker-AG: drei Laptops mit Code, einem Spiel und einer Webseite auf einem langen Tisch, am Ende sitzt ein kleiner Roboter und winkt"
 kind: labor
 duration: 4 Doppelstunden
 curriculum: "Sek I: Leben in und mit vernetzten Systemen (Gestalten von Internetseiten, Stylesheets; Gefahren bei E-Mails: Phishing); Oberstufe: Softwareprojekt (Ergonomie), Vertiefung Informatik und Gesellschaft"
@@ -101,7 +103,7 @@ schmückt, bekommt `alt=""`: Dann überspringt der Screenreader es.
 Die Seite hat zwei Bilder. Das Logo neben dem Menü sagt, wessen Seite das ist.
 Das große Bild zeigt den Raum der AG:
 
-<img src='/fair-web/bilder/ag.svg' class='full' alt='Der Raum der AG: drei Laptops auf einem langen Tisch, auf dem ersten Code, auf dem zweiten ein Spiel, auf dem dritten eine Webseite; am Ende des Tischs sitzt ein kleiner Roboter und winkt'>
+<img src='/fair-web/bilder/ag.svg' class='full fit-width' alt='Der Raum der AG: drei Laptops auf einem langen Tisch, auf dem ersten Code, auf dem zweiten ein Spiel, auf dem dritten eine Webseite; am Ende des Tischs sitzt ein kleiner Roboter und winkt'>
 
 _task(alt-gut)
 
