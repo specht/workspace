@@ -840,3 +840,104 @@ tasks:
     solution: |
       Über vierzigmal so groß: Rauschen ist Zufall, es lässt sich weder aus
       den Nachbarn noch aus dem Bild davor vorhersagen.
+
+  - id: psnr
+    title: Wie gut ist ein Bild?
+    prompt: |
+      Schreib in `video/quality.py` die Funktion `psnr(original, decoded)`:
+      den mittleren quadrierten Fehler zwischen den beiden Arrays, und
+      daraus 10 · log10(255² / Fehler) in dB. Sind beide gleich, gibt sie
+      `float('inf')` zurück.
+    check:
+      type: python
+      file: video/quality.py
+      cases:
+        - call: round(psnr(np.zeros((4, 4)), np.full((4, 4), 5.0)), 2)
+          expect: '34.15'
+          say: Jeder Wert ist um 5 falsch, der quadrierte Fehler also überall 25, und 10 · log10(255² / 25) = 34,15. Rechnest du mit `np.log10` und mit 255², nicht mit 255?
+        - call: round(psnr(np.array([10.0, 20.0]), np.array([13.0, 16.0])), 2)
+          expect: '37.16'
+          say: Die Fehler sind 3 und −4, quadriert 9 und 16, im Mittel 12,5. Quadrierst du die Unterschiede, bevor du den Mittelwert nimmst?
+        - call: round(psnr(np.array([0], dtype=np.uint8), np.array([255], dtype=np.uint8)), 2)
+          expect: '0.0'
+          say: Bilder kommen als Bytes, `uint8`, und 0 − 255 ist in Bytes 1, nicht −255. Macht `astype(float)` vor dem Abziehen Kommazahlen daraus?
+        - call: psnr(np.zeros((4, 4)), np.zeros((4, 4))) == float('inf')
+          expect: 'True'
+          say: Zwei gleiche Bilder haben den Fehler 0. Dann gibt `psnr` `float('inf')` zurück, statt durch 0 zu teilen.
+    solution: |
+      ```python
+      def psnr(original, decoded):
+          error = np.mean((original.astype(float) - decoded.astype(float)) ** 2)
+          if error == 0:
+              return float('inf')
+          return 10 * np.log10(255 ** 2 / error)
+      ```
+
+  - id: same-rate
+    title: Dieselbe Rate für beide
+    prediction: true
+    prompt: |
+      `glance.mp4` und `tilt.mp4` werden beide mit 400 kbit/s codiert.
+      Welcher Ausschnitt hat danach die höhere PSNR?
+    check:
+      type: choice
+      options:
+        - glance.mp4, der Blick des Mädchens.
+        - tilt.mp4, die Fahrt die Wand hinauf.
+        - Beide etwa gleich, sie haben ja dieselbe Rate.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Denk an die Bytes der P-Frames in »I-, P- und B-Frames«. Welcher Ausschnitt braucht für dieselbe Qualität mehr?
+      - when: { picked: 2 }
+        say: Dieselbe Rate heißt dieselbe Zahl von Bytes, nicht dieselbe Qualität. Braucht ein Bild, in dem sich fast nichts bewegt, so viele Bytes wie eine schnelle Fahrt?
+    solution: |
+      glance.mp4: Dort ändert sich fast nichts, und dieselben Bytes reichen
+      für eine viel genauere Kopie als bei der schnellen Fahrt.
+
+  - id: av1-saves
+    title: Was AV1 spart
+    prediction: true
+    prompt: |
+      Bei derselben PSNR: Wie viel weniger Bytes braucht AV1 für
+      `slope.mp4` als H.264?
+    check:
+      type: choice
+      options:
+        - Kaum weniger, die Codecs sind sich zu ähnlich.
+        - Etwa ein Drittel bis die Hälfte weniger.
+        - Neun Zehntel weniger.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: AV1 kam 15 Jahre nach H.264, mit größeren Blöcken, mehr Arten der Vorhersage im Bild und besseren Filtern. Lohnt sich das nicht?
+      - when: { picked: 2 }
+        say: So viel schafft ein neuer Codec nicht. Jede Generation spart einen Teil, und die meisten Bytes sind schon bei H.264 gespart.
+    solution: |
+      Etwa ein Drittel bis die Hälfte weniger, je nach Qualität: bei 38 dB
+      gut ein Drittel, bei 34 dB über die Hälfte.
+
+  - id: history-gain
+    title: Dreißig Jahre
+    prediction: true
+    prompt: |
+      Bei 500 kbit/s: Um wie viel ist das PSNR von AV1 (2018) höher als
+      das von MPEG-1 (1993)?
+    check:
+      type: choice
+      options:
+        - Kaum, etwa 1 dB.
+        - Etwa 3 dB.
+        - Etwa 8 dB.
+        - Über 20 dB.
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Seit MPEG-1 kamen Blöcke in vielen Größen dazu, neun und mehr Arten der Vorhersage im Bild, Vektoren auf Viertelpixel und ein Filter in der Schleife. Lohnt sich das so wenig?
+      - when: { picked: 1 }
+        say: So viel liegt schon zwischen H.264 und AV1 in deiner Kurve. Und MPEG-1 ist zehn Jahre älter als H.264.
+      - when: { picked: 3 }
+        say: So viel nicht, 20 dB mehr hieße hundertmal kleinere quadrierte Fehler. Bei 500 kbit/s rechnet auch AV1 noch mit spürbaren Fehlern.
+    solution: |
+      Etwa 8 dB, 37,5 statt 29,4, und MPEG-1 braucht dafür sogar fast
+      doppelt so viele Bytes.

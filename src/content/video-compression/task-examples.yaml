@@ -98,3 +98,12 @@ examples:
       - { files: { video/artifacts.py: fehler/smooth-edges-no-limit.py, video/video.py: stufen/video.py }, say: 'echte Kante' }
       - { files: { video/artifacts.py: fehler/smooth-edges-in-place.py, video/video.py: stufen/video.py }, say: 'Kopie' }
       - { files: { video/artifacts.py: fehler/smooth-edges-reversed.py, video/video.py: stufen/video.py }, say: 'Gewichte' }
+  psnr:
+    pass:
+      - { files: { video/quality.py: stufen/quality-1.py, video/video.py: stufen/video.py } }
+      - { files: { video/quality.py: stufen/quality-2.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/quality.py: fehler/psnr-bytes.py, video/video.py: stufen/video.py }, say: 'astype(float)' }
+      - { files: { video/quality.py: fehler/psnr-absolute.py, video/video.py: stufen/video.py }, say: 'quadrierte Fehler' }
+      - { files: { video/quality.py: fehler/psnr-natural-log.py, video/video.py: stufen/video.py }, say: 'np.log10' }
+      - { files: { video/quality.py: fehler/psnr-peak.py, video/video.py: stufen/video.py }, say: '255²' }

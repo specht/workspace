@@ -6,6 +6,12 @@
       "state_hash": "f56670b996788aa2da28112461b896ed9dc3dfc965c8289978e46156fc840925",
       "workspace_look": "4.140.0-ls368"
     },
+    "curves.webp": {
+      "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
+      "output_sha256": "8f4ce829c6b24b5bb667e3f466310e0f470a16fb4e8dd0af42dc856906cf873a",
+      "state_hash": "0ed5d930b03738764c7be715e0a406586756613916a9b300d01cad422550374e",
+      "workspace_look": "4.140.0-ls368"
+    },
     "detail-chroma.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "83cbe59d1b97de3624c6797ebf418ae6d5ef887d6c6b51971f56ba0f5365b0d2",

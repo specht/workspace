@@ -344,6 +344,27 @@ seconds at 720p each.
    5 to 15 s each in the Workspace image). A measure of blockiness was
    tried and dropped: the ratio of jumps at block edges to jumps inside was
    1,08 against 1,01, too weak to teach with.
+   Part 8 is written: `psnr` of one's own (checks for the squared error,
+   bytes as input, equal pictures), fixed quality against fixed rate at
+   glance and tilt (crf 28: 71.407 and 327.850 bytes at 40,8 and 34,1 dB;
+   400k: 135.496 and 170.631 at 41,4 and 30,4 dB), two passes, SSIM and
+   VMAF in text, ffmpeg's PSNR (y 42,33 against our 40,78: Y from 16 to
+   235), the curves of H.264, H.265 and SVT-AV1 at five crf each (AV1 a
+   third less at 38 dB, over half at 34 dB; about 30 s in the Workspace
+   image), and adaptive streaming: a drawing (`bilder/ladder.py`) and an
+   HLS ladder of three rungs with ffmpeg (`master.m3u8`, 2 s segments,
+   `-g 48 -sc_threshold 0`).
+   SVT-AV1 needs `-svtav1-params lp=1` in a Workspace: without it it starts
+   more threads than the pids limit of 256 allows (VS Code uses almost 80)
+   and stops with »insufficient resources«; found when the recipes ran.
+   Part 9 is written: H.120, H.261, MPEG-1 and 2, H.264, H.265 with dates
+   checked on Wikipedia (Video coding format, AV1), five codecs at 500
+   kbit/s with `history.py` (MPEG-1 29,36 dB at 477.184 bytes, AV1 37,55 dB
+   at 250.156; MPEG-1 and 2 overshoot, their encoders round at most with
+   step 31), patents, AOMedia (1 September 2015, seven founders), AV1
+   (2018, from VP9, VP10, Daala, Thor), VVC (2020), AV2, neural codecs, and
+   »Wie geht es weiter?«. Nasir Ahmed's box in part 3. The video activity is
+   complete in its nine parts.
    The clips come from the YouTube copy of Spring on Commons; Blender Studio
    keeps its masters for subscribers. The Spring dataset of the University
    of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,

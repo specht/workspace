@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Ein Bild aus dem Film Spring: ein Mädchen mit Wanderstab und ein kleiner Hund auf einem Pfad zwischen Felsen im Abendlicht, dahinter ein Berg. Darüber liegen Quadrate, die Blöcke eines Codecs: große im ruhigen Himmel und am unscharfen Berg, kleine an Felsen, Gras und den beiden Figuren."
 kind: labor
 language: Python
-duration: 7 Doppelstunden
+duration: 9 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Diskrete Kosinustransformation, Bewegungsschätzung), Vertiefung Technische Informatik (Videokompression)"
 topics: [kompression, codierung]
 requires: [jpeg, audio-compression]
@@ -534,6 +534,8 @@ Bevor ein Codec Bilder miteinander vergleicht, muss er ein einzelnes Bild gut sp
 ### Blöcke und Frequenzen
 
 Ein Block aus 8 × 8 Helligkeiten lässt sich als Summe von 64 **Basisbildern** schreiben: Muster aus Kosinus-Wellen, vom ganz glatten Block bis zum feinen Schachbrett. Die **DCT** (Diskrete Kosinustransformation) rechnet aus, wie stark jedes Muster im Block vorkommt; diese 64 Zahlen heißen **Koeffizienten**. Das ist dieselbe Idee wie bei der MDCT in »Audio komprimieren«, nur in zwei Richtungen; ausführlich steht es in <a href='/jpeg' target='_blank' rel='noopener'>der JPEG-Aktivität</a>.
+
+_person(ahmed)
 
 Hier ist ein Ausschnitt aus `slope.png` in Blöcken aus 8 × 8 Pixeln. Markiert ist der Hinterkopf des Mädchens: ihr dunkles Haar vor dem Berg, mit dem Rand, der im Abendlicht leuchtet. Die Koeffizienten des Blocks sind schon auf Vielfache von 8 gerundet, und 56 der 64 sind nicht 0: Eine helle Kante quer durch einen Block braucht viele Muster. Schritt für Schritt kommt ein Basisbild nach dem anderen dazu. Neben dem Bild steht der Block, wie er werden soll, unten rechts der Fehler: orange, wo der Block bisher noch zu dunkel ist, blau, wo er zu hell ist, und darunter, wie groß der Fehler im Mittel ist. Zieh den Block an eine andere Stelle und vergleich, wie viele Koeffizienten übrig bleiben und wie groß der erste ist, der für die mittlere Helligkeit. Schalte auch auf Cb und Cr. Dort steht ein Block für 16 × 16 Pixel, denn wie bei 4:2:0 hat die Farbe in jeder Richtung die halbe Auflösung: Jeder Wert ist der Mittelwert aus 2 × 2 Pixeln, wie bei `subsample`. Obwohl ein solcher Block viermal so viele Pixel abdeckt, braucht er meist weniger Koeffizienten als einer in Y, denn die Farbe ändert sich langsamer als die Helligkeit.
 
@@ -1924,3 +1926,348 @@ image-file: video/glance-av1-grain-detail.png 1
 Ohne den Trick rundet AV1 bei dieser Qualität das Korn einfach weg, und das Mädchen sieht aus wie aus Plastik. Mit ihm ist das Korn wieder da. Die Datei ist etwas größer als die ohne den Trick, braucht aber nur etwa ein Hundertzwanzigstel der Bytes von H.264 mit Korn.
 
 <!-- stage: stufen/artifacts-1.py as artifacts.py -->
+
+## Bitrate steuern
+
+Bisher hast du die Qualität festgelegt, mit `-crf` oder `-qp`, und die Größe war, was dabei herauskam. Wer Videos verschickt, braucht oft das Umgekehrte: Eine Leitung schafft 2 Mbit in der Sekunde, und das Video muss hindurchpassen. Um beides zu vergleichen, brauchst du zuerst eine Zahl dafür, wie gut ein Bild ist.
+
+### Wie gut ist ein Bild?
+
+Das einfachste Maß ist das **PSNR**, Peak Signal-to-Noise Ratio: wie das Signal-Rausch-Verhältnis in »Audio komprimieren«, nur mit dem größten Wert, den ein Pixel haben kann, 255, statt der Lautstärke des Signals. Man nimmt für jedes Pixel den Fehler zwischen Original und decodiertem Bild, quadriert ihn und bildet den Mittelwert. Das PSNR in dB ist dann 10 · log10(255² / Fehler). Ab etwa 40 dB lässt sich ein Bild meist kaum noch vom Original unterscheiden, unter 30 dB sind die Fehler deutlich. Lege `quality.py` an:
+
+<!-- page-code: own -->
+```python
+import os
+import subprocess
+
+import numpy as np
+
+from video import read_frames
+
+
+def luma(frames):
+    return frames @ np.array([0.299, 0.587, 0.114])
+
+
+def psnr(original, decoded):
+    # hier: der mittlere quadrierte Fehler und daraus das PSNR in dB
+
+
+def encode(source, target, options):
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', source, *options, target], check=True, capture_output=True)
+
+
+def measure(source, target):
+    return os.path.getsize(target), psnr(luma(read_frames(source)), luma(read_frames(target)))
+
+
+if __name__ == '__main__':
+    for clip in ['glance', 'tilt']:
+        for label, options in [('crf28', ['-c:v', 'libx264', '-crf', '28']),
+                               ('400k', ['-c:v', 'libx264', '-b:v', '400k'])]:
+            target = f'{clip}-{label}.mp4'
+            encode(f'{clip}.mp4', target, options)
+            size, quality = measure(f'{clip}.mp4', target)
+            print(f'{target:18} {size:7} Bytes  {quality:5.2f} dB')
+```
+
+`encode` ruft ffmpeg auf und behält seine Ausgabe für sich; geht etwas schief, zeigt Python sie mit dem Fehler. `measure` gibt die Bytes einer Datei und ihr PSNR gegenüber dem Original, gemessen an der Helligkeit Y aller Bilder.
+
+<div class='hint own' data-check='psnr'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>psnr(original, decoded)</code>. Die beiden Arrays haben dieselbe Form, Bilder als Bytes oder Kommazahlen. Rechne den mittleren quadrierten Fehler aus und daraus 10 · log10(255² / Fehler). Sind beide Arrays gleich, ist der Fehler 0: Dann gib <code>float('inf')</code> zurück, unendlich.
+</div>
+
+<!-- hint -->
+`original.astype(float) - decoded.astype(float)` gibt die Fehler, auch bei Bytes richtig: In `uint8` wäre 0 − 255 nämlich 1. `** 2` quadriert jeden, `np.mean` bildet den Mittelwert über alles.
+<!-- /hint -->
+<!-- hint -->
+```python
+error = np.mean((original.astype(float) - decoded.astype(float)) ** 2)
+if error == 0:
+    return float('inf')
+```
+`np.log10` ist der Logarithmus zur Basis 10, `np.log` wäre der natürliche.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def psnr(original, decoded):
+    error = np.mean((original.astype(float) - decoded.astype(float)) ** 2)
+    if error == 0:
+        return float('inf')
+    return 10 * np.log10(255 ** 2 / error)
+```
+<!-- /solution -->
+
+_task(psnr)
+
+### Feste Qualität, feste Rate
+
+Das Hauptprogramm codiert den Blick des Mädchens und die Fahrt die Wand hinauf je zweimal: mit fester Qualität, `-crf 28`, und mit fester Rate, `-b:v 400k`, 400 kbit in der Sekunde.
+
+_task(same-rate)
+
+```bash
+python3 quality.py
+```
+
+<!-- tutorial-step
+write-file: video/quality.py <- file:stufen/quality-1.py
+check-task: psnr
+terminal-run: python3 quality.py
+terminal-wait-for-prompt: 120
+wait-for-text: tilt-400k
+-->
+
+<!-- after: same-rate -->
+```text
+glance-crf28.mp4     71407 Bytes  40.78 dB
+glance-400k.mp4     135496 Bytes  41.39 dB
+tilt-crf28.mp4      327850 Bytes  34.08 dB
+tilt-400k.mp4       170631 Bytes  30.36 dB
+```
+
+Mit fester Qualität sind beide etwa gleich gut, aber die Fahrt braucht fast fünfmal so viele Bytes. Mit fester Rate sind beide ähnlich groß, aber der Blick bekommt mehr Bytes, als er braucht, und die Fahrt zu wenige: 30 dB, man sieht die Blöcke. x264 trifft die Rate dabei nicht genau, beide Dateien sind kleiner als 400 kbit/s · 4 s = 200.000 Bytes; mit einem Durchgang weiß der Encoder nicht, was noch kommt.
+<!-- /after -->
+
+Mit **zwei Durchgängen** (`-pass 1`, dann `-pass 2`) schaut sich der Encoder das ganze Video zuerst an und verteilt beim zweiten Mal die Bytes: wenige an ruhige Stellen, viele an schnelle, und am Ende passt die Größe. So arbeiten Encoder, wenn ein Film auf eine Scheibe oder in eine feste Größe passen muss. Oft mischt man beides: eine feste Qualität mit einer Obergrenze für die Rate, bei x264 `-crf 23 -maxrate 2M -bufsize 4M`.
+
+ffmpeg kann das PSNR auch selbst messen:
+
+```bash
+ffmpeg -hide_banner -i glance-crf28.mp4 -i glance.mp4 -lavfi psnr -f null - 2>&1 | grep -o "PSNR.*"
+```
+
+```text
+PSNR y:42.329499 u:45.854655 v:45.929024 average:43.226220 min:42.488342 max:43.888032
+```
+
+Für Y kommt ffmpeg auf 42,33 dB statt 40,78. Es misst Y so, wie es in der Datei steht: von 16 bis 235 statt von 0 bis 255 wie dein `luma`. Dieselben Fehler sind dort im Verhältnis 219 zu 255 kleiner, und das sind gut 1,3 dB. Zum Vergleichen von Dateien taugen beide Zahlen, solange man nicht die eine mit der anderen vergleicht. PSNR misst allerdings nur Unterschiede von Pixeln, nicht, was das Auge sieht. Genauer sind **SSIM**, das Strukturen und Kontraste vergleicht (`-lavfi ssim`), und **VMAF**, das Netflix mit Hochschulen entwickelt hat: Es hat an den Urteilen von Menschen gelernt, die Videos angeschaut und bewertet haben.
+
+### Die Kurve
+
+Ein Codec ist nicht bei einer Größe besser, sondern bei allen: Seine Kurve aus Bytes und PSNR liegt über der eines anderen. Erweitere `quality.py`: die Zeile mit PIL zu den anderen `import`-Zeilen, `CODECS` darunter, und zwei Funktionen hinter `measure`. Das neue Hauptprogramm ersetzt das alte:
+
+```python
+from PIL import Image, ImageDraw, ImageFont
+
+CODECS = {
+    'H.264': (['-c:v', 'libx264', '-crf'], [18, 23, 28, 33, 38], (37, 99, 235)),
+    'H.265': (['-c:v', 'libx265', '-x265-params', 'log-level=error', '-crf'], [18, 23, 28, 33, 38], (22, 163, 74)),
+    'AV1': (['-c:v', 'libsvtav1', '-svtav1-params', 'lp=1', '-crf'], [25, 32, 39, 46, 53], (220, 38, 38)),
+}
+```
+
+```python
+def curve(source, name, options, crfs):
+    points = []
+    for crf in crfs:
+        target = f'curve-{name}-{crf}.mp4'
+        encode(source, target, options + [str(crf)])
+        points.append(measure(source, target))
+    return points
+
+
+def draw_curves(curves, path, width=900, height=520):
+    picture = Image.new('RGB', (width, height), 'white')
+    draw = ImageDraw.Draw(picture)
+    font = ImageFont.load_default(size=18)
+    left, right, top, bottom = 70, width - 50, 20, height - 50
+    most = max(size for points, _ in curves.values() for size, _ in points)
+    low, high = 28, 44
+    x = lambda size: left + (right - left) * size / most
+    y = lambda db: bottom - (bottom - top) * (db - low) / (high - low)
+    for db in range(low, high + 1, 4):
+        draw.line([left, y(db), right, y(db)], fill=(225, 225, 225))
+        draw.text((10, y(db) - 10), f'{db} dB', fill='black', font=font)
+    for kb in range(0, int(most / 1000) + 1, 200):
+        draw.text((x(kb * 1000) - 15, bottom + 12), f'{kb} KB', fill='black', font=font)
+    for n, (name, (points, colour)) in enumerate(curves.items()):
+        corners = [(x(size), y(db)) for size, db in sorted(points)]
+        draw.line(corners, fill=colour, width=3)
+        for cx, cy in corners:
+            draw.ellipse([cx - 5, cy - 5, cx + 5, cy + 5], fill=colour)
+        draw.text((right - 90, bottom - 30 - 26 * n), name, fill=colour, font=font)
+    picture.save(path)
+
+
+if __name__ == '__main__':
+    curves = {}
+    for name, (options, crfs, colour) in CODECS.items():
+        points = curve('slope.mp4', name, options, crfs)
+        curves[name] = (points, colour)
+        for crf, (size, quality) in zip(crfs, points):
+            print(f'{name:6} crf {crf:2}  {size:7} Bytes  {quality:5.2f} dB')
+    draw_curves(curves, 'curves.png')
+```
+
+`curve` codiert `slope.mp4` mit einem Codec bei mehreren Werten für `-crf` und misst jede Datei. Die Werte unterscheiden sich von Codec zu Codec: Bei AV1 geht `-crf` bis 63, und dieselbe Zahl heißt nicht dieselbe Qualität. Darum vergleicht man die Kurven, nicht einzelne Punkte. `libsvtav1` ist ein schneller AV1-Encoder, den Intel und Netflix begonnen haben. `lp=1` lässt ihn auf einem Kern rechnen: Ohne diese Angabe startet er für die Kerne des Rechners so viele Threads, wie ein Workspace nicht starten darf, und bricht ab. Alles zusammen braucht etwa eine halbe Minute.
+
+_task(av1-saves)
+
+<!-- tutorial-step
+write-file: video/quality.py <- file:stufen/quality-2.py
+terminal-run: python3 quality.py
+terminal-wait-for-prompt: 240
+wait-for-text: AV1    crf 53
+-->
+
+<!-- after: av1-saves -->
+```text
+H.264  crf 18  1037368 Bytes  42.23 dB
+H.264  crf 23   503795 Bytes  38.38 dB
+H.264  crf 28   241036 Bytes  34.74 dB
+H.264  crf 33   122668 Bytes  31.46 dB
+H.264  crf 38    68084 Bytes  28.61 dB
+H.265  crf 18  1034153 Bytes  42.38 dB
+H.265  crf 23   515880 Bytes  39.36 dB
+H.265  crf 28   244698 Bytes  36.21 dB
+H.265  crf 33   114172 Bytes  32.96 dB
+H.265  crf 38    53779 Bytes  29.98 dB
+AV1    crf 25   541237 Bytes  40.33 dB
+AV1    crf 32   326862 Bytes  38.58 dB
+AV1    crf 39   207857 Bytes  37.02 dB
+AV1    crf 46   140863 Bytes  35.69 dB
+AV1    crf 53    97681 Bytes  34.32 dB
+```
+
+<!-- tutorial-screenshot
+image-file: video/curves.png 1
+-->
+<img class='inspect' src='curves.webp' alt='Drei Kurven, nach rechts die Bytes von 0 bis 1.000 KB, nach oben das PSNR von 28 bis 44 dB. Alle steigen erst steil und dann flacher. Die blaue Kurve von H.264 liegt unten, die grüne von H.265 darüber, die rote von AV1 am höchsten, besonders bei wenigen Bytes.'>
+
+Bei 38,4 dB braucht H.264 504 KB, AV1 bei 38,6 dB 327 KB, gut ein Drittel weniger; bei 34 dB ist es über die Hälfte. H.265 liegt dazwischen. Jede Generation spart, aber sie kostet auch: Der Encoder probiert mehr aus, und ein Gerät muss den neuen Codec decodieren können, am besten mit einem eigenen Chip. Die Kurven steigen erst steil und werden dann flach: Die ersten Bytes bringen viel, die letzten wenig.
+<!-- /after -->
+
+### Eine Leiter fürs Streaming
+
+Ein Streamingdienst weiß nicht, wie schnell deine Leitung gerade ist. Darum legt er jedes Video in mehreren Stufen bereit, einer **Leiter**: groß und mit vielen Bytes, kleiner und mit weniger. Jede Stufe ist in Stücke von ein paar Sekunden zerteilt. Der Player misst beim Laden, wie schnell die Stücke kommen, und holt das nächste aus der Stufe, die gerade hindurchpasst. Das heißt **adaptives Streaming**:
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='ladder-wide.svg' alt='Oben die gemessene Rate über 12 Sekunden, eine Stufe für jedes Stück von 2 Sekunden: 2,4, dann 2,0, 0,9, 0,5, 1,1 und 2,2 Mbit/s; gestrichelt die Raten der drei Stufen, 1,65, 0,66 und 0,275 Mbit/s. Darunter die drei Stufen als Reihen von Stücken, jedes beginnt mit einem I-Frame. Gewählt sind die ersten beiden Stücke aus der großen Stufe 960 × 400, das dritte aus der mittleren, das vierte aus der kleinsten, das fünfte wieder aus der mittleren und das letzte aus der großen; eine Linie verbindet sie.'>
+<img class='drawing d-lg-none' style='width: 27em' src='ladder.svg' alt='Oben die gemessene Rate über 12 Sekunden, eine Stufe für jedes Stück von 2 Sekunden: 2,4, dann 2,0, 0,9, 0,5, 1,1 und 2,2 Mbit/s; gestrichelt die Raten der drei Stufen. Darunter die drei Stufen als Reihen von Stücken. Gewählt sind die ersten beiden Stücke aus der großen Stufe, das dritte aus der mittleren, das vierte aus der kleinsten, das fünfte aus der mittleren und das letzte aus der großen.'>
+
+Für jedes Stück nimmt der Player die größte Stufe, deren Rate unter der gemessenen bleibt. Apple führte 2009 HLS ein, HTTP Live Streaming; die Norm DASH von MPEG funktioniert ähnlich. ffmpeg baut dir eine Leiter mit drei Stufen:
+
+```bash
+mkdir -p stream_0 stream_1 stream_2
+ffmpeg -v error -y -i slope.mp4 \
+  -filter_complex "[0:v]split=3[a][b][c];[b]scale=640:-2[b2];[c]scale=480:-2[c2]" \
+  -map "[a]" -c:v:0 libx264 -b:v:0 1500k \
+  -map "[b2]" -c:v:1 libx264 -b:v:1 600k \
+  -map "[c2]" -c:v:2 libx264 -b:v:2 250k \
+  -g 48 -keyint_min 48 -sc_threshold 0 \
+  -f hls -hls_time 2 -hls_playlist_type vod \
+  -master_pl_name master.m3u8 -var_stream_map "v:0 v:1 v:2" \
+  -hls_segment_filename "stream_%v/seg_%03d.ts" "stream_%v/index.m3u8"
+cat master.m3u8 stream_0/index.m3u8
+```
+
+`split=3` macht drei Kopien des Videos, zwei davon werden kleiner gerechnet, auf 640 und 480 Pixel Breite. Jede bekommt ihre eigene Rate. `-g 48 -keyint_min 48 -sc_threshold 0` setzt genau alle 48 Bilder, alle 2 Sekunden, ein I-Frame, und `-hls_time 2` schneidet dort die Stücke.
+
+<!-- tutorial-step
+terminal-run: mkdir -p stream_0 stream_1 stream_2 && ffmpeg -v error -y -i slope.mp4 -filter_complex "[0:v]split=3[a][b][c];[b]scale=640:-2[b2];[c]scale=480:-2[c2]" -map "[a]" -c:v:0 libx264 -b:v:0 1500k -map "[b2]" -c:v:1 libx264 -b:v:1 600k -map "[c2]" -c:v:2 libx264 -b:v:2 250k -g 48 -keyint_min 48 -sc_threshold 0 -f hls -hls_time 2 -hls_playlist_type vod -master_pl_name master.m3u8 -var_stream_map "v:0 v:1 v:2" -hls_segment_filename "stream_%v/seg_%03d.ts" "stream_%v/index.m3u8" && cat master.m3u8 stream_0/index.m3u8
+terminal-wait-for-prompt: 120
+wait-for-text: EXT-X-ENDLIST
+-->
+
+```text
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=1650000,RESOLUTION=960x400,CODECS="avc1.64001e"
+stream_0/index.m3u8
+
+#EXT-X-STREAM-INF:BANDWIDTH=660000,RESOLUTION=640x266,CODECS="avc1.640015"
+stream_1/index.m3u8
+
+#EXT-X-STREAM-INF:BANDWIDTH=275000,RESOLUTION=480x200,CODECS="avc1.64000d"
+stream_2/index.m3u8
+
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:2
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:2.000000,
+seg_000.ts
+#EXTINF:2.000000,
+seg_001.ts
+#EXT-X-ENDLIST
+```
+
+Die **Playlist** `master.m3u8` ist eine Textdatei mit den drei Stufen: wie viele Bits in der Sekunde jede braucht (`BANDWIDTH`), wie groß ihre Bilder sind und mit welchem Codec. Jede Stufe hat ihre eigene Playlist mit ihren Stücken, je 2 Sekunden lang. Der Player kann nur an der Grenze zweier Stücke die Stufe wechseln, und weil jedes Stück mit einem I-Frame beginnt, kann er es decodieren, ohne die anderen Stufen zu kennen. Das ist derselbe Grund wie beim Springen in »I-, P- und B-Frames«. Mit `ls -l stream_*` siehst du, wie groß die Stücke der drei Stufen sind.
+
+<!-- stage: stufen/quality-2.py as quality.py -->
+
+## Geschichte und heute
+
+### Wie es anfing
+
+Den ersten Standard für digitales Video, **H.120**, gab der CCITT, heute die ITU-T, 1984 heraus. Er speicherte für jedes Pixel den Unterschied zu einer Vorhersage, ohne Blöcke und ohne DCT, und war in der Praxis kaum zu gebrauchen. 1988 kam **H.261**, für Videokonferenzen über ISDN-Leitungen des Telefonnetzes mit 64 kbit/s oder einem Vielfachen davon. Es brachte zum ersten Mal zusammen, was du in diesen Kapiteln gebaut hast: Makroblöcke aus 16 × 16 Pixeln, die DCT auf Blöcken aus 8 × 8, Runden, Bewegungsvektoren und einen Filter in der Schleife. Fast jeder Videocodec seitdem ist so aufgebaut.
+
+**MPEG-1** (1993) machte daraus ein Format für Filme: Auf eine Video-CD passten 74 Minuten in der Qualität einer Videokassette, mit I-, P- und B-Frames. **MPEG-2** (1995) konnte Halbbilder und größere Bilder und wurde das Video des digitalen Fernsehens und der DVD. **H.264** (2003) ist bis heute das Video, das fast jedes Gerät abspielen kann: auf Blu-ray, bei YouTube, in Videokonferenzen und in den Ausschnitten dieser Seite. **H.265** (2013) spart noch einmal, steckt in Ultra-HD-Blu-rays und in den Videos vieler Handys.
+
+### Dreißig Jahre in einer Tabelle
+
+ffmpeg kann die alten Codecs noch. Lege `history.py` an; es braucht `encode` und `measure` aus `quality.py`:
+
+```python
+from quality import encode, measure
+
+CODECS = [
+    ('MPEG-1', 1993, ['-c:v', 'mpeg1video'], 'mpg'),
+    ('MPEG-2', 1995, ['-c:v', 'mpeg2video'], 'mpg'),
+    ('H.264', 2003, ['-c:v', 'libx264'], 'mp4'),
+    ('H.265', 2013, ['-c:v', 'libx265', '-x265-params', 'log-level=error'], 'mp4'),
+    ('AV1', 2018, ['-c:v', 'libsvtav1', '-svtav1-params', 'lp=1'], 'mp4'),
+]
+
+if __name__ == '__main__':
+    for name, year, options, ending in CODECS:
+        target = f'history-{name}.{ending}'
+        encode('slope.mp4', target, options + ['-b:v', '500k'])
+        size, quality = measure('slope.mp4', target)
+        print(f'{name:7} {year}  {size:7} Bytes  {quality:5.2f} dB')
+```
+
+Jeder Codec soll `slope.mp4` mit 500 kbit/s codieren, und `measure` misst, was dabei herauskommt.
+
+_task(history-gain)
+
+```bash
+python3 history.py
+```
+
+<!-- tutorial-step
+write-file: video/history.py <- file:stufen/history.py
+terminal-run: python3 history.py
+terminal-wait-for-prompt: 120
+wait-for-text: AV1     2018
+-->
+
+<!-- after: history-gain -->
+```text
+MPEG-1  1993   477184 Bytes  29.36 dB
+MPEG-2  1995   475136 Bytes  29.20 dB
+H.264   2003   197259 Bytes  33.40 dB
+H.265   2013   209100 Bytes  35.26 dB
+AV1     2018   250156 Bytes  37.55 dB
+```
+
+MPEG-1 und MPEG-2 schaffen die 500 kbit/s gar nicht: Ihre Encoder runden höchstens mit dem Schritt 31, und für Bilder mit 960 × 400 Pixeln ist das nicht grob genug. Sie werden fast doppelt so groß wie verlangt und liegen trotzdem 8 dB unter AV1. 8 dB heißen: Der mittlere quadrierte Fehler von AV1 ist nur ein Sechstel so groß. Für 960 × 400 war MPEG-1 auch nicht gedacht; die Filme auf einer Video-CD hatten 352 × 240 oder 352 × 288 Pixel.
+<!-- /after -->
+
+### Patente und freie Codecs
+
+Wer einen Codec nach einer Norm baut, nutzt Erfindungen, auf die Firmen Patente haben, und zahlt Lizenzen; bei MP3 lief das bis 2017. Bei H.265 wurde es teuer und unübersichtlich: Die Lizenzen kosteten mehr als bei H.264, sie waren auf mehrere Pools verteilt, und manche Inhaber von Patenten gingen in keinen davon. 2015 gründeten Amazon, Cisco, Google, Intel, Microsoft, Mozilla und Netflix die **Alliance for Open Media**, kurz AOMedia, um einen Codec ohne Lizenzgebühren zu bauen. Daraus wurde 2018 **AV1**, gebaut auf Googles VP9 und mit Ideen aus VP10, aus Daala von Xiph und Mozilla und aus Thor von Cisco.
+
+Die ITU und MPEG gaben 2020 **VVC** heraus, H.266, noch einmal sparsamer als H.265. AOMedia stellte am 28. Mai 2026 die Spezifikation von **AV2** fertig; nach Angaben von AOMedia braucht es etwa 30 Prozent weniger als AV1.
+
+### Codecs, die lernen
+
+Wie beim Ton gibt es Videocodecs, in denen neuronale Netze stecken. Manche ersetzen nur einen Teil, etwa den Filter in der Schleife; andere bestehen ganz aus Netzen, die an sehr vielen Videos gelernt haben, Bilder in wenige Zahlen zu verwandeln und zurück. Im Labor kommen solche Codecs an die besten Normen heran, brauchen aber ein Vielfaches an Rechenzeit. Und sie werfen dieselbe Frage auf wie beim Ton: Ein Netz, das Einzelheiten erfindet, zeigt ein scharfes Bild, das so nie aufgenommen wurde. Film Grain Synthesis ist ein harmloser Anfang davon: Das Korn, das du siehst, war nie im Film.
+
+## Wie geht es weiter?
+
+Du hast einen Videocodec Stück für Stück gebaut: Bilder als Zahlen, Farbe in Y, Cb und Cr, Blöcke mit der DCT und einer Vorhersage im Bild, Unterschiede von Bild zu Bild, Bewegungsvektoren, die Reihenfolge der I-, P- und B-Frames, einen Filter für die Kanten und ein Maß für die Qualität. Wie dieselben Ideen mit Ton funktionieren, zeigt [Audio komprimieren](/audio-compression), und [Eine JPEG-Datei decodieren](/jpeg) liest echte Bilddateien Byte für Byte, mit der DCT, die in Abwandlungen in jedem dieser Videocodecs steckt.
+
+<!-- stage: stufen/history.py as history.py -->
