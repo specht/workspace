@@ -193,10 +193,10 @@ seconds at 720p each.
    and `fft` of one's own against `np.fft.fft` (4.096 samples 0,6 s, 8.192
    2,2 s; fft 0,05 s; numpy 5 ms; measured in the Workspace image), Cooley
    and Tukey with Gauß, `strength` and the number in `waehlen.wav` (a Drama
-   Number of the Bundesnetzagentur, 030 23125386). A person box for Fourier
-   waits until the page is public (the Personen test wants every box on a
-   visible page): the engraving after Boilly, »Fourier2 - restoration1.jpg«
-   on Wikimedia Commons, public domain, cropped 1200 × 1500 from (230, 140).
+   Number of the Bundesnetzagentur, 030 23125386). The person box for
+   Fourier came when the page went public (11 November 2026): the engraving
+   by Geille after Boilly, »Fourier2 - restoration1.jpg« on Wikimedia
+   Commons, PD-art-100, cropped 1200 × 1500 from (230, 140).
    Part 4 is written: cochlea and Bark, the
    threshold-in-quiet widget and the masking widget (`hearing_widget.js`,
    right after their predictions; the masking model waits for its switch
@@ -237,11 +237,11 @@ seconds at 720p each.
    as a try box, Opus 1.5, SoundStream and EnCodec, a reflection on codecs
    that invent details; the picture is a timeline. The audio activity is
    complete in its eight parts. Open: listening by a person (the clips, the
-   codec at OFFSET 15, the pre-echo), the titles, a person box for Fourier
-   and perhaps Brandenburg once the page is public, the section's new
-   name; then the video activity. The section is
-   renamed and the /lehrplan graph recomputed when the page leaves
-   development, not before: until then no public page is about sound.
+   codec at OFFSET 15, the pre-echo), the titles, perhaps a person box for
+   Brandenburg. On 11 November 2026 the maintainer took both activities
+   out of development: the section is »Bilder, Ton und Kompression«, the
+   /lehrplan graph recomputed, Fourier's box placed, and the video page
+   says 6 Doppelstunden until parts 7 to 9 are written.
 3. Moving pictures the same way. Begun on 10 November 2026, dev-only
    (`.video-compression` after `.audio-compression` in `sections.yaml`),
    working title »Video komprimieren«, nine parts planned (`duration: 9

@@ -100,6 +100,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1768 -->
+<!-- part: fourier -->
+### Joseph Fourier
+
+<div class='person'>
+<img src='fourier.webp' alt='Joseph Fourier als Stich, farbig getönt: ein Mann mit dichten, lockigen Haaren und rundem Gesicht, der leicht lächelt, in einem dunklen Rock mit gestickten Blättern am Kragen und einem weißen Halstuch.'>
+<p><strong>Joseph Fourier</strong> (1768–1830), französischer Mathematiker und Physiker. Er untersuchte, wie sich Wärme in einem Körper ausbreitet, und schrieb dafür Temperaturverläufe als Summen von Sinus- und Kosinusschwingungen. 1822 erschien sein Buch <em>Théorie analytique de la chaleur</em>. Darauf geht alles zurück, was ein Signal in seine Frequenzen zerlegt: deine <code>dft</code>, die FFT und die DCT von JPEG und den Videocodecs.</p>
+<p>Fourier war der Sohn eines Schneiders aus Auxerre und wurde früh Waise. Er begleitete Napoleon 1798 nach Ägypten und war danach Präfekt in Grenoble, wo er die Wärme erforschte. Dass sich fast jede Kurve so zerlegen lässt, glaubten Lagrange und andere zunächst nicht; unter welchen Bedingungen genau, zeigte Dirichlet 1829.</p>
+<p class='person-credit'>Stich: A. F. B. Geille nach Julien Léopold Boilly, frühes 19. Jahrhundert, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Fourier2_-_restoration1.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1777 -->
 <!-- part: gauss -->
 ### Carl Friedrich Gauß

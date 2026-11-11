@@ -147,22 +147,24 @@
 
 - key: compression
   compact: true
-  label: Bilder und Kompression
-  short: Mach Daten kleiner und lies echte GIF- und JPEG-Dateien Byte für Byte.
+  label: Bilder, Ton und Kompression
+  short: Mach Daten kleiner, lies echte GIF- und JPEG-Dateien und lass weg, was Ohr und Auge nicht merken.
   icon: /images/clamp.png
   description: |
     Daten kleiner machen, ohne etwas zu verlieren: Lauflängen, Huffman-Codes
     und LZW, jedes Verfahren selbst geschrieben. Danach Decoder in C für GIF
     und JPEG, die echte Bilddateien Byte für Byte lesen und zeigen, und
-    Botschaften, die in den Pixeln eines Fotos verschwinden.
+    Botschaften, die in den Pixeln eines Fotos verschwinden. Bei Ton und
+    Video lässt ein Codec weg, was Ohr und Auge nicht merken, und speichert
+    von Bild zu Bild nur, was sich ändert.
   entries:
     - rle
     - huffman
     - lzw
     - gif
     - jpeg
-    - .audio-compression
-    - .video-compression
+    - audio-compression
+    - video-compression
     - fraktale-kompression
     - steganography
 

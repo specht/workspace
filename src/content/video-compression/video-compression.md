@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Ein Bild aus dem Film Spring: ein Mädchen mit Wanderstab und ein kleiner Hund auf einem Pfad zwischen Felsen im Abendlicht, dahinter ein Berg. Darüber liegen Quadrate, die Blöcke eines Codecs: große im ruhigen Himmel und am unscharfen Berg, kleine an Felsen, Gras und den beiden Figuren."
 kind: labor
 language: Python
-duration: 9 Doppelstunden
+duration: 6 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Diskrete Kosinustransformation, Bewegungsschätzung), Vertiefung Technische Informatik (Videokompression)"
 topics: [kompression, codierung]
 requires: [jpeg, audio-compression]

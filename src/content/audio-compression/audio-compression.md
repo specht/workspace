@@ -812,6 +812,8 @@ Die Stimme braucht als FLAC etwa ein Drittel, die Musik etwa 60 %. Viel mehr sch
 
 Der Akkord aus dem ersten Kapitel war eine Summe von drei Sinustönen. Joseph Fourier behauptete 1822 in seinem Buch über die Ausbreitung von Wärme, dass sich fast jede Schwingung so schreiben lässt: als Summe von Sinusschwingungen verschiedener Frequenzen, jede mit ihrer eigenen Stärke. Welche Frequenzen in einem Klang stecken und wie stark, heißt sein **Spektrum**. Für das Ohr ist das die wichtigste Beschreibung eines Klangs: Im Innenohr reagiert jede Stelle auf eine andere Frequenz. Und für das Komprimieren auch: Was das Ohr nicht hört, lässt sich erst weglassen, wenn man die Frequenzen kennt.
 
+_person(fourier)
+
 ### Frequenzen sehen
 
 Ein **Spektrogramm** zeigt das Spektrum über die Zeit: nach rechts die Zeit, nach oben die Frequenz, und je stärker eine Frequenz zu einer Zeit ist, desto kräftiger die Farbe. Die Frequenzen stehen auf einer logarithmischen Skala, wie auf einer Klaviatur: Von 100 bis 200 Hz ist es so weit wie von 1.000 bis 2.000 Hz, eine Oktave.

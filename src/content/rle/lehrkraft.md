@@ -3,7 +3,7 @@ Die einfachste Kompression zuerst: Lauflängen, in Ruby oder Python. Lernende ma
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python: Schleifen, Strings, Arrays oder Listen.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
-<tr><th>Einordnung</th><td>Der Einstieg in den Abschnitt »Bilder und Kompression«; <a href='/huffman'>Huffman</a>, <a href='/lzw'>LZW</a>, <a href='/gif'>GIF</a> und <a href='/jpeg'>JPEG</a> bauen darauf auf.</td></tr>
+<tr><th>Einordnung</th><td>Der Einstieg in den Abschnitt »Bilder, Ton und Kompression«; <a href='/huffman'>Huffman</a>, <a href='/lzw'>LZW</a>, <a href='/gif'>GIF</a> und <a href='/jpeg'>JPEG</a> bauen darauf auf.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>
 <li>Pixeleditor und »Von Hand« (10 Minuten)</li>
 <li><code>rle</code> und <code>unrle</code> (30 Minuten)</li>
