@@ -45,10 +45,17 @@
   description: |
     Dasselbe in beiden Sprachen nebeneinander: Ausgabe, Zahlen, Text,
     Listen, Hashes und Dictionaries, Funktionen, Dateien und Bytes, und was
-    die Fehlermeldungen sagen. Dazu numpy, um in Python mit ganzen Arrays zu
-    rechnen.
+    die Fehlermeldungen sagen.
   entries:
     - ruby-python
+
+- key: reference-numpy
+  label: numpy
+  icon: /images/bar-chart.png
+  description: |
+    In Python mit ganzen Arrays rechnen: Samples, Pixel und Bilder eines
+    Videos auf einmal, ohne Schleife, dazu Bytes, Bilder, die FFT und Zufall.
+  entries:
     - numpy
 
 - key: reference-dart-java
