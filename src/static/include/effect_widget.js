@@ -39,6 +39,13 @@
         stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
         melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
         schlagzeug: { label: 'Schlagzeug', url: '/audio/musik/snare.flac' },
+        // Kennedy at Rice University, 1962, and a melody from his voice (bilder/moon_song.py)
+        kennedy: { label: 'Kennedy', url: '/audio/kennedy.wav',
+            credit: "John F. Kennedy, »We choose to go to the Moon«, Rice University, 12. September 1962, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg'>Wikimedia Commons</a>); seine Sätze im Takt geschnitten" },
+        kennedyMelodie: { label: 'Melodie', url: '/audio/kennedy-melodie.wav',
+            credit: 'Die Melodie zu Kennedys Worten: ein Ton für jedes Wort, in seiner Stimmlage.' },
+        kennedyBand: { label: 'Band', url: '/audio/kennedy-band.wav',
+            credit: 'Schlagzeug, Bass und Akkorde: C, Am, F, G, 100 Schläge in der Minute.' },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi
@@ -148,13 +155,23 @@
             ],
             live: true,
             neutral: (p) => p.semitones === 0,
-            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit.',
+            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit. Zum Spulen ziehen.',
             line: (p) => `Jede Frequenz mal ${de(2 ** (p.semitones / 12), 3)}${p.semitones % 12 === 0 && p.semitones ? `, ${Math.abs(p.semitones / 12)} Oktave ${p.semitones > 0 ? 'höher' : 'tiefer'}` : ''}; der Klang bleibt so lang, wie er ist.`,
             draw: drawPitch,
         },
         autotune: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'melodie'],
+            clips: ['kennedy', 'kennedyMelodie', 'kennedyBand'],
+            plain: ['kennedyMelodie', 'kennedyBand'], // played as they are
+            melody: 'kennedyMelodie',            // the target of »Melodie« …
+            melodyFor: 'kennedy',                // … for this clip
+            startOff: true,                      // first the voice as it is
+            choices: [
+                { key: 'target', label: 'Ziel', value: 'melody', options: [['melody', 'die Melodie'], ['note', 'der nächste Halbton']] },
+            ],
+            // other clips of the same length, mixed in when switched on
+            switches: [{ key: 'withMelody', label: 'Melodie dazu', value: false, mix: 'kennedyMelodie', level: 0.6 },
+                { key: 'withBand', label: 'Band dazu', value: false, mix: 'kennedyBand', level: 0.7 }],
             knobs: [
                 { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
                   marks: [[0, '0'], [0.05, '50'], [0.1, '100'], [0.15, '150'], [0.2, '200 ms']], show: ms },
@@ -164,7 +181,7 @@
             ],
             live: true,
             neutral: () => false,
-            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune; die dünnen Linien sind die Halbtöne.',
+            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune, dunkel die Melodie; die dünnen Linien sind die Halbtöne. Zum Spulen ziehen.',
             line: (p) => {
                 const goal = p.target === 'melody' ? 'den Ton der Melodie' : 'den nächsten Halbton';
                 return p.speed === 0
@@ -257,7 +274,8 @@
         return out;
     }
     // the pitch of the voice, as pitch() and pitches() of the page: per HOP
-    // samples a block of SIZE; quiet blocks 0. Here on a quarter of the rate
+    // samples a block of SIZE; quiet blocks 0, and blocks that do not fit
+    // themselves one period later (applause, hisses). Here on a quarter of the rate
     // (each four samples averaged) and with the lag refined between two
     // samples, so a whole clip takes a fraction of a second
     const SIZE = 2048, HOP = 512;
@@ -279,7 +297,8 @@
                 if (acc < 0) dipped = true;
                 else if (dipped && acc > best) { best = acc; bestLag = lag; }
             }
-            if (!bestLag) { out.push(0); continue; }
+            // a voice fits itself one period later; applause and hisses do not
+            if (!bestLag || best < 0.5 * e) { out.push(0); continue; }
             const a = rs[bestLag - 1], b = rs[bestLag], c = rs[bestLag + 1];
             const bend = a - 2 * b + c, lag = bendLag(bestLag, a, c, bend);
             out.push(r / lag);
@@ -471,7 +490,13 @@ onmessage = (e) => {
     const clip = clips[m.clip];
     let out;
     let found = null;
-    if (m.effect === 'vocoder') {
+    if (!m.on) {
+        out = Float32Array.from(clip.x);
+        if (m.effect === 'pitch' || m.effect === 'autotune') {
+            if (!clip.track) clip.track = track(clip.x, clip.rate);
+            found = clip.track;
+        }
+    } else if (m.effect === 'vocoder') {
         let melody = null;
         if (m.params.carrier === 'melody' && clips[m.melody]) {
             const mc = clips[m.melody];
@@ -492,7 +517,6 @@ onmessage = (e) => {
         const factors = m.effect === 'autotune' ? tuneFactors(found, clip.rate, m.params, melody && melody.track) : null;
         const constant = 2 ** ((m.params.semitones || 0) / 12);
         out = shift(clip.x, clip.rate, factors ? (c) => factors[blockAt(c, n)] : () => constant, 0.05);
-        if (melody && m.params.withMelody) for (let i = 0; i < out.length; i++) out[i] += 0.6 * melody.x[i % melody.x.length];
     } else if (m.effect === 'eq') out = eq(clip, m.params);
     else if (m.twice) {
         // the sound twice in a row; the second time, with what the first leaves over
@@ -500,6 +524,10 @@ onmessage = (e) => {
         x2.set(clip.x); x2.set(clip.x, n);
         out = EFFECTS[m.effect](x2, clip.rate, m.params).slice(n);
     } else out = EFFECTS[m.effect](clip.x, clip.rate, m.params);
+    for (const [id, level] of m.mixes || []) {
+        const other = clips[id] && clips[id].x;
+        if (other) for (let i = 0; i < out.length; i++) out[i] += level * other[i % other.length];
+    }
     // never louder than full scale: quieter as a whole instead of clipped
     let peak = 0;
     for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
@@ -846,7 +874,7 @@ onmessage = (e) => {
         const name = root.dataset.effect in EFFECTS ? root.dataset.effect : 'eq';
         let clipId = effect.clips.includes(root.dataset.clip) ? root.dataset.clip : effect.clips[0];
         const params = {};
-        let on = true;
+        let on = !effect.startOff;
         let ctx = null, output = null, voice = null, playing = false, startedAt = 0, offset = 0;
         let current = null, original = null, rate = 44100;
         const loaded = {}, peaks = {}, tracks = {};           // clip: Float32Array, its largest value
@@ -905,11 +933,15 @@ onmessage = (e) => {
         const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary fx-play' });
         const showPlay = () => playButton.replaceChildren(el('i', { class: `bi ${playing ? 'bi-stop-fill' : 'bi-play-fill'}` }), playing ? ' Anhalten' : ' Abspielen');
         showPlay();
+        const fromStart = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary fx-from-start' },
+            [el('i', { class: 'bi bi-skip-start-fill' }), ' Von vorn']);
+        fromStart.addEventListener('click', () => { if (playing) start(0); else { offset = 0; draw(); drawWave(); } });
+        const clock = el('span', { class: 'fx-clock', 'aria-live': 'off' });
         const resetButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary fx-reset' },
             [el('i', { class: 'bi bi-arrow-counterclockwise' }), ' Zurücksetzen']);
         resetButton.addEventListener('click', () => { resets.forEach((r) => r()); changed(); });
         const onSwitch = el('input', { type: 'checkbox', class: 'form-check-input', id: `fx-on-${uid}`, role: 'switch' });
-        onSwitch.checked = true;
+        onSwitch.checked = on;
         const clipGroup = el('div', { class: 'btn-group btn-group-sm', role: 'group', 'aria-label': 'Klang' });
         for (const id of effect.clips) {
             const input = el('input', { type: 'radio', class: 'btn-check', name: `fx-clip-${uid}`, id: `fx-clip-${id}-${uid}`, autocomplete: 'off' });
@@ -919,17 +951,22 @@ onmessage = (e) => {
         }
         const chart = el('canvas', { class: 'fx-chart', role: 'img' });
         const line = el('p', { class: 'fx-line', 'aria-live': 'polite' });
+        // who made the sound that plays (CLIPS, trusted HTML of this file)
+        const credit = el('p', { class: 'fx-credit' });
+        const showCredit = () => { credit.innerHTML = CLIPS[clipId].credit || ''; credit.hidden = !CLIPS[clipId].credit; };
+        showCredit();
         const wave = el('canvas', { class: 'fx-wave', role: 'img', 'aria-label': 'Der Klang ohne und mit Effekt, vier Sekunden um die Stelle, die gerade spielt.' });
         root.append(
             el('div', { class: 'fx-controls' }, [
-                ...(effect.clips.length > 1 ? [clipGroup] : []), playButton, resetButton,
+                ...(effect.clips.length > 1 ? [clipGroup] : []), playButton, fromStart, clock, resetButton,
                 el('div', { class: 'form-check form-switch fx-switch' }, [onSwitch, el('label', { class: 'form-check-label', for: `fx-on-${uid}`, text: 'Effekt an' })]),
                 ...(effect.switches || []).map(toggle)]),
+            credit,
             ...(effect.choices || []).map(choice),
             ...effect.knobs.map(slider),
             el('figure', { class: 'fx-figure' }, [el('figcaption', { text: effect.caption }), chart]),
             line,
-            el('figure', { class: 'fx-figure' }, [el('figcaption', { text: 'Der Klang, vier Sekunden um die Stelle, die gerade spielt (Strich): oben ohne Effekt, unten mit.' }), wave]));
+            el('figure', { class: 'fx-figure' }, [el('figcaption', { text: 'Der Klang, vier Sekunden um die Stelle, die gerade spielt (Strich): oben ohne Effekt, unten mit. Zum Spulen ziehen.' }), wave]));
         onSwitch.addEventListener('change', () => { on = onSwitch.checked; changed(); });
 
         const colours = () => {
@@ -973,7 +1010,7 @@ onmessage = (e) => {
                 live = { ...smooth, binHz: rate / N };
             } else if ((name === 'pitch' || name === 'autotune') && original && tracks[clipId]) {
                 const found = tracks[clipId];
-                const melody = effect.melody && tracks[effect.melody];
+                const melody = melodyNow() && tracks[effect.melody];
                 const tuned = name === 'autotune' ? tuneFactors(found, rate, params, melody) : null;
                 const constant = 2 ** ((params.semitones || 0) / 12);
                 const plain = (effect.plain || []).includes(clipId);
@@ -1013,6 +1050,7 @@ onmessage = (e) => {
             const c = prepare(wave);
             if (!c) return;
             const { g, w, h } = c, col = colours();
+            clock.textContent = original ? `${de(positionAt(ctx.currentTime), 1)} s von ${de(original.length / rate, 1)} s` : '';
             if (!original) {
                 g.fillStyle = col.ink; g.textAlign = 'center'; g.textBaseline = 'middle';
                 g.fillText('Spiel den Klang ab, dann erscheint er hier.', w / 2, h / 2);
@@ -1102,16 +1140,27 @@ onmessage = (e) => {
 
         // a knob moved: the picture at once, the sound as soon as the worker
         // has the last one (also while dragging), always the last setting
+        // the switched-on clips to mix in, where they belong to the clip that plays
+        const mixesNow = () => (effect.switches || []).filter((t) => t.mix && params[t.key] && melodyNow()).map((t) => [t.mix, t.level]);
+        const effectNow = () => on && !effect.neutral(params) && !(effect.plain || []).includes(clipId);
+        function message() {
+            return { effect: name, clip: clipId, melody: melodyNow(), params: { ...params }, twice: !!effect.twice, id: ++asked,
+                on: effectNow(), mixes: mixesNow() };
+        }
         function ask() {
-            if (!on || effect.neutral(params) || (effect.plain || []).includes(clipId)) { current = original; if (playing) start(); return; }
+            if (!effectNow() && !mixesNow().length) { current = original; if (playing) start(); return; }
             busy = true;
-            worker.postMessage({ effect: name, clip: clipId, melody: effect.melody, params: { ...params }, twice: !!effect.twice, id: ++asked });
+            worker.postMessage(message());
         }
         function changed() {
             draw(); drawWave();
             if (!worker || !original) return;
             if (busy) { again = true; return; }
             ask();
+        }
+        // the melody clip, where it belongs to the clip that plays
+        function melodyNow() {
+            return effect.melody && (!effect.melodyFor || effect.melodyFor === clipId) ? effect.melody : null;
         }
         function keepTracks(e) {
             if (e.data.track) tracks[clipId] = e.data.track;
@@ -1146,18 +1195,21 @@ onmessage = (e) => {
                 worker.onmessage = heard;
             }
             if (effect.melody) await loadClip(effect.melody);
+            for (const t of effect.switches || []) if (t.mix) await loadClip(t.mix);
             original = await loadClip(clipId);
             current = original;
-            if (on && !effect.neutral(params) && !(effect.plain || []).includes(clipId)) {
+            const needsTrack = (name === 'pitch' || name === 'autotune') && !tracks[clipId];
+            if (effectNow() || mixesNow().length || needsTrack) {
                 // the first sound of a clip waits for the worker once
                 await new Promise((done) => {
                     worker.onmessage = (e) => { worker.onmessage = heard; current = e.data.out; keepTracks(e); done(); };
-                    worker.postMessage({ effect: name, clip: clipId, melody: effect.melody, params: { ...params }, twice: !!effect.twice, id: ++asked });
+                    worker.postMessage(message());
                 });
             }
         }
         async function pickClip(id) {
             clipId = id;
+            showCredit();
             if (!ctx) return;
             const was = playing;
             if (playing) stop();
@@ -1180,6 +1232,31 @@ onmessage = (e) => {
             }
             start(offset);
         });
+        // dragging a picture of the time around the sound (the wave, the
+        // pitch) moves through it: to the right goes back
+        const draggable = (canvas) => {
+            let drag = null;
+            canvas.classList.add('fx-draggable');
+            canvas.addEventListener('pointerdown', (e) => {
+                if (!original) return;
+                canvas.setPointerCapture(e.pointerId);
+                drag = { x: e.clientX, from: positionAt(ctx.currentTime), last: 0 };
+            });
+            canvas.addEventListener('pointermove', (e) => {
+                if (!drag) return;
+                const d = original.length / rate, plotW = Math.max(1, canvas.clientWidth - LABEL_W);
+                const place = (((drag.from - (e.clientX - drag.x) / plotW * WAVE_SECONDS) % d) + d) % d;
+                if (playing) {
+                    if (performance.now() - drag.last > 80) { drag.last = performance.now(); start(place); }
+                } else { offset = place; draw(); drawWave(); }
+                drag.place = place;
+            });
+            const end = () => { if (drag && playing && drag.place !== undefined) start(drag.place); drag = null; };
+            canvas.addEventListener('pointerup', end);
+            canvas.addEventListener('pointercancel', end);
+        };
+        draggable(wave);
+        if (effect.draw === drawPitch) draggable(chart);
         if (typeof ResizeObserver !== 'undefined') {
             new ResizeObserver(draw).observe(chart);
             new ResizeObserver(drawWave).observe(wave);

@@ -715,10 +715,16 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 <p>Hör dir <a href='https://www.youtube.com/watch?v=nZXRV4MezEw'>»Believe«</a> auf YouTube an und achte darauf, wo Chers Stimme von Ton zu Ton springt, statt zu gleiten.</p>
 </div>
 
+<div class='history' id='history-songify'>
+<i class='bi bi-calendar3'></i>
+<p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten, wie das Widget oben Kennedy. Ab 2011 hieß die Reihe »Songify the News«.</p>
+<p>Hör dir zwei ihrer Lieder auf YouTube an: den <a href='https://www.youtube.com/watch?v=MX0D4oZwCsA'>»Double Rainbow Song«</a> aus dem Video eines Mannes, der einen doppelten Regenbogen sieht, und <a href='https://www.youtube.com/watch?v=sP4NMoJcFd4'>»Can't Hug Every Cat«</a> aus dem Video einer Frau, die Katzen liebt. Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben?</p>
+</div>
+
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir die Stimme mit einer Retune Speed von 0 an und schau, wie die lila Punkte auf den Linien der Halbtöne liegen. Dreh die Retune Speed dann langsam auf: Ab wann klingt die Stimme wieder wie gesprochen, und woran siehst du das im Bild? Probier dasselbe mit der Melodie: Warum ändert Autotune an ihr fast nichts?
+<strong>Ausprobieren:</strong> Hör dir Kennedy zuerst an, wie er 1962 sprach, und dann die Melodie: Sie ist aus seiner Stimme gemacht, in jedem Moment der nächste Ton einer Tonleiter. Schalt <strong>Effekt an</strong> ein: Jetzt singt er sie. Schalt <strong>Melodie dazu</strong> ein und hör, ob er die Töne trifft. Stell dann das Ziel auf den nächsten Halbton und dreh die Retune Speed langsam auf: Ab wann klingt er wieder wie gesprochen, und woran siehst du das im Bild?
 </div>
 
 Ein Halbton ist ein Zwölftel einer Oktave: zwölf Halbtöne verdoppeln die Frequenz, ein Halbton multipliziert sie mit \\(2^{1/12} \approx 1{,}0595\\). Von einem Ton \\(f\\) bis zum Kammerton A mit 440 Hz sind es also \\(12 \cdot \log\_2(f / 440)\\) Halbtöne. Rundet man diese Zahl, hat man den nächsten Halbton.

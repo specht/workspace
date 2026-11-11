@@ -15468,7 +15468,11 @@ html[data-bs-theme="dark"] .effect-widget {
 .fx-figure figcaption { font-size: 0.85em; color: var(--fx-ink); margin-bottom: 0.25em; }
 .fx-chart { display: block; width: 100%; height: 200px; }
 .fx-wave { display: block; width: 100%; height: 110px; }
+.fx-draggable { cursor: grab; touch-action: pan-y; }
+.fx-draggable:active { cursor: grabbing; }
+.fx-clock { font-variant-numeric: tabular-nums; font-size: 0.9em; color: var(--bs-secondary-color); min-width: 8.5em; }
 .fx-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+.fx-credit { font-size: 0.8em; color: var(--bs-secondary-color); margin: -0.3em 0 0.6em; }
 @media (max-width: 576px) {
     /* label and value on a line, the slider with its marks across the width under them */
     .fx-row { grid-template-columns: minmax(0, 1fr) auto; gap: 0 0.5em; margin-bottom: 0.3em; }
