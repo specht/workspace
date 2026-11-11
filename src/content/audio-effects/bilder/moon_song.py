@@ -168,6 +168,44 @@ speech = np.frombuffer(raw, dtype=np.float32).astype(float)
 speech /= np.abs(speech).max()
 
 
+def clean(x):
+    """the recording of 1962 made easier to understand, in blocks of 2048
+    with half overlap: the noise (its spectrum from the quietest tenth of the
+    blocks) taken away gently, never below a tenth of what was there; below
+    90 Hz out, around 300 Hz 3 dB less, around 3 kHz 4 dB more"""
+    N, H = 2048, 1024
+    window = np.hanning(N)
+    frames = [x[i:i + N] * window for i in range(0, len(x) - N, H)]
+    spectra = [np.fft.rfft(f) for f in frames]
+    power = np.array([np.sum(np.abs(s) ** 2) for s in spectra])
+    quiet = np.argsort(power)[:max(1, len(power) // 10)]
+    noise = np.mean([np.abs(spectra[i]) for i in quiet], axis=0)
+    freq = np.fft.rfftfreq(N, 1 / RATE)
+    octaves = lambda f0: np.log2(np.maximum(freq, 1) / f0)
+    eq_db = -3 * np.exp(-(octaves(300) / 0.7) ** 2) + 4 * np.exp(-(octaves(3000) / 0.8) ** 2)
+    eq = 10 ** (eq_db / 20) * (1 / (1 + (90 / np.maximum(freq, 1)) ** 4))
+    out = np.zeros(len(x) + N)
+    for k, spec in enumerate(spectra):
+        size = np.abs(spec)
+        keep = np.maximum(1 - 1.5 * noise / np.maximum(size, 1e-9), 0.1)
+        out[k * H:k * H + N] += np.fft.irfft(spec * keep * eq) * window
+    out = out[:len(x)] / 1.5
+    return out / np.abs(out).max()
+
+
+def snr(x):
+    """how far the quietest tenth of 50 ms blocks lies below the loudest tenth, in dB"""
+    n = int(0.05 * RATE)
+    levels = np.sort([np.sqrt(np.mean(x[i:i + n] ** 2)) + 1e-9 for i in range(0, len(x) - n, n)])
+    k = max(1, len(levels) // 10)
+    return 20 * np.log10(np.mean(levels[-k:]) / np.mean(levels[:k]))
+
+
+before = snr(speech)
+speech = clean(speech)
+print(f'noise below speech: {before:.1f} dB before, {snr(speech):.1f} dB after cleaning')
+
+
 
 def pitch(block):
     best, best_lag, dipped = 0, 0, False
@@ -228,7 +266,10 @@ for bar, sixteenth, name, lengths in SHEET:
     for (t0, t1), units, step in zip(zip(bounds[:-1], bounds[1:]), lengths, CONTOUR[name]):
         piece = speech[at(t0):at(t1)]
         n = int(units * SIXTEENTH * (0.92 if units > 2 else 0.98) * RATE)
-        place(voice, fade(hold(piece, n), 5, 25), slot)
+        held = hold(piece, n)
+        rms = np.sqrt(np.mean(held ** 2)) + 1e-9
+        held *= (0.12 / rms) ** 0.5                    # quiet syllables up, loud ones down, halfway
+        place(voice, fade(held, 5, 25), slot)
         # the note: of the scale, nearest to his own pitch, a chord tone on long ones
         f = own_pitch(piece)
         chord = CHORDS[min(BARS - 1, int(slot / BAR))]
@@ -342,6 +383,11 @@ noise = noise - np.concatenate([[0], noise[:-1]])
 place(drums, noise * np.linspace(0, 1, n) ** 2, 7 * BAR, 0.1)
 
 band = drums[:LENGTH] + keys[:LENGTH] + low[:LENGTH] + (pads * duck)[:LENGTH]
+# room for the voice: 1 to 4 kHz 4 dB quieter in the band
+spec = np.fft.rfft(band)
+freq = np.fft.rfftfreq(len(band), 1 / RATE)
+spec *= 10 ** (-4 * np.exp(-(np.log2(np.maximum(freq, 1) / 2000) / 0.9) ** 2) / 20)
+band = np.fft.irfft(spec, len(band))
 band *= 0.8 / np.abs(band).max()
 print('band: drums %.3f keys %.3f 808 %.3f pad %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, keys, low, pads)))
 

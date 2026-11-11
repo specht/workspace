@@ -248,7 +248,7 @@
             ],
             // other clips of the same length, mixed in when switched on
             switches: [{ key: 'withMelody', label: 'Melodie dazu', value: false, mix: 'kennedyMelodie', level: 0.6 },
-                { key: 'withBand', label: 'Band dazu', value: false, mix: 'kennedyBand', level: 0.7 }],
+                { key: 'withBand', label: 'Band dazu', value: false, mix: 'kennedyBand', level: 0.55 }],
             knobs: [
                 { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
                   marks: [[0, '0'], [0.05, '50'], [0.1, '100'], [0.15, '150'], [0.2, '200 ms']], show: ms },
