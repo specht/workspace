@@ -25,7 +25,16 @@
     const BITS = [16, 12, 8, 6, 4, 3];
     const MU = 255;
     const WINDOW = 0.005;                    // the picture: 5 ms
-    const CLIPS = [{ id: 'musik', label: 'Musik', at: 2.504 }, { id: 'stimme', label: 'Stimme', at: 0.62 }];
+    // at: where the picture of 5 ms starts, in seconds (a hi-hat stroke, a held vowel)
+    const CLIPS = [
+        { id: 'funk', label: 'Funk', at: 5.503, url: '/audio/effects/funk.flac',
+          credit: "»Funkorama« von Kevin MacLeod (incompetech.com), CC BY 4.0 (<a href='https://incompetech.com/music/royalty-free/faq.html'>incompetech</a>)" },
+        { id: 'schlagzeug', label: 'Schlagzeug', at: 5.573, url: '/audio/effects/drums.flac',
+          credit: "»Rock-funk backbeat« von jmarcosfer, CC0 (<a href='https://freesound.org/people/jmarcosfer/sounds/592756/'>Freesound</a>)" },
+        { id: 'gesang', label: 'Gesang', at: 8.62, url: '/audio/effects/singing-voice-2.flac',
+          credit: "»Running with Renegades (Main Vox)«, feat. Ashes and Dreams, CC BY 4.0 (<a href='https://freesound.org/people/ashesanddreams/sounds/610416/'>Freesound</a>)" },
+        { id: 'stimme', label: 'Stimme', at: 0.62 },
+    ];
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
     const de = (n, digits = 0) => n.toLocaleString('de-DE', { minimumFractionDigits: digits, maximumFractionDigits: digits });
     let counter = 0;
@@ -43,8 +52,26 @@
 
     // a WAV file as numbers from -1 to 1: the chunks one after the other,
     // the samples in the one called »data«, 16 bit, Little Endian
+    // a recording under a free licence (the clips of »Audioeffekte«, FLAC):
+    // decoded by the browser at 44.100 Hz, its channels averaged
+    function decoded(url) {
+        const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        return fetch(url).then((r) => {
+            if (!r.ok) throw new Error(r.status);
+            return r.arrayBuffer();
+        }).then((data) => new OAC(1, 1, SOURCE).decodeAudioData(data)).then((buffer) => {
+            const x = new Float32Array(buffer.length);
+            for (let c = 0; c < buffer.numberOfChannels; c++) {
+                const channel = buffer.getChannelData(c);
+                for (let i = 0; i < x.length; i++) x[i] += channel[i] / buffer.numberOfChannels;
+            }
+            return x;
+        });
+    }
     const files = {};
-    function load(id) {
+    function load(clip) {
+        const id = clip.id;
+        if (!files[id] && clip.url) files[id] = decoded(clip.url);
         if (!files[id]) {
             files[id] = fetch(`/audio/${id}.wav`).then((r) => {
                 if (!r.ok) throw new Error(r.status);
@@ -152,6 +179,10 @@
             group('clip', 'Klang', CLIPS.map((c) => ({ value: c.id, label: c.label })), clip.id, (v) => pickClip(v)),
             playButton,
         ]);
+        // who made the clip, where it is someone else's (CLIPS, trusted HTML of this file)
+        const credit = el('p', { class: 'fx-credit' });
+        const showCredit = () => { credit.innerHTML = clip.credit || ''; credit.hidden = !clip.credit; };
+        showCredit();
         const settings = el('div', { class: 'sampling-controls' }, [
             group('rate', 'Samples je Sekunde', RATES.map((r) => ({ value: String(r), label: de(r) })), String(rate),
                 (v) => { rate = Number(v); update(); }),
@@ -171,7 +202,7 @@
         ]);
         const strip = el('canvas', { class: 'sampling-strip', tabindex: '0', role: 'slider', 'aria-label': 'Stelle im Klang' });
         const rateLine = el('p', { class: 'sampling-rate', 'aria-live': 'polite' });
-        root.append(controls, settings,
+        root.append(controls, credit, settings,
             el('figure', { class: 'sampling-figure' }, [el('figcaption', { text: level === 1 ? '5 Millisekunden des Klangs' : `5 Millisekunden des leisen Klangs, ${de(1 / level)}-mal vergrößert` }), picture, legend]),
             el('figure', { class: 'sampling-figure' }, [el('figcaption', { text: 'Der ganze Klang: hier klicken oder ziehen wählt die Stelle' }), strip]),
             rateLine);
@@ -383,13 +414,14 @@
 
         async function pickClip(value) {
             clip = CLIPS.find((c) => c.id === value);
+            showCredit();
             const wasPlaying = playing;
             if (playing) stop();
             original = null; measured = null; heard = null; envelope = null;
             at = clip.at; offset = 0;
             draw();
             try {
-                const x = await load(clip.id);
+                const x = await load(clip);
                 if (clip.id !== value) return;
                 original = level === 1 ? x : x.map((v) => v * level);
             } catch (e) {

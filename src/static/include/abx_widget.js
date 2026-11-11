@@ -19,6 +19,7 @@
         { id: 'aac', label: 'AAC', rates: [32, 64, 128] },
         { id: 'opus', label: 'Opus', rates: [16, 32, 64] },
     ];
+    const CREDIT = "»Acoustic Jazz Quartet no1 (exploration)« von Claude Reid, fünf Sekunden, durch den Codec und zurück, CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Acoustic_Jazz_Quartet_no1_(exploration).flac'>Wikimedia Commons</a>)";
     const FADE = 0.012;                      // seconds to fade when switching, so that no click tells them apart
     const GAIN = 0.8;
     let counter = 0;
@@ -109,6 +110,8 @@
             el('div', { class: 'abx-controls' }, [el('span', { class: 'abx-label', text: 'Codec' }), codecGroup]),
             el('div', { class: 'abx-controls' }, [el('span', { class: 'abx-label', text: 'Bitrate' }), rateBox]),
             el('div', { class: 'abx-play' }, [playButton, listen]),
+            // the recording the pieces are made from (sounds/abx.py)
+            Object.assign(el('p', { class: 'fx-credit' }), { innerHTML: CREDIT }),
             el('div', { class: 'abx-controls abx-answer' }, [el('span', { class: 'abx-label', text: 'Antwort' }), answerA, answerB, again]),
             verdict, tally);
 

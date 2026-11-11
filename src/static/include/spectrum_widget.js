@@ -36,6 +36,10 @@
     };
     const CLIPS = [
         { id: 'musik', label: 'Musik', at: 2.6 },
+        { id: 'gesang', label: 'Gesang', at: 8.62, url: '/audio/effects/singing-voice-2.flac',
+          credit: "»Running with Renegades (Main Vox)«, feat. Ashes and Dreams, CC BY 4.0 (<a href='https://freesound.org/people/ashesanddreams/sounds/610416/'>Freesound</a>)" },
+        { id: 'schlagzeug', label: 'Schlagzeug', at: 5.573, url: '/audio/effects/drums.flac',
+          credit: "»Rock-funk backbeat« von jmarcosfer, CC0 (<a href='https://freesound.org/people/jmarcosfer/sounds/592756/'>Freesound</a>)" },
         { id: 'stimme', label: 'Stimme', at: 0.7 },
         { id: 'akkord', label: 'Akkord', at: 1, make: () => tone(2, (t) =>
             [440, 554.37, 659.26].reduce((s, f) => s + 0.5 * Math.sin(2 * Math.PI * f * t), 0) / 3) },
@@ -58,9 +62,26 @@
     };
 
     // a WAV file as numbers from -1 to 1 (the chunk »data«, 16 bit, Little Endian)
+    // a recording under a free licence (the clips of »Audioeffekte«, FLAC):
+    // decoded by the browser at 44.100 Hz, its channels averaged
+    function decoded(url) {
+        const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        return fetch(url).then((r) => {
+            if (!r.ok) throw new Error(r.status);
+            return r.arrayBuffer();
+        }).then((data) => new OAC(1, 1, SOURCE).decodeAudioData(data)).then((buffer) => {
+            const x = new Float32Array(buffer.length);
+            for (let c = 0; c < buffer.numberOfChannels; c++) {
+                const channel = buffer.getChannelData(c);
+                for (let i = 0; i < x.length; i++) x[i] += channel[i] / buffer.numberOfChannels;
+            }
+            return x;
+        });
+    }
     const files = {};
     function load(clip) {
         if (clip.make) return Promise.resolve(files[clip.id] || (files[clip.id] = clip.make()));
+        if (clip.url) return files[clip.id] || (files[clip.id] = decoded(clip.url));
         if (!files[clip.id]) {
             files[clip.id] = fetch(`/audio/${clip.id}.wav`).then((r) => {
                 if (!r.ok) throw new Error(r.status);
@@ -214,6 +235,10 @@
             playButton.replaceChildren(el('i', { class: `bi ${playing ? 'bi-stop-fill' : 'bi-play-fill'}` }), playing ? ' Anhalten' : ' Abspielen');
         };
         showPlay();
+        // who made the clip, where it is someone else's (CLIPS, trusted HTML of this file)
+        const credit = el('p', { class: 'fx-credit' });
+        const showCredit = () => { credit.innerHTML = clip.credit || ''; credit.hidden = !clip.credit; };
+        showCredit();
         const gram = el('canvas', { class: 'spectrum-gram', tabindex: '0', role: 'slider', 'aria-label': 'Zeitpunkt im Spektrogramm' });
         const chart = el('canvas', { class: 'spectrum-chart', role: 'img' });
         const line = el('p', { class: 'spectrum-line', 'aria-live': 'polite' });
@@ -222,6 +247,7 @@
                 group('clip', 'Klang', CLIPS.map((c) => ({ value: c.id, label: c.label })), clip.id, (v) => pickClip(v)),
                 playButton,
             ]),
+            credit,
             instrumentRow,
             el('figure', { class: 'spectrum-figure' }, [
                 el('figcaption', { text: 'Spektrogramm: die Zeit nach rechts, die Frequenz nach oben, je lauter, desto kräftiger die Farbe. Hier klicken oder ziehen wählt den Zeitpunkt.' }),
@@ -500,6 +526,7 @@
 
         async function pickClip(value) {
             clip = CLIPS.find((c) => c.id === value);
+            showCredit();
             instrumentRow.hidden = !INSTRUMENTS[clip.id];
             makeSwitches();
             if (playing) { stopSource(); playing = false; showPlay(); }

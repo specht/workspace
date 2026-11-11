@@ -1,5 +1,9 @@
 """The pieces for the listening test of »Audio komprimieren« (abx_widget.js):
-musik.wav coded with MP3, AAC and Opus at three bit rates each, decoded
+five seconds of a jazz quartet (»Acoustic Jazz Quartet no1 (exploration)«
+by Claude Reid, CC BY-SA 4.0, the clip »Jazz« of »Audioeffekte«: a real
+recording, full to 22 kHz, the five seconds with the most above 8 kHz,
+where a codec is heard first), as mono at 44.100 Hz,
+coded with MP3, AAC and Opus at three bit rates each, decoded
 again by ffmpeg and cut to the same five seconds as the original, so that
 the browser plays only lossless FLAC and every piece starts at the same
 sample (a coded file played directly would start a little late, by the
@@ -18,9 +22,9 @@ import wave
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SOURCE = os.path.join(HERE, '..', '..', '..', 'static', 'audio', 'musik.wav')
+SOURCE = os.path.join(HERE, '..', '..', '..', 'static', 'audio', 'effects', 'jazz.flac')
 OUT = os.path.join(HERE, '..', '..', '..', 'static', 'audio', 'abx')
-START, SECONDS, RATE = 1.0, 5.0, 44100
+START, SECONDS, RATE = 12.7, 5.0, 44100        # the five seconds with the most energy above 8 kHz
 CODECS = {
     'mp3': (['-c:a', 'libmp3lame'], 'mp3', [32, 64, 128]),
     'aac': (['-c:a', 'aac'], 'm4a', [32, 64, 128]),
@@ -54,13 +58,16 @@ def lag(a, b):
 def main():
     os.makedirs(OUT, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
-        piece(SOURCE, os.path.join(OUT, 'original.flac'))
+        # mono at 44.100 Hz first, so that every codec gets the same
+        source = os.path.join(tmp, 'source.wav')
+        ffmpeg('-i', SOURCE, '-ac', '1', '-ar', str(RATE), source)
+        piece(source, os.path.join(OUT, 'original.flac'))
         ffmpeg('-i', os.path.join(OUT, 'original.flac'), os.path.join(tmp, 'original.wav'))
         original = read(os.path.join(tmp, 'original.wav'))
         for name, (options, ext, rates) in CODECS.items():
             for kbit in rates:
                 coded = os.path.join(tmp, f'{name}-{kbit}.{ext}')
-                ffmpeg('-i', SOURCE, *options, '-b:a', f'{kbit}k', coded)
+                ffmpeg('-i', source, *options, '-b:a', f'{kbit}k', coded)
                 target = os.path.join(OUT, f'{name}-{kbit}.flac')
                 piece(coded, target)
                 ffmpeg('-i', target, os.path.join(tmp, 'check.wav'))
