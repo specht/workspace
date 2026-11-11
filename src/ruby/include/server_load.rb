@@ -159,7 +159,8 @@ module ServerLoad
     end
 
     # A chart in percent, 0 to 100: columns [{ value:, tip:, href: }],
-    # labels [[index, text]] under it.
+    # labels [[index, text]] under it, none without (nil: no axis, as in
+    # the stacked course of /statistik, where only the last strip has one).
     def self.plot(columns, labels, fine: false)
         io = +"<div class='usage-plot server-plot'>"
         [0, 50, 100].each { |t| io << "<span class='usage-tick' style='bottom: #{t}%'><span>#{t} %</span></span>" }
@@ -169,9 +170,25 @@ module ServerLoad
             tag = col[:href] ? "a href='#{h(col[:href])}'" : 'span'
             io << "<#{tag} class='usage-col#{col[:weekend] ? ' usage-weekend' : ''}' data-tip='#{h(col[:tip])}'>#{fill}</#{tag.split.first}>"
         end
-        io << "</div></div><div class='usage-axis' aria-hidden='true'>"
+        io << '</div></div>'
+        return io if labels.nil?
+
+        io << "<div class='usage-axis' aria-hidden='true'>"
         labels.each { |i, text| io << "<span style='left: #{(100.0 * i / columns.size).round(2)}%'>#{h(text)}</span>" }
         io << '</div>'
+    end
+
+    # The columns of a chart over the periods: value and tip from the
+    # chart (CHARTS), a link to the day in five-minute steps for the days
+    # whose looks are still kept, weekends marked.
+    def self.columns(periods, today, value, tip)
+        weekly = periods.any? { |p| p[:from] != p[:to] }
+        periods.map do |p|
+            linked = !weekly && p[:counted] && p[:from] > today - SAMPLE_DAYS
+            { :value => value.(p), :tip => "#{UsageStats.period_label(p)}: #{tip.(p)}",
+              :href => linked ? "/statistik?server=#{p[:from].iso8601}" : nil,
+              :weekend => !weekly && (p[:from].saturday? || p[:from].sunday?) }
+        end
     end
 
     def self.cpu_tip(p)
@@ -190,36 +207,33 @@ module ServerLoad
     ].freeze
 
     # The section of /statistik. since: the first measured hour (nil:
-    # none yet); today: the day to count the SAMPLE_DAYS back from.
-    def self.html(periods, rhythm, since:, today:)
+    # none yet); today: the day to count the SAMPLE_DAYS back from. The
+    # processors and the memory stand in the course above (UsageStats.
+    # course_html), beside the students; here the two disks.
+    def self.html(periods, since:, today:)
         io = +"<div class='usage-charts'><h2 class='mt-4' id='server'>Server</h2>"
         if since.nil?
             io << '<p>Noch keine Zahlen. Der Workspace liest alle fünf Minuten, wie ausgelastet der Server ist.</p></div>'
             return io
         end
         weekly = periods.any? { |p| p[:from] != p[:to] }
-        io << "<p>Wie ausgelastet der Server #{weekly ? 'in jeder Woche' : 'an jedem Tag'} war: Prozessoren, Arbeitsspeicher und die beiden Festplatten. "               "Gemessen wird alle fünf Minuten, seit #{Time.at(since).strftime('%-d.%-m.%Y')}. Je Stunde bleiben Mittel und Höchstwerte ohne Ende, "               "die einzelnen Messungen #{SAMPLE_DAYS} Tage#{weekly ? '' : '; ein Klick auf einen dieser Tage zeigt ihn in Fünf-Minuten-Schritten'}.</p>"
+        io << "<p>Prozessoren und Arbeitsspeicher stehen oben im Verlauf, neben den Lernenden; hier die beiden Festplatten, " \
+              "#{weekly ? 'am Ende jeder Woche' : 'am Ende jedes Tages'}. Gemessen wird alle fünf Minuten, seit #{Time.at(since).strftime('%-d.%-m.%Y')}. " \
+              "Je Stunde bleiben Mittel und Höchstwerte ohne Ende, die einzelnen Messungen #{SAMPLE_DAYS} Tage" \
+              "#{weekly ? '' : '; ein Klick auf einen dieser Tage zeigt ihn in Fünf-Minuten-Schritten'}.</p>"
         labels = UsageStats.axis_labels(periods)
         io << "<div class='server-plots'>"
-        CHARTS.each do |title, note, value, tip|
-            columns = periods.map do |p|
-                linked = !weekly && p[:counted] && p[:from] > today - SAMPLE_DAYS
-                { :value => value.(p), :tip => "#{UsageStats.period_label(p)}: #{tip.(p)}",
-                  :href => linked ? "/statistik?server=#{p[:from].iso8601}" : nil,
-                  :weekend => !weekly && (p[:from].saturday? || p[:from].sunday?) }
-            end
-            io << "<section><h3 class='h6 mb-1'>#{h(title)}</h3><p class='server-note'>#{h(note)}</p>#{plot(columns, labels)}</section>"
+        CHARTS.drop(2).each do |title, note, value, tip|
+            io << "<section><h3 class='h6 mb-1'>#{h(title)}</h3><p class='server-note'>#{h(note)}</p>#{plot(columns(periods, today, value, tip), labels)}</section>"
         end
         io << '</div>'
-        io << "<details class='usage-table-view'><summary>Als Tabelle</summary><div class='table-responsive'><table class='table table-sm usage-table'>"               "<thead><tr><th>#{weekly ? 'Woche' : 'Tag'}</th><th class='text-end'>Prozessoren</th><th class='text-end'>vollste Stunde</th>"               "<th class='text-end'>Arbeitsspeicher</th><th class='text-end'>System</th><th class='text-end'>Workspaces</th></tr></thead><tbody>"
         pct = ->(v) { v.nil? ? '–' : "#{decimal(v)} %" }
+        io << "<details class='usage-table-view'><summary>Als Tabelle</summary><div class='table-responsive'><table class='table table-sm usage-table'>" \
+              "<thead><tr><th>#{weekly ? 'Woche' : 'Tag'}</th><th class='text-end'>System</th><th class='text-end'>Workspaces</th></tr></thead><tbody>"
         periods.each do |p|
-            io << "<tr><td>#{UsageStats.period_label(p)}</td><td class='text-end'>#{pct.(p[:cpu_mean])}</td><td class='text-end'>#{pct.(p[:cpu_hour])}</td>"                   "<td class='text-end'>#{pct.(share(p[:ram]))}</td><td class='text-end'>#{pct.(share(p[:root]))}</td><td class='text-end'>#{pct.(share(p[:user]))}</td></tr>"
+            io << "<tr><td>#{UsageStats.period_label(p)}</td><td class='text-end'>#{pct.(share(p[:root]))}</td><td class='text-end'>#{pct.(share(p[:user]))}</td></tr>"
         end
-        io << '</tbody></table></div></details>'
-        io << "<h3 class='mt-3 h5'>Wann die Prozessoren arbeiten</h3><p>Im Mittel je Wochentag und Stunde, über den Zeitraum.</p>"
-        io << rhythm_html(rhythm)
-        io << '</div>'
+        io << '</tbody></table></div></details></div>'
     end
 
     # Fixed steps of 20 %, so that the colours mean the same in every window

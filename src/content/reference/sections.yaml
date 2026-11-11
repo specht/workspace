@@ -64,13 +64,14 @@
   icon: /images/pen.png
   description: |
     Webseiten und Folien bauen: Inhalt mit HTML, Aussehen mit CSS, Anordnung
-    mit Flexbox und Spalten, Bilder aus Text mit SVG. Jedes Beispiel als
-    Webseite und als Folie.
+    mit Flexbox und Spalten, Bilder aus Text mit SVG, und so, dass alle sie
+    benutzen können. Jedes Beispiel als Webseite und als Folie.
   entries:
     - html
     - css
     - layout
     - svg
+    - accessibility
 
 - key: reference-presentations
   label: Präsentationen
@@ -101,6 +102,16 @@
   entries:
     - farben
     - farbraeume
+
+- key: reference-media
+  label: Ton und Video
+  icon: /images/clamp.png
+  description: |
+    Ton- und Videodateien mit ffmpeg umwandeln, komprimieren, schneiden und
+    vergleichen, mit ffprobe hineinsehen und Pixel oder Samples an Python
+    weitergeben.
+  entries:
+    - ffmpeg
 
 - key: reference-network
   label: Netzwerk, Daten und Sicherheit

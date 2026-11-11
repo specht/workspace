@@ -96,7 +96,7 @@ module StudentHome
             pinned.each do |p|
                 io << card(p[:slug], p[:title], by_slug[p[:slug]], :abstract => p[:abstract], :pinned => p[:group],
                            :template_folder => p[:template_folder], :kind => p[:kind], :image => p[:image],
-                           :image_dark => p[:image_dark], :position => p[:position], :kata => p[:kata])
+                           :image_dark => p[:image_dark], :position => p[:position], :kata => p[:kata], :reference => p[:reference])
             end
             io << '</div></section>'
         end
@@ -169,7 +169,8 @@ module StudentHome
     # which group it was pinned for, small. On a phone the picture is on top.
     # kata: { hue:, icon: } for a set of Katas, which has no picture of its
     # own: its band from the strip instead (KataMap.art_html).
-    def self.card(slug, title, entry, abstract: nil, pinned: nil, template_folder: nil, kind: nil, image: nil, image_dark: nil, position: nil, kata: nil)
+    # reference: a Handbuch page, to read rather than to solve (»Lesen«)
+    def self.card(slug, title, entry, abstract: nil, pinned: nil, template_folder: nil, kind: nil, image: nil, image_dark: nil, position: nil, kata: nil, reference: false)
         link = entry && entry[:next] ? "/#{h(slug)}#aufgabe-#{h(entry[:next][:id])}" : "/#{h(slug)}"
         io = +"<article class='student-home-card#{pinned ? ' student-home-pinned' : ''}#{image || kata ? ' shc-with-picture' : ''}' data-slug='#{h(slug)}'>"
         if kata
@@ -193,7 +194,8 @@ module StudentHome
             io << "<span class='shc-count'>#{entry[:done]} von #{entry[:total]} gelöst#{extras_text(entry)}</span></div>"
             io << "<span class='shc-next'>Weiter mit: #{h(entry[:next][:title])}</span>" if entry[:next]
         end
-        label = if entry.nil? || entry[:done].to_i.zero? then 'Loslegen'
+        label = if reference then 'Lesen'
+                elsif entry.nil? || entry[:done].to_i.zero? then 'Loslegen'
                 elsif entry[:done] >= entry[:total] then 'Ansehen'
                 else 'Weitermachen'
                 end

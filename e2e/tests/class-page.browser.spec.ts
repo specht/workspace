@@ -140,4 +140,20 @@ test('the class page finds activities by typing', async ({ page }, testInfo) => 
   await expect(pinned).toBeVisible();
   await pinned.locator('.class-unpin').click();
   await expect(pinned).toHaveCount(0);
+
+  // a Handbuch page can be pinned too, under its own heading
+  const pinAgain = page.locator('.class-pins input[role=combobox]');
+  await pinAgain.click();
+  await pinAgain.fill('reference/ffmpeg');
+  await page.locator('.class-pins .suggest-menu .dropdown-item').first().click();
+  const handbook = page.locator(".class-pin:has(a[href='/reference/ffmpeg'])");
+  await expect(handbook).toBeVisible();
+  await expect(handbook.locator('.class-pin-kind')).toHaveText('Handbuch');
+  // and on the Handbuch page itself the teacher finds »Anpinnen«
+  await page.goto('/reference/ffmpeg');
+  await expect(page.locator('.page-pin-toggle')).toBeVisible();
+  await page.goto('/klasse?group=E2E');
+  await page.getByRole('tab', { name: 'Startseite' }).click();
+  await page.locator(".class-pin:has(a[href='/reference/ffmpeg']) .class-unpin").click();
+  await expect(page.locator(".class-pin:has(a[href='/reference/ffmpeg'])")).toHaveCount(0);
 });

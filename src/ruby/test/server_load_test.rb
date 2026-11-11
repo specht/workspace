@@ -86,13 +86,19 @@ class ServerLoadTest < Minitest::Test
 
     def test_the_page_links_the_days_with_their_looks
         today = Date.new(2026, 11, 7)
-        html = ServerLoad.html(ServerLoad.periods([hour(1, 10, 50.0)], 30, NOW), ServerLoad.rhythm([]), :since => NOW - 86_400, :today => today)
+        periods = ServerLoad.periods([hour(1, 10, 50.0)], 30, NOW)
+        html = ServerLoad.html(periods, :since => NOW - 86_400, :today => today)
         assert_includes html, 'Festplatte der Workspaces'
         assert_includes html, "href='/statistik?server=2026-11-06'"
-        assert_includes html, 'in der vollsten Stunde 50,0 %'
         # days without a look are no links
         refute_includes html, "href='/statistik?server=2026-11-05'"
-        assert_includes ServerLoad.html([], [], :since => nil, :today => today), 'Noch keine Zahlen'
+        assert_includes ServerLoad.html([], :since => nil, :today => today), 'Noch keine Zahlen'
+        # the processors stand in the course above, beside the students
+        title, _, value, tip = ServerLoad::CHARTS.first
+        assert_equal 'Prozessoren', title
+        day = ServerLoad.columns(periods, today, value, tip).find { |c| c[:href] }
+        assert_includes day[:tip], 'in der vollsten Stunde 50,0 %'
+        assert_equal '/statistik?server=2026-11-06', day[:href]
     end
 
     def test_a_day_in_five_minute_steps

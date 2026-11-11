@@ -773,6 +773,17 @@ footer.footer-fixed {
     margin-top: 0;
 }
 
+/* On a short page (a search without result) the footer still at the bottom
+   of the window: the page at least as tall as the window, the footer
+   pushed down to its end; on a long page it simply comes last */
+body:has(> footer:not(.footer-fixed)) {
+    min-height: 100vh;
+}
+footer:not(.footer-fixed) {
+    position: sticky;
+    top: 100vh;
+}
+
 body:has(footer.footer-fixed) {
     --footer-reserved-space: 100px;
 }
@@ -14529,6 +14540,122 @@ html[data-bs-theme="dark"] .interleaving .il-wait {
 .usage-bars-dense {
     gap: 1px;
 }
+/* /statistik, »Verlauf« (UsageStats.course_html): students, Workspaces,
+   processors and memory as low strips one under the other, all with the
+   same left edge, so that a day is the same column in each; the dates only
+   under the last strip */
+.usage-stack {
+    display: grid;
+    gap: 0.9rem;
+}
+.usage-stack-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.6em;
+    margin-bottom: 0.3rem;
+}
+.usage-stack-head h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+.usage-stack-head span {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+}
+.usage-stack .usage-plot,
+.usage-stack .usage-plot.server-plot,
+.usage-stack .usage-axis {
+    margin-left: 3em;
+}
+.usage-stack .usage-plot {
+    height: 5.5rem;
+}
+.usage-stack .usage-stack-row:first-child .usage-plot {
+    height: 7rem;
+}
+/* /statistik, »Wochenrhythmus«: the three grids side by side, each with
+   its legend; one under the other on a narrow screen */
+.usage-rhythms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: 1.2rem 2rem;
+}
+.usage-rhythms h3 {
+    margin: 0 0 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+.usage-rhythms .usage-rhythm {
+    max-width: none;
+}
+/* /statistik, »Klassen« and »Stolpersteine«: one line per class or task,
+   a narrow strip of days, the classes of a task as chips in their own
+   column */
+.usage-class-name {
+    font-weight: 500;
+}
+.usage-classes-strip {
+    width: 34%;
+    min-width: 10rem;
+}
+.usage-classes-strip .usage-plot-small {
+    height: 1.4rem;
+}
+.usage-stumbling td:first-child {
+    width: auto;
+}
+.usage-stumbling .usage-task-activity {
+    margin-left: 0.3em;
+}
+.usage-stumbling .usage-task-activity a {
+    color: var(--bs-secondary-color);
+}
+.usage-places-cell {
+    width: 32%;
+}
+/* a class: its name, the school beside it in grey; on a phone a small
+   block: name, school and students, then what and when, then its days
+   across the whole width */
+.usage-class-name {
+    white-space: nowrap;
+}
+@media (max-width: 575.98px) {
+    .usage-classes,
+    .usage-classes tbody {
+        display: block;
+    }
+    .usage-classes thead {
+        display: none;
+    }
+    .usage-classes tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.1rem 0.8em;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+    }
+    .usage-classes td {
+        display: block;
+        padding: 0;
+        border: 0;
+        white-space: normal;
+    }
+    .usage-classes td:nth-child(1) { grid-area: 1 / 1; }
+    .usage-classes td:nth-child(2) { grid-area: 1 / 2; }
+    .usage-classes td:nth-child(2)::after { content: ' Lernende'; color: var(--bs-secondary-color); }
+    .usage-classes td:nth-child(3) { grid-area: 2 / 2; text-align: right; color: var(--bs-secondary-color); }
+    .usage-classes td:nth-child(4) { grid-area: 2 / 1; }
+    .usage-classes td:nth-child(5) { grid-area: 3 / 1 / 4 / 3; width: auto; min-width: 0; padding-top: 0.3rem; }
+}
+.usage-places-cell .usage-places {
+    margin-top: 0;
+}
+.usage-more > summary {
+    color: var(--bs-secondary-color);
+    margin-top: 0.4rem;
+}
 /* /statistik, »Server« (server_load.rb): four small charts in percent, two
    side by side on a wide screen; a day in five-minute steps without gaps */
 .server-plots {
@@ -14739,6 +14866,14 @@ html[data-bs-theme="dark"] .usage-charts {
 .usage-tasks th:first-child {
     width: 100%;
 }
+.usage-tasks.usage-stumbling td:first-child,
+.usage-tasks.usage-stumbling th:first-child {
+    width: auto;
+}
+.usage-tasks.usage-stumbling td.usage-places-cell {
+    width: 36%;
+    min-width: 16rem;
+}
 .usage-charts .usage-table td {
     vertical-align: middle;
 }
@@ -14885,6 +15020,11 @@ html[data-bs-theme="dark"] .usage-charts {
     }
     .usage-activity .table-responsive {
         margin-left: 0;
+    }
+    /* »Stolpersteine«: the classes on a line of their own under the values */
+    .usage-tasks.usage-stumbling td.usage-places-cell {
+        flex: 1 0 100%;
+        padding-top: 0.4em;
     }
     .usage-hbar-track {
         width: 3.5em;

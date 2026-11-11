@@ -277,7 +277,12 @@ jedem Tag (im Jahr: in jeder Woche) etwas prüfen ließen, als Balken, insgesamt
 und je Schule, wann in der Woche geprüft wird (Wochentag und Stunde), welche
 Aktivitäten und Aufgaben an welcher Schule bearbeitet werden, wie viele sie gelöst haben, wie viele
 Prüfungen es bis dahin brauchte und welche Aufgaben am häufigsten haken
-(»Stolpersteine«). Die Zahlen kommen aus den Versuchen, die jede Prüfung
+(»Stolpersteine«), und welche Klassen zuletzt gearbeitet haben (»Klassen«:
+jede Klasse, in der mindestens fünf Lernende etwas prüfen ließen, mit dem
+letzten Tag, an dem mindestens fünf aus ihr gearbeitet haben, und woran die
+meisten von ihnen da gearbeitet haben; kleinere Klassen werden nur gezählt).
+Neben den Lernenden stehen, auf denselben Tagen, die laufenden Workspaces und
+die Auslastung des Servers. Die Zahlen kommen aus den Versuchen, die jede Prüfung
 ohnehin hinterlässt (`TaskAttempt`: Aufgabe, Ergebnis, Zeit, kein Text); es
 wird nichts Neues gespeichert (`src/ruby/include/usage_stats.rb`,
 `usage_stats_page.rb`, getestet in `test/usage_stats_test.rb`).
