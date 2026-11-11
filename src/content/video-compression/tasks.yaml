@@ -783,8 +783,8 @@ tasks:
     check:
       type: choice
       options:
-        - Die mit Filter, slope-deblock.mp4.
-        - Die ohne Filter, slope-blocky.mp4, denn der Filter ist zusätzliche Arbeit.
+        - Die mit Filter, glance-deblock.mp4.
+        - Die ohne Filter, glance-blocky.mp4, denn der Filter ist zusätzliche Arbeit.
         - Beide sind gleich groß, der Filter ändert nur, wie das Bild aussieht.
       correct: 0
     feedback:

@@ -19,14 +19,14 @@ def smooth_edges(plane, limit, n=8):
 
 
 def save_detail(path, frame):
-    detail = np.clip(frame, 0, 255).round().astype(np.uint8)[144:304, 384:672]
+    detail = np.clip(frame, 0, 255).round().astype(np.uint8)[120:280, 352:640]
     Image.fromarray(detail).resize((864, 480), Image.NEAREST).save(path)
 
 
 if __name__ == '__main__':
-    for name in ['slope', 'slope-blocky', 'slope-deblock']:
+    for name in ['glance', 'glance-blocky', 'glance-deblock']:
         save_detail(f'{name}-detail.png', read_frames(f'{name}.mp4')[FRAME])
-    frame = read_frames('slope-blocky.mp4')[FRAME]
+    frame = read_frames('glance-blocky.mp4')[FRAME]
     smoothed = np.stack([smooth_edges(frame[..., c], 24) for c in range(3)], axis=-1)
-    save_detail('slope-smoothed-detail.png', smoothed)
+    save_detail('glance-smoothed-detail.png', smoothed)
     print('Vier Ausschnitte gespeichert')

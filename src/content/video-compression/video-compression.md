@@ -1404,11 +1404,11 @@ Der Rest wird mit kleineren Blöcken kleiner, aber die Vektoren werden schneller
 
 Ein Encoder entscheidet deshalb für jeden Makroblock aus 16 × 16 Pixeln einzeln, ob er ganz bleibt oder geteilt wird. Mit unserer Suche kann man das so machen: einen Makroblock nur dann in vier Blöcke aus 8 × 8 Pixeln teilen, wenn die vier mit ihren eigenen Vektoren die Summe der Unterschiede um mehr als 400 senken. Dann werden 54 der 1.500 Makroblöcke von Bild 12 geteilt, und das Bild braucht 5.753 Bytes statt 6.127, obwohl jeder Makroblock jetzt ein Bit mehr kostet, das sagt, ob er geteilt ist. Beim Schwenk lohnt es sich nicht: Dort bewegt sich alles gleich, und das eine Bit je Makroblock kostet mehr, als das Teilen spart.
 
-x264 geht genauer vor. Für jede Art, einen Makroblock zu teilen, rechnet er aus, wie viele Bits Vektoren und Rest kosten und wie groß der Fehler bleibt, und nimmt die, bei der beides zusammen am kleinsten ist. Wie viel ein Bit dabei gegen den Fehler zählt, hängt von der Qualität ab. Erlaubt sind in H.264 Teile von 16 × 8, 8 × 16 und 8 × 8 Pixeln und darin noch kleinere bis 4 × 4; x264 nimmt für die Bewegung von sich aus höchstens 8 × 8. So hat er Bild 12 vom Hang mit `-crf 30` geteilt:
+x264 geht genauer vor. Für jede Art, einen Makroblock zu teilen, rechnet er aus, wie viele Bits Vektoren und Rest kosten und wie groß der Fehler bleibt, und nimmt die, bei der beides zusammen am kleinsten ist. Wie viel ein Bit dabei gegen den Fehler zählt, hängt von der Qualität ab. Erlaubt sind in H.264 Teile von 16 × 8, 8 × 16 und 8 × 8 Pixeln und darin noch kleinere bis 4 × 4; x264 nimmt für die Bewegung von sich aus höchstens 8 × 8. So hat er Bild 12 vom Hang mit `-crf 30` geteilt, hier der Ausschnitt um das Mädchen und den Hund, viermal vergrößert:
 
-<img class='full fit-width inspect' src='partitions.webp' alt='Bild 12 vom Hang mit einem feinen Raster aus Makroblöcken von 16 × 16 Pixeln. Die meisten bleiben ganz. Hell hinterlegt und mit eingeschnittenen Linien geteilt sind einzelne Makroblöcke, in zwei Hälften oder in vier Viertel: am Mädchen, an den Rändern der Felsen, im Gras vor ihnen, oben links an der Felswand und am Rand zwischen Berg und Himmel. Einige wenige sind schraffiert.'>
+<img class='full fit-width inspect' src='partitions.webp' alt='Ein Ausschnitt aus Bild 12 vom Hang, viermal vergrößert: das Mädchen mit dem Stab, der Hund, ein Felsen und Gras, darüber die Blöcke von x264 als eingeschnittene Linien. Die meisten Makroblöcke sind ganze Quadrate. Einzelne sind in zwei Hälften oder in vier Viertel geteilt, im Gras, am Felsen, am Hund und am Hang; einige am Mädchen sind schraffiert.'>
 
-1.266 der 1.500 Makroblöcke bleiben ganz. Geteilt, hell hinterlegt, sind 194. Sie liegen am Mädchen, das sich anders bewegt als der Hang hinter ihr, an den Rändern der Felsen und im Gras: Wo ein Bild viele Einzelheiten hat, kostet jeder kleine Fehler der Vorhersage viele Bits, und ein eigener Vektor für ein kleineres Stück lohnt sich eher. Die 40 schraffierten hat x264 im Bild selbst vorhergesagt wie in einem I-Frame, weil das billiger war als jeder Vektor. Mit `-crf 18`, der Qualität der Ausschnitte, teilt x264 fast überall: Bits sind dann billig, und schon ein wenig weniger Rest ist die Vektoren wert.
+Im ganzen Bild bleiben 1.266 der 1.500 Makroblöcke ganz, 194 sind geteilt. Sie liegen am Mädchen, das sich anders bewegt als der Hang hinter ihr, an den Rändern der Felsen und im Gras: Wo ein Bild viele Einzelheiten hat, kostet jeder kleine Fehler der Vorhersage viele Bits, und ein eigener Vektor für ein kleineres Stück lohnt sich eher. Die 40 schraffierten hat x264 im Bild selbst vorhergesagt wie in einem I-Frame, weil das billiger war als jeder Vektor. Mit `-crf 18`, der Qualität der Ausschnitte, teilt x264 fast überall: Bits sind dann billig, und schon ein wenig weniger Rest ist die Vektoren wert.
 
 ## I-, P- und B-Frames
 
@@ -1736,12 +1736,16 @@ Wird ein Video zu stark komprimiert, sieht man es: Blöcke, Stufen im Himmel, Ge
 
 ### Blöcke
 
-Bei groben Schritten bleibt von einem Block oft nur der DC-Koeffizient übrig, der Mittelwert. Der Block wird eine Fläche in einer Farbe, und zwei Nachbarn passen an ihrer Kante nicht mehr zusammen. In einem ruhigen Himmel wird so aus einem sanften Verlauf eine Treppe aus Flächen; das heißt **Banding**. Probier es mit `slope.mp4` und einem festen, groben Quantisierer:
+Bei groben Schritten bleibt von einem Block oft nur der DC-Koeffizient übrig, der Mittelwert. Der Block wird eine Fläche in einer Farbe, und zwei Nachbarn passen an ihrer Kante nicht mehr zusammen. In einem ruhigen Himmel wird so aus einem sanften Verlauf eine Treppe aus Flächen; das heißt **Banding**.
+
+<img class='full fit-width inspect' src='banding.webp' alt='Zwei Streifen Himmel, dreimal vergrößert und mit verstärktem Kontrast. Oben der Himmel aus dem Ausschnitt: ein sanfter Verlauf von Hellblau unten über Türkis zu Dunkelblau oben rechts. Unten derselbe Himmel mit -qp 42: Der Verlauf ist in Quadrate zerfallen, jedes in einer einzigen Farbe, und die Farbe springt von Quadrat zu Quadrat in Stufen.'>
+
+Oben ein Streifen Himmel aus dem Film, unten derselbe mit dem groben Quantisierer, der gleich folgt, beide dreimal vergrößert und mit dreifachem Kontrast, damit man die Stufen sieht. Probier es mit dem Blick des Mädchens, `glance.mp4`, und einem festen, groben Quantisierer:
 
 ```bash
-ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 slope-deblock.mp4
-ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 -x264-params no-deblock=1 slope-blocky.mp4
-ls -l slope-deblock.mp4 slope-blocky.mp4
+ffmpeg -v error -y -i glance.mp4 -c:v libx264 -qp 42 glance-deblock.mp4
+ffmpeg -v error -y -i glance.mp4 -c:v libx264 -qp 42 -x264-params no-deblock=1 glance-blocky.mp4
+ls -l glance-deblock.mp4 glance-blocky.mp4
 ```
 
 `-qp 42` rundet jedes Bild mit demselben groben Schritt. Er geht von 0 bis 51, und jede 6 mehr verdoppelt den Schritt. Die zweite Datei schaltet den **Deblocking-Filter** von H.264 aus, den die erste hat wie jede gewöhnliche Datei. Er glättet die Kanten zwischen den Blöcken, im Encoder und im Decoder.
@@ -1749,21 +1753,21 @@ ls -l slope-deblock.mp4 slope-blocky.mp4
 _task(deblock-size)
 
 <!-- tutorial-step
-terminal-run: ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 slope-deblock.mp4 && ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 -x264-params no-deblock=1 slope-blocky.mp4 && ls -l slope-deblock.mp4 slope-blocky.mp4
+terminal-run: ffmpeg -v error -y -i glance.mp4 -c:v libx264 -qp 42 glance-deblock.mp4 && ffmpeg -v error -y -i glance.mp4 -c:v libx264 -qp 42 -x264-params no-deblock=1 glance-blocky.mp4 && ls -l glance-deblock.mp4 glance-blocky.mp4
 terminal-wait-for-prompt: 120
-wait-for-text: slope-blocky.mp4
+wait-for-text: glance-blocky.mp4
 -->
 
 <!-- after: deblock-size -->
 ```text
-63460 slope-blocky.mp4
-60309 slope-deblock.mp4
+20682 glance-blocky.mp4
+19131 glance-deblock.mp4
 ```
 
-Mit Filter ist die Datei um ein Zwanzigstel kleiner. Der Filter steht nämlich in der Schleife des Decoders, wie das Runden in `encode` aus »Von Bild zu Bild«: Das nächste Bild wird aus dem gefilterten Bild vorhergesagt, und weil das dem Original näher ist, bleibt weniger Rest. Darum muss der Encoder genau so filtern wie der Decoder; ein Filter, der nur beim Anschauen glättet, spart keine Bytes.
+Mit Filter ist die Datei um etwa 7 % kleiner. Der Filter steht nämlich in der Schleife des Decoders, wie das Runden in `encode` aus »Von Bild zu Bild«: Das nächste Bild wird aus dem gefilterten Bild vorhergesagt, und weil das dem Original näher ist, bleibt weniger Rest. Darum muss der Encoder genau so filtern wie der Decoder; ein Filter, der nur beim Anschauen glättet, spart keine Bytes.
 <!-- /after -->
 
-Einen einfachen Filter schreibst du selbst. Er schaut an jeder Kante zwischen zwei Blöcken die beiden Pixel direkt daneben an. Ist der Sprung zwischen ihnen klein, kommt er vom Runden, und der Filter verteilt ihn gleichmäßig auf die acht Pixel um die Kante: aus einer Stufe wird eine Rampe. Ist der Sprung groß, ist es eine echte Kante im Bild, etwa der Rand des Mädchens vor dem Berg, und sie bleibt.
+Einen einfachen Filter schreibst du selbst. Er schaut an jeder Kante zwischen zwei Blöcken die beiden Pixel direkt daneben an. Ist der Sprung zwischen ihnen klein, kommt er vom Runden, und der Filter verteilt ihn gleichmäßig auf die acht Pixel um die Kante: aus einer Stufe wird eine Rampe. Ist der Sprung groß, ist es eine echte Kante im Bild, etwa der Rand ihres Gesichts vor dem dunklen Hintergrund, und sie bleibt.
 
 <img class='drawing d-none d-lg-block' style='width: 60em' src='deblock-wide.svg' alt='Eine Zeile aus 16 Pixeln über eine Kante zwischen zwei Blöcken, jedes Pixel mit einem Balken für seinen Wert. Vorher: acht Pixel mit 100, dann acht mit 108, eine Stufe an der Kante. Nachher: vier Pixel mit 100, dann 100,5, 101,5, 102,5, 103,5, 104,5, 105,5, 106,5 und 107,5, dann vier mit 108: Die Stufe ist eine gleichmäßige Rampe über die acht Pixel um die Kante.'>
 <img class='drawing d-lg-none' style='width: 26.25em' src='deblock.svg' alt='Die acht Pixel um eine Kante zwischen zwei Blöcken, jedes mit einem Balken für seinen Wert. Vorher: vier Pixel mit 100, dann vier mit 108, eine Stufe an der Kante. Nachher: 100,5, 101,5, 102,5, 103,5, 104,5, 105,5, 106,5 und 107,5, eine gleichmäßige Rampe.'>
@@ -1785,20 +1789,20 @@ def smooth_edges(plane, limit, n=8):
 
 
 def save_detail(path, frame):
-    detail = np.clip(frame, 0, 255).round().astype(np.uint8)[144:304, 384:672]
+    detail = np.clip(frame, 0, 255).round().astype(np.uint8)[120:280, 352:640]
     Image.fromarray(detail).resize((864, 480), Image.NEAREST).save(path)
 
 
 if __name__ == '__main__':
-    for name in ['slope', 'slope-blocky', 'slope-deblock']:
+    for name in ['glance', 'glance-blocky', 'glance-deblock']:
         save_detail(f'{name}-detail.png', read_frames(f'{name}.mp4')[FRAME])
-    frame = read_frames('slope-blocky.mp4')[FRAME]
+    frame = read_frames('glance-blocky.mp4')[FRAME]
     smoothed = np.stack([smooth_edges(frame[..., c], 24) for c in range(3)], axis=-1)
-    save_detail('slope-smoothed-detail.png', smoothed)
+    save_detail('glance-smoothed-detail.png', smoothed)
     print('Vier Ausschnitte gespeichert')
 ```
 
-`save_detail` speichert einen Ausschnitt um das Mädchen und den Hund, dreimal so groß und ohne Glätten, damit man die Blöcke sieht. Das Hauptprogramm filtert jeden der drei Kanäle R, G und B für sich.
+`save_detail` speichert einen Ausschnitt um das Gesicht des Mädchens, dreimal so groß und ohne Glätten, damit man die Blöcke sieht. Das Hauptprogramm filtert jeden der drei Kanäle R, G und B für sich.
 
 <div class='hint own' data-check='smooth-edges'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>smooth_edges(plane, limit, n=8)</code>. Die Kanten liegen zwischen Spalte <code>n - 1</code> und <code>n</code>, <code>2n - 1</code> und <code>2n</code> und so weiter. Für jede rechnet die Funktion die Stufe <code>step</code>: das Pixel rechts der Kante minus das links davon. Ist sie kleiner als <code>limit</code>, steigen die vier Pixel links um 7/16, 5/16, 3/16 und 1/16 der Stufe, von der Kante aus gezählt, und die vier rechts sinken um dieselben Anteile. Danach dasselbe zwischen den Zeilen. Gib ein neues Array mit Kommazahlen zurück und lass das, das du bekommst, wie es ist.
@@ -1849,27 +1853,27 @@ wait-for-text: Vier Ausschnitte
 <div class='gallery columns-2'>
 <figure>
 <!-- tutorial-screenshot
-image-file: video/slope-detail.png 1
+image-file: video/glance-detail.png 1
 -->
-<img class='inspect' src='slope-detail.webp' alt='Ein Ausschnitt aus slope.mp4, dreimal vergrößert: das Mädchen mit dem Stab, der Hund und der Hang dahinter, scharf, mit feinen Grashalmen und weichem Licht.'>
-<figcaption>slope.mp4</figcaption></figure>
+<img class='inspect' src='glance-detail.webp' alt='Ein Ausschnitt aus glance.mp4, dreimal vergrößert: das Gesicht des Mädchens mit den grünen Augen, rechts ihre Hand am Stab und ein kleines Blatt, scharf, mit glatter Haut und weichem Licht.'>
+<figcaption>glance.mp4</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
-image-file: video/slope-blocky-detail.png 1
+image-file: video/glance-blocky-detail.png 1
 -->
-<img class='inspect' src='slope-blocky-detail.webp' alt='Derselbe Ausschnitt aus slope-blocky.mp4: Der Hang dahinter ist ein Mosaik aus Quadraten in verschiedenen Grün- und Blautönen, das Gesicht des Mädchens ein heller Fleck, der Hund grob in Stufen.'>
+<img class='inspect' src='glance-blocky-detail.webp' alt='Derselbe Ausschnitt aus glance-blocky.mp4: Wangen, Stirn und Kinn bestehen aus Quadraten in verschiedenen Hauttönen mit Kanten dazwischen, das Blatt ist ein grüner Fleck, der Stab grob in Stufen.'>
 <figcaption>-qp 42 ohne Filter</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
-image-file: video/slope-smoothed-detail.png 1
+image-file: video/glance-smoothed-detail.png 1
 -->
-<img class='inspect' src='slope-smoothed-detail.webp' alt='Derselbe Ausschnitt nach smooth_edges: Die Kanten der Quadrate im Hang sind weicher, die Quadrate aber noch zu erkennen; der Umriss des Mädchens ist so scharf wie vorher.'>
+<img class='inspect' src='glance-smoothed-detail.webp' alt='Derselbe Ausschnitt nach smooth_edges: Die Kanten der Quadrate auf den Wangen sind weicher, die Quadrate aber noch zu erkennen; die Augen und der Umriss des Gesichts sind so scharf wie vorher.'>
 <figcaption>ohne Filter, danach smooth_edges</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
-image-file: video/slope-deblock-detail.png 1
+image-file: video/glance-deblock-detail.png 1
 -->
-<img class='inspect' src='slope-deblock-detail.webp' alt='Derselbe Ausschnitt aus slope-deblock.mp4: Der Hang ist ein weicher, unscharfer Verlauf ohne Quadrate, das Mädchen und der Hund verschwommen, aber ohne Stufen.'>
+<img class='inspect' src='glance-deblock-detail.webp' alt='Derselbe Ausschnitt aus glance-deblock.mp4: Das Gesicht ist glatt und etwas verwaschen, wie aus Plastik, ohne Quadrate; der Stab und das Blatt verschwommen, aber ohne Stufen.'>
 <figcaption>-qp 42 mit dem Filter von H.264</figcaption></figure>
 </div>
 
@@ -1954,6 +1958,10 @@ image-file: video/glance-av1-grain-detail.png 1
 </div>
 
 Ohne den Trick rundet AV1 bei dieser Qualität das Korn einfach weg, und das Mädchen sieht aus wie aus Plastik. Mit ihm ist das Korn wieder da. Die Datei ist etwas größer als die ohne den Trick, braucht aber nur etwa ein Hundertzwanzigstel der Bytes von H.264 mit Korn.
+
+Warum sind es gut 17.000 Bytes mehr und nicht nur ein paar für die Beschreibung des Korns? Weil libaom das Korn für jedes Bild neu misst und jedes Mal die ganze Beschreibung in die Datei schreibt, etwa 135 Bytes: bis zu 14 Stützstellen für Y und bis zu 10 für Cb und Cr, wie stark das Korn bei welchem Wert ist, dazu 74 Zahlen für ein kleines Filter, das aus Zufallszahlen Körner einer bestimmten Größe macht. Bei 96 Bildern sind das 13.472 Bytes, die übrigen knapp 4.000 stecken im Bild selbst. AV1 erlaubt auch, mit wenigen Bits die Beschreibung eines früheren Bildes wiederzuverwenden; libaom tut das hier nicht. Nachzählen lässt sich das mit `ffmpeg -i glance-av1-grain.mkv -c copy -bsf:v trace_headers -f null -`, das jedes Feld der Köpfe mit seinen Bits ausgibt.
+
+Dieselbe Idee steckt in Restaurierungen alter Filme. Für die 4K-Fassung von »Die unendliche Geschichte« (1984) scannte CinePostproduction 2019 das 35-mm-Originalnegativ mit 4,5K und 16 Bit; die Szenen, die es nur in der längeren deutschen Fassung gibt, kamen von einem Dup-Positiv, einer späteren Kopie mit anderem Korn. Das Korn wurde für jede Art von Einstellung verringert und angeglichen, die Farben für SDR und HDR neu korrigiert, und einer der letzten Schritte war, wieder ein feines, über den ganzen Film gleichmäßiges Korn darüberzulegen, das ReGraining. So beschreibt es der [Bericht von CinePostproduction](https://www.cinepostproduction.de/wp-content/uploads/2019/08/Die_unendliche_Geschichte_4K_ReMastering_2019.pdf).
 
 <!-- stage: stufen/artifacts-1.py as artifacts.py -->
 

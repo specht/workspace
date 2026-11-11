@@ -4,11 +4,11 @@ calm sky; with fewer bits a split only pays where the motion differs), a
 P-frame: every
 macroblock of 16 × 16 pixels whole or split into two of 16 × 8 or 8 × 16
 or four of 8 × 8, each part with its own motion vector, as the decoder
-exports them (export_mvs). The macroblocks a faint grid; a split one
-under a light veil, its parts with a dark and a light line, cut in like
-the grid of the teaser; a macroblock without a vector, predicted within the
-frame, hatched. Twice the size of the frame, a photo, so one WebP for both
-themes. Run in a throwaway container with PyAV, which brings its own ffmpeg:
+exports them (export_mvs). Each block's edges a dark and a light line,
+cut in like the grid of the teaser; a macroblock without a vector,
+predicted within the frame, hatched. A region around the girl, the dog and the rocks, four
+times enlarged, so a macroblock is as large as the blocks of the teaser;
+a photo, so one WebP for both themes. Run in a throwaway container with PyAV, which brings its own ffmpeg:
 
     docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD:/repo" -w /repo python:3.12-slim \\
         sh -c 'pip install -q --user av==19.0.2 numpy pillow && python3 src/content/video-compression/bilder/partitions.py'
@@ -27,10 +27,10 @@ SOURCE = os.path.join(HERE, '..', '..', '..', 'static', 'video', 'slope.mp4')
 OUT = os.path.join(HERE, '..', 'partitions.webp')
 FRAME = 12
 CRF = 30
-SCALE = 2
+SCALE = 4
+REGION = (272, 112, 752, 320)             # x0, y0, x1, y1 in the frame: the girl, the dog, rocks and grass
 LINE = 2                                    # pixels of each line, in the enlarged picture
-DARK, LIGHT = (0, 0, 0, 140), (255, 255, 255, 190)
-FAINT, VEIL = (255, 255, 255, 45), (255, 255, 255, 70)
+DARK, LIGHT = (0, 0, 0, 120), (255, 255, 255, 150)
 
 
 def encoded():
@@ -78,28 +78,22 @@ def main():
         x0, y0 = c * 16 * SCALE, r * 16 * SCALE
         for t in range(-16 * SCALE, 16 * SCALE, 8):
             draw.line([(x0 + max(t, 0), y0 + max(-t, 0)), (x0 + min(t + 16 * SCALE, 16 * SCALE), y0 + min(16 * SCALE - t, 16 * SCALE))],
-                      fill=(255, 255, 255, 110), width=2)
-    # which macroblocks are split: a part smaller than 16 × 16 in them
+                      fill=(255, 255, 255, 70), width=2)
+    # every part's top and left edge, a dark and then a light line, cut in
+    # like the grid of the teaser; a macroblock predicted within the frame
+    # counts as one part of 16 × 16
     split = np.zeros_like(covered)
     for x, y, w, h in parts:
         if (w, h) != (16, 16):
             split[y // 16, x // 16] = True
-    for r, c in zip(*np.nonzero(split)):
-        draw.rectangle([c * 16 * SCALE, r * 16 * SCALE, (c + 1) * 16 * SCALE - 1, (r + 1) * 16 * SCALE - 1], fill=VEIL)
-    # the faint grid of the macroblocks
-    for x in range(0, width, 16):
-        draw.rectangle([x * SCALE, 0, x * SCALE, height * SCALE], fill=FAINT)
-    for y in range(0, height, 16):
-        draw.rectangle([0, y * SCALE, width * SCALE, y * SCALE], fill=FAINT)
-    # the parts of a split macroblock, cut in
-    for x, y, w, h in parts:
-        if not split[y // 16, x // 16]:
-            continue
+    edges = parts + [(c * 16, r * 16, 16, 16) for r, c in zip(*np.nonzero(~covered))]
+    for x, y, w, h in edges:
         x0, y0 = x * SCALE, y * SCALE
         for k, colour in ((0, DARK), (LINE, LIGHT)):
             draw.rectangle([x0, y0 + k, x0 + w * SCALE, y0 + k + LINE - 1], fill=colour)
             draw.rectangle([x0 + k, y0, x0 + k + LINE - 1, y0 + h * SCALE], fill=colour)
-    Image.alpha_composite(big, overlay).convert('RGB').save(OUT, quality=86)
+    x0, y0, x1, y1 = (v * SCALE for v in REGION)
+    Image.alpha_composite(big, overlay).convert('RGB').crop((x0, y0, x1, y1)).save(OUT, quality=86)
     counts = collections.Counter((w, h) for _, _, w, h in parts)
     print('split macroblocks:', int(split.sum()), 'of', split.size)
     print(OUT, dict(counts), 'within the frame:', int((~covered).sum()))
