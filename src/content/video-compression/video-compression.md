@@ -379,25 +379,25 @@ wait-for-text: y.png
 
 Öffne `y.png`, `cb.png` und `cr.png`:
 
-<div class='gallery'>
+<div class='gallery side-by-side'>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/y.png 1
 -->
 <img class='inspect' src='plane-y.webp' alt='Das Mädchen von Nahem in Graustufen, mit Stab, vor Felsen und Reif: jede Haarsträhne, die Augen und die Maserung des Stabs zu sehen, wie ein Schwarz-Weiß-Foto.'>
-<figcaption>Y: die Helligkeit</figcaption></figure>
+<figcaption>Y: Helligkeit</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/cb.png 1
 -->
 <img class='inspect' src='plane-cb.webp' alt='Dasselbe Bild in mittleren Grautönen, mit weichen Umrissen. Das Gesicht und der Stab im Licht sind dunkler, am dunkelsten die Augen; die blauschwarzen Haare, die Felsen und der Reif im Hintergrund sind heller. Die Jacke ist kaum dunkler als das Grau.'>
-<figcaption>Cb: blauer oder weniger blau als Grau</figcaption></figure>
+<figcaption>Cb: wie viel blauer</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/cr.png 1
 -->
 <img class='inspect' src='plane-cr.webp' alt='Wieder fast überall mittleres Grau. Hell heraus stechen die Jacke und das Gesicht des Mädchens; die Felsen und der Reif im Hintergrund sind etwas dunkler.'>
-<figcaption>Cr: röter oder weniger rot als Grau</figcaption></figure>
+<figcaption>Cr: wie viel röter</figcaption></figure>
 </div>
 
 `y.png` sieht aus wie ein Schwarz-Weiß-Foto, mit allen Einzelheiten. `cb.png` und `cr.png` sind fast überall ein mittleres Grau nahe 128, denn die meisten Farben in der Natur sind nicht sehr bunt. Die Jacke ist in Cr deutlich heller, im Mittel 150, weil sie viel röter ist als ein Grau derselben Helligkeit, und in Cb nur wenig dunkler, im Mittel 121, weil sie kaum Blau hat. Das Gesicht ist in Cr ebenso hell: Haut ist röter als Grau. Am dunkelsten in Cb sind die gelbgrünen Augen und der Stab im Abendlicht, denn Gelb hat kaum Blau. Die Felsen und der Reif im Hintergrund sind bläulich und darum in Cb etwas heller.

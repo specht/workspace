@@ -2622,6 +2622,17 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     flex-basis: 11em;
 }
 
+/* .side-by-side: parts of one picture to compare at a glance (Y, Cb and
+   Cr of a frame), in one row at every width, also on a phone, never a
+   carousel; each opens large */
+.gallery.side-by-side {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+}
+@media (max-width: 576px) {
+    .gallery.side-by-side { gap: 0.8em 0.4em; }
+    .gallery.side-by-side figcaption { font-size: 0.8em; }
+}
+
 .gallery.tiles {
     grid-template-columns: repeat(auto-fill, minmax(9em, 1fr));
     gap: 1em;

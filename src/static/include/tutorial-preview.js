@@ -25,7 +25,7 @@
 // dragged with the mouse; it snaps to a picture and ends where the last one
 // is whole, and a drag does not open the picture large.
 document.addEventListener('DOMContentLoaded', () => {
-    const KEEP = '.columns-4, .tiles, .centered, .single, .er-pair';
+    const KEEP = '.columns-4, .tiles, .centered, .single, .er-pair, .side-by-side';
     for (const gallery of document.querySelectorAll('.gallery')) {
         const figures = [...gallery.children].filter((child) => child.tagName === 'FIGURE');
         if ((gallery.matches(KEEP) && !gallery.matches('.carousel')) || figures.length < 2) continue;
