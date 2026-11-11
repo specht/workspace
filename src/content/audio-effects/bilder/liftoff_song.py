@@ -1,27 +1,27 @@
-"""A song from Kennedy's speech at Rice University, 12 September 1962 (the
-recording on Wikimedia Commons, public domain:
-File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg), for the
-autotune widget, made the way Songify songs are made: every syllable cut
-out on its own and put on the grid of sixteenths like a rapped line, held
-where its note is long (only its vowel stretched), silence between; the
-hook »We choose to go to the Moon« with its »Moon« held and »the Moon« as
-a stutter; a melody that takes, for each syllable, the note of the scale
-nearest to his own voice plus a line per phrase, so that autotune moves
-him only a little. A modern beat in half time: 95 beats a minute, B minor
-(Bm G D A), 16 bars, in three files of the same length:
+"""A song from NASA's commentary of the launch of Artemis II, 1 April 2026
+(public domain: images.nasa.gov, KSC-20260401-AU-LMM01-0001-Artemis_II_Live_
+Launch_Coverage_Program_LOS, the commentary channel without the rocket),
+for the autotune widget, made the way Songify songs are made: every
+syllable cut out on its own and put on the grid of sixteenths, legato
+within a phrase; the countdown on the beats as the build, »and liftoff« as
+the drop and the hook; a melody that takes, for each syllable, the note of
+the scale nearest to the voice plus a line per phrase, so that autotune
+moves it only a little; harmonies, »lift« chopped into a riff. A half-time
+beat at 95 beats a minute in B minor (Bm G D A), 16 bars, three files of the
+same length:
 
-  kennedy.flac          his syllables on the grid (SHEET), his own pitch
-  kennedy-melodie.flac  the melody, one note per syllable
-  kennedy-band.flac     a real drum kit (audio/drums: DRSKit of DrumGizmo,
-                        CC BY 4.0, and a clap, CC0) as a half-time beat with
-                        hi-hat rolls, an 808 bass that slides into each
-                        note, dark piano chords, a pad in the chorus that
-                        ducks under the kick
+  liftoff.flac          the syllables on the grid (SHEET), the voice's own pitch
+  liftoff-melodie.flac  the melody, one note per syllable
+  liftoff-band.flac     a real drum kit (audio/drums: DRSKit of DrumGizmo,
+                        CC BY 4.0, and a clap, CC0), an 808 bass, a clavinet,
+                        brass stabs, a pad, harmonies and chops of the voice
 
-    mkdir -p /tmp/jfk && curl -sL -o /tmp/jfk/jfk.ogg \\
-        https://commons.wikimedia.org/wiki/Special:FilePath/Jfk_rice_university_we_choose_to_go_to_the_moon.ogg
-    docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -v /tmp/jfk:/jfk -w /repo --entrypoint python3 \\
-        hs_code_server:latest src/content/audio-effects/bilder/moon_song.py /jfk/jfk.ogg
+The two excerpts (artemis/four-explorers.flac, 5:35:01.6 to 5:35:15.6 of the
+commentary, and artemis/liftoff.flac, 5:35:23.4 to 5:35:44.0) are made from
+the original with ffmpeg, channel 1, mono, 44.1 kHz.
+
+    docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/repo" -w /repo --entrypoint python3 \\
+        hs_code_server:latest src/content/audio-effects/bilder/liftoff_song.py
 """
 
 import os
@@ -39,66 +39,70 @@ BPM = 95
 BEAT = 60 / BPM
 BAR = 4 * BEAT
 
-# the pieces: the start of each syllable in seconds of the recording
-# (Whisper's word times, a word of two syllables split by ear) and, last,
-# where the voice stops (its loudness and how well a block fits itself one
-# period later, measured every 40 ms), so that »Moon« keeps its »n«
-PIECES = {
-    'moon1': [517.88, 518.04, 518.40, 518.62, 518.78, 518.92, 519.02, 519.46],
-    'moon2': [520.45, 520.70, 521.02, 521.26, 521.42, 521.54, 521.64, 522.10],
-    'moon3': [528.00, 528.60, 529.00, 529.34, 529.54, 529.70, 529.82, 530.12],
-    'we-choose1': [517.88, 518.04, 518.40, 518.62, 518.78, 518.92, 519.02],
-    'we-choose2': [520.45, 520.70, 521.02, 521.26, 521.42, 521.54, 521.64],
-    'moon-word1': [519.02, 519.46],
-    'moon-word2': [521.64, 522.10],
-    'decade': [530.12, 530.38, 530.62, 530.80, 531.00],
-    'the-moon': [518.92, 519.02, 519.46],
-    'easy': [532.62, 533.00, 533.23, 533.46, 533.80, 533.96, 534.15, 534.27],
-    'hard': [534.27, 534.74, 534.95, 535.16, 535.46, 535.60, 536.05],
-    'because-hard': [534.74, 534.95, 535.16, 535.46, 535.60, 536.05],
-    'hard-word': [535.60, 536.05],
+# the two excerpts, one after the other on one time line: the explorers at
+# 0 s, the liftoff at OFFSET s
+OFFSET = 20.0
+# the words of the commentary: (start, end, syllables), in seconds of that
+# time line (Whisper's word times)
+E, L = 0.0, OFFSET
+WORDS = {
+    'rocket-own': [(3.80, 3.92, 1), (3.92, 4.22, 2), (4.22, 4.44, 1), (4.44, 4.56, 1), (4.56, 4.74, 1), (4.74, 5.02, 1)],
+    'four-brave': [(5.32, 5.66, 1), (5.66, 6.00, 1), (6.00, 6.74, 3)],
+    'ready-ride': [(6.74, 7.14, 2), (7.14, 7.30, 1), (7.30, 7.52, 1), (7.52, 7.70, 1), (7.70, 7.86, 1), (7.86, 8.32, 3), (8.32, 8.80, 2)],
+    'nasa-launched': [(11.30, 11.90, 2), (11.90, 12.22, 1), (12.22, 12.70, 2), (12.70, 13.44, 1)],
+    'ten': [(L + 0.00, L + 1.08, 1)], 'nine': [(L + 1.54, L + 2.12, 1)], 'eight': [(L + 2.50, L + 3.16, 1)],
+    'seven': [(L + 3.56, L + 4.22, 2)],
+    'rs25-lit': [(L + 4.48, L + 5.12, 2), (L + 5.12, L + 5.70, 3), (L + 5.70, L + 6.22, 2), (L + 6.22, L + 6.68, 1)],
+    'four': [(L + 7.24, L + 8.12, 1)], 'three': [(L + 8.40, L + 8.88, 1)], 'two': [(L + 9.04, L + 9.64, 1)],
+    'one': [(L + 10.04, L + 10.64, 1)],
+    'booster-ignition': [(L + 10.96, L + 11.40, 2), (L + 11.40, L + 11.84, 3)],
+    'and-liftoff': [(L + 12.40, L + 12.94, 1), (L + 12.94, L + 13.26, 1), (L + 13.26, L + 13.66, 1)],
+    'liftoff': [(L + 12.94, L + 13.26, 1), (L + 13.26, L + 13.66, 1)],
+    'lift': [(L + 12.94, L + 13.26, 1)],
+    'crew-moon': [(L + 15.02, L + 15.12, 1), (L + 15.12, L + 15.36, 1), (L + 15.36, L + 15.56, 1), (L + 15.56, L + 15.92, 3),
+                  (L + 15.92, L + 16.18, 1), (L + 16.18, L + 16.56, 1), (L + 16.56, L + 16.78, 1), (L + 16.78, L + 17.14, 1),
+                  (L + 17.14, L + 17.26, 1), (L + 17.26, L + 17.50, 1)],
+    'humanity-begins': [(L + 18.04, L + 18.64, 4), (L + 18.64, L + 18.82, 1), (L + 18.82, L + 19.22, 1), (L + 19.22, L + 19.68, 2),
+                        (L + 19.68, L + 20.14, 2)],
 }
+
+
 # per bar its chord, as semitones above C: Bm G D A
 CHORDS = [[11, 2, 6], [7, 11, 2], [2, 6, 9], [9, 1, 4]] * 4
 # B minor: the notes a syllable may sing
 SCALE = [11, 1, 2, 4, 6, 7, 9]
 # the sheet: (bar, sixteenth in the bar, piece, sixteenths per syllable)
 SHEET = [
-    (0, 0, 'moon1', [1, 2, 1, 2, 1, 1, 4]),
-    (1, 0, 'moon2', [1, 2, 1, 2, 1, 1, 4]),
-    (2, 0, 'moon3', [1, 2, 1, 2, 1, 1, 4]),
-    (3, 0, 'decade', [1, 1, 2, 4]),
-    (3, 9, 'the-moon', [1, 3]),
-    (4, 0, 'easy', [2, 1, 1, 1, 1, 2, 4]),
-    (5, 0, 'hard', [2, 1, 1, 1, 1, 6]),
-    (6, 0, 'easy', [2, 1, 1, 1, 1, 2, 4]),
-    (7, 0, 'because-hard', [1, 1, 1, 1, 4]),
-    (7, 8, 'hard-word', [2]),
-    (7, 10, 'hard-word', [2]),
-    (8, 0, 'we-choose1', [1, 2, 1, 2, 1, 1]),
-    (8, 8, 'moon-word1', [8]),
-    (9, 0, 'the-moon', [1, 3]),
-    (9, 4, 'the-moon', [1, 3]),
-    (9, 8, 'the-moon', [1, 7]),
-    (10, 0, 'we-choose2', [1, 2, 1, 2, 1, 1]),
-    (10, 8, 'moon-word2', [8]),
-    (11, 0, 'easy', [2, 1, 1, 1, 1, 2, 4]),
-    (12, 0, 'hard', [2, 1, 1, 1, 1, 9]),
-    (13, 0, 'we-choose1', [1, 2, 1, 2, 1, 1]),
-    (13, 8, 'moon-word1', [8]),
-    (14, 0, 'the-moon', [1, 3]),
-    (14, 4, 'the-moon', [1, 3]),
-    (14, 8, 'hard-word', [4]),
+    # verse
+    (0, 0, 'rocket-own', [1, 2, 1, 1, 1, 1, 5]),
+    (1, 0, 'four-brave', [2, 2, 2, 2, 4]),
+    (2, 0, 'ready-ride', [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 3]),
+    (3, 0, 'nasa-launched', [2, 2, 2, 2, 2, 6]),
+    # build: the countdown on the beats
+    (4, 0, 'ten', [4]), (4, 4, 'nine', [4]), (4, 8, 'eight', [4]), (4, 12, 'seven', [2, 2]),
+    (5, 0, 'rs25-lit', [1, 1, 2, 1, 1, 2, 2, 6]),
+    (6, 0, 'four', [4]), (6, 4, 'three', [4]), (6, 8, 'two', [4]), (6, 12, 'one', [4]),
+    (7, 0, 'booster-ignition', [2, 2, 2, 2, 4]),
+    # drop and chorus
+    (8, 0, 'and-liftoff', [2, 4, 10]),
+    (9, 0, 'crew-moon', [1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 4]),
+    (10, 0, 'humanity-begins', [1, 1, 1, 1, 2, 2, 2, 1, 1, 4]),
+    (11, 0, 'lift', [2]), (11, 2, 'lift', [2]), (11, 4, 'liftoff', [2, 4]), (11, 10, 'liftoff', [2, 4]),
+    (12, 0, 'and-liftoff', [2, 4, 10]),
+    (13, 0, 'crew-moon', [1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 4]),
+    (14, 0, 'humanity-begins', [1, 1, 1, 1, 2, 2, 2, 1, 1, 4]),
+    (15, 0, 'liftoff', [4, 12]),
 ]
 SIXTEENTH = BEAT / 4
 # the line of each phrase: semitones above his own pitch, per syllable; a
 # note may lie at most LIMIT semitones from his voice
 CONTOUR = {
-    'moon1': [0, 3, 0, 5, 3, 0, -2], 'moon2': [0, 3, 0, 5, 3, 0, 5], 'moon3': [0, 3, 0, 5, 7, 5, 0],
-    'decade': [0, 3, 5, -2], 'the-moon': [3, 0],
-    'easy': [0, -3, 0, 3, 0, -3, -5], 'hard': [5, 5, 3, 0, -2, -5], 'because-hard': [0, 3, 5, 3, 0],
-    'hard-word': [-3],
-    'we-choose1': [0, 3, 0, 5, 7, 5], 'we-choose2': [0, 3, 0, 5, 3, 0], 'moon-word1': [3], 'moon-word2': [-2],
+    'rocket-own': [0, 3, 0, 2, 0, -2, -3], 'four-brave': [0, 2, 3, 5, 3], 'ready-ride': [0, 2, 0, 3, 2, 3, 5, 3, 2, 0, -2],
+    'nasa-launched': [3, 2, 0, 2, 0, -3],
+    'ten': [5], 'nine': [3], 'eight': [2], 'seven': [0, -2], 'rs25-lit': [0, 2, 3, 2, 0, 2, 3, 5],
+    'four': [0], 'three': [2], 'two': [3], 'one': [5], 'booster-ignition': [3, 5, 5, 7, 7],
+    'and-liftoff': [3, 5, 7], 'liftoff': [5, 3], 'lift': [5],
+    'crew-moon': [0, 2, 0, 3, 2, 0, 2, 3, 2, 0, -2, -3], 'humanity-begins': [0, 2, 3, 5, 7, 5, 3, 2, 0, -2],
 }
 LIMIT = 6
 STEP = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
@@ -162,10 +166,21 @@ def place(track, sound, seconds, level=1.0):
         track[at:at + len(sound)] += level * sound[:len(track) - at]
 
 
-raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', sys.argv[1], '-ss', '515', '-t', '23',
-                      '-f', 'f32le', '-ac', '1', '-ar', str(RATE), '-'], check=True, capture_output=True).stdout
-speech = np.frombuffer(raw, dtype=np.float32).astype(float)
+
+
+def load(path):
+    raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', path, '-f', 'f32le', '-ac', '1', '-ar', str(RATE), '-'],
+                         check=True, capture_output=True).stdout
+    return np.frombuffer(raw, dtype=np.float32).astype(float)
+
+
+explorers = load(os.path.join(HERE, 'artemis', 'four-explorers.flac'))
+liftoff = load(os.path.join(HERE, 'artemis', 'liftoff.flac'))
+speech = np.zeros(int((OFFSET + 1) * RATE) + len(liftoff))
+speech[:len(explorers)] = explorers
+speech[int(OFFSET * RATE):int(OFFSET * RATE) + len(liftoff)] = liftoff
 speech /= np.abs(speech).max()
+raw = (speech.astype(np.float32)).tobytes()
 
 
 def clean(x):
@@ -206,9 +221,9 @@ def snr(x):
     return 20 * np.log10(np.mean(levels[-k:]) / np.mean(levels[:k]))
 
 
-before = snr(speech)
+before = snr(speech[:len(explorers)])
 speech = clean(speech)
-print(f'noise below speech: {before:.1f} dB before, {snr(speech):.1f} dB after cleaning')
+print(f'noise below speech: {before:.1f} dB before, {snr(speech[:len(explorers)]):.1f} dB after cleaning')
 
 
 
@@ -224,7 +239,35 @@ def pitch(block):
 
 
 def at(t):
-    return int(round((t - 515) * RATE))
+    return int(round(t * RATE))
+
+
+def voice_end(t0, t1):
+    """where the voice of a word stops: the end of the last 10 ms after t0
+    and before t1 + 0.15 s that is no more than 24 dB below the word's loudest"""
+    step = int(0.01 * RATE)
+    a, b = at(t0), at(t1 + 0.15)
+    levels = [np.sqrt(np.mean(speech[i:i + step] ** 2)) for i in range(a, b, step)]
+    top = max(levels) if levels else 0
+    last = max((k for k, v in enumerate(levels) if v > top * 10 ** (-24 / 20)), default=len(levels) - 1)
+    return t0 + (last + 1) * 0.01
+
+
+def pieces():
+    """per phrase the start of each syllable and, last, where the voice
+    stops: a word of several syllables split evenly (refine() moves each cut
+    to a quiet place)"""
+    out = {}
+    for name, words in WORDS.items():
+        times = []
+        for t0, t1, n in words:
+            times += [t0 + (t1 - t0) * k / n for k in range(n)]
+        times.append(voice_end(words[-1][0], words[-1][1]))
+        out[name] = times
+    return out
+
+
+PIECES = pieces()
 
 
 def zero_crossing(i):
@@ -464,15 +507,15 @@ def scale_step(note, steps):
 
 
 extras = np.zeros(LENGTH + 3 * RATE)
-# harmonies in the chorus: Kennedy a third and a fifth above his melody, exactly on the notes
+# harmonies in the chorus: the voice a third and a fifth above its melody, exactly on the notes
 for slot, held, f, note in syllables:
     if 8 * BAR <= slot < 15 * BAR and f:
         for steps, level, delay in ((2, 0.32, 0.012), (4, 0.22, 0.021)):
             target = semis_hz(scale_step(note, steps))
             place(extras, fade(shift(held, target / f), 5, 30), slot + delay, level)
-# vocal chops: »Moon« as an instrument on eighths, through the build and the last bar
-moon = PIECES['moon-word1']
-m0, m1 = int(round((moon[0] - 515) * RATE)), int(round((moon[1] - 515) * RATE))
+# vocal chops: »lift« as an instrument on eighths, through the build and the last bar
+moon = PIECES['lift']
+m0, m1 = int(round(moon[0] * RATE)), int(round(moon[1] * RATE))
 chop = speech[m0:m0 + int(0.22 * RATE)]
 chop_f = own_pitch(speech[m0:m1]) or 240
 RIFF = [0, 2, 4, 2, 5, 4, 2, 1]                       # steps of the scale above the chord's root
@@ -508,6 +551,6 @@ band = np.fft.irfft(spec, len(band))
 band *= 0.8 / np.abs(band).max()
 print('band: drums %.3f keys %.3f 808 %.3f pad %.3f extras %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, keys, low, pads, extras)))
 
-write('kennedy.flac', voice)
-write('kennedy-melodie.flac', melody)
-write('kennedy-band.flac', band)
+write('liftoff.flac', voice)
+write('liftoff-melodie.flac', melody)
+write('liftoff-band.flac', band)

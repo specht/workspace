@@ -62,8 +62,9 @@ checks and examples, a file to listen to: Lautstärke in Dezibel (gain),
 Equalizer (bell, with presets old radio, phone, party next door), Echo,
 Chorus (read between samples), Hall (allpass), Compressor (gain_db),
 Pitch Shifting (pitch by autocorrelation, grains aligned with
-np.correlate), Autotune (nearest_note; in the widget Kennedy's »We choose
-to go to the Moon« as a Songify song, bilder/moon_song.py), Vocoder
+np.correlate), Autotune (nearest_note; in the widget NASA's commentary of the
+Artemis II launch as a Songify song, bilder/liftoff_song.py; Kennedy's
+»We choose to go to the Moon« was tried first, its 1962 sound too poor), Vocoder
 (vocode_frame), Stimmen für Filme (ring; chipmunk, giant, Dalek, Vader,
 Grievous). History boxes with sources in content/history-sources.yaml.
 The widget plays fifteen recordings under free licences (audio/effects/,

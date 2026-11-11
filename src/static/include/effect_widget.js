@@ -74,13 +74,13 @@
             credit: "»Drums_120bpm_closedhat_snareghost_loop1« von tichec, CC0 (<a href='https://freesound.org/people/tichec/sounds/169870/'>Freesound</a>)" },
         dynamik: { label: 'Orchester leise und laut', url: '/audio/effects/dynamic-orchestra.flac',
             credit: "Ludwig van Beethoven, Egmont-Ouvertüre op. 84, Czech National Symphony Orchestra (Musopen Symphony), gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Beethoven_-_Egmont_Overture,_Op._84_(Musopen_Symphony).flac'>Wikimedia Commons</a>)" },
-        // Kennedy at Rice University, 1962, and a melody from his voice (bilder/moon_song.py)
-        kennedy: { label: 'Kennedy', url: '/audio/kennedy.flac',
-            credit: "John F. Kennedy, »We choose to go to the Moon«, Rice University, 12. September 1962, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg'>Wikimedia Commons</a>); seine Sätze im Takt geschnitten" },
-        kennedyMelodie: { label: 'Melodie', url: '/audio/kennedy-melodie.flac',
-            credit: 'Die Melodie zu Kennedys Worten: ein Ton für jedes Wort, in seiner Stimmlage.' },
-        kennedyBand: { label: 'Band', url: '/audio/kennedy-band.flac',
-            credit: "Bm, G, D, A, 95 Schläge in der Minute, mit 808-Bass; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
+        // NASA's commentary of the launch of Artemis II, 2026, as a song (bilder/liftoff_song.py)
+        liftoff: { label: 'Artemis II', url: '/audio/liftoff.flac',
+            credit: "Kommentar des Starts von Artemis II, NASA, 1. April 2026, gemeinfrei (<a href='https://images.nasa.gov/details/KSC-20260401-AU-LMM01-0001-Artemis_II_Live_Launch_Coverage_Program_LOS'>NASA</a>); die Silben im Takt geschnitten" },
+        liftoffMelodie: { label: 'Melodie', url: '/audio/liftoff-melodie.flac',
+            credit: 'Die Melodie zu den Worten: ein Ton für jede Silbe, in der Stimmlage des Sprechers.' },
+        liftoffBand: { label: 'Band', url: '/audio/liftoff-band.flac',
+            credit: "Bm, G, D, A, 95 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi
@@ -238,17 +238,17 @@
         },
         autotune: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['kennedy', 'kennedyMelodie', 'kennedyBand'],
-            plain: ['kennedyMelodie', 'kennedyBand'], // played as they are
-            melody: 'kennedyMelodie',            // the target of »Melodie« …
-            melodyFor: 'kennedy',                // … for this clip
+            clips: ['liftoff', 'liftoffMelodie', 'liftoffBand'],
+            plain: ['liftoffMelodie', 'liftoffBand'], // played as they are
+            melody: 'liftoffMelodie',            // the target of »Melodie« …
+            melodyFor: 'liftoff',                // … for this clip
             startOff: true,                      // first the voice as it is
             choices: [
                 { key: 'target', label: 'Ziel', value: 'melody', options: [['melody', 'die Melodie'], ['note', 'der nächste Halbton']] },
             ],
             // other clips of the same length, mixed in when switched on
-            switches: [{ key: 'withMelody', label: 'Melodie dazu', value: false, mix: 'kennedyMelodie', level: 0.6 },
-                { key: 'withBand', label: 'Band dazu', value: false, mix: 'kennedyBand', level: 0.55 }],
+            switches: [{ key: 'withMelody', label: 'Melodie dazu', value: false, mix: 'liftoffMelodie', level: 0.6 },
+                { key: 'withBand', label: 'Band dazu', value: false, mix: 'liftoffBand', level: 0.55 }],
             knobs: [
                 { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
                   marks: [[0, '0'], [0.05, '50'], [0.1, '100'], [0.15, '150'], [0.2, '200 ms']], show: ms },
@@ -285,7 +285,7 @@
         },
         voices: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'kennedy'],
+            clips: ['stimme', 'liftoff'],
             knobs: [
                 { key: 'semitones', label: 'Halbtöne', min: -12, max: 12, step: 1, value: 0,
                   marks: [[-12, '−12'], [-7, '−7'], [0, '0'], [7, '+7'], [12, '+12']],

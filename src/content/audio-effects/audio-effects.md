@@ -800,12 +800,12 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir Kennedy zuerst an, wie er 1962 sprach, und dann die Melodie: Sie ist aus seiner Stimme gemacht, in jedem Moment der nächste Ton einer Tonleiter. Schalt <strong>Effekt an</strong> ein: Jetzt singt er sie. Schalt <strong>Melodie dazu</strong> ein und hör, ob er die Töne trifft. Stell dann das Ziel auf den nächsten Halbton und dreh die Retune Speed langsam auf: Ab wann klingt er wieder wie gesprochen, und woran siehst du das im Bild?
+<strong>Ausprobieren:</strong> Hör dir zuerst den Kommentar an, ohne Effekt: der Start der Rakete von Artemis II, 2026, die Silben im Takt geschnitten. Dann die Melodie, ein Ton für jede Silbe. Schalt <strong>Effekt an</strong> ein: Jetzt singt der Kommentator. Schalt <strong>Band dazu</strong> und <strong>Melodie dazu</strong> ein und hör, ob er die Töne trifft. Stell dann das Ziel auf den nächsten Halbton und dreh die Retune Speed langsam auf: Ab wann klingt er wieder wie gesprochen, und woran siehst du das im Bild?
 </div>
 
 <div class='history' id='history-songify'>
 <img class='wide' src='geschichte/songify.webp' alt='Die Gregory Brothers 2010 bei den Streamy Awards: drei Männer in dunklen Sakkos und eine Frau im grünen Kleid vor einer roten Wand, lachend, mit einem Preis in den Händen'>
-<p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten, wie das Widget oben Kennedy. Ab 2011 hieß die Reihe »Songify the News«.</p>
+<p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten, wie das Widget oben den Kommentar des Starts von Artemis II. Ab 2011 hieß die Reihe »Songify the News«.</p>
 <p>Hör dir zwei ihrer Lieder auf YouTube an: den <a href='https://www.youtube.com/watch?v=MX0D4oZwCsA'>»Double Rainbow Song«</a> aus dem Video eines Mannes, der einen doppelten Regenbogen sieht, und <a href='https://www.youtube.com/watch?v=sP4NMoJcFd4'>»Can't Hug Every Cat«</a> aus dem Video einer Frau, die Katzen liebt. Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben?</p>
 <p class='history-credit'>Die Gregory Brothers. Foto: The Bui Brothers, 2010, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Gregories.jpg'>Wikimedia Commons</a>)</p>
 </div>
