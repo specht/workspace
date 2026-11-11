@@ -14235,6 +14235,13 @@ td :is(.m0, .m1, .m2, .m3, .m4, .m5, .m6, .m7, .m8, .mg) code {
     background: transparent;
     color: inherit;
 }
+/* a table of fields (table.bytes): the bytes of a field stay on one line,
+   also on a phone; the explanation beside them wraps (the longest field on
+   the site has 12 characters) */
+table.bytes td:first-child {
+    width: 1%;
+    white-space: nowrap;
+}
 
 /* A small note under a picture or a row: a photo credit, a detail */
 p.expl {
