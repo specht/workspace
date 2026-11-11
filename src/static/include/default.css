@@ -16794,3 +16794,37 @@ html[data-bs-theme="dark"] .dp-added {
 .dp-total {
     margin: 0 0 0.6em;
 }
+.dp-result {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0.2em 0 0.7em;
+    padding: 0.6em 0.8em;
+    border: 1px solid;
+    border-radius: 0.4em;
+}
+.dp-result .bi {
+    margin: 0;
+    font-size: 1.15em;
+    line-height: 1;
+}
+.dp-result-ok { color: #1b6e2f; background: #ebfbee; border-color: #8ce99a; }
+.dp-result-bad { color: #a51d1d; background: #fff5f5; border-color: #ffa8a8; }
+.dp-result-half { color: #8a5a00; background: #fff9db; border-color: #ffd43b; }
+.dp-result-neutral { color: var(--bs-body-color); background: var(--widget-chip); border-color: var(--widget-line); }
+html[data-bs-theme="dark"] .dp-result-ok { color: #8ce99a; background: #0f2a17; border-color: #2b8a3e; }
+html[data-bs-theme="dark"] .dp-result-bad { color: #ffa8a8; background: #2d1414; border-color: #c92a2a; }
+html[data-bs-theme="dark"] .dp-result-half { color: #ffe066; background: #2b2410; border-color: #f08c00; }
+/* under each banner, outside the card: the clicks so far, »Noch einmal« */
+.dp-meter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 1em;
+    margin-top: 0.5em;
+    min-height: 2em;
+}
+.dp-meter .dp-status {
+    font-size: 0.95em;
+    color: var(--bs-body-color);
+}

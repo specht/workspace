@@ -37,25 +37,37 @@
     // declining a cookie banner, unfair and fair, with the clicks it takes
     function bannerDemo(root) {
         root.dataset.chip = 'Zum Ausprobieren: ablehnen';
-        const unfairBox = el('div', { class: 'dp-banner' });
-        const fairBox = el('div', { class: 'dp-banner' });
-        const status = (box, clicks, text) => box.querySelector('.dp-status').replaceChildren(
-            text ? el('strong', { text }) : '', `${text ? ' ' : ''}Klicks: ${clicks}`);
-
+        // the outcome in the card: green for declined, red for consent the
+        // banner pushed someone into, amber for half, grey for a free choice
+        const KINDS = { ok: 'check-circle-fill', bad: 'exclamation-triangle-fill', half: 'exclamation-circle-fill', neutral: 'info-circle-fill' };
+        const outcome = (kind, text) => el('div', { class: `dp-result dp-result-${kind}` }, [icon(KINDS[kind]), el('strong', { text })]);
         const link = (text, onClick) => {
             const b = el('button', { type: 'button', class: 'dp-link', text });
             b.addEventListener('click', onClick);
             return el('div', {}, [b]);
         };
-        function unfair() {
-            let clicks = 0;
-            const count = () => { clicks += 1; status(unfairBox, clicks, ''); };
-            const done = (text) => {
-                unfairBox.replaceChildren(el('p', { class: 'dp-done' }, [text]), el('p', { class: 'dp-status', 'aria-live': 'polite' }),
-                    button('Noch einmal', 'btn-outline-secondary', unfair));
-                status(unfairBox, clicks, '');
+        // a card with the made-up banner, and under it, outside the card, the
+        // clicks so far and »Noch einmal«
+        function setUp(title, run) {
+            const box = el('div', { class: 'dp-banner' });
+            const clicks = el('span', { class: 'dp-status', 'aria-live': 'polite' });
+            const again = button('Noch einmal', 'btn-sm btn-outline-secondary', () => start());
+            const figure = el('figure', { class: 'a11y-panel' }, [el('figcaption', { text: title }),
+                el('div', { class: 'a11y-sample' }, [box]), el('div', { class: 'dp-meter' }, [clicks, again])]);
+            let n = 0;
+            const show = (done) => {
+                clicks.replaceChildren(done ? `${done} nach ` : 'Bisher ', el('strong', { text: `${n} ${n === 1 ? 'Klick' : 'Klicks'}` }));
+                again.hidden = !done;
             };
-            const accept = () => { count(); done('Du hast allem zugestimmt.'); };
+            const count = () => { n += 1; show(''); };
+            const finish = (kind, text, word) => { box.replaceChildren(outcome(kind, text)); show(word); };
+            function start() { n = 0; show(''); run(box, count, finish); }
+            start();
+            return figure;
+        }
+
+        const unfair = setUp('Unfair', (box, count, finish) => {
+            const accept = () => { count(); finish('bad', 'Du hast allem zugestimmt.', 'Zugestimmt'); };
             // the second layer: everything already switched on, »Alle akzeptieren« big again
             function settings() {
                 const toggles = [['Notwendig', true], ['Statistik', false], ['Marketing', false], ['Partner', false]];
@@ -67,42 +79,29 @@
                     input.addEventListener('change', count);
                     return el('div', { class: 'form-check form-switch' }, [input, el('label', { class: 'form-check-label', for: id, text: name })]);
                 }));
-                unfairBox.replaceChildren(el('p', { text: 'Deine Auswahl' }), list,
+                box.replaceChildren(el('p', { text: 'Deine Auswahl' }), list,
                     button('Alle akzeptieren', 'btn-success dp-big', accept),
                     link('Auswahl speichern', () => {
                         count();
                         const off = [...list.querySelectorAll('input:not(:disabled)')].every((x) => !x.checked);
-                        done(off ? 'Abgelehnt.' : 'Gespeichert, aber einiges ist noch an.');
-                    }),
-                    el('p', { class: 'dp-status', 'aria-live': 'polite' }));
-                status(unfairBox, clicks, '');
+                        if (off) finish('ok', 'Abgelehnt.', 'Abgelehnt');
+                        else finish('half', 'Gespeichert, aber einiges ist noch an.', 'Gespeichert');
+                    }));
             }
-            unfairBox.replaceChildren(
+            box.replaceChildren(
                 el('p', { text: 'Wir und unsere 847 Partner verwenden Cookies, um dir das beste Erlebnis zu bieten.' }),
                 button('Alle akzeptieren', 'btn-success dp-big', accept),
-                link('Einstellungen', () => { count(); settings(); }),
-                el('p', { class: 'dp-status', 'aria-live': 'polite' }));
-            status(unfairBox, clicks, '');
-        }
-        function fair() {
-            let clicks = 0;
-            const done = (text) => {
-                clicks += 1;
-                fairBox.replaceChildren(el('p', { class: 'dp-done' }, [text]), el('p', { class: 'dp-status', 'aria-live': 'polite' }),
-                    button('Noch einmal', 'btn-outline-secondary', fair));
-                status(fairBox, clicks, '');
-            };
-            fairBox.replaceChildren(
+                link('Einstellungen', () => { count(); settings(); }));
+        });
+        const fair = setUp('Fair', (box, count, finish) => {
+            box.replaceChildren(
                 el('p', { text: 'Dürfen wir mit einem Cookie zählen, welche Seiten du liest?' }),
-                el('div', { class: 'dp-choices' }, [button('Ablehnen', 'btn-outline-primary', () => done('Abgelehnt.')),
-                    button('Zustimmen', 'btn-outline-primary', () => done('Zugestimmt.'))]),
-                el('p', { class: 'dp-status', 'aria-live': 'polite' }));
-            status(fairBox, clicks, '');
-        }
+                el('div', { class: 'dp-choices' }, [
+                    button('Ablehnen', 'btn-outline-primary', () => { count(); finish('ok', 'Abgelehnt.', 'Abgelehnt'); }),
+                    button('Zustimmen', 'btn-outline-primary', () => { count(); finish('bad', 'Zugestimmt.', 'Zugestimmt'); })]));
+        });
         counter += 1;
-        unfair();
-        fair();
-        root.append(el('div', { class: 'a11y-panels' }, [panel('Unfair', [unfairBox]), panel('Fair', [fairBox])]));
+        root.append(el('div', { class: 'a11y-panels' }, [unfair, fair]));
     }
 
     // ------------------------------------------------------------------
@@ -112,10 +111,11 @@
         const id = `dp-wording-${++counter}`;
         const box = el('input', { type: 'checkbox', class: 'form-check-input', id });
         box.checked = true;
-        const result = el('p', { class: 'dp-done', 'aria-live': 'polite' });
+        const result = el('div', { 'aria-live': 'polite' });
         const order = button('Bestellen', 'btn-success', () => {
-            result.replaceChildren(box.checked ? icon('envelope-fill') : icon('envelope-slash'), ' ',
-                box.checked ? 'Du bekommst ab jetzt Werbung per E-Mail.' : 'Du bekommst keine Werbung.');
+            result.replaceChildren(el('div', { class: `dp-result dp-result-${box.checked ? 'bad' : 'ok'}` }, [
+                icon(box.checked ? 'envelope-fill' : 'envelope-slash'),
+                el('strong', { text: box.checked ? 'Du bekommst ab jetzt Werbung per E-Mail.' : 'Du bekommst keine Werbung.' })]));
         });
         box.addEventListener('change', () => result.replaceChildren());
         const fairId = `dp-wording-fair-${counter}`;
