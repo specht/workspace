@@ -410,7 +410,9 @@
             const d = duration();
             return ((offset + Math.max(0, ctx.currentTime - startedAt)) % d + d) % d;
         }
+        const announce = window.audio_exclusive ? window.audio_exclusive(() => { if (playing) stop(); }) : () => {};
         function start(from, smooth = playing) {
+            announce();
             const AC = window.AudioContext || window.webkitAudioContext;
             if (!AC || !samples) return;
             if (!ctx) ctx = new AC();

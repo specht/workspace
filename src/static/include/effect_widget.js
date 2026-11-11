@@ -1111,7 +1111,6 @@ onmessage = (e) => {
 
     // ------------------------------------------------------------------
     // the widgets that play: starting one stops the others
-    const players = new Set();
     function setUp(root) {
         const effect = EFFECTS[root.dataset.effect] || EFFECTS.eq;
         const name = root.dataset.effect in EFFECTS ? root.dataset.effect : 'eq';
@@ -1371,12 +1370,11 @@ onmessage = (e) => {
             voice = { source, gain: gainNode };
             offset = place; startedAt = when;
             if (!playing) {
-                for (const other of players) if (other !== me) other();
+                announce();
                 playing = true; showPlay(); requestAnimationFrame(tick);
             }
         }
-        const me = () => { if (playing) stop(); };
-        players.add(me);
+        const announce = window.audio_exclusive ? window.audio_exclusive(() => { if (playing) stop(); }) : () => {};
         function stop() {
             offset = positionAt(ctx.currentTime);
             if (voice) fadeOut(voice, ctx.currentTime);

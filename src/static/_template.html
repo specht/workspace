@@ -642,6 +642,27 @@ function install_card_abstract_fit() {
     fit();
 }
 
+// One sound at a time on a page: whatever starts to play announces it
+// (the event hs-audio-start), and everything else that plays stops. A
+// widget registers how it stops and calls what it gets back when it starts:
+//   const announce = window.audio_exclusive ? window.audio_exclusive(() => { if (playing) stop(); }) : () => {};
+// <audio> and <video> with sound take part by themselves; a muted video
+// that plays while it is in view (video_in_view.js) does not.
+function audio_exclusive(stop) {
+    let me = {};
+    window.addEventListener('hs-audio-start', (e) => { if (e.detail !== me) stop(); });
+    return () => window.dispatchEvent(new CustomEvent('hs-audio-start', { detail: me }));
+}
+document.addEventListener('play', (e) => {
+    let media = e.target;
+    if (media instanceof HTMLMediaElement && !media.muted) window.dispatchEvent(new CustomEvent('hs-audio-start', { detail: media }));
+}, true);
+window.addEventListener('hs-audio-start', (e) => {
+    document.querySelectorAll('audio, video').forEach((media) => {
+        if (media !== e.detail && !media.paused && !media.muted) media.pause();
+    });
+});
+
 var autotoc_secondary = null;
 var autotoc_secondary_headings = [];
 var autotoc_secondary_links = [];

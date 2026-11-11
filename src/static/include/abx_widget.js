@@ -170,8 +170,10 @@
             }
         }
 
+        const announce = window.audio_exclusive ? window.audio_exclusive(() => { if (playing) stop(); }) : () => {};
         function start(from) {
             if (!pieces || !audio()) return;
+            announce();
             const when = ctx.currentTime + 0.02;
             const sources = {}, gains = {};
             for (const key of ['A', 'B']) {
