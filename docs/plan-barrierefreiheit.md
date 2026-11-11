@@ -14,7 +14,7 @@ activity. Being built from 11 November 2026.
 
 ## State (11 November 2026)
 
-Built, in development only (`- .fair-web` in `sections.yaml`), as
+Public since 11 November 2026 (Web, after `static-website`), built as
 `src/content/fair-web/`: one Markdown file with `parts: true`, three pages
 (Eine Seite für alle, Fair statt trickreich, Phishing); the closing »Wie
 geht es weiter?« ends the last part (`ActivityParts.fold_closing`). Each
@@ -25,9 +25,8 @@ building (HTML checks, functions in the card). The starter is
 `task-examples.yaml` run every check against both. The mail viewer is
 `src/static/include/mail_demo.js` (five mails, two phishing, `.example`
 only). Functions: `luminance`, `contrast_ratio`, `host`, `real_domain`,
-`looks_like`, in Ruby and Python. Still open: a card picture, the final
-title, whether the demos leave the Handbuch pages (they are on both now),
-a read of the page by the maintainer.
+`looks_like`, in Ruby and Python. The demos left the Handbuch pages,
+which keep the rules and link the activity. Still open: the final title.
 
 ## Decided (the maintainer, 11 November 2026)
 

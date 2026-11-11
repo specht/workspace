@@ -124,7 +124,7 @@
     von Diensten im Netz.
   entries:
     - static-website
-    - .fair-web
+    - fair-web
     - svelte
     - wetter
     - hugo

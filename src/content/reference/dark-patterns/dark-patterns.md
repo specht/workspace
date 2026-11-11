@@ -62,6 +62,10 @@ Knopf; wer glaubt, dass ein Angebot gleich endet, denkt weniger nach; und wer
 schon drei Schritte bis zur Kasse gegangen ist, bricht ungern ab, auch wenn
 der Preis gestiegen ist.
 
+Im Labor [Fair, barrierefrei, sicher](/fair-web) klickst du dich selbst durch
+einen unfairen Banner, ein doppelt verneintes Häkchen, einen Countdown und eine
+Kasse, an der der Preis wächst, und baust eine Seite fair um.
+
 <!-- part: dark-pattern-gesetz -->
 <!-- short: Einwilligung nach DSGVO, die Sicht der deutschen Aufsichtsbehörden auf Cookie-Banner, Art. 25 Digital Services Act, der Kündigungsbutton nach § 312k BGB. -->
 ## Was das Gesetz sagt

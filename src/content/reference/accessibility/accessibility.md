@@ -89,6 +89,11 @@ jeden anderen Text vor, ohne zu sagen, dass man es anklicken kann, und mit der
 Tastatur kommt man nicht hin; ein `<button>` heißt »Schalter«, und
 <kbd>Tab</kbd> erreicht ihn.
 
+Ausprobieren kannst du das alles im Labor
+[Fair, barrierefrei, sicher](/fair-web): eine Seite mit anderen Augen sehen,
+lesen, was ein Screenreader aus ihr macht, den Kontrast selbst ausrechnen und
+die Barrieren einer Seite Schritt für Schritt ausbauen.
+
 <!-- part: barrierefreiheit-gesetz -->
 <!-- short: BITV 2.0 für öffentliche Stellen, das Barrierefreiheitsstärkungsgesetz seit 28. Juni 2025 für Online-Shops und andere Dienstleistungen, Kleinstunternehmen ausgenommen. -->
 ## Was das Gesetz sagt
