@@ -220,6 +220,9 @@ wait-for-text: 110592000 Bytes
 
 Das Fernsehen hatte ein anderes Problem. Ein Bild nach dem anderen zu übertragen, hätte zu viel Bandbreite gebraucht, und mit nur 25 Bildern in der Sekunde flackerte die Röhre. Darum sendete es in **Halbbildern**: erst alle geraden Zeilen, dann alle ungeraden, 50-mal in der Sekunde, im Takt des Stromnetzes mit 50 Hz. Die beiden Halbbilder eines Bildes sind aber zu verschiedenen Zeiten aufgenommen, eine fünfzigstel Sekunde auseinander. Das heißt auf Englisch **Interlacing**.
 
+<img class='drawing d-none d-lg-block' style='width: 40em' src='interlace-wide.svg' alt='Drei Bilder aus je acht Zeilen. Links Bild k, seine geraden Zeilen 0, 2, 4 und 6 blau. Rechts Bild k + 1, seine ungeraden Zeilen 1, 3, 5 und 7 lila. In der Mitte das Bild aus beiden: blaue und lila Zeilen im Wechsel, mit Pfeilen von links für die geraden und von rechts für die ungeraden Zeilen.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='interlace.svg' alt='Drei Bilder aus je acht Zeilen. Links Bild k, seine geraden Zeilen 0, 2, 4 und 6 blau. Rechts Bild k + 1, seine ungeraden Zeilen 1, 3, 5 und 7 lila. In der Mitte das Bild aus beiden: blaue und lila Zeilen im Wechsel, mit Pfeilen von links für die geraden und von rechts für die ungeraden Zeilen.'>
+
 <div class='hint own' data-check='interlace'>
 <strong>Jetzt bist du dran:</strong> Schreib <code>interlace(frames)</code>: Bild <code>k</code> des Ergebnisses hat die geraden Zeilen (0, 2, 4, …) von Bild <code>k</code> und die ungeraden (1, 3, 5, …) von Bild <code>k + 1</code>. Das Ergebnis hat ein Bild weniger als <code>frames</code>, und <code>frames</code> selbst bleibt unverändert.
 </div>
