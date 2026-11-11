@@ -72,12 +72,12 @@
         dynamik: { label: 'Orchester leise und laut', url: '/audio/effects/dynamic-orchestra.flac',
             credit: "Ludwig van Beethoven, Egmont-Ouvertüre op. 84, Czech National Symphony Orchestra (Musopen Symphony), gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Beethoven_-_Egmont_Overture,_Op._84_(Musopen_Symphony).flac'>Wikimedia Commons</a>)" },
         // Kennedy at Rice University, 1962, and a melody from his voice (bilder/moon_song.py)
-        kennedy: { label: 'Kennedy', url: '/audio/kennedy.wav',
+        kennedy: { label: 'Kennedy', url: '/audio/kennedy.flac',
             credit: "John F. Kennedy, »We choose to go to the Moon«, Rice University, 12. September 1962, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg'>Wikimedia Commons</a>); seine Sätze im Takt geschnitten" },
-        kennedyMelodie: { label: 'Melodie', url: '/audio/kennedy-melodie.wav',
+        kennedyMelodie: { label: 'Melodie', url: '/audio/kennedy-melodie.flac',
             credit: 'Die Melodie zu Kennedys Worten: ein Ton für jedes Wort, in seiner Stimmlage.' },
-        kennedyBand: { label: 'Band', url: '/audio/kennedy-band.wav',
-            credit: "Am, F, C, G, 120 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
+        kennedyBand: { label: 'Band', url: '/audio/kennedy-band.flac',
+            credit: "C, G, Am, F, 120 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi
