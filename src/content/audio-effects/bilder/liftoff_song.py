@@ -307,8 +307,8 @@ VERSE, BUILD, DROP = range(0, 8), range(8, 16), range(16, 24)
 # the song, from, to), in seconds; the countdown so placed that »lift«
 # (OFFSET + 12.94 s) falls on the first beat of the drop
 SPOKEN = [
-    (2.0, 2.40, 8.90),                  # … ready to ride the most powerful rocket
-    (8.8, 11.25, 13.60),                # NASA has ever launched: without the pause of 2,4 s
+    (5.5, 2.40, 8.90),                  # … ready to ride the most powerful rocket
+    (12.3, 11.25, 13.60),               # NASA has ever launched: without the pause of 2,4 s
     (16 * BAR - 12.94, OFFSET + 0.0, OFFSET + 13.80),   # … and liftoff, spoken, »lift« on the drop
     (19 * BAR, OFFSET + 17.98, OFFSET + 20.30),         # humanity's next great voyage begins, spoken, as an answer
     (22 * BAR, OFFSET + 17.98, OFFSET + 20.30),
