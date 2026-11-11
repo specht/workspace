@@ -83,6 +83,11 @@ In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Fr
 <strong>Ausprobieren:</strong> Am Anfang ist alles weit weg von der Mitte 12 dB leiser, <strong>Übrige</strong>: Was hörst du von der Musik noch? Stell <strong>Übrige</strong> auf 0 dB und dann 60 Hz, eine Oktave und +12 dB ein: Welches Instrument wird lauter? Dann −24 dB bei 10 kHz mit zwei Oktaven: Was verschwindet? Schalt mit <strong>Effekt an</strong> hin und her und achte darauf, was sich ändert. Schieb bei +12 dB die Frequenz langsam von unten nach oben und hör, wann die Melodie lauter wird. Zum Schluss ein Bandpass, der nur einen Bereich durchlässt: Stell <strong>Übrige</strong>, was weit weg von der Mitte geschieht, auf −24 dB, die Verstärkung auf 0 dB, die Mitte auf 1 kHz und die Breite auf eine Oktave. Wie klingt die Musik jetzt, und woran erinnert sie dich?
 </div>
 
+<div class='history' id='history-filter-house'>
+<p><strong>»Music Sounds Better with You«</strong>, 1998. Thomas Bangalter von Daft Punk, der DJ Alan Braxe und der Sänger Benjamin Diamond nahmen als Stardust eine Schleife aus Chaka Khans Lied »Fate« von 1981. Wie in vielen Stücken des French House läuft eine solche Schleife durch einen Filter, der die hohen Frequenzen wegnimmt: Die Musik klingt dumpf, als hörte man sie durch die Wand von einer Party nebenan, bis sich der Filter langsam öffnet und alle Frequenzen zurückkommen. Das Lied kam in Großbritannien auf Platz zwei.</p>
+<p>Hör dir <a href='https://www.youtube.com/watch?v=FQlAEiCb8m0'>das Video</a> auf YouTube an: Wo klingt die Musik dumpf, und wann wird sie wieder hell?</p>
+</div>
+
 Ein EQ rechnet in Dezibel, aber was er mit dem Klang tut, ist eine Multiplikation: Jede Frequenz wird mit einem Faktor multipliziert.
 
 _task(eq-factor)

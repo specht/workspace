@@ -174,3 +174,30 @@ songify:
     note: beide Links sind Uploads auf dem Kanal »schmoyoho« (YouTube oEmbed geprüft)
   - text: Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben
     none: eine Frage zum Anhören
+
+filter-house:
+  - text: »Music Sounds Better with You«, 1998
+    sources:
+      - url: https://en.wikipedia.org/wiki/Music_Sounds_Better_with_You
+        quote: "'Music Sounds Better with You' is the only song by the French house trio Stardust, released on 20 July 1998."
+  - text: Thomas Bangalter von Daft Punk, der DJ Alan Braxe und der Sänger Benjamin Diamond nahmen als Stardust eine Schleife aus Chaka Khans Lied »Fate« von 1981
+    sources:
+      - url: https://en.wikipedia.org/wiki/Music_Sounds_Better_with_You
+        quote: "Stardust was composed of the Daft Punk member Thomas Bangalter, the DJ Alan Braxe, and the vocalist Benjamin Diamond. … using a looped sample from the 1981 Chaka Khan song \"Fate\""
+  - text: Wie in vielen Stücken des French House läuft eine solche Schleife durch einen Filter, der die hohen Frequenzen wegnimmt
+    sources:
+      - url: https://en.wikipedia.org/wiki/French_house
+        quote: "The defining characteristics of the genre are filter and phaser effects both on and alongside samples"
+      - url: https://nitelifeaudio.com/classic-techniques-the-filtered-disco-loop/
+        quote: "Essentially, this technique takes a sample loop and then puts it through a low pass filter. … Stardust’s ‘Music Sounds Better With You’"
+    note: nitelifeaudio nennt das Lied als Beispiel für die gefilterte Schleife
+  - text: Die Musik klingt dumpf, als hörte man sie durch die Wand von einer Party nebenan, bis sich der Filter langsam öffnet und alle Frequenzen zurückkommen
+    sources:
+      - url: https://nitelifeaudio.com/classic-techniques-the-filtered-disco-loop/
+        quote: "The audio then sounds muffled, with no top and very little mid-range, as though you're listening to it through a wall while it's being played at a house party next door. Then slowly the filter opens up to gradually reveal the rest of the frequencies."
+  - text: Das Lied kam in Großbritannien auf Platz zwei
+    sources:
+      - url: https://en.wikipedia.org/wiki/Music_Sounds_Better_with_You
+        quote: "It reached number two on the UK singles chart"
+  - text: Wo klingt die Musik dumpf, und wann wird sie wieder hell
+    none: eine Frage zum Anhören; der Link ist das offizielle Video auf Stardusts Kanal
