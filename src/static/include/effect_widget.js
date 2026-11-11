@@ -101,6 +101,16 @@
     // the compressor's gain in dB at a level in dB, as students write it
     const gainDb = (level, threshold, ratio) => (level <= threshold ? 0 : (threshold - level) * (1 - 1 / ratio));
 
+    // the EQ's curve in dB at f: the bell, or a high-pass or low-pass whose
+    // edge lies at the centre and is »width« octaves wide
+    const eqDb = (f, p) => {
+        if (p.shape === 'high' || p.shape === 'low') {
+            const d = Math.log2(Math.max(f, 1) / p.centre) * (p.shape === 'high' ? 1 : -1);
+            return p.rest + (p.gain - p.rest) / (1 + Math.exp(-4 * d / p.width));
+        }
+        return bellDb(f, p.centre, p.width, p.gain, p.rest);
+    };
+
     const EFFECTS = {
         gain: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
@@ -137,15 +147,20 @@
                 { key: 'rest', label: 'Übrige', min: -24, max: 0, step: 1, value: -12,
                   marks: [[-24, '−24'], [-12, '−12'], [0, '0']], show: signedDb },
             ],
-            neutral: (p) => p.gain === 0 && p.rest === 0,
+            neutral: (p) => p.gain === 0 && p.rest === 0,   // in every form
             // settings to start from: the knobs move there and show how
             presets: [
-                ['Altes Radio', { centre: 1000, width: 1.4, gain: 0, rest: -24 }],
-                ['Telefon', { centre: 1000, width: 0.9, gain: 0, rest: -24 }],
-                ['Party nebenan', { centre: 80, width: 1.6, gain: 0, rest: -24 }],
+                ['Altes Radio', { shape: 'bell', centre: 1000, width: 1.4, gain: 0, rest: -24 }],
+                ['Telefon', { shape: 'bell', centre: 1000, width: 0.9, gain: 0, rest: -24 }],
+                ['Party nebenan', { shape: 'low', centre: 250, width: 1, gain: 0, rest: -24 }],
+            ],
+            choices: [
+                { key: 'shape', label: 'Form', value: 'bell', options: [['bell', 'Glocke'], ['high', 'Hochpass'], ['low', 'Tiefpass']] },
             ],
             caption: 'Lila Linie: wie viel dB das EQ jeder Frequenz gibt. Graue Linie: das Spektrum des Klangs ohne EQ, lila Fläche: mit EQ.',
-            line: (p) => (p.rest === 0
+            line: (p) => (p.shape === 'high' ? `Hochpass: unter ${hz(p.centre)} wird es leiser, bis ${signedDb(p.rest)}; darüber bleibt alles.`
+                : p.shape === 'low' ? `Tiefpass: über ${hz(p.centre)} wird es leiser, bis ${signedDb(p.rest)}; darunter bleibt alles.`
+                : p.rest === 0
                 ? `Um ${hz(p.centre)} ${signedDb(p.gain)}, die Schwingung dort mal ${factor(10 ** (p.gain / 20))}; ${de(p.width, 1)} Oktaven daneben noch die Hälfte.`
                 : `Um ${hz(p.centre)} ${signedDb(p.gain)}, weit weg ${signedDb(p.rest)}; ${de(p.width, 1)} Oktaven daneben genau dazwischen.`),
             draw: drawEq,
@@ -531,6 +546,7 @@
     // the worker: one function per effect, as the Python of the page
     const WORKER = `'use strict';
 const bellDb = ${bellDb.toString()};
+const eqDb = ${eqDb.toString()};
 ${fft.toString()}
 const clips = {};        // id: { x, rate, spectrum }
 function eq(clip, p) {
@@ -544,7 +560,7 @@ function eq(clip, p) {
     const { re: re0, im: im0, size, lead } = clip.spectrum;
     const re = new Float64Array(size), im = new Float64Array(size);
     for (let k = 0; k <= size / 2; k++) {
-        const factor = 10 ** (bellDb(k * clip.rate / size, p.centre, p.width, p.gain, p.rest) / 20);
+        const factor = 10 ** (eqDb(k * clip.rate / size, p) / 20);
         re[k] = re0[k] * factor; im[k] = im0[k] * factor;
         if (k > 0 && k < size / 2) { re[size - k] = re[k]; im[size - k] = -im[k]; }
     }
@@ -719,7 +735,7 @@ onmessage = (e) => {
         g.beginPath();
         for (let px = 0; px <= plotW; px++) {
             const f = F0 * (F1 / F0) ** (px / plotW);
-            const y = yOf(on ? bellDb(f, p.centre, p.width, p.gain, p.rest) : 0);
+            const y = yOf(on ? eqDb(f, p) : 0);
             if (px === 0) g.moveTo(LABEL_W, y); else g.lineTo(LABEL_W + px, y);
         }
         g.strokeStyle = col.mark; g.lineWidth = 2.5; g.stroke();
@@ -1097,6 +1113,7 @@ onmessage = (e) => {
             });
             params[c.key] = c.value;
             resets.push(() => { params[c.key] = c.value; inputs.forEach(([v, input]) => { input.checked = v === c.value; }); });
+            setters[c.key] = (value) => { params[c.key] = value; inputs.forEach(([v, input]) => { input.checked = v === value; }); };
             return el('div', { class: 'fx-row' }, [el('span', { class: 'fx-label', text: c.label }), el('div', { class: 'fx-track' }, [group]), el('span')]);
         };
         // buttons that move the knobs to a setting

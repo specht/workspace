@@ -154,6 +154,13 @@ In »Audio komprimieren« hast du Klänge in ihre Frequenzen zerlegt. Wer die Fr
 <p>Hör dir <a href='https://www.youtube.com/watch?v=FQlAEiCb8m0'>das Video</a> auf YouTube an: Wo klingt die Musik dumpf, und wann wird sie wieder hell?</p>
 </div>
 
+In elektronischer Tanzmusik geht es oft andersherum: Vor dem **Drop**, dem Moment, in dem das ganze Lied mit voller Kraft einsetzt, nimmt ein **Hochpass** über einige Takte nach und nach den Bass heraus, und mit dem Drop kommt er auf einen Schlag zurück. Weil der Bass eine Weile fehlte, wirkt er danach umso gewaltiger ([Icon Collective](https://www.iconcollective.edu/edm-drop-tips) beschreibt es für Produzenten). Im Widget kannst du die **Form** auf Hochpass stellen und die Frequenz langsam nach oben schieben: Was bleibt von der Musik, wenn der Bass fehlt?
+
+<div class='history' id='history-drop'>
+<p><strong>Martin Garrix, »Animals«</strong>, 2013. Der Breakdown ist zuerst gefiltert, damit die Energie sinkt; im Build-up steigert sich alles bis zu einem letzten Takt fast ohne Musik, dann setzt der Drop mit einer gewaltigen Kick-Drum ein. Am Ende nimmt Garrix den Bass noch einmal heraus, als Gegensatz. Mit »Animals« wurde er der jüngste Produzent, dessen Lied auf Platz eins des Musikladens Beatport kam.</p>
+<p>Hör dir <a href='https://www.youtube.com/watch?v=gCYcHz2k5x0'>das Video</a> auf YouTube an: Wann wird die Musik dünner, und wie wirkt der Drop danach?</p>
+</div>
+
 Ein EQ rechnet in Dezibel, aber was er mit dem Klang tut, ist eine Multiplikation: Jede Frequenz wird mit einem Faktor multipliziert.
 
 _task(eq-factor)

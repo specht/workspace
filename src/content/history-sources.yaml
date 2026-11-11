@@ -201,3 +201,25 @@ filter-house:
         quote: "It reached number two on the UK singles chart"
   - text: Wo klingt die Musik dumpf, und wann wird sie wieder hell
     none: eine Frage zum Anhören; der Link ist das offizielle Video auf Stardusts Kanal
+
+drop:
+  - text: Martin Garrix, »Animals«, 2013
+    sources:
+      - url: https://en.wikipedia.org/wiki/Animals_(Martin_Garrix_song)
+        quote: "released as a digital download on 17 June 2013 on iTunes"
+  - text: Der Breakdown ist zuerst gefiltert, damit die Energie sinkt; im Build-up steigert sich alles bis zu einem letzten Takt fast ohne Musik, dann setzt der Drop mit einer gewaltigen Kick-Drum ein
+    sources:
+      - url: https://www.musicradar.com/tuition/tech/anatomy-of-a-hit-martin-garrix-animals-636619
+        quote: "it's initially filtered to lower the energy level … leading into a final one-bar gap with a practically naked spoken vocal sample … a monstrous 4/4 kick"
+    note: die Worte stammen aus dem Auszug der Suchmaschine; der Artikel selbst ließ sich nicht abrufen
+  - text: Am Ende nimmt Garrix den Bass noch einmal heraus, als Gegensatz
+    sources:
+      - url: https://www.musicradar.com/tuition/tech/anatomy-of-a-hit-martin-garrix-animals-636619
+        quote: "Garrix again filters the bass from the mix to strip away weight and provide contrast"
+    note: aus dem Auszug der Suchmaschine
+  - text: Mit »Animals« wurde er der jüngste Produzent, dessen Lied auf Platz eins des Musikladens Beatport kam
+    sources:
+      - url: https://en.wikipedia.org/wiki/Animals_(Martin_Garrix_song)
+        quote: "the youngest producer to ever have a song reach number one on the electronic music store Beatport"
+  - text: Wann wird die Musik dünner, und wie wirkt der Drop danach
+    none: eine Frage zum Anhören; der Link ist das offizielle Video auf dem Kanal STMPD RCRDS
