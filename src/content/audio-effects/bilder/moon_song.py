@@ -2,19 +2,21 @@
 recording on Wikimedia Commons, public domain:
 File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg), for the
 autotune widget, made the way Songify songs are made: every syllable cut
-out on its own and put on the grid of eighths, held as long as its note
-(only its vowel stretched), silence between; the hook »We choose to go to
-the Moon« with its »Moon« held; and a melody that takes, for each
-syllable, the note of the scale nearest to his own voice, so that autotune
-moves him only a little. 16 bars at 120 beats a minute, D A Bm G four
-times, in three files of the same length:
+out on its own and put on the grid of sixteenths like a rapped line, held
+where its note is long (only its vowel stretched), silence between; the
+hook »We choose to go to the Moon« with its »Moon« held and »the Moon« as
+a stutter; a melody that takes, for each syllable, the note of the scale
+nearest to his own voice plus a line per phrase, so that autotune moves
+him only a little. A modern beat in half time: 95 beats a minute, B minor
+(Bm G D A), 16 bars, in three files of the same length:
 
   kennedy.flac          his syllables on the grid (SHEET), his own pitch
   kennedy-melodie.flac  the melody, one note per syllable
   kennedy-band.flac     a real drum kit (audio/drums: DRSKit of DrumGizmo,
-                        CC BY 4.0, and a clap, CC0), a plucked bass, an
-                        electric piano, a pad in the chorus; a rise of noise
-                        and a short stop before the chorus
+                        CC BY 4.0, and a clap, CC0) as a half-time beat with
+                        hi-hat rolls, an 808 bass that slides into each
+                        note, dark piano chords, a pad in the chorus that
+                        ducks under the kick
 
     mkdir -p /tmp/jfk && curl -sL -o /tmp/jfk/jfk.ogg \\
         https://commons.wikimedia.org/wiki/Special:FilePath/Jfk_rice_university_we_choose_to_go_to_the_moon.ogg
@@ -33,7 +35,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 AUDIO = os.path.join(HERE, '..', '..', '..', 'static', 'audio')
 DRUMS = os.path.join(AUDIO, 'drums')
 RATE = 44100
-BPM = 120
+BPM = 95
 BEAT = 60 / BPM
 BAR = 4 * BEAT
 
@@ -54,41 +56,49 @@ PIECES = {
     'easy': [532.62, 533.00, 533.23, 533.46, 533.80, 533.96, 534.15, 534.27],
     'hard': [534.27, 534.74, 534.95, 535.16, 535.46, 535.60, 536.05],
     'because-hard': [534.74, 534.95, 535.16, 535.46, 535.60, 536.05],
+    'hard-word': [535.60, 536.05],
 }
-# per bar its chord, as semitones above C: D A Bm G
-CHORDS = [[2, 6, 9], [9, 1, 4], [11, 2, 6], [7, 11, 2]] * 4
-# D major: the notes a syllable may sing
-SCALE = [2, 4, 6, 7, 9, 11, 1]
-# the sheet: (bar, eighth in the bar, piece, eighths per syllable)
+# per bar its chord, as semitones above C: Bm G D A
+CHORDS = [[11, 2, 6], [7, 11, 2], [2, 6, 9], [9, 1, 4]] * 4
+# B minor: the notes a syllable may sing
+SCALE = [11, 1, 2, 4, 6, 7, 9]
+# the sheet: (bar, sixteenth in the bar, piece, sixteenths per syllable)
 SHEET = [
-    (0, 0, 'moon1', [1, 1, 1, 1, 1, 1, 2]),
-    (1, 0, 'moon2', [1, 1, 1, 1, 1, 1, 2]),
-    (2, 0, 'moon3', [1, 1, 1, 1, 1, 1, 2]),
-    (3, 0, 'decade', [1, 1, 1, 3]),
-    (3, 6, 'the-moon', [1, 1]),
-    (4, 0, 'easy', [1, 1, 1, 1, 1, 1, 2]),
-    (5, 0, 'hard', [1, 1, 1, 1, 1, 3]),
-    (6, 0, 'easy', [1, 1, 1, 1, 1, 1, 2]),
-    (7, 0, 'because-hard', [1, 1, 1, 1, 2]),
-    (8, 0, 'we-choose1', [1, 1, 1, 1, 1, 1]),
-    (8, 6, 'moon-word1', [10]),
-    (10, 0, 'we-choose2', [1, 1, 1, 1, 1, 1]),
-    (10, 6, 'moon-word2', [6]),
-    (11, 4, 'the-moon', [1, 1]),
-    (11, 6, 'the-moon', [1, 1]),
-    (12, 0, 'easy', [1, 1, 1, 1, 1, 1, 2]),
-    (13, 0, 'hard', [1, 1, 1, 1, 1, 3]),
-    (14, 0, 'we-choose1', [1, 1, 1, 1, 1, 1]),
-    (14, 6, 'moon-word1', [10]),
+    (0, 0, 'moon1', [1, 2, 1, 2, 1, 1, 4]),
+    (1, 0, 'moon2', [1, 2, 1, 2, 1, 1, 4]),
+    (2, 0, 'moon3', [1, 2, 1, 2, 1, 1, 4]),
+    (3, 0, 'decade', [1, 1, 2, 4]),
+    (3, 9, 'the-moon', [1, 3]),
+    (4, 0, 'easy', [2, 1, 1, 1, 1, 2, 4]),
+    (5, 0, 'hard', [2, 1, 1, 1, 1, 6]),
+    (6, 0, 'easy', [2, 1, 1, 1, 1, 2, 4]),
+    (7, 0, 'because-hard', [1, 1, 1, 1, 4]),
+    (7, 8, 'hard-word', [2]),
+    (7, 10, 'hard-word', [2]),
+    (8, 0, 'we-choose1', [1, 2, 1, 2, 1, 1]),
+    (8, 8, 'moon-word1', [8]),
+    (9, 0, 'the-moon', [1, 3]),
+    (9, 4, 'the-moon', [1, 3]),
+    (9, 8, 'the-moon', [1, 7]),
+    (10, 0, 'we-choose2', [1, 2, 1, 2, 1, 1]),
+    (10, 8, 'moon-word2', [8]),
+    (11, 0, 'easy', [2, 1, 1, 1, 1, 2, 4]),
+    (12, 0, 'hard', [2, 1, 1, 1, 1, 9]),
+    (13, 0, 'we-choose1', [1, 2, 1, 2, 1, 1]),
+    (13, 8, 'moon-word1', [8]),
+    (14, 0, 'the-moon', [1, 3]),
+    (14, 4, 'the-moon', [1, 3]),
+    (14, 8, 'hard-word', [4]),
 ]
-EIGHTH = BEAT / 2
+SIXTEENTH = BEAT / 4
 # the line of each phrase: semitones above his own pitch, per syllable; a
 # note may lie at most LIMIT semitones from his voice
 CONTOUR = {
-    'moon1': [0, 2, 2, 4, 2, 0, -1], 'moon2': [0, 2, 2, 4, 2, 0, 2], 'moon3': [0, 2, 2, 4, 5, 4, 2],
-    'decade': [0, 2, 4, 2], 'the-moon': [2, 0],
-    'easy': [0, -2, 0, 2, 0, -2, -3], 'hard': [3, 3, 2, 0, -1, -3], 'because-hard': [0, 2, 3, 2, 0],
-    'we-choose1': [0, 2, 2, 4, 5, 4], 'we-choose2': [0, 2, 2, 4, 2, 0], 'moon-word1': [2], 'moon-word2': [-1],
+    'moon1': [0, 2, 0, 3, 2, 0, -2], 'moon2': [0, 2, 0, 3, 2, 0, 3], 'moon3': [0, 2, 0, 3, 5, 3, 0],
+    'decade': [0, 2, 3, -2], 'the-moon': [2, 0],
+    'easy': [0, -2, 0, 2, 0, -2, -4], 'hard': [3, 3, 2, 0, -1, -4], 'because-hard': [0, 2, 3, 2, 0],
+    'hard-word': [-2],
+    'we-choose1': [0, 2, 0, 3, 5, 3], 'we-choose2': [0, 2, 0, 3, 2, 0], 'moon-word1': [2], 'moon-word2': [-2],
 }
 LIMIT = 4
 STEP = {'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11}
@@ -210,20 +220,20 @@ def hold(piece, n):
 voice = np.zeros(LENGTH + 2 * RATE)
 melody = np.zeros(LENGTH + 2 * RATE)
 shifts, sung = [], []
-for bar, eighth, name, lengths in SHEET:
+for bar, sixteenth, name, lengths in SHEET:
     times = PIECES[name]
     assert len(lengths) == len(times) - 1, name
     bounds = [times[0]] + [refine(t) for t in times[1:-1]] + [times[-1]]
-    slot = bar * BAR + eighth * EIGHTH
-    for (t0, t1), eighths, step in zip(zip(bounds[:-1], bounds[1:]), lengths, CONTOUR[name]):
+    slot = bar * BAR + sixteenth * SIXTEENTH
+    for (t0, t1), units, step in zip(zip(bounds[:-1], bounds[1:]), lengths, CONTOUR[name]):
         piece = speech[at(t0):at(t1)]
-        n = int(eighths * EIGHTH * (0.92 if eighths > 1 else 0.98) * RATE)
+        n = int(units * SIXTEENTH * (0.92 if units > 2 else 0.98) * RATE)
         place(voice, fade(hold(piece, n), 5, 25), slot)
         # the note: of the scale, nearest to his own pitch, a chord tone on long ones
         f = own_pitch(piece)
         chord = CHORDS[min(BARS - 1, int(slot / BAR))]
-        allowed = chord if eighths >= 2 else SCALE
-        mine = 12 * np.log2(f / C3) if f else 12 * np.log2(237 / C3)
+        allowed = chord if units >= 4 else SCALE
+        mine = 12 * np.log2(f / C3) if f else 12 * np.log2(240 / C3)
         near = [o * 12 + c for o in range(-1, 3) for c in allowed if abs(o * 12 + c - mine) <= LIMIT] or \
                [o * 12 + c for o in range(-1, 3) for c in SCALE if abs(o * 12 + c - mine) <= LIMIT]
         note = min(near, key=lambda k: abs(k - (mine + step)))
@@ -231,7 +241,7 @@ for bar, eighth, name, lengths in SHEET:
             shifts.append(note - mine)
         sung.append(note)
         place(melody, 0.3 * fade(tone(semis_hz(note), n), 12, 30), slot)
-        slot += eighths * EIGHTH
+        slot += units * SIXTEENTH
 voice = voice[:LENGTH] * 0.85 / np.abs(voice).max()
 melody = melody[:LENGTH]
 names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -245,20 +255,22 @@ def sample(name):
         return np.frombuffer(f.readframes(f.getnframes()), '<i2') / 32768
 
 
-def electric_piano(f, n):
-    """a Rhodes-like note: a sine whose brightness (frequency modulation)
-    and loudness fade"""
+def piano(f, n):
+    """a dark piano note: partials a little sharper than whole multiples,
+    the higher ones fading faster, a soft attack"""
     t = np.arange(n) / RATE
-    index = 1.8 * np.exp(-t * 6) + 0.15
-    return np.sin(2 * np.pi * f * t + index * np.sin(2 * np.pi * f * t)) * np.exp(-t * 2.2)
+    out = sum(np.sin(2 * np.pi * f * k * np.sqrt(1 + 0.0004 * k * k) * t) / k ** 1.3 * np.exp(-t * (0.8 + 0.9 * k))
+              for k in range(1, 9) if f * k < 6000)
+    return fade(out * np.minimum(1, t / 0.006), 1, 40)
 
 
-def bass_note(f, n):
-    """a plucked bass: the harmonics of a saw wave, the higher ones fading
-    faster, as a filter closing after each note"""
+def bass_808(f, n):
+    """an 808: a sine that slides down into its note in 60 ms, held long,
+    a little saturated so that it is heard on small speakers too"""
     t = np.arange(n) / RATE
-    out = sum(np.sin(2 * np.pi * f * k * t) / k * np.exp(-t * (3 + 9 * k)) for k in range(1, 12) if f * k < 5000)
-    return fade(out * np.minimum(1, t / 0.004), 1, 15)
+    freq = f * (1 + 0.9 * np.exp(-t / 0.02))
+    out = np.sin(2 * np.pi * np.cumsum(freq) / RATE) * np.exp(-t * 1.1)
+    return fade(np.tanh(2.2 * out) / np.tanh(2.2), 2, 60)
 
 
 def pad(chord, n):
@@ -266,66 +278,72 @@ def pad(chord, n):
     t = np.arange(n) / RATE
     out = np.zeros(n)
     for c in chord:
-        for detune in (0.997, 1.003):
-            out += sum(np.sin(2 * np.pi * semis_hz(c) * 2 * detune * k * t) / k ** 1.5 for k in range(1, 6))
-    return fade(out * np.minimum(1, t / 0.3), 1, 80)
+        for detune in (0.996, 1.004):
+            out += sum(np.sin(2 * np.pi * semis_hz(c) * 2 * detune * k * t) / k ** 1.4 for k in range(1, 7))
+    return fade(out * np.minimum(1, t / 0.5), 1, 120)
 
 
 kick, snare, clap = sample('kick'), sample('snare'), sample('clap')
-hat, open_hat, crash = sample('hat-closed'), sample('hat-open'), sample('crash')
-open_short = open_hat[:int(0.2 * RATE)] * np.linspace(1, 0, int(0.2 * RATE))
+hat, open_hat, rim = sample('hat-closed'), sample('hat-open'), sample('rim')
+open_short = open_hat[:int(0.25 * RATE)] * np.linspace(1, 0, int(0.25 * RATE))
 drums = np.zeros(LENGTH + 5 * RATE)
-keys = np.zeros(LENGTH + 2 * RATE)
-low = np.zeros(LENGTH + 2 * RATE)
+keys = np.zeros(LENGTH + 3 * RATE)
+low = np.zeros(LENGTH + 3 * RATE)
+pads = np.zeros(LENGTH + 3 * RATE)
+duck = np.ones(LENGTH + 3 * RATE)                # the pad ducks under every kick
 rng = np.random.default_rng(1962)
+KICKS = {'verse': (0, 10), 'build': (0, 7, 10), 'chorus': (0, 3, 7, 10, 14)}
 for bar, chord in enumerate(CHORDS):
     t0 = bar * BAR
-    part = 'verse' if bar < 4 else 'build' if bar < 8 else 'chorus'
-    root = semis_hz(chord[0], C2)
-    if bar in (0, 8, 12):
-        place(drums, crash, t0, 0.35)
-    for step in range(16):                     # sixteenths
-        t = t0 + step * BEAT / 4
-        beat, sub = divmod(step, 4)
-        stop = bar == 7 and beat == 3            # a short stop before the chorus
-        if stop:
+    part = 'verse' if bar < 4 else 'build' if bar < 8 else 'chorus' if bar < 15 else 'outro'
+    stop = bar == 7
+    root = semis_hz(chord[0], C2 / 2)            # B0 … A1: the 808's octave
+    for k in KICKS.get(part, (0,)):
+        if stop and k > 8:
             continue
-        if sub == 0 and (part == 'chorus' or beat in (0, 2)) or (part != 'chorus' and step == 10):
-            place(drums, kick, t, 0.9)
-        if sub == 0 and beat in (1, 3):
-            place(drums, snare, t, 0.7)
-            if part == 'chorus':
-                place(drums, clap, t, 0.35)
-        if part == 'chorus':
-            if sub == 2:
-                place(drums, open_short, t, 0.3)
-            elif sub == 0:
-                place(drums, hat, t, 0.25)
-        elif part == 'build' or sub % 2 == 0:
-            place(drums, hat, t, 0.28 if sub == 0 else 0.15)
-        if bar == 7 and beat == 2:              # the fill into the stop
-            place(drums, snare, t, 0.3 + 0.1 * sub)
-    if bar == 7:
-        continue                                # bass and keys rest in the last bar of the build
-    pattern = ((0, 1, 0.75), (1.5, 1, 0.4), (2, 2, 0.4), (2.5, 1, 0.4), (3.5, 2, 0.4)) if part != 'verse' else ((0, 1, 1.5), (2, 1, 0.75), (3, 2, 0.4))
-    for beats, octave, length in pattern:
-        place(low, bass_note(root * octave, int(length * BEAT * RATE)), t0 + beats * BEAT, 0.5)
-    for beats in (0.5, 1.5, 2.5, 3.5):
-        n = int(0.9 * BEAT * RATE)
-        notes = sum(electric_piano(semis_hz(c) * 2, n) for c in chord)
-        place(keys, notes, t0 + beats * BEAT, 0.07 if part == 'verse' else 0.09)
+        place(drums, kick, t0 + k * SIXTEENTH, 0.95)
+        d = int(0.25 * RATE)
+        at = int((t0 + k * SIXTEENTH) * RATE)
+        duck[at:at + d] = np.minimum(duck[at:at + d], 0.35 + 0.65 * np.linspace(0, 1, d) ** 2)
+    if not (stop and False):
+        place(drums, snare, t0 + 8 * SIXTEENTH, 0.75)
+        if part != 'verse':
+            place(drums, clap, t0 + 8 * SIXTEENTH, 0.45)
+    # hi-hats: eighths in the verse, sixteenths later, a roll of 32nds at the end of every fourth bar
+    for k in range(16):
+        if stop and k >= 12:
+            break
+        if part == 'verse' and k % 2:
+            continue
+        accent = 0.26 if k % 4 == 0 else 0.17 if k % 2 == 0 else 0.11
+        place(drums, hat, t0 + k * SIXTEENTH, accent)
+        if bar % 4 == 3 and k in (13, 14, 15) and part != 'verse':
+            place(drums, hat, t0 + (k + 0.5) * SIXTEENTH, 0.13)
+    if part in ('chorus', 'build'):
+        place(drums, open_short, t0 + 14 * SIXTEENTH, 0.25)
     if part == 'chorus':
-        place(keys, pad(chord, int(BAR * RATE)), t0, 0.022)
-# the bass of the last build bar on its first beat only, then the stop
-place(low, bass_note(semis_hz(CHORDS[7][0], C2), int(1.5 * BEAT * RATE)), 7 * BAR, 0.5)
+        place(drums, rim, t0 + 13 * SIXTEENTH, 0.5)
+    # 808: on the kicks, held to the next
+    hits = [k for k in KICKS.get(part, (0,)) if not (stop and k > 8)]
+    for a, b in zip(hits, hits[1:] + [16]):
+        place(low, bass_808(root, int((b - a) * SIXTEENTH * RATE)), t0 + a * SIXTEENTH, 0.2)
+    # piano: the chord on 1, struck again on the »and« of 2
+    for k, level in ((0, 0.16), (6, 0.11)):
+        if stop and k > 8:
+            continue
+        n = int((BAR - k * SIXTEENTH) * RATE)
+        place(keys, sum(piano(semis_hz(c) * (2 if c < 6 else 1), n) for c in chord), t0 + k * SIXTEENTH, level)
+    if part == 'chorus':
+        place(pads, pad(chord, int(BAR * RATE)), t0, 0.03)
 # a rise of noise through the build's last bar
 n = int(3 * BEAT * RATE)
 noise = rng.uniform(-1, 1, n)
 noise = noise - np.concatenate([[0], noise[:-1]])
-place(drums, noise * np.linspace(0, 1, n) ** 2, 7 * BAR, 0.12)
+place(drums, noise * np.linspace(0, 1, n) ** 2, 7 * BAR, 0.1)
 
-band = drums[:LENGTH] + keys[:LENGTH] + low[:LENGTH]
+band = drums[:LENGTH] + keys[:LENGTH] + low[:LENGTH] + (pads * duck)[:LENGTH]
 band *= 0.8 / np.abs(band).max()
+print('band: drums %.3f keys %.3f 808 %.3f pad %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, keys, low, pads)))
 
 write('kennedy.flac', voice)
 write('kennedy-melodie.flac', melody)
