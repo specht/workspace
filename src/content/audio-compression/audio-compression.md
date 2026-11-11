@@ -1518,6 +1518,9 @@ In den kurzen Blöcken bleibt der Fehler beim Schlag. Darum schalten Codecs um: 
 
 Jetzt kommt alles zusammen: die MDCT in Blöcken, die Mithörschwelle und das Runden. Ein Codec wie MP3 oder AAC rundet jede Zahl der MDCT so grob, wie es geht, ohne dass man den Fehler hört. Wo die Musik laut ist und viel verdeckt, sind die Stufen grob; wo es leise ist, fein. Was dabei herauskommt, sind fast nur kleine ganze Zahlen und sehr viele Nullen, und die lassen sich mit wenigen Bits speichern.
 
+<img class='drawing d-none d-lg-block' style='width: 60em' src='codec-flow-wide.svg' alt='Ein Ablauf von links nach rechts: Samples, Blöcke mit Fenster und MDCT (encode), runden mit einer Stufe je Band (quantise), Bits zählen (entropy), Datei. Von der MDCT führt ein lila Zweig nach unten: die Lautstärke je Band (level) und daraus die Mithörschwelle (allowed), die dem Runden die Stufe je Band gibt.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='codec-flow.svg' alt='Ein Ablauf von oben nach unten: Samples, Blöcke mit Fenster und MDCT (encode), runden mit einer Stufe je Band (quantise), Bits zählen (entropy), Datei. Daneben ein lila Zweig von der MDCT: die Lautstärke je Band (level) und daraus die Mithörschwelle (allowed), die dem Runden die Stufe je Band gibt.'>
+
 ### Schneller rechnen
 
 `mdct` geht für jedes `k` alle Samples durch und rechnet dabei jedes Mal die Testtöne neu aus. Für ein ganzes Lied dauert das zu lange. Die Testtöne hängen aber nur von `N` ab: Man kann sie einmal ausrechnen, als Tabelle mit einer Zeile für jedes `k`, eine **Matrix**. `tones(N) @ x` multipliziert jede Zeile mit `x` und zählt zusammen, alle `N` Summen auf einmal, und numpy macht das in C. `@functools.cache` merkt sich die Matrix für jedes `N`, damit sie nur einmal ausgerechnet wird. Ersetz `mdct` und `imdct` in `mdct.py` durch:
