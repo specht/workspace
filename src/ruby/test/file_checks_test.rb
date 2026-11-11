@@ -336,6 +336,10 @@ class FileChecksTest < Minitest::Test
         assert_equal :too_many_elements, outcome.problem
         assert_includes outcome.message, 'Zeile 2'
         assert site_check('<main><button>Weiter</button><div>Text</div></main>', expect).ok
+        # a box ticked in advance: checked has no value, and still counts
+        ticked = { 'elements' => [{ 'selector' => 'input', 'attr' => 'checked', 'max' => 0 }] }
+        assert_equal :too_many_elements, site_check('<form><input type="checkbox" checked> Newsletter</form>', ticked).problem
+        assert site_check('<form><input type="checkbox"> Newsletter</form>', ticked).ok
     end
 
     def test_html_labels

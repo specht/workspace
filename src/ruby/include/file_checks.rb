@@ -379,7 +379,11 @@ module FileChecks
         # many elements of this kind (with this attribute, not empty).
         Array(expect['elements']).each do |want|
             found = doc.select(want['selector'])
-            found = found.reject { |e| e.attrs[want['attr']].to_s.strip.empty? } if want['attr']
+            # with max, an attribute counts once it is there, even without a
+            # value (checked, disabled); with min it needs one (href="")
+            if want['attr']
+                found = want.key?('max') ? found.select { |e| e.attrs.key?(want['attr']) } : found.reject { |e| e.attrs[want['attr']].to_s.strip.empty? }
+            end
             what = "`#{want['selector']}`#{want['attr'] ? " mit `#{want['attr']}`" : ''}"
             read_lines << "#{found.size} × #{what} in #{code(file)}."
             # max: at most so many (0: none at all), where they are
