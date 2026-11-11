@@ -312,10 +312,11 @@ SPOKEN = [
 # None for the length it was spoken, rounded to whole sixteenths, or 'hold'
 # for that and the last syllable held to the end of the bar; a note per syllable)
 SHEET = [
-    (17, 0, 'crew-two', 'hold', 'B B B D+ C#+ B A'),
-    (18, 0, 'bound-moon', 'hold', 'A A F# A B'),
-    (20, 0, 'crew-two', 'hold', 'B B B D+ C#+ B A'),
-    (21, 0, 'bound-moon', 'hold', 'A A F# A B'),
+    # the hook, written first: its rhythm and notes; the syllables are laid on them
+    (17, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B D+'),
+    (18, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A F# B'),
+    (20, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B D+'),
+    (21, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A F# B'),
 ]
 NOTES = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
 

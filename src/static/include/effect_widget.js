@@ -572,6 +572,47 @@
         }
         return out;
     }
+    // autotune pitch-synchronously (PSOLA): marks one period apart on the
+    // voice's peaks; for every mark of the output, factor-times closer
+    // together, the grain of two periods around the nearest mark of the
+    // input, windowed and added. The grains are not read faster, so the
+    // vowels and the timbre stay as they are; where the voice does not
+    // sound, grains of 10 ms are copied as they are
+    function psola(x, rate, factors, found) {
+        const L = x.length, n = found.length, step = Math.round(0.01 * rate);
+        const periodAt = (i) => {
+            const f = found[blockAt(i, n)];
+            return f > 60 && f < 1000 ? rate / f : 0;
+        };
+        const marks = [];
+        let i = 0;
+        while (i < L) {
+            const P = periodAt(i);
+            if (!P) { marks.push(i); i += step; continue; }
+            // the peak within a quarter period around where the next one is expected
+            let best = i, top = -Infinity;
+            for (let j = Math.max(0, Math.round(i - P / 4)); j < Math.min(L, Math.round(i + P / 4)); j++) if (x[j] > top) { top = x[j]; best = j; }
+            marks.push(best);
+            i = Math.max(best + 1, Math.round(best + P));
+        }
+        const y = new Float32Array(L), weight = new Float32Array(L);
+        let m = 0;
+        for (let t = 0; t < L;) {
+            while (m + 1 < marks.length && Math.abs(marks[m + 1] - t) <= Math.abs(marks[m] - t)) m++;
+            const P = periodAt(t), k = blockAt(t, n);
+            const half = Math.round(P || step);
+            const at = marks[m];
+            for (let j = -half; j <= half; j++) {
+                const w = 0.5 + 0.5 * Math.cos(Math.PI * j / half);
+                const o = ((t + j) % L + L) % L;
+                y[o] += w * x[((at + j) % L + L) % L];
+                weight[o] += w;
+            }
+            t += P ? Math.max(1, P / factors[k]) : step;
+        }
+        for (let j = 0; j < L; j++) y[j] /= Math.max(weight[j], 0.5);
+        return y;
+    }
     const blockAt = (c, n) => Math.min(n - 1, Math.max(0, Math.floor((c - SIZE / 2) / HOP)));
     function chorus(x, rate, p) {
         const out = new Float32Array(x.length);
@@ -631,6 +672,7 @@ ${track.toString()}
 ${bendLag.toString()}
 ${tuneFactors.toString()}
 ${shift.toString()}
+${psola.toString()}
 ${vocoder.toString()}
 ${carrierFor.toString()}
 const SIZE = ${SIZE}, HOP = ${HOP};
@@ -683,7 +725,7 @@ onmessage = (e) => {
         }
         const factors = m.effect === 'autotune' ? tuneFactors(found, clip.rate, m.params, melody && melody.track) : null;
         const constant = 2 ** ((m.params.semitones || 0) / 12);
-        out = shift(clip.x, clip.rate, factors ? (c) => factors[blockAt(c, n)] : () => constant, 0.05);
+        out = factors ? psola(clip.x, clip.rate, factors, found) : shift(clip.x, clip.rate, () => constant, 0.05);
     } else if (m.effect === 'eq') out = eq(clip, m.params);
     else if (m.twice) {
         // the sound twice in a row; the second time, with what the first leaves over
