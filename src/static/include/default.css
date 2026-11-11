@@ -3811,7 +3811,7 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        others): from edge to edge, the colour bar at the screen's edge,
        their content where the paragraphs start */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
-        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .a11y-demo, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
+        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .a11y-demo, .dp-demo, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         border-right-width: 0;
@@ -8847,6 +8847,7 @@ div[data-stepper],
 .abx-widget,
 .motion-widget,
 .a11y-demo,
+.dp-demo,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8872,6 +8873,7 @@ html[data-bs-theme="dark"] .hearing-widget,
 html[data-bs-theme="dark"] .abx-widget,
 html[data-bs-theme="dark"] .motion-widget,
 html[data-bs-theme="dark"] .a11y-demo,
+html[data-bs-theme="dark"] .dp-demo,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -16548,7 +16550,8 @@ html[data-bs-theme="dark"] .a11y-demo {
     --a11y-ok: #51cf66;
     --a11y-bad: #ff6b6b;
 }
-.a11y-demo::before {
+.a11y-demo::before,
+.dp-demo::before {
     content: attr(data-chip);
     display: inline-block;
     padding: 0.15em 0.75em;
@@ -16698,4 +16701,96 @@ html[data-bs-theme="dark"] .a11y-demo {
     margin: 0;
     padding-left: 1.4em;
     font-size: 0.95em;
+}
+
+/* Dark Patterns (Handbuch, dark_patterns_demo.js): a banner, a box, an
+   offer and a till, made up; the panels are those of the accessibility
+   demos. The unfair link is small and grey on purpose, as in real banners,
+   but a real button for the keyboard. */
+.dp-banner > * + * {
+    margin-top: 0.6em;
+}
+.dp-banner p {
+    margin: 0;
+}
+.dp-big {
+    display: block;
+    width: 100%;
+    padding: 0.5em;
+    font-size: 1.05em;
+}
+.dp-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--bs-secondary-color);
+    font-size: 0.75em;
+    text-decoration: underline;
+}
+.dp-choices {
+    display: flex;
+    gap: 0.6em;
+}
+.dp-choices .btn {
+    flex: 1 1 0;
+}
+.dp-toggles {
+    display: grid;
+    gap: 0.2em;
+}
+.dp-status {
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+.dp-done {
+    font-weight: 600;
+}
+.dp-note {
+    margin: 0.6em 0 0;
+    font-size: 0.9em;
+    color: var(--bs-secondary-color);
+}
+.dp-offer {
+    padding: 0.8em 1em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.4em;
+    background: var(--bs-body-bg);
+}
+.dp-offer p {
+    margin: 0 0 0.5em;
+}
+.dp-offer-title {
+    font-weight: 700;
+    font-size: 1.1em;
+}
+.dp-clock {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #e03131;
+}
+html[data-bs-theme="dark"] .dp-clock {
+    color: #ff6b6b;
+}
+.dp-bill {
+    list-style: none;
+    margin: 0 0 0.5em;
+    padding: 0;
+}
+.dp-bill li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    padding: 0.15em 0;
+    border-bottom: 1px solid var(--widget-line);
+    font-variant-numeric: tabular-nums;
+}
+.dp-added {
+    color: #c92a2a;
+}
+html[data-bs-theme="dark"] .dp-added {
+    color: #ff8787;
+}
+.dp-total {
+    margin: 0 0 0.6em;
 }

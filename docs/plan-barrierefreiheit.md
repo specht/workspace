@@ -1,12 +1,14 @@
-# Plan: an activity on accessibility (»Eine Seite für alle«)
+# Plan: an activity on accessibility and fair design (»Eine Seite für alle«)
 
 The Handbuch page `reference/accessibility` explains the rules and shows
 three of them (`a11y_demo.js`: only colour, contrast, what a screen reader
 reads out). An activity would let students meet the barriers themselves on
 a page that has them, and take them out one by one, each step checked. The
 maintainer asked for it on 11 November 2026 (»if this becomes like an
-activity we should make an activity out of it or at least plan it«). Not
-built.
+activity we should make an activity out of it or at least plan it«), and
+the same day: the activity should cover dark patterns too, and the demos of
+both Handbuch pages (`a11y_demo.js`, `dark_patterns_demo.js`) move into it,
+with tasks; the Handbuch keeps the rules. Not built.
 
 ## The idea
 
@@ -51,13 +53,26 @@ First they **use** the page as others do, then they **fix** it, then they
    to computer science.
 7. **Struktur:** headings in order, `<main>`, `<nav>`, a skip link.
 8. **Fokus und Bewegung:** `:focus-visible`, `prefers-reduced-motion`.
-9. **Prüfen:** Lighthouse in Chrome, the accessibility inspector of
+9. **Fair statt trickreich:** the club page also has a cookie banner, a
+   newsletter box and a sign-up with fees that appear late, each a dark
+   pattern of the Handbuch page. Students first predict how many clicks
+   declining takes, count them in the banner demo, then rebuild the banner
+   with two equal buttons, the box without the double negation and
+   unticked, the price whole from the start. Tasks: a prediction (clicks),
+   a choice (which wording is a dark pattern, and which), and checks of the
+   HTML (no `checked` on the box, two buttons of the same class in the
+   banner).
+10. **Prüfen:** Lighthouse in Chrome, the accessibility inspector of
    Firefox; what tools cannot find (whether an alt text fits). Students
    write a short »Erklärung zur Barrierefreiheit« for their page, as the
    BITV asks of public bodies: what is accessible, what is not yet.
 
-About four double lessons; chapters 3 to 8 are independent of each other,
-so a class can stop after any of them.
+About five double lessons; chapters 3 to 9 are independent of each other,
+so a class can stop after any of them. The demos of both Handbuch pages go
+into their chapters (the colour demo into 6, the screen reader into 3 and
+5, the banner, the wording, the countdown and the till into 9), each with
+a task about what it shows; the Handbuch pages then link the activity for
+trying.
 
 ## Checks
 
