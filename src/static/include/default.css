@@ -3722,6 +3722,18 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
         padding-left: 1rem;
         padding-right: 1rem;
     }
+    /* the widgets likewise (their slate card, div[data-stepper] and the
+       others): from edge to edge, the colour bar at the screen's edge,
+       their content where the paragraphs start */
+    :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
+        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .hearing-widget, .abx-widget, .motion-widget, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        border-right-width: 0;
+        border-radius: 0;
+        padding-left: calc(1rem - 5px);
+        padding-right: 1rem;
+    }
     /* the hits of the Handbuch search likewise */
     .reference-results > .reference-result {
         margin-left: calc(50% - 50vw);
