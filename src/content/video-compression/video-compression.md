@@ -1984,7 +1984,16 @@ Das einfachste Maß ist das **PSNR**, Peak Signal-to-Noise Ratio. Es ist gebaut 
 
 $$\text{PSNR} = 10 \cdot \log\_{10} \frac{255^2}{\text{Fehler}}$$
 
-Das Ergebnis ist in **Dezibel** (dB) wie beim Ton, und der Logarithmus macht aus jedem Faktor einen gleich großen Schritt: 10 dB mehr heißen ein zehnmal kleinerer Fehler, 20 dB ein hundertmal kleinerer. Gut 6 dB mehr heißen ein Viertel des Fehlers, also dass jedes Pixel im Mittel nur halb so weit danebenliegt. Ab etwa 40 dB lässt sich ein Bild meist kaum noch vom Original unterscheiden, unter 30 dB sind die Fehler deutlich. Lege `quality.py` an:
+Das Ergebnis ist in **Dezibel** (dB) wie beim Ton, und der Logarithmus macht aus jedem Faktor einen gleich großen Schritt: 10 dB mehr heißen ein zehnmal kleinerer Fehler, 20 dB ein hundertmal kleinerer. Gut 6 dB mehr heißen ein Viertel des Fehlers, also dass jedes Pixel im Mittel nur halb so weit danebenliegt. Ab etwa 40 dB lässt sich ein Bild meist kaum noch vom Original unterscheiden, unter 30 dB sind die Fehler deutlich. So sieht das bei der Nahaufnahme aus, mit H.264 so grob gerundet, dass das PSNR jeweils so hoch ist:
+
+<div class='gallery side-by-side'>
+<figure><img class='inspect' src='psnr-original.webp' alt='Das Gesicht des Mädchens aus portrait.png, dreimal vergrößert: scharfe Wimpern, glatte Haut, das kleine Blatt am Stab.'><figcaption>Original</figcaption></figure>
+<figure><img class='inspect' src='psnr-40.webp' alt='Dasselbe Gesicht bei 40 dB: kaum vom Original zu unterscheiden.'><figcaption>40 dB</figcaption></figure>
+<figure><img class='inspect' src='psnr-35.webp' alt='Dasselbe Gesicht bei 35 dB: die Haut glatter und etwas fleckig, die Wimpern weicher, der Stab verwaschen.'><figcaption>35 dB</figcaption></figure>
+<figure><img class='inspect' src='psnr-30.webp' alt='Dasselbe Gesicht bei 30 dB: Wangen und Stirn in deutlichen Blöcken, die Augen grob, das Blatt ein Fleck.'><figcaption>30 dB</figcaption></figure>
+</div>
+
+Lege `quality.py` an:
 
 <!-- page-code: own -->
 ```python
