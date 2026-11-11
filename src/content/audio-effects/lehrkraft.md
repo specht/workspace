@@ -1,4 +1,4 @@
-Lernende bauen in Python mit numpy die Effekte eines Tonstudios: Dezibel und einen Compressor, einen Equalizer, ein Echo, einen Chorus, Hall, eine andere Tonhöhe, Autotune und einen Vocoder. Bei jedem hören sie zuerst im Widget, was seine Regler tun, sagen etwas voraus und schreiben dann die Funktion selbst. Die Seite ist im Aufbau (`docs/plan-audio-effects.md`).
+Lernende bauen in Python mit numpy die Effekte eines Tonstudios: Dezibel und einen Compressor, einen Equalizer, ein Echo, einen Chorus, Hall, eine andere Tonhöhe, Autotune und einen Vocoder. Bei jedem hören sie zuerst im Widget, was seine Regler tun, sagen etwas voraus und schreiben dann die Funktion selbst.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>»Audio komprimieren«: Samples als Zahlen, WAV-Dateien, Dezibel, die FFT.</td></tr>

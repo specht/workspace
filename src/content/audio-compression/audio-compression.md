@@ -2036,4 +2036,4 @@ _task(erfundene-details)
 
 ## Wie geht es weiter?
 
-Für Bilder gibt es dieselben Ideen: [Eine JPEG-Datei decodieren](/jpeg) zerlegt Bilder in Blöcke und rundet ihre Frequenzen nach dem, was das Auge sieht. [Video komprimieren](/video-compression) baut daraus einen Videocodec und speichert von Bild zu Bild nur, was sich ändert. Und im [Spiel am Telefon](/telefonspiel) hörst du, was ein Telefon mit 8.000 Samples in der Sekunde aus einer Stimme macht.
+Mit Samples und Frequenzen kann man Klänge nicht nur kleiner machen, sondern auch verändern: In [Audioeffekte](/audio-effects) baust du einen Equalizer, ein Echo, Hall, einen Compressor, Autotune und einen Vocoder. Für Bilder gibt es dieselben Ideen wie in diesem Codec: [Eine JPEG-Datei decodieren](/jpeg) zerlegt Bilder in Blöcke und rundet ihre Frequenzen nach dem, was das Auge sieht. [Video komprimieren](/video-compression) baut daraus einen Videocodec und speichert von Bild zu Bild nur, was sich ändert. Und im [Spiel am Telefon](/telefonspiel) hörst du, was ein Telefon mit 8.000 Samples in der Sekunde aus einer Stimme macht.
