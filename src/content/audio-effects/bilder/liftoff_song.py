@@ -1,8 +1,9 @@
 """A song from NASA's commentary of the launch of Artemis II, 1 April 2026
 (public domain: images.nasa.gov, KSC-20260401-AU-LMM01-0001-Artemis_II_Live_
 Launch_Coverage_Program_LOS, the commentary channel without the rocket),
-for the autotune widget: the commentary as it was said over the verse and
-the build, the sung voice only from the drop on; in the arc of a dance
+for the autotune widget: the commentary as it was said over the verse, the
+build and »and liftoff« on the drop, sung only in the chorus (»The crew of
+Artemis II now bound for the Moon, humanity's next great voyage begins«); in the arc of a dance
 track at 128 beats a minute
 in B minor (Bm G D A): a funky verse, the countdown as the build (a snare
 roll getting faster, a rise of noise, no bass), a stop, and on »liftoff« the
@@ -298,20 +299,16 @@ VERSE, BUILD, DROP = range(0, 8), range(8, 16), range(16, 24)
 SPOKEN = [
     (2.0, 2.40, 8.90),                  # … ready to ride the most powerful rocket
     (8.8, 11.25, 13.60),                # NASA has ever launched: without the pause of 2,4 s
-    (16 * BAR - 12.94, OFFSET + 0.0, OFFSET + 12.80),
+    (16 * BAR - 12.94, OFFSET + 0.0, OFFSET + 13.80),   # … and liftoff, spoken, »lift« on the drop
 ]
-# the drop, sung: (bar, sixteenth in the bar, piece, sixteenths per syllable
+# the chorus, sung, after the drop: (bar, sixteenth in the bar, piece, sixteenths per syllable
 # or None for the length it was spoken, a note per syllable); a length None
 # is rounded to whole sixteenths, so nothing is drawn out
 SHEET = [
-    (16, 0, 'liftoff', [4, 12], 'D+ B'),
     (17, 0, 'crew-moon', None, 'B B B D+ C#+ B A A F# F# A B'),
     (18, 0, 'humanity-begins', None, 'F# A B D+ C#+ B A F# A B'),
-    (19, 8, 'liftoff', [2, 6], 'D+ B'),
-    (20, 0, 'liftoff', [4, 12], 'D+ B'),
-    (21, 0, 'lift', [2], 'D+'), (21, 2, 'lift', [2], 'D+'), (21, 4, 'liftoff', [2, 10], 'D+ B'),
-    (22, 0, 'humanity-begins', None, 'F# A B D+ C#+ B A F# A B'),
-    (23, 8, 'liftoff', [2, 6], 'D+ B'),
+    (20, 0, 'crew-moon', None, 'B B B D+ C#+ B A A F# F# A B'),
+    (21, 0, 'humanity-begins', None, 'F# A B D+ C#+ B A F# A B'),
 ]
 NOTES = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
 
