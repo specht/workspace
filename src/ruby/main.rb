@@ -918,6 +918,11 @@ class Main < Sinatra::Base
                 end
                 Main.hourly_jobs_ran!
                 begin
+                    Main.youtube_check!
+                rescue => e
+                    STDERR.puts "YouTube check failed: #{e.class}: #{e.message}"
+                end
+                begin
                     Main.new!.check_health
                 rescue => e
                     STDERR.puts "Health check failed: #{e.class}: #{e.message}"

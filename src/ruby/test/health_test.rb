@@ -76,4 +76,23 @@ class HealthTest < Minitest::Test
         assert_equal :bad, Health.worst(checks)
         assert_equal :ok, Health.worst([])
     end
+
+    def test_youtube_from_the_last_test_download
+        every = 6 * 3600
+        assert_equal :unknown, Health.youtube(nil, :now => NOW, :every => every).state
+        ok = Health.youtube({ 'at' => NOW - 3600, 'ok' => true, 'seconds' => 4.2, 'yt_dlp' => '2026.10.26', 'cookies' => true },
+            :now => NOW, :every => every)
+        assert_equal :ok, ok.state
+        assert_includes ok.text, 'vor 60 Minuten gelungen (4.2 s, yt-dlp 2026.10.26, mit Cookies)'
+        stale = Health.youtube({ 'at' => NOW - 20 * 3600, 'ok' => true }, :now => NOW, :every => every)
+        assert_equal :warn, stale.state
+        bot = Health.youtube({ 'at' => NOW - 600, 'ok' => false,
+            'error' => "ERROR: [youtube] jNQXAC9IVRw: Sign in to confirm you're not a bot." }, :now => NOW, :every => every)
+        assert_equal :bad, bot.state
+        assert_includes bot.text, 'neue cookies.txt'
+        other = Health.youtube({ 'at' => NOW - 600, 'ok' => false, 'error' => 'Der Sprachdienst antwortet nicht' },
+            :now => NOW, :every => every)
+        assert_includes other.text, 'Log des Sprachdienstes'
+        assert_equal %w[youtube], Health.to_mail([bot], {}, :today => '2026-10-19').map(&:key)
+    end
 end

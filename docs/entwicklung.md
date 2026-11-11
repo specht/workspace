@@ -135,10 +135,20 @@ in `test/health_test.rb`):
   (Löschungen, Links, Erinnerungen, die Speichermessung von
   `housekeeping.rb`): gestört, wenn sie länger als zwei Stunden nicht
   gelaufen sind.
+- **Musik von YouTube:** Alle sechs Stunden lädt der Sprachdienst die ersten
+  fünf Sekunden von »Me at the zoo« herunter, dem ersten Video auf YouTube
+  (`/youtube-check` in `src/phone/speech/server.py`, angestoßen von den
+  stündlichen Aufgaben, das Ergebnis in `/internal/youtube-check.json`): mit
+  den Cookies aus `PHONE_YOUTUBE_COOKIES`, wie die Musik des Telefonspiels,
+  und nach einem Fehlschlag noch einmal mit dem neuesten yt-dlp. Gestört,
+  wenn das misslingt, mit der letzten Zeile von yt-dlp; verlangt YouTube
+  eine Anmeldung (»Sign in to confirm you're not a bot«), braucht es eine
+  neue `cookies.txt` des Kontos dafür und danach `./config.rb up -d`.
+  Ansehen, wenn die letzte Probe mehr als 13 Stunden alt ist.
 
 Ist etwas davon gestört, bekommt die Administration einmal am Tag eine
 E-Mail je Punkt (vermerkt in `/internal/health-alerts.json`; für den
-Speicherplatz gibt es die eigene Mail). Die Warteschlange bekommt keine Mail,
+Speicherplatz gibt es die eigene Mail), auch für die Musik von YouTube. Die Warteschlange bekommt keine Mail,
 sie leert sich von selbst. Was das alles nicht sieht: einen Server, der
 ganz steht. Dafür braucht es einen Dienst von außen, der die Startseite
 aufruft.

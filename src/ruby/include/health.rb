@@ -155,9 +155,43 @@ module Health
             :text => "#{text} Älter als die Härtung (Oktober 2026): ./build-image.sh, sonst startet ping in neuen Workspaces nicht.")
     end
 
-    # What gets a mail (once a day each): what stops lessons or loses data.
+    # result: the last test download from YouTube by the speech service
+    # (server_health.rb, every `every` seconds), { 'at', 'ok', 'seconds',
+    # 'yt_dlp', 'cookies', 'error' }, or nil before the first. The music of
+    # the Telefonspiel depends on it, and so on the cookies of the account
+    # kept for it (PHONE_YOUTUBE_COOKIES).
+    def self.youtube(result, now:, every:)
+        label = 'Musik von YouTube'
+        unless result
+            return Check.new(:key => 'youtube', :label => label, :state => :unknown,
+                :text => 'Noch nicht geprüft: Die erste Probe läuft eine Weile nach dem Start.')
+        end
+
+        age = now.to_i - result['at'].to_i
+        if result['ok']
+            how = [("#{result['seconds']} s" if result['seconds']), ("yt-dlp #{result['yt_dlp']}" if result['yt_dlp']),
+                   result['cookies'] ? 'mit Cookies' : 'ohne Cookies'].compact.join(', ')
+            text = "Probe-Download vor #{age_text(age)} gelungen (#{how})."
+            return Check.new(:key => 'youtube', :label => label, :state => :ok, :text => text) if age <= 2 * every + 3600
+
+            return Check.new(:key => 'youtube', :label => label, :state => :warn,
+                :text => "#{text} Seitdem keine Probe mehr: Laufen die stündlichen Aufgaben?")
+        end
+
+        error = result['error'].to_s.strip
+        text = "Probe-Download vor #{age_text(age)} fehlgeschlagen#{error.empty? ? '' : ": #{error}"}."
+        text += if error.match?(/sign in|confirm you|cookies/i)
+            ' YouTube will eine Anmeldung: neue cookies.txt des Kontos dafür exportieren, als PHONE_YOUTUBE_COOKIES ablegen, dann ./config.rb up -d.'
+        else
+            ' Musik im Telefonspiel lädt so nicht; das Log des Sprachdienstes nennt mehr (docker logs workspace_phone_speech_1).'
+        end
+        Check.new(:key => 'youtube', :label => label, :state => :bad, :text => text)
+    end
+
+    # What gets a mail (once a day each): what stops lessons or loses data,
+    # and the music of the Telefonspiel, which waits for new cookies.
     # The disk has its own mail (check_disk_space), the queue clears itself.
-    MAIL_KEYS = %w[backup starts docker mysql neo4j app_db jobs].freeze
+    MAIL_KEYS = %w[backup starts docker mysql neo4j app_db jobs youtube].freeze
 
     # The checks to mail about today: bad, mailed for, not yet today.
     # sent: key => the day of the last mail (»YYYY-MM-DD«).
