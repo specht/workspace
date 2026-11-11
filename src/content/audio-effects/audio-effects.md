@@ -1,6 +1,6 @@
 <div class='meta'>
 image: teaser.webp
-image_alt: "Das Spektrogramm einer Sängerin oder eines Sängers: die Zeit nach rechts, die Frequenz nach oben. Links, wie gesungen, laufen die Obertöne als viele parallele Linien, die sich mit der Melodie heben und senken und mit dem Vibrato wellen. Rechts von einer senkrechten Linie, nach Autotune auf einen einzigen Ton, liegen sie alle waagerecht und gerade."
+image_alt: "Links die Kennlinie eines Compressors: gestrichelt eine gerade Linie, so laut wie hinein, so laut heraus; lila eine Linie, die ab einer Schwelle abknickt und flacher weiterläuft, darauf ein Punkt. Rechts ein Orchester, das sehr leise beginnt und dann laut wird, oben grau als Welle, wie es aufgenommen wurde, unten lila nach dem Compressor: Der leise Anfang ist fast so hoch wie der laute Teil."
 kind: labor
 language: Python
 duration: 6 Doppelstunden
