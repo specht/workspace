@@ -4,7 +4,7 @@ at 395 s, the girl and her dog on a path in the evening sun, cut to 16 : 9
 around them, and over it the blocks a codec might choose: a block of 100
 pixels is split in four while its brightness varies a lot (the standard
 deviation above a threshold, the same share of blocks split at each size),
-down to 25 pixels, each edge a light and a dark line. Large blocks where the sky
+down to 25 pixels, each edge a dark and a light line, cut in like a groove. Large blocks where the sky
 and the blurred mountain are calm, small ones at rocks, grass and figures.
 1600 × 900, a photo, so one WebP for both themes.
 
@@ -72,7 +72,7 @@ def main(path):
                 # the top and left edge of each block, a light and a dark
                 # line side by side: seen on bright grass and dark rock alike,
                 # without washing the picture out
-                for k, colour in ((0, LIGHT), (LINE, DARK)):
+                for k, colour in ((0, DARK), (LINE, LIGHT)):
                     draw.rectangle([bx, by + k, bx + size, by + k + LINE - 1], fill=colour)
                     draw.rectangle([bx + k, by, bx + k + LINE - 1, by + size], fill=colour)
     picture = Image.alpha_composite(picture.convert('RGBA'), overlay).convert('RGB')
