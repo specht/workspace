@@ -2095,6 +2095,9 @@ tilt-400k.mp4       170631 Bytes  30.36 dB
 ```
 
 Mit fester Qualität sind beide etwa gleich gut, aber die Fahrt braucht fast fünfmal so viele Bytes. Mit fester Rate sind beide ähnlich groß, aber der Blick bekommt mehr Bytes, als er braucht, und die Fahrt zu wenige: 30 dB, man sieht die Blöcke. x264 trifft die Rate dabei nicht genau, beide Dateien sind kleiner als 400 kbit/s · 4 s = 200.000 Bytes; mit einem Durchgang weiß der Encoder nicht, was noch kommt.
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='rate-control-wide.svg' alt='Zwei Diagramme, nach rechts die vier Sekunden, nach oben die Bytes bis zu jedem Bild. Links mit fester Qualität: Die lila Linie der Fahrt steigt steil bis über 300 KB, die graue des Blicks flach bis etwa 70 KB. Rechts mit fester Rate: Beide Linien steigen ähnlich, auf etwa 170 und 135 KB, unter einer gestrichelten Linie für 400 kbit/s.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='rate-control.svg' alt='Zwei Diagramme untereinander, nach rechts die vier Sekunden, nach oben die Bytes bis zu jedem Bild. Oben mit fester Qualität: Die lila Linie der Fahrt steigt steil bis über 300 KB, die graue des Blicks flach bis etwa 70 KB. Unten mit fester Rate: Beide Linien steigen ähnlich, auf etwa 170 und 135 KB, unter einer gestrichelten Linie für 400 kbit/s.'>
 <!-- /after -->
 
 Mit **zwei Durchgängen** (`-pass 1`, dann `-pass 2`) schaut sich der Encoder das ganze Video zuerst an und verteilt beim zweiten Mal die Bytes: wenige an ruhige Stellen, viele an schnelle, und am Ende passt die Größe. So arbeiten Encoder, wenn ein Film auf eine Scheibe oder in eine feste Größe passen muss. Oft mischt man beides: eine feste Qualität mit einer Obergrenze für die Rate, bei x264 `-crf 23 -maxrate 2M -bufsize 4M`.
