@@ -750,3 +750,93 @@ tasks:
     solution: |
       Den Bergkamm: Der Decoder setzt die Vektoren und Reste der Fahrt auf das
       letzte Bild des Schwenks, und die Felswand malt über ihn.
+
+  - id: deblock-size
+    title: Mit Filter oder ohne
+    prediction: true
+    prompt: |
+      Beide Dateien sind mit demselben groben Quantisierer codiert, eine
+      mit dem Deblocking-Filter von H.264, eine ohne. Welche ist kleiner?
+    check:
+      type: choice
+      options:
+        - Die mit Filter, slope-deblock.mp4.
+        - Die ohne Filter, slope-blocky.mp4, denn der Filter ist zusätzliche Arbeit.
+        - Beide sind gleich groß, der Filter ändert nur, wie das Bild aussieht.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Arbeit kostet Rechenzeit, keine Bytes. Woraus sagt der Encoder das nächste Bild vorher, aus dem gefilterten Bild oder aus dem ungefilterten?
+      - when: { picked: 2 }
+        say: Der Filter ändert das Bild, das der Decoder hat, und aus genau diesem Bild wird das nächste vorhergesagt.
+    solution: |
+      Die mit Filter: Der Filter steht im Decoder-Loop, und weil das
+      gefilterte Bild dem Original näher ist, bleibt bei den nächsten Bildern
+      weniger Rest.
+
+  - id: smooth-edges
+    title: Ein Filter für die Kanten
+    prompt: |
+      Schreib in `video/artifacts.py` die Funktion `smooth_edges(plane,
+      limit, n=8)`: An jeder Kante zwischen zwei Blöcken verteilt sie eine
+      Stufe, die kleiner als `limit` ist, gleichmäßig auf die acht Pixel
+      daneben, vier auf jeder Seite, zwischen Spalten und zwischen Zeilen.
+      Größere Stufen bleiben, und das Array, das sie bekommt, auch.
+    check:
+      type: python
+      file: video/artifacts.py
+      cases:
+        - call: smooth_edges(np.array([[100.0] * 8 + [108.0] * 8] * 16), 20)[0].round(2).tolist()
+          expect: '[100.0, 100.0, 100.0, 100.0, 100.5, 101.5, 102.5, 103.5, 104.5, 105.5, 106.5, 107.5, 108.0, 108.0, 108.0, 108.0]'
+          say: Eine Stufe von 8 zwischen Spalte 7 und 8 wird eine Rampe über die acht Pixel daneben. Spalte 7 bis 4 steigen um 7/16, 5/16, 3/16 und 1/16 der Stufe, Spalte 8 bis 11 sinken um dieselben Anteile. Stimmen die Gewichte, das größte direkt an der Kante?
+        - call: smooth_edges(np.array([[100.0] * 8 + [200.0] * 8] * 16), 20)[0].tolist() == [100.0] * 8 + [200.0] * 8
+          expect: 'True'
+          say: Eine Stufe von 100 ist größer als `limit`, eine echte Kante im Bild, und bleibt, wie sie ist. Setzt `np.where` die Stufe dort auf 0?
+        - call: smooth_edges(np.array([[100.0] * 16] * 8 + [[108.0] * 16] * 8), 20)[:, 0].round(2).tolist()
+          expect: '[100.0, 100.0, 100.0, 100.0, 100.5, 101.5, 102.5, 103.5, 104.5, 105.5, 106.5, 107.5, 108.0, 108.0, 108.0, 108.0]'
+          say: Auch zwischen zwei Zeilen von Blöcken liegt eine Kante. `plane.T` ist dasselbe Array mit Zeilen und Spalten vertauscht; machst du dort dasselbe?
+        - call: 'p = np.full((16, 16), 100.0); p[:, 8:] = 108; smooth_edges(p, 20); float(p[0, 7])'
+          expect: '100.0'
+          say: Deine Funktion ändert das Array, das sie bekommt. `plane.astype(float)` macht eine Kopie, auch wenn die Zahlen schon Kommazahlen sind.
+        - call: float(smooth_edges(np.array([[100] * 8 + [108] * 8] * 16, dtype=np.uint8), 20)[0, 7])
+          expect: '103.5'
+          say: Bilder kommen als Bytes, `uint8`. Rechnet deine Funktion mit Kommazahlen, `plane.astype(float)`?
+    solution: |
+      ```python
+      def smooth_edges(plane, limit, n=8):
+          plane = plane.astype(float)
+          for view in (plane, plane.T):
+              edges = np.arange(n, view.shape[1], n)
+              step = view[:, edges] - view[:, edges - 1]
+              step = np.where(np.abs(step) < limit, step, 0)
+              for j in range(4):
+                  view[:, edges - 1 - j] += step * (7 - 2 * j) / 16
+                  view[:, edges + j] -= step * (7 - 2 * j) / 16
+          return plane
+      ```
+
+  - id: grain-size
+    title: Was Korn kostet
+    prediction: true
+    prompt: |
+      `glance-grain.mp4` ist derselbe Ausschnitt mit Rauschen, das sich von
+      Bild zu Bild ändert, mit derselben Qualität codiert wie
+      `glance-clean.mp4`. Wie viel größer wird die Datei?
+    check:
+      type: choice
+      options:
+        - Etwa gleich groß, das Rauschen ist schwach.
+        - Etwa doppelt so groß.
+        - Etwa zehnmal so groß.
+        - Über vierzigmal so groß.
+      correct: 3
+    feedback:
+      - when: { picked: 0 }
+        say: Schwach heißt nicht billig. Lässt sich Rauschen aus den Nachbarn oder aus dem Bild davor vorhersagen?
+      - when: { picked: 1 }
+        say: Beim Blick kostete ein B-Frame ein Zwanzigstel eines P-Frames, weil fast alles aus anderen Bildern kam. Was davon gilt noch, wenn jedes Pixel in jedem Bild ein neues Rauschen hat?
+      - when: { picked: 2 }
+        say: Noch mehr. Jedes Pixel hat in jedem Bild einen neuen Zufall, und gleiche Qualität heißt, ihn so genau zu speichern wie das Bild.
+    solution: |
+      Über vierzigmal so groß: Rauschen ist Zufall, es lässt sich weder aus
+      den Nachbarn noch aus dem Bild davor vorhersagen.

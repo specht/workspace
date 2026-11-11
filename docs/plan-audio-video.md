@@ -333,6 +333,17 @@ seconds at 720p each.
    1.477.186, 4.685.365 against 1.037.368) and datamoshing (pan and tilt
    without B-frames, every I-frame but the first dropped with
    `noise=drop=key*gt(n,0)`).
+   Part 7 is written: blocks and banding at `-qp 42`, with and without
+   x264's deblocking filter (`no-deblock=1`; 63.460 against 60.309 bytes,
+   the filter is in the loop), `smooth_edges` of one's own (a small step
+   at a block edge becomes a ramp over eight pixels, a large one stays; a
+   drawing of the ramp, `bilder/deblock.py`), four details compared; film
+   grain with ffmpeg's `noise` (146.408 against 6.929.524 bytes, the seed
+   is fixed) and AV1's film grain synthesis with `libaom-av1`,
+   `-denoise-noise-level 60` (37.941 bytes smooth, 55.341 with grain;
+   5 to 15 s each in the Workspace image). A measure of blockiness was
+   tried and dropped: the ratio of jumps at block edges to jumps inside was
+   1,08 against 1,01, too weak to teach with.
    The clips come from the YouTube copy of Spring on Commons; Blender Studio
    keeps its masters for subscribers. The Spring dataset of the University
    of Stuttgart (Mehl et al., CVPR 2023, CC BY 4.0,

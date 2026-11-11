@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Ein Bild aus dem Film Spring: ein Mädchen mit Wanderstab und ein kleiner Hund auf einem Pfad zwischen Felsen im Abendlicht, dahinter ein Berg. Darüber liegen Quadrate, die Blöcke eines Codecs: große im ruhigen Himmel und am unscharfen Berg, kleine an Felsen, Gras und den beiden Figuren."
 kind: labor
 language: Python
-duration: 6 Doppelstunden
+duration: 7 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Diskrete Kosinustransformation, Bewegungsschätzung), Vertiefung Technische Informatik (Videokompression)"
 topics: [kompression, codierung]
 requires: [jpeg, audio-compression]
@@ -1697,3 +1697,230 @@ Das sieht aus, als male die Bewegung der einen Szene über das Bild der anderen,
 <!-- /after -->
 
 <!-- stage: stufen/gop-2.py as gop.py -->
+
+## Artefakte und Filter
+
+Wird ein Video zu stark komprimiert, sieht man es: Blöcke, Stufen im Himmel, Gesichter wie aus Plastik. Solche Fehler heißen **Artefakte**. Codecs haben Filter, die sie verstecken, und für manches einen Trick, der sie gar nicht erst entstehen lässt.
+
+### Blöcke
+
+Bei groben Schritten bleibt von einem Block oft nur der DC-Koeffizient übrig, der Mittelwert. Der Block wird eine Fläche in einer Farbe, und zwei Nachbarn passen an ihrer Kante nicht mehr zusammen. In einem ruhigen Himmel wird so aus einem sanften Verlauf eine Treppe aus Flächen; das heißt **Banding**. Probier es mit `slope.mp4` und einem festen, groben Quantisierer:
+
+```bash
+ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 slope-deblock.mp4
+ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 -x264-params no-deblock=1 slope-blocky.mp4
+ls -l slope-deblock.mp4 slope-blocky.mp4
+```
+
+`-qp 42` rundet jedes Bild mit demselben groben Schritt. Er geht von 0 bis 51, und jede 6 mehr verdoppelt den Schritt. Die zweite Datei schaltet den **Deblocking-Filter** von H.264 aus, den die erste hat wie jede gewöhnliche Datei. Er glättet die Kanten zwischen den Blöcken, im Encoder und im Decoder.
+
+_task(deblock-size)
+
+<!-- tutorial-step
+terminal-run: ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 slope-deblock.mp4 && ffmpeg -v error -y -i slope.mp4 -c:v libx264 -qp 42 -x264-params no-deblock=1 slope-blocky.mp4 && ls -l slope-deblock.mp4 slope-blocky.mp4
+terminal-wait-for-prompt: 120
+wait-for-text: slope-blocky.mp4
+-->
+
+<!-- after: deblock-size -->
+```text
+63460 slope-blocky.mp4
+60309 slope-deblock.mp4
+```
+
+Mit Filter ist die Datei um ein Zwanzigstel kleiner. Der Filter steht nämlich in der Schleife des Decoders, wie das Runden in `encode` aus »Von Bild zu Bild«: Das nächste Bild wird aus dem gefilterten Bild vorhergesagt, und weil das dem Original näher ist, bleibt weniger Rest. Darum muss der Encoder genau so filtern wie der Decoder; ein Filter, der nur beim Anschauen glättet, spart keine Bytes.
+<!-- /after -->
+
+Einen einfachen Filter schreibst du selbst. Er schaut an jeder Kante zwischen zwei Blöcken die beiden Pixel direkt daneben an. Ist der Sprung zwischen ihnen klein, kommt er vom Runden, und der Filter verteilt ihn gleichmäßig auf die acht Pixel um die Kante: aus einer Stufe wird eine Rampe. Ist der Sprung groß, ist es eine echte Kante im Bild, etwa der Rand des Mädchens vor dem Berg, und sie bleibt.
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='deblock-wide.svg' alt='Eine Zeile aus 16 Pixeln über eine Kante zwischen zwei Blöcken, jedes Pixel mit einem Balken für seinen Wert. Vorher: acht Pixel mit 100, dann acht mit 108, eine Stufe an der Kante. Nachher: vier Pixel mit 100, dann 100,5, 101,5, 102,5, 103,5, 104,5, 105,5, 106,5 und 107,5, dann vier mit 108: Die Stufe ist eine gleichmäßige Rampe über die acht Pixel um die Kante.'>
+<img class='drawing d-lg-none' style='width: 26.25em' src='deblock.svg' alt='Die acht Pixel um eine Kante zwischen zwei Blöcken, jedes mit einem Balken für seinen Wert. Vorher: vier Pixel mit 100, dann vier mit 108, eine Stufe an der Kante. Nachher: 100,5, 101,5, 102,5, 103,5, 104,5, 105,5, 106,5 und 107,5, eine gleichmäßige Rampe.'>
+
+Lege `artifacts.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+from PIL import Image
+
+from video import read_frames
+
+FRAME = 30
+
+
+def smooth_edges(plane, limit, n=8):
+    # hier: kleine Stufen an den Kanten zwischen Blöcken zu Rampen machen
+
+
+def save_detail(path, frame):
+    detail = np.clip(frame, 0, 255).round().astype(np.uint8)[144:304, 384:672]
+    Image.fromarray(detail).resize((864, 480), Image.NEAREST).save(path)
+
+
+if __name__ == '__main__':
+    for name in ['slope', 'slope-blocky', 'slope-deblock']:
+        save_detail(f'{name}-detail.png', read_frames(f'{name}.mp4')[FRAME])
+    frame = read_frames('slope-blocky.mp4')[FRAME]
+    smoothed = np.stack([smooth_edges(frame[..., c], 24) for c in range(3)], axis=-1)
+    save_detail('slope-smoothed-detail.png', smoothed)
+    print('Vier Ausschnitte gespeichert')
+```
+
+`save_detail` speichert einen Ausschnitt um das Mädchen und den Hund, dreimal so groß und ohne Glätten, damit man die Blöcke sieht. Das Hauptprogramm filtert jeden der drei Kanäle R, G und B für sich.
+
+<div class='hint own' data-check='smooth-edges'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>smooth_edges(plane, limit, n=8)</code>. Die Kanten liegen zwischen Spalte <code>n - 1</code> und <code>n</code>, <code>2n - 1</code> und <code>2n</code> und so weiter. Für jede rechnet die Funktion die Stufe <code>step</code>: das Pixel rechts der Kante minus das links davon. Ist sie kleiner als <code>limit</code>, steigen die vier Pixel links um 7/16, 5/16, 3/16 und 1/16 der Stufe, von der Kante aus gezählt, und die vier rechts sinken um dieselben Anteile. Danach dasselbe zwischen den Zeilen. Gib ein neues Array mit Kommazahlen zurück und lass das, das du bekommst, wie es ist.
+</div>
+
+<!-- hint -->
+Die Spalten rechts der Kanten sind `edges = np.arange(n, plane.shape[1], n)`, die links davon `edges - 1`. `plane[:, edges] - plane[:, edges - 1]` gibt alle Stufen auf einmal, eine Spalte je Kante. `np.where(np.abs(step) < limit, step, 0)` setzt die großen auf 0, dann ändern sie nichts.
+<!-- /hint -->
+<!-- hint -->
+Für das Pixel im Abstand `j` von der Kante (0, 1, 2, 3) ist der Anteil `(7 - 2 * j) / 16`: Links ist es die Spalte `edges - 1 - j`, rechts `edges + j`. `plane.T` ist dasselbe Array mit Zeilen und Spalten vertauscht, keine Kopie: Was du dort änderst, ändert `plane`. So machst du die Zeilen mit demselben Code:
+
+```python
+plane = plane.astype(float)
+for view in (plane, plane.T):
+    edges = np.arange(n, view.shape[1], n)
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def smooth_edges(plane, limit, n=8):
+    plane = plane.astype(float)
+    for view in (plane, plane.T):
+        edges = np.arange(n, view.shape[1], n)
+        step = view[:, edges] - view[:, edges - 1]
+        step = np.where(np.abs(step) < limit, step, 0)
+        for j in range(4):
+            view[:, edges - 1 - j] += step * (7 - 2 * j) / 16
+            view[:, edges + j] -= step * (7 - 2 * j) / 16
+    return plane
+```
+<!-- /solution -->
+
+_task(smooth-edges)
+
+```bash
+python3 artifacts.py
+```
+
+<!-- tutorial-step
+write-file: video/artifacts.py <- file:stufen/artifacts-1.py
+check-task: smooth-edges
+terminal-run: python3 artifacts.py
+terminal-wait-for-prompt: 60
+wait-for-text: Vier Ausschnitte
+-->
+
+<div class='gallery columns-2'>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/slope-detail.png 1
+-->
+<img class='inspect' src='slope-detail.webp' alt='Ein Ausschnitt aus slope.mp4, dreimal vergrößert: das Mädchen mit dem Stab, der Hund und der Hang dahinter, scharf, mit feinen Grashalmen und weichem Licht.'>
+<figcaption>slope.mp4</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/slope-blocky-detail.png 1
+-->
+<img class='inspect' src='slope-blocky-detail.webp' alt='Derselbe Ausschnitt aus slope-blocky.mp4: Der Hang dahinter ist ein Mosaik aus Quadraten in verschiedenen Grün- und Blautönen, das Gesicht des Mädchens ein heller Fleck, der Hund grob in Stufen.'>
+<figcaption>-qp 42 ohne Filter</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/slope-smoothed-detail.png 1
+-->
+<img class='inspect' src='slope-smoothed-detail.webp' alt='Derselbe Ausschnitt nach smooth_edges: Die Kanten der Quadrate im Hang sind weicher, die Quadrate aber noch zu erkennen; der Umriss des Mädchens ist so scharf wie vorher.'>
+<figcaption>ohne Filter, danach smooth_edges</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/slope-deblock-detail.png 1
+-->
+<img class='inspect' src='slope-deblock-detail.webp' alt='Derselbe Ausschnitt aus slope-deblock.mp4: Der Hang ist ein weicher, unscharfer Verlauf ohne Quadrate, das Mädchen und der Hund verschwommen, aber ohne Stufen.'>
+<figcaption>-qp 42 mit dem Filter von H.264</figcaption></figure>
+</div>
+
+Dein Filter macht die Stufen weicher, aber die Blöcke bleiben zu sehen; der von H.264 lässt sie fast verschwinden. Er arbeitet auf jedem Bild im Decoder, bevor es zur Vorlage für das nächste wird, und entscheidet an jeder Kante neu: wie grob gerundet wurde, ob ein Block im Bild vorhergesagt wurde oder aus einem anderen, ob er einen Rest hat. Danach ändert er bis zu drei Pixel auf jeder Seite. Weil das Ergebnis in die Vorlagen eingeht, erben die nächsten Bilder keine Stufen. Dein Filter glättet dagegen ein fertiges Bild, dessen Vorlagen schon voller Blöcke waren.
+
+### Filmkorn
+
+Echte Filme haben Korn: auf Film die Körner der Fotoschicht, bei einer Digitalkamera das Rauschen des Sensors. Manche Filme setzen es mit Absicht ein, weil es lebendiger aussieht. Für einen Codec ist Korn das Schwierigste, was es gibt: Es ist Zufall, und Zufall lässt sich weder aus den Nachbarn erraten noch aus dem Bild davor vorhersagen. Leg Korn über den Blick des Mädchens und codiere beide mit derselben Qualität:
+
+```bash
+ffmpeg -v error -y -i glance.mp4 -c:v libx264 -crf 23 glance-clean.mp4
+ffmpeg -v error -y -i glance.mp4 -vf noise=alls=14:allf=t -c:v libx264 -crf 23 glance-grain.mp4
+ls -l glance-clean.mp4 glance-grain.mp4
+```
+
+Der Filter `noise=alls=14:allf=t` legt Rauschen der Stärke 14 auf alle drei Ebenen, Y, Cb und Cr, in jedem Bild ein anderes (`allf=t`, `t` für die Zeit).
+
+_task(grain-size)
+
+<!-- tutorial-step
+terminal-run: ffmpeg -v error -y -i glance.mp4 -c:v libx264 -crf 23 glance-clean.mp4 && ffmpeg -v error -y -i glance.mp4 -vf noise=alls=14:allf=t -c:v libx264 -crf 23 glance-grain.mp4 && ls -l glance-clean.mp4 glance-grain.mp4
+terminal-wait-for-prompt: 120
+wait-for-text: glance-grain.mp4
+-->
+
+<!-- after: grain-size -->
+```text
+ 146408 glance-clean.mp4
+6929524 glance-grain.mp4
+```
+
+Mit Korn wird die Datei fast 47-mal so groß. Dieselbe Qualität heißt auch: dasselbe Korn, Pixel für Pixel, und das lässt sich nur speichern, indem man es speichert.
+<!-- /after -->
+
+AV1 hat dafür einen Trick, **Film Grain Synthesis**. Der Encoder entfernt das Korn vor dem Codieren, misst, wie stark es war und wie es aussah, und schreibt nur diese wenigen Zahlen in die Datei. Der Player rechnet das glatte Bild und legt neues Korn darüber, das genauso aussieht, aber nicht dasselbe ist. Niemand bemerkt, dass es anderer Zufall ist. Probier es mit `libaom-av1`, dem Encoder von AOMedia, einmal ohne und einmal mit dem Trick:
+
+```bash
+ffmpeg -v error -y -i glance-grain.mp4 -c:v libaom-av1 -crf 40 -b:v 0 -cpu-used 8 -row-mt 1 glance-av1.mkv
+ffmpeg -v error -y -i glance-grain.mp4 -c:v libaom-av1 -crf 40 -b:v 0 -cpu-used 8 -row-mt 1 -denoise-noise-level 60 glance-av1-grain.mkv
+ls -l glance-av1.mkv glance-av1-grain.mkv
+```
+
+`-crf 40 -b:v 0` codiert mit fester Qualität, `-cpu-used 8` am schnellsten, `-row-mt 1` auf mehreren Kernen. `-denoise-noise-level 60` schaltet Film Grain Synthesis ein; die Zahl sagt, wie kräftig das Korn ist, das der Encoder entfernt und beschreibt. Jeder Befehl braucht ein paar Sekunden. Den Unterschied zeigt am besten ein stehendes Bild aus jeder Datei:
+
+```bash
+for f in glance-grain.mp4 glance-av1.mkv glance-av1-grain.mkv; do ffmpeg -v error -y -i $f -vf "select=eq(n\,40),crop=240:160:420:100,scale=720:480:flags=neighbor" -frames:v 1 ${f%.*}-detail.png; done
+```
+
+<!-- tutorial-step
+terminal-run: ffmpeg -v error -y -i glance-grain.mp4 -c:v libaom-av1 -crf 40 -b:v 0 -cpu-used 8 -row-mt 1 glance-av1.mkv && ffmpeg -v error -y -i glance-grain.mp4 -c:v libaom-av1 -crf 40 -b:v 0 -cpu-used 8 -row-mt 1 -denoise-noise-level 60 glance-av1-grain.mkv && ls -l glance-av1.mkv glance-av1-grain.mkv
+terminal-wait-for-prompt: 240
+wait-for-text: glance-av1-grain.mkv
+terminal-run: for f in glance-grain.mp4 glance-av1.mkv glance-av1-grain.mkv; do ffmpeg -v error -y -i $f -vf "select=eq(n\,40),crop=240:160:420:100,scale=720:480:flags=neighbor" -frames:v 1 ${f%.*}-detail.png; done; ls *-detail.png
+terminal-wait-for-prompt: 60
+wait-for-text: glance-av1-grain-detail.png
+-->
+
+```text
+37941 glance-av1.mkv
+55341 glance-av1-grain.mkv
+```
+
+<div class='gallery columns-3'>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/glance-grain-detail.png 1
+-->
+<img class='inspect' src='glance-grain-detail.webp' alt='Das Gesicht des Mädchens aus glance-grain.mp4, dreimal vergrößert: Über Haut, Augen und den Stab liegt ein dichtes, buntes Korn.'>
+<figcaption>H.264 mit Korn: 6.929.524 Bytes</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/glance-av1-detail.png 1
+-->
+<img class='inspect' src='glance-av1-detail.webp' alt='Dasselbe Gesicht aus glance-av1.mkv: ganz glatt, ohne Korn, die Haut wie aus Kunststoff, die Maserung des Stabs verwaschen.'>
+<figcaption>AV1 ohne Trick: 37.941 Bytes</figcaption></figure>
+<figure>
+<!-- tutorial-screenshot
+image-file: video/glance-av1-grain-detail.png 1
+-->
+<img class='inspect' src='glance-av1-grain-detail.webp' alt='Dasselbe Gesicht aus glance-av1-grain.mkv: wieder mit Korn über Haut und Stab, ähnlich dicht wie im ersten Bild, aber anderes.'>
+<figcaption>AV1 mit Film Grain Synthesis: 55.341 Bytes</figcaption></figure>
+</div>
+
+Ohne den Trick rundet AV1 bei dieser Qualität das Korn einfach weg, und das Mädchen sieht aus wie aus Plastik. Mit ihm ist das Korn wieder da. Die Datei ist etwas größer als die ohne den Trick, braucht aber nur etwa ein Hundertzwanzigstel der Bytes von H.264 mit Korn.
+
+<!-- stage: stufen/artifacts-1.py as artifacts.py -->

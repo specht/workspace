@@ -90,3 +90,11 @@ examples:
       - { files: { video/gop.py: stufen/gop-1.py }, say: 'decode_order' }
       - { files: { video/gop.py: fehler/decode-order-lost-end.py }, say: 'am Schluss' }
       - { files: { video/gop.py: fehler/decode-order-not-emptied.py }, say: 'genau einmal' }
+  smooth-edges:
+    pass:
+      - { files: { video/artifacts.py: stufen/artifacts-1.py, video/video.py: stufen/video.py } }
+    fail:
+      - { files: { video/artifacts.py: fehler/smooth-edges-columns-only.py, video/video.py: stufen/video.py }, say: 'plane.T' }
+      - { files: { video/artifacts.py: fehler/smooth-edges-no-limit.py, video/video.py: stufen/video.py }, say: 'echte Kante' }
+      - { files: { video/artifacts.py: fehler/smooth-edges-in-place.py, video/video.py: stufen/video.py }, say: 'Kopie' }
+      - { files: { video/artifacts.py: fehler/smooth-edges-reversed.py, video/video.py: stufen/video.py }, say: 'Gewichte' }
