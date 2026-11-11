@@ -700,6 +700,8 @@ Mit `k = 2` sieht das so aus:
 
 Zahlen bis 3 brauchen 3 Bit, bis 7 vier, und jede weitere Vierergruppe ein Bit mehr. Wer liest, zählt die Nullen bis zur 1 und liest dann `k` Bits: Ein Code endet von selbst, ohne Trennzeichen. Ein größeres `k` passt für größere Zahlen.
 
+_person(golomb)
+
 Die Reste sind aber auch negativ. Darum werden sie vorher im Zickzack umgeordnet, 0, −1, 1, −2, 2, … werden zu 0, 1, 2, 3, 4, …: Eine Zahl `r ≥ 0` wird zu `2 * r`, eine negative zu `-2 * r - 1`. Lege `rice.py` an:
 
 <!-- page-code: own -->
@@ -978,6 +980,8 @@ Blau führt zu den Samples mit geradem Index einer Gruppe, lila zu denen mit ung
 
 Veröffentlicht haben sie James Cooley von IBM und John Tukey von der Universität Princeton 1965. Tukey soll die Idee in einer Sitzung der Berater von Präsident Kennedy gehabt haben, in der es darum ging, Atomwaffentests der Sowjetunion an Samples von Erdbebenstationen außerhalb des Landes zu erkennen. Später stellte sich heraus, dass Carl Friedrich Gauß denselben Trick schon um 1805 benutzt hatte, um die Bahnen der Kleinplaneten Pallas und Juno zu berechnen. Veröffentlicht wurde das erst nach seinem Tod.
 
+_person(cooley-tukey)
+
 <div class='book'>
 <i class='bi bi-file-earmark-text'></i>
 <p><strong>An Algorithm for the Machine Calculation of Complex Fourier Series</strong>, James W. Cooley und John W. Tukey, Mathematics of Computation, 1965. Fünf Seiten, auf denen die FFT zu einem Programm für Computer wird: beim <a href='https://doi.org/10.1090/S0025-5718-1965-0178586-1'>Verlag</a>.</p>
@@ -1172,6 +1176,8 @@ Bis hierher ging nichts verloren, oder es klang schlechter. MP3 und alle Codecs 
 Im Innenohr liegt die Schnecke, ein aufgerollter Gang von gut drei Zentimetern, gefüllt mit Flüssigkeit. Durch ihn läuft die Basilarmembran, an deren Anfang hohe Frequenzen am stärksten schwingen und an deren Ende tiefe. Auf ihr sitzen Haarzellen, die melden, wo sie schwingt. Das Ohr zerlegt einen Klang also selbst in Frequenzen, ähnlich wie deine FFT. Georg von Békésy hat diese Welle auf der Membran an Ohren von Verstorbenen sichtbar gemacht und dafür 1961 den Nobelpreis für Medizin bekommen.
 
 Diese Zerlegung ist nicht beliebig fein. Ein Ton bringt nicht nur eine Stelle der Membran zum Schwingen, sondern ein Stück davon. Was im selben Stück landet, hört das Ohr zusammen. Eberhard Zwicker teilte den Bereich des Hörens 1961 in 24 solche Stücke, die **Frequenzgruppen**; gezählt wird in **Bark**, nach dem Physiker Heinrich Barkhausen. Unten sind die Gruppen etwa 100 Hz breit, oben mehrere tausend.
+
+_person(bekesy)
 
 ### Die Hörschwelle
 

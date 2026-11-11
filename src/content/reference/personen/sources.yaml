@@ -4171,3 +4171,99 @@ parsons:
     sources:
       - url: https://en.wikipedia.org/wiki/Kane_Parsons
         quote: "released by A24 on May 29, 2026. … At 20 years old upon the film's release, … Parsons became the youngest director to have a film open at number one at the North American box office,"
+bekesy:
+  - text: (1899–1972), ungarischer Physiker.
+    sources:
+      - url: https://www.nobelprize.org/prizes/medicine/1961/bekesy/biographical/
+        quote: "Georg von Békésy was born in Budapest, Hungary, on June 3, 1899, … he received his Ph.D. in Physics in 1923 from the University of Budapest."
+      - url: https://en.wikipedia.org/wiki/Georg_von_B%C3%A9k%C3%A9sy
+        quote: "3 June 1899 – 13 June 1972"
+  - text: Im Forschungslabor der ungarischen Post in Budapest ging es um Telefongespräche über weite Strecken, und er untersuchte dafür auch das Ohr, das am Ende jeder Leitung zuhört.
+    sources:
+      - url: https://www.nobelprize.org/prizes/medicine/1961/bekesy/biographical/
+        quote: "His work in the research laboratory of the Hungarian Post Offce was concerned mainly with problems of long-distance telephone transmission. The friendly and efficient atmosphere of this laboratory made it possible for him to spend considerable time in the study of the ear as a main component of the transmission system."
+  - text: In der Werkstatt der Post fand man morgens die Bohrmaschine voller Staub aus menschlichen Knochen.
+    sources:
+      - url: https://www.nobelprize.org/prizes/medicine/1961/bekesy/biographical/
+        quote: "Soon he became a nuisance to the autopsy rooms of the hospitals and the mechanical workshops of the Post Office. There they did not like to find their drill press full of human-bone dust in the morning."
+  - text: Er präparierte die Schnecke aus den Ohren Verstorbener so, dass sie zum Teil erhalten blieb, streute Silberflocken auf die Basilarmembran und sah ihr im Licht schneller Blitze beim Schwingen zu
+    sources:
+      - url: https://en.wikipedia.org/wiki/Georg_von_B%C3%A9k%C3%A9sy
+        quote: "Békésy developed a method for dissecting the inner ear of human cadavers while leaving the cochlea partly intact. By using strobe photography and silver flakes as a marker,"
+  - text: 'Sie bewegt sich wie eine Welle.'
+    note: >-
+      Der Artikel der englischen Wikipedia behauptet seit 2025, eine Arbeit aus dem Labor von
+      A. James Hudspeth habe Békésys Wanderwelle widerlegt; eine Veröffentlichung dazu war nicht
+      zu finden, und andere Quellen beschreiben die Wanderwelle weiter. Der Kasten sagt nur, was
+      Békésy beobachtet hat.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Georg_von_B%C3%A9k%C3%A9sy
+        quote: "he was able to observe that the basilar membrane moves like a surface wave when stimulated by sound."
+  - text: Dafür bekam er 1961 den Nobelpreis für Medizin.
+    sources:
+      - url: https://www.nobelprize.org/prizes/medicine/1961/summary/
+        quote: "for his discoveries of the physical mechanism of stimulation within the cochlea"
+  - text: Ab 1947 forschte er an der Harvard University, ab 1966 in Hawaii.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Georg_von_B%C3%A9k%C3%A9sy
+        quote: "In 1947, he moved to the United States, working at Harvard University until 1966. … He became a professor at the University of Hawaiʻi in 1966"
+cooley-tukey:
+  - text: James Cooley (1926–2016) und John Tukey (1915–2000), amerikanische Mathematiker, veröffentlichten 1965 die FFT.
+    sources:
+      - url: https://en.wikipedia.org/wiki/James_Cooley
+        quote: "James William Cooley (September 18, 1926 – June 29, 2016) was an American mathematician."
+      - url: https://en.wikipedia.org/wiki/John_Tukey
+        quote: "John Wilder Tukey (; June 16, 1915 – July 26, 2000) was an American mathematician and statistician, best known for the development of the fast Fourier Transform (FFT) algorithm,"
+      - url: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+        quote: "FFTs became popular after James Cooley of IBM and John Tukey of Princeton published a paper in 1965 reinventing the algorithm"
+  - text: Cooley hatte von 1953 bis 1956 in Princeton den Computer von John von Neumann programmiert und forschte ab 1962 bei IBM
+    sources:
+      - url: https://en.wikipedia.org/wiki/James_Cooley
+        quote: "He was a programmer on John von Neumann's computer at the Institute for Advanced Study, Princeton, New Jersey, from 1953 to 1956, … from 1956 to 1962, when he joined the Research Staff at the IBM Watson Research Center"
+  - text: Tukey lehrte in Princeton und arbeitete zugleich bei den Bell Labs
+    sources:
+      - url: https://en.wikipedia.org/wiki/John_Tukey
+        quote: "After the war, he returned to Princeton, dividing his time between the university and AT&T Bell Laboratories."
+  - text: Richard Garwin von IBM hatte die beiden zusammengebracht.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+        quote: "Another participant at that meeting, Richard Garwin of IBM, recognized the potential of the method and put Tukey in touch with Cooley."
+  - text: Cooley sagte er nicht, wofür Tukey die FFT brauchte, sondern nur, es gehe um Spins in einem Kristall aus Helium-3.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+        quote: "However, Garwin made sure that Cooley did not know the original purpose. Instead, Cooley was told that this was needed to determine periodicities of the spin orientations in a 3-D crystal of helium-3."
+  - text: Das Wort Bit, kurz für binary digit, prägte Tukey 1947 in einer Notiz bei den Bell Labs.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Bit
+        quote: "Tukey, who had written a Bell Labs memo on 9 January 1947 in which he contracted \"binary digit\" to simply \"bit\"."
+      - url: https://en.wikipedia.org/wiki/John_Tukey
+        quote: "Early in his career Tukey worked on developing statistical methods for computers at Bell Labs, where he coined the word bit in 1947."
+  - text: Auch den Boxplot, den du vielleicht aus dem Mathematikunterricht kennst, führte er 1970 ein.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Box_plot
+        quote: "The box-and-whisker plot was first introduced in 1970 by John Tukey, who later published on the subject in his book \"Exploratory Data Analysis\" in 1977."
+golomb:
+  - text: (1932–2016), amerikanischer Mathematiker und Ingenieur, am Jet Propulsion Laboratory und ab 1963 an der University of Southern California.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Solomon_W._Golomb
+        quote: "Solomon Wolf Golomb ( gə-LOHM; May 30, 1932 – May 1, 2016) was an American mathematician, engineer, and professor of electrical engineering at the University of Southern California, … then joined the Jet Propulsion Laboratory at Caltech, where he researched military and space communications. He joined the faculty of USC in 1963"
+  - text: 1966 beschrieb er die Golomb-Codes für Zahlen, unter denen kleine häufig sind.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Golomb_coding
+        quote: "Golomb coding is a lossless data compression method using a family of data compression codes invented by Solomon W. Golomb in the 1960s. … highly suitable for situations in which the occurrence of small values in the input stream is significantly more likely than large values. … Golomb, Solomon W. (1966). Run-length encodings. IEEE Transactions on Information Theory"
+  - text: Die Rice-Codes, mit denen FLAC die Reste seiner Vorhersage schreibt, sind die unter ihnen, bei denen man durch eine Zweierpotenz teilt.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Golomb_coding
+        quote: "Rice codes are those in which the tunable parameter is a power of two. … Several lossless audio codecs, such as Shorten, FLAC, Apple Lossless, and MPEG-4 ALS, use a Rice code after the linear prediction step"
+  - text: Du hast Tetris gespielt?
+    none: Workspace
+  - text: Figuren aus Quadraten, die an ihren Kanten zusammenhängen, gab Golomb 1953 den Namen Polyominos.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Polyomino
+        quote: "The name polyomino was invented by Solomon W. Golomb in 1953,"
+  - text: Tetris ist aus den sieben Figuren aus vier Quadraten gebaut, und Alexei Paschitnow kam auf das Spiel mit einem Puzzle aus Pentominos, Figuren aus fünf Quadraten.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Polyomino
+        quote: "The video game Tetris is based on the seven one-sided tetrominoes"
+      - url: https://en.wikipedia.org/wiki/Tetris
+        quote: "Pajitnov bought a pentomino puzzle set from a store and played with it in his office, and he became inspired to adapt the puzzle game to the computer."
