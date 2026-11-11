@@ -293,10 +293,10 @@ $$Cr = 128 + 0{,}5\,R - 0{,}418688\,G - 0{,}081312\,B$$
 
 Grün zählt für die Helligkeit am meisten, weil das Auge für Grün am empfindlichsten ist, Blau am wenigsten. Bei einem Grau sind R, G und B gleich: Dann ist Y genau dieser Wert, und Cb und Cr sind 128, denn die Zahlen vor R, G und B ergeben in beiden Zeilen zusammen 0. Fernsehen in HD rechnet mit etwas anderen Gewichten (die Norm BT.709) und lässt Y nur von 16 bis 235 laufen; die Idee ist dieselbe. Wie die drei Teile zusammen ein Foto ergeben, zeigt <a href='/colorspace' target='_blank' rel='noopener'>Trennung von Helligkeit und Farbe</a>.
 
-Für dieses Kapitel gibt es ein einzelnes Bild als PNG, von derselben Stelle des Films wie `slope.mp4`. Warum kein Bild aus `slope.mp4`, steht am Ende des Kapitels.
+Für dieses Kapitel gibt es ein einzelnes Bild als PNG, das Mädchen von Nahem, aus derselben Stelle des Films wie `glance.mp4`. Warum kein Bild aus `glance.mp4`, steht am Ende des Kapitels.
 
 ```bash_copy
-wget ${web_root}/video/slope.png
+wget ${web_root}/video/portrait.png
 ```
 
 Lege `chroma.py` an:
@@ -316,7 +316,7 @@ def save_grey(path, plane):
 
 
 if __name__ == '__main__':
-    frame = np.asarray(Image.open('slope.png').convert('RGB'))
+    frame = np.asarray(Image.open('portrait.png').convert('RGB'))
     ycbcr = to_ycbcr(frame)
     save_grey('y.png', ycbcr[..., 0])
     save_grey('cb.png', ycbcr[..., 1])
@@ -354,7 +354,7 @@ def to_ycbcr(rgb):
 
 _task(ycbcr)
 
-Das Mädchen in `slope.png` trägt eine rote Jacke. Bevor du das Programm startest:
+Das Mädchen in `portrait.png` trägt eine rote Jacke. Bevor du das Programm startest:
 
 _task(jacket)
 
@@ -363,9 +363,9 @@ python3 chroma.py
 ```
 
 <!-- tutorial-step
-terminal-run: cd /workspace/video && (test -f slope.png || curl -sO http://workspace_nginx_1/video/slope.png) && ls -l slope.png
+terminal-run: cd /workspace/video && (test -f portrait.png || curl -sO http://workspace_nginx_1/video/portrait.png) && ls -l portrait.png
 terminal-wait-for-prompt: 30
-wait-for-text: slope.png
+wait-for-text: portrait.png
 -->
 
 <!-- after: jacket -->
@@ -384,23 +384,23 @@ wait-for-text: y.png
 <!-- tutorial-screenshot
 image-file: video/y.png 1
 -->
-<img class='inspect' src='plane-y.webp' alt='Das Bild vom Hang in Graustufen: das Mädchen, der Hund, die Felsen und das Gras mit allen Einzelheiten, wie ein Schwarz-Weiß-Foto.'>
+<img class='inspect' src='plane-y.webp' alt='Das Mädchen von Nahem in Graustufen, mit Stab, vor Felsen und Reif: jede Haarsträhne, die Augen und die Maserung des Stabs zu sehen, wie ein Schwarz-Weiß-Foto.'>
 <figcaption>Y: die Helligkeit</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/cb.png 1
 -->
-<img class='inspect' src='plane-cb.webp' alt='Dasselbe Bild fast überall in einem mittleren Grau, mit weichen Umrissen. Das Gras in der Sonne und der Weg sind dunkler; vom Mädchen sieht man den Umriss, die Jacke etwas dunkler als das Grau.'>
+<img class='inspect' src='plane-cb.webp' alt='Dasselbe Bild in mittleren Grautönen, mit weichen Umrissen. Das Gesicht und der Stab im Licht sind dunkler, am dunkelsten die Augen; die blauschwarzen Haare, die Felsen und der Reif im Hintergrund sind heller. Die Jacke ist kaum dunkler als das Grau.'>
 <figcaption>Cb: blauer oder weniger blau als Grau</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/cr.png 1
 -->
-<img class='inspect' src='plane-cr.webp' alt='Wieder fast überall mittleres Grau. Hell heraus sticht die Jacke des Mädchens, etwas heller sind die sonnigen Stellen; die Felsen im Schatten sind etwas dunkler.'>
+<img class='inspect' src='plane-cr.webp' alt='Wieder fast überall mittleres Grau. Hell heraus stechen die Jacke und das Gesicht des Mädchens; die Felsen und der Reif im Hintergrund sind etwas dunkler.'>
 <figcaption>Cr: röter oder weniger rot als Grau</figcaption></figure>
 </div>
 
-`y.png` sieht aus wie ein Schwarz-Weiß-Foto, mit allen Einzelheiten. `cb.png` und `cr.png` sind fast überall ein mittleres Grau nahe 128, denn die meisten Farben in der Natur sind nicht sehr bunt. Die Jacke ist in Cr deutlich heller, im Mittel 162, weil sie viel röter ist als ein Grau derselben Helligkeit, und in Cb etwas dunkler, im Mittel 105, weil sie wenig Blau hat. Am dunkelsten in Cb ist das Gras in der Abendsonne: Gelb hat kaum Blau.
+`y.png` sieht aus wie ein Schwarz-Weiß-Foto, mit allen Einzelheiten. `cb.png` und `cr.png` sind fast überall ein mittleres Grau nahe 128, denn die meisten Farben in der Natur sind nicht sehr bunt. Die Jacke ist in Cr deutlich heller, im Mittel 150, weil sie viel röter ist als ein Grau derselben Helligkeit, und in Cb nur wenig dunkler, im Mittel 121, weil sie kaum Blau hat. Das Gesicht ist in Cr ebenso hell: Haut ist röter als Grau. Am dunkelsten in Cb sind die gelbgrünen Augen und der Stab im Abendlicht, denn Gelb hat kaum Blau. Die Felsen und der Reif im Hintergrund sind bläulich und darum in Cb etwas heller.
 <!-- /after -->
 
 ### Chroma Subsampling
@@ -433,7 +433,7 @@ def upsample(plane, n=2):
 
 
 def save_detail(path, rgb):
-    Image.fromarray(rgb[130:310, 460:700]).resize((720, 540), Image.NEAREST).save(path)
+    Image.fromarray(rgb[130:310, 390:630]).resize((720, 540), Image.NEAREST).save(path)
 ```
 
 Und unten im Hauptprogramm, nach den drei Graubildern:
@@ -495,7 +495,7 @@ wait-for-text: detail-luma.png
 <!-- tutorial-screenshot
 image-file: video/detail.png 1
 -->
-<img src='detail.webp' alt='Ein vergrößerter Ausschnitt: das Mädchen mit Wanderstab und roter Jacke, vor ihr der Hund, unten das Gras in der Sonne, scharf bis in die Halme.'>
+<img src='detail.webp' alt='Ein vergrößerter Ausschnitt: das Gesicht des Mädchens mit den grünen Augen, das dunkle Tuch um den Hals, rechts ihre Hand am Stab und ein kleines grünes Blatt, scharf bis in die Wimpern.'>
 <figcaption>Das Original</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
@@ -507,22 +507,22 @@ image-file: video/detail-chroma.png 1
 <!-- tutorial-screenshot
 image-file: video/detail-luma.png 1
 -->
-<img src='detail-luma.webp' alt='Derselbe Ausschnitt mit Y in Quadraten aus 2 × 2 gemittelt. Er ist deutlich unschärfer, mit treppigen Kanten am Gesicht, am Stab und am Hund.'>
+<img src='detail-luma.webp' alt='Derselbe Ausschnitt mit Y in Quadraten aus 2 × 2 gemittelt. Er ist deutlich unschärfer, mit treppigen Kanten an den Augen, an den Brauen und am Stab.'>
 <figcaption>Helligkeit gröber: Y in 2 × 2 gemittelt</figcaption></figure>
 </div>
 
 Mit gröberer Farbe sieht der Ausschnitt aus wie das Original. Mit gröberer Helligkeit ist er sichtbar unscharf, obwohl er sogar mehr Zahlen behält: Y für jedes vierte Pixel und Cb und Cr für jedes Pixel sind 96.000 + 2 · 384.000 = 864.000 Werte, bei 4:2:0 sind es 576.000.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Mach die Farbe noch gröber: <code>upsample(subsample(ycbcr[..., 1], 4), 4)</code>, ebenso für Cr, und dann mit 8. Ab wann siehst du einen Unterschied? Achte auf die Ränder der roten Jacke und auf den Stab davor.
+<strong>Ausprobieren:</strong> Mach die Farbe noch gröber: <code>upsample(subsample(ycbcr[..., 1], 4), 4)</code>, ebenso für Cr, und dann mit 8. Ab wann siehst du einen Unterschied? Achte auf die grünen Augen, auf das kleine Blatt am Stab und auf den Rand des Tuchs vor der roten Jacke.
 </div>
 
 ### Schon gespart
 
-Warum `slope.png` und kein Bild aus `slope.mp4`? In `write_video` steht `-pix_fmt yuv420p`: Jede MP4-Datei dieser Seite ist schon 4:2:0, wie fast jedes Video im Internet, auf Blu-ray und im Fernsehen. Ein Bild aus `slope.mp4` hat Cb und Cr also schon gemittelt, und `subsample` fände nichts mehr zu sparen. `slope.png` ist auch aus dem Film von YouTube gemacht, der seine Farbe in 4:2:0 hat, aber für 2.048 Pixel Breite: 1.024 Werte je Zeile. Verkleinert auf 960 Pixel bekommt fast jedes Pixel wieder eine eigene Farbe.
+Warum `portrait.png` und kein Bild aus `glance.mp4`? In `write_video` steht `-pix_fmt yuv420p`: Jede MP4-Datei dieser Seite ist schon 4:2:0, wie fast jedes Video im Internet, auf Blu-ray und im Fernsehen. Ein Bild aus `glance.mp4` hat Cb und Cr also schon gemittelt, und `subsample` fände nichts mehr zu sparen. `portrait.png` ist auch aus dem Film von YouTube gemacht, der seine Farbe in 4:2:0 hat, aber für 2.048 Pixel Breite: 1.024 Werte je Zeile. Verkleinert auf 960 Pixel bekommt fast jedes Pixel wieder eine eigene Farbe.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Gib im Hauptprogramm aus, wie weit <code>small_chroma</code> im Mittel vom Original abweicht: <code>print(np.abs(from_ycbcr(small_chroma).astype(int) - frame).mean())</code>. Dann nimm statt <code>slope.png</code> das erste Bild aus <code>slope.mp4</code>, <code>read_frames('slope.mp4')[0]</code> mit <code>from video import read_frames</code>. Wie ändert sich die Zahl?
+<strong>Ausprobieren:</strong> Gib im Hauptprogramm aus, wie weit <code>small_chroma</code> im Mittel vom Original abweicht: <code>print(np.abs(from_ycbcr(small_chroma).astype(int) - frame).mean())</code>. Dann nimm statt <code>portrait.png</code> dasselbe Bild aus <code>glance.mp4</code>, das Bild 72, <code>read_frames('glance.mp4')[72]</code> mit <code>from video import read_frames</code>. Wie ändert sich die Zahl?
 </div>
 
 <!-- stage: stufen/chroma-2.py as chroma.py -->
@@ -543,6 +543,12 @@ Hier ist ein Ausschnitt aus `slope.png` in Blöcken aus 8 × 8 Pixeln. Markiert 
 <div class='idct-stepper' data-stepper data-picture data-quantize='8' data-block='88 40' data-coef='-192 200 -80 -72 16 24 16 0 -112 24 208 96 8 16 8 8 -56 -112 -56 80 48 -32 -8 8 -64 -64 -72 -88 0 48 16 0 32 8 -24 -16 -32 -16 8 0 24 32 8 -32 -24 -16 -8 8 -8 -8 16 16 -8 -16 -8 0 -8 -8 -8 0 8 0 -8 0'><img data-noconvert src='idct-detail.png' alt='Ein Ausschnitt aus dem Bild vom Hang um das Gesicht des Mädchens, in Blöcken aus 8 × 8 Pixeln.'></div>
 
 Die ersten Koeffizienten bringen die mittlere Helligkeit und die grobe Form, die späteren machen Kanten schärfer; der Fehler unten rechts wird dabei von Schritt zu Schritt kleiner. Was zuletzt kommt, sind feine Muster, und gerade bei denen sieht das Auge Fehler kaum. Darum rundet ein Codec sie grob, und viele werden 0.
+
+Dieses Kapitel arbeitet mit dem Bild vom Hang, dem ersten Bild von `slope.mp4`, wieder als PNG mit aller Farbe:
+
+```bash_copy
+wget ${web_root}/video/slope.png
+```
 
 Lege `blocks.py` an. Es braucht `to_ycbcr` aus `chroma.py`:
 
@@ -660,7 +666,7 @@ python3 blocks.py
 <!-- tutorial-step
 write-file: video/blocks.py <- file:stufen/blocks-1.py
 check-task: quantize
-terminal-run: python3 blocks.py
+terminal-run: (test -f slope.png || curl -sO http://workspace_nginx_1/video/slope.png) && python3 blocks.py
 terminal-wait-for-prompt: 60
 wait-for-text: Schritt 64
 -->
@@ -1243,7 +1249,7 @@ image-file: video/tilt-h264.png 1
 -->
 <img class='full fit-width inspect' src='tilt-h264.webp' alt='Bild 13 der Fahrt die Wand hinauf in Farbe, darüber viele kleine weiße Pfeile. Im Hintergrund zeigen alle nach unten, dicht an dicht; am Mädchen mit dem Hund sind die Blöcke kleiner und die Pfeile zeigen in verschiedene Richtungen.'>
 
-Die Pfeile zeigen nach unten: ffmpeg malt sie vom Ort im vorigen Bild zum Block, also so, wie sich der Inhalt bewegt, andersherum als `draw_vectors`. Der Encoder von H.264 macht mehr als `motion_field`. Er teilt einen Block von 16 × 16 Pixeln in kleinere, wo das hilft, bis 4 × 4, und er sucht nicht nur ganze Pixel, sondern Viertel davon: Der Schwenk bewegt sich etwa anderthalb Pixel je Bild, nicht eines oder zwei. Und er probiert nicht alle Verschiebungen aus, sondern geht vom Vektor der Nachbarn aus und sucht in kleinen Schritten weiter, wo die Summe kleiner wird.
+Die Pfeile zeigen nach unten: ffmpeg malt sie vom Ort im vorigen Bild zum Block, also so, wie sich der Inhalt bewegt, andersherum als `draw_vectors`. Der Encoder von H.264 macht mehr als `motion_field`. Er teilt einen Block von 16 × 16 Pixeln in kleinere, wo das hilft (mehr dazu in »Große und kleine Blöcke«), und er sucht nicht nur ganze Pixel, sondern Viertel davon: Der Schwenk bewegt sich etwa anderthalb Pixel je Bild, nicht eines oder zwei. Und er probiert nicht alle Verschiebungen aus, sondern geht vom Vektor der Nachbarn aus und sucht in kleinen Schritten weiter, wo die Summe kleiner wird.
 
 ### Was übrig bleibt
 
@@ -1379,6 +1385,36 @@ Die Vorhersage sieht schon aus wie Bild 12. Übrig bleibt, was sich nicht nur ve
 </div>
 
 <!-- stage: stufen/motion-2.py as motion.py -->
+
+### Große und kleine Blöcke
+
+Bisher hat jeder Block 16 × 16 Pixel und einen Vektor. Liegt ein Block halb auf dem Mädchen und halb auf dem Hang hinter ihr, passt sein Vektor nur zu einer der beiden Hälften, und die andere bleibt als Rest übrig. Kleinere Blöcke folgen der Bewegung genauer, aber jeder braucht seinen eigenen Vektor.
+
+_task(block-size)
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Setz in <code>motion.py</code> <code>N</code> auf 8 und lass das Programm laufen, dann auf 4; mit 4 dauert es eine Weile. Achte in der letzten Zeile auf die Bytes und darauf, wie viele davon die Vektoren brauchen. Setz <code>N</code> danach wieder auf 16.
+</div>
+
+<!-- after: block-size -->
+Für Bild 12 vom Hang kommt Folgendes heraus:
+
+<table class='table'>
+<tr><th>Blöcke</th><th>Rest</th><th>Vektoren</th><th>zusammen</th></tr>
+<tr><td>16 × 16</td><td>5.888 Bytes</td><td>239 Bytes</td><td>6.127 Bytes</td></tr>
+<tr><td>8 × 8</td><td>5.221 Bytes</td><td>1.182 Bytes</td><td>6.404 Bytes</td></tr>
+<tr><td>4 × 4</td><td>4.333 Bytes</td><td>6.330 Bytes</td><td>10.663 Bytes</td></tr>
+</table>
+
+Der Rest wird mit kleineren Blöcken kleiner, aber die Vektoren werden schneller teurer: Bei 8 × 8 gibt es viermal so viele, bei 4 × 4 sechzehnmal so viele, und dort stecken mehr Bytes in den Vektoren als im Rest. Eine einzige Größe für das ganze Bild ist darum nie die beste. Kleine Blöcke lohnen sich nur dort, wo sich in einem großen Block Verschiedenes verschieden bewegt; überall sonst ist ein großer Block mit einem Vektor billiger.
+
+Ein Encoder entscheidet deshalb für jeden Makroblock aus 16 × 16 Pixeln einzeln, ob er ganz bleibt oder geteilt wird. Mit unserer Suche kann man das so machen: einen Makroblock nur dann in vier Blöcke aus 8 × 8 Pixeln teilen, wenn die vier mit ihren eigenen Vektoren die Summe der Unterschiede um mehr als 400 senken. Dann werden 54 der 1.500 Makroblöcke von Bild 12 geteilt, und das Bild braucht 5.753 Bytes statt 6.127, obwohl jeder Makroblock jetzt ein Bit mehr kostet, das sagt, ob er geteilt ist. Beim Schwenk lohnt es sich nicht: Dort bewegt sich alles gleich, und das eine Bit je Makroblock kostet mehr, als das Teilen spart.
+
+x264 geht genauer vor. Für jede Art, einen Makroblock zu teilen, rechnet er aus, wie viele Bits Vektoren und Rest kosten und wie groß der Fehler bleibt, und nimmt die, bei der beides zusammen am kleinsten ist. Wie viel ein Bit dabei gegen den Fehler zählt, hängt von der Qualität ab. Erlaubt sind in H.264 Teile von 16 × 8, 8 × 16 und 8 × 8 Pixeln und darin noch kleinere bis 4 × 4; x264 nimmt für die Bewegung von sich aus höchstens 8 × 8. So hat er Bild 12 vom Hang mit `-crf 30` geteilt:
+
+<img class='full fit-width inspect' src='partitions.webp' alt='Bild 12 vom Hang mit einem feinen Raster aus Makroblöcken von 16 × 16 Pixeln. Die meisten bleiben ganz. Hell hinterlegt und mit eingeschnittenen Linien geteilt sind einzelne Makroblöcke, in zwei Hälften oder in vier Viertel: am Mädchen, an den Rändern der Felsen, im Gras vor ihnen, oben links an der Felswand und am Rand zwischen Berg und Himmel. Einige wenige sind schraffiert.'>
+
+1.266 der 1.500 Makroblöcke bleiben ganz. Geteilt, hell hinterlegt, sind 194. Sie liegen am Mädchen, das sich anders bewegt als der Hang hinter ihr, an den Rändern der Felsen und im Gras: Wo ein Bild viele Einzelheiten hat, kostet jeder kleine Fehler der Vorhersage viele Bits, und ein eigener Vektor für ein kleineres Stück lohnt sich eher. Die 40 schraffierten hat x264 im Bild selbst vorhergesagt wie in einem I-Frame, weil das billiger war als jeder Vektor. Mit `-crf 18`, der Qualität der Ausschnitte, teilt x264 fast überall: Bits sind dann billig, und schon ein wenig weniger Rest ist die Vektoren wert.
 
 ## I-, P- und B-Frames
 

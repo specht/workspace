@@ -169,8 +169,8 @@ tasks:
         say: Mittelgrau, 128, haben Cb und Cr bei einem Grau. Die Jacke ist kräftig rot.
     solution: |
       In Cr heller, weil die Jacke viel röter ist als ein Grau derselben
-      Helligkeit (im Mittel 162), in Cb etwas dunkler, weil sie wenig Blau
-      hat (im Mittel 105).
+      Helligkeit (im Mittel 150), in Cb ein wenig dunkler, weil sie kaum
+      Blau hat (im Mittel 121).
 
   - id: bytes-420
     title: Ein Bild in 4:2:0
@@ -612,6 +612,29 @@ tasks:
       kaum etwas, und übrig bleiben vor allem die Beine des Mädchens und der
       Hund.
 
+  - id: block-size
+    title: Kleinere Blöcke
+    prediction: true
+    prompt: |
+      In `motion.py` hat jeder Block 16 × 16 Pixel und einen Vektor, und
+      Bild 12 vom Hang braucht mit Bewegung etwa 6.100 Bytes. Was passiert,
+      wenn jeder Block nur 8 × 8 Pixel hat?
+    check:
+      type: choice
+      options:
+        - Das Bild braucht deutlich weniger Bytes, weil der Rest kleiner wird.
+        - Das Bild braucht etwas mehr Bytes, weil die Vektoren mehr kosten, als der kleinere Rest spart.
+        - Es ändert sich nichts, weil sich dieselben Pixel bewegen.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Der Rest wird kleiner, das stimmt. Aber wie viele Vektoren braucht das Bild jetzt?
+      - when: { picked: 2 }
+        say: Mit kleineren Blöcken passen die Vektoren besser, besonders am Mädchen. Es ändert sich also etwas, beim Rest und bei den Vektoren.
+    solution: |
+      Etwas mehr: 6.404 statt 6.127 Bytes. Der Rest sinkt von 5.888 auf
+      5.221 Bytes, aber es gibt viermal so viele Vektoren, und sie kosten
+      1.182 statt 239 Bytes.
   - id: frame-sizes
     title: Die Größe jedes Bildes
     prompt: |
