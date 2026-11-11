@@ -800,7 +800,7 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir zuerst den Kommentar an, ohne Effekt: der Start der Rakete von Artemis II, 2026, die Silben im Takt geschnitten. Dann die Melodie, ein Ton für jede Silbe. Schalt <strong>Effekt an</strong> ein: Jetzt singt der Kommentator. Schalt <strong>Band dazu</strong> und <strong>Melodie dazu</strong> ein und hör, ob er die Töne trifft. Stell dann das Ziel auf den nächsten Halbton und dreh die Retune Speed langsam auf: Ab wann klingt er wieder wie gesprochen, und woran siehst du das im Bild?
+<strong>Ausprobieren:</strong> Geh in vier Schritten vor. Hör dir zuerst den Kommentar an, wie er gesprochen wurde: den Start der Rakete von Artemis II, 2026. Schalt <strong>Effekt an</strong> ein, mit dem Ziel <strong>ein Ton</strong>: Jede Silbe liegt jetzt auf demselben Ton. Nimm dann <strong>Im Takt</strong>, die Silben auf den Schlägen eines Lieds, und das Ziel <strong>die Melodie</strong>: Jetzt singt der Kommentator. Zum Schluss <strong>Band dazu</strong>. Probier auch den nächsten Halbton und dreh die Retune Speed langsam auf: Ab wann klingt er wieder wie gesprochen, und woran siehst du das im Bild?
 </div>
 
 <div class='history' id='history-songify'>

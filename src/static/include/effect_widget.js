@@ -75,7 +75,9 @@
         dynamik: { label: 'Orchester leise und laut', url: '/audio/effects/dynamic-orchestra.flac',
             credit: "Ludwig van Beethoven, Egmont-Ouvertüre op. 84, Czech National Symphony Orchestra (Musopen Symphony), gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Beethoven_-_Egmont_Overture,_Op._84_(Musopen_Symphony).flac'>Wikimedia Commons</a>)" },
         // NASA's commentary of the launch of Artemis II, 2026, as a song (bilder/liftoff_song.py)
-        liftoff: { label: 'Artemis II', url: '/audio/liftoff.flac',
+        liftoffSpoken: { label: 'Gesprochen', url: '/audio/liftoff-gesprochen.flac',
+            credit: "Kommentar des Starts von Artemis II, NASA, 1. April 2026, gemeinfrei (<a href='https://images.nasa.gov/details/KSC-20260401-AU-LMM01-0001-Artemis_II_Live_Launch_Coverage_Program_LOS'>NASA</a>)" },
+        liftoff: { label: 'Im Takt', url: '/audio/liftoff.flac',
             credit: "Kommentar des Starts von Artemis II, NASA, 1. April 2026, gemeinfrei (<a href='https://images.nasa.gov/details/KSC-20260401-AU-LMM01-0001-Artemis_II_Live_Launch_Coverage_Program_LOS'>NASA</a>); die Silben im Takt geschnitten" },
         liftoffMelodie: { label: 'Melodie', url: '/audio/liftoff-melodie.flac',
             credit: 'Die Melodie zu den Worten: ein Ton für jede Silbe, in der Stimmlage des Sprechers.' },
@@ -238,17 +240,15 @@
         },
         autotune: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['liftoff', 'liftoffMelodie', 'liftoffBand'],
-            plain: ['liftoffMelodie', 'liftoffBand'], // played as they are
+            clips: ['liftoffSpoken', 'liftoff'],
             melody: 'liftoffMelodie',            // the target of »Melodie« …
             melodyFor: 'liftoff',                // … for this clip
             startOff: true,                      // first the voice as it is
             choices: [
-                { key: 'target', label: 'Ziel', value: 'melody', options: [['melody', 'die Melodie'], ['note', 'der nächste Halbton']] },
+                { key: 'target', label: 'Ziel', value: 'flat', options: [['flat', 'ein Ton'], ['note', 'der nächste Halbton'], ['melody', 'die Melodie']] },
             ],
             // other clips of the same length, mixed in when switched on
-            switches: [{ key: 'withMelody', label: 'Melodie dazu', value: false, mix: 'liftoffMelodie', level: 0.6 },
-                { key: 'withBand', label: 'Band dazu', value: false, mix: 'liftoffBand', level: 0.55 }],
+            switches: [{ key: 'withBand', label: 'Band dazu', value: false, mix: 'liftoffBand', level: 0.55 }],
             knobs: [
                 { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
                   marks: [[0, '0'], [0.05, '50'], [0.1, '100'], [0.15, '150'], [0.2, '200 ms']], show: ms },
@@ -258,9 +258,9 @@
             ],
             live: true,
             neutral: () => false,
-            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune, dunkel die Melodie; die dünnen Linien sind die Halbtöne. Zum Spulen ziehen.',
+            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune, dunkel die Melodie, wenn sie das Ziel ist; die dünnen Linien sind die Halbtöne. Zum Spulen ziehen.',
             line: (p) => {
-                const goal = p.target === 'melody' ? 'den Ton der Melodie' : 'den nächsten Halbton';
+                const goal = p.target === 'melody' ? 'den Ton der Melodie' : p.target === 'flat' ? 'denselben Ton' : 'den nächsten Halbton';
                 return p.speed === 0
                     ? `Jeder Block springt sofort auf ${goal}: Die Stimme klingt wie eine Maschine.`
                     : `Jeder Block geht in etwa ${de(p.speed * 1000)} ms auf ${goal} zu.`;
@@ -425,6 +425,12 @@
         const n = found.length, out = new Float32Array(n), move = 2 ** (p.transpose / 12);
         const step = p.speed > 0 ? 1 - Math.exp(-HOP / rate / p.speed) : 1;
         const toMelody = p.target === 'melody' && melody;
+        // »ein Ton«: the voice's own middle, every syllable on it
+        let flat = 0;
+        if (p.target === 'flat') {
+            const voiced = Array.from(found).filter((f) => f > 60 && f < 1000).sort((a, b) => a - b);
+            flat = voiced.length ? voiced[voiced.length >> 1] : 0;
+        }
         // the voice's pitch, the median of five blocks: a block an octave off is not followed
         const voice = new Float32Array(n);
         for (let k = 0; k < n; k++) {
@@ -438,7 +444,8 @@
             const f = voice[k];
             if (toMelody && melody[k] > 60) note = melody[k];          // the melody's gaps keep the last note
             let want = now;
-            if (f && !toMelody) want = 440 * 2 ** (Math.round(12 * Math.log2(f * move / 440)) / 12) / f;
+            if (f && flat) want = flat * move / f;
+            else if (f && !toMelody) want = 440 * 2 ** (Math.round(12 * Math.log2(f * move / 440)) / 12) / f;
             else if (f && note) want = note * move / f;
             else if (!f) want = now;                                   // no voice: stay where it is
             // more than 7 semitones away from where it is: a wrong pitch, not followed
@@ -612,6 +619,8 @@ onmessage = (e) => {
     const m = e.data;
     if (m.load) { clips[m.load] = { x: m.x, rate: m.rate }; return; }
     const clip = clips[m.clip];
+    // not loaded yet (the page asked too early): answer anyway, so that it is not kept waiting
+    if (!clip) { postMessage({ out: null, id: m.id }); return; }
     let out;
     let found = null;
     if (!m.on) {
@@ -1317,8 +1326,8 @@ onmessage = (e) => {
                 // steady tone does not beat against the columns (moiré)
                 const reach = Math.max(span / plotW, 0.01 * rate) / 2;
                 for (let px = 0; px < plotW; px++) {
-                    const mid = from + (px + 0.5) / plotW * span;
-                    const a = Math.floor(mid - reach), b = Math.max(a + 1, Math.floor(mid + reach));
+                    const centre = from + (px + 0.5) / plotW * span;
+                    const a = Math.floor(centre - reach), b = Math.max(a + 1, Math.floor(centre + reach));
                     let lo = 0, hi = 0;
                     for (let i = a; i < b; i++) {
                         const v = x[(i % L + L) % L];
@@ -1402,6 +1411,7 @@ onmessage = (e) => {
                 on: effectNow(), mixes: mixesNow(), cut: !!effect.clip };
         }
         function ask() {
+            if (!loaded[clipId]) return;                 // ready() computes it once the clip is there
             if (!effectNow() && !mixesNow().length) { current = original; if (playing) start(); return; }
             busy = true;
             worker.postMessage(message());
@@ -1422,6 +1432,7 @@ onmessage = (e) => {
         }
         function heard(e) {
             busy = false;
+            if (!e.data.out) { if (again) { again = false; ask(); } return; }
             current = e.data.out;
             keepTracks(e);
             if (playing) start(); else drawWave();
@@ -1456,7 +1467,7 @@ onmessage = (e) => {
             if (effectNow() || mixesNow().length || needsTrack) {
                 // the first sound of a clip waits for the worker once
                 await new Promise((done) => {
-                    worker.onmessage = (e) => { worker.onmessage = heard; current = e.data.out; keepTracks(e); done(); };
+                    worker.onmessage = (e) => { worker.onmessage = heard; if (e.data.out) current = e.data.out; keepTracks(e); done(); };
                     worker.postMessage(message());
                 });
             }
