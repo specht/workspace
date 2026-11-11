@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hacker-AG</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="cookie-banner" id="banner">
+    <p>Wir und unsere 312 Partner verwenden Cookies, um dir das beste Erlebnis zu bieten.</p>
+    <button class="accept" onclick="closeBanner()">Alle akzeptieren</button>
+    <a class="settings" href="#" onclick="showSettings()">Einstellungen</a>
+  </div>
+
+  <div class="menu">
+    <img src="bilder/logo.svg" alt="logo.svg" class="logo">
+    <a href="#termine">hier klicken</a> für die Termine,
+    <a href="#anmelden">hier klicken</a> zum Anmelden
+  </div>
+
+  <h1>Hacker-AG</h1>
+  <p class="intro">Jeden Dienstag bauen wir Spiele, Roboter und Webseiten. Wer neu ist, ist willkommen!</p>
+  <img src="bilder/ag.svg" class="photo">
+
+  <h4 id="termine">Nächste Termine</h4>
+  <ul class="dates">
+    <li class="on">12. Mai: Spiele mit Python</li>
+    <li class="off">19. Mai: Webseiten bauen</li>
+    <li class="on">26. Mai: Roboter</li>
+  </ul>
+
+  <p class="scarcity">Nur noch <strong>2 Plätze</strong> frei! Die Anmeldung endet in <span id="countdown">05:00</span>.</p>
+
+  <h4 id="anmelden">Anmelden</h4>
+  <form id="form">
+    <input id="name" type="text" placeholder="Name">
+    <input id="email" type="email" placeholder="E-Mail">
+    <p class="small">
+      <input type="checkbox" id="newsletter" checked>
+      Entfernen Sie das Häkchen nicht, wenn Sie keine Angebote nicht verpassen möchten.
+    </p>
+    <div class="send" onclick="send()">Anmelden</div>
+  </form>
+
+  <div class="top" onclick="window.scrollTo(0, 0)">↑</div>
+  <script src="script.js"></script>
+</body>
+</html>

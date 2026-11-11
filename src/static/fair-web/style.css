@@ -1,0 +1,98 @@
+* {
+  outline: none;
+}
+
+body {
+  max-width: 40em;
+  margin: 0 auto;
+  padding: 1em;
+  font-family: sans-serif;
+  color: #999999;
+  background: #ffffff;
+}
+
+h1 {
+  color: #2b8a3e;
+}
+
+h4 {
+  font-size: 1.5em;
+  color: #2b8a3e;
+}
+
+.menu a {
+  color: #aaaaaa;
+  text-decoration: none;
+}
+
+.logo {
+  width: 3em;
+  vertical-align: middle;
+}
+
+.photo {
+  width: 100%;
+}
+
+.on {
+  color: #51cf66;
+}
+
+.off {
+  color: #ff6b6b;
+}
+
+.cookie-banner {
+  padding: 1em;
+  margin-bottom: 1em;
+  background: #f1f3f5;
+}
+
+.accept {
+  display: block;
+  width: 100%;
+  padding: 0.8em;
+  font-size: 1.2em;
+  color: #ffffff;
+  background: #2b8a3e;
+  border: 0;
+}
+
+.settings {
+  font-size: 0.6em;
+  color: #cccccc;
+}
+
+.scarcity {
+  color: #e03131;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.2;
+  }
+}
+
+input {
+  display: block;
+  margin: 0.5em 0;
+  padding: 0.4em;
+}
+
+input.error {
+  border: 2px solid #ff6b6b;
+}
+
+.small {
+  font-size: 0.7em;
+}
+
+.send,
+.top {
+  display: inline-block;
+  padding: 0.5em 1em;
+  color: #ffffff;
+  background: #91a7ff;
+  cursor: pointer;
+}
