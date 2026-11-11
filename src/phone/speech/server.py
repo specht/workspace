@@ -385,7 +385,7 @@ def duration(source):
 
 
 # Whether YouTube still lets this server download, for »Betrieb« on /admin
-# (include/server_health.rb asks every few hours): the first five seconds
+# (include/server_health.rb asks once a day): the first five seconds
 # of »Me at the zoo«, the first video on YouTube (2005, 19 s), which will
 # not go away; with the cookies, as music is fetched, and like fetch once
 # more with the newest yt-dlp after a failure. Not cached, so it is a real

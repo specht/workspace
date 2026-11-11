@@ -10,9 +10,11 @@ class Main < Sinatra::Base
     # successful run); BACKUP_MAX_AGE_HOURS in credentials.rb, default 26.
     BACKUP_STAMP_FILE = '/internal/backup-done'
     HEALTH_ALERT_FILE = '/internal/health-alerts.json'
-    # the last test download from YouTube (youtube_check!), every six hours
+    # the last test download from YouTube (youtube_check!), once a day: often
+    # enough to find dead cookies before the next lesson, rarely enough not
+    # to bother YouTube
     YOUTUBE_CHECK_FILE = '/internal/youtube-check.json'
-    YOUTUBE_CHECK_EVERY = 6 * 3600
+    YOUTUBE_CHECK_EVERY = 24 * 3600
     PROBE_SECONDS = 3
 
     @@process_started_at = Time.now

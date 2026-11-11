@@ -135,7 +135,7 @@ in `test/health_test.rb`):
   (Löschungen, Links, Erinnerungen, die Speichermessung von
   `housekeeping.rb`): gestört, wenn sie länger als zwei Stunden nicht
   gelaufen sind.
-- **Musik von YouTube:** Alle sechs Stunden lädt der Sprachdienst die ersten
+- **Musik von YouTube:** Einmal am Tag lädt der Sprachdienst die ersten
   fünf Sekunden von »Me at the zoo« herunter, dem ersten Video auf YouTube
   (`/youtube-check` in `src/phone/speech/server.py`, angestoßen von den
   stündlichen Aufgaben, das Ergebnis in `/internal/youtube-check.json`): mit
@@ -144,7 +144,7 @@ in `test/health_test.rb`):
   wenn das misslingt, mit der letzten Zeile von yt-dlp; verlangt YouTube
   eine Anmeldung (»Sign in to confirm you're not a bot«), braucht es eine
   neue `cookies.txt` des Kontos dafür und danach `./config.rb up -d`.
-  Ansehen, wenn die letzte Probe mehr als 13 Stunden alt ist.
+  Ansehen, wenn die letzte Probe mehr als zwei Tage alt ist.
 
 Ist etwas davon gestört, bekommt die Administration einmal am Tag eine
 E-Mail je Punkt (vermerkt in `/internal/health-alerts.json`; für den

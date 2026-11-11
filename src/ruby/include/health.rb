@@ -172,7 +172,7 @@ module Health
             how = [("#{result['seconds']} s" if result['seconds']), ("yt-dlp #{result['yt_dlp']}" if result['yt_dlp']),
                    result['cookies'] ? 'mit Cookies' : 'ohne Cookies'].compact.join(', ')
             text = "Probe-Download vor #{age_text(age)} gelungen (#{how})."
-            return Check.new(:key => 'youtube', :label => label, :state => :ok, :text => text) if age <= 2 * every + 3600
+            return Check.new(:key => 'youtube', :label => label, :state => :ok, :text => text) if age <= 2 * every
 
             return Check.new(:key => 'youtube', :label => label, :state => :warn,
                 :text => "#{text} Seitdem keine Probe mehr: Laufen die stündlichen Aufgaben?")
