@@ -237,8 +237,9 @@ seconds at 720p each.
    as a try box, Opus 1.5, SoundStream and EnCodec, a reflection on codecs
    that invent details; the picture is a timeline. The audio activity is
    complete in its eight parts. Open: listening by a person (the clips, the
-   codec at OFFSET 15, the pre-echo), the titles, perhaps a person box for
-   Brandenburg. On 11 November 2026 the maintainer took both activities
+   codec at OFFSET 15, the pre-echo), the titles. Brandenburg has a person
+   box since 11 November 2026 (»Karlheinz Brandenburg cropped.jpg«, CC BY
+   2.0, Christliches Medienmagazin pro). On 11 November 2026 the maintainer took both activities
    out of development: the section is »Bilder, Ton und Kompression«, the
    /lehrplan graph recomputed, Fourier's box placed, and the video page
    says 6 Doppelstunden until parts 7 to 9 are written.

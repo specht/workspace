@@ -973,6 +973,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1954 -->
+<!-- part: brandenburg -->
+### Karlheinz Brandenburg
+
+<div class='person'>
+<img src='brandenburg.webp' alt='Karlheinz Brandenburg, 2010: ein Mann mit grauem Haar, grauem Bart und randloser Brille, der freundlich lächelt, in einem schwarzen Sakko über einem roten Hemd, vor einer hellen Wand.'>
+<p><strong>Karlheinz Brandenburg</strong> (geboren 1954), Elektroingenieur aus Erlangen. In seiner Doktorarbeit von 1989 codierte er Musik nach dem, was das Ohr wahrnimmt, und mit seinem Team am Fraunhofer-Institut für Integrierte Schaltungen in Erlangen entwickelte er daraus das Verfahren, das als MP3 bekannt wurde.</p>
+<p>Später lehrte er an der Technischen Universität Ilmenau und leitete dort das Fraunhofer-Institut für Digitale Medientechnologie. 2014 kam er in die Internet Hall of Fame.</p>
+<p class='person-credit'>Foto: Christliches Medienmagazin pro, 2010, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Karlheinz_Brandenburg_cropped.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1955 -->
 <!-- part: crockford -->
 ### Douglas Crockford

@@ -1952,6 +1952,8 @@ Alles, was du gebaut hast, steckt in den Codecs, die heute jeden Tag Milliarden 
 
 Zum Prüfen hörte Brandenburg immer wieder ein Lied: »Tom's Diner« von Suzanne Vega, eine Stimme ohne Begleitung. Eine einzelne Stimme verdeckt wenig, und jeder Fehler ist zu hören. 1995 stimmten die Forscher in Erlangen ab, wie die Dateien heißen sollten, und wählten die Endung `.mp3`. Wer MP3 benutzen wollte, zahlte bis 2017 Lizenzen; dann lief das letzte Patent ab, und MP3 ist frei.
 
+_person(brandenburg)
+
 ### Nach MP3
 
 **AAC** wurde 1997 als Nachfolger von MP3 genormt, von Dolby, AT&T, Fraunhofer und Sony gemeinsam. Es hat nur noch die MDCT, ohne die Filterbank davor, und Blöcke mit 1.024 oder achtmal 128 Zahlen, wie im Kapitel über Blöcke. AAC steckt in Videos, bei Apple und bei den meisten Musikdiensten.
