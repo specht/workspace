@@ -6,32 +6,34 @@
 // data-stepper; its buttons say what they do with data-go (first, prev,
 // next, last), and the keys press them, so a widget does nothing extra.
 //
-// The keys go to the widget that has the window: of the widgets that show
-// at least half of themselves or fill at least half of the window, the one
-// that takes up most of it. That widget gets the class stepper-has-keys
-// (its left edge in the purple of »current«, default.css), so that the
-// reader sees where the keys go. Without such a widget the keys do what
-// they do on the page (Pos1 and Ende scroll to its start and end). They
+// ← and → go to the widget that takes up most of the window; it gets the
+// class stepper-has-keys (its left edge in the purple of »current«,
+// default.css), so that the reader sees where they go. Pos1 and Ende go to
+// it only while it has the window, showing at least half of itself or
+// filling at least half of the window; otherwise they scroll the page to
+// its start and end, as they do without a widget. The keys
 // leave alone a text field (the cursor moves there), a key with Ctrl, Alt
 // or Cmd, and an open dialog such as a picture opened large, which steps
 // with the arrow keys itself.
+// the widget that takes up most of the window, and whether it has the
+// window (half of itself visible, or half of the window filled)
 const stepperWithKeys = () => {
     let best = null;
     let bestArea = 0;
+    let holds = false;
     const windowArea = window.innerWidth * window.innerHeight;
     for (const widget of document.querySelectorAll('[data-stepper]')) {
         const rect = widget.getBoundingClientRect();
         const width = Math.min(rect.right, window.innerWidth) - Math.max(rect.left, 0);
         const height = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
         const area = Math.max(0, width) * Math.max(0, height);
-        const own = rect.width * rect.height;
-        const holds = area > 0 && (area >= 0.5 * own || area >= 0.5 * windowArea);
-        if (holds && area > bestArea) {
+        if (area > bestArea) {
             best = widget;
             bestArea = area;
+            holds = area >= 0.5 * rect.width * rect.height || area >= 0.5 * windowArea;
         }
     }
-    return best;
+    return { widget: best, holds };
 };
 
 document.addEventListener('keydown', (event) => {
@@ -43,8 +45,9 @@ document.addEventListener('keydown', (event) => {
         (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return;
     if (document.querySelector('dialog[open]')) return;
 
-    const best = stepperWithKeys();
+    const { widget: best, holds } = stepperWithKeys();
     if (!best) return;
+    if ((which === 'first' || which === 'last') && !holds) return;
     const button = best.querySelector(`[data-go='${which}']`);
     if (!button) return;
     // at the start or the end already: the key is still the widget's, so
@@ -60,7 +63,7 @@ document.addEventListener('keydown', (event) => {
     let waiting = 0;
     const mark = () => {
         waiting = 0;
-        const best = stepperWithKeys();
+        const best = stepperWithKeys().widget;
         if (best === marked) return;
         if (marked) marked.classList.remove('stepper-has-keys');
         if (best) best.classList.add('stepper-has-keys');
