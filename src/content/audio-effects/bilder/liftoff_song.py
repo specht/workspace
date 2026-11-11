@@ -3,7 +3,8 @@
 Launch_Coverage_Program_LOS, the commentary channel without the rocket),
 for the autotune widget: the commentary as it was said over the verse, the
 build and »and liftoff« on the drop, sung only in the chorus (»The crew of
-Artemis II now bound for the Moon, humanity's next great voyage begins«); in the arc of a dance
+Artemis twoooo / now bound for the Moooon«), answered spoken (»humanity's
+next great voyage begins«); in the arc of a dance
 track at 128 beats a minute
 in B minor (Bm G D A): a funky verse, the countdown as the build (a snare
 roll getting faster, a rise of noise, no bass), a stop, and on »liftoff« the
@@ -66,6 +67,10 @@ WORDS = {
     'crew-moon': [(L + 15.02, L + 15.12, 1), (L + 15.12, L + 15.36, 1), (L + 15.36, L + 15.56, 1), (L + 15.56, L + 15.92, 3),
                   (L + 15.92, L + 16.18, 1), (L + 16.18, L + 16.56, 1), (L + 16.56, L + 16.78, 1), (L + 16.78, L + 17.14, 1),
                   (L + 17.14, L + 17.26, 1), (L + 17.26, L + 17.50, 1)],
+    'crew-two': [(L + 15.02, L + 15.12, 1), (L + 15.12, L + 15.36, 1), (L + 15.36, L + 15.56, 1), (L + 15.56, L + 15.92, 3),
+                 (L + 15.92, L + 16.18, 1)],
+    'bound-moon': [(L + 16.18, L + 16.56, 1), (L + 16.56, L + 16.78, 1), (L + 16.78, L + 17.14, 1), (L + 17.14, L + 17.26, 1),
+                   (L + 17.26, L + 17.50, 1)],
     'humanity-begins': [(L + 18.04, L + 18.64, 4), (L + 18.64, L + 18.82, 1), (L + 18.82, L + 19.22, 1), (L + 19.22, L + 19.68, 2),
                         (L + 19.68, L + 20.14, 2)],
 }
@@ -300,15 +305,17 @@ SPOKEN = [
     (2.0, 2.40, 8.90),                  # … ready to ride the most powerful rocket
     (8.8, 11.25, 13.60),                # NASA has ever launched: without the pause of 2,4 s
     (16 * BAR - 12.94, OFFSET + 0.0, OFFSET + 13.80),   # … and liftoff, spoken, »lift« on the drop
+    (19 * BAR, OFFSET + 17.98, OFFSET + 20.30),         # humanity's next great voyage begins, spoken, as an answer
+    (22 * BAR, OFFSET + 17.98, OFFSET + 20.30),
 ]
-# the chorus, sung, after the drop: (bar, sixteenth in the bar, piece, sixteenths per syllable
-# or None for the length it was spoken, a note per syllable); a length None
-# is rounded to whole sixteenths, so nothing is drawn out
+# the chorus, sung, after the drop: (bar, sixteenth in the bar, piece, sixteenths per syllable,
+# None for the length it was spoken, rounded to whole sixteenths, or 'hold'
+# for that and the last syllable held to the end of the bar; a note per syllable)
 SHEET = [
-    (17, 0, 'crew-moon', None, 'B B B D+ C#+ B A A F# F# A B'),
-    (18, 0, 'humanity-begins', None, 'F# A B D+ C#+ B A F# A B'),
-    (20, 0, 'crew-moon', None, 'B B B D+ C#+ B A A F# F# A B'),
-    (21, 0, 'humanity-begins', None, 'F# A B D+ C#+ B A F# A B'),
+    (17, 0, 'crew-two', 'hold', 'B B B D+ C#+ B A'),
+    (18, 0, 'bound-moon', 'hold', 'A A F# A B'),
+    (20, 0, 'crew-two', 'hold', 'B B B D+ C#+ B A'),
+    (21, 0, 'bound-moon', 'hold', 'A A F# A B'),
 ]
 NOTES = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
 
@@ -337,8 +344,11 @@ for start, t0, t1 in SPOKEN:
 for bar, sixteenth, name, lengths, notes in SHEET:
     times = PIECES[name]
     notes = notes.split()
-    if lengths is None:
+    if lengths in (None, 'hold'):
+        held_last = lengths == 'hold'
         lengths = [max(1, round((b - a) / SIXTEENTH)) for a, b in zip(times[:-1], times[1:])]
+        if held_last:                            # the last syllable held to the end of the bar (»twoooo«, »mooon«)
+            lengths[-1] = max(lengths[-1], 16 - sixteenth - sum(lengths[:-1]))
     assert len(lengths) == len(times) - 1 == len(notes), name
     bounds = [voice_start(times[0], times[1])] + [refine(t) for t in times[1:-1]] + [times[-1]]
     slot = bar * BAR + sixteenth * SIXTEENTH
@@ -410,25 +420,28 @@ for bar, chord in enumerate(CHORDS):
     t0 = bar * BAR
     root = semis_hz(chord[0], C2 / 2)
     if bar in VERSE:
-        for k in (0, 6, 10):                     # kick
-            place(drums, kick, t0 + k * SIXTEENTH, 0.85)
-        for k in (4, 12):
-            place(drums, snare, t0 + k * SIXTEENTH, 0.6)
+        # the first four bars only hi-hats, then a plain, solid groove
         for k in range(0, 16, 2):
-            place(drums, hat, t0 + k * SIXTEENTH, 0.2 if k % 4 == 0 else 0.13)
+            place(drums, hat, t0 + k * SIXTEENTH, 0.14)
+        if bar >= 4:
+            for k in (0, 8, 10):
+                place(drums, kick, t0 + k * SIXTEENTH, 0.8)
+            for k in (4, 12):
+                place(drums, snare, t0 + k * SIXTEENTH, 0.55)
         for k, level in {0: 0.08, 3: 0.06, 6: 0.08, 10: 0.07, 14: 0.07}.items():
             place(keys, sum(clav(semis_hz(c + 12 if c < 6 else c), int(SIXTEENTH * 1.5 * RATE)) for c in chord), t0 + k * SIXTEENTH, level)
         for k, length in ((0, 6), (6, 4), (10, 6)):
             place(low, pluck_bass(root * 2, int(length * SIXTEENTH * RATE)), t0 + k * SIXTEENTH, 0.17)
     elif bar in BUILD:
-        # the snare roll: quarters, eighths, sixteenths, thirty-seconds, then the stop
-        step = {8: 4, 9: 4, 10: 2, 11: 2, 12: 1, 13: 1, 14: 0.5, 15: 0.5}[bar]
+        # the snare roll: quarters, eighths, then sixteenths, louder evenly; the last beat silent
+        step = {8: 4, 9: 4, 10: 2, 11: 2, 12: 1, 13: 1, 14: 1, 15: 1}[bar]
         k = 0.0
-        while k < (8 if bar == 15 else 16):
-            place(drums, snare, t0 + k * SIXTEENTH, 0.25 + 0.4 * (bar - 8) / 7)
+        while k < (12 if bar == 15 else 16):
+            progress = ((bar - 8) * 16 + k) / (8 * 16)
+            place(drums, snare, t0 + k * SIXTEENTH, 0.12 + 0.33 * progress)
             k += step
         for c in chord:                          # the chord held high and thin
-            place(keys, saws(semis_hz(c) * 4, int(BAR * RATE), top=12000) * np.linspace(0.3, 1, int(BAR * RATE)), t0, 0.012 if bar < 15 else 0.0)
+            place(keys, saws(semis_hz(c) * 4, int(BAR * RATE), top=12000) * np.linspace(0.3, 1, int(BAR * RATE)), t0, 0.006 + 0.001 * (bar - 8) if bar < 15 else 0.0)
     else:
         if bar in (16, 20):
             place(drums, crash, t0, 0.4)
@@ -455,10 +468,10 @@ for bar, chord in enumerate(CHORDS):
             note = ladder[min(len(ladder) - 1, i0 + steps)]
             place(lead, fade(saws(semis_hz(note), int(2 * SIXTEENTH * 0.8 * RATE), voices=(0.995, 1.0, 1.005)), 3, 30), t0 + k * 2 * SIXTEENTH, 0.13)
 # a rise of noise through the build, brighter as it goes
-n = int(8 * BAR * RATE)
+n = int((8 * BAR - BEAT) * RATE)
 noise = rng.uniform(-1, 1, n)
 noise = noise - np.concatenate([[0], noise[:-1]])
-place(drums, noise * np.linspace(0, 1, n) ** 3, 8 * BAR, 0.08)
+place(drums, noise * np.linspace(0, 1, n) ** 3, 8 * BAR, 0.05)
 place(drums, crash[::-1][-int(1.5 * RATE):], 16 * BAR - 1.5, 0.3)
 
 

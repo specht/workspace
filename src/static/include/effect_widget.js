@@ -439,6 +439,27 @@
             near.sort((a, b) => a - b);
             voice[k] = found[k] > 60 && found[k] < 1000 && near.length ? near[near.length >> 1] : 0;
         }
+        // with the melody as the target: one factor for each connected voiced
+        // stretch (a syllable, a held vowel), from its median pitch to the
+        // melody's note there, so that it sits steadily on the note
+        if (toMelody) {
+            const out2 = new Float32Array(n);
+            let now2 = move, k = 0;
+            while (k < n) {
+                if (!voice[k]) { out2[k] = now2; k++; continue; }
+                let e = k;
+                while (e < n && (voice[e] || (e + 2 < n && (voice[e + 1] || voice[e + 2])))) e++;
+                const pitches = [], targets = [];
+                for (let j = k; j < e; j++) { if (voice[j]) pitches.push(voice[j]); if (melody[j] > 60) targets.push(melody[j]); }
+                pitches.sort((a, b) => a - b);
+                targets.sort((a, b) => a - b);
+                const own = pitches[pitches.length >> 1];
+                const want = targets.length ? targets[targets.length >> 1] * move / own : move;
+                for (let j = k; j < e; j++) { now2 += (want - now2) * step; out2[j] = now2; }
+                k = e;
+            }
+            return out2;
+        }
         let now = move, note = 0, quiet = 0;
         for (let k = 0; k < n; k++) {
             const f = voice[k];
