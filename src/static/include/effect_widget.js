@@ -37,9 +37,11 @@
     const CLIPS = {
         musik: { label: 'Musik', url: '/audio/musik.wav' },
         stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
+        // stimme.wav timed to »Ode an die Freude« of stimmeMelodie (bilder/voice_melody.py)
+        stimmeImTakt: { label: 'Stimme', url: '/audio/stimme-im-takt.wav' },
         melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
         schlagzeug: { label: 'Schlagzeug', url: '/audio/musik/snare.flac' },
-        // »Ode an die Freude« on the syllables of stimme.wav, as long as it (bilder/voice_melody.py)
+        // »Ode an die Freude«, as long as stimme-im-takt.wav (bilder/voice_melody.py)
         stimmeMelodie: { label: 'Melodie', url: '/audio/stimme-melodie.wav' },
     };
 
@@ -156,7 +158,7 @@
         },
         autotune: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'stimmeMelodie'],
+            clips: ['stimmeImTakt', 'stimmeMelodie'],
             plain: ['stimmeMelodie'],            // played as it is
             melody: 'stimmeMelodie',             // the target of »Melodie«
             choices: [
