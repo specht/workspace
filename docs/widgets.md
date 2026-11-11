@@ -621,6 +621,17 @@ only to look nice.
   many), and no frame, label or lightbox of its own: the task card is the
   frame. The current line of the plan is marked purple in the editor, its
   number brighter.
+- **Every widget fits in the window** (`stepper_keys.js`, `stepperWindowFit`),
+  from 768 px wide: the school's screen is 1920 × 1080, which leaves a page
+  of about 1920 × 900 under the browser's bars and the taskbar. A widget
+  taller than the window under the sticky bar first shrinks its picture
+  with CSS zoom (the decoder's view, the DCT widget's picture with its grid,
+  the two frames of block matching, an Algo Stepper's SVG; not Pip, whose
+  canvases lie over the SVG), down to 60 %, so its text keeps its size;
+  if that is not enough, the whole widget, down to 80 %. Fitted when it
+  comes near the window, when it changes size on its own (a picture
+  loaded) and on a new window size; the lightbox clears it. On a phone the
+  lightbox shows a widget whole.
 - **A lightbox for a demo**: every widget has a square button at its top
   right (`bi-fullscreen`, `stepper_keys.js`) that opens it larger in a
   lightbox on a black background, for the big screen. The keys and the
