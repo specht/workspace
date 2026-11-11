@@ -670,7 +670,7 @@ Spielt man eine Aufnahme schneller ab, wird sie höher, und kürzer: Doppelt so 
 _task(speed-length)
 
 <div class='history' id='history-sped-up'>
-<img src='geschichte/sped-up.webp' alt='FIFTY FIFTY 2023: zwei der vier Sängerinnen in Rosa und Weiß winken bei einer Pressekonferenz'>
+<img class='wide' src='geschichte/sped-up.webp' alt='FIFTY FIFTY 2023: die vier Sängerinnen in Rosa und Weiß winken bei einer Pressekonferenz'>
 <p><strong>Nightcore, »sped up« und »slowed«</strong>, 2001. »Nightcore« war der Name eines Schulprojekts: Lieder, etwa 35 % schneller abgespielt, und damit höher. In den frühen 2020er-Jahren wurde das durch TikTok wieder beliebt. Bei FIFTY FIFTYs »Cupid« wurde 2023 zuerst die schnellere Fassung eines Fans auf TikTok bekannt, dann brachte die Plattenfirma eine eigene heraus. Den umgekehrten Weg geht »slowed and reverb«: ein Lied langsamer abgespielt, also tiefer, und mit Hall dazu, beliebt auf YouTube und TikTok.</p>
 <p>Hör dir »Cupid« in drei Fassungen an, alle von FIFTY FIFTY auf YouTube: <a href='https://www.youtube.com/watch?v=OFDTqxlgWOw'>wie aufgenommen</a>, <a href='https://www.youtube.com/watch?v=Xxb9Hl5d6n4'>schneller</a> und <a href='https://www.youtube.com/watch?v=31Igu1C9H4g'>langsamer</a>. Achte auf die Stimmen: Wie klingen sie in der schnellen Fassung, und wie lang ist jede Fassung?</p>
 <p class='history-credit'>FIFTY FIFTY. Foto: K-POPIT, 2023, CC BY 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:20230413_FIFTY_FIFTY_(%ED%94%BC%ED%94%84%ED%8B%B0%ED%94%BC%ED%94%84%ED%8B%B0).jpg'>Wikimedia Commons</a>)</p>
@@ -806,10 +806,10 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 </div>
 
 <div class='history' id='history-songify'>
-<img src='geschichte/songify.webp' alt='Die Gregory Brothers 2012 auf der Bühne der VidCon: eine Frau mit langen Haaren fasst sich lachend an den Kopf, daneben ein Mann mit Kappe'>
+<img class='wide' src='geschichte/songify.webp' alt='Die Gregory Brothers 2010 bei den Streamy Awards: drei Männer in dunklen Sakkos und eine Frau im grünen Kleid vor einer roten Wand, lachend, mit einem Preis in den Händen'>
 <p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten, wie das Widget oben Kennedy. Ab 2011 hieß die Reihe »Songify the News«.</p>
 <p>Hör dir zwei ihrer Lieder auf YouTube an: den <a href='https://www.youtube.com/watch?v=MX0D4oZwCsA'>»Double Rainbow Song«</a> aus dem Video eines Mannes, der einen doppelten Regenbogen sieht, und <a href='https://www.youtube.com/watch?v=sP4NMoJcFd4'>»Can't Hug Every Cat«</a> aus dem Video einer Frau, die Katzen liebt. Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben?</p>
-<p class='history-credit'>Die Gregory Brothers. Foto: Gage Skidmore, 2012, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:The_Gregory_Brothers_(7478138936).jpg'>Wikimedia Commons</a>)</p>
+<p class='history-credit'>Die Gregory Brothers. Foto: The Bui Brothers, 2010, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Gregories.jpg'>Wikimedia Commons</a>)</p>
 </div>
 
 Ein Halbton ist ein Zwölftel einer Oktave: zwölf Halbtöne verdoppeln die Frequenz, ein Halbton multipliziert sie mit \\(2^{1/12} \approx 1{,}0595\\). Von einem Ton \\(f\\) bis zum Kammerton A mit 440 Hz sind es also \\(12 \cdot \log\_2(f / 440)\\) Halbtöne. Rundet man diese Zahl, hat man den nächsten Halbton.

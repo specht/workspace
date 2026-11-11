@@ -8639,6 +8639,9 @@ h3:has(+ .person) {
 .history { display: block; }
 .history:has(> img) { display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 0 1.1em; }
 .history > img { grid-column: 1; grid-row: 1 / span 20; width: 100%; height: auto; border-radius: 0.3em; }
+/* a group that 4:5 would cut: a wide picture (3:2 or 16:10) in a wider column */
+.history:has(> img.wide) { grid-template-columns: 13em minmax(0, 1fr); }
+@media (max-width: 576px) { .history:has(> img.wide) { grid-template-columns: 9em minmax(0, 1fr); } }
 .history p.history-credit { font-size: 0.82em; color: var(--bs-secondary-color); }
 .book > .book-cover {
     grid-column: 1;

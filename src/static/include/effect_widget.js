@@ -16,6 +16,9 @@
 // and its function in WORKER, written like the Python of the page.
 (function () {
     'use strict';
+    // the cache buster of this script's address, also for the sounds: a
+    // new version of a sound is fetched again, not taken from the cache
+    const BUSTER = ((document.currentScript && document.currentScript.src) || '').split('?')[1] || '';
     const FADE = 0.03;
     const LABEL_W = 46, AXIS = 18;
     const de = (n, digits = 0) => n.toLocaleString('de-DE', { minimumFractionDigits: digits, maximumFractionDigits: digits });
@@ -77,7 +80,7 @@
         kennedyMelodie: { label: 'Melodie', url: '/audio/kennedy-melodie.flac',
             credit: 'Die Melodie zu Kennedys Worten: ein Ton für jedes Wort, in seiner Stimmlage.' },
         kennedyBand: { label: 'Band', url: '/audio/kennedy-band.flac',
-            credit: "C, G, Am, F, 120 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
+            credit: "D, A, Bm, G, 120 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi
@@ -1410,7 +1413,7 @@ onmessage = (e) => {
         }
         async function loadClip(id) {
             if (!loaded[id]) {
-                const response = await fetch(CLIPS[id].url);
+                const response = await fetch(BUSTER ? `${CLIPS[id].url}?${BUSTER}` : CLIPS[id].url);
                 if (!response.ok) throw new Error(response.status);
                 const decoded = await ctx.decodeAudioData(await response.arrayBuffer());
                 loaded[id] = decoded.getChannelData(0).slice();
