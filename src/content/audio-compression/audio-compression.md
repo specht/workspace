@@ -432,6 +432,13 @@ Dort stehen dieselben 60 Bytes wie oben. Öffne dann `a.wav` im Explorer und spi
 <strong>Ausprobieren:</strong> Schreib in <code>tones.py</code> eine dritte Datei mit <code>tone(440, 2, 8000)</code> und Abtastrate 8.000. Klingt sie anders als <code>a.wav</code>? Und wie groß sind die beiden Dateien (<code>ls -l</code>)? Versuch es dann mit <code>tone(5000, 2, 8000)</code>: Welchen Ton hörst du, und warum keinen mit 5.000 Hz? Nimm die Zeilen danach wieder heraus.
 </div>
 
+Mit 8.000 Samples in der Sekunde kommen auf eine Millisekunde acht Samples, und ein Ton mit 5.000 Hz schwingt in derselben Zeit fünfmal. Für fünf Schwingungen sind acht Punkte zu wenig: Sie liegen genau so, wie sie bei einem Ton mit 3.000 Hz lägen, nur auf dem Kopf.
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='aliasing-wide.svg' alt='Eine Millisekunde: dunkel ein Ton mit 5.000 Hz, fünf Schwingungen, und auf ihm acht Samples als Punkte mit Stielen, eines alle 0,125 ms. Gestrichelt lila ein Ton mit 3.000 Hz, drei Schwingungen, der genau durch dieselben acht Punkte geht.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='aliasing.svg' alt='Eine Millisekunde: dunkel ein Ton mit 5.000 Hz, fünf Schwingungen, und auf ihm acht Samples als Punkte mit Stielen, eines alle 0,125 ms. Gestrichelt lila ein Ton mit 3.000 Hz, drei Schwingungen, der genau durch dieselben acht Punkte geht.'>
+
+Wer die Samples abspielt, kennt nur die Punkte und hört den Ton mit 3.000 Hz, 8.000 minus 5.000. Eine Frequenz über der halben Abtastrate kommt also nicht einfach abhanden, sie taucht als eine andere, tiefere wieder auf. Das heißt **Aliasing**, nach dem englischen *alias*, ein anderer Name. Darum filtert ein Wandler vor dem Messen alles über der halben Abtastrate heraus.
+
 ### Drei Töne auf einmal
 
 Zwei Klänge, die zugleich erklingen, sind in Zahlen eine Summe: Der Druck der Luft ist an jeder Stelle die Summe dessen, was beide Klänge aus ihr machen. Ein Akkord aus drei Tönen, A, Cis und E, ist darum die Summe dreier Töne. Schreib unten in `tones.py` dazu:
@@ -830,6 +837,9 @@ Die Linien der Stimme sind ihre **Obertöne**: Die Stimmbänder schwingen mit ei
 
 Wie findet man heraus, wie stark eine Frequenz in `N` Samples steckt? Man nimmt einen Testton dieser Frequenz, multipliziert jedes Sample mit ihm und zählt alles zusammen. Steckt die Frequenz im Klang, gehen beide gemeinsam auf und ab, die Produkte sind meist positiv, und die Summe wird groß. Andere Frequenzen geraten mal in den gleichen Takt, mal in den entgegengesetzten, und ihre Produkte heben sich auf.
 
+<img class='drawing d-none d-lg-block' style='width: 60em' src='testton-wide.svg' alt='Zwei Reihen mit je drei Bildern aus 16 Samples als Stiele. Oben: ein Klang mit 2 Schwingungen, ein Testton mit ebenfalls 2 Schwingungen und ihr Produkt Sample für Sample, alle Stiele nach oben, lila; daneben Summe: 8. Unten: derselbe Klang, ein Testton mit 3 Schwingungen und ihr Produkt, die Stiele mal nach oben, lila, mal nach unten, grau; daneben Summe: 0.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='testton.svg' alt='Zweimal drei Bilder aus 16 Samples als Stiele untereinander. Zuerst ein Klang mit 2 Schwingungen, ein Testton mit ebenfalls 2 Schwingungen und ihr Produkt, alle Stiele nach oben, lila, Summe: 8. Dann derselbe Klang, ein Testton mit 3 Schwingungen und ihr Produkt, die Stiele mal nach oben, lila, mal nach unten, grau, Summe: 0.'>
+
 Ein Testton macht genau `k` Schwingungen in den `N` Samples; bei `rate` Samples in der Sekunde hat er die Frequenz `k * rate / N`. Weil ein Ton im Klang gegen den Testton verschoben sein kann, nimmt man zwei Testtöne, einen Kosinus und einen Sinus:
 
 $$c\_k = \sum\_{n=0}^{N-1} x\_n \cos\left(\frac{2\pi k n}{N}\right), \qquad s\_k = \sum\_{n=0}^{N-1} x\_n \sin\left(\frac{2\pi k n}{N}\right)$$
@@ -953,6 +963,11 @@ $$X\_k = E\_k + e^{-2\pi i k / N} \, O\_k, \qquad X\_{k + N/2} = E\_k - e^{-2\pi
 Warum? In der Summe von \\(X_k\\) sind die Summanden mit geradem `n = 2m` genau die DFT der geraden Samples, denn \\(2\pi k \cdot 2m / N = 2\pi k m / (N/2)\\). Bei ungeradem `n = 2m + 1` kommt nur der Faktor \\(e^{-2\pi i k / N}\\) dazu. Für \\(k + N/2\\) dreht sich jeder Testton der halben DFTs einmal ganz herum, und das ändert nichts; nur der Faktor wechselt sein Vorzeichen. So liefern zwei halbe DFTs alle `N` Ergebnisse.
 
 Die beiden halben DFTs macht man genauso, mit Vierteln, und so weiter, bis nur noch ein Sample übrig ist: Die DFT eines einzigen Samples ist das Sample selbst. Bei 8.192 = 2¹³ Samples sind das 13 Stufen mit je 8.192 Multiplikationen, gut 100.000 statt 67 Millionen. Das ist die **schnelle Fourier-Transformation**, auf Englisch Fast Fourier Transform, kurz FFT. Sie braucht eine Zweierpotenz als `N`.
+
+<img class='drawing d-none d-lg-block' style='width: 55em' src='fft-tree-wide.svg' alt='Ein Baum aus vier Reihen von Zellen. Oben x0 bis x7. Darunter zwei Gruppen: x0, x2, x4, x6 und x1, x3, x5, x7. Darunter vier: x0, x4; x2, x6; x1, x5; x3, x7. Unten acht einzelne Samples. Blaue Linien führen zu den Samples mit geradem Index einer Gruppe, lila Linien zu denen mit ungeradem. Daneben: eine DFT aus 8 Samples, zwei aus 4, vier aus 2, acht aus 1: das Sample selbst.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='fft-tree.svg' alt='Ein Baum aus vier Reihen von Zellen. Oben x0 bis x7. Darunter zwei Gruppen: x0, x2, x4, x6 und x1, x3, x5, x7. Darunter vier: x0, x4; x2, x6; x1, x5; x3, x7. Unten acht einzelne Samples. Blaue Linien führen zu den Samples mit geradem Index einer Gruppe, lila Linien zu denen mit ungeradem. Darunter: eine DFT aus 8 Samples, zwei aus 4, vier aus 2, acht aus 1.'>
+
+Blau führt zu den Samples mit geradem Index einer Gruppe, lila zu denen mit ungeradem. Von unten nach oben gelesen ist das, was `fft` tut: Aus acht DFTs von einem Sample werden vier von zwei, zwei von vier und eine von acht, in drei Stufen mit je acht Multiplikationen.
 
 Veröffentlicht haben sie James Cooley von IBM und John Tukey von der Universität Princeton 1965. Tukey soll die Idee in einer Sitzung der Berater von Präsident Kennedy gehabt haben, in der es darum ging, Atomwaffentests der Sowjetunion an Samples von Erdbebenstationen außerhalb des Landes zu erkennen. Später stellte sich heraus, dass Carl Friedrich Gauß denselben Trick schon um 1805 benutzt hatte, um die Bahnen der Kleinplaneten Pallas und Juno zu berechnen. Veröffentlicht wurde das erst nach seinem Tod.
 
