@@ -1739,18 +1739,29 @@ details.solution.hint-step-new > summary {
                     border-top: 0;
                     border-left: 1px solid #eee;
 
-                    /* never taller than the picture, so no bars: two lines
-                       in a narrow column, more where the column is wide
-                       (half of a wide row) and the picture tall */
+                    /* the progress at the bottom (.card-usage, absolute):
+                       its room kept free, the text centred above it */
+                    &:has(.card-usage) {
+                        padding-bottom: 2.3em;
+                    }
+
+                    /* never taller than the picture, so no bars: three
+                       lines in a narrow column, five where the column is
+                       wide (half of a wide row) and the picture tall, one
+                       less with the line »Baut auf …« (measured on the
+                       start page from 1200 to 1920 px) */
                     .abstract {
+                        -webkit-line-clamp: 3;
+                    }
+                    &:has(.card-requires) .abstract {
                         -webkit-line-clamp: 2;
                     }
                     @container (min-width: 600px) {
                         .abstract {
-                            -webkit-line-clamp: 4;
+                            -webkit-line-clamp: 5;
                         }
                         &:has(.card-requires) .abstract {
-                            -webkit-line-clamp: 3;
+                            -webkit-line-clamp: 4;
                         }
                     }
                     .card-requires {

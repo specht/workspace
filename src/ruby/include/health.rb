@@ -164,7 +164,7 @@ module Health
         label = 'Musik von YouTube'
         unless result
             return Check.new(:key => 'youtube', :label => label, :state => :unknown,
-                :text => 'Noch nicht geprüft: Die erste Probe läuft eine Weile nach dem Start.')
+                :text => 'Noch nicht geprüft: Die erste Probe beginnt etwa zehn Minuten nach dem Start des Servers und dauert bis zu sieben Minuten.')
         end
 
         age = now.to_i - result['at'].to_i
