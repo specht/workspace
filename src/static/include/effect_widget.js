@@ -38,7 +38,6 @@
         musik: { label: 'Musik', url: '/audio/musik.wav' },
         stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
         melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
-        schlagzeug: { label: 'Schlagzeug', url: '/audio/musik/snare.flac' },
         // recordings under free licences (audio/effects/), each with its credit
         gesang: { label: 'Gesang', url: '/audio/effects/singing-voice.flac',
             credit: "»Scarborough Fair« (traditionell), gesungen von Makemi, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Scarborough_Fair.ogg'>Wikimedia Commons</a>)" },
@@ -64,7 +63,7 @@
             credit: "»Javanese Court Gamelan 1 – Indonesia« von RTB45, CC BY 4.0 (<a href='https://freesound.org/people/RTB45/sounds/255544/'>Freesound</a>)" },
         veena: { label: 'Veena', url: '/audio/effects/veena.flac',
             credit: "»rAga kIravANi« von L. Ramakrishnan, CC0 (<a href='https://archive.org/details/LR_kIravANI'>Internet Archive</a>)" },
-        drumset: { label: 'Drumset', url: '/audio/effects/drums.flac',
+        schlagzeug: { label: 'Schlagzeug', url: '/audio/effects/drums.flac',
             credit: "»Rock-funk backbeat« von jmarcosfer, CC0 (<a href='https://freesound.org/people/jmarcosfer/sounds/592756/'>Freesound</a>)" },
         funkdrums: { label: 'Funk-Schlagzeug', url: '/audio/effects/funk-drums.flac',
             credit: "»Drums_120bpm_closedhat_snareghost_loop1« von tichec, CC0 (<a href='https://freesound.org/people/tichec/sounds/169870/'>Freesound</a>)" },
@@ -161,7 +160,7 @@
         },
         reverb: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['schlagzeug', 'drumset', 'klavier', 'gesang', 'chor', 'stimme'],
+            clips: ['schlagzeug', 'klavier', 'gesang', 'chor', 'stimme'],
             knobs: [
                 { key: 'size', label: 'Raumgröße', min: 0.5, max: 2, step: 0.05, value: 1,
                   marks: [[0.5, '½'], [1, '1'], [1.5, '1½'], [2, '2']], show: (v) => `${de(v, 2)}-mal` },
@@ -239,7 +238,7 @@
         },
         compressor: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['schlagzeug', 'funkdrums', 'dynamik', 'stimme', 'rock'],
+            clips: ['funkdrums', 'schlagzeug', 'dynamik', 'stimme', 'rock'],
             knobs: [
                 { key: 'threshold', label: 'Threshold', min: -48, max: 0, step: 1, value: -24,
                   marks: [[-48, '−48'], [-36, '−36'], [-24, '−24'], [-12, '−12'], [0, '0 dB']], show: signedDb },

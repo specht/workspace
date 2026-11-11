@@ -482,7 +482,7 @@ $$p\_n = c \cdot p\_{n-1} + (1 - c) \cdot |x\_n|$$
 <div class='effect-widget' data-effect='compressor'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir das Schlagzeug bei 20 : 1 an und zieh den Threshold langsam von 0 dB herunter bis −40 dB. Achte auf den Anschlag jeder Snare, den ersten Moment des Schlags: Wann wird er stumpf? Stell dann die Attack auf 30 ms: Was kommt zurück, und warum? Schau dabei rechts im Bild, wie viele dB der Compressor wegnimmt, und auf die Welle darunter.
+<strong>Ausprobieren:</strong> Hör dir das Schlagzeug bei 20 : 1 an und zieh den Threshold langsam von 0 dB herunter bis −40 dB. Achte auf den Anschlag jeder Snare, den ersten Moment des Schlags: Wann wird er stumpf? Stell dann die Attack auf 30 ms: Was kommt zurück, und warum? Schau dabei rechts im Bild, wie viele dB der Compressor wegnimmt, und auf die Welle darunter. Nimm dann das Funk-Schlagzeug, mit 20 dB Make-up Gain: Was wird aus den leisen Schlägen auf der Snare zwischen den lauten?
 </div>
 
 _task(compressor-level)
