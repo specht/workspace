@@ -57,6 +57,16 @@ class ActivityPartsTest < Minitest::Test
         assert_nil parts[2].first.at_css('.activity-part-next')
     end
 
+    def test_the_closing_chapter_ends_the_last_part
+        page = PAGE.sub('</div>\n', "</div>\n") + "<div class='autotoc-container' data-label='4. Wie geht es weiter?'><h2>4. Wie geht es weiter?</h2><p>Vier</p></div>"
+        split = ActivityParts.split(Nokogiri::HTML(page), 'audio')
+        assert_equal 3, split.size
+        last = split[2].first
+        assert_includes last.text, 'Vier'
+        assert_equal 'Wie geht es weiter?', last.css('h2').last.text
+        refute_includes split[0].first.text, 'Vier'
+    end
+
     def test_a_page_with_one_chapter_is_not_split
         one = "<h1>Kurz</h1><div class='autotoc-container' data-label='1. Alles'><h2>1. Alles</h2></div>"
         assert_empty ActivityParts.split(Nokogiri::HTML(one), 'kurz')

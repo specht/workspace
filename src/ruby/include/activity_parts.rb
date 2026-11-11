@@ -41,9 +41,24 @@ module ActivityParts
             .gsub(/\A-|-\z/, '')
     end
 
+    # The closing chapter »Wie geht es weiter?« (next_steps_test.rb) is no
+    # part of its own: it closes the last part, without a number.
+    CLOSING = 'Wie geht es weiter?'
+    def self.fold_closing(root)
+        containers = chapters(root)
+        last = containers.last
+        return unless containers.size > 2 && last['data-label'].to_s.strip.sub(/\A\d+\.\s*/, '') == CLOSING
+
+        h2 = last.at_css('h2')
+        h2.content = CLOSING if h2
+        containers[-2].add_child(last.children)
+        last.remove
+    end
+
     # One document per chapter, or [] when the page has fewer than two.
     # Returns [[root, title], …].
     def self.split(root, slug)
+        fold_closing(root)
         containers = chapters(root)
         return [] if containers.size < 2
 

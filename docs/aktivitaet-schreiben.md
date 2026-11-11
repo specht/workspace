@@ -611,7 +611,8 @@ verteilt, eine für jedes Kapitel (`##`). Das erste Kapitel steht unter
 `/slug`, die anderen unter `/slug/2`, `/slug/3` und so weiter. Jede Seite hat
 unter dem Titel eine Reihe mit allen Teilen, der aktuelle lila umrandet, und
 am Ende »Weiter mit Teil n: …«; die Kurzfassung (`abstract`) steht nur auf
-dem ersten Teil. Die Leiste der Kapitel oben nennt alle Teile und öffnet sie,
+dem ersten Teil. Ein letztes Kapitel »Wie geht es weiter?« ist kein eigener
+Teil: Es schließt den letzten ab, ohne Nummer. Die Leiste der Kapitel oben nennt alle Teile und öffnet sie,
 die Liste am Rand nur die Abschnitte des aktuellen. Ein alter Link auf eine
 Überschrift (`/slug#ein-ton-aus-zahlen`) führt zu dem Teil, der sie hat.
 
