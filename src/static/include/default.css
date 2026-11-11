@@ -3811,7 +3811,7 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        others): from edge to edge, the colour bar at the screen's edge,
        their content where the paragraphs start */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
-        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .a11y-demo, .dp-demo, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
+        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .a11y-demo, .dp-demo, .mail-demo, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         border-right-width: 0;
@@ -8848,6 +8848,7 @@ div[data-stepper],
 .motion-widget,
 .a11y-demo,
 .dp-demo,
+.mail-demo,
 .interleaving:not([data-task-editor]) {
     --widget: #5c677d;
     --widget-ink: #4a5264;
@@ -8874,6 +8875,7 @@ html[data-bs-theme="dark"] .abx-widget,
 html[data-bs-theme="dark"] .motion-widget,
 html[data-bs-theme="dark"] .a11y-demo,
 html[data-bs-theme="dark"] .dp-demo,
+html[data-bs-theme="dark"] .mail-demo,
 html[data-bs-theme="dark"] .interleaving:not([data-task-editor]) {
     --widget: #858d9e;
     --widget-ink: #a5abb7;
@@ -16551,7 +16553,8 @@ html[data-bs-theme="dark"] .a11y-demo {
     --a11y-bad: #ff6b6b;
 }
 .a11y-demo::before,
-.dp-demo::before {
+.dp-demo::before,
+.mail-demo::before {
     content: attr(data-chip);
     display: inline-block;
     padding: 0.15em 0.75em;
@@ -16827,4 +16830,219 @@ html[data-bs-theme="dark"] .dp-result-half { color: #ffe066; background: #2b2410
 .dp-meter .dp-status {
     font-size: 0.95em;
     color: var(--bs-body-color);
+}
+
+/* Phishing (fair-web, mail_demo.js): a mail program in the slate frame, the
+   inbox on the left, the open mail on the right; on a phone one above the
+   other. The sentences look like text until the pointer or the focus is on
+   them, so that a clue does not stand out before it is found. */
+.mail-demo {
+    --mail-paper: #ffffff;
+    --mail-hover: #fff3bf;
+    --mail-found: #ffe8cc;
+    --mail-found-line: #f76707;
+    --mail-url: #1864ab;
+}
+html[data-bs-theme="dark"] .mail-demo {
+    --mail-paper: #212327;
+    --mail-hover: #3b3313;
+    --mail-found: #3d2511;
+    --mail-found-line: #ff922b;
+    --mail-url: #74c0fc;
+}
+.mail-app {
+    display: grid;
+    grid-template-columns: minmax(12em, 15em) 1fr;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.5em;
+    overflow: hidden;
+    background: var(--mail-paper);
+}
+.mail-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-right: 1px solid var(--widget-line);
+    background: var(--widget-tint);
+}
+.mail-list li + li {
+    border-top: 1px solid var(--widget-line);
+}
+.mail-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.1em 0.5em;
+    width: 100%;
+    padding: 0.55em 0.75em;
+    border: 0;
+    border-left: 3px solid transparent;
+    background: none;
+    color: var(--bs-body-color);
+    text-align: left;
+    font-size: 0.9em;
+    line-height: 1.3;
+}
+.mail-item:hover {
+    background: var(--widget-chip);
+}
+.mail-item[aria-current="true"] {
+    border-left-color: var(--widget);
+    background: var(--mail-paper);
+}
+.mail-item-from {
+    font-weight: 700;
+}
+.mail-item-time {
+    color: var(--widget-ink);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+}
+.mail-item-subject {
+    grid-column: 1 / -1;
+    color: var(--widget-ink);
+}
+.mail-mark {
+    margin-left: 0.4em;
+    font-weight: 400;
+}
+.mail-mark.bi-check-circle-fill { color: #2b8a3e; }
+.mail-mark.bi-x-circle-fill { color: #e03131; }
+html[data-bs-theme="dark"] .mail-mark.bi-check-circle-fill { color: #51cf66; }
+html[data-bs-theme="dark"] .mail-mark.bi-x-circle-fill { color: #ff6b6b; }
+.mail-pane {
+    min-width: 0;
+    padding: 0.8em 1em 0.9em;
+}
+.mail-head {
+    padding-bottom: 0.6em;
+    margin-bottom: 0.7em;
+    border-bottom: 1px solid var(--widget-line);
+    font-size: 0.92em;
+}
+.mail-subject {
+    font-size: 1.15em;
+    font-weight: 700;
+    margin-bottom: 0.25em;
+}
+.mail-label {
+    color: var(--widget-ink);
+    display: inline-block;
+    min-width: 2.4em;
+}
+.mail-body p {
+    margin: 0 0 0.6em;
+}
+.mail-sentence {
+    cursor: pointer;
+    border-radius: 0.2em;
+    padding: 0.05em 0;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+.mail-sentence:focus-visible {
+    background: var(--mail-hover);
+}
+@media (hover: hover) {
+    .mail-sentence:hover {
+        background: var(--mail-hover);
+    }
+}
+.mail-sentence:focus-visible,
+.mail-link:focus-visible {
+    outline: 2px solid var(--widget);
+    outline-offset: 1px;
+}
+.mail-found,
+.mail-found:hover {
+    background: var(--mail-found);
+    box-shadow: inset 0 -2px 0 var(--mail-found-line);
+}
+.mail-link {
+    color: var(--mail-url);
+    text-decoration: underline;
+}
+.mail-attachment {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    margin: 0.2em 0 0.7em;
+    padding: 0.35em 0.7em;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.4em;
+    background: var(--widget-tint);
+    font-size: 0.92em;
+}
+.mail-status {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 2em;
+    margin: 0.4em -1em 0.8em;
+    padding: 0.3em 1em;
+    border-top: 1px solid var(--widget-line);
+    border-bottom: 1px solid var(--widget-line);
+    background: var(--widget-tint);
+    color: var(--widget-ink);
+    font-size: 0.85em;
+}
+.mail-url {
+    font-family: '0xProto Nerd Font Mono', monospace;
+    font-size: 0.95em;
+    color: var(--bs-body-color);
+    overflow-wrap: anywhere;
+}
+.mail-decide {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+    margin-bottom: 0.7em;
+}
+.mail-verdict {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.8em;
+}
+.mail-verdict .dp-result {
+    flex: 1 1 18em;
+}
+.mail-verdict:empty {
+    display: none;
+}
+.mail-notes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.mail-notes li {
+    display: flex;
+    gap: 0.5em;
+    align-items: baseline;
+    padding: 0.45em 0;
+    border-top: 1px dashed var(--widget-line);
+    font-size: 0.93em;
+}
+.mail-note-clue .bi {
+    color: var(--mail-found-line);
+}
+.mail-calm {
+    display: flex;
+    gap: 0.5em;
+    align-items: baseline;
+    margin-bottom: 0.4em;
+    color: var(--widget-ink);
+    font-size: 0.93em;
+}
+.mail-calm:empty {
+    display: none;
+}
+@media (max-width: 640px) {
+    .mail-app {
+        grid-template-columns: 1fr;
+    }
+    .mail-list {
+        border-right: 0;
+        border-bottom: 1px solid var(--widget-line);
+    }
 }
