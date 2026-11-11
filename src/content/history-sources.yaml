@@ -117,6 +117,13 @@ vocoder:
     sources:
       - url: https://en.wikipedia.org/wiki/Kraftwerk
         quote: "Kraftwerk used a custom-built vocoder on its albums Ralf & Florian and Autobahn … Schneider processing his voice with a vocoder live"
+  - text: vom Electric Light Orchestra auf YouTube an, 1977
+    sources:
+      - url: https://en.wikipedia.org/wiki/Mr._Blue_Sky
+        quote: "The song features a heavily vocoded voice singing the phrase \"Mr. Blue Sky\""
+    note: das Album »Out of the Blue« erschien 1977; der Link ist das offizielle Video auf ELOVEVO, in Deutschland abspielbar (geprüft)
+  - text: Wo singt eine Stimme durch den Vocoder, und was singt sie
+    none: eine Frage zum Anhören
 
 sped-up:
   - text: Nightcore, »sped up« und »slowed«, 2001

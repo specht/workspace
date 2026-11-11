@@ -18,7 +18,7 @@ module PersonSources
     HISTORY_SOURCES = File.join(CONTENT, 'history-sources.yaml')
     # A period after these ends no sentence: »bis ins 20. Jahrhundert«, »z. B.«
     # A year ends one: »1970. Ein Band …«; an ellipsis none: »Let It Be... Naked«
-    NO_END = /(?:(?:\A|[\s(])(?:\d{1,3}|[[:alpha:]]|ca|bzw|Dr|St|Nr|usw|vgl|etc|Jh)\.|\.\.\.)\z/
+    NO_END = /(?:(?:\A|[\s(»„"])(?:\d{1,3}|[[:alpha:]]|ca|bzw|Dr|Mr|Mrs|Ms|St|Nr|usw|vgl|etc|Jh)\.|\.\.\.)\z/
     STATES = {
         'open' => ['Offen', 'bi-question-circle'],
         'partly' => ['Teilweise', 'bi-exclamation-triangle'],

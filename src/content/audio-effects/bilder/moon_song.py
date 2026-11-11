@@ -169,15 +169,32 @@ speech /= np.abs(speech).max()
 
 
 def clean(x):
-    """the recording of 1962 a little clearer, with one FFT over the whole of
-    it (no blocks, so nothing becomes choppy): below 90 Hz out, around
-    300 Hz 3 dB less, around 3 kHz 3 dB more; the noise stays as it is"""
-    spec = np.fft.rfft(x)
-    freq = np.fft.rfftfreq(len(x), 1 / RATE)
+    """the recording of 1962 clearer and quieter between the words, gently:
+    blocks of 2048 overlapping by three quarters, root-Hann windows (they add
+    up without seams); per frequency a Wiener gain from the noise (its
+    spectrum from the quietest fifth of the blocks), never below 0,2
+    (−14 dB), smoothed over five neighbouring frequencies and over time, so
+    that nothing bubbles; then below 90 Hz out, around 300 Hz 3 dB less,
+    around 3 kHz 3 dB more"""
+    N, H = 2048, 512
+    window = np.sqrt(np.hanning(N + 1)[:N])
+    starts = range(0, len(x) - N, H)
+    spectra = np.array([np.fft.rfft(x[i:i + N] * window) for i in starts])
+    power = np.abs(spectra) ** 2
+    quiet = np.argsort(power.sum(axis=1))[:max(1, len(spectra) // 5)]
+    noise = np.median(power[quiet], axis=0)
+    freq = np.fft.rfftfreq(N, 1 / RATE)
     octaves = lambda f0: np.log2(np.maximum(freq, 1) / f0)
-    eq_db = -3 * np.exp(-(octaves(300) / 0.7) ** 2) + 3 * np.exp(-(octaves(3000) / 0.8) ** 2)
-    spec *= 10 ** (eq_db / 20) / (1 + (90 / np.maximum(freq, 1)) ** 4)
-    out = np.fft.irfft(spec, len(x))
+    eq = 10 ** ((-3 * np.exp(-(octaves(300) / 0.7) ** 2) + 3 * np.exp(-(octaves(3000) / 0.8) ** 2)) / 20)
+    eq /= 1 + (90 / np.maximum(freq, 1)) ** 4
+    out = np.zeros(len(x) + N)
+    gain = np.ones(len(freq))
+    for k, i in enumerate(starts):
+        want = np.maximum(1 - 1.2 * noise / np.maximum(power[k], 1e-12), 0.2)
+        want = np.convolve(want, np.ones(5) / 5, 'same')
+        gain = np.where(want > gain, 0.6 * want + 0.4 * gain, 0.85 * gain + 0.15 * want)
+        out[i:i + N] += np.fft.irfft(spectra[k] * gain * eq, N) * window
+    out = out[:len(x)] / 1.5
     return out / np.abs(out).max()
 
 
@@ -191,7 +208,7 @@ def snr(x):
 
 before = snr(speech)
 speech = clean(speech)
-print(f'noise below speech: {before:.1f} dB before, {snr(speech):.1f} dB after the EQ')
+print(f'noise below speech: {before:.1f} dB before, {snr(speech):.1f} dB after cleaning')
 
 
 
@@ -271,11 +288,14 @@ for bar, sixteenth, name, lengths in SHEET:
     slot = bar * BAR + sixteenth * SIXTEENTH
     for (t0, t1), units, step in zip(zip(bounds[:-1], bounds[1:]), lengths, CONTOUR[name]):
         piece = speech[zero_crossing(at(t0)):zero_crossing(at(t1))]
-        n = int(units * SIXTEENTH * (0.92 if units > 2 else 0.98) * RATE)
+        # legato: up to the next syllable and 20 ms into it, longer by up to a
+        # quarter rather than squeezed hard into a short slot
+        n = int(units * SIXTEENTH * RATE) + int(0.02 * RATE)
+        n = max(n, min(len(piece), int(n * 1.25)))
         held = hold(piece, n)
         rms = np.sqrt(np.mean(held ** 2)) + 1e-9
         held *= (0.12 / rms) ** 0.5                    # quiet syllables up, loud ones down, halfway
-        place(voice, fade(held, 8, 35), slot)
+        place(voice, fade(held, 10, 20), slot)
         # the note: of the scale, nearest to his own pitch, a chord tone on long ones
         f = own_pitch(piece)
         chord = CHORDS[min(BARS - 1, int(slot / BAR))]
