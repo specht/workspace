@@ -1549,7 +1549,12 @@ check-task: mdct
 
 ### Bänder
 
-Ein Codec speichert nicht für jede der 1.024 Zahlen eines Blocks eine eigene Stufe, das kostete zu viele Bits. Er teilt die Zahlen in **Bänder**, ungefähr in Frequenzgruppen, eines für jedes Bark, und gibt jedem Band eine Stufe. Unten sind die Bänder 4 bis 10 Zahlen breit, oben über 300. Lege `codec.py` an:
+Ein Codec speichert nicht für jede der 1.024 Zahlen eines Blocks eine eigene Stufe, das kostete zu viele Bits. Er teilt die Zahlen in **Bänder**, ungefähr in Frequenzgruppen, eines für jedes Bark, und gibt jedem Band eine Stufe. Unten sind die Bänder 4 bis 10 Zahlen breit, oben über 300:
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='bands-wide.svg' alt='Ein Balken aus den 1.024 Zahlen eines Blocks, nach rechts die Frequenz von 0 bis 22.050 Hz, geteilt in 25 Bänder, abwechselnd blau und lila. Links drängen sich schmale Bänder, nach rechts werden sie immer breiter: 29, 33, 40, 47, 56, 72, 104, 187 und zuletzt 307 Zahlen. Darunter vergrößert die ersten 91 Zahlen bis 1.960 Hz: Bänder mit 5, 4, 5, 5, 6, 5, 6, 7, 7, 8, 10, 11 und 12 Zahlen.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='bands.svg' alt='Ein Balken aus den 1.024 Zahlen eines Blocks, nach rechts die Frequenz von 0 bis 22.050 Hz, geteilt in 25 Bänder, abwechselnd blau und lila. Links drängen sich schmale Bänder, nach rechts werden sie immer breiter: 29, 33, 40, 47, 56, 72, 104, 187 und zuletzt 307 Zahlen. Darunter vergrößert die ersten 91 Zahlen bis 1.960 Hz: Bänder mit 5, 4, 5, 5, 6, 5, 6, 7, 7, 8, 10, 11 und 12 Zahlen.'>
+
+Lege `codec.py` an:
 
 ```python
 import numpy as np
