@@ -1,7 +1,9 @@
 """A song from NASA's commentary of the launch of Artemis II, 1 April 2026
 (public domain: images.nasa.gov, KSC-20260401-AU-LMM01-0001-Artemis_II_Live_
 Launch_Coverage_Program_LOS, the commentary channel without the rocket),
-for the autotune widget, in the arc of a dance track at 128 beats a minute
+for the autotune widget: the commentary as it was said over the verse and
+the build, the sung voice only from the drop on; in the arc of a dance
+track at 128 beats a minute
 in B minor (Bm G D A): a funky verse, the countdown as the build (a snare
 roll getting faster, a rise of noise, no bass), a stop, and on »liftoff« the
 drop (a kick on every beat, chords pumping under it, a bass jumping
@@ -290,26 +292,26 @@ BARS = len(CHORDS)
 LENGTH = int(round(BARS * BAR * RATE))
 SIXTEENTH = BEAT / 4
 VERSE, BUILD, DROP = range(0, 8), range(8, 16), range(16, 24)
-# the sheet: (bar, sixteenth in the bar, piece, sixteenths per syllable, a note per syllable)
+# the spoken part, as it was said, over the verse and the build: (where in
+# the song, from, to), in seconds; the countdown so placed that »lift«
+# (OFFSET + 12.94 s) falls on the first beat of the drop
+SPOKEN = [
+    (2.0, 2.40, 8.90),                  # … ready to ride the most powerful rocket
+    (8.8, 11.25, 13.60),                # NASA has ever launched: without the pause of 2,4 s
+    (16 * BAR - 12.94, OFFSET + 0.0, OFFSET + 12.80),
+]
+# the drop, sung: (bar, sixteenth in the bar, piece, sixteenths per syllable
+# or None for the length it was spoken, a note per syllable); a length None
+# is rounded to whole sixteenths, so nothing is drawn out
 SHEET = [
-    # verse: a line every two bars
-    (0, 0, 'rocket-own', [2, 2, 2, 2, 2, 2, 8], 'F# F# D F# E D B'),
-    (2, 0, 'four-brave', [3, 3, 2, 2, 6], 'D E F# A F#'),
-    (4, 0, 'ready-ride', [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 6], 'F# E D E F# A F# E D C# B'),
-    (6, 0, 'nasa-launched', [3, 3, 2, 2, 2, 10], 'D C# B C# D B'),
-    # build: the countdown, a number every two beats
-    (8, 0, 'ten', [8], 'F#'), (8, 8, 'nine', [8], 'F#'), (9, 0, 'eight', [8], 'F#'), (9, 8, 'seven', [4, 4], 'F# E'),
-    (10, 0, 'rs25-lit', [2, 2, 2, 2, 2, 2, 2, 18], 'D D E E F# F# A B'),
-    (12, 0, 'four', [8], 'B'), (12, 8, 'three', [8], 'C#+'), (13, 0, 'two', [8], 'D+'), (13, 8, 'one', [8], 'E+'),
-    (14, 0, 'booster-ignition', [3, 3, 3, 3, 4], 'F# F# A A B'),
-    (15, 8, 'and-liftoff', [4, 2, 2], 'F# A B'),
-    # drop: the hook
     (16, 0, 'liftoff', [4, 12], 'D+ B'),
-    (17, 0, 'crew-moon', [1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 3], 'B B B D+ C#+ B A A F# F# A B'),
-    (18, 0, 'humanity-begins', [2, 2, 2, 2, 2, 2, 4, 2, 2, 12], 'F# A B D+ C#+ B A F# A B'),
+    (17, 0, 'crew-moon', None, 'B B B D+ C#+ B A A F# F# A B'),
+    (18, 0, 'humanity-begins', None, 'F# A B D+ C#+ B A F# A B'),
+    (19, 8, 'liftoff', [2, 6], 'D+ B'),
     (20, 0, 'liftoff', [4, 12], 'D+ B'),
     (21, 0, 'lift', [2], 'D+'), (21, 2, 'lift', [2], 'D+'), (21, 4, 'liftoff', [2, 10], 'D+ B'),
-    (22, 0, 'humanity-begins', [2, 2, 2, 2, 2, 2, 4, 2, 2, 12], 'F# A B D+ C#+ B A F# A B'),
+    (22, 0, 'humanity-begins', None, 'F# A B D+ C#+ B A F# A B'),
+    (23, 8, 'liftoff', [2, 6], 'D+ B'),
 ]
 NOTES = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
 
@@ -333,9 +335,13 @@ def voice_start(t0, t1):
 voice = np.zeros(LENGTH + 2 * RATE)
 melody = np.zeros(LENGTH + 2 * RATE)
 shifts, syllables, voice_pitch = [], [], []
+for start, t0, t1 in SPOKEN:
+    place(voice, fade(speech[at(t0):at(t1)], 30, 80), start)
 for bar, sixteenth, name, lengths, notes in SHEET:
     times = PIECES[name]
     notes = notes.split()
+    if lengths is None:
+        lengths = [max(1, round((b - a) / SIXTEENTH)) for a, b in zip(times[:-1], times[1:])]
     assert len(lengths) == len(times) - 1 == len(notes), name
     bounds = [voice_start(times[0], times[1])] + [refine(t) for t in times[1:-1]] + [times[-1]]
     slot = bar * BAR + sixteenth * SIXTEENTH

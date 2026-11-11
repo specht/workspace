@@ -439,14 +439,17 @@
             near.sort((a, b) => a - b);
             voice[k] = found[k] > 60 && found[k] < 1000 && near.length ? near[near.length >> 1] : 0;
         }
-        let now = move, note = 0;
+        let now = move, note = 0, quiet = 0;
         for (let k = 0; k < n; k++) {
             const f = voice[k];
-            if (toMelody && melody[k] > 60) note = melody[k];          // the melody's gaps keep the last note
+            // the melody's short gaps keep the last note; after a second without melody the voice is free again
+            if (toMelody && melody[k] > 60) { note = melody[k]; quiet = 0; }
+            else if (toMelody && ++quiet * HOP / rate > 1) note = 0;
             let want = now;
             if (f && flat) want = flat * move / f;
             else if (f && !toMelody) want = 440 * 2 ** (Math.round(12 * Math.log2(f * move / 440)) / 12) / f;
             else if (f && note) want = note * move / f;
+            else if (f && toMelody) want = move;                       // no melody here: the voice as it is
             else if (!f) want = now;                                   // no voice: stay where it is
             // more than 7 semitones away from where it is: a wrong pitch, not followed
             if (Math.abs(12 * Math.log2(want / now)) > 7 && Math.abs(12 * Math.log2(want / move)) > 7) want = now;
