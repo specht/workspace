@@ -53,11 +53,11 @@ def restore(levels, step):
 
 def save_detail(path, plane):
     grey = plane.round().clip(0, 255).astype(np.uint8)
-    Image.fromarray(grey[130:310, 460:700]).resize((720, 540), Image.NEAREST).save(path)
+    Image.fromarray(grey[130:310, 390:630]).resize((720, 540), Image.NEAREST).save(path)
 
 
 if __name__ == '__main__':
-    luma = to_ycbcr(np.asarray(Image.open('slope.png').convert('RGB')))[..., 0]
+    luma = to_ycbcr(np.asarray(Image.open('portrait.png').convert('RGB')))[..., 0]
     blocks = split(luma - 128, 8)
     for step in (8, 32, 64):
         levels = quantize(blocks, step)

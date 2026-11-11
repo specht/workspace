@@ -10,12 +10,11 @@ src/static/video/:
     slope.mp4       395 s:  a slope in the evening sun, the girl walking; fine texture
     tilt.mp4  408 s:  the camera tilts fast up a rock face with plants
 
-their first frames as stills for the page (glance.webp, …), and two
-frames with all their colour, never through H.264 and its 4:2:0, as
-PNG:
+their first frames as stills for the page (glance.webp, …), and one
+frame with all its colour, never through H.264 and its 4:2:0, as PNG:
 
-    slope.png       395 s:  the first frame of slope.mp4 (»Innerhalb eines Bildes«)
-    portrait.png    68,5 s: frame 72 of glance.mp4, the girl close up, crisp (»Farbe sparen«)
+    portrait.png    68,5 s: frame 72 of glance.mp4, the girl close up, crisp
+                    (»Farbe sparen« and »Innerhalb eines Bildes«)
 
 The film comes from Wikimedia Commons, which has it from the Blender
 Studio's YouTube channel, so it was compressed once before (VP9, 2048 ×
@@ -33,7 +32,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '..', 'static', 'video')
 CLIPS = {'glance': 65.5, 'pan': 37.0, 'slope': 395.0, 'tilt': 408.0}
-STILLS = {'slope': 395.0, 'portrait': 68.5}
+STILLS = {'portrait': 68.5}
 SECONDS = 4
 WIDTH, HEIGHT = 960, 400
 

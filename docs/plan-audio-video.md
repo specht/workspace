@@ -262,9 +262,10 @@ seconds at 720p each.
    (`video_in_view.js`: nothing loads before a clip is in view, stills from
    `clips/make.py`). Part 2 is written: colour television as the origin,
    `to_ycbcr` of one's own (JPEG's formulas), the three planes of
-   `slope.png` (a frame made from the film without H.264, so with nearly all
-   its colour) and the prediction of the red jacket (Cr 162, Cb 105 on
-   average), a drawing of 4:4:4, 4:2:2 and 4:2:0 (`bilder/subsampling.py`),
+   `portrait.png` (a close-up at 68,5 s, frame 72 of `glance.mp4`, made
+   from the film without H.264, so crisp and with nearly all its colour; it
+   replaced a frame of the slope, where the girl was small, also for part 3)
+   and the prediction of the red jacket (Cr 150, Cb 121 on average), a drawing of 4:4:4, 4:2:2 and 4:2:0 (`bilder/subsampling.py`),
    the bytes of a frame in 4:2:0, `subsample` of one's own, colour made
    coarser against brightness made coarser in a detail, and why a frame
    from an MP4 has nothing left to subsample.

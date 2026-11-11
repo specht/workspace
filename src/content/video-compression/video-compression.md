@@ -537,20 +537,14 @@ Ein Block aus 8 × 8 Helligkeiten lässt sich als Summe von 64 **Basisbildern** 
 
 _person(ahmed)
 
-Hier ist ein Ausschnitt aus `slope.png` in Blöcken aus 8 × 8 Pixeln. Markiert ist der Hinterkopf des Mädchens: ihr dunkles Haar vor dem Berg, mit dem Rand, der im Abendlicht leuchtet. Die Koeffizienten des Blocks sind schon auf Vielfache von 8 gerundet, und 56 der 64 sind nicht 0: Eine helle Kante quer durch einen Block braucht viele Muster. Schritt für Schritt kommt ein Basisbild nach dem anderen dazu. Neben dem Bild steht der Block, wie er werden soll, unten rechts der Fehler: orange, wo der Block bisher noch zu dunkel ist, blau, wo er zu hell ist, und darunter, wie groß der Fehler im Mittel ist. Zieh den Block an eine andere Stelle und vergleich, wie viele Koeffizienten übrig bleiben und wie groß der erste ist, der für die mittlere Helligkeit. Schalte auch auf Cb und Cr. Dort steht ein Block für 16 × 16 Pixel, denn wie bei 4:2:0 hat die Farbe in jeder Richtung die halbe Auflösung: Jeder Wert ist der Mittelwert aus 2 × 2 Pixeln, wie bei `subsample`. Obwohl ein solcher Block viermal so viele Pixel abdeckt, braucht er meist weniger Koeffizienten als einer in Y, denn die Farbe ändert sich langsamer als die Helligkeit.
+Hier ist ein Ausschnitt aus `portrait.png`, der Nahaufnahme aus »Farbe sparen«, in Blöcken aus 8 × 8 Pixeln. Markiert ist der obere Rand des Auges rechts im Bild: das dunkle Lid, die Iris mit einem hellen Lichtpunkt und das Weiße daneben. Die Koeffizienten des Blocks sind schon auf Vielfache von 8 gerundet, und 58 der 64 sind nicht 0: Helle und dunkle Kanten quer durch einen Block brauchen viele Muster. Schritt für Schritt kommt ein Basisbild nach dem anderen dazu. Neben dem Bild steht der Block, wie er werden soll, unten rechts der Fehler: orange, wo der Block bisher noch zu dunkel ist, blau, wo er zu hell ist, und darunter, wie groß der Fehler im Mittel ist. Zieh den Block an eine andere Stelle und vergleich, wie viele Koeffizienten übrig bleiben und wie groß der erste ist, der für die mittlere Helligkeit. Schalte auch auf Cb und Cr. Dort steht ein Block für 16 × 16 Pixel, denn wie bei 4:2:0 hat die Farbe in jeder Richtung die halbe Auflösung: Jeder Wert ist der Mittelwert aus 2 × 2 Pixeln, wie bei `subsample`. Obwohl ein solcher Block viermal so viele Pixel abdeckt, braucht er meist weniger Koeffizienten als einer in Y, denn die Farbe ändert sich langsamer als die Helligkeit.
 
 <script src='/include/idct_stepper.js'></script>
-<div class='idct-stepper' data-stepper data-picture data-quantize='8' data-block='88 40' data-coef='-192 200 -80 -72 16 24 16 0 -112 24 208 96 8 16 8 8 -56 -112 -56 80 48 -32 -8 8 -64 -64 -72 -88 0 48 16 0 32 8 -24 -16 -32 -16 8 0 24 32 8 -32 -24 -16 -8 8 -8 -8 16 16 -8 -16 -8 0 -8 -8 -8 0 8 0 -8 0'><img data-noconvert src='idct-detail.png' alt='Ein Ausschnitt aus dem Bild vom Hang um das Gesicht des Mädchens, in Blöcken aus 8 × 8 Pixeln.'></div>
+<div class='idct-stepper' data-stepper data-picture data-quantize='8' data-block='144 48' data-coef='-216 -240 72 32 32 8 8 16 -8 16 -184 8 -48 -16 -16 -16 -56 192 -8 -56 40 0 16 8 -72 56 64 -40 -48 8 -16 0 -64 16 48 16 -16 -32 16 -8 -32 -16 56 24 16 -16 -8 8 -24 -24 16 8 8 0 -8 0 -8 -16 8 0 8 8 0 -8'><img data-noconvert src='idct-detail.png' alt='Ein Ausschnitt aus der Nahaufnahme um die Augen des Mädchens, in Blöcken aus 8 × 8 Pixeln.'></div>
 
 Die ersten Koeffizienten bringen die mittlere Helligkeit und die grobe Form, die späteren machen Kanten schärfer; der Fehler unten rechts wird dabei von Schritt zu Schritt kleiner. Was zuletzt kommt, sind feine Muster, und gerade bei denen sieht das Auge Fehler kaum. Darum rundet ein Codec sie grob, und viele werden 0.
 
-Dieses Kapitel arbeitet mit dem Bild vom Hang, dem ersten Bild von `slope.mp4`, wieder als PNG mit aller Farbe:
-
-```bash_copy
-wget ${web_root}/video/slope.png
-```
-
-Lege `blocks.py` an. Es braucht `to_ycbcr` aus `chroma.py`:
+Lege `blocks.py` an. Es nimmt wieder `portrait.png` und braucht `to_ycbcr` aus `chroma.py`:
 
 <!-- page-code: own -->
 ```python
@@ -609,11 +603,11 @@ def restore(levels, step):
 
 def save_detail(path, plane):
     grey = plane.round().clip(0, 255).astype(np.uint8)
-    Image.fromarray(grey[130:310, 460:700]).resize((720, 540), Image.NEAREST).save(path)
+    Image.fromarray(grey[130:310, 390:630]).resize((720, 540), Image.NEAREST).save(path)
 
 
 if __name__ == '__main__':
-    luma = to_ycbcr(np.asarray(Image.open('slope.png').convert('RGB')))[..., 0]
+    luma = to_ycbcr(np.asarray(Image.open('portrait.png').convert('RGB')))[..., 0]
     blocks = split(luma - 128, 8)
     for step in (8, 32, 64):
         levels = quantize(blocks, step)
@@ -655,7 +649,7 @@ def restore(levels, step):
 
 _task(quantize)
 
-Das Programm speichert für die Schritte 8, 32 und 64 einen Ausschnitt um das Mädchen. Bevor du es startest:
+Das Programm speichert für die Schritte 8, 32 und 64 einen Ausschnitt um das Gesicht des Mädchens. Bevor du es startest:
 
 _task(tiles)
 
@@ -666,7 +660,7 @@ python3 blocks.py
 <!-- tutorial-step
 write-file: video/blocks.py <- file:stufen/blocks-1.py
 check-task: quantize
-terminal-run: (test -f slope.png || curl -sO http://workspace_nginx_1/video/slope.png) && python3 blocks.py
+terminal-run: python3 blocks.py
 terminal-wait-for-prompt: 60
 wait-for-text: Schritt 64
 -->
@@ -677,23 +671,23 @@ wait-for-text: Schritt 64
 <!-- tutorial-screenshot
 image-file: video/step-8.png 1
 -->
-<img src='step-8.webp' alt='Der Ausschnitt um das Mädchen in Graustufen nach Schritt 8: kaum vom Original zu unterscheiden.'>
-<figcaption>Schritt 8: 33 % der Koeffizienten nicht 0</figcaption></figure>
+<img src='step-8.webp' alt='Der Ausschnitt um das Gesicht in Graustufen nach Schritt 8: kaum vom Original zu unterscheiden.'>
+<figcaption>Schritt 8: 14,4 % der Koeffizienten nicht 0</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/step-32.png 1
 -->
-<img src='step-32.webp' alt='Derselbe Ausschnitt nach Schritt 32: Im dunklen Hintergrund ahnt man Kacheln, das Gesicht hat weniger Einzelheiten.'>
-<figcaption>Schritt 32: 11,5 %</figcaption></figure>
+<img src='step-32.webp' alt='Derselbe Ausschnitt nach Schritt 32: Auf der Wange und im Hintergrund ahnt man Kacheln, die Haare und der Stab haben weniger Einzelheiten.'>
+<figcaption>Schritt 32: 5,2 %</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/step-64.png 1
 -->
-<img src='step-64.webp' alt='Derselbe Ausschnitt nach Schritt 64: Der Hintergrund besteht aus deutlichen Kacheln mit Kanten dazwischen, das Gesicht und der Stab haben kaum noch Einzelheiten.'>
-<figcaption>Schritt 64: 5,4 %</figcaption></figure>
+<img src='step-64.webp' alt='Derselbe Ausschnitt nach Schritt 64: Die Wange, das Tuch und der Hintergrund bestehen aus deutlichen Kacheln mit Kanten dazwischen; die Augen sind noch zu erkennen, die Haare und der Stab haben kaum noch Einzelheiten.'>
+<figcaption>Schritt 64: 3,0 %</figcaption></figure>
 </div>
 
-Bei Schritt 64 zerfällt der Hintergrund in Kacheln aus 8 × 8 Pixeln. In jedem Block blieb kaum mehr als der Koeffizient für die mittlere Helligkeit, und benachbarte Blöcke treffen sich mit einer Kante. Das ist das bekannteste Artefakt von JPEG und von Videos mit zu wenigen Bits. Bei Schritt 32 braucht das Bild 0,67 Bits je Pixel statt 8, ein Zwölftel, und ist noch gut zu erkennen.
+Bei Schritt 64 zerfallen die Wange, das Tuch und der Hintergrund in Kacheln aus 8 × 8 Pixeln. In jedem Block blieb kaum mehr als der Koeffizient für die mittlere Helligkeit, und benachbarte Blöcke treffen sich mit einer Kante. Das ist das bekannteste Artefakt von JPEG und von Videos mit zu wenigen Bits. Bei Schritt 32 braucht das Bild 0,29 Bits je Pixel statt 8, weniger als ein Zwanzigstel, und ist noch gut zu erkennen.
 <!-- /after -->
 
 ### Vorhersage im Bild
@@ -840,17 +834,17 @@ wait-for-text: mit Vorhersage
 <!-- tutorial-screenshot
 image-file: video/residual.png 1
 -->
-<img class='full fit-width' src='residual.webp' alt='Der Rest nach der Vorhersage für das ganze Bild vom Hang: fast überall ein gleichmäßiges mittleres Grau. Nur an Kanten bleiben helle und dunkle Linien: am Umriss des Mädchens, an den Felsen, an den Halmen im Gras und an den Pflanzen oben links.'>
+<img class='full fit-width' src='residual.webp' alt='Der Rest nach der Vorhersage für die ganze Nahaufnahme: fast überall ein gleichmäßiges mittleres Grau. Nur an Kanten bleiben helle und dunkle Linien: am Umriss des Gesichts, an den Augen, an den Haaren, am Stab und am Reif im Hintergrund.'>
 
-Fast alles ist mittelgrau: Wo das Bild ruhig ist, sagen die Nachbarn den Block gut voraus. Was bleibt, sind Kanten und feine Muster wie das Gras. Die Zahlen:
+Fast alles ist mittelgrau: Wo das Bild ruhig ist, sagen die Nachbarn den Block gut voraus. Was bleibt, sind Kanten und feine Muster wie die Haare. Die Zahlen:
 
 ```text
-8 × 8 ohne Vorhersage: 0.67 Bits je Pixel
-4 × 4 ohne Vorhersage: 0.79 Bits je Pixel
-4 × 4 mit Vorhersage : 0.60 Bits je Pixel
+8 × 8 ohne Vorhersage: 0.29 Bits je Pixel
+4 × 4 ohne Vorhersage: 0.42 Bits je Pixel
+4 × 4 mit Vorhersage : 0.18 Bits je Pixel
 ```
 
-Kleine Blöcke folgen den Kanten besser, aber ohne Vorhersage kosten sie mehr: Jeder Block braucht seine eigene mittlere Helligkeit. Mit Vorhersage kommt diese fast umsonst aus den Nachbarn, und die kleinen Blöcke sind um ein Viertel billiger, sogar billiger als die großen ohne Vorhersage. Darum kann H.264 bei Kanten kleine Blöcke nehmen und bei ruhigen Flächen große.
+Kleine Blöcke folgen den Kanten besser, aber ohne Vorhersage kosten sie mehr: Jeder Block braucht seine eigene mittlere Helligkeit. Mit Vorhersage kommt diese fast umsonst aus den Nachbarn, und die kleinen Blöcke kosten weniger als die Hälfte, sogar weniger als die großen ohne Vorhersage. Darum kann H.264 bei Kanten kleine Blöcke nehmen und bei ruhigen Flächen große.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Nimm in <code>residual</code> und der letzten Zeile Blöcke aus 8 × 8 Pixeln statt 4 × 4. Hilft die Vorhersage dann noch so viel? Und was ändert sich, wenn du <code>MODES</code> auf <code>['dc']</code> kürzt?

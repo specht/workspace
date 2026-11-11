@@ -266,8 +266,8 @@ tasks:
     title: Grob gerundet
     prediction: true
     prompt: |
-      Bei Schritt 64 bleiben von den Koeffizienten nur gut 5 % übrig, die
-      anderen werden 0. Wie sieht der Ausschnitt um das Mädchen dann aus?
+      Bei Schritt 64 bleiben von den Koeffizienten nur 3 % übrig, die
+      anderen werden 0. Wie sieht der Ausschnitt um das Gesicht dann aus?
     check:
       type: choice
       options:
@@ -360,7 +360,7 @@ tasks:
     check:
       type: choice
       options:
-        - Wie das Bild vom Hang, nur blasser.
+        - Wie die Nahaufnahme, nur blasser.
         - Fast überall mittelgrau, nur an Kanten hell oder dunkel.
         - Überall gleichmäßig verrauscht.
         - Fast ganz schwarz.
@@ -374,7 +374,7 @@ tasks:
         say: Schwarz wäre ein Rest von −128. Ein Rest von 0 ist mittelgrau.
     solution: |
       Fast überall mittelgrau: In ruhigen Flächen sagen die Nachbarn den Block
-      gut voraus. Hell und dunkel bleiben Kanten und feine Muster wie Gras.
+      gut voraus. Hell und dunkel bleiben Kanten und feine Muster wie Haare.
 
   - id: wrap
     title: Bytes voneinander abziehen
