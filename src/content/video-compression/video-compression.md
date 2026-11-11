@@ -1254,6 +1254,13 @@ image-file: video/tilt-h264.png 1
 
 Die Pfeile zeigen nach unten: ffmpeg malt sie vom Ort im vorigen Bild zum Block, also so, wie sich der Inhalt bewegt, andersherum als `draw_vectors`. Der Encoder von H.264 macht mehr als `motion_field`. Er teilt einen Block von 16 × 16 Pixeln in kleinere, wo das hilft (mehr dazu in »Große und kleine Blöcke«), und er sucht nicht nur ganze Pixel, sondern Viertel davon: Der Schwenk bewegt sich etwa anderthalb Pixel je Bild, nicht eines oder zwei. Und er probiert nicht alle Verschiebungen aus, sondern geht vom Vektor der Nachbarn aus und sucht in kleinen Schritten weiter, wo die Summe kleiner wird.
 
+Ein Viertelpixel gibt es im Bild nicht; der Decoder rechnet es aus den Pixeln daneben aus. Um einen Viertelpixel verschoben, ist jeder neue Wert drei Viertel des Pixels, über dem er liegt, und ein Viertel des nächsten:
+
+<img class='drawing d-none d-lg-block' style='width: 34em' src='quarter-pixel-wide.svg' alt='Oben eine Reihe aus sieben Pixeln mit den Werten 40, 60, 120, 200, 220, 220 und 200, jedes so hell wie sein Wert. Darunter dieselbe Reihe um einen Viertelpixel nach rechts verschoben: 45, 75, 140, 205, 220 und 215. Zwei Linien führen von 120 und 200 zum neuen Wert 140, beschriftet mit drei Viertel und einem Viertel; darunter die Rechnung drei Viertel mal 120 plus ein Viertel mal 200 gleich 140.'>
+<img class='drawing d-lg-none' style='width: 22em' src='quarter-pixel.svg' alt='Oben eine Reihe aus sieben Pixeln mit den Werten 40, 60, 120, 200, 220, 220 und 200, jedes so hell wie sein Wert. Darunter dieselbe Reihe um einen Viertelpixel nach rechts verschoben: 45, 75, 140, 205, 220 und 215. Zwei Linien führen von 120 und 200 zum neuen Wert 140, beschriftet mit drei Viertel und einem Viertel; darunter die Rechnung drei Viertel mal 120 plus ein Viertel mal 200 gleich 140.'>
+
+H.264 rechnet etwas genauer: Halbe Pixel macht es aus sechs Nachbarn, Viertel dann aus zwei. Die Idee ist dieselbe, und so kann ein Vektor auch 1,25 oder 1,5 Pixel weit zeigen.
+
 ### Was übrig bleibt
 
 Mit den Vektoren baut der Decoder aus dem vorigen Bild eine Vorhersage: Jeder Block wird aus dem vorigen Bild kopiert, um seinen Vektor verschoben. Dazu kommt der gerundete Rest. Erweitere `motion.py`:
