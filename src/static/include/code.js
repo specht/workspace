@@ -215,16 +215,21 @@ function searchable_select(select) {
         if (option && option.value !== select.val()) select.val(option.value).trigger('change');
         sync();
     };
-    // A word finds an option by its text or its value (the address of an
-    // activity, »pixelram«), without regard to case, accents, spaces and
-    // hyphens; several words must all be found. An option's data-search
+    // A word finds an option by its text, its value (the address of an
+    // activity, »pixelram«) or its group's heading (the school of a class:
+    // »steg« finds every class of Gymnasium Steglitz), without regard to
+    // case, accents, spaces and hyphens; several words must all be found.
+    // The list keeps the order of the options, so a heading comes once. An option's data-search
     // (an activity's description) counts too, but those come after the
     // others and say »im Text«.
     const plain = (t) => `${t}`.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\s\-_.]+/g, '');
     const show = function (query) {
         const words = query.trim().split(/\s+/).filter(Boolean).map(plain);
         const all = options();
-        const direct = all.filter(o => { const hay = plain(o.text) + ' ' + plain(o.value); return words.every(w => hay.includes(w)); });
+        const own = all.filter(o => { const hay = plain(o.text) + ' ' + plain(o.value); return words.every(w => hay.includes(w)); });
+        const by_group = all.filter(o => !own.includes(o) && o.group &&
+            words.every(w => (plain(o.text) + ' ' + plain(o.value) + ' ' + plain(o.group)).includes(w)));
+        const direct = all.filter(o => own.includes(o) || by_group.includes(o));
         const in_text = words.length === 0 ? [] : all.filter(o => !direct.includes(o) && o.more &&
             words.every(w => (plain(o.text) + ' ' + plain(o.value) + ' ' + plain(o.more)).includes(w))).map(o => ({ ...o, in_text: true }));
         shown = direct.concat(in_text);

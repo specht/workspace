@@ -5000,6 +5000,21 @@ ul.task-teacher-list .task-teacher-answer {
     text-overflow: ellipsis;
 }
 
+/* the group as a search field (class_board.js): wide enough for a group
+   with its count, and its list as wide as the field or a long name */
+.searchable-select.class-group-choice {
+    flex: 0 1 26em;
+    width: 26em;
+    max-width: 100%;
+}
+.searchable-select.class-group-choice > input {
+    width: 100%;
+}
+.searchable-select.class-group-choice > .suggest-menu {
+    min-width: 100%;
+    max-width: min(36em, calc(100vw - 2em));
+}
+
 .class-live-menu {
     max-height: 60vh;
     overflow-y: auto;

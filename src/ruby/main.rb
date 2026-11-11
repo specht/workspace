@@ -1494,7 +1494,7 @@ class Main < Sinatra::Base
         return '' unless user_logged_in? && (teacher_account_logged_in? || admin_logged_in?)
         return '' unless pinnable_pages.include?(slug)
 
-        groups = class_groups
+        groups = own_class_groups
         return '' if groups.empty?
 
         pinned = pins_for_groups(groups).select { |p| p[:slug] == slug }.map { |p| p[:group] }
@@ -1685,11 +1685,7 @@ class Main < Sinatra::Base
         return '' unless (@@content[slug] || {})[:class_repo] && (teacher_account_logged_in? || admin_logged_in?)
 
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        groups = class_groups
-        if admin_logged_in?
-            own = @@teachers[@session_user[:email]] || Set.new
-            groups = groups.select { |g| own.include?(g) || @@test_groups.include?(g) }
-        end
+        groups = own_class_groups
         repos = group_class_repos(groups)
         link = ->(g) { "/klasse?group=#{CGI.escape(g)}&repos=#{CGI.escape(slug)}" }
         with = groups.select { |g| (repos[g] || {})[slug] }
@@ -1872,8 +1868,9 @@ class Main < Sinatra::Base
         teacher = teacher_logged_in?
         # a teacher: the group chosen on the class page, or the only one
         groups = if teacher
-            chosen = [class_prefs['group']].compact & class_groups
-            chosen.empty? && class_groups.size == 1 ? class_groups : chosen
+            own = own_class_groups
+            chosen = [class_prefs['group']].compact & own
+            chosen.empty? && own.size == 1 ? own : chosen
         else
             my_groups
         end
@@ -2012,6 +2009,18 @@ class Main < Sinatra::Base
         groups = (defined?(@@group_members) ? @@group_members : {}).keys.sort_by { |g| @@user_group_order.index(g) || 0 }
         me = @session_user[:email]
         TestAccounts.visible_groups(groups, :admin => admin_logged_in?, :own => @@teachers[me] || Set.new,
+            :test_groups => @@test_groups, :own_test_group => @@test_group_of[me])
+    end
+
+    # The groups the person teaches. For a teacher the same as class_groups;
+    # an administrator may look at every group (class_groups, /klasse), but
+    # what concerns their own teaching (pins on the start page, »Anpinnen«,
+    # the meeting point) is only about their own groups and test group.
+    def own_class_groups
+        return class_groups unless admin_logged_in?
+
+        me = @session_user[:email]
+        TestAccounts.visible_groups(class_groups, :admin => false, :own => @@teachers[me] || Set.new,
             :test_groups => @@test_groups, :own_test_group => @@test_group_of[me])
     end
 
@@ -2923,7 +2932,7 @@ class Main < Sinatra::Base
                 card_index = 0
                 series_cards = false
                 # pinned for one of the person's groups: a pin on the card, as on the Kata strip
-                catalog_pins = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
+                catalog_pins = user_logged_in? ? pins_for_groups((my_groups + own_class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
                 # the band at the foot of the cards (card_usage): admins, teachers, students
                 usage = catalog == :student ? card_usage : nil
                 section_order.each do |section_key|
@@ -4040,7 +4049,7 @@ class Main < Sinatra::Base
             stop.icon = "#{stop.icon}?#{File.mtime(path).to_i}" if stop.icon.to_s.start_with?('/') && File.file?(path)
         end
         progress = user_logged_in? ? my_progress.to_h { |p| [p[:slug], p] } : nil
-        pinned = user_logged_in? ? pins_for_groups((my_groups + class_groups).uniq).map { |p| p[:slug] }.uniq & slugs : []
+        pinned = user_logged_in? ? pins_for_groups((my_groups + own_class_groups).uniq).map { |p| p[:slug] }.uniq & slugs : []
         KataMap.carousel_html(stops, :progress => progress, :teacher => teacher_logged_in?, :pinned => pinned,
             :usage => usage ? slugs.to_h { |slug| [slug, usage_html(usage, slug, 'kata-set-usage')] } : {})
     end
