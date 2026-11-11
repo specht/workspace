@@ -119,6 +119,30 @@ class UsageStatsTest < Minitest::Test
         assert_includes html, '6 Klassen mit weniger als 5'
     end
 
+    # classes that worked recently: from five students on, the last day on
+    # which five of them worked and on what; smaller classes only counted
+    def test_classes_are_named_from_five_with_their_last_lesson
+        list = []
+        6.times { |p| list << row(p, 'a', 'turtle-1/square', 'correct', 5).merge(:groups => ['10a']) }
+        5.times { |p| list << row(p, 'a', 'kata-loops/sum', 'correct', 2).merge(:groups => ['10a']) }
+        list << row(0, 'a', 'jpeg/dct', 'wrong', 1).merge(:groups => ['10a'])
+        3.times { |p| list << row(20 + p, 'a', 'turtle-1/square', 'wrong', 1).merge(:groups => ['10b']) }
+        s = UsageStats.summary(list, :days => 30, :now => NOW, :group_school => { '10a' => 'a', '10b' => 'a' })
+        assert_equal 1, s[:classes][:list].size
+        c = s[:classes][:list].first
+        assert_equal ['10a', 'a', 6], [c[:group], c[:school], c[:people]]
+        # the day before yesterday five worked on the loops; yesterday only one
+        assert_equal UsageStats.day_of(NOW - 2 * DAY), c[:last]
+        assert_equal 'kata-loops', c[:activity]
+        assert_equal 1, s[:classes][:small]
+        html = UsageStats.html(s, :titles => { 'kata-loops' => ['Katas: Schleifen', 'kata-loops'] }, :tasks => {}, :schools => { 'a' => 'Schule A' })
+        assert_includes html, '10a'
+        assert_includes html, 'vor 2 Tagen'
+        assert_includes html, 'Katas: Schleifen'
+        refute_includes html, '10b'
+        assert_includes html, '1 Klasse mit weniger als 5'
+    end
+
     # Running Workspaces: who it was only within the hour, two numbers out
     def test_the_tally_counts_different_workspaces_and_the_most_at_once
         tally = WorkspaceUsage::Tally.new

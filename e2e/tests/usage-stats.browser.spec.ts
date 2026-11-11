@@ -27,16 +27,17 @@ test('the administration sees what is used, without names; a student does not', 
   await loginAsE2eUser(admin, adminEmail(), testInfo);
   await admin.goto('/statistik');
   await expect(admin.locator('h1')).toHaveText('Nutzung');
-  for (const heading of ['Verlauf', 'Wochenrhythmus', 'Stolpersteine', 'Schulen', 'Aktivitäten']) {
+  for (const heading of ['Verlauf', 'Wochenrhythmus', 'Klassen', 'Stolpersteine', 'Schulen', 'Aktivitäten', 'Server']) {
     await expect(admin.locator('h2', { hasText: heading })).toBeVisible();
   }
-  // a bar per day, its number above it under the pointer; 7 x 24 hours
-  const columns = admin.locator('.usage-plot:not(.usage-plot-small) .usage-col');
+  // the students' strip of the course: a bar per day, its number above it
+  // under the pointer; the weekly grid of the students: 7 x 24 hours
+  const columns = admin.locator('.usage-stack-row').first().locator('.usage-col');
   expect(await columns.count()).toBe(30);
   await columns.last().hover();
   await expect(admin.locator('.usage-tip')).toBeVisible();
   await expect(admin.locator('.usage-tip')).toHaveText(/\d+\.\d+\.: /);
-  await expect(admin.locator('.usage-rhythm .usage-cell')).toHaveCount(7 * 24);
+  await expect(admin.locator('.usage-rhythms section').first().locator('.usage-cell')).toHaveCount(7 * 24);
   // another window
   await admin.locator('.usage-windows a', { hasText: '7 Tage' }).click();
   await expect(admin).toHaveURL(/tage=7/);

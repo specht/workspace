@@ -45,6 +45,8 @@ module UsageStats
             :schools => schools(rows, min, days, now),
             :activities => activities(rows, min),
             :stumbling => stumbling(rows, min, group_school),
+            :classes => classes(rows, min, days, now, group_school),
+            :today => day_of(now),
             :workspaces => workspace_periods(hours, days, now, min),
             :workspace_rhythm => workspace_rhythm(hours, min),
             :workspaces_since => hours.map { |h| h[:hour] }.min,
@@ -175,6 +177,31 @@ module UsageStats
         end
     end
 
+    # The classes that worked in the window, the most recent first: each in
+    # which at least min different students checked something, with its
+    # school, its days (or weeks), the last of them with min of its students
+    # (a lesson, most of the time) and what most of them worked on then, if
+    # min did; the smaller classes only counted.
+    def self.classes(rows, min, days, now, group_school)
+        by_group = Hash.new { |hash, key| hash[key] = [] }
+        rows.each { |r| (r[:groups] || []).each { |g| by_group[g] << r } }
+        named, small = by_group.partition { |_, part| people(part).size >= min }
+        list = named.map do |group, part|
+            own = periods(part, days, now, min)
+            lesson = own.reverse.find { |p| p[:people].is_a?(Integer) && p[:people].positive? }
+            topic = nil
+            if lesson
+                inside = part.select { |r| (lesson[:from]..lesson[:to]).cover?(day_of(r[:ts])) }
+                activity, its = inside.group_by { |r| r[:activity] }.max_by { |_, x| people(x).size }
+                topic = activity if its && people(its).size >= min
+            end
+            { :group => group, :school => group_school[group], :people => people(part).size, :periods => own,
+              :last => lesson && lesson[:from], :last_period => lesson, :activity => topic }
+        end
+        list.sort_by! { |c| [c[:last] ? -c[:last].jd : 0, -c[:people], c[:group].to_s] }
+        { :list => list, :small => small.size }
+    end
+
     # Where a task goes wrong: each class in which at least min students
     # tried it, with its own share solved, the lowest first; a school none
     # of whose classes has min, but which has min itself, as the school
@@ -252,7 +279,7 @@ module UsageStats
     # for the grey stub and an empty day
     STUDENT_TIP = ->(p, n) { "#{n} Lernende, #{p[:checks]} Prüfungen" }
 
-    def self.bars(periods, min, small: false, tip: STUDENT_TIP, few: 'Lernende', none: 'keine Prüfung')
+    def self.bars(periods, min, small: false, tip: STUDENT_TIP, few: 'Lernende', none: 'keine Prüfung', axis: true)
         max = periods.map { |p| p[:people].is_a?(Integer) ? p[:people] : 0 }.max.to_i
         top = small ? [max, min].max : ticks([max, min].max).last
         weekly = periods.any? { |p| p[:from] != p[:to] }
@@ -274,7 +301,7 @@ module UsageStats
             io << "<span class='usage-col#{weekend ? ' usage-weekend' : ''}' data-tip='#{h(tip_text)}'>#{fill}</span>"
         end
         io << '</div></div>'
-        unless small
+        if !small && axis
             io << "<div class='usage-axis' aria-hidden='true'>"
             axis_labels(periods).each do |i, text|
                 io << "<span style='left: #{(100.0 * i / periods.size).round(2)}%'>#{h(text)}</span>"
@@ -341,9 +368,94 @@ module UsageStats
         "<td class='usage-pie-cell' data-label='falsch'>#{pie(t[:wrong], 'wrong', 'Prüfungen falsch')}</td>" \
         "<td class='text-end usage-num' data-label='bis gelöst'>#{median_text(t[:median])}</td>"
 
+    # A day as people say it: heute, gestern, vor 3 Tagen, then the date
+    def self.recent(day, today)
+        ago = (today - day).to_i
+        return 'heute' if ago <= 0
+        return 'gestern' if ago == 1
+        return "vor #{ago} Tagen" if ago < 7
+
+        "#{WEEKDAYS[day.cwday - 1]} #{date(day)}"
+    end
+
+    # One row of the stacked course: a title, a note, the chart
+    def self.strip(title, note, chart)
+        "<section class='usage-stack-row'><div class='usage-stack-head'><h3>#{h(title)}</h3>" \
+            "<span>#{h(note)}</span></div>#{chart}</section>"
+    end
+
+    # The course in time: students, running Workspaces and the server, one
+    # strip each, on the same days, the dates only under the last, so that
+    # a busy day lines up across them (each strip keeps its own scale).
+    def self.course_html(summary, server)
+        min = summary[:min]
+        unit = summary[:days] > 90 ? 'Woche' : 'Tag'
+        rows = [['Lernende', "die etwas prüfen ließen, je #{unit}",
+                 ->(axis) { bars(summary[:periods], min, :axis => axis) }]]
+        unless summary[:workspaces_since].nil?
+            rows << ['Laufende Workspaces', "in der vollsten Stunde, auch von Lehrkräften, je #{unit}",
+                     lambda do |axis|
+                         bars(summary[:workspaces], min, :axis => axis,
+                              :tip => ->(p, n) { "höchstens #{n} Workspaces in einer Stunde, #{p[:peak]} gleichzeitig" },
+                              :few => 'Workspaces', :none => (->(p) { p[:counted] ? 'kein Workspace' : 'nicht gezählt' }))
+                     end]
+        end
+        if server && server[:since]
+            labels = axis_labels(server[:periods])
+            ServerLoad::CHARTS.first(2).each do |title, note, value, tip|
+                rows << [title, note, ->(axis) { ServerLoad.plot(ServerLoad.columns(server[:periods], server[:today], value, tip), axis ? labels : nil) }]
+            end
+        end
+        io = +"<div class='usage-stack'>"
+        rows.each_with_index { |(title, note, chart), i| io << strip(title, note, chart.(i == rows.size - 1)) }
+        if summary[:workspaces_since].nil?
+            io << strip('Laufende Workspaces', 'noch keine Zahlen',
+                        "<p class='usage-legend'>Noch keine Zahlen. Der Workspace zählt alle fünf Minuten, wie viele Workspaces laufen, " \
+                        'und speichert je Stunde nur zwei Zahlen, nicht wer.</p>')
+        end
+        io << '</div>'
+        io << "<p class='usage-legend'>Wochenenden grau hinterlegt; ein grauer Strich: weniger als #{min}. " \
+              "#{server && server[:since] && unit == 'Tag' ? "Ein Klick auf einen Tag der letzten #{ServerLoad::SAMPLE_DAYS} Tage beim Server zeigt ihn in Fünf-Minuten-Schritten." : ''}</p>"
+        # the same as a table
+        io << "<details class='usage-table-view'><summary>Als Tabelle</summary><div class='table-responsive'><table class='table table-sm usage-table'>"
+        io << "<thead><tr><th>#{unit}</th><th class='text-end'>Lernende</th><th class='text-end'>Prüfungen</th>"
+        io << "<th class='text-end'>Workspaces</th>" unless summary[:workspaces_since].nil?
+        io << "<th class='text-end'>Prozessoren</th><th class='text-end'>Arbeitsspeicher</th>" if server && server[:since]
+        io << '</tr></thead><tbody>'
+        pct = ->(v) { v.nil? ? '–' : "#{decimal(v)} %" }
+        summary[:periods].each_with_index do |p, i|
+            people = p[:people] == :few ? nil : p[:people]
+            io << "<tr><td>#{period_label(p)}</td><td class='text-end'>#{number(people, min)}</td>" \
+                  "<td class='text-end'>#{p[:people] == 0 ? 0 : number(p[:checks], min)}</td>"
+            unless summary[:workspaces_since].nil?
+                w = summary[:workspaces][i]
+                io << "<td class='text-end'>#{w.nil? || !w[:counted] ? '–' : (w[:people] == :few ? "&lt; #{min}" : w[:people])}</td>"
+            end
+            if server && server[:since]
+                sp = server[:periods][i]
+                io << "<td class='text-end'>#{pct.(sp && sp[:cpu_hour])}</td><td class='text-end'>#{pct.(sp && ServerLoad.share(sp[:ram]))}</td>"
+            end
+            io << '</tr>'
+        end
+        io << '</tbody></table></div></details>'
+    end
+
+    # A class (or a school) on »Stolpersteine«: its name with a small pie of
+    # its share solved; its school and the numbers under the pointer, so
+    # that several classes fit on one line
+    def self.place_chip(pl, school_name)
+        name = h(pl[:group] || school_name.(pl[:school]))
+        label = pl[:group] ? "#{pl[:group]}, #{school_name.(pl[:school])}" : school_name.(pl[:school])
+        "<span class='usage-place' data-tip='#{h(label)}: #{pl[:people]} Lernende, #{percent(pl[:solved])} gelöst'>" \
+            "<span class='usage-pie usage-pie-solved usage-pie-small' style='--p: #{(pl[:solved] * 100).round(1)}%'></span>#{name}</span>"
+    end
+
+    STUMBLING_SHOWN = 8
+
     # titles: { activity => [title, slug] }, tasks: { 'activity/id' => title },
-    # schools: { key => name }
-    def self.html(summary, titles:, tasks:, schools:)
+    # schools: { key => name }; server: { periods:, rhythm:, since:, today: }
+    # of the server (ServerLoad), nil without
+    def self.html(summary, titles:, tasks:, schools:, server: nil)
         min = summary[:min]
         activity_link = lambda do |activity|
             title, slug = titles[activity] || [activity, nil]
@@ -352,6 +464,7 @@ module UsageStats
         task_name = ->(task) { h(tasks[task] || task.to_s.split('/', 2).last) }
         school_name = ->(key) { schools[key] || 'ohne Schule' }
         unit = summary[:days] > 90 ? 'Woche' : 'Tag'
+        classes = summary[:classes] || { :list => [], :small => 0 }
         io = +"<div class='usage-charts'>"
 
         io << "<nav class='usage-windows mb-3' aria-label='Zeitraum'>"
@@ -363,6 +476,7 @@ module UsageStats
         shown_schools = summary[:schools].count { |s| s[:people] }
         busiest = summary[:periods].map { |p| p[:people].is_a?(Integer) ? p[:people] : 0 }.max.to_i
         tiles = [[number(summary[:people], min), 'Lernende'], [number(summary[:checks], min), 'Prüfungen'],
+                 [classes[:list].size.to_s, "#{classes[:list].size == 1 ? 'Klasse' : 'Klassen'} ab #{min} Lernenden"],
                  [shown_schools.to_s, "#{shown_schools == 1 ? 'Schule' : 'Schulen'} ab #{min} Lernenden"],
                  [busiest.positive? ? busiest.to_s : '–', unit == 'Tag' ? 'höchstens an einem Tag' : 'höchstens in einer Woche']]
         io << "<div class='usage-tiles' aria-label='#{summary[:days] == 365 ? 'Im letzten Jahr' : "In den letzten #{summary[:days]} Tagen"}'>"
@@ -370,68 +484,74 @@ module UsageStats
         io << '</div>'
 
         io << "<h2 class='mt-4'>Verlauf</h2>"
-        io << "<p>Wie viele Lernende #{unit == 'Tag' ? 'an jedem Tag' : 'in jeder Woche'} etwas prüfen ließen#{unit == 'Tag' ? ', Wochenenden grau hinterlegt' : ''}. " \
-              "Ein grauer Strich: weniger als #{min}.</p>"
-        io << bars(summary[:periods], min)
-        io << "<details class='usage-table-view'><summary>Als Tabelle</summary>"
-        io << "<div class='table-responsive'><table class='table table-sm usage-table'><thead><tr><th>#{unit}</th><th class='text-end'>Lernende</th><th class='text-end'>Prüfungen</th></tr></thead><tbody>"
-        summary[:periods].each do |p|
-            people = p[:people] == :few ? nil : p[:people]
-            io << "<tr><td>#{period_label(p)}</td><td class='text-end'>#{number(people, min)}</td><td class='text-end'>#{p[:people] == 0 ? 0 : number(p[:checks], min)}</td></tr>"
-        end
-        io << '</tbody></table></div></details>'
-
-        io << "<h2 class='mt-4'>Laufende Workspaces</h2>"
-        if summary[:workspaces_since].nil?
-            io << "<p>Noch keine Zahlen. Der Workspace zählt alle fünf Minuten, wie viele Workspaces laufen, und speichert je Stunde nur zwei Zahlen, nicht wer.</p>"
-        else
-            since = Time.at(summary[:workspaces_since])
-            io << "<p>Wie viele Workspaces #{unit == 'Tag' ? 'an jedem Tag' : 'in jeder Woche'} in der vollsten Stunde liefen, auch die von Lehrkräften. " \
-                  "Gezählt wird alle fünf Minuten, seit #{since.strftime('%-d.%-m.%Y')}; gespeichert sind je Stunde nur zwei Zahlen, nicht wer. Ein grauer Strich: weniger als #{min}.</p>"
-            io << bars(summary[:workspaces], min, :tip => ->(p, n) { "höchstens #{n} Workspaces in einer Stunde, #{p[:peak]} gleichzeitig" },
-                       :few => 'Workspaces', :none => (->(p) { p[:counted] ? 'kein Workspace' : 'nicht gezählt' }))
-            io << "<h3 class='mt-3 h5'>Wann sie laufen</h3>"
-            io << '<p>Laufende Workspaces je Wochentag und Stunde, im Mittel über den Zeitraum.</p>'
-            io << rhythm_html(summary[:workspace_rhythm], min, :noun => 'Workspaces', :none => 'kein Workspace')
-        end
+        io << "<p>Wer arbeitet und was der Server dabei leistet, #{unit == 'Tag' ? 'an jedem Tag' : 'in jeder Woche'}, untereinander auf denselben " \
+              "#{unit == 'Tag' ? 'Tagen' : 'Wochen'}: Ein voller Tag ist in allen Streifen an derselben Stelle. Jeder Streifen hat seinen eigenen Maßstab.</p>"
+        io << course_html(summary, server)
 
         io << "<h2 class='mt-4'>Wochenrhythmus</h2>"
-        io << '<p>Wann in der Woche geprüft wird: Lernende je Wochentag und Stunde, über den ganzen Zeitraum.</p>'
-        io << rhythm_html(summary[:rhythm], min)
+        io << '<p>Wann in der Woche gearbeitet wird, je Wochentag und Stunde über den ganzen Zeitraum, nebeneinander.</p>'
+        io << "<div class='usage-rhythms'>"
+        io << "<section><h3>Lernende</h3>#{rhythm_html(summary[:rhythm], min)}</section>"
+        unless summary[:workspaces_since].nil?
+            io << "<section><h3>Laufende Workspaces</h3>#{rhythm_html(summary[:workspace_rhythm], min, :noun => 'Workspaces', :none => 'kein Workspace')}</section>"
+        end
+        io << "<section><h3>Prozessoren</h3>#{ServerLoad.rhythm_html(server[:rhythm])}</section>" if server && server[:since]
+        io << '</div>'
+
+        io << "<h2 class='mt-4'>Klassen</h2>"
+        io << "<p>Klassen, in denen mindestens #{min} Lernende etwas prüfen ließen, die zuletzt aktiven zuerst. " \
+              "»Zuletzt« ist #{unit == 'Tag' ? 'der letzte Tag' : 'die letzte Woche'}, an #{unit == 'Tag' ? 'dem' : 'der'} mindestens #{min} aus der Klasse gearbeitet haben, " \
+              'meist eine Stunde im Unterricht, und »woran« das, woran die meisten von ihnen da gearbeitet haben.</p>'
+        if classes[:list].empty?
+            io << "<p class='text-muted'>Noch keine Klasse mit mindestens #{min} Lernenden.</p>"
+        else
+            io << "<div class='table-responsive'><table class='table table-sm usage-table usage-classes'><thead><tr><th>Klasse</th>" \
+                  "<th class='text-end'>Lernende</th><th>zuletzt</th><th>woran</th><th class='usage-classes-strip'>#{unit == 'Tag' ? 'Tage' : 'Wochen'}</th></tr></thead><tbody>"
+            classes[:list].each do |c|
+                last = if c[:last_period].nil? then '–'
+                       elsif unit == 'Tag' then recent(c[:last], summary[:today])
+                       else "Woche ab #{date(c[:last])}"
+                       end
+                io << "<tr><td><span class='usage-class-name'>#{h(c[:group])}</span> <span class='usage-place-school'>#{h(school_name.(c[:school]))}</span></td>" \
+                      "<td class='text-end usage-num'>#{c[:people]}</td><td class='text-nowrap'>#{last}</td>" \
+                      "<td>#{c[:activity] ? activity_link.(c[:activity]) : '–'}</td>" \
+                      "<td class='usage-classes-strip'>#{bars(c[:periods], min, :small => true)}</td></tr>"
+            end
+            io << '</tbody></table></div>'
+        end
+        io << "<p class='text-muted'>#{classes[:small]} #{classes[:small] == 1 ? 'Klasse' : 'Klassen'} mit weniger als #{min}.</p>" if classes[:small].to_i.positive?
 
         io << "<h2 class='mt-4'>Stolpersteine</h2>"
-        io << "<p>Aufgaben, die mindestens #{min} Lernende versucht haben, die mit dem kleinsten Anteil Gelöster zuerst. " \
-              "<span class='usage-key'>#{pie(0.7, 'solved', 'Beispiel')}</span> Anteil der Lernenden, die sie gelöst haben, " \
-              "<span class='usage-key'>#{pie(0.3, 'wrong', 'Beispiel')}</span> Anteil der Prüfungen, die falsch waren; " \
-              '»bis gelöst« ist der Median der Prüfungen bis zur ersten richtigen. Darunter die Klassen, in denen ' \
-              "mindestens #{min} sie versucht haben, mit ihrem Anteil Gelöster.</p>"
+        io << "<p>Aufgaben, die mindestens #{min} Lernende versucht haben, die mit dem kleinsten Anteil Gelöster zuerst: " \
+              "<span class='usage-key'>#{pie(0.7, 'solved', 'Beispiel')}</span> wie viele sie gelöst haben, " \
+              "<span class='usage-key'>#{pie(0.3, 'wrong', 'Beispiel')}</span> wie viele Prüfungen falsch waren, " \
+              "»bis gelöst« der Median der Prüfungen bis zur ersten richtigen; rechts die Klassen ab #{min}, die sie versucht haben.</p>"
         if summary[:stumbling].empty?
             io << "<p class='text-muted'>Noch keine Aufgabe mit genug Lernenden.</p>"
         else
-            io << "<div class='table-responsive'><table class='table usage-table usage-tasks'>#{task_header('Aufgabe')}<tbody>"
-            summary[:stumbling].each do |t|
-                io << "<tr><td><div class='usage-task-name'>#{task_name.(t[:task])}</div><div class='usage-task-activity'>#{activity_link.(t[:activity])}</div>"
+            head = "<thead><tr><th>Aufgabe</th><th class='text-end'>Lernende</th><th class='usage-pie-cell'>gelöst</th>" \
+                   "<th class='usage-pie-cell'>falsch</th><th class='text-end text-nowrap'>bis gelöst</th><th>Klassen</th></tr></thead>"
+            row = lambda do |t|
                 places = t[:places] || []
-                unless places.empty? && t[:small_places].to_i.zero?
-                    io << "<div class='usage-places'>"
-                    places.first(PLACES).each do |pl|
-                        name = pl[:group] ? "#{h(pl[:group])} <span class='usage-place-school'>#{h(school_name.(pl[:school]))}</span>" : h(school_name.(pl[:school]))
-                        label = pl[:group] ? "#{pl[:group]}, #{school_name.(pl[:school])}" : school_name.(pl[:school])
-                        io << "<span class='usage-place' data-tip='#{h(label)}: #{pl[:people]} Lernende, #{percent(pl[:solved])} gelöst'>" \
-                              "<span class='usage-pie usage-pie-solved usage-pie-small' style='--p: #{(pl[:solved] * 100).round(1)}%'></span>#{name}</span>"
-                    end
-                    hidden = places.drop(PLACES)
-                    classes = hidden.count { |pl| pl[:group] }
-                    rest = []
-                    rest << "#{classes} weitere #{classes == 1 ? 'Klasse' : 'Klassen'}" if classes.positive?
-                    rest << "#{hidden.size - classes} weitere #{hidden.size - classes == 1 ? 'Schule' : 'Schulen'}" if hidden.size > classes
-                    rest << "#{t[:small_places]} #{t[:small_places] == 1 ? 'Klasse' : 'Klassen'} mit weniger als #{min}" if t[:small_places].to_i.positive?
-                    io << "<span class='usage-place-rest'>#{rest.join('; ')}</span>" unless rest.empty?
-                    io << '</div>'
-                end
-                io << "</td>#{task_cells(t)}</tr>"
+                chips = places.first(PLACES).map { |pl| place_chip(pl, school_name) }.join
+                hidden = places.drop(PLACES)
+                rest = []
+                rest << "+#{hidden.size}" unless hidden.empty?
+                rest << "#{t[:small_places]} unter #{min}" if t[:small_places].to_i.positive?
+                chips << "<span class='usage-place-rest'>#{rest.join(', ')}</span>" unless rest.empty?
+                "<tr><td><span class='usage-task-name'>#{task_name.(t[:task])}</span> <span class='usage-task-activity'>#{activity_link.(t[:activity])}</span></td>" \
+                    "#{task_cells(t)}<td class='usage-places-cell'><div class='usage-places'>#{chips}</div></td></tr>"
             end
+            first, more = summary[:stumbling].first(STUMBLING_SHOWN), summary[:stumbling].drop(STUMBLING_SHOWN)
+            io << "<div class='table-responsive'><table class='table table-sm usage-table usage-tasks usage-stumbling'>#{head}<tbody>"
+            first.each { |t| io << row.(t) }
             io << '</tbody></table></div>'
+            unless more.empty?
+                io << "<details class='usage-more'><summary>#{more.size} weitere #{more.size == 1 ? 'Aufgabe' : 'Aufgaben'}</summary>" \
+                      "<div class='table-responsive'><table class='table table-sm usage-table usage-tasks usage-stumbling'>#{head}<tbody>"
+                more.each { |t| io << row.(t) }
+                io << '</tbody></table></div></details>'
+            end
         end
 
         io << "<h2 class='mt-4'>Schulen</h2>"
@@ -484,7 +604,8 @@ module UsageStats
             io << '</details>'
         end
         unless small.empty?
-            io << "<p class='mt-3'>Mit weniger als #{min} Lernenden: #{small.sort_by { |a| titles[a[:activity]][0] }.map { |a| activity_link.(a[:activity]) }.join(', ')}.</p>"
+            io << "<details class='usage-more mt-3'><summary>#{small.size} #{small.size == 1 ? 'Aktivität' : 'Aktivitäten'} mit weniger als #{min} Lernenden</summary>" \
+                  "<p>#{small.sort_by { |a| titles[a[:activity]][0] }.map { |a| activity_link.(a[:activity]) }.join(', ')}.</p></details>"
         end
         io << '</div>'
         io

@@ -64,13 +64,16 @@ class Main < Sinatra::Base
         hours = workspace_hours(now - days * 86_400 - 7 * 86_400)
         server = server_hours(now - days * 86_400 - 7 * 86_400)
         first_server = neo4j_query('MATCH (h:ServerHour) RETURN min(h.hour) AS first;').first&.dig('first')
+        server_periods = ServerLoad.periods(server, days, now)
+        today = UsageStats.day_of(now)
         "<h1 class='mt-4'>Nutzung</h1>" \
             "<p class='abstract'>Welche Aktivitäten und Aufgaben an welcher Schule und in welcher Klasse bearbeitet werden und wo sie haken, " \
-            'aus den Ergebnissen der automatischen Prüfung, ohne Namen. Zahlen, die auf weniger als fünf Lernenden beruhen, stehen hier nicht; ' \
-            'Lehrkräfte, die Administration und die Testgruppen zählen nicht mit. Am Ende steht, wie ausgelastet der Server ist.</p>' +
+            'aus den Ergebnissen der automatischen Prüfung, ohne Namen, und was der Server dabei leistet. Zahlen, die auf weniger als fünf Lernenden beruhen, ' \
+            'stehen hier nicht; Lehrkräfte, die Administration und die Testgruppen zählen nicht mit.</p>' +
             UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours),
-                        :titles => titles, :tasks => tasks, :schools => school_names) +
-            ServerLoad.html(ServerLoad.periods(server, days, now), ServerLoad.rhythm(server), :since => first_server, :today => UsageStats.day_of(now))
+                        :titles => titles, :tasks => tasks, :schools => school_names,
+                        :server => { :periods => server_periods, :rhythm => ServerLoad.rhythm(server), :since => first_server, :today => today }) +
+            ServerLoad.html(server_periods, :since => first_server, :today => today)
     end
 
     # /statistik?server=2026-11-09: one day of the server in five-minute steps
