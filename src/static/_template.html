@@ -613,7 +613,8 @@ function install_card_abstract_fit() {
     if (cards.length === 0) return;
     function fit() {
         for (let card of cards) {
-            let img = card.querySelector('img');
+            // the picture that shows: a card has one for the light and one for the dark theme
+            let img = Array.from(card.querySelectorAll('img')).find((e) => e.getClientRects().length > 0);
             let content = card.querySelector('.card-content');
             let abstract = content && content.querySelector('.abstract');
             if (!img || !abstract) continue;

@@ -58,11 +58,11 @@ x /= np.abs(x).max()
 y, levels = compress(x, RATE)
 y /= max(1, np.abs(y).max())
 
-# where things go: the curve left, the two sounds right, in pixels of the large picture
-M = 70 * S
-curve = (M, M, 640 * S, H * S - M)                   # left, top, right, bottom
-above = (720 * S, M, W * S - M, H * S // 2 - 25 * S)
-below = (720 * S, H * S // 2 + 25 * S, W * S - M, H * S - M)
+# where things go, in pixels of the large picture: the curve left, the two
+# sounds right, all inside a margin that a card cutting its sides keeps
+curve = (130 * S, 90 * S, 640 * S, 810 * S)           # left, top, right, bottom
+above = (730 * S, 90 * S, 1480 * S, 435 * S)
+below = (730 * S, 465 * S, 1480 * S, 810 * S)
 
 
 def envelope(z, box):
@@ -85,16 +85,20 @@ for suffix, theme in THEMES.items():
     xof = lambda db: left + (db - LO) / -LO * (right - left)
     yof = lambda db: top + (HI - db) / (HI - LO) * (bottom - top)
     for db in (0, -24, -48):
-        draw.line([(left, yof(db)), (right, yof(db))], fill=theme['quiet'], width=2 * S)
+        draw.line([(left, yof(db)), (right, yof(db))], fill=theme['quiet'], width=3 * S)
+    # the threshold: where the curve bends, a quiet vertical line
+    draw.line([(xof(THRESHOLD), top), (xof(THRESHOLD), bottom)], fill=theme['quiet'], width=3 * S)
+    # the axes, in and out
+    draw.line([(left, top), (left, bottom), (right, bottom)], fill=theme['sound'], width=4 * S)
     # dashed: without the compressor, out = in
-    for k in range(0, 60, 3):
-        draw.line([(xof(LO + k), yof(LO + k)), (xof(LO + k + 1.8), yof(LO + k + 1.8))], fill=theme['sound'], width=3 * S)
+    for k in np.arange(0, 60, 4):
+        draw.line([(xof(LO + k), yof(LO + k)), (xof(LO + k + 2.4), yof(LO + k + 2.4))], fill=theme['sound'], width=6 * S)
     out = lambda db: db + gain_db(db, THRESHOLD, RATIO) + MAKEUP
     points = [(xof(db), yof(out(db))) for db in np.linspace(LO, 0, 400)]
-    draw.line(points, fill=theme['mark'], width=6 * S, joint='curve')
+    draw.line(points, fill=theme['mark'], width=11 * S, joint='curve')
     now = float(np.median(levels[int(0.7 * len(levels)):]))
-    cx, cy, rad = xof(now), yof(out(now)), 14 * S
-    draw.ellipse([cx - rad, cy - rad, cx + rad, cy + rad], fill=theme['mark'], outline=theme['ground'], width=4 * S)
+    cx, cy, rad = xof(now), yof(out(now)), 24 * S
+    draw.ellipse([cx - rad, cy - rad, cx + rad, cy + rad], fill=theme['mark'], outline=theme['ground'], width=6 * S)
     # the sound, before and after
     for box, z, colour in ((above, x, theme['sound']), (below, y, theme['mark'])):
         for px, hi, lo in envelope(z, box):
