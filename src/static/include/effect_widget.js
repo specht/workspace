@@ -276,7 +276,7 @@
             ],
             switches: [{ key: 'withBand', label: 'Band dazu', value: false, mix: 'liftoffBand', level: 0.55 }],
             knobs: [
-                { key: 'bands', label: 'Bänder', min: 2, max: 32, step: 1, value: 16,
+                { key: 'bands', label: 'Bänder', min: 2, max: 32, step: 1, value: 24,
                   marks: [[2, '2'], [4, '4'], [8, '8'], [16, '16'], [24, '24'], [32, '32']], show: (v) => `${v}` },
             ],
             live: true,
@@ -711,11 +711,14 @@ onmessage = (e) => {
             // the melody's instrument as carrier; where it is silent, the voice as it is (20 ms crossfades)
             out = vocoder(clip.x, lead, clip.rate, m.params.bands);
             const ramp = Math.round(0.02 * clip.rate);
-            let level = 0, mix = 0;
+            let level = 0, mix = 0, a = 0, b = 0;
             for (let i = 0; i < out.length; i++) {
                 level = Math.max(Math.abs(lead[i % lead.length]), level * 0.999);
                 mix += ((level > 0.02 ? 1 : 0) - mix) / ramp;
-                out[i] = mix * out[i] * 1.6 + (1 - mix) * clip.x[i];
+                // the hiss of the consonants from the voice itself (above about 4 kHz), which a vocoder loses
+                const hiss = clip.x[i] - 2 * a + b;
+                b = a; a = clip.x[i];
+                out[i] = mix * (out[i] * 1.6 + 0.35 * hiss) + (1 - mix) * clip.x[i];
             }
         } else out = vocoder(clip.x, carrierFor(m.params.carrier === 'melody' ? 'chord' : m.params.carrier, clip.x.length, clip.rate, null), clip.rate, m.params.bands);
     } else if (m.effect === 'voices') {
