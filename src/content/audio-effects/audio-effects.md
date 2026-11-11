@@ -21,7 +21,7 @@ reference: [bits-und-bytes]
 # Audioeffekte
 
 <p class='abstract'>
-Ein Equalizer, ein Echo, Hall, ein Chorus, ein Kompressor, eine Stimme in einer anderen Tonhöhe und ein Roboter, der singt: Du baust die Effekte eines Tonstudios in Python mit numpy und hörst bei jedem im Widget, was seine Regler tun.
+Ein Equalizer, ein Echo, Hall, ein Chorus, ein Compressor, eine Stimme in einer anderen Tonhöhe und ein Roboter, der singt: Du baust die Effekte eines Tonstudios in Python mit numpy und hörst bei jedem im Widget, was seine Regler tun.
 </p>
 
 ## Einrichten
@@ -466,5 +466,104 @@ Hör dir `stimme-raum.wav` und `stimme-kirche.wav` an. In der Kirche verschwimme
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Lass die beiden Allpässe weg: Wie klingt der Hall nur aus den vier Echos? Und was passiert mit nur einem Echo statt vier?
+</div>
+
+## Compressor
+
+Im Radio klingt ein Lied gleichmäßig laut, auch wo jemand leise singt, und ein Podcast ist in der Bahn gut zu verstehen, ohne dass ein Lachen in den Ohren schmerzt. Dahinter steckt ein **Compressor**, wie man ihn auch im deutschen Tonstudio nennt: Er macht laute Stellen leiser und lässt leise, wie sie sind. Was über dem **Threshold** liegt, der Schwelle, staucht er nach der **Ratio**: Bei 4 : 1 kommt von 12 dB über dem Threshold nur ein Viertel heraus, 3 dB. Danach ist alles höchstens so laut wie vorher, und man kann es als Ganzes wieder lauter machen, mit dem **Make-up Gain**. Jetzt sind die leisen Stellen lauter als vorher, die lauten aber nicht.
+
+Wie laut der Klang gerade ist, sagt ein einzelnes Sample nicht, denn eine Schwingung geht ständig durch null. Der Compressor folgt deshalb dem Betrag der Samples mit Verzögerung, dem **Pegel**:
+
+$$p\_n = c \cdot p\_{n-1} + (1 - c) \cdot |x\_n|$$
+
+\\(c\\) liegt knapp unter 1: Je näher an 1, desto langsamer folgt der Pegel. Wird der Klang lauter, nimmt der Compressor ein \\(c\\) für die Zeit **Attack**, wird er leiser, eins für die Zeit **Release**.
+
+<div class='effect-widget' data-effect='compressor'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Hör dir das Schlagzeug bei 20 : 1 an und zieh den Threshold langsam von 0 dB herunter bis −40 dB. Achte auf den Anschlag jeder Snare, den ersten Moment des Schlags: Wann wird er stumpf? Stell dann die Attack auf 30 ms: Was kommt zurück, und warum? Schau dabei rechts im Bild, wie viele dB der Compressor wegnimmt, und auf die Welle darunter.
+</div>
+
+_task(compressor-level)
+
+Lege `compressor.py` an:
+
+<!-- page-code: own -->
+```python
+import math
+
+import numpy as np
+
+from wav import read_wav, write_wav
+
+
+def gain_db(level, threshold, ratio):
+    # hier: wie viele dB der Compressor bei diesem Pegel dazugibt (0 oder weniger)
+
+
+def compress(x, rate, threshold, ratio, attack, release, makeup):
+    a = math.exp(-1 / (attack * rate))
+    r = math.exp(-1 / (release * rate))
+    level = 0
+    y = np.zeros_like(x)
+    for n, v in enumerate(np.abs(x).tolist()):
+        c = a if v > level else r
+        level = c * level + (1 - c) * v
+        db = 20 * math.log10(max(level, 1e-9))
+        y[n] = x[n] * 10 ** ((gain_db(db, threshold, ratio) + makeup) / 20)
+    return y
+
+
+def save(path, y, rate):
+    peak = np.abs(y).max()
+    write_wav(path, y / max(1, peak), rate)
+    print(f'{path}: lauteste Stelle {peak:.2f}')
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('stimme.wav')
+    save('stimme-komprimiert.wav', compress(x, rate, -30, 4, 0.005, 0.1, 15), rate)
+```
+
+`compress` geht einmal über alle Samples, denn jeder Pegel braucht den vorigen. `math.exp` macht aus der Zeit `attack` in Sekunden das \\(c\\): Nach dieser Zeit ist der Pegel knapp zwei Drittel des Wegs zum neuen Betrag gegangen. Der Pegel in Dezibel geht an `gain_db`, und das Sample wird mit dem Faktor multipliziert, der zu `gain_db` und dem Make-up Gain `makeup` gehört.
+
+<div class='hint own' data-check='gain-db'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>gain_db(level, threshold, ratio)</code>: Liegt der Pegel <code>level</code> in dB höchstens beim Threshold <code>threshold</code>, gibt der Compressor 0 dB dazu. Liegt er darüber, gib zurück, um wie viele dB der Compressor ihn leiser macht, als negative Zahl.
+</div>
+
+<!-- hint -->
+Liegt der Pegel 12 dB über dem Threshold und die Ratio ist 4, bleiben 12 / 4 = 3 dB über dem Threshold. Der Compressor nimmt also 9 dB weg: `gain_db` gibt −9 zurück.
+<!-- /hint -->
+<!-- hint -->
+Von dem, was über dem Threshold liegt, `level - threshold`, bleibt der Teil `1 / ratio`; weggenommen wird der Teil `1 - 1 / ratio`.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def gain_db(level, threshold, ratio):
+    if level <= threshold:
+        return 0
+    return (threshold - level) * (1 - 1 / ratio)
+```
+<!-- /solution -->
+
+_task(gain-db)
+
+```bash
+python3 compressor.py
+```
+
+<!-- tutorial-step
+write-file: effects/compressor.py <- file:stufen/compressor.py
+check-task: gain-db
+terminal-run: cd /workspace/effects && python3 compressor.py
+terminal-wait-for-prompt: 120
+wait-for-text: stimme-komprimiert.wav
+-->
+
+Hör dir `stimme-komprimiert.wav` an und dann noch einmal `stimme.wav`: In der komprimierten Fassung sind die leisen Silben etwa 5 dB lauter geworden, die lauten etwa 1 dB leiser. Lagen zwischen ihnen vorher fast 20 dB, sind es jetzt etwa 13. Ein Compressor macht aber alles Leise lauter, auch ein Rauschen oder ein Atmen: Er kann nicht wissen, welche leisen Klänge man hören will.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Stell im Widget die Musik ein, die Attack auf 1 ms, die Release auf 20 ms und den Threshold tief. Jetzt klingt der Bass verzerrt: Der Pegel folgt so schnell, dass der Compressor die einzelnen Schwingungen des Basses leiser und lauter macht und ihre Form verändert. Wie lang muss die Release sein, bis die Verzerrung verschwindet?
 </div>
 

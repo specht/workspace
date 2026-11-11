@@ -25,7 +25,7 @@ development.
 5. **Hall.** Many echoes: Schroeder's reverberator (1962), four comb
    filters side by side and two all-pass filters after them; the room's
    size scales the delays, the feedback the length of the hall.
-6. **Kompressor.** Loud parts quieter: an envelope follower (attack,
+6. **Compressor.** (The maintainer: the industry's English terms, Compressor, Threshold, Ratio, Attack, Release, Make-up Gain.) Loud parts quieter: an envelope follower (attack,
    release), above a threshold the level divided by the ratio, make-up
    gain. One loop over the samples (the only one, and why it cannot be
    avoided: each value needs the one before).

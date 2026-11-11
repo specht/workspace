@@ -31,3 +31,10 @@ examples:
     fail:
       - { files: { effects/reverb.py: fehler/allpass-ohne-rueckkopplung.py, effects/echo.py: stufen/echo.py, effects/wav.py: stufen/wav.py }, say: 'g * y[n - D]' }
       - { files: { effects/reverb.py: fehler/allpass-ohne-minus.py, effects/echo.py: stufen/echo.py, effects/wav.py: stufen/wav.py }, say: 'g * y[n - D]' }
+  gain-db:
+    pass:
+      - { files: { effects/compressor.py: stufen/compressor.py, effects/wav.py: stufen/wav.py } }
+    fail:
+      - { files: { effects/compressor.py: fehler/gain-vorzeichen.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
+      - { files: { effects/compressor.py: fehler/gain-geteilt.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
+      - { files: { effects/compressor.py: fehler/gain-ausgang.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }

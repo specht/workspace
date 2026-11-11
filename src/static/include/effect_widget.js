@@ -12,7 +12,7 @@
 //   <div class='effect-widget' data-effect='eq'></div>
 //   <div class='effect-widget' data-effect='echo' data-clip='stimme'></div>
 //
-// The effects (EFFECTS below): eq, echo, chorus, reverb. Each has its knobs, its picture
+// The effects (EFFECTS below): eq, echo, chorus, reverb, compressor. Each has its knobs, its picture
 // and its function in WORKER, written like the Python of the page.
 (function () {
     'use strict';
@@ -55,6 +55,12 @@
         const d = Math.log2(Math.max(f, 1) / centre);
         return rest + (gain - rest) * 2 ** (-((d / width) ** 2));
     };
+
+    const RATIO = logSlider(1, 20), ATTACK = logSlider(0.001, 0.1), RELEASE = logSlider(0.02, 1);
+    const ms = (v) => `${de(v * 1000)} ms`;
+
+    // the compressor's gain in dB at a level in dB, as students write it
+    const gainDb = (level, threshold, ratio) => (level <= threshold ? 0 : (threshold - level) * (1 - 1 / ratio));
 
     const EFFECTS = {
         eq: {
@@ -132,6 +138,32 @@
             line: (p) => `Nach ${de(p.time, 1)} s ist der Hall um 60 dB leiser, ein Tausendstel der Höhe; die Echos kommen ${de(29.7 * p.size, 0)} bis ${de(43.7 * p.size, 0)} ms auseinander.`,
             draw: drawReverb,
         },
+        compressor: {
+            chip: 'Zum Ausprobieren: abspielen und regeln',
+            clips: ['schlagzeug', 'stimme', 'musik'],
+            knobs: [
+                { key: 'threshold', label: 'Threshold', min: -48, max: 0, step: 1, value: -24,
+                  marks: [[-48, '−48'], [-36, '−36'], [-24, '−24'], [-12, '−12'], [0, '0 dB']], show: signedDb },
+                { key: 'ratio', label: 'Ratio', min: 0, max: 1000, step: 1, value: RATIO.from(4), scale: RATIO,
+                  marks: [[1, '1'], [2, '2'], [4, '4'], [8, '8'], [20, '20']],
+                  show: (v) => `${v.toLocaleString('de-DE', { maximumFractionDigits: 1 })} : 1` },
+                { key: 'attack', label: 'Attack', min: 0, max: 1000, step: 1, value: ATTACK.from(0.005), scale: ATTACK,
+                  marks: [[0.001, '1'], [0.003, '3'], [0.01, '10'], [0.03, '30'], [0.1, '100 ms']], show: ms },
+                { key: 'release', label: 'Release', min: 0, max: 1000, step: 1, value: RELEASE.from(0.1), scale: RELEASE,
+                  marks: [[0.02, '20'], [0.05, '50'], [0.1, '100'], [0.2, '200'], [0.5, '500'], [1, '1000 ms']], show: ms },
+                { key: 'makeup', label: 'Make-up Gain', min: 0, max: 24, step: 1, value: 9,
+                  marks: [[0, '0'], [6, '+6'], [12, '+12'], [18, '+18'], [24, '+24 dB']], show: signedDb },
+            ],
+            twice: true,
+            live: true,
+            neutral: (p) => p.ratio === 1 && p.makeup === 0,
+            caption: 'Links: wie laut ein Klang herauskommt, lila mit Compressor, gestrichelt ohne; der Punkt ist der Pegel, der gerade spielt. Rechts: wie viele dB der Compressor gibt, vier Sekunden um die Stelle, die gerade spielt (Strich).',
+            line: (p) => {
+                const one = (v) => v.toLocaleString('de-DE', { maximumFractionDigits: 1 });
+                return `Was über ${signedDb(p.threshold)} liegt, wird ${one(p.ratio)} : 1 gestaucht: 12 dB darüber kommen als ${one(12 / p.ratio)} dB darüber heraus; danach alles ${signedDb(p.makeup)}.`;
+            },
+            draw: drawCompressor,
+        },
     };
 
     // Schroeder's reverberator, the same in the worker and for the picture:
@@ -159,6 +191,20 @@
         return out;
     }
     // the chorus: a copy read 15 ms plus a wobbling depth behind, between samples
+    // the level follows |x| (attack when it rises, release when it falls);
+    // each sample gets the gain of gainDb and the makeup
+    function compressor(x, rate, p) {
+        const a = Math.exp(-1 / (p.attack * rate)), r = Math.exp(-1 / (p.release * rate));
+        const out = new Float32Array(x.length);
+        let level = 0;
+        for (let n = 0; n < x.length; n++) {
+            const v = Math.abs(x[n]), c = v > level ? a : r;
+            level = c * level + (1 - c) * v;
+            const db = 20 * Math.log10(Math.max(level, 1e-9));
+            out[n] = x[n] * 10 ** ((gainDb(db, p.threshold, p.ratio) + p.makeup) / 20);
+        }
+        return out;
+    }
     function chorus(x, rate, p) {
         const out = new Float32Array(x.length);
         for (let n = 0; n < x.length; n++) {
@@ -211,8 +257,10 @@ function echo(x, rate, p) {
 }
 ${reverb.toString()}
 ${chorus.toString()}
+${compressor.toString()}
+const gainDb = ${gainDb.toString()};
 const COMBS = ${JSON.stringify(COMBS)}, ALLPASS = ${JSON.stringify(ALLPASS)};
-const EFFECTS = { echo, chorus, reverb };
+const EFFECTS = { echo, chorus, reverb, compressor };
 onmessage = (e) => {
     const m = e.data;
     if (m.load) { clips[m.load] = { x: m.x, rate: m.rate }; return; }
@@ -395,6 +443,80 @@ onmessage = (e) => {
         g.stroke();
     }
 
+    // left the curve (input level against output level, with the make-up
+    // gain), right the gain over four seconds: each knob changes one of them
+    const compressorLayout = (w) => {
+        const left = Math.round((w - 2 * LABEL_W - 16) * 0.4);
+        return { left, x2: 2 * LABEL_W + left + 16, right: w - (2 * LABEL_W + left + 16) };
+    };
+    function drawCompressor(g, w, h, col, p, on, live) {
+        const { left, x2, right } = compressorLayout(w);
+        const plotH = h - AXIS;
+        g.font = '12px system-ui, sans-serif';
+        g.fillStyle = col.ground;
+        g.fillRect(LABEL_W, 0, left, plotH);
+        g.fillRect(x2, 0, right, plotH);
+        // the curve: in −60 … 0 dB, out −60 … +24 dB
+        const LO = -60, HI = 24;
+        const xOf = (db) => LABEL_W + (db - LO) / -LO * left;
+        const yOf = (db) => 4 + (HI - db) / (HI - LO) * (plotH - 8);
+        g.lineWidth = 1; g.strokeStyle = col.quiet; g.fillStyle = col.ink;
+        g.textAlign = 'right'; g.textBaseline = 'middle';
+        for (const db of [24, 0, -24, -48]) {
+            const y = Math.round(yOf(db)) + 0.5;
+            g.beginPath(); g.moveTo(LABEL_W, y); g.lineTo(LABEL_W + left, y); g.stroke();
+            g.fillText(signedDb(db), LABEL_W - 6, y);
+        }
+        g.textAlign = 'center'; g.textBaseline = 'bottom';
+        for (const db of [-48, -24, 0]) g.fillText(signedDb(db), Math.min(LABEL_W + left - 16, xOf(db)), h);
+        g.save();
+        g.beginPath(); g.rect(LABEL_W, 0, left, plotH); g.clip();
+        g.setLineDash([5, 4]); g.strokeStyle = col.sound; g.lineWidth = 1.5;
+        g.beginPath(); g.moveTo(xOf(LO), yOf(LO)); g.lineTo(xOf(0), yOf(0)); g.stroke();
+        g.setLineDash([]);
+        const out = (db) => db + (on ? gainDb(db, p.threshold, p.ratio) + p.makeup : 0);
+        g.beginPath();
+        for (let px = 0; px <= left; px++) {
+            const db = LO + px / left * -LO;
+            if (px === 0) g.moveTo(LABEL_W, yOf(out(db))); else g.lineTo(LABEL_W + px, yOf(out(db)));
+        }
+        g.strokeStyle = col.mark; g.lineWidth = 2.5; g.stroke();
+        if (live && live.level !== undefined) {
+            const db = Math.max(LO, Math.min(0, live.level));
+            g.beginPath(); g.arc(xOf(db), yOf(out(db)), 6, 0, 2 * Math.PI);
+            g.fillStyle = col.mark; g.fill();
+            g.lineWidth = 2; g.strokeStyle = col.ground; g.stroke();
+        }
+        g.restore();
+        // the gain over time: −36 … +24 dB
+        const G0 = -36, G1 = 24;
+        const gy = (db) => 4 + (G1 - db) / (G1 - G0) * (plotH - 8);
+        g.lineWidth = 1; g.strokeStyle = col.quiet; g.fillStyle = col.ink;
+        g.textAlign = 'right'; g.textBaseline = 'middle';
+        for (const db of [24, 12, 0, -12, -24, -36]) {
+            const y = Math.round(gy(db)) + 0.5;
+            g.lineWidth = db === 0 ? 1.5 : 1;
+            g.beginPath(); g.moveTo(x2, y); g.lineTo(x2 + right, y); g.stroke();
+            g.fillText(signedDb(db), x2 - 6, y);
+        }
+        g.textAlign = 'center'; g.textBaseline = 'bottom';
+        g.fillText('−2 s', x2 + 14, h); g.fillText('jetzt', x2 + right / 2, h); g.fillText('+2 s', x2 + right - 14, h);
+        if (live && live.gains) {
+            g.save();
+            g.beginPath(); g.rect(x2, 0, right, plotH); g.clip();
+            g.beginPath();
+            live.gains.forEach((db, px) => { if (px === 0) g.moveTo(x2, gy(db)); else g.lineTo(x2 + px, gy(db)); });
+            g.strokeStyle = col.mark; g.lineWidth = 2; g.stroke();
+            g.restore();
+            const xm = Math.round(x2 + right / 2) + 0.5;
+            g.strokeStyle = col.ink; g.lineWidth = 1.5;
+            g.beginPath(); g.moveTo(xm, 0); g.lineTo(xm, plotH); g.stroke();
+        } else {
+            g.fillStyle = col.ink; g.textAlign = 'center'; g.textBaseline = 'middle';
+            g.fillText('Spiel den Klang ab.', x2 + right / 2, plotH / 2);
+        }
+    }
+
     // ------------------------------------------------------------------
     function setUp(root) {
         const effect = EFFECTS[root.dataset.effect] || EFFECTS.eq;
@@ -405,7 +527,7 @@ onmessage = (e) => {
         let ctx = null, output = null, voice = null, playing = false, startedAt = 0, offset = 0;
         let current = null, original = null, rate = 44100;
         const loaded = {}, peaks = {};           // clip: Float32Array, its largest value
-        let smooth = null;                       // the EQ's spectra, smoothed over time
+        let smooth = null, shownPeak = { of: null, peak: 1 };                       // the EQ's spectra, smoothed over time
         let worker = null, busy = false, again = false, asked = 0;
         const uid = Math.random().toString(36).slice(2, 8);
         root.dataset.chip = effect.chip;
@@ -500,6 +622,27 @@ onmessage = (e) => {
                 const at = sampleNow();
                 smooth = { before: spectrum(original, at, smooth && smooth.before), after: spectrum(current || original, at, smooth && smooth.after) };
                 live = { ...smooth, binHz: rate / N };
+            } else if (name === 'compressor' && original) {
+                // the level as the compressor follows it, from half a second
+                // before the window on, and per column of the right picture its gain
+                const L = original.length, span = 4 * rate, cols = Math.max(1, compressorLayout(c.w).right);
+                const from = sampleNow() - span / 2, warm = Math.round(0.5 * rate);
+                const a = Math.exp(-1 / (params.attack * rate)), r = Math.exp(-1 / (params.release * rate));
+                const gains = new Float32Array(cols);
+                let level = 0, nowLevel = 0;
+                for (let i = -warm; i < span; i++) {
+                    const v = Math.abs(original[((Math.floor(from) + i) % L + L) % L]), k = v > level ? a : r;
+                    level = k * level + (1 - k) * v;
+                    if (i === Math.floor(span / 2)) nowLevel = level;
+                    if (i >= 0) {
+                        const px = Math.floor(i / span * cols);
+                        if (Math.floor((i + 1) / span * cols) !== px || i === span - 1) {
+                            const db = 20 * Math.log10(Math.max(level, 1e-9));
+                            gains[px] = on ? gainDb(db, params.threshold, params.ratio) + params.makeup : 0;
+                        }
+                    }
+                }
+                live = { gains, level: 20 * Math.log10(Math.max(nowLevel, 1e-9)) };
             }
             effect.draw(c.g, c.w, c.h, colours(), params, on, live);
             line.textContent = on ? effect.line(params) : 'Der Effekt ist aus: der Klang, wie er ist.';
@@ -520,8 +663,11 @@ onmessage = (e) => {
             }
             const gap = 6, laneH = (h - gap) / 2, plotW = w - LABEL_W;
             const span = WAVE_SECONDS * rate, from = sampleNow() - span / 2;
-            const scale = 0.95 / peaks[clipId];
-            [['ohne', original, col.sound], ['mit', on ? current || original : original, on ? col.mark : col.sound]].forEach(([label, x, colour], k) => {
+            // one scale for both, so that louder looks louder and nothing is cut off
+            const shown = on ? current || original : original;
+            if (shown !== original && shownPeak.of !== shown) shownPeak = { of: shown, peak: shown.reduce((m, v) => Math.max(m, Math.abs(v)), 1e-6) };
+            const scale = 0.95 / Math.max(peaks[clipId], shown === original ? 0 : shownPeak.peak);
+            [['ohne', original, col.sound], ['mit', shown, on ? col.mark : col.sound]].forEach(([label, x, colour], k) => {
                 const mid = k * (laneH + gap) + laneH / 2, L = x.length;
                 g.fillStyle = col.ground; g.fillRect(LABEL_W, k * (laneH + gap), plotW, laneH);
                 g.fillStyle = col.ink; g.textAlign = 'right'; g.textBaseline = 'middle';
@@ -592,7 +738,7 @@ onmessage = (e) => {
         }
         function tick() {
             if (!playing) return;
-            if (name === 'eq') draw();
+            if (name === 'eq' || effect.live) draw();
             drawWave();
             requestAnimationFrame(tick);
         }
