@@ -200,3 +200,5 @@ star-wars:
       - url: https://en.wikipedia.org/wiki/General_Grievous
         quote: "Wood approached Grievous as a \"classic villain\" and used a gruff and harsh voice. … A \"gravelly quality\" was added to Wood's voice when it was processed. … he instructed Wood to give Grievous an asthmatic cough."
 ```
+
+The picture for its history box (Ross Bagdasarian, Liberty Records press photo, 1972, public domain, https://commons.wikimedia.org/wiki/File:Ross_Bagdasarian_1972.jpg) is shelved/film-voices.webp; credit »Foto: Liberty Records, 1972, gemeinfrei, zugeschnitten (Wikimedia Commons)«, alt »Ross Bagdasarian, Schwarzweißfoto: ein Mann mit dunklem, zurückgekämmtem Haar und offenem Hemdkragen vor hohem Gras«.

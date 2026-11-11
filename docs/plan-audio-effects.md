@@ -86,10 +86,23 @@ recording. What that touches:
 - Telefonspiel: Thorsten stays as the speech of the games (what students
   hear is what their game will say); only its listening examples and the
   cave music hoehle.mp3 could change.
-- Candidates being searched: a German voice from »Gesprochene Wikipedia«
-  (CC BY-SA), a free multitrack song with stems, or else musik.wav arranged
-  from real samples (DRSKit drums in audio/drums, a sampled piano, a bass),
-  real castanets.
+- Found (11 November 2026, licences checked on the source pages):
+  - German voice, all »Gesprochene Wikipedia«, CC BY-SA 4.0: Ursonaten
+    reading »Ralf Dahrendorf« (»Er war ein deutsch-britischer Soziologe,
+    Publizist und Politiker …«, 6,8 s, the cleanest), Jonsonr reading
+    »Konsequentialismus« (4,0 s), MsAntimodes reading »Palais Meckel« (the
+    most sibilants, but from a 60 kbit/s file without anything above
+    15 kHz, wrong for a page about compression). A page that uses one
+    becomes CC BY-SA for that file; credit line needed.
+  - No free song with separate stems that could be verified (ccMixter sets
+    are partial and refuse scripted downloads; MedleyDB and MUSDB18 are NC).
+    So musik.wav from real samples: DRSKit drums (CC BY 4.0, audio/drums),
+    FreePats »Clean Electric Bass YR« (CC0), Salamander Grand Piano (CC BY
+    3.0) or VCSL (CC0: organ, pianos, vibraphone), VSCO 2 CE strings (CC0)
+    as a pad. Its six stems come for free.
+  - Castanets: »castanets dry.wav« by Satoration (CC BY 4.0, Freesound
+    57299), clicks with 0,6 s of silence between; or »Castanet« by
+    JarredGibb (CC0, Freesound 263882), a children's castanet.
 
 ## Open for the maintainer
 
