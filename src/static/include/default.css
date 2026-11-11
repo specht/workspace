@@ -1830,7 +1830,7 @@ h2 > .squircle {
 
 /* »Nach oben«: a plain chevron, no circle, centred on the line of the
    chapter labels; quiet until it is pointed at. */
-.autotoc-up {
+:is(.autotoc-up, .autotoc-toc) {
     flex: 0 0 auto;
     display: flex;
     align-items: center;
@@ -1851,24 +1851,24 @@ h2 > .squircle {
     transition: background-color 0.15s, color 0.15s, transform 0.15s;
 }
 
-.autotoc-up:hover {
+:is(.autotoc-up, .autotoc-toc):hover {
     color: #212529;
     background: none;
     transform: translateY(-2px);
 }
 
-.autotoc-up:focus-visible {
+:is(.autotoc-up, .autotoc-toc):focus-visible {
     outline: 2px solid #2b5fb4;
     outline-offset: 2px;
 }
 
-.autotoc-up .bi {
+:is(.autotoc-up, .autotoc-toc) .bi {
     margin: 0;
 }
 
 @media (max-width: 768px) {
     /* The bar is lower on a phone: a smaller button, on the label's line */
-    .autotoc-up {
+    :is(.autotoc-up, .autotoc-toc) {
         width: 2em;
         height: 2em;
         margin-top: 0.8em;
@@ -1877,7 +1877,7 @@ h2 > .squircle {
     }
 
     /* A finger needs more than the circle: an invisible larger area */
-    .autotoc-up::before {
+    :is(.autotoc-up, .autotoc-toc)::before {
         content: '';
         position: absolute;
         inset: -0.45em;
@@ -2293,6 +2293,44 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     .autotoc-secondary {
         display: none;
     }
+
+    /* below the side navigation's width it opens from the bar's button
+       (.autotoc-toc), over the page, from the left */
+    .autotoc-secondary.open {
+        display: flex;
+        position: fixed;
+        z-index: 1100;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: min(20rem, 85vw);
+        padding-top: calc(1rem + env(safe-area-inset-top, 0px));
+        background: var(--bs-body-bg);
+        box-shadow: 0 0 2em rgba(0, 0, 0, 0.3);
+    }
+    .autotoc-secondary.open a {
+        font-size: 0.9rem;
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+    }
+    .autotoc-secondary-backdrop {
+        position: fixed;
+        z-index: 1050;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.25);
+    }
+
+    /* the button takes the empty column that keeps the chapters centred */
+    body.has-autotoc-secondary .autotoc::after {
+        display: none;
+    }
+    body.has-autotoc-secondary .autotoc-toc {
+        display: flex;
+    }
+}
+
+.autotoc-toc {
+    display: none;
 }
 
 /* Before the script builds the side navigation (install_secondary_autotoc,
@@ -8641,7 +8679,14 @@ h3:has(+ .person) {
 .history > img { grid-column: 1; grid-row: 1 / span 20; width: 100%; height: auto; border-radius: 0.3em; }
 /* a group that 4:5 would cut: a wide picture (3:2 or 16:10) in a wider column */
 .history:has(> img.wide) { grid-template-columns: 13em minmax(0, 1fr); }
-@media (max-width: 576px) { .history:has(> img.wide) { grid-template-columns: 9em minmax(0, 1fr); } }
+/* on a phone the text keeps the width: a wide picture above it, a narrow
+   one small at its left, the text around it and then below it */
+@media (max-width: 576px) {
+    .history:has(> img) { display: block; }
+    .history:has(> img)::after { content: ''; display: block; clear: both; }
+    .history > img.wide { display: block; width: 100%; margin-bottom: 0.7em; }
+    .history > img:not(.wide) { float: left; width: 5.5em; margin: 0.2em 0.9em 0.3em 0; }
+}
 .history p.history-credit { font-size: 0.82em; color: var(--bs-secondary-color); }
 .book > .book-cover {
     grid-column: 1;
@@ -15483,6 +15528,8 @@ html[data-bs-theme="dark"] .effect-widget {
 .fx-presets { display: flex; flex-wrap: wrap; gap: 0.4em; }
 .fx-credit { font-size: 0.8em; color: var(--bs-secondary-color); margin: -0.3em 0 0.6em; }
 @media (max-width: 576px) {
+    /* the clips and choices in rows when they do not fit beside each other */
+    .effect-widget .btn-group { flex-wrap: wrap; max-width: 100%; }
     /* label and value on a line, the slider with its marks across the width under them */
     .fx-row { grid-template-columns: minmax(0, 1fr) auto; gap: 0 0.5em; margin-bottom: 0.3em; }
     .fx-track { grid-column: 1 / -1; grid-row: 2; }
