@@ -18,6 +18,7 @@ reference: [bits-und-bytes]
 
 <script src='/include/sampling_widget.js'></script>
 <script src='/include/spectrum_widget.js'></script>
+<script src='/include/eq_widget.js'></script>
 <script src='/include/hearing_widget.js'></script>
 <script src='/include/abx_widget.js'></script>
 
@@ -848,6 +849,13 @@ Die Stärke der Frequenz, so hoch, wie die Schwingung im Klang geht, ist dann
 
 $$A\_k = \frac{2}{N} \sqrt{c\_k^2 + s\_k^2}$$
 
+Wie weit der Ton im Klang verschoben ist, seine **Phase**, spielt dafür keine Rolle. Ist er gegen den Kosinus gar nicht verschoben, steckt seine ganze Stärke in \\(c\_k\\); um eine Viertelschwingung verschoben, sieht er aus wie der Sinus, und alles steckt in \\(s\_k\\); dazwischen teilt sie sich auf beide. Wie das Paar \\((c\_k, s\_k)\\) sich auch aufteilt, es liegt immer auf demselben Kreis, denn \\(\cos^2 + \sin^2 = 1\\), und \\(\sqrt{c\_k^2 + s\_k^2}\\) ist sein Radius:
+
+<img class='drawing d-none d-lg-block' style='width: 44em' src='phase-wide.svg' alt='Links derselbe Ton dreimal: nicht verschoben, um ein Achtel und um ein Viertel einer Schwingung verschoben. Rechts für jeden das Paar aus c und s als Punkt: Der nicht verschobene liegt auf der c-Achse, der um ein Viertel verschobene auf der s-Achse, der um ein Achtel verschobene dazwischen, alle drei auf demselben Viertelkreis, gleich weit vom Nullpunkt.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='phase.svg' alt='Oben derselbe Ton dreimal: nicht verschoben, um ein Achtel und um ein Viertel einer Schwingung verschoben. Darunter für jeden das Paar aus c und s als Punkt: Der nicht verschobene liegt auf der c-Achse, der um ein Viertel verschobene auf der s-Achse, der um ein Achtel verschobene dazwischen, alle drei auf demselben Viertelkreis, gleich weit vom Nullpunkt.'>
+
+Darum braucht man beide Testtöne: Mit dem Kosinus allein käme bei einem um eine Viertelschwingung verschobenen Ton 0 heraus. Dasselbe gilt später für die Tasten des Telefons: `strength` nimmt den Betrag, `abs`, und der hängt nicht davon ab, wann der Ton der Taste begann.
+
 Probier es von Hand mit acht Samples, \\(x = (1, 2, 1, 0, 1, 2, 1, 0)\\). Für `k = 2` sind die beiden Testtöne:
 
 <div class='table-responsive'>
@@ -1153,6 +1161,109 @@ _task(nummer)
 <!-- after: nummer -->
 Ruf die Nummer besser nicht an: Es gibt dort niemanden. Die Bundesnetzagentur hält in Berlin die Nummern 030 23125-000 bis -999 und ein paar weitere für Filme, Bücher und Aufgaben wie diese frei, damit niemand angerufen wird, dessen Nummer zufällig in einem Krimi vorkommt.
 <!-- /after -->
+
+### Frequenzen lauter und leiser
+
+Wer die Frequenzen kennt, kann sie auch verändern. Ein **Equalizer**, kurz EQ, macht einen Bereich von Frequenzen lauter oder leiser: der Bassregler am Lautsprecher, die Klangregler im Musikprogramm, im Tonstudio Dutzende davon. Ein Regler des EQ hat drei Einstellungen: um welche Frequenz es geht, wie breit der Bereich ist und wie viele Dezibel dazukommen oder wegfallen. Die Breite zählt man in Oktaven, denn das Ohr hört Frequenzen auf einer logarithmischen Skala: Von 100 bis 200 Hz ist es so weit wie von 1.000 bis 2.000 Hz.
+
+<div class='eq-widget'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Stell 60 Hz, eine Oktave und +12 dB ein: Welches Instrument wird lauter? Dann −24 dB bei 10 kHz mit zwei Oktaven: Was verschwindet? Schalt mit <strong>EQ an</strong> hin und her und achte darauf, was sich ändert. Schieb bei +12 dB die Frequenz langsam von unten nach oben und hör, wann die Melodie lauter wird. Zum Schluss ein Bandpass, der nur einen Bereich durchlässt: Stell <strong>Übrige</strong>, was weit weg von der Mitte geschieht, auf −24 dB, die Verstärkung auf 0 dB, die Mitte auf 1 kHz und die Breite auf eine Oktave. Wie klingt die Musik jetzt, und woran erinnert sie dich?
+</div>
+
+Ein EQ rechnet in Dezibel, aber was er mit dem Klang tut, ist eine Multiplikation: Jede Frequenz wird mit einem Faktor multipliziert.
+
+_task(eq-factor)
+
+<!-- after: eq-factor -->
+Aus \\(G\\) Dezibel wird der Faktor \\(10^{G / 20}\\) für die Höhe der Schwingung, 20, nicht 10 wie bei der Energie, denn die Energie ist das Quadrat der Höhe. Für den Regler im Widget ist die Verstärkung eine Glocke über den Oktaven: In der Mitte wirkt sie ganz, `width` Oktaven daneben noch zur Hälfte, weiter weg immer weniger. Ist `d` der Abstand von der Mitte in Oktaven, gibt der Regler
+
+$$G(d) = G \cdot 2^{-(d / \text{width})^2}$$
+
+Dezibel dazu. Lege `eq.py` an:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from wav import read_wav, write_wav
+
+
+def bell(freqs, centre, width, gain):
+    # hier: für jede Frequenz der Faktor, mit dem das EQ ihre Schwingung multipliziert
+
+
+def equalize(x, rate, centre, width, gain):
+    X = np.fft.rfft(x)
+    freqs = np.fft.rfftfreq(len(x), 1 / rate)
+    return np.fft.irfft(X * bell(freqs, centre, width, gain), len(x))
+
+
+def save(path, y, rate):
+    peak = np.abs(y).max()
+    write_wav(path, y / max(1, peak), rate)
+    print(f'{path}: lauteste Stelle {peak:.2f}')
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('musik.wav')
+    save('musik-bass.wav', equalize(x, rate, 60, 1, 12), rate)
+    save('musik-ohne-hihat.wav', equalize(x, rate, 10000, 2, -30), rate)
+```
+
+`equalize` macht, was du in diesem Kapitel gebaut hast, mit der FFT von numpy: `np.fft.rfft` zerlegt die ganzen acht Sekunden auf einmal in ihre Frequenzen, nur die erste Hälfte, bis zur halben Abtastrate, und `np.fft.rfftfreq` gibt die Frequenz zu jeder Zahl. Jede Zahl wird mit dem Faktor ihrer Frequenz multipliziert, und `np.fft.irfft` macht daraus wieder Samples. `save` macht leiser, was lauter als 1 geworden ist, statt es abzuschneiden.
+
+<div class='hint own' data-check='eq-bell'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>bell(freqs, centre, width, gain)</code>: <code>freqs</code> ist ein numpy-Array von Frequenzen in Hz, <code>centre</code> die Mitte in Hz, <code>width</code> die Breite in Oktaven und <code>gain</code> die Verstärkung in dB. Gib für jede Frequenz den Faktor für die Schwingung zurück.
+</div>
+
+<!-- hint -->
+Drei Schritte: der Abstand in Oktaven, daraus die Dezibel nach der Formel oben, daraus der Faktor. Wie viele Oktaven `f` von `centre` entfernt ist, sagt `np.log2(f / centre)`: Bei der doppelten Frequenz ist es 1, bei der halben −1.
+<!-- /hint -->
+<!-- hint -->
+Die erste Frequenz der FFT ist 0 Hz, und `np.log2(0)` ist minus unendlich. `np.maximum(freqs, 1)` macht aus 0 erst 1:
+
+```python
+octaves = np.log2(np.maximum(freqs, 1) / centre)
+db = gain * 2 ** (-(octaves / width) ** 2)
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def bell(freqs, centre, width, gain):
+    octaves = np.log2(np.maximum(freqs, 1) / centre)
+    db = gain * 2 ** (-(octaves / width) ** 2)
+    return 10 ** (db / 20)
+```
+<!-- /solution -->
+
+_task(eq-bell)
+
+```bash
+python3 eq.py
+```
+
+<!-- tutorial-step
+write-file: audio/eq.py <- file:stufen/eq.py
+check-task: eq-bell
+terminal-run: python3 eq.py
+terminal-wait-for-prompt: 60
+wait-for-text: musik-ohne-hihat.wav
+-->
+
+```text
+musik-bass.wav: lauteste Stelle 2.27
+musik-ohne-hihat.wav: lauteste Stelle 0.80
+```
+
+Hör dir beide Dateien an und vergleich sie mit `musik.wav`. Beim Bass wäre die lauteste Stelle mehr als doppelt so hoch, wie eine WAV-Datei fassen kann: Die Kick-Drum und der Bass bekommen bis zum Vierfachen. `save` macht deshalb das Ganze leiser, und neben dem lauten Bass klingt der Rest etwas leiser als vorher. Ohne die Hi-Hat fehlt das Zischen oben; die anderen Instrumente bleiben, wie sie waren, denn sie haben bei 10.000 Hz kaum etwas.
+<!-- /after -->
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Mach die Stimme, <code>stimme.wav</code>, verständlicher oder unverständlicher: Gib zwischen 2.000 und 4.000 Hz einige dB dazu oder nimm dort viel weg. Woran hörst du den Unterschied zuerst? Bau dann wie im Widget einen Bandpass: Gib <code>bell</code> einen fünften Parameter <code>rest=0</code>, die Dezibel weit weg von der Mitte, und rechne <code>db = rest + (gain - rest) * 2 ** (-(octaves / width) ** 2)</code>. Mit <code>rest=-24</code> und <code>gain=0</code> bleibt nur der Bereich um <code>centre</code>.
+</div>
 
 Mit dem Spektrum weißt du jetzt, aus welchen Frequenzen ein Klang besteht. Das ist die Sprache, in der MP3, AAC und Opus über Klänge nachdenken: Sie zerlegen ihn in Frequenzen und fragen für jede, ob das Ohr sie überhaupt hört.
 

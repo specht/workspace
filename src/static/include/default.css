@@ -3747,7 +3747,7 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        others): from edge to edge, the colour bar at the screen's edge,
        their content where the paragraphs start */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
-        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .hearing-widget, .abx-widget, .motion-widget, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
+        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .eq-widget, .hearing-widget, .abx-widget, .motion-widget, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .reference-include, .teacher-note) *) {
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         border-right-width: 0;
@@ -8761,6 +8761,7 @@ div[data-stepper],
 .dtmf-widget,
 .sampling-widget,
 .spectrum-widget,
+.eq-widget,
 .hearing-widget,
 .abx-widget,
 .motion-widget,
@@ -8784,6 +8785,7 @@ html[data-bs-theme="dark"] .qr-damage,
 html[data-bs-theme="dark"] .dtmf-widget,
 html[data-bs-theme="dark"] .sampling-widget,
 html[data-bs-theme="dark"] .spectrum-widget,
+html[data-bs-theme="dark"] .eq-widget,
 html[data-bs-theme="dark"] .hearing-widget,
 html[data-bs-theme="dark"] .abx-widget,
 html[data-bs-theme="dark"] .motion-widget,
@@ -15418,6 +15420,59 @@ html[data-bs-theme="dark"] .spectrum-widget {
 @media (max-width: 576px) {
     .spectrum-gram { height: 200px; }
     .spectrum-chart { height: 150px; }
+}
+
+/* An equalizer (eq_widget.js, »Audio komprimieren«): three sliders, the
+   bell in purple (what is set) over the spectrum playing, grey */
+.eq-widget {
+    --eq-ink: var(--widget-ink);
+    --eq-quiet: var(--widget-line);
+    --eq-mark: #6741d9;
+    --eq-ground: #f1f2f5;
+    --eq-sound: #8a90a0;
+}
+html[data-bs-theme="dark"] .eq-widget {
+    --eq-mark: #b197fc;
+    --eq-ground: #111213;
+    --eq-sound: #6b7280;
+}
+.eq-widget::before {
+    content: 'Zum Ausprobieren: abspielen und regeln';
+    display: inline-block;
+    padding: 0.15em 0.75em;
+    border-radius: 1em;
+    background-color: var(--widget-chip);
+    color: var(--widget-ink);
+    font-size: 80%;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.7em;
+}
+.eq-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5em 1.2em; margin-bottom: 0.6em; }
+.eq-switch { margin: 0; display: flex; align-items: center; gap: 0.4em; }
+.eq-switch .form-check-input:checked { background-color: var(--eq-mark); border-color: var(--eq-mark); }
+.eq-row { display: grid; grid-template-columns: 7em minmax(0, 1fr) 7.5em; gap: 0.75em; margin: 0.1em 0; }
+.eq-label { font-size: 0.9em; color: var(--widget-ink); margin: 0; }
+.eq-row { align-items: start; }
+.eq-row .eq-label, .eq-row .eq-value { padding-top: 0.15em; }
+.eq-track { min-width: 0; }
+.eq-track .eq-slider { display: block; width: 100%; margin: 0; }
+/* the marks under a slider: a tick and its label, centred on the thumb's place */
+.eq-scale { position: relative; height: 1.5em; margin-top: 0.1em; }
+.eq-mark { position: absolute; top: 0; transform: translateX(-50%); padding-top: 5px; font-size: 0.75em; color: var(--widget-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.eq-mark::before { content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 4px; background: var(--widget-ink); opacity: 0.6; }
+.eq-value { font-variant-numeric: tabular-nums; text-align: right; }
+.eq-slider::-webkit-slider-thumb { background-color: var(--eq-mark); }
+.eq-slider::-moz-range-thumb { background-color: var(--eq-mark); }
+.eq-figure { margin: 0.6em 0 0; }
+.eq-figure figcaption { font-size: 0.85em; color: var(--eq-ink); margin-bottom: 0.25em; }
+.eq-chart { display: block; width: 100%; height: 200px; }
+.eq-line { margin: 0.8em 0 0.2em; font-variant-numeric: tabular-nums; }
+@media (max-width: 576px) {
+    /* label and value on a line, the slider with its marks across the width under them */
+    .eq-row { grid-template-columns: minmax(0, 1fr) auto; gap: 0 0.5em; margin-bottom: 0.3em; }
+    .eq-track { grid-column: 1 / -1; grid-row: 2; }
+    .eq-chart { height: 160px; }
 }
 
 /* What the ear hears (hearing_widget.js, »Audio komprimieren«): a tone
