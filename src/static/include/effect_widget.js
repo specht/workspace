@@ -81,6 +81,8 @@
             credit: "Kommentar des Starts von Artemis II, NASA, 1. April 2026, gemeinfrei (<a href='https://images.nasa.gov/details/KSC-20260401-AU-LMM01-0001-Artemis_II_Live_Launch_Coverage_Program_LOS'>NASA</a>); die Silben im Takt geschnitten" },
         liftoffMelodie: { label: 'Melodie', url: '/audio/liftoff-melodie.flac',
             credit: 'Die Melodie zu den Worten: ein Ton für jede Silbe, in der Stimmlage des Sprechers.' },
+        liftoffCarrier: { label: 'Träger', url: '/audio/liftoff-traeger.flac',
+            credit: 'Die Melodie als Instrument, Sägezahn- und Rechteckschwingung.' },
         liftoffBand: { label: 'Band', url: '/audio/liftoff-band.flac',
             credit: "Septakkorde, Refrain auf dem »Royal Road« des J-Pop (Gmaj7, A7, F#7, Bm7), 128 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
     };
@@ -240,15 +242,11 @@
         },
         autotune: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['liftoffSpoken', 'liftoff'],
-            melody: 'liftoffMelodie',            // the target of »Melodie« …
-            melodyFor: 'liftoff',                // … for this clip
+            clips: ['liftoffSpoken', 'stimme'],
             startOff: true,                      // first the voice as it is
             choices: [
-                { key: 'target', label: 'Ziel', value: 'flat', options: [['flat', 'ein Ton'], ['note', 'der nächste Halbton'], ['melody', 'die Melodie']] },
+                { key: 'target', label: 'Ziel', value: 'flat', options: [['flat', 'ein Ton'], ['note', 'der nächste Halbton']] },
             ],
-            // other clips of the same length, mixed in when switched on
-            switches: [{ key: 'withBand', label: 'Band dazu', value: false, mix: 'liftoffBand', level: 0.55 }],
             knobs: [
                 { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
                   marks: [[0, '0'], [0.05, '50'], [0.1, '100'], [0.15, '150'], [0.2, '200 ms']], show: ms },
@@ -258,7 +256,7 @@
             ],
             live: true,
             neutral: () => false,
-            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune, dunkel die Melodie, wenn sie das Ziel ist; die dünnen Linien sind die Halbtöne. Zum Spulen ziehen.',
+            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit Autotune; die dünnen Linien sind die Halbtöne. Zum Spulen ziehen.',
             line: (p) => {
                 const goal = p.target === 'melody' ? 'den Ton der Melodie' : p.target === 'flat' ? 'denselben Ton' : 'den nächsten Halbton';
                 return p.speed === 0
@@ -269,10 +267,14 @@
         },
         vocoder: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'gesang'],
+            clips: ['liftoff', 'stimme', 'gesang'],
+            carrierClip: 'liftoffCarrier',       // the carrier »Melodie« …
+            melodyFor: 'liftoff',                // … for this clip
+            startOff: true,
             choices: [
-                { key: 'carrier', label: 'Träger', value: 'chord', options: [['chord', 'Akkord'], ['noise', 'Rauschen']] },
+                { key: 'carrier', label: 'Träger', value: 'melody', options: [['melody', 'Melodie'], ['chord', 'Akkord'], ['noise', 'Rauschen']] },
             ],
+            switches: [{ key: 'withBand', label: 'Band dazu', value: false, mix: 'liftoffBand', level: 0.55 }],
             knobs: [
                 { key: 'bands', label: 'Bänder', min: 2, max: 32, step: 1, value: 16,
                   marks: [[2, '2'], [4, '4'], [8, '8'], [16, '16'], [24, '24'], [32, '32']], show: (v) => `${v}` },
@@ -280,7 +282,7 @@
             live: true,
             neutral: () => false,
             caption: 'Wie stark jedes Band gerade ist, von 100 Hz bis 8 kHz: grau in der Stimme, lila im Ergebnis, dem Träger mit der Stärke der Stimme.',
-            line: (p) => `${p.bands} Bänder, jedes ${de(80 ** (1 / p.bands), 2)}-mal so breit wie das darunter; der Träger: ${{ chord: 'ein Akkord aus drei Sägezahnschwingungen', melody: 'eine Sägezahnschwingung auf den Tönen der Melodie', noise: 'Rauschen' }[p.carrier]}.`,
+            line: (p) => `${p.bands} Bänder, jedes ${de(80 ** (1 / p.bands), 2)}-mal so breit wie das darunter; der Träger: ${{ chord: 'ein Akkord aus drei Sägezahnschwingungen', melody: 'die Melodie des Lieds, gespielt von einem Instrument; wo es schweigt, die Stimme, wie sie ist', noise: 'Rauschen' }[p.carrier]}.`,
             draw: drawVocoder,
         },
         voices: {
@@ -611,6 +613,14 @@
             t += P ? Math.max(1, P / factors[k]) : step;
         }
         for (let j = 0; j < L; j++) y[j] /= Math.max(weight[j], 0.5);
+        // where nothing is to change (factor 1), the voice as it is, crossing over in 20 ms
+        const fade = Math.round(0.02 * rate);
+        let mix = 0;
+        for (let j = 0; j < L; j++) {
+            const changed = Math.abs(factors[blockAt(j, n)] - 1) > 0.003 ? 1 : 0;
+            mix += (changed - mix) / fade;
+            y[j] = mix * y[j] + (1 - mix) * x[j];
+        }
         return y;
     }
     const blockAt = (c, n) => Math.min(n - 1, Math.max(0, Math.floor((c - SIZE / 2) / HOP)));
@@ -696,13 +706,18 @@ onmessage = (e) => {
             found = clip.track;
         }
     } else if (m.effect === 'vocoder') {
-        let melody = null;
-        if (m.params.carrier === 'melody' && clips[m.melody]) {
-            const mc = clips[m.melody];
-            if (!mc.track) mc.track = track(mc.x, mc.rate);
-            melody = mc.track;
-        }
-        out = vocoder(clip.x, carrierFor(m.params.carrier, clip.x.length, clip.rate, melody), clip.rate, m.params.bands);
+        const lead = m.params.carrier === 'melody' && clips[m.melody] ? clips[m.melody].x : null;
+        if (lead) {
+            // the melody's instrument as carrier; where it is silent, the voice as it is (20 ms crossfades)
+            out = vocoder(clip.x, lead, clip.rate, m.params.bands);
+            const ramp = Math.round(0.02 * clip.rate);
+            let level = 0, mix = 0;
+            for (let i = 0; i < out.length; i++) {
+                level = Math.max(Math.abs(lead[i % lead.length]), level * 0.999);
+                mix += ((level > 0.02 ? 1 : 0) - mix) / ramp;
+                out[i] = mix * out[i] * 1.6 + (1 - mix) * clip.x[i];
+            }
+        } else out = vocoder(clip.x, carrierFor(m.params.carrier === 'melody' ? 'chord' : m.params.carrier, clip.x.length, clip.rate, null), clip.rate, m.params.bands);
     } else if (m.effect === 'voices') {
         out = m.params.semitones ? shift(clip.x, clip.rate, () => 2 ** (m.params.semitones / 12), 0.05) : Float32Array.from(clip.x);
         if (m.params.ring) for (let n = 0; n < out.length; n++) out[n] *= Math.sin(2 * Math.PI * m.params.ring * n / clip.rate);
@@ -1490,7 +1505,8 @@ onmessage = (e) => {
         }
         // the melody clip, where it belongs to the clip that plays
         function melodyNow() {
-            return effect.melody && (!effect.melodyFor || effect.melodyFor === clipId) ? effect.melody : null;
+            const m = effect.melody || effect.carrierClip;
+            return m && (!effect.melodyFor || effect.melodyFor === clipId) ? m : null;
         }
         function keepTracks(e) {
             if (e.data.track) tracks[clipId] = e.data.track;
@@ -1526,6 +1542,7 @@ onmessage = (e) => {
                 worker.onmessage = heard;
             }
             if (effect.melody) await loadClip(effect.melody);
+            if (effect.carrierClip) await loadClip(effect.carrierClip);
             for (const t of effect.switches || []) if (t.mix) await loadClip(t.mix);
             original = await loadClip(clipId);
             current = original;

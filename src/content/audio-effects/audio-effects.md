@@ -800,12 +800,12 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Geh in vier Schritten vor. Hör dir zuerst den Kommentar an, wie er gesprochen wurde: den Start der Rakete von Artemis II, 2026. Schalt <strong>Effekt an</strong> ein, mit dem Ziel <strong>ein Ton</strong>: Jede Silbe liegt jetzt auf demselben Ton. Nimm dann <strong>Im Takt</strong>, die Silben auf den Schlägen eines Lieds, und das Ziel <strong>die Melodie</strong>: Jetzt singt der Kommentator. Zum Schluss <strong>Band dazu</strong>. Probier auch den nächsten Halbton und dreh die Retune Speed langsam auf: Ab wann klingt er wieder wie gesprochen, und woran siehst du das im Bild?
+<strong>Ausprobieren:</strong> Hör dir zuerst den Kommentar an, wie er gesprochen wurde: den Start der Rakete von Artemis II, 2026. Schalt <strong>Effekt an</strong> ein, mit dem Ziel <strong>ein Ton</strong>: Jede Silbe liegt jetzt auf demselben Ton, und die Stimme klingt wie eine Maschine. Nimm dann den nächsten Halbton: Wo springt die Stimme im Bild von Linie zu Linie? Dreh die Retune Speed langsam auf: Ab wann klingt sie wieder wie gesprochen?
 </div>
 
 <div class='history' id='history-songify'>
 <img class='wide' src='geschichte/songify.webp' alt='Die Gregory Brothers 2010 bei den Streamy Awards: drei Männer in dunklen Sakkos und eine Frau im grünen Kleid vor einer roten Wand, lachend, mit einem Preis in den Händen'>
-<p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten, wie das Widget oben den Kommentar des Starts von Artemis II. Ab 2011 hieß die Reihe »Songify the News«.</p>
+<p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten. Ab 2011 hieß die Reihe »Songify the News«.</p>
 <p>Hör dir zwei ihrer Lieder auf YouTube an: den <a href='https://www.youtube.com/watch?v=MX0D4oZwCsA'>»Double Rainbow Song«</a> aus dem Video eines Mannes, der einen doppelten Regenbogen sieht, und <a href='https://www.youtube.com/watch?v=sP4NMoJcFd4'>»Can't Hug Every Cat«</a> aus dem Video einer Frau, die Katzen liebt. Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben?</p>
 <p class='history-credit'>Die Gregory Brothers. Foto: The Bui Brothers, 2010, CC BY-SA 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Gregories.jpg'>Wikimedia Commons</a>)</p>
 </div>
@@ -883,8 +883,10 @@ Ein **Vocoder** lässt ein Instrument sprechen. Er zerlegt die Stimme in Bänder
 
 <div class='effect-widget' data-effect='vocoder'></div>
 
+Im Widget ist der Kommentar des Starts von Artemis II ein Lied geworden, wie die Gregory Brothers es mit Nachrichten machen: Die Sätze stehen im Takt, und im Refrain singt der Kommentator »The crew of Artemis two, now bound for the Moon«. Gesungen ist das mit einem Vocoder, nicht mit Autotune. Die Töne spielt ein Instrument, und die Stimme gibt ihm nur ihre Laute. Autotune könnte die Stimme zwar auf die Töne schieben, aber ein gesprochenes Wort dauert nur Zehntelsekunden; ein Instrument hält einen Ton, so lange die Melodie es will.
+
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir die Stimme mit dem Akkord an und schalt den Effekt aus und an. Mit Rauschen als Träger flüstert die Stimme: Warum, wenn Rauschen keine Tonhöhe hat? Zieh die Bänder zum Schluss auf 4 herunter und dann auf 32: Ab wie vielen Bändern verstehst du die Wörter?
+<strong>Ausprobieren:</strong> Hör dir das Lied zuerst ohne Effekt an: Die Silben des Refrains stehen im Takt, aber gesprochen. Schalt <strong>Effekt an</strong> ein: Jetzt singt der Refrain, die Strophe und der Countdown bleiben gesprochen, denn dort schweigt das Instrument. Schalt <strong>Band dazu</strong> ein. Nimm dann die Stimme mit dem Akkord als Träger und schalt den Effekt aus und an. Mit Rauschen als Träger flüstert die Stimme: Warum, wenn Rauschen keine Tonhöhe hat? Zieh die Bänder zum Schluss auf 4 herunter und dann auf 32: Ab wie vielen Bändern verstehst du die Wörter?
 </div>
 
 <div class='history' id='history-vocoder'>

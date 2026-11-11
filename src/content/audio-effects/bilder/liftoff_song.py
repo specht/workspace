@@ -17,6 +17,7 @@ files of the same length:
   liftoff-gesprochen.flac  the commentary as spoken
   liftoff.flac          the syllables on the grid (SHEET), the voice's own pitch
   liftoff-melodie.flac  the melody, one note per syllable
+  liftoff-traeger.flac  the melody as a punchy lead, the vocoder's carrier
   liftoff-band.flac     a real drum kit (audio/drums: DRSKit of DrumGizmo,
                         CC BY 4.0, and a clap, CC0) and the instruments,
                         harmonies and chops of the voice
@@ -169,12 +170,14 @@ def clean(x):
     noise = np.median(power[quiet], axis=0)
     freq = np.fft.rfftfreq(N, 1 / RATE)
     octaves = lambda f0: np.log2(np.maximum(freq, 1) / f0)
-    eq = 10 ** ((-3 * np.exp(-(octaves(300) / 0.7) ** 2) + 3 * np.exp(-(octaves(3000) / 0.8) ** 2)) / 20)
+    eq = 10 ** ((-2 * np.exp(-(octaves(300) / 0.7) ** 2) + 1 * np.exp(-(octaves(3000) / 0.8) ** 2)) / 20)
     eq /= 1 + (90 / np.maximum(freq, 1)) ** 4
+    # a clean recording (the noise more than 40 dB below) only gets the EQ
+    clean_enough = 10 * np.log10(power.sum(axis=1).max() / max(1e-12, np.median(noise) * len(freq))) > 40
     out = np.zeros(len(x) + N)
     gain = np.ones(len(freq))
     for k, i in enumerate(starts):
-        want = np.maximum(1 - 1.2 * noise / np.maximum(power[k], 1e-12), 0.2)
+        want = np.ones(len(freq)) if clean_enough else np.maximum(1 - 1.2 * noise / np.maximum(power[k], 1e-12), 0.2)
         want = np.convolve(want, np.ones(5) / 5, 'same')
         gain = np.where(want > gain, 0.6 * want + 0.4 * gain, 0.85 * gain + 0.15 * want)
         out[i:i + N] += np.fft.irfft(spectra[k] * gain * eq, N) * window
@@ -192,7 +195,7 @@ def snr(x):
 
 before = snr(speech[:len(explorers)])
 speech = clean(speech)
-print(f'noise below speech: {before:.1f} dB before, {snr(speech[:len(explorers)]):.1f} dB after cleaning')
+print(f'noise below speech: {before:.1f} dB before, {snr(speech[:len(explorers)]):.1f} dB after the EQ')
 
 
 
@@ -348,7 +351,7 @@ def voice_start(t0, t1):
 
 voice = np.zeros(LENGTH + 2 * RATE)
 melody = np.zeros(LENGTH + 2 * RATE)
-shifts, syllables, voice_pitch = [], [], []
+shifts, syllables, voice_pitch, lead_notes = [], [], [], []
 for start, t0, t1 in SPOKEN:
     place(voice, fade(speech[at(t0):at(t1)], 30, 80), start)
 for bar, sixteenth, name, lengths, notes in SHEET:
@@ -378,6 +381,7 @@ for bar, sixteenth, name, lengths, notes in SHEET:
             # the note as written, so that the melody keeps its direction
             shifts.append(note - mine)
         syllables.append((slot, held, f, note))
+        lead_notes.append((slot, units * SIXTEENTH, note))
         place(melody, 0.3 * fade(tone(semis_hz(note), int(units * SIXTEENTH * RATE)), 12, 30), slot)
         slot += units * SIXTEENTH
 voice = voice[:LENGTH] * 0.85 / np.abs(voice).max()
@@ -540,6 +544,19 @@ spec *= 10 ** (-4 * np.exp(-(np.log2(np.maximum(freq, 1) / 2000) / 0.9) ** 2) / 
 band = np.fft.irfft(spec, len(band))
 band *= 0.8 / np.abs(band).max()
 print('band: drums %.3f keys %.3f bass %.3f lead %.3f extras %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, keys * pump, low, lead, extras)))
+
+# the carrier of the vocoder: the melody as a punchy lead of saw and square
+# waves, a sharp start, held as long as the note, silent between the notes
+carrier = np.zeros(LENGTH + RATE)
+for slot, seconds, note in lead_notes:
+    n = int(seconds * RATE)
+    t = np.arange(n) / RATE
+    f = semis_hz(note)
+    wave_ = sum(np.sin(2 * np.pi * f * k * t) / k for k in range(1, 40) if f * k < 12000)
+    wave_ += 0.5 * sum(np.sin(2 * np.pi * f * 1.003 * k * t) / k for k in range(1, 40, 2) if f * k < 12000)
+    env = np.minimum(1, t / 0.004) * (0.75 + 0.25 * np.exp(-t / 0.08))
+    place(carrier, fade(wave_ * env, 1, 25), slot, 0.5)
+write('liftoff-traeger.flac', carrier[:LENGTH] * 0.9 / np.abs(carrier).max())
 
 # the commentary as spoken, the two excerpts one after the other with half a second between
 spoken = np.concatenate([speech[:len(explorers)], np.zeros(int(0.5 * RATE)), speech[int(OFFSET * RATE):int(OFFSET * RATE) + len(liftoff)]])
