@@ -103,6 +103,15 @@ class StudentHomeTest < Minitest::Test
         refute_includes StudentHome.html(:progress => progress), 'So geht'
     end
 
+    # a Handbuch page pinned for a class: no tasks, so »Lesen«, not »Loslegen«
+    def test_a_pinned_handbook_page_is_to_read
+        html = StudentHome.card('reference/ffmpeg', 'ffmpeg: Ton und Video', nil, :kind => 'Handbuch', :pinned => '9b', :reference => true)
+        assert_includes html, "href='/reference/ffmpeg'"
+        assert_includes html, '>Lesen<'
+        assert_includes html, 'Handbuch'
+        refute_includes html, 'Loslegen'
+    end
+
     def test_teacher_accounts_see_only_what_is_pinned
         assert_equal '', StudentHome.html(:progress => [], :guide => false)
         assert_equal '', StudentHome.html(:progress => progress, :guide => false)

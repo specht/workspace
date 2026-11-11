@@ -1492,7 +1492,7 @@ class Main < Sinatra::Base
     # list of them with ticks (page_pin.js).
     def page_pin_button(slug)
         return '' unless user_logged_in? && (teacher_account_logged_in? || admin_logged_in?)
-        return '' unless pinnable_slugs.include?(slug)
+        return '' unless pinnable_pages.include?(slug)
 
         groups = class_groups
         return '' if groups.empty?
@@ -2081,6 +2081,17 @@ class Main < Sinatra::Base
         END_OF_QUERY
     end
 
+    # Handbuch pages a teacher may pin for a class too (the Handbuch catalog,
+    # without pages still in development): reference/<name>.
+    def pinnable_reference_slugs
+        order = defined?(@@reference_section_order) ? @@reference_section_order : []
+        order.flat_map { |key| (@@sections[key] || {})[:entries] || [] }
+             .select { |slug| @@content[slug] && (DEVELOPMENT || !@@content[slug][:dev_only]) }
+    end
+
+    # What a teacher may pin: the activities of the catalog and the Handbuch pages.
+    def pinnable_pages = pinnable_slugs + pinnable_reference_slugs
+
     # Activities a student may see in the catalog (and a teacher may pin).
     def pinnable_slugs
         @@section_order.reject { |key| (@@sections[key] || {})[:hidden] }
@@ -2095,13 +2106,17 @@ class Main < Sinatra::Base
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         section_of = {}
         @@section_order.each { |key| ((@@sections[key] || {})[:entries] || []).each { |slug| section_of[slug.to_s.delete_prefix('.')] ||= key } }
-        groups = items.group_by { |_, _, slug| section_of[slug] }
-        order = @@section_order + [nil]
+        # Handbuch pages (reference/…) together, after the activities
+        groups = items.group_by { |_, _, slug| PageKinds.reference?(slug) ? :reference : section_of[slug] }
+        order = @@section_order + [:reference, nil]
         order.filter_map do |key|
             list = groups[key]
             next if list.nil? || list.empty?
 
-            label = key ? CGI.unescapeHTML((@@sections[key] || {})[:label].to_s.gsub('&shy;', '')) : 'Weitere'
+            label = if key == :reference then 'Handbuch'
+                    elsif key then CGI.unescapeHTML((@@sections[key] || {})[:label].to_s.gsub('&shy;', ''))
+                    else 'Weitere'
+                    end
             options = list.sort_by { |_, title, _| title.downcase }.map do |value, title, slug|
                 "<option value='#{h.(value)}' data-search='#{h.(activity_search_text(slug))}'#{value == selected ? ' selected' : ''}>#{h.(title)}</option>"
             end
@@ -2146,11 +2161,14 @@ class Main < Sinatra::Base
         return '' unless my_running_tests.empty?
 
         allowed = pinnable_slugs
-        pinned = pins_for_groups(my_groups).select { |p| allowed.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
+        pinnable = pinnable_pages
+        pinned = pins_for_groups(my_groups).select { |p| pinnable.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
             c = @@content[p[:slug]]
+            reference = PageKinds.reference?(p[:slug])
             # the catalog's picture, its dark variant and focus (CardImages)
             { :slug => p[:slug], :title => plain_title(p[:slug]), :abstract => c[:abstract], :group => p[:group],
-              :template_folder => (c[:template] || {})[:folder], :kind => PageKinds.kind_label(c[:kind]),
+              :template_folder => (c[:template] || {})[:folder], :kind => reference ? 'Handbuch' : PageKinds.kind_label(c[:kind]),
+              :reference => reference,
               :image => c[:image] && CardImages.attributes(c[:image]), :image_dark => c[:image_dark] && CardImages.attributes(c[:image_dark]),
               # centred: the card shows nearly all of the 16:9 picture, a
               # little narrower once its text is taller (default.css); the
@@ -2172,7 +2190,7 @@ class Main < Sinatra::Base
         Main.load_invitations()
         data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => {:group => 200, :slug => 100})
         halt 403 unless class_groups.include?(data[:group])
-        halt 404 unless pinnable_slugs.include?(data[:slug])
+        halt 404 unless pinnable_pages.include?(data[:slug])
         neo4j_query(<<~END_OF_QUERY, :key => "#{data[:group]}|#{data[:slug]}", :group => data[:group], :slug => data[:slug], :by => @session_user[:email], :ts => Time.now.to_i)
             MERGE (p:Pin {key: $key})
             SET p.group = $group, p.slug = $slug, p.by = $by, p.ts = $ts;
@@ -2365,7 +2383,7 @@ class Main < Sinatra::Base
             io << "<ul class='class-pins-list'>"
             pins.each do |p|
                 title = plain_title(p[:slug])
-                kind = PageKinds.kind_label((@@content[p[:slug]] || {})[:kind])
+                kind = PageKinds.reference?(p[:slug]) ? 'Handbuch' : PageKinds.kind_label((@@content[p[:slug]] || {})[:kind])
                 io << "<li class='class-pin'><a href='/#{h.(p[:slug])}'>#{h.(title)}</a>"
                 io << "<span class='class-pin-kind'>#{h.(kind)}</span>" if kind
                 io << "<button type='button' class='btn btn-sm btn-outline-secondary class-unpin' data-slug='#{h.(p[:slug])}' aria-label='#{h.(title)} lösen'>" \
@@ -2373,9 +2391,10 @@ class Main < Sinatra::Base
             end
             io << '</ul>'
         end
-        io << "<div class='class-pins-add'><select class='form-select class-pin-select' aria-label='Aktivität suchen und anheften'><option value=''>Aktivität suchen und anheften …</option>"
+        io << "<div class='class-pins-add'><select class='form-select class-pin-select' aria-label='Aktivität oder Handbuch-Seite suchen und anheften'>" \
+              "<option value=''>Aktivität oder Handbuch-Seite suchen und anheften …</option>"
         pinned = pins.map { |p| p[:slug] }
-        io << grouped_activity_options(pinnable_slugs.reject { |s| pinned.include?(s) }.map { |s| [s, plain_title(s), s] })
+        io << grouped_activity_options(pinnable_pages.reject { |s| pinned.include?(s) }.map { |s| [s, plain_title(s), s] })
         io << '</select></div></section>'
         io
     end

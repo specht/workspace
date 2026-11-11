@@ -590,7 +590,7 @@ wird neu gefragt), »Nicht jetzt« und »Nicht mehr fragen« fallen weg
 | Dauer einer Aktivität (`duration`, im Streifen über der Seite) | | | ✓ | ✓ |
 | Zeile des Lehrplans (`curriculum`, im Streifen über der Seite, in Lila) | | | ✓ | ✓ |
 | Die Übersicht `/lehrplan` (docs/lehrplan.md); Gäste wählen das Land über `?land=`, Lehrkräfte speichern es im Profil | ✓ | ✓ | ✓ | ✓ |
-| »Anpinnen« im Streifen über einer Aktivität: dieselben Anheftungen wie auf der Klassenseite, bei einer Gruppe mit einem Klick, bei mehreren in einer Liste mit Häkchen | | | ✓ eigene Gruppen | ✓ |
+| »Anpinnen« im Streifen über einer Aktivität oder einer Handbuch-Seite: dieselben Anheftungen wie auf der Klassenseite, bei einer Gruppe mit einem Klick, bei mehreren in einer Liste mit Häkchen; eine Handbuch-Seite steht auf der Startseite der Lernenden als Karte ohne Bild mit »Lesen« | | | ✓ eigene Gruppen | ✓ |
 | »Lösung einsetzen« neben den Knöpfen einer Kata | | ✓ | ✓ | ✓ |
 | Startseite: »Weiter mit«, »So geht’s« | ✓ (auch Testkonten) | | | |
 
