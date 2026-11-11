@@ -129,7 +129,7 @@
             ? 'Hörschwelle nach Terhardt, an deine Messung bei 1.000 Hz gelegt'
             : 'Mithörschwelle nach einem Modell']);
         legendModel.hidden = !showModel;
-        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' });
+        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-success' });
         const noteButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary' },
             [el('i', { class: 'bi bi-pin-angle' }), kind === 'threshold' ? ' Nicht mehr zu hören: merken' : ' Verdeckt: merken']);
         const clearButton = el('button', { type: 'button', class: 'btn btn-sm btn-link hearing-clear', text: 'Alles vergessen' });

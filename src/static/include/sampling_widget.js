@@ -143,7 +143,7 @@
             return el('div', { class: 'sampling-group' }, [el('span', { class: 'sampling-label', text: label }), box]);
         };
 
-        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary sampling-play' });
+        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-success sampling-play' });
         const showPlay = () => {
             playButton.replaceChildren(el('i', { class: `bi ${playing ? 'bi-stop-fill' : 'bi-play-fill'}` }), playing ? ' Anhalten' : ' Abspielen');
         };

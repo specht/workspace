@@ -96,7 +96,7 @@
             (v) => { rate = Number(v); choose(); }, 'btn-group-sm');
         const rateBox = el('span', {}, [rateGroup()]);
 
-        const playButton = el('button', { type: 'button', class: 'btn btn-outline-secondary abx-play-button' });
+        const playButton = el('button', { type: 'button', class: 'btn btn-success abx-play-button' });
         const listen = group('listen', 'Was du hörst', [
             { value: 'A', label: 'A: Original' }, { value: 'B', label: 'B: mit Codec' }, { value: 'X', label: 'X: A oder B?' }],
         which, (v) => { which = v; mix(); }, 'abx-listen');

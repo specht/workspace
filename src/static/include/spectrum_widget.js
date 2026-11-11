@@ -190,7 +190,7 @@
             return el('div', { class: 'spectrum-group' }, [el('span', { class: 'spectrum-label', text: label }), box]);
         };
 
-        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-outline-secondary spectrum-play' });
+        const playButton = el('button', { type: 'button', class: 'btn btn-sm btn-success spectrum-play' });
         // the instruments of a piece of music, each a switch of its own (not a
         // bar), made anew for each piece; all on at first
         const instruments = el('div', { class: 'spectrum-instruments', role: 'group', 'aria-label': 'Instrumente' });
