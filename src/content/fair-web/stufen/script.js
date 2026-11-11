@@ -17,5 +17,5 @@ document.getElementById('form').addEventListener('submit', (event) => {
   }
   name.classList.remove('error');
   error.hidden = true;
-  alert('Danke, ' + name.value + '!');
+  document.getElementById('thanks').textContent = 'Danke, ' + name.value + '!';
 });

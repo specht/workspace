@@ -46,8 +46,9 @@ class HeadingAnchorsTest < Minitest::Test
         ids
     end
 
+    # Links in the prose; an example in code (`<a href="#termine">`) is none.
     def self.links(markdown)
-        markdown.scan(/\]\(#([^)\s]+)\)|href=['"]#([^'"]+)['"]/).map do |a, b|
+        markdown.gsub(/^[ \t]*```.*?^[ \t]*```/m, '').gsub(/`[^`\n]*`/, '').scan(/\]\(#([^)\s]+)\)|href=['"]#([^'"]+)['"]/).map do |a, b|
             URI.decode_www_form_component(a || b)
         end
     end

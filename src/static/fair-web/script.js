@@ -4,7 +4,7 @@ function closeBanner() {
 }
 
 function showSettings() {
-  alert('Die Einstellungen kommen bald.');
+  document.querySelector('#banner p').textContent = 'Die Einstellungen kommen bald.';
 }
 
 // The countdown: five minutes, and after every reload five minutes again.
@@ -24,5 +24,5 @@ function send() {
     return;
   }
   name.classList.remove('error');
-  alert('Danke, ' + name.value + '!');
+  document.getElementById('thanks').textContent = 'Danke, ' + name.value + '!';
 }
