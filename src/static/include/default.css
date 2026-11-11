@@ -1739,9 +1739,19 @@ details.solution.hint-step-new > summary {
                     border-top: 0;
                     border-left: 1px solid #eee;
 
-                    /* never taller than the picture, so no bars */
+                    /* never taller than the picture, so no bars: two lines
+                       in a narrow column, more where the column is wide
+                       (half of a wide row) and the picture tall */
                     .abstract {
                         -webkit-line-clamp: 2;
+                    }
+                    @container (min-width: 600px) {
+                        .abstract {
+                            -webkit-line-clamp: 4;
+                        }
+                        &:has(.card-requires) .abstract {
+                            -webkit-line-clamp: 3;
+                        }
                     }
                     .card-requires {
                         overflow: hidden;
