@@ -2,14 +2,14 @@
 (public domain: images.nasa.gov, KSC-20260401-AU-LMM01-0001-Artemis_II_Live_
 Launch_Coverage_Program_LOS, the commentary channel without the rocket),
 for the autotune widget: the commentary as it was said over the verse, the
-build and »and liftoff« on the drop, sung only in the chorus (»The crew of
+build and »and liftoff« on the chorus, sung only in the chorus (»The crew of
 Artemis twoooo / now bound for the Moooon«), answered spoken (»humanity's
-next great voyage begins«); in the arc of a dance
-track at 128 beats a minute
-in B minor (Bm G D A): a funky verse, the countdown as the build (a snare
-roll getting faster, a rise of noise, no bass), a stop, and on »liftoff« the
-drop (a kick on every beat, chords pumping under it, a bass jumping
-octaves, a riff of one bar as the hook, »lift-off« chopped). Every syllable
+next great voyage begins«); a funk track at 128 beats a minute in B minor
+with the anime »royal road« in the chorus (Gmaj7 A7 F#7 Bm7): a clean
+guitar in sixteenths alone, then drums and bass, the countdown over the
+groove with an electric piano growing, a stop of the whole band, and on
+»liftoff« the chorus (horn stabs where the voice rests, harmonies,
+»lift-off« chopped). Every syllable
 starts where its voice starts, on the grid of sixteenths, legato within a
 phrase; the chorus has fixed notes, the same every time it comes. Three
 files of the same length:
@@ -18,9 +18,8 @@ files of the same length:
   liftoff.flac          the syllables on the grid (SHEET), the voice's own pitch
   liftoff-melodie.flac  the melody, one note per syllable
   liftoff-traeger.flac  the melody as a punchy lead, the vocoder's carrier
-  liftoff-band.flac     a real drum kit (audio/drums: DRSKit of DrumGizmo,
-                        CC BY 4.0, and a clap, CC0) and the instruments,
-                        harmonies and chops of the voice
+  liftoff-band.flac     electronic drum samples (audio/drums-electronic, CC0)
+                        and the instruments, harmonies and chops of the voice
 
 The two excerpts (artemis/four-explorers.flac, 5:35:01.6 to 5:35:15.6 of the
 commentary, and artemis/liftoff.flac, 5:35:23.4 to 5:35:44.0) are made from
@@ -315,9 +314,8 @@ VERSE, BUILD, DROP = range(0, 6), range(6, D), range(D, D + 16)
 SPOKEN = [
     (0.3, 2.40, 8.90),                  # from the start: … ready to ride the most powerful rocket
     (0.3 + 6.75, 11.25, 13.60),         # NASA has ever launched: without the pause of 2,4 s
-    # the countdown without »RS-25 engines lit«: ten … seven, then four … and liftoff, »lift« on the drop
-    (D * BAR - 5.74 - 0.6 - 4.30, OFFSET + 0.0, OFFSET + 4.30),
-    (D * BAR - 5.74, OFFSET + 7.20, OFFSET + 13.80),
+    # the whole countdown, ten … RS-25 engines lit … and liftoff, »lift« on the first bar of the chorus
+    (D * BAR - 12.94, OFFSET + 0.0, OFFSET + 13.80),
     ((D + 6) * BAR, OFFSET + 17.98, OFFSET + 20.30),    # humanity's next great voyage begins, spoken, as an answer
     ((D + 14) * BAR, OFFSET + 17.98, OFFSET + 20.30),
 ]
@@ -399,15 +397,6 @@ def sample(name):
         return np.frombuffer(f.readframes(f.getnframes()), '<i2') / 32768
 
 
-def clav(f, n):
-    """a clavinet: a plucked string with many bright harmonics that fade
-    fast, the odd ones a little stronger, a hard start"""
-    t = np.arange(n) / RATE
-    out = sum(np.sin(2 * np.pi * f * k * t) / k ** 0.8 * (1.3 if k % 2 else 0.8) * np.exp(-t * (7 + 4 * k))
-              for k in range(1, 16) if f * k < 9000)
-    return fade(out, 1, 15)
-
-
 PLUCKS = {}
 
 
@@ -433,22 +422,67 @@ def pluck(f, seconds, ring):
 
 
 def guitar_voicing(chord):
-    """the chord on four strings: the root from E3 up, the others above it"""
-    root = chord[0] + (12 if chord[0] < 4 else 0)
-    return [root] + [root + (c - chord[0]) % 12 for c in chord[1:]]
+    """the chord on six strings, as a guitar holds it: the root low (E2 to
+    D#3), its fifth and octave, then the third and the seventh above"""
+    root = chord[0] - 12
+    third, seventh = (chord[1] - chord[0]) % 12, (chord[3] - chord[0]) % 12
+    return [root, root + 7, root + 12, root + 12 + third, root + 12 + seventh, root + 24]
 
 
-def strum(track, chord, seconds, length, level, up, ring):
-    """a stroke over the strings, the notes 6 ms apart, downwards or upwards"""
-    notes = guitar_voicing(chord)
-    for i, note in enumerate(reversed(notes) if up else notes):
-        place(track, pluck(semis_hz(note), length, ring), seconds + i * 0.006, level * (0.8 if up else 1.0))
+# which strings a stroke hits: all six, the top four, the top three, three in the middle
+STRINGS = {'full': slice(0, 6), 'top': slice(2, 6), 'high': slice(3, 6), 'mid': slice(1, 4)}
 
 
-def saws(f, n, voices=(0.99, 0.995, 1.0, 1.005, 1.01), top=9000):
-    """detuned saw waves, as a dance track's chords and leads"""
+def bright_noise(n):
+    """noise without its low part, the click of a pick"""
+    return np.diff(rng.uniform(-1, 1, n + 1))
+
+
+def strum(track, chord, seconds, length, level, up, ring, strings='full'):
+    """a stroke of the pick over some strings: down from the lowest to the
+    highest, 4 ms apart; up the other way, 3 ms apart and softer; each string
+    with the click of the pick, the whole a few ms early or late and a little
+    louder or softer, as a hand plays it"""
+    notes = guitar_voicing(chord)[STRINGS[strings]]
+    notes = list(reversed(notes)) if up else notes
+    gap = 0.003 if up else 0.004
+    start = seconds + rng.uniform(-0.002, 0.002)
+    level *= rng.uniform(0.9, 1.1) * (0.75 if up else 1.0)
+    click = int(0.003 * RATE)
+    for i, note in enumerate(notes):
+        place(track, pluck(semis_hz(note), length, ring), start + i * gap, level / len(notes) * 3)
+        place(track, bright_noise(click) * np.linspace(1, 0, click), start + i * gap, level * 0.2)
+
+
+def scratch(track, chord, seconds, level, up):
+    """a muted stroke, »chk«: the left hand lies on the strings, so mostly the
+    noise of the pick and a short pitch from two or three strings"""
+    n = int(0.03 * RATE)
+    noise = np.convolve(bright_noise(n), np.ones(4) / 4, 'same') * np.exp(-np.arange(n) / RATE / 0.008)
+    start = seconds + rng.uniform(-0.002, 0.002)
+    level *= rng.uniform(0.85, 1.15) * (0.8 if up else 1.0)
+    place(track, noise, start, level)
+    strum(track, chord, start, 0.04, level * 0.5, up, 0.8, 'mid' if rng.random() < 0.6 else 'high')
+
+
+def rhodes(f, n):
+    """an electric piano: a sine bent by a sine of its own frequency, the
+    bending (and so the brightness) fading, a short ping of the tine on top"""
     t = np.arange(n) / RATE
-    return sum(np.sin(2 * np.pi * f * d * k * t + 1.7 * k * d) / k for d in voices for k in range(1, 30) if f * k < top) / len(voices)
+    bend = 1.2 * np.exp(-t / 0.3)
+    out = np.sin(2 * np.pi * f * t + bend * np.sin(2 * np.pi * f * t)) * np.exp(-t / 1.5)
+    out += 0.12 * np.sin(2 * np.pi * f * 7 * t) * np.exp(-t / 0.04)
+    return fade(out, 2, 40)
+
+
+def horn(f, n):
+    """a brass stab: harmonics that open up in the first 40 ms, as a player's
+    lips start the note, then a little falling"""
+    t = np.arange(n) / RATE
+    open_ = 1 + 7 * np.minimum(1, t / 0.04)
+    vib = 1 + 0.003 * np.sin(2 * np.pi * 5.5 * t)
+    out = sum(np.sin(2 * np.pi * f * k * t * vib) / k * np.exp(-(k - 1) / open_) for k in range(1, 30) if f * k < 9000)
+    return fade(out * (0.8 + 0.2 * np.exp(-t / 0.1)), 4, 30)
 
 
 def pluck_bass(f, n):
@@ -473,100 +507,120 @@ def chord_at(seconds):
 rng = np.random.default_rng(1962)
 DRUMS = os.path.join(AUDIO, 'drums-electronic')
 guitar = np.zeros(LENGTH + 3 * RATE)
-# the guitar: sixteenths all the time, down on the beats and the »and«, up between;
-# most of them muted scratches, full chords on the syncopated accents
-ACCENTS = {0: 0.9, 3: 0.8, 6: 0.85, 10: 0.8, 13: 0.75}
+# the guitar, as Cory Wong plays: sixteenths all the time, down on the
+# beats and the »and«, up between; most of them muted scratches, the
+# backbeat (2 and 4) scratched harder; on syncopated accents chords: the
+# whole chord low only on the one, else short stabs on the top strings;
+# the pattern changes every other bar
+ACCENTS = [{0: (0.9, 'full'), 3: (0.75, 'top'), 6: (0.8, 'high'), 10: (0.8, 'top'), 13: (0.7, 'high')},
+           {0: (0.85, 'top'), 2: (0.65, 'high'), 7: (0.85, 'top'), 10: (0.75, 'high'), 14: (0.8, 'top')}]
 
 
-def guitar_bar(t0, chord):
-    for k in range(16):
+def guitar_bar(t0, chord, bar, upto=16):
+    accents = ACCENTS[bar % 2]
+    for k in range(upto):
         up = k % 2 == 1
-        if k in ACCENTS:
-            strum(guitar, chord, t0 + k * SIXTEENTH, 0.35, 0.22 * ACCENTS[k], up, 0.996)
+        if k in accents:
+            level, strings = accents[k]
+            strum(guitar, chord, t0 + k * SIXTEENTH, 0.3 if strings == 'full' else 0.18, 0.2 * level, up, 0.996, strings)
         else:
-            strum(guitar, chord, t0 + k * SIXTEENTH, 0.06, 0.085, up, 0.93)
+            scratch(guitar, chord, t0 + k * SIXTEENTH, 0.16 if k in (4, 12) else 0.07, up)
 
 
-kick, snare, roll, clap = sample('kick'), sample('snare'), sample('snare-roll'), sample('clap')
-hat, open_hat, crash = sample('hat-closed'), sample('hat-open'), sample('crash')
-riser, reverse, shaker = sample('riser'), sample('reverse-cymbal'), sample('perc')
+kick, snare, clap = sample('kick'), sample('snare'), sample('clap')
+hat, open_hat, crash, shaker = sample('hat-closed'), sample('hat-open'), sample('crash'), sample('perc')
 open_short = open_hat[:int(0.2 * RATE)] * np.linspace(1, 0, int(0.2 * RATE))
 drums = np.zeros(LENGTH + 5 * RATE)
 keys = np.zeros(LENGTH + 3 * RATE)
 low = np.zeros(LENGTH + 3 * RATE)
-lead = np.zeros(LENGTH + 3 * RATE)
-pump = np.ones(LENGTH + 3 * RATE)                  # what the kick ducks in the drop
-# the hook of the drop: a riff of eighths, steps of the scale above the chord's root
-RIFF = [0, 4, 7, 4, 9, 7, 4, 2]
+horns = np.zeros(LENGTH + 3 * RATE)
 # the funky bass: (sixteenth, semitones above the root or 'next' for the step
 # up to the next chord's root, sixteenths long, level); short ones are ghost notes
 FUNK = [(0, 0, 2, 1.0), (1, 0, 0.5, 0.35), (3, 12, 1, 0.8), (6, 7, 2, 0.85), (8, 0, 2, 1.0),
         (10, 10, 1, 0.7), (11, 12, 1, 0.6), (13, 7, 1, 0.7), (14, 12, 1, 0.55), (15, 'next', 1, 0.75)]
+# the kick, syncopated, two bars that alternate; the snare on 2 and 4 with ghost notes around
+KICKS = [[(0, 0.95), (6, 0.6), (10, 0.85)], [(0, 0.95), (3, 0.55), (8, 0.7), (10, 0.85)]]
+GHOSTS = [7, 9, 15]
+# sixteenths where the voice sings: the horns stay out of them
+sung = {int(round((slot + i * SIXTEENTH) / SIXTEENTH)) for slot, seconds, note in lead_notes
+        for i in range(int(round(seconds / SIXTEENTH)))}
 
 
-def funk_bass(t0, bar, level):
+def funk_bass(t0, bar, level, upto=16):
     root = CHORDS[bar][0] - 24
     following = CHORDS[min(BARS - 1, bar + 1)][0] - 24
     for k, interval, length, gain in FUNK:
-        note = following + (12 if following < root - 6 else 0) - 1 if interval == 'next' else root + interval
-        place(low, pluck_bass(semis_hz(note, C2), int(length * SIXTEENTH * 0.9 * RATE)), t0 + k * SIXTEENTH, level * gain)
+        if k < upto:
+            note = following + (12 if following < root - 6 else 0) - 1 if interval == 'next' else root + interval
+            place(low, pluck_bass(semis_hz(note, C2), int(length * SIXTEENTH * 0.9 * RATE)), t0 + k * SIXTEENTH, level * gain)
+
+
+def groove(t0, bar, hats, level=1.0, upto=16):
+    for k, gain in KICKS[bar % 2]:
+        if k < upto:
+            place(drums, kick, t0 + k * SIXTEENTH, 0.85 * gain * level)
+    for k in (4, 12):
+        if k < upto:
+            place(drums, snare, t0 + k * SIXTEENTH, 0.55 * level)
+    for k in GHOSTS:
+        if k < upto:
+            place(drums, snare, t0 + k * SIXTEENTH, 0.07 * level)
+    for k in range(0, upto, 1 if hats == 16 else 2):
+        open_ = hats == 16 and bar % 2 == 1 and k == 14
+        place(drums, open_short if open_ else hat, t0 + k * SIXTEENTH, 0.2 if open_ else (0.13 if k % 2 == 0 else 0.07))
+
+
+def keys_bar(t0, chord, level):
+    """the electric piano: the chord on the one, held, and again on the »a« of 2"""
+    for c in chord:
+        place(keys, rhodes(semis_hz(c) * 2, int(1.5 * BEAT * RATE)), t0, level)
+        place(keys, rhodes(semis_hz(c) * 2, int(0.4 * BEAT * RATE)), t0 + 7 * SIXTEENTH, level * 0.7)
+
+
 for bar, chord in enumerate(CHORDS):
     t0 = bar * BAR
-    root = semis_hz(chord[0], C2 / 2)
     if bar in VERSE:
-        # the first two bars only hi-hats, then a plain, solid groove
-        for k in range(0, 16, 2):
-            place(drums, hat, t0 + k * SIXTEENTH, 0.14)
-        if bar >= 2:
-            for k in (0, 8, 10):
-                place(drums, kick, t0 + k * SIXTEENTH, 0.8)
-            for k in (4, 12):
-                place(drums, snare, t0 + k * SIXTEENTH, 0.55)
-        guitar_bar(t0, chord)
-        funk_bass(t0, bar, 0.15)
-    elif bar in BUILD:
-        # the snare roll: quarters, eighths, then sixteenths, louder evenly; the last beat silent
-        i = bar - BUILD[0]
-        step = [4, 4, 2, 2, 1, 1][i]
-        k = 0.0
-        while k < (12 if bar == D - 1 else 16):
-            progress = (i * 16 + k) / (len(BUILD) * 16)
-            place(drums, snare if int(k * 4) % 2 == 0 else roll, t0 + k * SIXTEENTH, 0.12 + 0.33 * progress)
-            k += step
-        for c in chord:                          # the chord held high and thin
-            place(keys, saws(semis_hz(c) * 4, int(BAR * RATE), top=12000) * np.linspace(0.3, 1, int(BAR * RATE)), t0, 0.006 + 0.0013 * (bar - BUILD[0]) if bar < D - 1 else 0.0)
+        # the guitar alone with hi-hats, then drums and bass together
+        guitar_bar(t0, chord, bar)
+        if bar < 2:
+            for k in range(0, 16, 2):
+                place(drums, hat, t0 + k * SIXTEENTH, 0.12)
+        else:
+            groove(t0, bar, 8, 0.9)
+            funk_bass(t0, bar, 0.15)
+    elif bar in BUILD and bar < D - 1:
+        # the countdown: the groove goes on, sixteenths on the hi-hat, the
+        # electric piano coming in and growing
+        guitar_bar(t0, chord, bar)
+        groove(t0, bar, 16)
+        funk_bass(t0, bar, 0.16)
+        keys_bar(t0, chord, 0.01 + 0.004 * (bar - BUILD[0]))
+    elif bar == D - 1:
+        # the stop: all together on the one, then silence until »liftoff«
+        strum(guitar, chord, t0, 0.8, 0.22, False, 0.998, 'full')
+        place(drums, kick, t0, 0.9)
+        place(drums, crash, t0, 0.25)
+        funk_bass(t0, bar, 0.18, upto=1)
+        for c in chord:
+            place(horns, horn(semis_hz(c) * 2, int(0.25 * RATE)), t0, 0.035)
     else:
+        # the chorus: the whole band
         if bar in (D, D + 8):
             place(drums, crash, t0, 0.4)
         for k in range(1, 16, 2):                    # the shaker on the off-sixteenths
-            place(drums, shaker, t0 + k * SIXTEENTH, 0.12)
-        for k in range(0, 16, 4):
-            place(drums, kick, t0 + k * SIXTEENTH, 0.95)
-            a = int((t0 + k * SIXTEENTH) * RATE)
-            d = int(BEAT * 0.9 * RATE)
-            pump[a:a + d] = np.minimum(pump[a:a + d], 0.25 + 0.75 * np.linspace(0, 1, d) ** 1.5)
+            place(drums, shaker, t0 + k * SIXTEENTH, 0.09)
+        groove(t0, bar, 16)
         for k in (4, 12):
-            place(drums, clap, t0 + k * SIXTEENTH, 0.5)
-            place(drums, snare, t0 + k * SIXTEENTH, 0.4)
-        for k in range(16):
-            place(drums, open_short if k % 4 == 2 else hat, t0 + k * SIXTEENTH, 0.22 if k % 4 == 2 else 0.1)
-        guitar_bar(t0, chord)
-        # chords held (they pump under the kick), the bass jumping octaves on eighths
-        for c in chord:
-            place(keys, saws(semis_hz(c) * 2, int(BAR * RATE)), t0, 0.06)
-        funk_bass(t0, bar, 0.18)
-        # the riff, an octave above the voice
-        base = chord[0] + 24
-        for k, steps in enumerate(RIFF):
-            note = scale_step(base, [0, 2, 4, 2, 5, 4, 2, 1][k], chord)
-            place(lead, fade(saws(semis_hz(note), int(2 * SIXTEENTH * 0.8 * RATE), voices=(0.995, 1.0, 1.005)), 3, 30), t0 + k * 2 * SIXTEENTH, 0.13)
-# a rise of noise through the build, brighter as it goes
-# the riser through the build, its top a beat before the drop; the reverse cymbal into the drop
-place(drums, riser, D * BAR - BEAT - len(riser) / RATE, 0.35)
-peak = int(np.argmax(np.abs(reverse)))
-place(drums, reverse[:peak], D * BAR - peak / RATE, 0.3)
-place(drums, reverse[:peak], (D + 8) * BAR - peak / RATE, 0.25)
-
+            place(drums, clap, t0 + k * SIXTEENTH, 0.3)
+        guitar_bar(t0, chord, bar)
+        funk_bass(t0, bar, 0.19)
+        keys_bar(t0, chord, 0.03)
+        # the horns: short stabs on the »a« of 1 and the »and« of 3, where the voice rests
+        here = round(t0 / SIXTEENTH)
+        for k, length in ((3, 0.12), (10, 0.2), (14, 0.12)):
+            if here + k not in sung and here + k + 1 not in sung:
+                for c in chord[1:]:
+                    place(horns, horn(semis_hz(c) * 2, int(length * RATE)), t0 + k * SIXTEENTH, 0.03)
 
 def shift(x, factor):
     """x factor-times as high, as long as it is: grains of 40 ms, each read
@@ -603,13 +657,13 @@ for bar in (D + 1, D + 9, D + 15):
         target = semis_hz(scale_step(CHORDS[bar][0] + 12, steps // 2, CHORDS[bar]))
         place(extras, fade(shift(chop, target / chop_f), 3, 40), bar * BAR + k * SIXTEENTH, 0.3)
 
-band = drums[:LENGTH] + guitar[:LENGTH] + (keys * pump)[:LENGTH] + low[:LENGTH] + lead[:LENGTH] + extras[:LENGTH]
+band = drums[:LENGTH] + 1.7 * guitar[:LENGTH] + keys[:LENGTH] + low[:LENGTH] + 1.6 * horns[:LENGTH] + extras[:LENGTH]
 spec = np.fft.rfft(band)
 freq = np.fft.rfftfreq(len(band), 1 / RATE)
 spec *= 10 ** (-4 * np.exp(-(np.log2(np.maximum(freq, 1) / 2000) / 0.9) ** 2) / 20)
 band = np.fft.irfft(spec, len(band))
 band *= 0.8 / np.abs(band).max()
-print('band: drums %.3f guitar %.3f keys %.3f bass %.3f lead %.3f extras %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, guitar, keys * pump, low, lead, extras)))
+print('band: drums %.3f guitar %.3f keys %.3f bass %.3f horns %.3f extras %.3f' % tuple(float(np.sqrt(np.mean(z[:LENGTH] ** 2))) for z in (drums, guitar, keys, low, horns, extras)))
 if os.environ.get('GUITAR_PREVIEW'):
     # the guitar alone over the bass, for listening
     demo = guitar[:LENGTH] / np.abs(guitar).max() * 0.7 + low[:LENGTH] / max(1e-9, np.abs(low).max()) * 0.35
