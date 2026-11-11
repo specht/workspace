@@ -4,7 +4,7 @@ import subprocess
 from PIL import Image, ImageDraw, ImageFont
 
 CLIPS = ['glance', 'pan', 'slope', 'tilt']
-COLOURS = {'I': (220, 38, 38), 'P': (37, 99, 235), 'B': (22, 163, 74)}
+COLOURS = {'I': (13, 96, 174), 'P': (201, 133, 0), 'B': (18, 149, 159)}
 
 
 def frame_sizes(path):

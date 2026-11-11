@@ -50,6 +50,9 @@ DARK = {
     '#ede9fe' => '#2a2140', # pale purple areas (pixels sharing a colour value)
     '#ddd6fe' => '#3a2d5c', # a second, slightly stronger pale purple beside it
     '#eab308' => '#facc15', # yellow: a colour by name beside red, green and blue (a map in four colours)
+    '#0d60ae' => '#118cfc', # I-frames (»Video komprimieren«): the strongest of the three kinds
+    '#12959f' => '#14bbc2', # B-frames: between I and P
+    '#c98500' => '#f4a938', # P-frames
 }.freeze
 
 # in docker/drawings, the same fonts and tools on every machine: started

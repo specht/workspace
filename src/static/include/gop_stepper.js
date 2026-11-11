@@ -31,7 +31,8 @@
 // frames and the vectors, bilinear between pixels).
 (function () {
     'use strict';
-    const COLOURS = { I: '#dc2626', P: '#2b5fb4', B: '#16a34a' };
+    // the colours of the kinds, as CSS variables with a step for dark mode (default.css)
+    const COLOURS = { I: 'var(--gop-i)', P: 'var(--gop-p)', B: 'var(--gop-b)' };
     const SLIDE_MS = 1100;
     const FADE_MS = 700;
     const de = (n) => n.toLocaleString('de-DE');

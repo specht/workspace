@@ -1,5 +1,5 @@
 """Drawings of a group of pictures, the frames as tiles in the
-colours of the bar charts of gop.py (I red, P blue, B green), arrows from a
+colours of the bar charts of gop.py (I blue, P amber, B turquoise between them), arrows from a
 frame to each frame it is predicted from (where it looks for support):
 
     gop-refs: I B B B P B B B P as they are shown; each P from the I or P
@@ -32,7 +32,7 @@ import automaton_pictures as ap  # noqa: E402
 
 OUT = os.path.join(HERE, '..')
 INK, GREY, WHITE = '#1f2937', '#6b7280', '#ffffff'
-COLOURS = {'I': '#dc2626', 'P': '#2b5fb4', 'B': '#16a34a'}
+COLOURS = {'I': '#0d60ae', 'P': '#c98500', 'B': '#12959f'}
 
 WIDE = dict(frames='IBBBPBBBP', tile=72, gap=24, letter=30, number=16, label=16, margin=24, lift=34,
             seek_tile=48, seek_gap=14, seek_letter=22)

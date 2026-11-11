@@ -15961,6 +15961,17 @@ html[data-bs-theme="dark"] .autotoc-secondary .toc-entry .toc-bookmark.preview {
    pictures lie outside them (outline-offset). */
 .gop-stepper {
     container-type: inline-size;
+    /* the kinds of frame: I the strongest, B between I and P in hue (it is
+       predicted from both); a lighter, more vivid step of each in dark mode,
+       checked for colour blindness against both grounds */
+    --gop-i: #0d60ae;
+    --gop-b: #12959f;
+    --gop-p: #c98500;
+}
+html[data-bs-theme="dark"] .gop-stepper {
+    --gop-i: #118cfc;
+    --gop-b: #14bbc2;
+    --gop-p: #f4a938;
 }
 .gop-stepper .gop-strip-head {
     margin: 0.2em 0 0.3em;

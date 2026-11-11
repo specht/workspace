@@ -1403,7 +1403,7 @@ import subprocess
 from PIL import Image, ImageDraw, ImageFont
 
 CLIPS = ['glance', 'pan', 'slope', 'tilt']
-COLOURS = {'I': (220, 38, 38), 'P': (37, 99, 235), 'B': (22, 163, 74)}
+COLOURS = {'I': (13, 96, 174), 'P': (201, 133, 0), 'B': (18, 149, 159)}
 
 
 def frame_sizes(path):
@@ -1439,7 +1439,7 @@ if __name__ == '__main__':
         draw_bars(frames, f'{name}-bars.png')
 ```
 
-`draw_bars` malt für jedes Bild einen Balken, so hoch wie seine Bytes, rot für I, blau für P, grün für B. Probier ffprobe zuerst im Terminal:
+`draw_bars` malt für jedes Bild einen Balken, so hoch wie seine Bytes, blau für I, bernsteinfarben für P, türkis für B. Probier ffprobe zuerst im Terminal:
 
 ```bash
 ffprobe -v error -select_streams v -show_entries frame=pict_type,pkt_size -of json glance.mp4 | head -20
@@ -1515,13 +1515,13 @@ tilt IBBBPPBBBPBBBPBBBPBBBPBBB
 <!-- tutorial-screenshot
 image-file: video/glance-bars.png 1
 -->
-<img src='glance-bars.webp' alt='Ein Balkendiagramm über die 96 Bilder von glance.mp4: ganz links ein hoher roter Balken für das I-Frame, danach meist alle vier Bilder ein niedriger blauer für ein P-Frame, in der Mitte einige blaue hintereinander, und dazwischen kaum sichtbare grüne für die B-Frames.'>
+<img src='glance-bars.webp' alt='Ein Balkendiagramm über die 96 Bilder von glance.mp4: ganz links ein hoher blauer Balken für das I-Frame, danach meist alle vier Bilder ein niedriger bernsteinfarbener für ein P-Frame, in der Mitte einige bernsteinfarbene hintereinander, und dazwischen kaum sichtbare türkise für die B-Frames.'>
 <figcaption>glance.mp4: ein großes I-Frame, dann fast nur winzige B-Frames</figcaption></figure>
 <figure>
 <!-- tutorial-screenshot
 image-file: video/tilt-bars.png 1
 -->
-<img src='tilt-bars.webp' alt='Ein Balkendiagramm über die 96 Bilder von tilt.mp4: links ein hoher roter Balken für das I-Frame, danach blaue P-Frames, etwa ein Drittel so hoch, und dazwischen niedrige grüne B-Frames.'>
+<img src='tilt-bars.webp' alt='Ein Balkendiagramm über die 96 Bilder von tilt.mp4: links ein hoher blauer Balken für das I-Frame, danach bernsteinfarbene P-Frames, etwa ein Drittel so hoch, und dazwischen niedrige türkise B-Frames.'>
 <figcaption>tilt.mp4: auch die P-Frames sind groß, die Kamera fährt schnell</figcaption></figure>
 </div>
 
