@@ -1316,6 +1316,9 @@ Die Verdeckung reicht nach oben viel weiter als nach unten. Ein tiefer, lauter K
 
 Verdeckt wird auch in der Zeit. Nach einem lauten Schlag hört das Ohr etwa 100 Millisekunden lang schlechter, als müsste es sich erst erholen. Und sogar kurz davor, etwa 20 Millisekunden. Warum, ist nicht ganz geklärt; eine Erklärung ist, dass das Gehirn einen lauten Klang schneller verarbeitet als einen leisen.
 
+<img class='drawing d-none d-lg-block' style='width: 50em' src='time-masking-wide.svg' alt='Schematisch: ein lauter Schlag als dunkler Balken, die Hörschwelle in der Stille als gestrichelte Linie und die Mithörschwelle als lila Kurve. Sie steigt in den etwa 20 Millisekunden vor dem Schlag steil an und sinkt in den etwa 100 Millisekunden danach langsam wieder auf die Hörschwelle.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='time-masking.svg' alt='Schematisch: ein lauter Schlag als dunkler Balken, die Hörschwelle in der Stille als gestrichelte Linie und die Mithörschwelle als lila Kurve. Sie steigt in den etwa 20 Millisekunden vor dem Schlag steil an und sinkt in den etwa 100 Millisekunden danach langsam wieder auf die Hörschwelle.'>
+
 Für einen Codec heißt das: Er muss nicht nur weglassen, was unter der Hörschwelle liegt. Er darf alles ungenau speichern, solange der Fehler unter der Mithörschwelle bleibt, die die lauten Teile des Klangs gerade hochziehen. Wie das geht, zeigen die nächsten beiden Kapitel: Erst braucht es Blöcke, die gut zusammenpassen, dann das Runden nach Gehör.
 
 ## Blöcke und Fenster
