@@ -773,6 +773,17 @@ footer.footer-fixed {
     margin-top: 0;
 }
 
+/* On a short page (a search without result) the footer still at the bottom
+   of the window: the page at least as tall as the window, the footer
+   pushed down to its end; on a long page it simply comes last */
+body:has(> footer:not(.footer-fixed)) {
+    min-height: 100vh;
+}
+footer:not(.footer-fixed) {
+    position: sticky;
+    top: 100vh;
+}
+
 body:has(footer.footer-fixed) {
     --footer-reserved-space: 100px;
 }
