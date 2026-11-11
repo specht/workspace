@@ -82,7 +82,7 @@
         liftoffMelodie: { label: 'Melodie', url: '/audio/liftoff-melodie.flac',
             credit: 'Die Melodie zu den Worten: ein Ton für jede Silbe, in der Stimmlage des Sprechers.' },
         liftoffBand: { label: 'Band', url: '/audio/liftoff-band.flac',
-            credit: "Bm, G, D, A, 95 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
+            credit: "Septakkorde, Refrain auf dem »Royal Road« des J-Pop (Gmaj7, A7, F#7, Bm7), 128 Schläge in der Minute; Schlagzeug »DRSKit« von Lars Muldjord und Deva (DrumGizmo), CC BY 4.0 (<a href='https://drumgizmo.org/wiki/doku.php?id=kits:drskit'>drumgizmo.org</a>), Klatschen von DCphotofilm, CC0 (<a href='https://freesound.org/people/DCphotofilm/sounds/456800/'>Freesound</a>)" },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi

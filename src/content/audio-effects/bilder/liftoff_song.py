@@ -291,8 +291,13 @@ def hold(piece, n):
 
 
 
-# the song: 24 bars, Bm G D A, as semitones above C
-CHORDS = [[11, 2, 6], [7, 11, 2], [2, 6, 9], [9, 1, 4]] * 6
+# the song: 24 bars of seventh chords, as semitones above C (the root first).
+# The verse in minor (Bm7 Gmaj7 Em7 F#7), the build and the chorus on the
+# »royal road« of Japanese pop and anime, IV V iii vi (Gmaj7 A7 F#7 Bm7),
+# with F#7 instead of F#m7, which pulls to Bm
+BM7, GMAJ7, EM7, FS7, A7 = [11, 2, 6, 9], [7, 11, 2, 6], [4, 7, 11, 2], [6, 10, 1, 4], [9, 1, 4, 7]
+CHORDS = ([BM7, GMAJ7, EM7, FS7] * 2 + [GMAJ7, A7, FS7, BM7] * 2
+          + [GMAJ7, A7, FS7, BM7, A7, FS7, BM7, GMAJ7])
 SCALE = [11, 1, 2, 4, 6, 7, 9]
 BARS = len(CHORDS)
 LENGTH = int(round(BARS * BAR * RATE))
@@ -313,10 +318,10 @@ SPOKEN = [
 # for that and the last syllable held to the end of the bar; a note per syllable)
 SHEET = [
     # the hook, written first: its rhythm and notes; the syllables are laid on them
-    (17, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B D+'),
-    (18, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A F# B'),
-    (20, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B D+'),
-    (21, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A F# B'),
+    (17, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B C#+'),    # over A7, held on its third
+    (18, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A# F# B'),         # over F#7, A# leading, held B into Bm7
+    (20, 0, 'crew-two', [1, 2, 1, 2, 1, 1, 8], 'F# A B B A B C#+'),
+    (21, 0, 'bound-moon', [2, 2, 1, 1, 10], 'C#+ B A# F# B'),
 ]
 NOTES = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
 
@@ -406,6 +411,18 @@ def pluck_bass(f, n):
     return fade(out + 0.8 * np.sin(2 * np.pi * f * t) * np.exp(-t * 3), 2, 20)
 
 
+def scale_step(note, steps, chord=None):
+    """the note steps notes higher: on the tones of the chord when it is given
+    (so that nothing clashes with its A#), else on the scale"""
+    ladder = sorted(o * 12 + c for o in range(-1, 5) for c in (chord or SCALE))
+    k = min(range(len(ladder)), key=lambda i: abs(ladder[i] - note))
+    return ladder[min(len(ladder) - 1, k + steps)]
+
+
+def chord_at(seconds):
+    return CHORDS[min(BARS - 1, int(seconds / BAR))]
+
+
 kick, snare, clap = sample('kick'), sample('snare'), sample('clap')
 hat, open_hat, crash = sample('hat-closed'), sample('hat-open'), sample('crash')
 open_short = open_hat[:int(0.2 * RATE)] * np.linspace(1, 0, int(0.2 * RATE))
@@ -464,9 +481,7 @@ for bar, chord in enumerate(CHORDS):
         # the riff, an octave above the voice
         base = chord[0] + 24
         for k, steps in enumerate(RIFF):
-            ladder = sorted(o * 12 + c for o in range(0, 6) for c in SCALE)
-            i0 = min(range(len(ladder)), key=lambda i: abs(ladder[i] - base))
-            note = ladder[min(len(ladder) - 1, i0 + steps)]
+            note = scale_step(base, [0, 2, 4, 2, 5, 4, 2, 1][k], chord)
             place(lead, fade(saws(semis_hz(note), int(2 * SIXTEENTH * 0.8 * RATE), voices=(0.995, 1.0, 1.005)), 3, 30), t0 + k * 2 * SIXTEENTH, 0.13)
 # a rise of noise through the build, brighter as it goes
 n = int((8 * BAR - BEAT) * RATE)
@@ -496,17 +511,11 @@ def shift(x, factor):
     return (y / np.maximum(weight, 1e-3))[3 * G:3 * G + len(x)]
 
 
-def scale_step(note, steps):
-    ladder = sorted(o * 12 + c for o in range(-1, 4) for c in SCALE)
-    k = min(range(len(ladder)), key=lambda i: abs(ladder[i] - note))
-    return ladder[min(len(ladder) - 1, k + steps)]
-
-
 extras = np.zeros(LENGTH + 3 * RATE)
 # harmonies in the drop: the voice a third above its melody, exactly on the notes
 for slot, held, f, note in syllables:
     if 16 * BAR <= slot and f:
-        place(extras, fade(shift(held, semis_hz(scale_step(note, 2)) / f), 5, 30), slot + 0.012, 0.35)
+        place(extras, fade(shift(held, semis_hz(scale_step(note, 1, chord_at(slot))) / f), 5, 30), slot + 0.012, 0.35)
 # »lift-off« chopped: on the offbeats of the drop's second and fourth bar, as an answer
 lift = PIECES['liftoff']
 c0, c1 = int(round(lift[0] * RATE)), int(round(lift[-1] * RATE))
@@ -514,7 +523,7 @@ chop = speech[c0:c1]
 chop_f = own_pitch(speech[c0:int(round(lift[1] * RATE))]) or 120
 for bar in (17, 19, 21, 23):
     for k, steps in ((10, 4), (14, 2)):
-        target = semis_hz(scale_step(CHORDS[bar][0] + 12, steps))
+        target = semis_hz(scale_step(CHORDS[bar][0] + 12, steps // 2, CHORDS[bar]))
         place(extras, fade(shift(chop, target / chop_f), 3, 40), bar * BAR + k * SIXTEENTH, 0.3)
 
 band = drums[:LENGTH] + (keys * pump)[:LENGTH] + low[:LENGTH] + lead[:LENGTH] + extras[:LENGTH]
