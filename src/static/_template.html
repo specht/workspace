@@ -528,18 +528,29 @@ function heading_content(heading) {
 // another part (/slug#ein-ton-aus-zahlen) goes to that part. Each other
 // part is an empty container that lists its anchors.
 function follow_part_anchor() {
-    // on a phone the row of parts scrolls sideways: the current one in view
+    // where the row of parts is too narrow it scrolls sideways: the current
+    // one in view, measured by the boxes on the screen, and again whenever
+    // the row changes its width (the side navigation is laid out after this,
+    // a phone turns), until someone scrolls the row by hand
     let current = document.querySelector('.activity-parts .current');
     if (current) {
         let row = current.closest('ol');
-        row.scrollLeft = current.parentElement.offsetLeft - row.offsetLeft - (row.clientWidth - current.offsetWidth) / 2;
+        let by_hand = false;
         const fade = function() {
             row.classList.toggle('more-left', row.scrollLeft > 1);
             row.classList.toggle('more-right', row.scrollLeft + row.clientWidth < row.scrollWidth - 1);
         };
+        const center = function() {
+            if (by_hand) return;
+            let r = row.getBoundingClientRect(), c = current.getBoundingClientRect();
+            row.scrollLeft += (c.left + c.width / 2) - (r.left + r.width / 2);
+            fade();
+        };
+        for (let kind of ['pointerdown', 'wheel', 'touchstart']) row.addEventListener(kind, () => { by_hand = true; }, { passive: true });
         row.addEventListener('scroll', fade, { passive: true });
-        window.addEventListener('resize', fade);
-        fade();
+        new ResizeObserver(center).observe(row);
+        if (document.fonts) document.fonts.ready.then(center);
+        center();
     }
     let id = decodeURIComponent(window.location.hash.slice(1));
     if (!id || document.getElementById(id)) return;
