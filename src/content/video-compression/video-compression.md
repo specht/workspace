@@ -1933,7 +1933,11 @@ Bisher hast du die Qualität festgelegt, mit `-crf` oder `-qp`, und die Größe 
 
 ### Wie gut ist ein Bild?
 
-Das einfachste Maß ist das **PSNR**, Peak Signal-to-Noise Ratio: wie das Signal-Rausch-Verhältnis in »Audio komprimieren«, nur mit dem größten Wert, den ein Pixel haben kann, 255, statt der Lautstärke des Signals. Man nimmt für jedes Pixel den Fehler zwischen Original und decodiertem Bild, quadriert ihn und bildet den Mittelwert. Das PSNR in dB ist dann 10 · log10(255² / Fehler). Ab etwa 40 dB lässt sich ein Bild meist kaum noch vom Original unterscheiden, unter 30 dB sind die Fehler deutlich. Lege `quality.py` an:
+Das einfachste Maß ist das **PSNR**, Peak Signal-to-Noise Ratio. Es ist gebaut wie der Signal-Rausch-Abstand in [Audio komprimieren](/audio-compression), nur steht über dem Bruchstrich statt der Energie des Signals der größte Wert, den ein Pixel haben kann, 255, quadriert. Man nimmt für jedes Pixel den Fehler zwischen Original und decodiertem Bild, quadriert ihn und bildet von allen Quadraten den Mittelwert, den **mittleren quadrierten Fehler**:
+
+$$\text{PSNR} = 10 \cdot \log\_{10} \frac{255^2}{\text{Fehler}}$$
+
+Das Ergebnis ist in **Dezibel** (dB) wie beim Ton, und der Logarithmus macht aus jedem Faktor einen gleich großen Schritt: 10 dB mehr heißen ein zehnmal kleinerer Fehler, 20 dB ein hundertmal kleinerer. Gut 6 dB mehr heißen ein Viertel des Fehlers, also dass jedes Pixel im Mittel nur halb so weit danebenliegt. Ab etwa 40 dB lässt sich ein Bild meist kaum noch vom Original unterscheiden, unter 30 dB sind die Fehler deutlich. Lege `quality.py` an:
 
 <!-- page-code: own -->
 ```python
