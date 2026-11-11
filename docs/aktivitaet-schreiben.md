@@ -420,9 +420,12 @@ sind, dass eine Bibliothek sie hat; jeder Link ist geprüft.
 
 Wo ein Verfahren eine Geschichte hat, die man hören, sehen oder nachlesen
 kann (das Bandecho auf der Hi-Hat von »Let It Be«, Chers »Believe« und
-Auto-Tune), bekommt sie einen Kasten wie ein Buch, mit einem Kalender
-(`bi-calendar3`) als Icon: der Titel fett, das Jahr, dann wenige Sätze,
-was geschah und wie es mit dem Abschnitt zusammenhängt. Jede Angabe ist geprüft; wo Quellen sich
+Auto-Tune), bekommt sie einen Kasten wie ein Buch, ohne Icon: der Titel fett, das
+Jahr, dann wenige Sätze, was geschah und wie es mit dem Abschnitt
+zusammenhängt. Gibt es ein freies Bild (ein Foto der Menschen, des Geräts,
+des Orts), steht es links wie in einem Kasten für eine Person, mit einer
+Zeile `<p class='history-credit'>` darunter; zwei Kästen zur Geschichte
+stehen nie direkt nacheinander. Jede Angabe ist geprüft; wo Quellen sich
 widersprechen, steht nur, worin sie übereinstimmen. Links zum Anhören
 oder Ansehen stehen im Kasten selbst, auf die Stelle, um die es geht
 (`&t=45s` bei YouTube). Die Quellen jedes Satzes stehen in
@@ -432,7 +435,6 @@ Entwicklungsseite /person-sources zeigt, was belegt ist und was offen.
 
 ```html
 <div class='history' id='history-believe'>
-<i class='bi bi-calendar3'></i>
 <p><strong>Cher, »Believe«</strong>, 1998. Was geschah, und wie es mit dem Abschnitt zusammenhängt.</p>
 </div>
 ```

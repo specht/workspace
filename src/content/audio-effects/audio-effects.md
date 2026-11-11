@@ -267,7 +267,6 @@ Hör dir `stimme-echo.wav` und `stimme-halle.wav` an. Mit 0,3 Sekunden hörst du
 Lange bevor Rechner Klänge bearbeiteten, machte man Echos mit Tonband: Ein Tonkopf nahm den Klang auf, ein zweiter ein Stück weiter spielte ihn wieder ab. Die Verzögerung ergab sich aus dem Abstand der beiden Köpfe und der Geschwindigkeit des Bands, die Rückkopplung daraus, wie viel von der Wiedergabe wieder aufgenommen wurde.
 
 <div class='history' id='history-let-it-be'>
-<i class='bi bi-calendar3'></i>
 <p><strong>Das Bandecho auf der Hi-Hat von »Let It Be«</strong>, 1970. Phil Spector mischte »Let It Be« von den Beatles für das Album neu und gab Ringo Starrs Hi-Hat in der zweiten Strophe ein Bandecho, so viel, dass sie fast alle Aufmerksamkeit auf sich zieht. Starr gefiel Spectors Fassung nicht. 2003 erschien auf »Let It Be... Naked« eine Fassung ohne Spectors Zutaten, mit Starrs einfachem Schlagzeug.</p>
 <p>Hör dir die zweite Strophe in beiden Fassungen an: <a href='https://www.youtube.com/watch?v=QDYfEBY9NM4&t=45s'>die Fassung des Albums</a> und <a href='https://www.youtube.com/watch?v=lcA-qlMP11s&t=45s'>die Fassung von »Naked«</a>, beide auf YouTube, ab der 45. Sekunde.</p>
 </div>
@@ -566,7 +565,6 @@ wait-for-text: stimme-komprimiert.wav
 Hör dir `stimme-komprimiert.wav` an und dann noch einmal `stimme.wav`: In der komprimierten Fassung sind die leisen Silben etwa 5 dB lauter geworden, die lauten etwa 1 dB leiser. Lagen zwischen ihnen vorher fast 20 dB, sind es jetzt etwa 13. Ein Compressor macht aber alles Leise lauter, auch ein Rauschen oder ein Atmen: Er kann nicht wissen, welche leisen Klänge man hören will.
 
 <div class='history' id='history-loudness-war'>
-<i class='bi bi-calendar3'></i>
 <p><strong>Der Loudness War</strong>, 2008. Lange wurde Musik immer lauter aufgenommen. Ist der höchste Wert erreicht, den ein Sample auf einer CD haben kann, geht es nur noch mit einem Compressor weiter, mit immer höherer Ratio. Metallicas Album »Death Magnetic« ist auf der CD so laut, dass die Spitzen über den höchsten Wert hinausgehen und abgeschnitten werden, was verzerrt klingt. Dieselben Lieder im Spiel »Guitar Hero« haben viel mehr Abstand zwischen leise und laut und sind weniger abgeschnitten. Heute machen die meisten großen Streamingdienste jedes Lied von sich aus gleich laut, Spotify und YouTube auf −14 LUFS, ein Maß dafür, wie laut Menschen einen Klang hören.</p>
 <p>Hör dir <a href='https://www.youtube.com/watch?v=K6AJuRK2NE4'>»The Day That Never Comes«</a> aus »Death Magnetic« auf YouTube an und achte darauf, wie die lauten Stellen klingen, wenn die ganze Band einsetzt.</p>
 </div>
@@ -588,7 +586,6 @@ Spielt man eine Aufnahme schneller ab, wird sie höher, und kürzer: Doppelt so 
 _task(speed-length)
 
 <div class='history' id='history-sped-up'>
-<i class='bi bi-calendar3'></i>
 <p><strong>Nightcore, »sped up« und »slowed«</strong>, 2001. »Nightcore« war der Name eines Schulprojekts: Lieder, etwa 35 % schneller abgespielt, und damit höher. In den frühen 2020er-Jahren wurde das durch TikTok wieder beliebt. Bei FIFTY FIFTYs »Cupid« wurde 2023 zuerst die schnellere Fassung eines Fans auf TikTok bekannt, dann brachte die Plattenfirma eine eigene heraus. Den umgekehrten Weg geht »slowed and reverb«: ein Lied langsamer abgespielt, also tiefer, und mit Hall dazu, beliebt auf YouTube und TikTok.</p>
 <p>Hör dir »Cupid« in drei Fassungen an, alle von FIFTY FIFTY auf YouTube: <a href='https://www.youtube.com/watch?v=OFDTqxlgWOw'>wie aufgenommen</a>, <a href='https://www.youtube.com/watch?v=Xxb9Hl5d6n4'>schneller</a> und <a href='https://www.youtube.com/watch?v=31Igu1C9H4g'>langsamer</a>. Achte auf die Stimmen: Wie klingen sie in der schnellen Fassung, und wie lang ist jede Fassung?</p>
 </div>
@@ -710,21 +707,19 @@ Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, w
 **Autotune** rückt schiefen Gesang gerade: Es findet die Tonhöhe jedes Blocks und schiebt sie zum nächsten Halbton. Gedacht ist es unhörbar, mit einer **Retune Speed** von einigen Dutzend Millisekunden, so dass die Stimme langsam zum richtigen Ton gleitet. Stellt man sie auf 0, springt die Stimme sofort von Halbton zu Halbton, ohne das Gleiten dazwischen, und klingt wie eine Maschine.
 
 <div class='history' id='history-believe'>
-<i class='bi bi-calendar3'></i>
 <p><strong>Cher, »Believe«</strong>, 1998. Ein Jahr zuvor brachte die Firma Antares Auto-Tune heraus. Erfunden hatte es Andy Hildebrand, der für Exxon aus den Echos von Schall im Boden herausgelesen hatte, wo man nach Öl bohren soll, mit denselben Verfahren, auch der Autokorrelation, die du eben in <code>pitch</code> geschrieben hast. »Believe« war die erste Aufnahme, die Auto-Tune hörbar als Effekt nutzt: Die Produzenten stellten es so extrem ein, dass Chers Stimme sofort von Ton zu Ton springt. Der Effekt wurde als »Cher-Effekt« bekannt. Um ihren Trick zu schützen, behaupteten die Produzenten zuerst, es sei ein Vocoder gewesen.</p>
 <p>Hör dir <a href='https://www.youtube.com/watch?v=nZXRV4MezEw'>»Believe«</a> auf YouTube an und achte darauf, wo Chers Stimme von Ton zu Ton springt, statt zu gleiten.</p>
-</div>
-
-<div class='history' id='history-songify'>
-<i class='bi bi-calendar3'></i>
-<p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten, wie das Widget oben Kennedy. Ab 2011 hieß die Reihe »Songify the News«.</p>
-<p>Hör dir zwei ihrer Lieder auf YouTube an: den <a href='https://www.youtube.com/watch?v=MX0D4oZwCsA'>»Double Rainbow Song«</a> aus dem Video eines Mannes, der einen doppelten Regenbogen sieht, und <a href='https://www.youtube.com/watch?v=sP4NMoJcFd4'>»Can't Hug Every Cat«</a> aus dem Video einer Frau, die Katzen liebt. Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben?</p>
 </div>
 
 <div class='effect-widget' data-effect='autotune'></div>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Hör dir Kennedy zuerst an, wie er 1962 sprach, und dann die Melodie: Sie ist aus seiner Stimme gemacht, in jedem Moment der nächste Ton einer Tonleiter. Schalt <strong>Effekt an</strong> ein: Jetzt singt er sie. Schalt <strong>Melodie dazu</strong> ein und hör, ob er die Töne trifft. Stell dann das Ziel auf den nächsten Halbton und dreh die Retune Speed langsam auf: Ab wann klingt er wieder wie gesprochen, und woran siehst du das im Bild?
+</div>
+
+<div class='history' id='history-songify'>
+<p><strong>Auto-Tune the News</strong>, 2009. Die Gregory Brothers machten auf ihrem YouTube-Kanal »schmoyoho« aus Aufnahmen von Politikern, Nachrichtensprechern und Kommentatoren Lieder: Sie veränderten die Stimmen am Rechner, bis sie einer Melodie folgten, wie das Widget oben Kennedy. Ab 2011 hieß die Reihe »Songify the News«.</p>
+<p>Hör dir zwei ihrer Lieder auf YouTube an: den <a href='https://www.youtube.com/watch?v=MX0D4oZwCsA'>»Double Rainbow Song«</a> aus dem Video eines Mannes, der einen doppelten Regenbogen sieht, und <a href='https://www.youtube.com/watch?v=sP4NMoJcFd4'>»Can't Hug Every Cat«</a> aus dem Video einer Frau, die Katzen liebt. Woran hörst du, wo sie Sätze wiederholt oder umgestellt haben?</p>
 </div>
 
 Ein Halbton ist ein Zwölftel einer Oktave: zwölf Halbtöne verdoppeln die Frequenz, ein Halbton multipliziert sie mit \\(2^{1/12} \approx 1{,}0595\\). Von einem Ton \\(f\\) bis zum Kammerton A mit 440 Hz sind es also \\(12 \cdot \log\_2(f / 440)\\) Halbtöne. Rundet man diese Zahl, hat man den nächsten Halbton.
@@ -805,7 +800,6 @@ Ein **Vocoder** lässt ein Instrument sprechen. Er zerlegt die Stimme in Bänder
 </div>
 
 <div class='history' id='history-vocoder'>
-<i class='bi bi-calendar3'></i>
 <p><strong>Der Vocoder</strong>, 1937. Homer Dudley erfand ihn bei den Bell Labs, um Sprache mit weniger Bandbreite durch Telefonleitungen zu schicken: Statt der Welle gehen nur die Stärken der Bänder durch die Leitung, und am anderen Ende macht ein Vocoder daraus wieder Sprache. Im Zweiten Weltkrieg verschlüsselte das System SIGSALY damit Telefongespräche. 1939 zeigten die Bell Labs auf der Weltausstellung in New York den Voder, der Sprache aus zehn Bändern erzeugte, gespielt mit Tasten. Kraftwerk nahmen in den Siebzigern für ihre Alben »Ralf & Florian« und »Autobahn« einen eigens gebauten Vocoder, und Florian Schneider sang auf der Bühne durch ihn.</p>
 </div>
 

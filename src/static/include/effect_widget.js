@@ -39,6 +39,37 @@
         stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
         melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
         schlagzeug: { label: 'Schlagzeug', url: '/audio/musik/snare.flac' },
+        // recordings under free licences (audio/effects/), each with its credit
+        gesang: { label: 'Gesang', url: '/audio/effects/singing-voice.flac',
+            credit: "»Scarborough Fair« (traditionell), gesungen von Makemi, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Scarborough_Fair.ogg'>Wikimedia Commons</a>)" },
+        chor: { label: 'Chor', url: '/audio/effects/choir.flac',
+            credit: "»Angels We Have Heard on High« (traditionell), Chor der U.S. Army Band, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:U.S._Army_Band_-_Angels_We_Have_Heard_on_High.ogg'>Wikimedia Commons</a>)" },
+        klavier: { label: 'Klavier', url: '/audio/effects/piano.flac',
+            credit: "Franz Schubert, Klaviersonate A-Dur D 664, II. Andante, gespielt von Paul Pitman, gemeinfrei (Musopen, <a href='https://commons.wikimedia.org/wiki/File:Schubert_-_Piano_Sonata_No._13_in_A_major,_D664_-_II._Andante_(Paul_Pitman).flac'>Wikimedia Commons</a>)" },
+        akustikgitarre: { label: 'Akustikgitarre', url: '/audio/effects/acoustic-guitar.flac',
+            credit: "»acoustic guitar melody #2 d-dur« von Garuda1982, CC0 (<a href='https://freesound.org/people/Garuda1982/sounds/462723/'>Freesound</a>)" },
+        egitarre: { label: 'E-Gitarre', url: '/audio/effects/electric-guitar.flac',
+            credit: "»Clean Strumming &amp; Arpeggio« von loudernoises, CC0 (<a href='https://freesound.org/people/loudernoises/sounds/453384/'>Freesound</a>)" },
+        orchester: { label: 'Orchester', url: '/audio/effects/orchestra.flac',
+            credit: "Bedřich Smetana, »Die Moldau«, Czech National Symphony Orchestra (Musopen Symphony), gemeinfrei (<a href='https://archive.org/details/MusopenCollectionAsFlac'>Internet Archive</a>)" },
+        jazz: { label: 'Jazz', url: '/audio/effects/jazz.flac',
+            credit: "»Acoustic Jazz Quartet no1 (exploration)« von Claude Reid, CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Acoustic_Jazz_Quartet_no1_(exploration).flac'>Wikimedia Commons</a>)" },
+        rock: { label: 'Rock', url: '/audio/effects/rock.flac',
+            credit: "»Big Rock« von Kevin MacLeod (incompetech.com), CC BY 4.0 (<a href='https://incompetech.com/music/royalty-free/faq.html'>incompetech</a>)" },
+        elektronik: { label: 'Elektronik', url: '/audio/effects/electronic.flac',
+            credit: "»Beauty Flow« von Kevin MacLeod (incompetech.com), CC BY 4.0 (<a href='https://incompetech.com/music/royalty-free/faq.html'>incompetech</a>)" },
+        funk: { label: 'Funk', url: '/audio/effects/funk.flac',
+            credit: "»Funkorama« von Kevin MacLeod (incompetech.com), CC BY 4.0 (<a href='https://incompetech.com/music/royalty-free/faq.html'>incompetech</a>)" },
+        gamelan: { label: 'Gamelan', url: '/audio/effects/gamelan.flac',
+            credit: "»Javanese Court Gamelan 1 – Indonesia« von RTB45, CC BY 4.0 (<a href='https://freesound.org/people/RTB45/sounds/255544/'>Freesound</a>)" },
+        veena: { label: 'Veena', url: '/audio/effects/veena.flac',
+            credit: "»rAga kIravANi« von L. Ramakrishnan, CC0 (<a href='https://archive.org/details/LR_kIravANI'>Internet Archive</a>)" },
+        drumset: { label: 'Drumset', url: '/audio/effects/drums.flac',
+            credit: "»Rock-funk backbeat« von jmarcosfer, CC0 (<a href='https://freesound.org/people/jmarcosfer/sounds/592756/'>Freesound</a>)" },
+        funkdrums: { label: 'Funk-Schlagzeug', url: '/audio/effects/funk-drums.flac',
+            credit: "»Drums_120bpm_closedhat_snareghost_loop1« von tichec, CC0 (<a href='https://freesound.org/people/tichec/sounds/169870/'>Freesound</a>)" },
+        dynamik: { label: 'Orchester leise und laut', url: '/audio/effects/dynamic-orchestra.flac',
+            credit: "Ludwig van Beethoven, Egmont-Ouvertüre op. 84, Czech National Symphony Orchestra (Musopen Symphony), gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Beethoven_-_Egmont_Overture,_Op._84_(Musopen_Symphony).flac'>Wikimedia Commons</a>)" },
         // Kennedy at Rice University, 1962, and a melody from his voice (bilder/moon_song.py)
         kennedy: { label: 'Kennedy', url: '/audio/kennedy.wav',
             credit: "John F. Kennedy, »We choose to go to the Moon«, Rice University, 12. September 1962, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Jfk_rice_university_we_choose_to_go_to_the_moon.ogg'>Wikimedia Commons</a>); seine Sätze im Takt geschnitten" },
@@ -72,7 +103,7 @@
     const EFFECTS = {
         eq: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['musik', 'stimme'],
+            clips: ['musik', 'stimme', 'jazz', 'elektronik', 'orchester', 'funk'],
             knobs: [
                 { key: 'centre', label: 'Frequenz', min: 0, max: 1000, step: 1, value: CENTRE.from(1000), scale: CENTRE,
                   marks: [[50, '50'], [100, '100'], [200, '200'], [500, '500'], [1000, '1k'], [2000, '2k'], [5000, '5k'], [10000, '10k']],
@@ -93,7 +124,7 @@
         },
         echo: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'schlagzeug', 'musik'],
+            clips: ['stimme', 'schlagzeug', 'funkdrums', 'akustikgitarre', 'klavier', 'gesang'],
             knobs: [
                 { key: 'delay', label: 'Verzögerung', min: 0.05, max: 1, step: 0.01, value: 0.3,
                   marks: [[0.1, '0,1'], [0.25, '0,25'], [0.5, '0,5'], [0.75, '0,75'], [1, '1 s']], show: (v) => `${de(v, 2)} s` },
@@ -113,7 +144,7 @@
         },
         chorus: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['melodie', 'stimme', 'musik'],
+            clips: ['melodie', 'akustikgitarre', 'egitarre', 'gesang', 'stimme'],
             knobs: [
                 { key: 'depth', label: 'Tiefe', min: 0, max: 0.01, step: 0.0005, value: 0.004,
                   marks: [[0, '0'], [0.0025, '2,5'], [0.005, '5'], [0.0075, '7,5'], [0.01, '10 ms']], show: (v) => `${de(v * 1000, 1)} ms` },
@@ -130,7 +161,7 @@
         },
         reverb: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['schlagzeug', 'stimme', 'melodie'],
+            clips: ['schlagzeug', 'drumset', 'klavier', 'gesang', 'chor', 'stimme'],
             knobs: [
                 { key: 'size', label: 'Raumgröße', min: 0.5, max: 2, step: 0.05, value: 1,
                   marks: [[0.5, '½'], [1, '1'], [1.5, '1½'], [2, '2']], show: (v) => `${de(v, 2)}-mal` },
@@ -147,7 +178,7 @@
         },
         pitch: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme', 'melodie', 'musik'],
+            clips: ['stimme', 'gesang', 'klavier', 'veena', 'gamelan', 'musik'],
             knobs: [
                 { key: 'semitones', label: 'Halbtöne', min: -12, max: 12, step: 1, value: 5,
                   marks: [[-12, '−12'], [-7, '−7'], [0, '0'], [7, '+7'], [12, '+12']],
@@ -192,7 +223,7 @@
         },
         vocoder: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['stimme'],
+            clips: ['stimme', 'gesang'],
             choices: [
                 { key: 'carrier', label: 'Träger', value: 'chord', options: [['chord', 'Akkord'], ['noise', 'Rauschen']] },
             ],
@@ -208,7 +239,7 @@
         },
         compressor: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
-            clips: ['schlagzeug', 'stimme', 'musik'],
+            clips: ['schlagzeug', 'funkdrums', 'dynamik', 'stimme', 'rock'],
             knobs: [
                 { key: 'threshold', label: 'Threshold', min: -48, max: 0, step: 1, value: -24,
                   marks: [[-48, '−48'], [-36, '−36'], [-24, '−24'], [-12, '−12'], [0, '0 dB']], show: signedDb },

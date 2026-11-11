@@ -63,6 +63,13 @@ class HistorySourcesTest < Minitest::Test
         assert_empty open
     end
 
+    # two history boxes never follow each other directly
+    def test_no_two_boxes_in_a_row
+        pages = PersonSources.activity_pages(CONTENT)
+        both = pages.select { |_, markdown| markdown.match?(%r{<div class='history'[^>]*>(?:(?!</div>).)*</div>\s*<div class='history'}m) }
+        assert_empty both.keys
+    end
+
     def test_no_claim_has_lost_its_sentence
         boxes, sources = real
         missing = boxes.flat_map { |b| b[:missing].map { |c| "#{b[:link]}: #{c['text']}" } }
