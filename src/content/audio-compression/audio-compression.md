@@ -1326,6 +1326,9 @@ Ein Codec arbeitet in Blöcken: Er zerlegt jeden Block in Frequenzen und speiche
 
 Dagegen hilft ein **Fenster**: Jeder Block wird am Anfang und am Ende sanft auf null geblendet, und die Blöcke überlappen sich zur Hälfte, so dass einer ausblendet, während der nächste einblendet. Ein Fehler endet dann nicht mit einem Sprung, er wird leiser.
 
+<img class='drawing d-none d-lg-block' style='width: 60em' src='windows-wide.svg' alt='Vier Fenster als Bögen über einer Achse aus fünf Hälften von je N Samples, abwechselnd blau und lila: Block 1 über den ersten beiden Hälften, Block 2 über der zweiten und dritten und so weiter. Jeder Bogen steigt von 0 auf und fällt wieder auf 0; wo einer fällt, steigt der nächste.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='windows.svg' alt='Vier Fenster als Bögen über einer Achse aus fünf Hälften von je N Samples, abwechselnd blau und lila: Block 1 über den ersten beiden Hälften, Block 2 über der zweiten und dritten und so weiter. Jeder Bogen steigt von 0 auf und fällt wieder auf 0; wo einer fällt, steigt der nächste.'>
+
 Dafür bezahlt man: Überlappen sich die Blöcke zur Hälfte, ist jedes Sample in zwei Blöcken, und eine FFT jedes Blocks gibt doppelt so viele Zahlen, wie es Samples gibt. Ein Codec, der doppelt so viele Zahlen speichern muss, ist kein guter Codec.
 
 John Princen, Alan Johnson und Alan Bradley an der University of Surrey fanden 1987 eine Transformation, die beides kann: Blöcke aus `2N` Samples, die sich zur Hälfte überlappen, und für jeden Block nur `N` Zahlen. Sie heißt **modifizierte diskrete Kosinustransformation**, kurz MDCT, und steckt in MP3, AAC, Vorbis und Opus. Aus `2N` Samples \\(x\_n\\) macht sie `N` Zahlen
@@ -1404,7 +1407,12 @@ Heraus kommt `[-7, -5, -3, -1, 1, 3, 5, 7, 23, 23, 23, 23, 23, 23, 23, 23]`. In 
 
 <img class='drawing' style='width: 35em' src='tdac.svg' alt='Drei Reihen mit derselben gestrichelten Welle, dem Original, über drei halbe Blöcke. Oben in Lila, was vom ersten Block zurückkommt: In seiner ersten Hälfte ist es leise und verschoben, in seiner zweiten folgt es dem Original nur ungefähr. In der Mitte, was vom zweiten Block zurückkommt, einen halben Block später: In seiner ersten Hälfte weicht es in die andere Richtung ab, in seiner zweiten folgt es dem Original. Unten die Summe beider in der Mitte, wo sie sich überlappen: genau das Original.'>
 
-Damit das klappt, braucht es ein Fenster, mit dem jeder Block vor der MDCT und nach der `imdct` multipliziert wird. Das Sinusfenster \\(w\_n = \sin\left(\frac{\pi}{2N}\left(n + \frac{1}{2}\right)\right)\\) erfüllt, was Princen und Bradley dafür verlangen: An jeder Stelle der Überlappung ergeben die Quadrate der beiden Fenster zusammen 1. Schreib dazu unter `imdct`:
+Damit das klappt, braucht es ein Fenster, mit dem jeder Block vor der MDCT und nach der `imdct` multipliziert wird. Das Sinusfenster \\(w\_n = \sin\left(\frac{\pi}{2N}\left(n + \frac{1}{2}\right)\right)\\) erfüllt, was Princen und Bradley dafür verlangen: An jeder Stelle der Überlappung ergeben die Quadrate der beiden Fenster zusammen 1:
+
+<img class='drawing d-none d-lg-block' style='width: 60em' src='window-squares-wide.svg' alt='Dieselben vier Fenster, jetzt quadriert, als gestrichelte Bögen, abwechselnd blau und lila. Darüber ihre Summe als durchgezogene Linie: Sie steigt am Anfang, liegt dann über der ganzen Mitte, wo sich immer zwei überlappen, waagerecht bei genau 1 und fällt am Ende wieder.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='window-squares.svg' alt='Dieselben vier Fenster, jetzt quadriert, als gestrichelte Bögen, abwechselnd blau und lila. Darüber ihre Summe als durchgezogene Linie: Sie steigt am Anfang, liegt dann über der ganzen Mitte, wo sich immer zwei überlappen, waagerecht bei genau 1 und fällt am Ende wieder.'>
+
+Weil jeder Block zweimal mit seinem Fenster multipliziert wird, vor der MDCT und nach der `imdct`, zählt beim Zusammenzählen das Quadrat. Schreib dazu unter `imdct`:
 
 ```python
 def window(N):
