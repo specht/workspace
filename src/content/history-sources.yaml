@@ -1,0 +1,88 @@
+# Sources for the claims in the history boxes of the activities
+# (<div class='history' id='history-…'>), keyed by the box's id without
+# »history-«; the format of reference/personen/sources.yaml. Shown on the
+# development page /person-sources (src/ruby/include/person_sources.rb);
+# history_sources_test.rb wants a source for every sentence.
+
+let-it-be:
+  - text: Das Bandecho auf der Hi-Hat von »Let It Be«, 1970
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "On 26 March 1970, Phil Spector remixed the song for the Let It Be album."
+  - text: Phil Spector mischte »Let It Be« von den Beatles für das Album neu und gab Ringo Starrs Hi-Hat in der zweiten Strophe ein Bandecho, so viel, dass sie fast alle Aufmerksamkeit auf sich zieht
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "Starr's drumming was augmented by Spector's \"tape-delay-effect\" to his hi-hats during the song's second verse"
+      - url: https://beatlesanswers.org/songs/let-it-be
+        quote: "adding such a degree of tape echo to Ringo's hi-hat that this instrument becomes virtually the sole focus of attention"
+  - text: Starr gefiel Spectors Fassung nicht
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "Ringo Starr disliked Phil Spector's version"
+  - text: 2003 erschien auf »Let It Be... Naked« eine Fassung ohne Spectors Zutaten, mit Starrs einfachem Schlagzeug
+    sources:
+      - url: https://en.wikipedia.org/wiki/Let_It_Be_(song)
+        quote: "Still another version of the song appeared on the Let It Be... Naked album in 2003. … features his original \"stripped-down-approach\" drumming"
+  - text: Hör dir die zweite Strophe in beiden Fassungen an
+    none: eine Einladung zum Anhören, die Links sind die offiziellen Aufnahmen auf dem Kanal »The Beatles - Topic«
+
+believe:
+  - text: Cher, »Believe«, 1998
+    sources:
+      - url: https://en.wikipedia.org/wiki/Believe_(Cher_song)
+        quote: "\"Believe\" was released as the lead single from Cher's 22nd studio album, Believe (1998), on October 19, 1998."
+  - text: Ein Jahr zuvor brachte die Firma Antares Auto-Tune heraus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "released on September 19, 1997, by the American company Antares Audio Technologies"
+  - text: Erfunden hatte es Andy Hildebrand, der für Exxon aus den Echos von Schall im Boden herausgelesen hatte, wo man nach Öl bohren soll, mit denselben Verfahren, auch der Autokorrelation
+    sources:
+      - url: https://priceonomics.com/the-inventor-of-auto-tune/
+        quote: "Upon graduating, he was plucked up by oil conglomerate Exxon, and tasked with using seismic data to pinpoint drill locations. … you emit sounds on the surface of the Earth (or in the ocean), listen to reverberations that come up … he could utilize some of the very same processing methods he'd used in the oil industry"
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "Hildebrand's method for detecting pitch involved autocorrelation"
+  - text: »Believe« war die erste Aufnahme, die Auto-Tune hörbar als Effekt nutzt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "was the first commercial recording to use AutoTune as a stylistic effect"
+  - text: Die Produzenten stellten es so extrem ein, dass Chers Stimme sofort von Ton zu Ton springt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "the \"Believe\" producers used extreme settings to create unnaturally rapid corrections"
+  - text: Der Effekt wurde als »Cher-Effekt« bekannt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "used AutoTune to deliberately distort vocals, a technique that became known as the \"Cher effect\""
+  - text: Um ihren Trick zu schützen, behaupteten die Produzenten zuerst, es sei ein Vocoder gewesen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Auto-Tune
+        quote: "In an attempt to protect their method, the producers initially claimed the effect was achieved with a vocoder."
+  - text: Hör dir »Believe« auf YouTube an und achte darauf, wo Chers Stimme von Ton zu Ton springt, statt zu gleiten
+    none: eine Einladung zum Anhören, der Link ist das offizielle Video auf Chers Kanal
+
+loudness-war:
+  - text: Der Loudness War, 2008
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "a trend of increasing audio levels in recorded music"
+    note: 2008 ist das Jahr von »Death Magnetic«, des Beispiels im Kasten; der Trend selbst ist älter
+  - text: Lange wurde Musik immer lauter aufgenommen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "a trend of increasing audio levels in recorded music"
+  - text: Ist der höchste Wert erreicht, den ein Sample auf einer CD haben kann, geht es nur noch mit einem Compressor weiter, mit immer höherer Ratio
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "Once the maximum amplitude of a CD is reached … Engineers can apply an increasingly high ratio of compression to a recording"
+  - text: Metallicas Album »Death Magnetic« ist auf der CD so laut, dass die Spitzen über den höchsten Wert hinausgehen und abgeschnitten werden, was verzerrt klingt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "The CD version of the album has a high average loudness that pushes peaks beyond the point of digital clipping"
+  - text: Dieselben Lieder im Spiel »Guitar Hero« haben viel mehr Abstand zwischen leise und laut und sind weniger abgeschnitten
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "The Guitar Hero version of the album songs exhibit much higher dynamic range and less clipping"
+  - text: Heute machen die meisten großen Streamingdienste jedes Lied von sich aus gleich laut, Spotify und YouTube auf −14 LUFS, ein Maß dafür, wie laut Menschen einen Klang hören
+    sources:
+      - url: https://en.wikipedia.org/wiki/Loudness_war
+        quote: "most major streaming services began normalizing audio by default, which can be turned off if not wanted. … Spotify −14 LUFS … YouTube −14 LUFS"

@@ -38,3 +38,16 @@ examples:
       - { files: { effects/compressor.py: fehler/gain-vorzeichen.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
       - { files: { effects/compressor.py: fehler/gain-geteilt.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
       - { files: { effects/compressor.py: fehler/gain-ausgang.py, effects/wav.py: stufen/wav.py }, say: '(threshold - level)' }
+  pitch:
+    pass:
+      - { files: { effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py } }
+    fail:
+      - { files: { effects/pitch.py: fehler/pitch-ohne-null.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: 'negativ' }
+      - { files: { effects/pitch.py: fehler/pitch-lag.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: 'rate / best_lag' }
+  nearest-note:
+    pass:
+      - { files: { effects/autotune.py: stufen/autotune.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py } }
+    fail:
+      - { files: { effects/autotune.py: fehler/note-abgerundet.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: 'round' }
+      - { files: { effects/autotune.py: fehler/note-oktaven.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: '466,16' }
+      - { files: { effects/autotune.py: fehler/note-hertz.py, effects/pitch.py: stufen/pitch.py, effects/wav.py: stufen/wav.py, effects/chorus.py: stufen/chorus.py }, say: '466,16' }

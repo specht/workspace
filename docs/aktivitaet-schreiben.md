@@ -416,6 +416,27 @@ gut zum Abschnitt passt, nicht zu jedem Thema irgendein Aufsatz.
 Nur Bücher, die man lesen kann, ohne sie zu kaufen, oder die so bekannt
 sind, dass eine Bibliothek sie hat; jeder Link ist geprüft.
 
+### Geschichte
+
+Wo ein Verfahren eine Geschichte hat, die man hören, sehen oder nachlesen
+kann (das Bandecho auf der Hi-Hat von »Let It Be«, Chers »Believe« und
+Auto-Tune), bekommt sie einen Kasten wie ein Buch, mit einem Kalender
+(`bi-calendar3`) als Icon: der Titel fett, das Jahr, dann wenige Sätze,
+was geschah und wie es mit dem Abschnitt zusammenhängt. Jede Angabe ist geprüft; wo Quellen sich
+widersprechen, steht nur, worin sie übereinstimmen. Links zum Anhören
+oder Ansehen stehen im Kasten selbst, auf die Stelle, um die es geht
+(`&t=45s` bei YouTube). Die Quellen jedes Satzes stehen in
+`src/content/history-sources.yaml` unter der `id` des Kastens ohne
+»history-«, im Format von `reference/personen/sources.yaml`; die
+Entwicklungsseite /person-sources zeigt, was belegt ist und was offen.
+
+```html
+<div class='history' id='history-believe'>
+<i class='bi bi-calendar3'></i>
+<p><strong>Cher, »Believe«</strong>, 1998. Was geschah, und wie es mit dem Abschnitt zusammenhängt.</p>
+</div>
+```
+
 ### Zum Ausprobieren einladen
 
 Wie etwas funktioniert, versteht man oft erst, wenn man es ändert und sieht,

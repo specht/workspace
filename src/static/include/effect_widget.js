@@ -12,7 +12,7 @@
 //   <div class='effect-widget' data-effect='eq'></div>
 //   <div class='effect-widget' data-effect='echo' data-clip='stimme'></div>
 //
-// The effects (EFFECTS below): eq, echo, chorus, reverb, compressor. Each has its knobs, its picture
+// The effects (EFFECTS below): eq, echo, chorus, reverb, compressor, pitch, autotune. Each has its knobs, its picture
 // and its function in WORKER, written like the Python of the page.
 (function () {
     'use strict';
@@ -39,6 +39,8 @@
         stimme: { label: 'Stimme', url: '/audio/stimme.wav' },
         melodie: { label: 'Melodie', url: '/audio/musik/melody.flac' },
         schlagzeug: { label: 'Schlagzeug', url: '/audio/musik/snare.flac' },
+        // »Ode an die Freude« on the syllables of stimme.wav, as long as it (bilder/voice_melody.py)
+        stimmeMelodie: { label: 'Melodie', url: '/audio/stimme-melodie.wav' },
     };
 
     // a logarithmic slider: 0 to 1000 between lo and hi
@@ -138,6 +140,47 @@
             line: (p) => `Nach ${de(p.time, 1)} s ist der Hall um 60 dB leiser, ein Tausendstel der Höhe; die Echos kommen ${de(29.7 * p.size, 0)} bis ${de(43.7 * p.size, 0)} ms auseinander.`,
             draw: drawReverb,
         },
+        pitch: {
+            chip: 'Zum Ausprobieren: abspielen und regeln',
+            clips: ['stimme', 'melodie', 'musik'],
+            knobs: [
+                { key: 'semitones', label: 'Halbtöne', min: -12, max: 12, step: 1, value: 5,
+                  marks: [[-12, '−12'], [-7, '−7'], [0, '0'], [7, '+7'], [12, '+12']],
+                  show: (v) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}` },
+            ],
+            live: true,
+            neutral: (p) => p.semitones === 0,
+            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau ohne Effekt, lila mit.',
+            line: (p) => `Jede Frequenz mal ${de(2 ** (p.semitones / 12), 3)}${p.semitones % 12 === 0 && p.semitones ? `, ${Math.abs(p.semitones / 12)} Oktave ${p.semitones > 0 ? 'höher' : 'tiefer'}` : ''}; der Klang bleibt so lang, wie er ist.`,
+            draw: drawPitch,
+        },
+        autotune: {
+            chip: 'Zum Ausprobieren: abspielen und regeln',
+            clips: ['stimme', 'stimmeMelodie'],
+            plain: ['stimmeMelodie'],            // played as it is
+            melody: 'stimmeMelodie',             // the target of »Melodie«
+            choices: [
+                { key: 'target', label: 'Ziel', value: 'melody', options: [['melody', 'die Melodie'], ['note', 'der nächste Halbton']] },
+            ],
+            switches: [{ key: 'withMelody', label: 'Melodie dazu', value: false }],
+            knobs: [
+                { key: 'speed', label: 'Retune Speed', min: 0, max: 0.2, step: 0.005, value: 0,
+                  marks: [[0, '0'], [0.05, '50'], [0.1, '100'], [0.15, '150'], [0.2, '200 ms']], show: ms },
+                { key: 'transpose', label: 'Transpose', min: -12, max: 12, step: 1, value: 0,
+                  marks: [[-12, '−12'], [-7, '−7'], [0, '0'], [7, '+7'], [12, '+12']],
+                  show: (v) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)} Halbtöne` },
+            ],
+            live: true,
+            neutral: () => false,
+            caption: 'Die Tonhöhe, vier Sekunden um die Stelle, die gerade spielt (Strich): grau die Stimme, lila mit Autotune, dunkel die Melodie; die dünnen Linien sind die Halbtöne.',
+            line: (p) => {
+                const goal = p.target === 'melody' ? 'den Ton der Melodie' : 'den nächsten Halbton';
+                return p.speed === 0
+                    ? `Jeder Block springt sofort auf ${goal}: Die Stimme klingt wie eine Maschine.`
+                    : `Jeder Block geht in etwa ${de(p.speed * 1000)} ms auf ${goal} zu.`;
+            },
+            draw: drawPitch,
+        },
         compressor: {
             chip: 'Zum Ausprobieren: abspielen und regeln',
             clips: ['schlagzeug', 'stimme', 'musik'],
@@ -205,6 +248,94 @@
         }
         return out;
     }
+    // the pitch of the voice, as pitch() and pitches() of the page: per HOP
+    // samples a block of SIZE; quiet blocks 0. Here on a quarter of the rate
+    // (each four samples averaged) and with the lag refined between two
+    // samples, so a whole clip takes a fraction of a second
+    const SIZE = 2048, HOP = 512;
+    function track(x, rate) {
+        const q = 4, r = rate / q, n = Math.floor(x.length / q), d = new Float32Array(n);
+        for (let i = 0; i < n; i++) d[i] = (x[q * i] + x[q * i + 1] + x[q * i + 2] + x[q * i + 3]) / q;
+        const size = SIZE / q, hop = HOP / q, maxLag = Math.floor(r / 60);
+        const out = [], rs = new Float64Array(maxLag + 2);
+        for (let s = 0; s + size <= n; s += hop) {
+            let e = 0;
+            for (let k = 0; k < size; k++) e += d[s + k] * d[s + k];
+            if (Math.sqrt(e / size) < 0.02) { out.push(0); continue; }
+            let best = 0, bestLag = 0, dipped = false;
+            for (let lag = 1; lag <= maxLag + 1; lag++) {
+                let acc = 0;
+                for (let k = 0; k < size - lag; k++) acc += d[s + k] * d[s + k + lag];
+                rs[lag] = acc;
+                if (lag > maxLag) break;
+                if (acc < 0) dipped = true;
+                else if (dipped && acc > best) { best = acc; bestLag = lag; }
+            }
+            if (!bestLag) { out.push(0); continue; }
+            const a = rs[bestLag - 1], b = rs[bestLag], c = rs[bestLag + 1];
+            const bend = a - 2 * b + c, lag = bendLag(bestLag, a, c, bend);
+            out.push(r / lag);
+        }
+        return Float32Array.from(out);
+    }
+    function bendLag(lag, a, c, bend) {
+        return bend < 0 ? lag + 0.5 * (a - c) / bend : lag;
+    }
+    // per block the factor of autotune: the nearest semitone of the pitch
+    // (moved by transpose), approached in the time speed
+    // (or, with the target melody, to the melody's pitch in that block)
+    function tuneFactors(found, rate, p, melody) {
+        const out = new Float32Array(found.length), move = 2 ** (p.transpose / 12);
+        const step = p.speed > 0 ? 1 - Math.exp(-HOP / rate / p.speed) : 1;
+        const toMelody = p.target === 'melody' && melody;
+        let now = move;
+        for (let k = 0; k < found.length; k++) {
+            const f = found[k], voiced = f > 60 && f < 1000;
+            let want = move;
+            if (voiced && !toMelody) want = 440 * 2 ** (Math.round(12 * Math.log2(f * move / 440)) / 12) / f;
+            else if (voiced && melody[k] > 0) want = melody[k] * move / f;
+            now += (want - now) * step;
+            out[k] = now;
+        }
+        return out;
+    }
+    // the grains of shift() of the page: around every quarter grain a piece
+    // read factor-times as fast, moved by up to one period until it fits what
+    // is already there (first every fourth place, then exactly), windowed and
+    // added; around the end of the clip back to its start, so the loop is seamless
+    function shift(x, rate, factorAt, grain) {
+        const L = x.length, G = Math.round(grain * rate), D = Math.floor(rate / 60), H = G >> 2, half = G >> 1;
+        const win = new Float32Array(G);
+        for (let i = 0; i < G; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * (i + 0.5) / G);
+        const y = new Float32Array(L), wsum = new Float32Array(L);
+        const piece = new Float32Array(G + 2 * D), here = new Float32Array(G);
+        for (let c = 0; c < L; c += H) {
+            const f = factorAt(c);
+            for (let i = 0; i < piece.length; i++) {
+                const pos = c + (i - half - D) * f, p = ((pos % L) + L) % L, i0 = Math.floor(p), fr = p - i0;
+                piece[i] = x[i0] * (1 - fr) + x[(i0 + 1) % L] * fr;
+            }
+            let energy = 0;
+            for (let k = 0; k < G; k++) { here[k] = y[((c - half + k) % L + L) % L]; energy += here[k] * here[k]; }
+            let at = D;
+            if (energy > 0) {
+                const corr = (s, step) => { let acc = 0; for (let k = 0; k < G; k += step) acc += piece[s + k] * here[k]; return acc; };
+                let best = -Infinity;
+                for (let s = 0; s <= 2 * D; s += 4) { const v = corr(s, 8); if (v > best) { best = v; at = s; } }
+                const from = Math.max(0, at - 3), to = Math.min(2 * D, at + 3);
+                best = -Infinity;
+                for (let s = from; s <= to; s++) { const v = corr(s, 1); if (v > best) { best = v; at = s; } }
+            }
+            for (let k = 0; k < G; k++) {
+                const o = ((c - half + k) % L + L) % L;
+                y[o] += win[k] * piece[at + k];
+                wsum[o] += win[k];
+            }
+        }
+        for (let i = 0; i < L; i++) y[i] /= Math.max(wsum[i], 1e-3);
+        return y;
+    }
+    const blockAt = (c, n) => Math.min(n - 1, Math.max(0, Math.floor((c - SIZE / 2) / HOP)));
     function chorus(x, rate, p) {
         const out = new Float32Array(x.length);
         for (let n = 0; n < x.length; n++) {
@@ -258,6 +389,12 @@ function echo(x, rate, p) {
 ${reverb.toString()}
 ${chorus.toString()}
 ${compressor.toString()}
+${track.toString()}
+${bendLag.toString()}
+${tuneFactors.toString()}
+${shift.toString()}
+const SIZE = ${SIZE}, HOP = ${HOP};
+const blockAt = ${blockAt.toString()};
 const gainDb = ${gainDb.toString()};
 const COMBS = ${JSON.stringify(COMBS)}, ALLPASS = ${JSON.stringify(ALLPASS)};
 const EFFECTS = { echo, chorus, reverb, compressor };
@@ -266,7 +403,22 @@ onmessage = (e) => {
     if (m.load) { clips[m.load] = { x: m.x, rate: m.rate }; return; }
     const clip = clips[m.clip];
     let out;
-    if (m.effect === 'eq') out = eq(clip, m.params);
+    let found = null;
+    if (m.effect === 'pitch' || m.effect === 'autotune') {
+        if (!clip.track) clip.track = track(clip.x, clip.rate);
+        found = clip.track;
+        const n = found.length;
+        let melody = null;
+        if (m.effect === 'autotune' && clips[m.melody]) {
+            const mc = clips[m.melody];
+            if (!mc.track) mc.track = track(mc.x, mc.rate);
+            melody = mc;
+        }
+        const factors = m.effect === 'autotune' ? tuneFactors(found, clip.rate, m.params, melody && melody.track) : null;
+        const constant = 2 ** ((m.params.semitones || 0) / 12);
+        out = shift(clip.x, clip.rate, factors ? (c) => factors[blockAt(c, n)] : () => constant, 0.05);
+        if (melody && m.params.withMelody) for (let i = 0; i < out.length; i++) out[i] += 0.6 * melody.x[i % melody.x.length];
+    } else if (m.effect === 'eq') out = eq(clip, m.params);
     else if (m.twice) {
         // the sound twice in a row; the second time, with what the first leaves over
         const n = clip.x.length, x2 = new Float32Array(2 * n);
@@ -277,7 +429,8 @@ onmessage = (e) => {
     let peak = 0;
     for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
     if (peak > 0.99) for (let i = 0; i < out.length; i++) out[i] *= 0.99 / peak;
-    postMessage({ out, id: m.id }, [out.buffer]);
+    const melodyTrack = m.melody && clips[m.melody] && clips[m.melody].track;
+    postMessage({ out, id: m.id, track: found ? Float32Array.from(found) : null, melodyTrack: melodyTrack ? Float32Array.from(melodyTrack) : null });
 };`;
 
     // an FFT in place, iterative: bit reversal, then the butterflies;
@@ -443,6 +596,65 @@ onmessage = (e) => {
         g.stroke();
     }
 
+    // the pitch over four seconds: grey the voice, lila with the effect
+    function drawPitch(g, w, h, col, p, on, live) {
+        frame(g, w, h, col);
+        const F0 = 60, F1 = 600, plotW = w - LABEL_W, plotH = h - AXIS;
+        const yOf = (f) => plotH - 4 - Math.log(f / F0) / Math.log(F1 / F0) * (plotH - 8);
+        if (p.speed !== undefined) {
+            g.strokeStyle = col.quiet; g.lineWidth = 0.5;
+            for (let k = Math.ceil(12 * Math.log2(F0 / 440)); 440 * 2 ** (k / 12) < F1; k++) {
+                const y = Math.round(yOf(440 * 2 ** (k / 12))) + 0.5;
+                g.beginPath(); g.moveTo(LABEL_W, y); g.lineTo(w, y); g.stroke();
+            }
+        }
+        g.textAlign = 'right'; g.textBaseline = 'middle'; g.fillStyle = col.ink; g.strokeStyle = col.quiet; g.lineWidth = 1;
+        for (const f of [100, 200, 400]) {
+            const y = Math.round(yOf(f)) + 0.5;
+            g.beginPath(); g.moveTo(LABEL_W, y); g.lineTo(w, y); g.stroke();
+            g.fillText(`${f} Hz`, LABEL_W - 4, y);
+        }
+        g.textAlign = 'center'; g.textBaseline = 'bottom';
+        g.fillText('−2 s', LABEL_W + 14, h); g.fillText('jetzt', LABEL_W + plotW / 2, h); g.fillText('+2 s', w - 14, h);
+        if (!live) {
+            g.textBaseline = 'middle';
+            g.fillText('Spiel den Klang ab, dann erscheint hier seine Tonhöhe.', LABEL_W + plotW / 2, plotH / 2);
+            return;
+        }
+        const { found, factors, at, rate } = live, n = found.length, span = 4 * rate, L = live.length;
+        const xOfBlock = (k, from) => {
+            let c = k * HOP + SIZE / 2 - from;
+            c = ((c % L) + L) % L;
+            return LABEL_W + c / span * plotW;
+        };
+        const from = at - span / 2;
+        const dots = (value, colour, r) => {
+            g.fillStyle = colour;
+            for (let k = 0; k < n; k++) {
+                const f = value(k);
+                if (!(found[k] > 60 && found[k] < 1000) || f < F0 || f > F1) continue;
+                const x = xOfBlock(k, from);
+                if (x < LABEL_W || x > w) continue;
+                g.fillRect(x - r, yOf(f) - r, 2 * r, 2 * r);
+            }
+        };
+        if (live.melody && !live.plain) {
+            // the melody as short lines: the target
+            g.fillStyle = col.ink;
+            for (let k = 0; k < live.melody.length; k++) {
+                const f = live.melody[k];
+                if (!(f > F0 && f < F1)) continue;
+                const x = xOfBlock(k, from);
+                if (x >= LABEL_W && x <= w) g.fillRect(x - 2, yOf(f) - 0.75, 4, 1.5);
+            }
+        }
+        dots((k) => found[k], col.sound, 2.5);
+        if (on && !live.plain) dots((k) => found[k] * factors(k), col.mark, 1.5);
+        const xm = Math.round(LABEL_W + plotW / 2) + 0.5;
+        g.strokeStyle = col.ink; g.lineWidth = 1.5;
+        g.beginPath(); g.moveTo(xm, 0); g.lineTo(xm, plotH); g.stroke();
+    }
+
     // left the curve (input level against output level, with the make-up
     // gain), right the gain over four seconds: each knob changes one of them
     const compressorLayout = (w) => {
@@ -526,7 +738,7 @@ onmessage = (e) => {
         let on = true;
         let ctx = null, output = null, voice = null, playing = false, startedAt = 0, offset = 0;
         let current = null, original = null, rate = 44100;
-        const loaded = {}, peaks = {};           // clip: Float32Array, its largest value
+        const loaded = {}, peaks = {}, tracks = {};           // clip: Float32Array, its largest value
         let smooth = null, shownPeak = { of: null, peak: 1 };                       // the EQ's spectra, smoothed over time
         let worker = null, busy = false, again = false, asked = 0;
         const uid = Math.random().toString(36).slice(2, 8);
@@ -534,6 +746,30 @@ onmessage = (e) => {
 
         // a slider with marks under it, each centred on the thumb's place (the thumb is 1rem wide)
         const resets = [];
+        // a choice of a few values as buttons, and a switch
+        const choice = (c) => {
+            const group = el('div', { class: 'btn-group btn-group-sm', role: 'group', 'aria-label': c.label });
+            const inputs = c.options.map(([value, text]) => {
+                const id = `fx-${c.key}-${value}-${uid}`;
+                const input = el('input', { type: 'radio', class: 'btn-check', name: `fx-${c.key}-${uid}`, id, autocomplete: 'off' });
+                input.checked = value === c.value;
+                input.addEventListener('change', () => { if (input.checked) { params[c.key] = value; changed(); } });
+                group.append(input, el('label', { class: 'btn btn-outline-secondary', for: id, text }));
+                return [value, input];
+            });
+            params[c.key] = c.value;
+            resets.push(() => { params[c.key] = c.value; inputs.forEach(([v, input]) => { input.checked = v === c.value; }); });
+            return el('div', { class: 'fx-row' }, [el('span', { class: 'fx-label', text: c.label }), el('div', { class: 'fx-track' }, [group]), el('span')]);
+        };
+        const toggle = (t) => {
+            const id = `fx-${t.key}-${uid}`;
+            const input = el('input', { type: 'checkbox', class: 'form-check-input', id, role: 'switch' });
+            input.checked = t.value;
+            params[t.key] = t.value;
+            input.addEventListener('change', () => { params[t.key] = input.checked; changed(); });
+            resets.push(() => { input.checked = t.value; params[t.key] = t.value; });
+            return el('div', { class: 'form-check form-switch fx-switch' }, [input, el('label', { class: 'form-check-label', for: id, text: t.label })]);
+        };
         const slider = (knob) => {
             const id = `fx-${knob.key}-${uid}`;
             const input = el('input', { type: 'range', class: 'form-range fx-slider', id, min: knob.min, max: knob.max, step: knob.step, value: knob.value });
@@ -576,7 +812,9 @@ onmessage = (e) => {
         root.append(
             el('div', { class: 'fx-controls' }, [
                 ...(effect.clips.length > 1 ? [clipGroup] : []), playButton, resetButton,
-                el('div', { class: 'form-check form-switch fx-switch' }, [onSwitch, el('label', { class: 'form-check-label', for: `fx-on-${uid}`, text: 'Effekt an' })])]),
+                el('div', { class: 'form-check form-switch fx-switch' }, [onSwitch, el('label', { class: 'form-check-label', for: `fx-on-${uid}`, text: 'Effekt an' })]),
+                ...(effect.switches || []).map(toggle)]),
+            ...(effect.choices || []).map(choice),
             ...effect.knobs.map(slider),
             el('figure', { class: 'fx-figure' }, [el('figcaption', { text: effect.caption }), chart]),
             line,
@@ -622,6 +860,14 @@ onmessage = (e) => {
                 const at = sampleNow();
                 smooth = { before: spectrum(original, at, smooth && smooth.before), after: spectrum(current || original, at, smooth && smooth.after) };
                 live = { ...smooth, binHz: rate / N };
+            } else if ((name === 'pitch' || name === 'autotune') && original && tracks[clipId]) {
+                const found = tracks[clipId];
+                const melody = effect.melody && tracks[effect.melody];
+                const tuned = name === 'autotune' ? tuneFactors(found, rate, params, melody) : null;
+                const constant = 2 ** ((params.semitones || 0) / 12);
+                const plain = (effect.plain || []).includes(clipId);
+                live = { found, factors: tuned && !plain ? (k) => tuned[k] : () => constant, at: sampleNow(), rate, length: original.length,
+                    melody: melody && params.target === 'melody' ? melody : null, plain };
             } else if (name === 'compressor' && original) {
                 // the level as the compressor follows it, from half a second
                 // before the window on, and per column of the right picture its gain
@@ -746,9 +992,9 @@ onmessage = (e) => {
         // a knob moved: the picture at once, the sound as soon as the worker
         // has the last one (also while dragging), always the last setting
         function ask() {
-            if (!on || effect.neutral(params)) { current = original; if (playing) start(); return; }
+            if (!on || effect.neutral(params) || (effect.plain || []).includes(clipId)) { current = original; if (playing) start(); return; }
             busy = true;
-            worker.postMessage({ effect: name, clip: clipId, params: { ...params }, twice: !!effect.twice, id: ++asked });
+            worker.postMessage({ effect: name, clip: clipId, melody: effect.melody, params: { ...params }, twice: !!effect.twice, id: ++asked });
         }
         function changed() {
             draw(); drawWave();
@@ -756,9 +1002,14 @@ onmessage = (e) => {
             if (busy) { again = true; return; }
             ask();
         }
+        function keepTracks(e) {
+            if (e.data.track) tracks[clipId] = e.data.track;
+            if (e.data.melodyTrack) tracks[effect.melody] = e.data.melodyTrack;
+        }
         function heard(e) {
             busy = false;
             current = e.data.out;
+            keepTracks(e);
             if (playing) start(); else drawWave();
             if (again) { again = false; ask(); }
         }
@@ -783,13 +1034,14 @@ onmessage = (e) => {
                 worker = new Worker(URL.createObjectURL(new Blob([WORKER], { type: 'text/javascript' })));
                 worker.onmessage = heard;
             }
+            if (effect.melody) await loadClip(effect.melody);
             original = await loadClip(clipId);
             current = original;
-            if (on && !effect.neutral(params)) {
+            if (on && !effect.neutral(params) && !(effect.plain || []).includes(clipId)) {
                 // the first sound of a clip waits for the worker once
                 await new Promise((done) => {
-                    worker.onmessage = (e) => { worker.onmessage = heard; current = e.data.out; done(); };
-                    worker.postMessage({ effect: name, clip: clipId, params: { ...params }, twice: !!effect.twice, id: ++asked });
+                    worker.onmessage = (e) => { worker.onmessage = heard; current = e.data.out; keepTracks(e); done(); };
+                    worker.postMessage({ effect: name, clip: clipId, melody: effect.melody, params: { ...params }, twice: !!effect.twice, id: ++asked });
                 });
             }
         }

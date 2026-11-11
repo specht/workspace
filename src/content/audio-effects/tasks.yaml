@@ -210,3 +210,78 @@ tasks:
               return 0
           return (threshold - level) * (1 - 1 / ratio)
       ```
+
+  - id: speed-length
+    title: Schneller abgespielt
+    prediction: true
+    prompt: |
+      Ein Klang von 3 Sekunden soll 7 Halbtöne höher werden, ohne Grains:
+      Man spielt ihn einfach schneller ab, 2^(7/12)-mal so schnell, etwa
+      1,5-mal. Wie viele Sekunden dauert er dann?
+    check:
+      type: number
+      expect: 2.0
+      tolerance: 0.05
+    feedback:
+      - when: { equals: 3 }
+        say: Schneller abgespielt ist der Klang früher zu Ende. Nur ein Pitch Shifter mit Grains hält ihn gleich lang.
+      - when: { between: [4.4, 4.6] }
+        say: Schneller heißt kürzer, nicht länger. Teile die Länge durch den Faktor.
+    solution: |
+      Etwa 2 Sekunden: 3 / 2^(7/12) = 3 / 1,498 ≈ 2,0.
+
+  - id: pitch
+    title: Die Tonhöhe eines Blocks
+    prompt: |
+      Schreib in `effects/pitch.py` die Funktion `pitch(block, rate)`: die
+      Frequenz der größten Autokorrelation nach dem ersten negativen Wert,
+      für `lag` von 1 bis `rate // 60`; 0, wenn keine gefunden.
+    check:
+      type: python
+      file: effects/pitch.py
+      cases:
+        - call: pitch(((np.arange(800) * 200 / 8000) % 1) - 0.5, 8000)
+          expect: '200.0'
+          say: 'Eine Sägezahnschwingung mit 200 Hz, 8000 Samples in der Sekunde: Sie wiederholt sich alle 40 Samples. Gibt deine Funktion `rate / best_lag` zurück?'
+        - call: pitch(np.sin(2 * np.pi * 100 * np.arange(800) / 8000), 8000)
+          expect: '100.0'
+          say: 'Bei einer tiefen Schwingung ist die Autokorrelation bei `lag` 1 fast so groß wie bei 0, größer als nach einer ganzen Schwingung. Nimmst du den größten Wert erst, nachdem einer negativ war?'
+        - call: float(pitch(np.zeros(800), 8000))
+          expect: '0.0'
+          say: In der Stille gibt es keine Tonhöhe; dann soll `pitch` 0 zurückgeben.
+    solution: |
+      ```python
+      def pitch(block, rate):
+          best, best_lag, dipped = 0, 0, False
+          for lag in range(1, rate // 60):
+              r = np.dot(block[:-lag], block[lag:])
+              if r < 0:
+                  dipped = True
+              elif dipped and r > best:
+                  best, best_lag = r, lag
+          return rate / best_lag if best_lag else 0
+      ```
+
+  - id: nearest-note
+    title: Der nächste Halbton
+    prompt: |
+      Schreib in `effects/autotune.py` die Funktion `nearest_note(f)`: die
+      Frequenz des Halbtons, der `f` am nächsten liegt, von 440 Hz aus gezählt.
+    check:
+      type: python
+      file: effects/autotune.py
+      cases:
+        - call: round(float(nearest_note(450)), 2)
+          expect: '440.0'
+          say: 450 Hz liegt näher an 440 Hz als am nächsten Halbton darüber, 466,16 Hz.
+        - call: round(float(nearest_note(470)), 2)
+          expect: '466.16'
+          say: 470 Hz liegt näher an 466,16 Hz, einen Halbton über 440. Rechnest du in Halbtönen, `12 * np.log2(f / 440)`, und teilst nach dem Runden wieder durch 12?
+        - call: round(float(nearest_note(420)), 2)
+          expect: '415.3'
+          say: 420 Hz liegt näher an 415,30 Hz, einen Halbton unter 440. Rundest du mit `round`? `int` schneidet zur Null hin ab und macht aus −0,8 Halbtönen 0.
+    solution: |
+      ```python
+      def nearest_note(f):
+          return 440 * 2 ** (round(12 * np.log2(f / 440)) / 12)
+      ```

@@ -138,6 +138,7 @@ Platform-wide:
 * [ ] When a page is touched: English names in its code (variables, functions, files), as in the raylib, web server and pixel wall activities; comments stay German
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Find a section for new pages as they land; keep related progressions adjacent
+* [ ] History boxes (`<div class='history'>`, docs/aktivitaet-schreiben.md »Geschichte«) on every page: go through the activities for history now in the prose or missing (songs, films, machines, events), each fact checked
 
 
 ## Infrastructure and operations

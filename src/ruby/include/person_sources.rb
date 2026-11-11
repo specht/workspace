@@ -5,14 +5,20 @@ require 'yaml'
 
 # The development page /person-sources: every sentence of the person boxes
 # (reference/personen) with the sources that back it, from sources.yaml next
-# to the page, so the boxes can be fact-checked. A sentence is covered when
+# to the page, so the boxes can be fact-checked; below them the history
+# boxes of the activities (<div class='history' id='history-…'>), with
+# their sources in content/history-sources.yaml, keyed by the id without
+# »history-«. A sentence is covered when
 # it contains the text of a claim (sources.yaml says how claims look); the
 # page shows what is still open, what the sources contradict, and claims
 # whose text the box no longer has.
 module PersonSources
     DIR = '/src/content/reference/personen'
+    CONTENT = '/src/content'
+    HISTORY_SOURCES = File.join(CONTENT, 'history-sources.yaml')
     # A period after these ends no sentence: »bis ins 20. Jahrhundert«, »z. B.«
-    NO_END = /(?:\A|[\s(])(?:\d+|[[:alpha:]]|ca|bzw|Dr|St|Nr|usw|vgl|etc|Jh)\.\z/
+    # A year ends one: »1970. Ein Band …«; an ellipsis none: »Let It Be... Naked«
+    NO_END = /(?:(?:\A|[\s(])(?:\d{1,3}|[[:alpha:]]|ca|bzw|Dr|St|Nr|usw|vgl|etc|Jh)\.|\.\.\.)\z/
     STATES = {
         'open' => ['Offen', 'bi-question-circle'],
         'partly' => ['Teilweise', 'bi-exclamation-triangle'],
@@ -54,21 +60,54 @@ module PersonSources
             box = Nokogiri::HTML::DocumentFragment.parse(text).at_css('div.person')
             next unless box
 
-            claims = (sources[part] || []).map { |c| c.merge('found' => false) }
-            paragraphs = box.css('p').reject { |p| p['class'].to_s.include?('person-credit') }.map do |p|
-                sentences(p.text.gsub(/\s+/, ' ').strip).map do |sentence|
-                    matched = claims.select { |c| sentence.include?(c['text'].to_s.gsub(/\s+/, ' ').strip) }
-                    matched.each { |c| c['found'] = true }
-                    { :text => sentence, :state => state(matched), :claims => matched }
-                end
-            end
-            {
-                :part => part, :name => ContentParts.heading_text(text) || part,
-                :paragraphs => paragraphs,
-                :credit => box.at_css('p.person-credit')&.inner_html,
-                :missing => claims.reject { |c| c['found'] },
-            }
+            entry(box, sources[part], part, ContentParts.heading_text(text) || part, 'person-credit')
         end
+    end
+
+    # One box: its sentences with their claims, the credit line, the claims
+    # whose text the box no longer has.
+    def self.entry(box, claims, part, name, credit_class)
+        claims = (claims || []).map { |c| c.merge('found' => false) }
+        paragraphs = box.css('p').reject { |p| p['class'].to_s.include?(credit_class) }.map do |p|
+            sentences(p.text.gsub(/\s+/, ' ').strip).map do |sentence|
+                matched = claims.select { |c| sentence.include?(c['text'].to_s.gsub(/\s+/, ' ').strip) }
+                matched.each { |c| c['found'] = true }
+                { :text => sentence, :state => state(matched), :claims => matched }
+            end
+        end
+        {
+            :part => part, :name => name,
+            :paragraphs => paragraphs,
+            :credit => box.at_css("p.#{credit_class}")&.inner_html,
+            :missing => claims.reject { |c| c['found'] },
+        }
+    end
+
+    # The history boxes of { slug => markdown }: like overview, with the
+    # box's id (without »history-«) as its part and :link to it. A box
+    # without an id gets the part nil.
+    def self.history_overview(pages, sources)
+        pages.flat_map do |slug, markdown|
+            Nokogiri::HTML::DocumentFragment.parse(markdown).css('div.history').map do |box|
+                id = box['id'].to_s[/\Ahistory-(.+)\z/, 1]
+                name = box.at_css('p strong')&.text.to_s.strip
+                entry(box, id && sources[id], id, name.empty? ? slug : name, 'history-credit')
+                    .merge(:link => "/#{slug}##{box['id']}", :slug => slug)
+            end
+        end
+    end
+
+    # The activities' pages, { slug => markdown }
+    def self.activity_pages(content = CONTENT)
+        Dir[File.join(content, '*', '*.md')].sort.filter_map do |path|
+            slug = File.basename(File.dirname(path))
+            [slug, File.read(path)] if File.basename(path, '.md') == slug
+        end.to_h
+    end
+
+    def self.history_load
+        sources = File.file?(HISTORY_SOURCES) ? (YAML.safe_load(File.read(HISTORY_SOURCES), aliases: false) || {}) : {}
+        history_overview(activity_pages, sources)
     end
 
     def self.load
@@ -169,10 +208,11 @@ module PersonSources
     # from the files is escaped, except the credit line, which is the box's
     # own HTML.
     def self.page_html
-        persons = load
+        persons = load.map { |p| p.merge(:link => "/reference/personen##{p[:part]}") }
+        histories = history_load
         counts = Hash.new(0)
         missing = 0
-        sections = persons.map do |person|
+        sections = (persons + histories).map do |person|
             states = []
             body = person[:paragraphs].map do |sentences|
                 rows = sentences.map do |s|
@@ -194,7 +234,7 @@ module PersonSources
             end
             credit = person[:credit] ? "<p class='ps-credit'>#{person[:credit]}</p>" : ''
             "<section class='ps-person' data-states='#{states.uniq.join(' ')}'>" \
-                "<h2><a href='/reference/personen##{h(person[:part])}'>#{h(person[:name])}</a></h2>#{body}#{credit}</section>"
+                "<h2><a href='#{h(person[:link])}'>#{h(person[:name])}</a></h2>#{body}#{credit}</section>"
         end
         filters = [['all', 'Alle', counts.values.sum]] + STATES.map { |key, (label, _)| [key, label, counts[key]] } +
                   [['missing', 'Nicht mehr im Kasten', missing]]
@@ -203,7 +243,7 @@ module PersonSources
                 "#{h(label)} <span class='badge text-bg-secondary'>#{count}</span></button>"
         end.join
         "<div class='ps-filters'>#{buttons}</div>" \
-            "<p class='ps-summary'>#{persons.size} Personen, #{counts.values.sum} Sätze, davon #{counts['sourced']} belegt, " \
+            "<p class='ps-summary'>#{persons.size} Personen und #{histories.size} Kästen zur Geschichte, #{counts.values.sum} Sätze, davon #{counts['sourced']} belegt, " \
             "#{counts['open']} offen.</p>#{sections.join}"
     end
 end

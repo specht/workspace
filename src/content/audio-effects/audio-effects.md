@@ -264,10 +264,12 @@ wait-for-text: stimme-halle.wav
 
 Hör dir `stimme-echo.wav` und `stimme-halle.wav` an. Mit 0,3 Sekunden hörst du jedes Echo für sich, mit 0,05 Sekunden verschwimmen sie zu einem Klang wie in einem gekachelten Bad. Zwei Klänge hört das Ohr erst als zwei, wenn zwischen ihnen mehr als einige Zehntelsekunden liegen; was schneller folgt, hört es als einen.
 
-Lange bevor Rechner Klänge bearbeiteten, machte man Echos mit Tonband: Ein Tonkopf nahm den Klang auf, ein zweiter ein Stück weiter spielte ihn wieder ab. Die Verzögerung ergab sich aus dem Abstand der beiden Köpfe und der Geschwindigkeit des Bands, die Rückkopplung daraus, wie viel von der Wiedergabe wieder aufgenommen wurde. Ein solches Bandecho hörst du in »Let It Be« von den Beatles: Phil Spector mischte das Lied 1970 für das Album neu und gab Ringo Starrs Hi-Hat in der zweiten Strophe so viel Echo, dass jeder Schlag mehrmals zurückkommt. Starr gefiel das nicht, und 2003 erschien auf »Let It Be... Naked« eine Fassung ohne Spectors Zutaten, mit einer trockenen Hi-Hat.
+Lange bevor Rechner Klänge bearbeiteten, machte man Echos mit Tonband: Ein Tonkopf nahm den Klang auf, ein zweiter ein Stück weiter spielte ihn wieder ab. Die Verzögerung ergab sich aus dem Abstand der beiden Köpfe und der Geschwindigkeit des Bands, die Rückkopplung daraus, wie viel von der Wiedergabe wieder aufgenommen wurde.
 
-<div class='hint try'>
-<strong>Ausprobieren:</strong> Hör dir die zweite Strophe in beiden Fassungen an, auf YouTube: <a href='https://www.youtube.com/watch?v=QDYfEBY9NM4'>die Fassung des Albums</a> und <a href='https://www.youtube.com/watch?v=lcA-qlMP11s'>die Fassung von »Naked«</a>. Achte auf die Hi-Hat, sobald das Schlagzeug einsetzt: Wie oft hörst du jeden Schlag? Schätze, wie lang die Verzögerung ist, und stell sie im Widget oben ein.
+<div class='history' id='history-let-it-be'>
+<i class='bi bi-calendar3'></i>
+<p><strong>Das Bandecho auf der Hi-Hat von »Let It Be«</strong>, 1970. Phil Spector mischte »Let It Be« von den Beatles für das Album neu und gab Ringo Starrs Hi-Hat in der zweiten Strophe ein Bandecho, so viel, dass sie fast alle Aufmerksamkeit auf sich zieht. Starr gefiel Spectors Fassung nicht. 2003 erschien auf »Let It Be... Naked« eine Fassung ohne Spectors Zutaten, mit Starrs einfachem Schlagzeug.</p>
+<p>Hör dir die zweite Strophe in beiden Fassungen an: <a href='https://www.youtube.com/watch?v=QDYfEBY9NM4&t=45s'>die Fassung des Albums</a> und <a href='https://www.youtube.com/watch?v=lcA-qlMP11s&t=45s'>die Fassung von »Naked«</a>, beide auf YouTube, ab der 45. Sekunde.</p>
 </div>
 
 <div class='hint try'>
@@ -563,7 +565,219 @@ wait-for-text: stimme-komprimiert.wav
 
 Hör dir `stimme-komprimiert.wav` an und dann noch einmal `stimme.wav`: In der komprimierten Fassung sind die leisen Silben etwa 5 dB lauter geworden, die lauten etwa 1 dB leiser. Lagen zwischen ihnen vorher fast 20 dB, sind es jetzt etwa 13. Ein Compressor macht aber alles Leise lauter, auch ein Rauschen oder ein Atmen: Er kann nicht wissen, welche leisen Klänge man hören will.
 
+<div class='history' id='history-loudness-war'>
+<i class='bi bi-calendar3'></i>
+<p><strong>Der Loudness War</strong>, 2008. Lange wurde Musik immer lauter aufgenommen. Ist der höchste Wert erreicht, den ein Sample auf einer CD haben kann, geht es nur noch mit einem Compressor weiter, mit immer höherer Ratio. Metallicas Album »Death Magnetic« ist auf der CD so laut, dass die Spitzen über den höchsten Wert hinausgehen und abgeschnitten werden, was verzerrt klingt. Dieselben Lieder im Spiel »Guitar Hero« haben viel mehr Abstand zwischen leise und laut und sind weniger abgeschnitten. Heute machen die meisten großen Streamingdienste jedes Lied von sich aus gleich laut, Spotify und YouTube auf −14 LUFS, ein Maß dafür, wie laut Menschen einen Klang hören.</p>
+</div>
+
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Stell im Widget die Musik ein, die Attack auf 1 ms, die Release auf 20 ms und den Threshold tief. Jetzt klingt der Bass verzerrt: Der Pegel folgt so schnell, dass der Compressor die einzelnen Schwingungen des Basses leiser und lauter macht und ihre Form verändert. Wie lang muss die Release sein, bis die Verzerrung verschwindet?
+</div>
+
+## Pitch Shifting
+
+Spielt man eine Aufnahme schneller ab, wird sie höher, und kürzer: Doppelt so schnell ist eine Oktave höher und halb so lang, die Stimme klingt nach Zeichentrick. Ein **Pitch Shifter** ändert nur die Tonhöhe und lässt die Länge, wie sie ist. Er zerlegt den Klang in **Grains**, kurze Stücke von 50 ms, die sich überlappen. Jedes Grain liest er schneller oder langsamer, mit `read` aus dem Chorus, legt es aber an seinen alten Platz zurück: So wird jedes Stück höher, und der Klang bleibt gleich lang.
+
+<div class='effect-widget' data-effect='pitch'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Schieb die Stimme 12 Halbtöne nach oben, eine Oktave, und dann 12 nach unten. Woran hörst du, dass es dieselbe Person ist, und woran, dass etwas nicht stimmt? Probier dasselbe mit der Musik: Was klingt dort zuerst falsch, das Schlagzeug oder die Melodie?
+</div>
+
+_task(speed-length)
+
+Die Grains haben einen Haken: Liegen zwei übereinander, deren Schwingungen gerade gegeneinander laufen, löschen sie sich aus, und die Stimme klingt hohl. Darum verschiebt der Pitch Shifter jedes Grain, bevor er es hinzuzählt, um bis zu eine Schwingung der tiefsten Stimme (1/60 Sekunde), bis es am besten zu dem passt, was schon da ist. Am besten passt es, wo das Produkt der beiden, Sample für Sample addiert, am größten ist: `np.correlate` rechnet das für alle Verschiebungen auf einmal aus.
+
+Dasselbe Produkt sagt auch, wie hoch eine Stimme gerade ist. Multipliziert man einen Block Sample für Sample mit sich selbst, um `lag` Samples verschoben, und zählt zusammen, heißt das **Autokorrelation**. Sie ist groß, wo der Block zu sich selbst passt: bei einer Verschiebung um eine ganze Schwingung, um zwei und so weiter. Bei 0 passt er immer, und kurz danach noch fast, denn eine Stimme ändert sich von Sample zu Sample kaum. Erst nach einer halben Schwingung läuft die verschobene Kopie gegen das Original und die Summe wird negativ. Die Tonhöhe findet man also so: Warte, bis die Autokorrelation einmal negativ war, und nimm dann die Verschiebung, bei der sie am größten ist. Ist sie das bei `lag` Samples, dauert eine Schwingung `lag / rate` Sekunden, und die Frequenz ist `rate / lag`.
+
+Lege `pitch.py` an. Es nimmt `read` aus `chorus.py`:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from chorus import read
+from wav import read_wav, write_wav
+
+SIZE, HOP = 2048, 512
+
+
+def pitch(block, rate):
+    # hier: die Tonhöhe des Blocks in Hz, 0, wenn keine gefunden
+
+
+def pitches(x, rate):
+    out = []
+    for start in range(0, len(x) - SIZE, HOP):
+        block = x[start:start + SIZE]
+        loud = np.sqrt(np.mean(block ** 2)) > 0.02
+        out.append(pitch(block, rate) if loud else 0)
+    return out
+
+
+def shift(x, rate, factor, grain=0.05):
+    G = round(grain * rate)
+    D = rate // 60
+    window = np.hanning(G)
+    offsets = np.arange(-G // 2 - D, G - G // 2 + D)
+    y = np.zeros(len(x) + G)
+    weight = np.zeros(len(x) + G)
+    for c in range(G // 2, len(x), G // 4):
+        f = factor(c) if callable(factor) else factor
+        piece = read(x, np.clip(c + offsets * f, 0, len(x) - 1))
+        here = y[c - G // 2:c - G // 2 + G]
+        s = np.argmax(np.correlate(piece, here, 'valid'))
+        y[c - G // 2:c - G // 2 + G] += window * piece[s:s + G]
+        weight[c - G // 2:c - G // 2 + G] += window
+    return y[:len(x)] / np.maximum(weight[:len(x)], 1e-3)
+
+
+def save(path, y, rate):
+    peak = np.abs(y).max()
+    write_wav(path, y / max(1, peak), rate)
+    print(f'{path}: lauteste Stelle {peak:.2f}')
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('stimme.wav')
+    found = [round(f) for f in pitches(x, rate) if f]
+    print('Tonhöhen in Hz:', found[:12], '…')
+    save('stimme-hoch.wav', shift(x, rate, 2 ** (5 / 12)), rate)
+    save('stimme-tief.wav', shift(x, rate, 2 ** (-5 / 12)), rate)
+```
+
+`pitches` geht in Blöcken von 2048 Samples über den Klang, je 512 Samples weiter, und gibt für jeden die Tonhöhe, für leise Blöcke 0. `shift` legt alle 512 Samples ein Grain hin, `factor` mal so schnell gelesen; `factor` ist eine Zahl oder eine Funktion, die für jede Stelle `c` eine Zahl gibt.
+
+<div class='hint own' data-check='pitch'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>pitch(block, rate)</code>: Geh die Verschiebungen <code>lag</code> von 1 bis <code>rate // 60</code> durch, rechne für jede die Autokorrelation und gib die Frequenz der größten zurück, die nach dem ersten negativen Wert kommt. Findest du keine, gib 0 zurück.
+</div>
+
+<!-- hint -->
+Die Autokorrelation für eine Verschiebung ist `np.dot(block[:-lag], block[lag:])`: der Block ohne seine letzten `lag` Samples mal der Block ohne seine ersten `lag`, Sample für Sample, addiert.
+<!-- /hint -->
+<!-- hint -->
+Merk dir in einer Variablen, ob schon ein negativer Wert kam, und in zwei weiteren den größten Wert danach und sein `lag`:
+
+```python
+best, best_lag, dipped = 0, 0, False
+for lag in range(1, rate // 60):
+    r = np.dot(block[:-lag], block[lag:])
+    if r < 0:
+        dipped = True
+    elif …
+```
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def pitch(block, rate):
+    best, best_lag, dipped = 0, 0, False
+    for lag in range(1, rate // 60):
+        r = np.dot(block[:-lag], block[lag:])
+        if r < 0:
+            dipped = True
+        elif dipped and r > best:
+            best, best_lag = r, lag
+    return rate / best_lag if best_lag else 0
+```
+<!-- /solution -->
+
+_task(pitch)
+
+```bash
+python3 pitch.py
+```
+
+<!-- tutorial-step
+write-file: effects/pitch.py <- file:stufen/pitch.py
+check-task: pitch
+terminal-run: cd /workspace/effects && python3 pitch.py
+terminal-wait-for-prompt: 120
+wait-for-text: stimme-tief.wav
+-->
+
+Die erste Zeile zeigt die Tonhöhen der Stimme: meist zwischen 100 und 200 Hz, wie bei vielen erwachsenen Männern. Wo jemand ein »s« oder »sch« spricht, schwingt nichts, und `pitch` findet eine zufällige, oft sehr hohe Zahl. Hör dir `stimme-hoch.wav` und `stimme-tief.wav` an: fünf Halbtöne höher und tiefer, gleich lang wie `stimme.wav`.
+
+## Autotune
+
+**Autotune** rückt schiefen Gesang gerade: Es findet die Tonhöhe jedes Blocks und schiebt sie zum nächsten Halbton. Gedacht ist es unhörbar, mit einer **Retune Speed** von einigen Dutzend Millisekunden, so dass die Stimme langsam zum richtigen Ton gleitet. Stellt man sie auf 0, springt die Stimme sofort von Halbton zu Halbton, ohne das Gleiten dazwischen, und klingt wie eine Maschine.
+
+<div class='history' id='history-believe'>
+<i class='bi bi-calendar3'></i>
+<p><strong>Cher, »Believe«</strong>, 1998. Ein Jahr zuvor brachte die Firma Antares Auto-Tune heraus. Erfunden hatte es Andy Hildebrand, der für Exxon aus den Echos von Schall im Boden herausgelesen hatte, wo man nach Öl bohren soll, mit denselben Verfahren, auch der Autokorrelation, die du eben in <code>pitch</code> geschrieben hast. »Believe« war die erste Aufnahme, die Auto-Tune hörbar als Effekt nutzt: Die Produzenten stellten es so extrem ein, dass Chers Stimme sofort von Ton zu Ton springt. Der Effekt wurde als »Cher-Effekt« bekannt. Um ihren Trick zu schützen, behaupteten die Produzenten zuerst, es sei ein Vocoder gewesen.</p>
+<p>Hör dir <a href='https://www.youtube.com/watch?v=nZXRV4MezEw'>»Believe«</a> auf YouTube an und achte darauf, wo Chers Stimme von Ton zu Ton springt, statt zu gleiten.</p>
+</div>
+
+<div class='effect-widget' data-effect='autotune'></div>
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Hör dir die Stimme und die Melodie zuerst einzeln an, die Stimme mit <strong>Effekt an</strong> aus. Schalt den Effekt dann ein: Die Stimme singt jetzt die Melodie, jede Silbe auf ihrem Ton. Welches Lied ist es? Schalt <strong>Melodie dazu</strong> ein und hör, ob die Stimme den Ton trifft. Stell dann das Ziel auf den nächsten Halbton und schau, wie die lila Punkte auf den Linien der Halbtöne liegen. Dreh die Retune Speed langsam auf: Ab wann klingt die Stimme wieder wie gesprochen, und woran siehst du das im Bild?
+</div>
+
+Ein Halbton ist ein Zwölftel einer Oktave: zwölf Halbtöne verdoppeln die Frequenz, ein Halbton multipliziert sie mit \\(2^{1/12} \approx 1{,}0595\\). Von einem Ton \\(f\\) bis zum Kammerton A mit 440 Hz sind es also \\(12 \cdot \log\_2(f / 440)\\) Halbtöne. Rundet man diese Zahl, hat man den nächsten Halbton.
+
+Lege `autotune.py` an. Es nimmt `pitches` und `shift` aus `pitch.py`:
+
+<!-- page-code: own -->
+```python
+import numpy as np
+
+from pitch import HOP, SIZE, pitches, save, shift
+from wav import read_wav
+
+
+def nearest_note(f):
+    # hier: die Frequenz des Halbtons, der f am nächsten liegt
+
+
+def autotune(x, rate):
+    found = pitches(x, rate)
+
+    def factor(c):
+        k = min(max(0, (c - SIZE // 2) // HOP), len(found) - 1)
+        f = found[k]
+        return nearest_note(f) / f if 60 < f < 1000 else 1
+
+    return shift(x, rate, factor)
+
+
+if __name__ == '__main__':
+    x, rate = read_wav('stimme.wav')
+    save('stimme-autotune.wav', autotune(x, rate), rate)
+```
+
+<div class='hint own' data-check='nearest-note'>
+<strong>Jetzt bist du dran:</strong> Schreib <code>nearest_note(f)</code>: die Frequenz des Halbtons, der <code>f</code> am nächsten liegt, von 440 Hz aus gezählt.
+</div>
+
+<!-- hint -->
+Rechne aus, wie viele Halbtöne `f` von 440 Hz entfernt ist, `12 * np.log2(f / 440)`, und runde. 440 Hz mal \\(2^{1/12}\\) hoch dieser Zahl ist der Halbton.
+<!-- /hint -->
+
+<!-- solution -->
+```python
+def nearest_note(f):
+    return 440 * 2 ** (round(12 * np.log2(f / 440)) / 12)
+```
+<!-- /solution -->
+
+_task(nearest-note)
+
+```bash
+python3 autotune.py
+```
+
+<!-- tutorial-step
+write-file: effects/autotune.py <- file:stufen/autotune.py
+check-task: nearest-note
+terminal-run: cd /workspace/effects && python3 autotune.py
+terminal-wait-for-prompt: 120
+wait-for-text: stimme-autotune.wav
+-->
+
+Hör dir `stimme-autotune.wav` an: Jede Silbe liegt jetzt auf einem Halbton und springt zum nächsten, sobald die Stimme ihn erreicht. `autotune` hat keine Retune Speed: Jeder Block springt sofort.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Gib <code>autotune</code> eine Retune Speed: Merk dir in <code>factor</code> den Faktor des vorigen Blocks und geh von ihm aus nur ein Stück auf den neuen zu, zum Beispiel ein Fünftel des Wegs. Wie klingt die Stimme jetzt?
 </div>
 

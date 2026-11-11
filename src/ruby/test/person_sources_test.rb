@@ -56,6 +56,8 @@ class PersonSourcesTest < Minitest::Test
     def test_sentences_ignore_ordinals_and_abbreviations
         assert_equal ['Im 19. Jahrhundert war das neu.', 'Das z. B. auch.'],
                      PersonSources.sentences('Im 19. Jahrhundert war das neu. Das z. B. auch.')
+        assert_equal ['Es war 1970.', 'Dann »Let It Be... Naked« 2003.'],
+                     PersonSources.sentences('Es war 1970. Dann »Let It Be... Naked« 2003.')
     end
 
     def test_each_sentence_gets_its_state
