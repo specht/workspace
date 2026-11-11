@@ -12,9 +12,12 @@ minute, Am F C G twice:
   kennedy-melodie.wav   a melody on his words, one note per syllable from
                         Whisper's word times, in his own range, so that
                         autotune moves him only a few semitones
-  kennedy-band.wav      kick on every beat, clap on 2 and 4, an open hi-hat
-                        between, bass in eighths (root and octave), short
-                        chords on the offbeats
+  kennedy-band.wav      a real drum kit (audio/drums, DRSKit of DrumGizmo,
+                        CC BY 4.0, and a clap, CC0): verse with kick on 1
+                        and 3, chorus with four on the floor, clap and open
+                        hi-hat, a fill and a rise of noise between; a
+                        plucked bass, an electric piano on the offbeats, a
+                        pad in the chorus
 
     mkdir -p /tmp/jfk && curl -sL -o /tmp/jfk/jfk.ogg \\
         https://commons.wikimedia.org/wiki/Special:FilePath/Jfk_rice_university_we_choose_to_go_to_the_moon.ogg
@@ -119,31 +122,95 @@ voice = voice[:LENGTH] * 0.85 / np.abs(voice).max()
 melody = melody[:LENGTH]
 print('melody:', ' | '.join(n for _, _, _, n in SONG))
 
-band = np.zeros(LENGTH + RATE)
+DRUMS = os.path.join(AUDIO, 'drums')
+
+
+def sample(name):
+    with wave.open(os.path.join(DRUMS, name + '.wav'), 'rb') as f:
+        return np.frombuffer(f.readframes(f.getnframes()), '<i2') / 32768
+
+
+def place(track, sound, seconds, level):
+    at = int(round(seconds * RATE))
+    if at < len(track):
+        track[at:at + len(sound)] += level * sound[:len(track) - at]
+
+
+def electric_piano(f, n):
+    """a Rhodes-like note: a sine whose brightness (frequency modulation)
+    and loudness fade"""
+    t = np.arange(n) / RATE
+    index = 1.8 * np.exp(-t * 6) + 0.15
+    return np.sin(2 * np.pi * f * t + index * np.sin(2 * np.pi * f * t)) * np.exp(-t * 2.2)
+
+
+def bass_note(f, n):
+    """a plucked bass: the harmonics of a saw wave, the higher ones fading
+    faster, as a filter closing after each note"""
+    t = np.arange(n) / RATE
+    out = sum(np.sin(2 * np.pi * f * k * t) / k * np.exp(-t * (3 + 9 * k)) for k in range(1, 12) if f * k < 5000)
+    return out * np.minimum(1, t / 0.004)
+
+
+def pad(chord, n):
+    """the chord held softly: detuned saws with few harmonics, slowly in"""
+    t = np.arange(n) / RATE
+    out = np.zeros(n)
+    for c in chord:
+        f = C3 * 2 ** (STEP['CDEFGAB'[[0, 2, 4, 5, 7, 9, 11].index(c)]] / 12)
+        for detune in (0.997, 1.003):
+            out += sum(np.sin(2 * np.pi * f * detune * k * t) / k ** 1.5 for k in range(1, 6))
+    return out * np.minimum(1, t / 0.4)
+
+
+kick, snare, clap = sample('kick'), sample('snare'), sample('clap')
+hat, open_hat, crash = sample('hat-closed'), sample('hat-open'), sample('crash')
+drums = np.zeros(LENGTH + 5 * RATE)
+keys = np.zeros(LENGTH + 2 * RATE)
+low = np.zeros(LENGTH + 2 * RATE)
 rng = np.random.default_rng(1962)
-t = np.arange(int(0.25 * RATE)) / RATE
-kick = np.sin(2 * np.pi * np.cumsum(48 + 110 * np.exp(-t * 35)) / RATE) * np.exp(-t * 14)
-t = np.arange(int(0.2 * RATE)) / RATE
-noise = rng.uniform(-1, 1, len(t))
-clap = (noise - np.concatenate([[0], noise[:-1]])) * (np.exp(-t * 28) + 0.6 * np.exp(-np.abs(t - 0.012) * 400))
-n = int(0.09 * RATE)
-hat = np.diff(rng.uniform(-1, 1, n + 1)) * np.exp(-np.arange(n) / RATE * 35)
 for bar, (_, chord) in enumerate(CHORDS):
-    for eighth in range(8):
-        at = int((bar * BAR + eighth * BEAT / 2) * RATE)
-        if eighth % 2 == 0:
-            band[at:at + len(kick)] += 0.8 * kick
-        else:
-            band[at:at + n] += 0.13 * hat
-            stab = sum(tone(note_hz('CDEFGAB'[[0, 2, 4, 5, 7, 9, 11].index(c)]) * 2, int(0.12 * RATE), (1, 0.3, 0.1)) for c in chord)
-            band[at:at + len(stab)] += 0.05 * fade(stab, 5, 60)
-        if eighth in (2, 6):
-            band[at:at + len(clap)] += 0.35 * clap
-        root = C2 * 2 ** (chord[0] / 12) * (2 if eighth % 2 else 1)
-        bass = fade(tone(root, int(BEAT / 2 * 0.85 * RATE), (1, 0.6, 0.3, 0.15)), 5, 30)
-        band[at:at + len(bass)] += 0.22 * bass
-band = band[:LENGTH]
+    t0 = bar * BAR
+    chorus = bar >= 4
+    root = C2 * 2 ** (chord[0] / 12)
+    if bar in (0, 4):
+        place(drums, crash, t0, 0.35)
+    for step in range(16):                     # sixteenths
+        t = t0 + step * BEAT / 4
+        beat, sub = divmod(step, 4)
+        if sub == 0 and (chorus or beat in (0, 2)) or (not chorus and step == 10):
+            place(drums, kick, t, 0.9)
+        if sub == 0 and beat in (1, 3):
+            place(drums, snare, t, 0.7)
+            if chorus:
+                place(drums, clap, t, 0.35)
+        if sub == 2:
+            place(drums, open_hat[:int(0.18 * RATE)] * np.linspace(1, 0, int(0.18 * RATE)) if chorus else hat, t, 0.3)
+        elif sub in (0, 1, 3) and not chorus or sub == 0:
+            place(drums, hat, t, 0.18 if sub else 0.28)
+        # the fill into the chorus: sixteenths on the snare, getting louder
+        if bar == 3 and beat == 3:
+            place(drums, snare, t, 0.3 + 0.12 * sub)
+    # bass: root on 1, on the »and« of 2, octave on 3 and its »and«
+    for beats, octave, length in ((0, 1, 0.75), (1.5, 1, 0.4), (2, 2, 0.4), (2.5, 1, 0.4), (3.5, 2, 0.4)):
+        n = int(length * BEAT * RATE)
+        place(low, bass_note(root * octave, n), t0 + beats * BEAT, 0.5)
+    # electric piano: the chord on the offbeats, a little louder on the »and« of 4
+    for beats in (0.5, 1.5, 2.5, 3.5):
+        n = int(0.9 * BEAT * RATE)
+        notes = sum(electric_piano(C3 * 2 ** (STEP['CDEFGAB'[[0, 2, 4, 5, 7, 9, 11].index(c)]] / 12) * 2, n) for c in chord)
+        place(keys, notes, t0 + beats * BEAT, 0.09 if beats < 3.5 else 0.12)
+    if chorus:
+        place(keys, pad(chord, int(BAR * RATE)), t0, 0.025)
+# a rise of noise into the chorus, over the last two beats of bar 4
+n = int(2 * BEAT * RATE)
+noise = rng.uniform(-1, 1, n)
+noise = noise - np.concatenate([[0], noise[:-1]])            # brighter
+place(drums, noise * np.linspace(0, 1, n) ** 2, 3 * BAR + 2 * BEAT, 0.12)
+
+band = drums[:LENGTH] + keys[:LENGTH] + low[:LENGTH]
 band *= 0.8 / np.abs(band).max()
+print('band: drums', round(float(np.sqrt(np.mean(drums ** 2))), 3), 'keys', round(float(np.sqrt(np.mean(keys ** 2))), 3), 'bass', round(float(np.sqrt(np.mean(low ** 2))), 3))
 
 write('kennedy.wav', voice)
 write('kennedy-melodie.wav', melody)
