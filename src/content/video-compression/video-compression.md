@@ -1078,7 +1078,13 @@ encode 3.3 3.4 3.4 3.4 3.4 3.5
 
 Beim Blick kostet der Unterschied fast nichts: Bei Schritt 32 wird er überall 0. Beim Hang spart er ein wenig. Beim Schwenk kostet er so viel wie das Bild allein, und bei der Fahrt die Wand hinauf sogar mehr. Ein Schwenk verschiebt das ganze Bild; abziehen hilft dann nicht, denn an jeder Kante steht nun etwas anderes.
 
+<img class='drawing d-none d-lg-block' style='width: 44em' src='drift-wide.svg' alt='Ein Diagramm: nach rechts die Bilder 0, 4, 8, 12, 16 und 20 des Schwenks, nach oben der mittlere Fehler von 0 bis 12. Die graue Linie von encode_naive steigt gleichmäßig von 3,3 auf 13,2, die lila Linie von encode bleibt bei 3,4 liegen.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='drift.svg' alt='Ein Diagramm: nach rechts die Bilder 0, 4, 8, 12, 16 und 20 des Schwenks, nach oben der mittlere Fehler von 0 bis 12. Die graue Linie von encode_naive steigt gleichmäßig von 3,3 auf 13,2, die lila Linie von encode bleibt bei 3,4 liegen.'>
+
 `encode_naive` verliert in einer Sekunde den Anschluss: Jeder gerundete Unterschied hat einen kleinen Fehler, und der Decoder zählt alle zusammen. Der Fehler wächst von 3,3 auf 13,2 und wüchse weiter, bis zum nächsten Bild, das allein gespeichert ist. `encode` rechnet den Unterschied zum Bild, das der Decoder wirklich hat; was einmal falsch gerundet wurde, steckt im nächsten Unterschied und wird dort ausgeglichen. Darum enthält jeder Encoder einen Decoder. Auch was zu klein war und zu 0 gerundet wurde, geht nicht verloren: Der Unterschied wächst von Bild zu Bild, bis er groß genug ist, und kommt dann an.
+
+<img class='drawing d-none d-lg-block' style='width: 44em' src='encoder-loop-wide.svg' alt='Ein Ablauf: Bild k, davon wird die Vorlage abgezogen, der Unterschied wird gerundet (DCT, Schritt) und kommt in die Datei. Darunter, gestrichelt umrahmt als der Decoder im Encoder: Der gerundete Unterschied wird zurückgerechnet und zur Vorlage gezählt; das gibt das gebaute Bild, und es wird die Vorlage für Bild k + 1, abgezogen oben und dazugezählt unten.'>
+<img class='drawing d-lg-none' style='width: 27.5em' src='encoder-loop.svg' alt='Ein Ablauf: Bild k, davon wird die Vorlage abgezogen, der Unterschied wird gerundet und kommt in die Datei. Darunter, gestrichelt umrahmt als der Decoder im Encoder: Der gerundete Unterschied wird zurückgerechnet und zur Vorlage gezählt; das gibt das gebaute Bild, und es wird die Vorlage für Bild k + 1.'>
 <!-- /after -->
 
 <div class='hint try'>
