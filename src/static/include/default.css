@@ -17498,6 +17498,8 @@ body.mail-app-open {
 .document-report {
     /* a calm grey under the page, the same in and out of full screen */
     --document-desk: #eceff1;
+    --document-desk-edge: rgba(33, 37, 41, 0.16);
+    --document-desk-shade: rgba(33, 37, 41, 0.14);
     display: grid;
     grid-template-columns: minmax(15em, 21em) minmax(0, 1fr);
     gap: 0.9em;
@@ -17508,6 +17510,8 @@ body.mail-app-open {
 }
 html[data-bs-theme="dark"] .document-report {
     --document-desk: #2b2e33;
+    --document-desk-edge: rgba(255, 255, 255, 0.14);
+    --document-desk-shade: rgba(0, 0, 0, 0.45);
 }
 .document-side {
     min-height: 0;
@@ -17630,6 +17634,19 @@ html[data-bs-theme="dark"] .document-report {
     -webkit-user-select: none;
     border-radius: 0.6em;
     background: var(--document-desk);
+}
+/* the desk's edge above the sheet: a slight border and an inner shadow, so
+   that a sheet zoomed past the edges still looks cut by a window, not like
+   the page around it (the stage moves by transform, the edge stays) */
+.document-viewport::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border: 1px solid var(--document-desk-edge, rgba(33, 37, 41, 0.16));
+    border-radius: inherit;
+    box-shadow: inset 0 1px 6px var(--document-desk-shade, rgba(33, 37, 41, 0.14));
+    pointer-events: none;
 }
 /* a plain wheel scrolls the website; this says how to zoom */
 .document-wheel-hint {
