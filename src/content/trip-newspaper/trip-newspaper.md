@@ -95,6 +95,10 @@ PDF landet in deinen Downloads.
 
 _task(pdf)
 
+<div class='history' id='history-pdf'>
+<p><strong>Das PDF</strong>, 1993. Die Firma Adobe stellte das <em>Portable Document Format</em> 1993 vor, damit ein Dokument auf jedem Computer gleich aussieht, mit seinen Schriften und Bildern darin. Seit 2008 ist es eine offene Norm, ISO 32000: Jedes Programm darf PDFs schreiben und lesen, ohne Adobe zu fragen. Darum kann LibreOffice es genauso wie Word.</p>
+</div>
+
 <!-- after: pdf -->
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Öffne dein PDF im Browser und leg es neben dein Dokument. Achte auf die Schrift, auf die Stellen, an denen die Zeilen umbrechen, und auf die Seitenzahl.

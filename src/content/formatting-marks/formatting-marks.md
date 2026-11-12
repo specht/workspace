@@ -27,6 +27,13 @@ der Mitte, das Datum rechts, darunter ein kurzer Brief.
 Wie ein Dokument gebaut ist, sieht man auf dem Papier nicht. Man merkt es erst,
 wenn sich etwas ändert.
 
+Wie groß eine Schrift ist, misst die Textverarbeitung in **Punkt** (pt). Ein
+Punkt ist ungefähr 0,35 mm; die 12 pt des Briefs sind gut 4 mm, das Feld, in
+das ein Buchstabe mit allem passt, was nach oben und unten herausragt. Auch
+Abstände misst sie in pt, Seitenränder und Bilder dagegen in cm.
+
+<img class='drawing' style='width: 35em' src='punkt.svg' alt='Oben ein Zentimeter, vergrößert, mit Millimeterstrichen, daneben ein schmaler blauer Balken: 1 pt ≈ 0,35 mm; 72 pt = 2,54 cm (ein Zoll); 28 pt ≈ 1 cm. Darunter groß »Hg« in einem blauen Feld, eine Klammer daneben: 12 pt ≈ 4,2 mm, das Feld, in das die Buchstaben passen; ein H ist etwas kleiner'>
+
 _task(groesser)
 
 <!-- after: groesser -->
@@ -91,6 +98,8 @@ _task(zeilenende)
 Ob ein Absatz links, in der Mitte oder rechts steht, ist seine
 **Ausrichtung**. Sie gehört zum Absatz, nicht zu den Leerzeichen davor: Ein
 zentrierter Absatz bleibt in der Mitte, wie groß die Schrift auch wird.
+
+<img class='drawing' style='width: 35em' src='ausrichtung.svg' alt='Derselbe Absatz aus vier Zeilen dreimal. Linksbündig: alle Zeilen beginnen am linken Rand. Zentriert: jede Zeile steht in der Mitte. Rechtsbündig: alle Zeilen enden am rechten Rand'>
 
 <table class='table'>
 <tr><th>Ausrichtung</th><th>Tasten</th></tr>
@@ -184,3 +193,12 @@ So sieht die gebaute Einladung mit größerer Schrift aus:
 
 _task(ausdruck)
 <!-- /after -->
+
+<div class='history' id='history-schreibmaschine'>
+<p><strong>Von der Schreibmaschine zur Textverarbeitung.</strong> An einer Schreibmaschine schob ein Hebel am Ende jeder Zeile die Walze mit dem Papier zurück an den Anfang und eine Zeile weiter, der Wagenrücklauf. Daher kommt das Zeichen ↵, und daher tippten viele zwei Leerzeichen nach dem Punkt: Auf der Schreibmaschine war jeder Buchstabe gleich breit, und ein Leerzeichen allein fiel kaum auf. 1955 schlug Ulrich Steinhilper, Verkäufer von Schreibmaschinen bei IBM in Deutschland, vor, Texte so mit Maschinen zu bearbeiten wie Zahlen, eine <em>Textverarbeitung</em> neben der Datenverarbeitung; IBM ehrte ihn 1972 für das Wort. Die Amerikanerin Evelyn Berezin baute 1968 die »Data Secretary«, ein Gerät so groß wie ein kleiner Kühlschrank, das getippten Text auf einem Band speicherte: Wer sich vertippt hatte, musste nicht mehr die ganze Seite neu schreiben.</p>
+</div>
+
+<div class='history' id='history-libreoffice'>
+<p><strong>Woher LibreOffice kommt.</strong> 1984 gründete Marco Börries mit 16 Jahren, noch als Schüler, in Lüneburg die Firma Star Division. 1985 erschien ihr Textprogramm StarWriter, für die Heimcomputer von Schneider; daraus wurde das Paket StarOffice. 1999 kaufte die Firma Sun StarOffice und gab seinen Quelltext frei, als OpenOffice.org. 2010 machten Entwicklerinnen und Entwickler daraus LibreOffice, mit der Stiftung The Document Foundation, die seit 2012 ihren Sitz in Berlin hat. LibreOffice ist freie Software: Jede und jeder darf es benutzen, weitergeben und verändern, kostenlos.</p>
+</div>
+

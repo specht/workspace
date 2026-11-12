@@ -60,6 +60,12 @@ Für ein Blatt reichen zwei: eine für die Überschrift, eine für den
 Text. Mehr Schriften machen ein Blatt nicht lebendiger, sondern unruhig, und
 jede neue Schrift fragt den Blick: Ist das etwas anderes?
 
+<div class='history' id='history-bravo'>
+<p><strong>Schrift auf dem Bildschirm</strong>, 1974. Lange zeigte ein Bildschirm nur eine Schrift in einer Größe; wie ein Text gedruckt aussah, sah man erst auf dem Papier. Bei Xerox PARC in Kalifornien schrieben Butler Lampson, Charles Simonyi und ihre Kollegen 1974 das Programm Bravo für den Rechner Alto: Es zeigte verschiedene Schriften und den Text ungefähr so, wie er gedruckt aussehen würde. Heute heißt das WYSIWYG, »what you see is what you get«, was du siehst, bekommst du.</p>
+</div>
+
+_person(tesler)
+
 ## Größe
 
 Text auf Papier ist in **11 oder 12 pt** gut lesbar. Die Überschrift darf groß

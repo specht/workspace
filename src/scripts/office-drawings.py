@@ -61,12 +61,14 @@ _fonts = {}
 
 
 def measure(text, size, weight='400', family='sans'):
-    key = (family, weight, size)
+    # one font at 400 px, scaled to the size asked for (which may be a
+    # fraction: 12 pt drawn at a ruler's scale)
+    key = (family, weight)
     if key not in _fonts:
         path = _FONT_FILES[(family, weight)]
         source = _ttf(path) if path.suffix == '.woff2' else str(path)
-        _fonts[key] = ImageFont.truetype(source, size * 4)
-    return _fonts[key].getlength(text) / 4
+        _fonts[key] = ImageFont.truetype(source, 400)
+    return _fonts[key].getlength(text) * size / 400
 
 
 def text(x, y, s, size=15, colour=TEXT, anchor='start', weight='400', family=SANS, extra=''):
@@ -704,8 +706,181 @@ def seite():
     svg('seite', 'headers-and-footnotes', w, h, body, 'Eine Seite mit Kopfzeile, Text, Fußnote und Fußzeile')
 
 
+
+# ---- the unit and alignment (Was das Auge nicht sieht)
+
+def punkt():
+    """the point: 72 to an inch, about 0,35 mm; a 12 pt letter measured from
+    the top of its tallest to the bottom of its lowest letters"""
+    w, h = 560, 250
+    body = []
+    # a ruler: 1 cm against 28,35 pt, drawn 6 times larger than life
+    x0, y0, mm = 30, 46, 22.0
+    body.append(text(x0, 22, 'ein Zentimeter, vergrößert', 14, GREY))
+    body.append(line(x0, y0, x0 + 10 * mm, y0, TEXT, 1.4))
+    for k in range(11):
+        body.append(line(x0 + k * mm, y0, x0 + k * mm, y0 + (12 if k in (0, 5, 10) else 7), TEXT, 1.2))
+    body.append(text(x0, y0 + 30, '0', 12, TEXT, 'middle'))
+    body.append(text(x0 + 10 * mm, y0 + 30, '1 cm', 12, TEXT, 'middle'))
+    # one point: 0,3528 mm
+    pt_w = 0.3528 * mm
+    body.append(rect(x0 + 10 * mm + 30, y0 - 18, pt_w, 18, BLUE))
+    body.append(text(x0 + 10 * mm + 30 + pt_w + 8, y0 - 4, '1 pt ≈ 0,35 mm', 14, BLUE, weight='600'))
+    body.append(text(x0 + 10 * mm + 30, y0 + 22, '72 pt = 2,54 cm (ein Zoll)', 13, GREY))
+    body.append(text(x0 + 10 * mm + 30, y0 + 40, '28 pt ≈ 1 cm', 13, GREY))
+    # 12 pt: the size of a letter, from the top of the tallest to the
+    # bottom of the lowest, drawn at the same scale (12 pt = 4,23 mm)
+    size = 12 * 0.3528 * mm   # the em at this scale
+    base = 196
+    gx = x0 + 20
+    top, bottom = base - size * 0.78, base + size * 0.22
+    # the box of the size (the font's em: 0,78 above the line, 0,22 below)
+    body.append(rect(gx - 4, top, measure('Hg', size) + 8, bottom - top, PBLUE_BG))
+    body.append(line(gx - 4, base, gx + measure('Hg', size) + 4, base, EDGE, 1, " stroke-dasharray='3 3'"))
+    body.append(text(gx, base, 'Hg', size, INK))
+    bx = gx + measure('Hg', size) + 14
+    body.append(line(bx, top, bx + 10, top, BLUE, 1.5) + line(bx + 10, top, bx + 10, bottom, BLUE, 1.5) +
+                line(bx, bottom, bx + 10, bottom, BLUE, 1.5))
+    body.append(text(bx + 18, (top + bottom) / 2 - 4, '12 pt ≈ 4,2 mm', 14, BLUE, weight='600'))
+    body.append(text(bx + 18, (top + bottom) / 2 + 14, 'das Feld, in das die', 12, GREY))
+    body.append(text(bx + 18, (top + bottom) / 2 + 30, 'Buchstaben passen; ein H', 12, GREY))
+    body.append(text(bx + 18, (top + bottom) / 2 + 46, 'ist etwas kleiner', 12, GREY))
+    body.append(text(x0 + 330, 160, 'Schrift und Abstände misst', 13, GREY))
+    body.append(text(x0 + 330, 177, 'die Textverarbeitung in pt;', 13, GREY))
+    body.append(text(x0 + 330, 194, 'Seitenränder und Bilder in cm.', 13, GREY))
+    svg('punkt', 'formatting-marks', w, h, body, 'Ein Punkt (pt) neben einem Zentimeter, und wie groß 12 pt sind')
+
+
+def ausrichtung():
+    """left, centred, right: the same paragraph three times"""
+    w, h = 560, 150
+    body = []
+    lines = [196, 160, 182, 92]
+    for i, (title, mode) in enumerate([('linksbündig', 'left'), ('zentriert', 'center'), ('rechtsbündig', 'right')]):
+        x = 10 + i * 186
+        body.append(text(x + 84, 22, title, 14, TEXT, 'middle', '600'))
+        body.append(paper(x, 34, 168, 104))
+        tx, tw = x + 14, 140
+        body.append(line(tx, 44, tx, 128, EDGE, 1, " stroke-dasharray='2 3'") +
+                    line(tx + tw, 44, tx + tw, 128, EDGE, 1, " stroke-dasharray='2 3'"))
+        for k, length in enumerate(lines):
+            length = length * tw / 200
+            bx = tx if mode == 'left' else tx + tw - length if mode == 'right' else tx + (tw - length) / 2
+            body.append(bar(bx, 62 + k * 18, length))
+    svg('ausrichtung', 'formatting-marks', w, h, body, 'Derselbe Absatz linksbündig, zentriert und rechtsbündig')
+
+
+# ---- levels (Formatvorlagen)
+
+def ebenen():
+    """headings in levels: the document beside its outline"""
+    w, h = 560, 240
+    body = []
+    px, py = 16, 14
+    body.append(paper(px, py, 250, 212))
+    y = py + 32
+    rows = [(1, 'Montag: Anreise'), (0, None), (1, 'Mittwoch: Wanderung'), (2, 'Am Vormittag: um den See'), (0, None),
+            (2, 'Am Nachmittag: über den Moorpfad'), (0, None)]
+    marks = []
+    for lvl, title in rows:
+        if lvl == 1:
+            body.append(text(px + 16, y, title, 14, PGREEN, weight='700'))
+            marks.append((lvl, title, y))
+            y += 22
+        elif lvl == 2:
+            body.append(text(px + 16, y, title, 12, PGREEN, weight='700'))
+            marks.append((lvl, title, y))
+            y += 20
+        else:
+            body.append(bar(px + 16, y - 4, 210))
+            body.append(bar(px + 16, y + 8, 160))
+            y += 28
+    # the outline: what the program shows beside the text
+    ox, oy = 300, 30
+    body.append(rect(ox - 12, oy - 14, 256, 150, '#f3f4f6', '#d1d5db', 1, 6))
+    body.append(text(ox, oy + 6, 'Übersicht der Überschriften', 12, GREY))
+    yy = oy + 34
+    for lvl, title, _ in marks:
+        indent = 0 if lvl == 1 else 18
+        body.append(text(ox + indent, yy, ('▸ ' if lvl == 1 else '') + title, 13, TEXT, weight='600' if lvl == 1 else '400'))
+        yy += 26
+    body.append(text(ox, oy + 156, 'Ebene 1: die Tage', 13, BLUE))
+    body.append(text(ox, oy + 174, 'Ebene 2: die Teile eines Tages,', 13, BLUE))
+    body.append(text(ox, oy + 190, 'eingerückt unter ihrem Tag', 13, BLUE))
+    svg('ebenen', 'paragraph-styles', w, h, body, 'Überschriften in Ebenen und die Übersicht, die das Programm daraus macht')
+
+
+# ---- the newspaper page (Die Zeitungsseite)
+
+def spalten():
+    """a page in two columns: margins, the columns, the gap between them"""
+    w, h = 450, 350
+    body = []
+    scale = 12.0     # px per cm
+    px, py = 170, 14
+    pw, ph = 21 * scale, 22 * scale
+    body.append(paper(px, py, pw, ph))
+    m, gap = 1.5 * scale, 0.8 * scale
+    col = (pw - 2 * m - gap) / 2
+    for c in range(2):
+        cx = px + m + c * (col + gap)
+        body.append(rect(cx, py + m, col, ph - 2 * m, PBLUE_BG))
+        for k in range(14):
+            body.append(bar(cx + 4, py + m + 14 + k * 14, col - 8 - (6 if k % 5 == 4 else 0), h=4))
+    # the measures
+    yy = py + ph + 0
+    def span(x1, x2, y, label, colour):
+        out = line(x1, y, x2, y, colour, 1.3) + line(x1, y - 5, x1, y + 5, colour, 1.3) + line(x2, y - 5, x2, y + 5, colour, 1.3)
+        return out + text((x1 + x2) / 2, y - 8, label, 12, colour, 'middle', '600')
+    # under the page: the margins and the gap, then the whole width
+    body.append(span(px, px + m, py + ph + 22, '1,5', AMBER))
+    body.append(span(px + pw - m, px + pw, py + ph + 22, '1,5', AMBER))
+    body.append(span(px + m + col, px + m + col + gap, py + ph + 22, '0,8', AMBER))
+    body.append(span(px, px + pw, py + ph + 56, '21 cm', TEXT))
+    body.append(text(20, py + 40, 'Seitenrand', 14, TEXT, weight='600'))
+    body.append(text(20, py + 58, 'links und rechts', 12, GREY))
+    body.append(text(20, py + 74, 'je 1,5 cm', 12, GREY))
+    body.append(text(20, py + 140, 'zwei Spalten,', 14, TEXT, weight='600'))
+    body.append(text(20, py + 158, 'dazwischen 0,8 cm', 12, GREY))
+    body.append(text(20, py + ph + 26, 'in cm:', 12, AMBER))
+    svg('spalten', 'newspaper-page', w, h, body, 'Eine Seite in zwei Spalten mit ihren Rändern und dem Abstand dazwischen')
+
+
+def satz():
+    """an office document's look against a newspaper's: ragged right with
+    spacing between paragraphs, justified with a first-line indent"""
+    w, h = 560, 240
+    body = []
+    paragraphs = [[200, 186, 194, 120], [192, 200, 176, 198, 88], [198, 184, 140]]
+    for i, (title, news) in enumerate([('wie ein neues Dokument', False), ('wie in der Zeitung', True)]):
+        x = 18 + i * 280
+        body.append(text(x + 122, 24, title, 15, TEXT, 'middle', '600'))
+        body.append(paper(x, 36, 244, 192))
+        tx, tw = x + 18, 208
+        y = 58
+        for k, para in enumerate(paragraphs):
+            for j, length in enumerate(para):
+                last = j == len(para) - 1
+                if news:
+                    start = tx + (18 if j == 0 and k > 0 else 0)
+                    full = tx + tw - start
+                    body.append(bar(start, y, full if not last else length * tw / 200 * 0.6))
+                else:
+                    body.append(bar(tx, y, length * tw / 200))
+                y += 11 if news else 13
+            y += 0 if news else 12
+        if news:
+            body.append(line(tx + tw + 4, 50, tx + tw + 4, y - 6, PAMBER, 1.2, " stroke-dasharray='3 3'"))
+            body.append(text(tx + tw - 2, y + 18, 'jede Zeile bis zum Rand,', 12, PAMBER, 'end'))
+            body.append(text(tx + tw - 2, y + 33, 'ein Einzug statt einer Lücke', 12, PAMBER, 'end'))
+        else:
+            body.append(text(tx, y + 12, 'rechts flatternd, Lücken', 12, GREY))
+            body.append(text(tx, y + 27, 'zwischen den Absätzen', 12, GREY))
+    svg('satz', 'newspaper-page', w, h, body, 'Flattersatz mit Abstand gegen Blocksatz mit Einzug')
+
+
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
-                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite]}
+                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz]}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:

@@ -30,6 +30,8 @@ Zeile reicht bis zum Rand der Spalte, und die Absätze stehen dicht
 untereinander. So passt mehr auf eine Seite, und das Auge springt am Ende
 einer kurzen Zeile leicht in die nächste.
 
+<img class='drawing' style='width: 35em' src='satz.svg' alt='Zwei Blätter mit denselben drei Absätzen als graue Zeilen. Links »wie ein neues Dokument«: die Zeilen enden verschieden weit rechts, zwischen den Absätzen eine Lücke. Rechts »wie in der Zeitung«: jede Zeile reicht bis zum rechten Rand, außer der letzten eines Absatzes, keine Lücken, die erste Zeile jedes neuen Absatzes eingerückt'>
+
 ## Spalten und Ränder
 
 Hol dir den Artikel:
@@ -59,6 +61,10 @@ einem Abstand von 0,8 cm. Die Ränder stellst du unter *Layout* <i class='bi bi-
 
 _task(spalte)
 
+<!-- after: spalte -->
+<img class='drawing' style='width: 28em' src='spalten.svg' alt='Ein Blatt mit zwei Spalten grauer Zeilen. Darunter die Maße in cm: links und rechts je 1,5 Rand, zwischen den Spalten 0,8, das ganze Blatt 21 cm breit'>
+<!-- /after -->
+
 **Jetzt bist du dran:** Stell die Seite auf zwei Spalten mit 0,8 cm Abstand
 und alle vier Ränder auf 1,5 cm.
 
@@ -80,6 +86,12 @@ in einer schmalen Spalte werden sie groß. Abhilfe schafft die
 **Silbentrennung**: Das Programm trennt lange Wörter am Zeilenende, und die
 Lücken bleiben klein.
 <!-- /after -->
+
+<div class='history' id='history-trennmuster'>
+<p><strong>Wie ein Programm Wörter trennt.</strong> Für jedes Wort im Wörterbuch nachzusehen, wo es getrennt wird, wäre viel Arbeit, und neue Wörter fehlen immer. Für das Satzprogramm TeX von Donald Knuth erfand sein Doktorand Frank Liang 1983 darum Muster: kurze Stücke von Buchstaben, an denen man trennen darf oder nicht. Aus ihnen rechnet das Programm die Trennstellen jedes Worts aus, auch eines neuen. Die Silbentrennung von LibreOffice benutzt Muster, die aus denen von TeX gemacht sind.</p>
+</div>
+
+_person(knuth-lamport)
 
 ## Silbentrennung, Einzug und Zeilenabstand
 

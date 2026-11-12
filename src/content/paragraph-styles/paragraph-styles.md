@@ -74,6 +74,10 @@ Absatzvorlagen *Überschrift 1*. Die Übersicht der Überschriften ist der
 
 _task(ebene)
 
+<!-- after: ebene -->
+<img class='drawing' style='width: 35em' src='ebenen.svg' alt='Links ein Blatt mit »Montag: Anreise« und »Mittwoch: Wanderung« als großen Überschriften, unter dem Mittwoch kleiner »Am Vormittag: um den See« und »Am Nachmittag: über den Moorpfad«. Rechts die Übersicht der Überschriften: die beiden Tage, darunter eingerückt die zwei Teile des Mittwochs. Ebene 1: die Tage; Ebene 2: die Teile eines Tages, eingerückt unter ihrem Tag'>
+<!-- /after -->
+
 **Jetzt bist du dran:** Gib den fünf Tagen die Vorlage »Überschrift 1« und
 den Teilen eines Tages »Überschrift 2«. Öffne danach die Übersicht der
 Überschriften und klick auf den Donnerstag.
