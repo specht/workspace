@@ -1,9 +1,11 @@
 #!/bin/sh
 # The Telefonspiel end to end, without a trunk: Asterisk, the speech
 # service, the runner and a test telephone (baresip) in a Docker network of
-# their own. The telephone
-# calls 100, chooses game 1 (Zahlenraten) and guesses; the test checks the
-# runner's log and keeps the recording in $OUT.
+# their own, with one published game (123, the demo Zahlenraten). The
+# telephone calls 100, the line's number here: the Telefonbuch's menu
+# answers, it types 123 and guesses. Then it calls 100123, the number with
+# the game's dialled after it: the game answers at once, without the menu.
+# The test checks the runner's log and keeps the recordings in $OUT.
 #   src/phone/test/e2e.sh            (from the repository; images phone-asterisk,
 #                                     phone-speech, phone-runner, phone-testclient built)
 set -eu
@@ -11,7 +13,11 @@ HERE=$(cd "$(dirname "$0")/.." && pwd)
 OUT=${OUT:-/tmp/phone-e2e}
 CACHE=${CACHE:-/tmp/phone-e2e-cache}       # speech, kept between runs
 NET=phone-e2e
-rm -rf "$OUT"; mkdir -p "$OUT/conf" "$OUT/in" "$OUT/out" "$CACHE"
+rm -rf "$OUT"; mkdir -p "$OUT/conf" "$OUT/in" "$OUT/out" "$OUT/games/1" "$CACHE"
+# the published list as the Workspace writes it (phone_games.rb)
+cp "$HERE/games/1/main.py" "$OUT/games/1/"
+echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}]}' > "$OUT/games/published.json"
+chmod -R a+rX "$OUT/games"
 cleanup() { docker rm -f phone-e2e-asterisk phone-e2e-speech phone-e2e-runner >/dev/null 2>&1 || true; docker network rm $NET >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 cleanup
@@ -23,20 +29,36 @@ chmod 777 "$CACHE" 2>/dev/null || true
 docker run -d --name phone-e2e-speech --network $NET --network-alias phone-speech \
     -v "$HERE/speech:/app:ro" -v "$CACHE:/cache" phone-speech >/dev/null
 docker run -d --name phone-e2e-runner --network $NET --network-alias runner \
-    -v "$HERE:/phone:ro" -v "$HERE/games:/games:ro" phone-runner >/dev/null
+    -e PHONE_NUMBER=100 -e PHONE_DIRECT_DIAL=1 \
+    -v "$HERE:/phone:ro" -v "$OUT/games:/games:ro" phone-runner >/dev/null
 cp "$HERE/test/baresip-config" "$OUT/conf/config"
 echo "<sip:test@asterisk>;auth_pass=test;regint=0" > "$OUT/conf/accounts"
 cp "$HERE/test/call.py" "$OUT/call.py"
 docker run --rm -v "$OUT:/t" phone-testclient sox -n -r 16000 -c 1 -b 16 /t/in/source.wav synth 60 sine 1 vol 0.0001
 for i in $(seq 1 30); do docker logs phone-e2e-runner 2>&1 | grep -q 'connected to Asterisk' && break; sleep 1; done
-# the menu speaks for about 5 s; then 1; then three guesses, 6 s apart
-docker run --rm --network $NET -v "$OUT:/t" -v "$OUT/conf:/root/.baresip" -v "$OUT/out:/out" -v "$OUT/in:/in" \
-    phone-testclient python3 /t/call.py 100 40 1@9 5@18 3@24 7@30 >/dev/null 2>&1
-docker logs phone-e2e-runner > "$OUT/runner.log" 2>&1
+call() {
+    docker run --rm --network $NET -v "$OUT:/t" -v "$OUT/conf:/root/.baresip" -v "$OUT/out:/out" -v "$OUT/in:/in" \
+        phone-testclient python3 /t/call.py "$@" >/dev/null 2>&1
+}
 fail=0
-for expected in "say 'Hallo und willkommen" "keys '1'" "say 'Ich denke mir eine Zahl" "keys '5'" "keys '3'" "keys '7'" "game ended: ended 0"; do
-    if grep -q "$expected" "$OUT/runner.log"; then echo "ok    $expected"; else echo "MISSING $expected"; fail=1; fi
-done
+check() {      # check LOG TEXT…: each text in the log
+    log=$1; shift
+    for expected in "$@"; do
+        if grep -q "$expected" "$log"; then echo "ok    $expected"; else echo "MISSING $expected"; fail=1; fi
+    done
+}
+# 1. the bare number: the menu speaks; 1 2 3 cut it short; then the game's
+# music alone for 3 s, its question, and three guesses (the game ends when
+# one is right, so not every guess is read)
+call 100 45 1@5 2@5.6 3@6.2 5@20 3@26 7@32
+docker logs phone-e2e-runner > "$OUT/runner.log" 2>&1
+check "$OUT/runner.log" "say 'Hier ist das Telefonbuch" "game 1" "say 'Ich denke mir eine Zahl" "keys '5'" "game ended: ended 0"
+# 2. the number with the game's after it: the game, no menu
+lines=$(wc -l < "$OUT/runner.log")
+call 100123 25 4@14
+docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-direct.log"
+check "$OUT/runner-direct.log" "game 1" "say 'Ich denke mir eine Zahl"
+if grep -q "say 'Hier ist das Telefonbuch" "$OUT/runner-direct.log"; then echo "WRONG the menu answered a call dialled with the game's number"; fail=1; else echo "ok    no menu when dialled directly"; fi
 heard=$(ls "$OUT"/out/*-dec.wav | head -1)
 seconds=$(docker run --rm -v "$OUT:/t" phone-testclient sh -c "sox /t/out/$(basename "$heard") -n stat 2>&1 | sed -n 's/^Length (seconds): *//p'")
 echo "heard ${seconds} s: $heard"

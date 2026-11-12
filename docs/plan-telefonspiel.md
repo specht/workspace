@@ -183,6 +183,19 @@ Why it was flaky:
   were at hand; the trunk's limit is not reached yet). Open since
   numbers may have four digits: a three-digit extension cannot reach
   them; either four-digit extensions or the menu for those games.
+- **The line only answers** (the maintainer, 12 November 2026): no call is
+  ever made from it, and the browser's phone takes a game's number only,
+  never a real one. Asterisk loads no module that dials, transfers or
+  pages, no call files (`pbx_spool`) and no `channel originate`
+  (`modules.conf`); the runner's ARI requests pass `runner/ari_guard.py`,
+  which refuses originating a channel, dialling, sending a call on in the
+  dialplan, recording and snooping (`test/test_ari_guard.py`). Nothing a
+  caller says is recorded: the runner mutes the caller's channel inwards,
+  the keys still arrive; no call records (CDR, CEL).
+- **The real line runs the Telefonbuch's menu** (`line/menu.py`) in the
+  runner's sandbox, as the browser's line does: the published games, a game
+  dialled after the line's number (`game.game_number`, `test_numbers.py`)
+  without the menu. `e2e.sh` calls both ways.
 - **Durchwahl is a setting** (the maintainer): schools have different
   providers, and whether one passes extra digits on cannot be told in
   advance. `credentials.rb` holds the number and a switch, off by default

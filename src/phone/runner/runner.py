@@ -3,8 +3,10 @@
 Asterisk hands every call to the Stasis app "telefonspiel". For each call
 the runner answers, connects a stream of its own into the call (External
 Media: RTP with 16 kHz audio as G.722, bridged with the caller), mixes music
-and speech into it live (mixer.py), reads the keys from ARI events, plays
-the menu and then runs the chosen game as a process of its own.
+and speech into it live (mixer.py), reads the keys from ARI events and runs
+the Telefonbuch's menu (src/phone/line/menu.py) as a process of its own,
+which becomes the published game the caller chooses, or the one dialled
+after the line's number (PHONE_DIRECT_DIAL).
 
 Running the game and its protocol is shared with the emulator in the
 Workspace (src/phone/core/game.py), so a game behaves the same in both.
@@ -23,6 +25,7 @@ import time
 import aiohttp
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'core'))
+import ari_guard  # noqa: E402
 import game  # noqa: E402
 import sounds  # noqa: E402
 from mixer import Mixer, silence  # noqa: E402
@@ -31,11 +34,15 @@ ARI = os.environ.get('PHONE_ARI', 'http://asterisk:8088/ari')
 ARI_USER = os.environ.get('PHONE_ARI_USER', 'runner')
 ARI_PASSWORD = os.environ.get('PHONE_ARI_PASSWORD', 'runner')
 APP = 'telefonspiel'
-# Nothing a caller says is recorded or kept (the maintainer, 12 November
-# 2026; docs/plan-telefonspiel.md): ARI's recordings and snooping (listening
-# in on a channel) are never asked for
-ARI_FORBIDDEN = re.compile(r'/(record|recordings|snoop)\b', re.I)
 GAMES = os.environ.get('PHONE_GAMES', '/games')
+# the Telefonbuch's menu (src/phone/line/menu.py): the same on the phone as
+# in the browser; it reads the published games (GAMES/published.json) and
+# becomes the chosen one
+MENU_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'line')
+MENU = [sys.executable, os.path.join(MENU_FOLDER, 'menu.py')]
+# the line's number (PHONE_NUMBER) and whether the provider passes digits
+# dialled after it on (PHONE_DIRECT_DIAL): »030 22908772 123« starts game 123
+DIRECT_DIAL = os.environ.get('PHONE_DIRECT_DIAL', '') in ('1', 'true', 'yes')
 RTP_PORTS = range(20000, 20100)
 GAME_SECONDS = int(os.environ.get('PHONE_GAME_SECONDS', '900'))   # a call at most 15 minutes
 # how often one call may be forwarded from game to game (transfer)
@@ -63,12 +70,38 @@ def game_limits():
         os.setuid(user.pw_uid)
 
 
+LINE_NUMBER = os.environ.get('PHONE_NUMBER', '')
+
+
+def direct_digits(exten):
+    """the game's number dialled after the line's (»030/22 908 772-123«), or
+    '' for the menu: a call to the bare number arrives with the SIP user's
+    name instead of the number (easybell, tested 12 November 2026)"""
+    if not DIRECT_DIAL or not LINE_NUMBER or not re.fullmatch(r'\+?\d+', exten or ''):
+        return ''
+    # only the line's number with digits after it: a trunk reports the
+    # whole number, never a game's alone
+    return game.game_number(exten, LINE_NUMBER) if game.international(exten).startswith(game.international(LINE_NUMBER)) else ''
+
+
+def published():
+    """the published games: (folders, numbers)"""
+    try:
+        with open(os.path.join(GAMES, 'published.json')) as f:
+            games = [g for g in json.load(f).get('games', []) if isinstance(g, dict)]
+    except (OSError, ValueError, AttributeError):
+        games = []
+    return {str(g.get('folder')) for g in games}, {str(g.get('number')) for g in games}
+
+
 class Call(game.Phone):
     def __init__(self, runner, channel):
         super().__init__()
         self.runner = runner
         self.channel = channel
-        self.folder = GAMES
+        self.folder = MENU_FOLDER
+        self.dialed = ''            # a game's number dialled after the line's (direct_digits)
+        self.switched = False
         self.mixer = None
         self.sock = None
         self.port = None
@@ -172,71 +205,50 @@ class Call(game.Phone):
 
     # the menu and the games ---------------------------------------------
 
-    def games(self):
-        found = {}
-        if os.path.isdir(GAMES):
-            for code in sorted(os.listdir(GAMES)):
-                meta = os.path.join(GAMES, code, 'game.json')
-                if code.isdigit() and os.path.exists(meta):
-                    with open(meta) as f:
-                        found[code] = json.load(f)
-        return found
-
-    async def menu(self):
-        games = self.games()
-        if not games:
-            await self.say('Hallo! Hier gibt es gerade keine Spiele. Schreib doch selbst eins.')
-            return None
-        await self.say('Hallo und willkommen beim Telefonspiel der Hackschule.')
-        for attempt in range(3):
-            for code, meta in games.items():
-                await self.say(f"Drücke die {' '.join(code)} für: {meta.get('title', 'ein Spiel')}.")
-                if not self.keys.empty():
-                    break
-            width = max(len(code) for code in games)
-            choice = await self.read_keys(width, 8000)
-            if choice in games:
-                return choice
-            if choice:
-                await self.say(f"Ein Spiel mit der {' '.join(choice)} gibt es nicht.")
-        await self.say('Bis bald!')
-        return None
-
     def transfer_problem(self, number):
-        if number not in self.games():
+        """a forwarded call goes only to a published game"""
+        if number not in published()[1]:
             return f'transfer: Ein Spiel mit der Nummer {number} gibt es nicht.'
         return None
 
-    async def run_game(self, code, seconds=GAME_SECONDS):
-        self.folder = os.path.join(GAMES, code)
-        with open(os.path.join(self.folder, 'game.json')) as f:
-            meta = json.load(f)
-        self.mixer.set_music(None)
-        env = game.environment({'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/tmp'})
-        reason, status = await game.run_game(
-            self, game.command_for(meta['command']), self.folder, env,
-            lambda kind, line: log(f'[{code} {kind}]', line),
-            preexec_fn=game_limits, seconds=seconds)
-        self.log('game ended:', reason, status)
-        if reason == 'time':
-            await self.say('Die Zeit ist um. Tschüss!')
+    async def execute(self, command):
+        # the menu becomes a published game once: from now on its music
+        # and recordings come from that game's folder (as in line.py)
+        if isinstance(command, dict) and 'game' in command:
+            folder = str(command['game'])
+            if self.switched or folder not in published()[0]:
+                return {'error': 'no game'}
+            self.switched = True
+            self.folder = os.path.join(GAMES, os.path.basename(folder))
+            self.log('game', os.path.basename(folder))
+            return {'ok': True}
+        return await super().execute(command)
 
     async def run(self):
         try:
             await self.setup()
-            code = await self.menu()
+            dialed = self.dialed
             # a game may forward the call to another game's number
-            # (transfer); five times at most, so that two games cannot pass
-            # a call back and forth for ever
-            # all of them together within the call's time
+            # (transfer): the menu starts again as if that number had been
+            # dialled, five times at most, all within the call's time
             deadline = time.monotonic() + GAME_SECONDS
             for _ in range(1 + MAX_TRANSFERS):
                 left = int(deadline - time.monotonic())
-                if not code or self.ended.is_set() or left <= 0:
+                if self.ended.is_set() or left <= 0:
                     break
-                self.transfer_to = None
-                await self.run_game(code, left)
-                code = self.transfer_to
+                self.folder, self.switched, self.transfer_to = MENU_FOLDER, False, None
+                self.mixer.set_music(None)
+                env = game.environment({'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/tmp',
+                                        'PHONE_GAMES': GAMES, 'PHONE_DIALED': dialed})
+                reason, status = await game.run_game(
+                    self, MENU, MENU_FOLDER, env, lambda kind, line: log(f'[{self.channel} {kind}]', line),
+                    preexec_fn=game_limits, seconds=left)
+                self.log('game ended:', reason, status)
+                if reason == 'time':
+                    await self.say('Die Zeit ist um. Tschüss!')
+                if reason != 'transfer':
+                    break
+                dialed = self.transfer_to
             if not self.ended.is_set():
                 self.mixer.say(silence(600))
                 await asyncio.sleep(0.6)
@@ -260,8 +272,9 @@ class Runner:
         self.free_ports.append(port)
 
     async def ari(self, method, path, **params):
-        if ARI_FORBIDDEN.search(path):
-            raise RuntimeError(f'{method} {path}: the runner never records or listens in')
+        # it only answers: never a call out, a recording or listening in
+        if not ari_guard.allowed(method, path):
+            raise RuntimeError(f'{method} {path}: the runner never makes a call, records or listens in')
         async with self.session.request(method, ARI + path, params=params,
                                         auth=aiohttp.BasicAuth(ARI_USER, ARI_PASSWORD)) as response:
             if response.status >= 400:
@@ -282,6 +295,7 @@ class Runner:
                         and not event['channel'].get('name', '').startswith('UnicastRTP'):
                     log('a call')          # no caller's number in the log (docs/plan-telefonspiel.md, »Open«)
                     call = Call(self, channel)
+                    call.dialed = direct_digits(event['channel'].get('dialplan', {}).get('exten', ''))
                     self.calls[channel] = call
                     asyncio.create_task(self._run_call(call))
                 elif kind == 'ChannelDtmfReceived' and channel in self.calls:

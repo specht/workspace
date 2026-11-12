@@ -180,6 +180,41 @@ def environment(base=None):
     return env
 
 
+def international(number):
+    """a number as digits with the country code, the way SIP trunks report
+    it: '+49 30 2290', '0049302290' and '030/22 90' all become '49302290'"""
+    digits = re.sub(r'[^\d+]', '', str(number or ''))
+    if digits.startswith('+'):
+        return digits[1:]
+    if digits.startswith('00'):
+        return digits[2:]
+    if digits.startswith('0'):
+        return '49' + digits[1:]
+    return digits
+
+
+def game_number(dialed, line_number):
+    """the game's number in what a call to the real line dialled (the
+    runner, PHONE_DIRECT_DIAL): the line's number with a game's after it
+    (»030/22 908 772-123«), a game's own three or four digits; '' when it
+    is the line's number alone (the menu), None when it is neither. The
+    browser's phone takes a game's number only, never a real one"""
+    dialed = str(dialed or '')
+    if not re.fullmatch(r'\+?[\d ]+', dialed):
+        return None
+    digits = re.sub(r'\D', '', dialed)
+    # the line's own number first: with a short test number (100) it would
+    # otherwise pass for a game's
+    line = international(line_number)
+    number = international(dialed)
+    if line and number.startswith(line):
+        rest = number[len(line):]
+        return rest if rest == '' or re.fullmatch(r'\d{3,4}', rest) else None
+    if re.fullmatch(r'\d{3,4}', digits) and not dialed.startswith(('0', '+')):
+        return digits
+    return None
+
+
 class Phone:
     """The other end of a game. Subclasses play speech and music; keys
     arrive with press(), and read_keys() is the same everywhere: keys
