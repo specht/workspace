@@ -1,0 +1,728 @@
+// The card of a document task (DocumentCheck, docs/plan-textverarbeitung.md):
+// the student's document from Word, LibreOffice or Nextcloud Office goes
+// to the server as a form upload; the answer is a checklist and the pages
+// as LibreOffice drew them, with a numbered mark at each place a point of
+// the checklist fails. Point and mark light up together (as in the mail
+// viewer).
+//
+// Where the browser can keep hold of a file (Chrome, Edge: the File System
+// Access API), »Vorlage speichern« saves the starting file through the page
+// itself, and »Prüfen« reads that file again each time, after the student
+// saved it in Word; a document chosen with »Dokument wählen« or dropped on
+// the card is kept the same way. Other browsers download the starting file
+// and need the document chosen or dropped for each check.
+//
+// tasks.js calls setup(card, check), check(card, busy, done),
+// render(card, report) and showStored(card, answer).
+(function () {
+    const MAX_BYTES = 10 * 1024 * 1024;
+    const CAN_KEEP = typeof window.showOpenFilePicker === 'function' && typeof window.showSaveFilePicker === 'function';
+    const TYPES = [{
+        description: 'Textdokumente',
+        accept: {
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+            'application/vnd.oasis.opendocument.text': ['.odt'],
+            'application/msword': ['.doc'],
+            'application/rtf': ['.rtf'],
+        },
+    }];
+
+    function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+    }
+
+    function hasFiles(e) {
+        return e.dataTransfer && Array.from(e.dataTransfer.types || []).indexOf('Files') >= 0;
+    }
+
+    // what the card says about the chosen document
+    function chosen(card, name) {
+        const line = card.querySelector('.document-name');
+        line.textContent = '';
+        line.appendChild(el('strong', null, name));
+        if (card.documentHandle) line.appendChild(document.createTextNode(': Speichere in Word, dann »Prüfen«.'));
+        card.querySelector('.document-pick').lastChild.textContent = 'Anderes Dokument';
+    }
+
+    // Chrome and Edge: a starting file saved through the page (»Vorlage
+    // speichern«, a link with class document-starter in the text or on the
+    // card), which the page then keeps hold of: every card with the same
+    // starting file reads it. Elsewhere the link is a plain download.
+    const SAVED = {};
+
+    function useSaved(card, handle) {
+        card.documentHandle = handle;
+        card.documentFile = null;
+        const line = card.querySelector('.document-name');
+        line.textContent = '';
+        line.appendChild(el('strong', null, handle.name));
+        line.appendChild(document.createTextNode(' ist gespeichert. Öffne sie in Word oder LibreOffice; »Prüfen« liest sie, sobald du dort gespeichert hast.'));
+        card.querySelector('.document-pick').lastChild.textContent = 'Anderes Dokument';
+    }
+
+    function bindStarter(link) {
+        if (!CAN_KEEP || link.dataset.bound) return;
+        link.dataset.bound = 'true';
+        link.addEventListener('click', async function (e) {
+            e.preventDefault();
+            const href = link.getAttribute('href');
+            const note = link.parentNode.querySelector('.document-saved') || link.insertAdjacentElement('afterend', el('span', 'document-saved'));
+            let handle;
+            try {
+                handle = await window.showSaveFilePicker({ suggestedName: decodeURIComponent(href.split('/').pop()), types: TYPES });
+            } catch (err) {
+                return;    // closed without saving
+            }
+            try {
+                const response = await fetch(href, { credentials: 'same-origin' });
+                if (!response.ok) throw new Error(String(response.status));
+                const writable = await handle.createWritable();
+                await writable.write(await response.blob());
+                await writable.close();
+            } catch (err) {
+                note.textContent = ' Die Vorlage konnte ich nicht speichern. Versuch es noch einmal.';
+                return;
+            }
+            SAVED[href] = handle;
+            note.textContent = ' Gespeichert als ' + handle.name + '.';
+            document.querySelectorAll('.task-card .document-starter[href="' + href + '"]').forEach(function (other) {
+                const card = other.closest('.task-card');
+                if (card) useSaved(card, handle);
+            });
+        });
+    }
+
+    const bindAll = function () { document.querySelectorAll('a.document-starter').forEach(bindStarter); };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAll);
+    else bindAll();
+
+    function invalid(text) {
+        return { success: true, status: 'invalid', message: '<p>' + text + '</p>' };
+    }
+
+    function setup(card, check) {
+        const box = card.querySelector('.document-task');
+        if (!box || box.dataset.ready) return;
+        box.dataset.ready = 'true';
+        card.documentRecheck = check;
+        const button = box.querySelector('.document-pick');
+        const input = box.querySelector('.document-input');
+        const starter = box.querySelector('.document-starter');
+
+        if (starter) bindStarter(starter);
+        // how short the loop is in this browser, and why another one helps
+        const note = el('p', 'document-browser');
+        note.innerHTML = CAN_KEEP
+            ? "<i class='bi bi-lightning-charge' aria-hidden='true'></i>Hier genügt es, in Word oder LibreOffice zu speichern: Die Seite merkt es und prüft von selbst."
+            : "<i class='bi bi-info-circle' aria-hidden='true'></i>In Chrome und Edge genügt es, in Word oder LibreOffice zu speichern, und die Seite prüft von selbst. " +
+              'Dieser Browser kann eine Datei nicht im Blick behalten: Wähle sie vor jedem Prüfen neu oder zieh sie auf die Karte.';
+        box.appendChild(note);
+        // a starting file saved before (a link in the text above the card)
+        const saved = starter && SAVED[starter.getAttribute('href')];
+        if (saved) useSaved(card, saved);
+
+        button.addEventListener('click', async function () {
+            if (!CAN_KEEP) {
+                input.click();
+                return;
+            }
+            let handle;
+            try {
+                [handle] = await window.showOpenFilePicker({ types: TYPES, multiple: false });
+            } catch (err) {
+                if (err && err.name === 'AbortError') return;
+                input.click();
+                return;
+            }
+            card.documentHandle = handle;
+            card.documentFile = null;
+            chosen(card, handle.name);
+            check();
+        });
+        input.addEventListener('change', function () {
+            const file = input.files && input.files[0];
+            input.value = '';
+            if (!file) return;
+            card.documentFile = file;
+            card.documentHandle = null;
+            chosen(card, file.name);
+            check();
+        });
+
+        // a document dropped anywhere on the card
+        card.addEventListener('dragover', function (e) {
+            if (!hasFiles(e)) return;
+            e.preventDefault();
+            card.classList.add('document-dragging');
+        });
+        card.addEventListener('dragleave', function (e) {
+            if (!card.contains(e.relatedTarget)) card.classList.remove('document-dragging');
+        });
+        card.addEventListener('drop', async function (e) {
+            if (!hasFiles(e)) return;
+            e.preventDefault();
+            card.classList.remove('document-dragging');
+            // both have to be asked for before anything is awaited
+            const file = e.dataTransfer.files[0];
+            const item = e.dataTransfer.items && e.dataTransfer.items[0];
+            const pending = item && typeof item.getAsFileSystemHandle === 'function' ? item.getAsFileSystemHandle() : null;
+            let handle = null;
+            try { handle = pending ? await pending : null; } catch (err) { handle = null; }
+            if (handle && handle.kind === 'file') {
+                card.documentHandle = handle;
+                card.documentFile = null;
+            } else {
+                card.documentFile = file;
+                card.documentHandle = null;
+            }
+            if (!file && !handle) return;
+            chosen(card, (handle || file).name);
+            check();
+        });
+    }
+
+    // Word on one half of the screen, the page on the other: while the page
+    // is visible, a document the browser keeps hold of is looked at every
+    // two seconds, and checked when it was saved since the last check (its
+    // time or size changed). Ctrl+S in Word is enough.
+    const WATCH_MS = 2000;
+    function watch(card, run) {
+        if (card.documentWatch) return;
+        card.documentWatch = setInterval(async function () {
+            const handle = card.documentHandle;
+            if (!handle || document.hidden || card.documentBusy || !card.documentSeen) return;
+            let file;
+            try {
+                if (handle.queryPermission && await handle.queryPermission({ mode: 'read' }) !== 'granted') return;
+                file = await handle.getFile();
+            } catch (err) {
+                return;
+            }
+            const seen = card.documentSeen;
+            if (file.lastModified === seen.time && file.size === seen.size) return;
+            // a save in progress: wait until the size holds still
+            if (seen.pending !== file.lastModified + ':' + file.size) {
+                seen.pending = file.lastModified + ':' + file.size;
+                return;
+            }
+            run();
+        }, WATCH_MS);
+    }
+
+    // Reads the document (again, if the browser keeps hold of it) and
+    // sends it. busy() when it goes; done(data) with the server's answer.
+    async function check(card, busy, done) {
+        let file = card.documentFile;
+        if (card.documentHandle) {
+            try {
+                if (card.documentHandle.queryPermission && await card.documentHandle.queryPermission({ mode: 'read' }) !== 'granted') {
+                    await card.documentHandle.requestPermission({ mode: 'read' });
+                }
+                file = await card.documentHandle.getFile();
+            } catch (err) {
+                card.documentHandle = null;
+                done(invalid('Die Datei kann ich nicht mehr lesen. Wurde sie verschoben, umbenannt oder gelöscht? Wähle sie noch einmal.'));
+                return;
+            }
+        }
+        if (!file) {
+            card.querySelector('.document-pick').click();
+            return;
+        }
+        if (file.size > MAX_BYTES) {
+            done(invalid('Die Datei ist größer als 10 MB. Sind große Bilder darin?'));
+            return;
+        }
+        busy();
+        card.documentBusy = true;
+        card.documentSeen = { time: file.lastModified, size: file.size };
+        if (card.documentHandle && card.documentRecheck) watch(card, card.documentRecheck);
+        const form = new FormData();
+        form.append('task', card.dataset.task);
+        form.append('file', file, file.name);
+        try {
+            const response = await fetch('/api/task/document', { method: 'POST', body: form, credentials: 'same-origin' });
+            if (!response.ok) throw new Error(String(response.status));
+            const data = await response.json();
+            data.success = true;
+            done(data);
+        } catch (err) {
+            done({ success: false });
+        } finally {
+            card.documentBusy = false;
+        }
+    }
+
+    // Where the website cannot scroll the panel to the top of the window
+    // (the card at the end of the page), the panel takes the height that is
+    // left below it, so that the verdict, the list and the page still fit;
+    // with the window's next change of size it goes back to the height in
+    // default.css.
+    function fit(wrap) {
+        const top = Math.max(wrap.getBoundingClientRect().top, 0);
+        const room = window.innerHeight - top - 12;
+        const css = wrap.getBoundingClientRect().height;
+        if (room < css) wrap.style.height = Math.max(280, room) + 'px';
+        window.addEventListener('resize', function () { wrap.style.height = ''; }, { once: true });
+    }
+
+    // ---- The result: the checklist beside the pages, on one screen
+
+    // A place on the page, in points (the page is 1 px per point before the
+    // zoom), drawn as what the formatting marks of Word and LibreOffice
+    // would show there, in orange: dots for spaces, ¶ for an empty
+    // paragraph, ↵ for a line break; a missing gap as a thin line; a
+    // paragraph (its alignment) only framed while its point is active.
+    function markNode(mark) {
+        const kind = mark.kind || 'box';
+        const node = el('div', 'document-mark document-mark-' + kind);
+        node.style.left = mark.x + 'px';
+        node.style.top = mark.y + 'px';
+        node.style.width = Math.max(mark.w, 3) + 'px';
+        node.style.height = Math.max(mark.h, 3) + 'px';
+        node.dataset.n = mark.n;
+        if (mark.title) node.title = mark.title;
+        if (kind === 'gap') {
+            // one dot per space, as far apart as the spaces are wide
+            const step = mark.count ? mark.w / mark.count : 3;
+            node.style.backgroundSize = step + 'px 100%';
+        } else if (kind === 'blank' || kind === 'spot') {
+            const glyph = el('span', 'document-glyph', kind === 'blank' ? '¶' : '↵');
+            glyph.setAttribute('aria-hidden', 'true');
+            glyph.style.fontSize = Math.min(14, Math.max(8, mark.h * 0.8)) + 'px';
+            node.appendChild(glyph);
+        }
+        return node;
+    }
+
+    // The numbers in the left margin of the page, beside their line, like
+    // comments: one per point and line; several points on one line side by
+    // side, the first nearest the text. Their size stays the same at every
+    // zoom (--inv).
+    function gutter(sheet, marks, left) {
+        const lines = [];
+        marks.forEach(function (m) {
+            const mid = m.y + Math.min(m.h, 16) / 2;
+            let line = lines.find(function (l) { return Math.abs(l.mid - mid) < 7; });
+            if (!line) { line = { mid: mid, points: [] }; lines.push(line); }
+            if (line.points.indexOf(m.n) < 0) line.points.push(m.n);
+        });
+        lines.forEach(function (line) {
+            line.points.sort(function (a, b) { return a - b; }).forEach(function (n, k) {
+                const badge = el('button', 'document-badge', String(n));
+                badge.type = 'button';
+                badge.dataset.n = n;
+                badge.tabIndex = -1;
+                badge.setAttribute('aria-hidden', 'true');
+                badge.style.top = line.mid + 'px';
+                badge.style.left = (left - 8) + 'px';
+                badge.style.setProperty('--k', String(k));
+                sheet.appendChild(badge);
+            });
+        });
+    }
+
+    // The pages one below the other on a stage that moves and zooms:
+    // dragging moves it (one finger or the mouse), two fingers, Ctrl and
+    // the wheel or a double click zoom, the wheel alone moves the page up
+    // and down and hands over to the website at the end, the buttons and
+    // the keys (+, -, 0, arrows) do the same. It starts on the part of the
+    // first page that has text (crop), as wide as the view.
+    // keep: { z, tx, ty } of the view before the new check, kept there,
+    // or 'whole' for the whole first page
+    // (the card redraws the result with each check); remember(view) is
+    // called after every move.
+    function viewer(view, pages, marks, keep, remember) {
+        const viewport = el('div', 'document-viewport');
+        const stage = el('div', 'document-stage');
+        const GAP = 24;
+        const width = Math.max.apply(null, pages.map(function (p) { return p.width; }));
+        let y = 0;
+        const tops = [];
+        const sheets = [];
+        pages.forEach(function (page, i) {
+            const sheet = el('div', 'document-sheet');
+            sheet.style.width = page.width + 'px';
+            sheet.style.height = page.height + 'px';
+            sheet.style.left = ((width - page.width) / 2) + 'px';
+            sheet.style.top = y + 'px';
+            tops.push(y);
+            const img = el('img');
+            img.src = page.src;
+            img.alt = 'Seite ' + (i + 1) + ' deines Dokuments, so wie LibreOffice sie zeichnet';
+            img.draggable = false;
+            sheet.appendChild(img);
+            const own = marks.filter(function (m) { return m.page === i + 1; });
+            own.forEach(function (m) { sheet.appendChild(markNode(m)); });
+            gutter(sheet, own, page.crop ? page.crop.left : 70);
+            stage.appendChild(sheet);
+            sheets.push(sheet);
+            y += page.height + GAP;
+        });
+        const height = y - GAP;
+        stage.style.width = width + 'px';
+        stage.style.height = height + 'px';
+        viewport.appendChild(stage);
+        view.appendChild(viewport);
+
+        let z = 1, tx = 0, ty = 0;
+        const MIN = 0.15, MAX = 6;
+        const size = function () { return { w: viewport.clientWidth, h: viewport.clientHeight }; };
+        const offset = function (i) { return (width - pages[i].width) / 2; };
+        // keep part of the stage in view, centred where it is smaller
+        function clamp() {
+            const v = size();
+            const sw = width * z, sh = height * z, keep = 48;
+            tx = sw <= v.w ? (v.w - sw) / 2 : Math.min(keep, Math.max(v.w - sw - keep, tx));
+            ty = sh <= v.h ? Math.max(Math.min(ty, v.h - sh), 0) : Math.min(keep, Math.max(v.h - sh - keep, ty));
+        }
+        function apply(animate) {
+            clamp();
+            stage.classList.toggle('document-gliding', !!animate && !reduced());
+            stage.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + z + ')';
+            viewport.style.setProperty('--inv', String(1 / z));
+            zoomLabel.textContent = Math.round(z * 100) + ' %';
+            if (remember) remember({ z: z, tx: tx, ty: ty });
+        }
+        function zoomAt(x, y, factor, animate) {
+            const next = Math.min(MAX, Math.max(MIN, z * factor));
+            tx = x - (x - tx) * (next / z);
+            ty = y - (y - ty) * (next / z);
+            z = next;
+            apply(animate);
+        }
+        // a rectangle of the stage (points) as large as fits, with room around
+        function show(r, most, animate) {
+            const v = size();
+            const pad = 24;
+            z = Math.max(MIN, Math.min(most || MAX, (v.w - 2 * pad) / r.w, (v.h - 2 * pad) / r.h));
+            tx = (v.w - r.w * z) / 2 - r.x * z;
+            ty = (v.h - r.h * z) / 2 - r.y * z;
+            apply(animate);
+        }
+        function start(animate) {
+            const v = size();
+            const c = pages[0].crop || { x: 0, y: 0, w: pages[0].width, h: pages[0].height };
+            z = Math.max(MIN, Math.min(MAX, (v.w - 16) / c.w));
+            tx = (v.w - c.w * z) / 2 - (offset(0) + c.x) * z;
+            ty = 8 - c.y * z;
+            apply(animate);
+        }
+        function whole(animate) {
+            show({ x: offset(0), y: 0, w: pages[0].width, h: pages[0].height }, null, animate);
+        }
+
+        // the tools above the page
+        const tools = el('div', 'document-tools');
+        const button = function (icon, label, act) {
+            const b = el('button', 'btn btn-sm btn-outline-secondary');
+            b.type = 'button';
+            b.innerHTML = "<i class='bi " + icon + "' aria-hidden='true'></i>";
+            b.setAttribute('aria-label', label);
+            b.title = label;
+            b.addEventListener('click', act);
+            tools.appendChild(b);
+            return b;
+        };
+        const middle = function () { const v = size(); return [v.w / 2, v.h / 2]; };
+        button('bi-zoom-out', 'Verkleinern', function () { const m = middle(); zoomAt(m[0], m[1], 1 / 1.4, true); });
+        const zoomLabel = el('span', 'document-zoom', '100 %');
+        tools.appendChild(zoomLabel);
+        button('bi-zoom-in', 'Vergrößern', function () { const m = middle(); zoomAt(m[0], m[1], 1.4, true); });
+        button('bi-file-earmark', 'Ganze Seite', function () { whole(true); });
+        button('bi-arrows', 'Seitenbreite', function () { start(true); });
+        view.insertBefore(tools, viewport);
+
+        // dragging and pinching
+        const pointers = new Map();
+        let pinch = null;
+        viewport.addEventListener('pointerdown', function (e) {
+            if (e.button !== 0 && e.pointerType === 'mouse') return;
+            if (e.target.closest('.document-badge')) return;
+            viewport.setPointerCapture(e.pointerId);
+            pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            viewport.classList.add('document-grabbing');
+            if (pointers.size === 2) {
+                const p = Array.from(pointers.values());
+                pinch = { d: Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y), z: z };
+            }
+        });
+        viewport.addEventListener('pointermove', function (e) {
+            const last = pointers.get(e.pointerId);
+            if (!last) return;
+            const box = viewport.getBoundingClientRect();
+            if (pointers.size === 2 && pinch) {
+                pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                const p = Array.from(pointers.values());
+                const d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+                const mx = (p[0].x + p[1].x) / 2 - box.left, my = (p[0].y + p[1].y) / 2 - box.top;
+                zoomAt(mx, my, (pinch.z * d / pinch.d) / z, false);
+                return;
+            }
+            tx += e.clientX - last.x;
+            ty += e.clientY - last.y;
+            pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            apply(false);
+        });
+        const up = function (e) {
+            pointers.delete(e.pointerId);
+            if (pointers.size < 2) pinch = null;
+            if (!pointers.size) viewport.classList.remove('document-grabbing');
+        };
+        viewport.addEventListener('pointerup', up);
+        viewport.addEventListener('pointercancel', up);
+        viewport.addEventListener('dblclick', function (e) {
+            if (e.target.closest('.document-badge')) return;
+            const box = viewport.getBoundingClientRect();
+            zoomAt(e.clientX - box.left, e.clientY - box.top, 2, true);
+        });
+        // The wheel zooms at the pointer, as in a map. Two fingers on a
+        // touchpad move the page (they scroll sideways too, a wheel never
+        // does), and pinching on it zooms (the browser sends Ctrl with it).
+        let touchpad = 0;
+        viewport.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            const box = viewport.getBoundingClientRect();
+            const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+            const dx = e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX;
+            if (dx !== 0 || (e.deltaMode === 0 && Math.abs(dy) < 40 && dy % 1 !== 0)) touchpad = Date.now();
+            if (!e.ctrlKey && !e.metaKey && Date.now() - touchpad < 600) {
+                tx -= dx;
+                ty -= dy;
+                apply(false);
+                return;
+            }
+            zoomAt(e.clientX - box.left, e.clientY - box.top, Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0025)), false);
+        }, { passive: false });
+        viewport.tabIndex = 0;
+        viewport.setAttribute('role', 'group');
+        viewport.setAttribute('aria-label', 'Dein Dokument: Ziehen verschiebt, das Mausrad, Plus und Minus zoomen, 0 zeigt die Seitenbreite');
+        viewport.addEventListener('keydown', function (e) {
+            const m = middle();
+            const step = 60;
+            const keys = {
+                '+': function () { zoomAt(m[0], m[1], 1.4, true); }, '=': function () { zoomAt(m[0], m[1], 1.4, true); },
+                '-': function () { zoomAt(m[0], m[1], 1 / 1.4, true); }, '0': function () { start(true); },
+                ArrowUp: function () { ty += step; apply(true); }, ArrowDown: function () { ty -= step; apply(true); },
+                ArrowLeft: function () { tx += step; apply(true); }, ArrowRight: function () { tx -= step; apply(true); },
+            };
+            if (keys[e.key]) { e.preventDefault(); keys[e.key](); }
+        });
+        if (window.ResizeObserver) {
+            let seen = false;
+            new ResizeObserver(function () {
+                if (!size().w) return;
+                if (!seen) first(); else apply(false);
+                seen = true;
+            }).observe(viewport);
+        } else {
+            requestAnimationFrame(first);
+        }
+        // where the last check left the view, else the text of page 1
+        function first() {
+            // all met: the whole clean page, with the stamp in its corner
+            if (keep === 'whole') {
+                whole(false);
+            } else if (keep) {
+                z = keep.z; tx = keep.tx; ty = keep.ty;
+                apply(false);
+            } else {
+                start(false);
+            }
+        }
+
+        return {
+            viewport: viewport,
+            sheets: sheets,
+            // one place and the text around it, near enough to read: the
+            // view travels there slowly enough to follow, then the places of
+            // the point pulse once
+            place: function (m) {
+                const page = m.page - 1;
+                const r = { x: offset(page) + m.x - 40, y: tops[page] + m.y - 40, w: m.w + 80, h: m.h + 80 };
+                const v = size();
+                stage.classList.add('document-travel');
+                show(r, Math.min(2.2, v.w / Math.max(r.w, 260)), true);
+                setTimeout(function () {
+                    stage.classList.remove('document-travel');
+                    stage.querySelectorAll(".document-mark[data-n='" + m.n + "']").forEach(function (x) {
+                        x.classList.remove('document-arrived');
+                        void x.offsetWidth;
+                        x.classList.add('document-arrived');
+                    });
+                }, reduced() ? 0 : 650);
+            },
+            overview: function () { start(true); },
+            whole: function () { whole(false); },
+        };
+    }
+
+    function reduced() {
+        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    // A point and its places belong together: pointing at the one (in the
+    // list or its number in the margin) brings out the other and dims the
+    // rest; a click on a point's number goes to its next place.
+    function connect(wrap, control, items) {
+        const activate = function (n) {
+            if (n) wrap.dataset.active = n; else delete wrap.dataset.active;
+            wrap.querySelectorAll('[data-n]').forEach(function (x) { x.classList.toggle('document-active', String(x.dataset.n) === String(n)); });
+        };
+        const step = {};
+        const go = function (n) {
+            const item = items.find(function (i) { return String(i.n) === String(n); });
+            if (!item || !item.marks.length) return;
+            const i = step[n] === undefined ? 0 : (step[n] + 1) % item.marks.length;
+            step[n] = i;
+            control.place(item.marks[i]);
+            activate(n);
+            const where = wrap.querySelector(".document-where[data-for='" + n + "']");
+            if (where && item.marks.length > 1) where.textContent = 'Stelle ' + (i + 1) + ' von ' + item.marks.length;
+        };
+        wrap.querySelectorAll('.document-open[data-n]').forEach(function (li) {
+            li.addEventListener('mouseenter', function () { activate(li.dataset.n); });
+            li.addEventListener('mouseleave', function () { if (!wrap.dataset.held) activate(null); });
+        });
+        wrap.querySelectorAll('.document-badge').forEach(function (badge) {
+            badge.addEventListener('mouseenter', function () { activate(badge.dataset.n); });
+            badge.addEventListener('mouseleave', function () { if (!wrap.dataset.held) activate(null); });
+            badge.addEventListener('click', function () { go(badge.dataset.n); });
+        });
+        wrap.querySelectorAll('.document-chip').forEach(function (chip) {
+            chip.addEventListener('focus', function () { activate(chip.dataset.n); });
+            chip.addEventListener('blur', function () { activate(null); });
+            chip.addEventListener('click', function () { go(chip.dataset.n); });
+        });
+    }
+
+    // All points met: the points tick one after the other, a check mark
+    // draws itself, a stamp lands on the page and a light passes over it.
+    function celebrate(wrap, side, control, report) {
+        const done = el('div', 'document-done');
+        done.innerHTML = "<svg class='document-done-mark' viewBox='0 0 52 52' aria-hidden='true'>" +
+            "<circle cx='26' cy='26' r='23'></circle><path d='M15 27 l7 7 l15 -16'></path></svg>" +
+            "<div><div class='document-done-title'>Sauber gebaut</div>" +
+            "<div class='document-done-text'>Ändere die Schrift, wie du willst: Dein Dokument hält.</div></div>";
+        side.insertBefore(done, side.firstChild);
+        side.querySelectorAll('.document-checklist li').forEach(function (li, i) { li.style.setProperty('--i', String(i)); });
+        control.sheets.slice(0, 1).forEach(function (sheet) {
+            const stamp = el('div', 'document-stamp', 'Alle ' + report.items.length + ' Punkte');
+            stamp.setAttribute('aria-hidden', 'true');
+            // in the corner of the part with text, which the view shows
+            const page = report.pages[0];
+            const crop = page.crop || { x: 0, y: 0, w: page.width };
+            stamp.style.top = (crop.y + 4) + 'px';
+            stamp.style.right = (page.width - crop.x - crop.w + 4) + 'px';
+            sheet.appendChild(stamp);
+            sheet.appendChild(el('div', 'document-shine'));
+        });
+        wrap.classList.add('document-success');
+        if (!reduced()) {
+            void wrap.offsetWidth;
+            wrap.classList.add('document-success-now');
+        }
+    }
+
+    function render(card, report) {
+        const body = card.querySelector('.task-feedback .task-feedback-body');
+        if (!body || !report) return;
+        const old = card.querySelector('.document-report');
+        if (old) old.remove();
+        const wrap = el('div', 'document-report');
+        const side = el('div', 'document-side');
+        // what was met at the last check, for »neu erfüllt«
+        const before = card.documentMet || null;
+        const met = report.items.filter(function (i) { return i.ok; }).map(function (i) { return i.label; });
+        card.documentMet = met;
+        const fresh = before ? met.filter(function (l) { return before.indexOf(l) < 0; }) : [];
+        const all = met.length === report.items.length;
+
+        if (!all && fresh.length) {
+            const gain = el('p', 'document-gain');
+            gain.innerHTML = "<i class='bi bi-arrow-up-circle-fill' aria-hidden='true'></i>" +
+                (fresh.length === 1 ? 'Ein Punkt mehr' : fresh.length + ' Punkte mehr') + ' als beim letzten Prüfen.';
+            side.appendChild(gain);
+        }
+        const list = el('ul', 'document-checklist');
+        list.setAttribute('aria-label', 'Was die Prüfung nachgesehen hat');
+        report.items.forEach(function (item) {
+            const li = el('li', item.ok ? 'document-ok' : 'document-open');
+            if (fresh.indexOf(item.label) >= 0 && !all) li.classList.add('document-fresh');
+            if (item.n) li.dataset.n = item.n;
+            const icon = el('i', 'bi ' + (item.ok ? 'bi-check-circle-fill' : 'bi-circle'));
+            icon.setAttribute('aria-hidden', 'true');
+            li.appendChild(icon);
+            const text = el('div', 'document-item');
+            const head = el('div', 'document-label');
+            if (item.n && item.marks && item.marks.length) {
+                const chip = el('button', 'document-chip', String(item.n));
+                chip.type = 'button';
+                chip.dataset.n = item.n;
+                chip.title = item.marks.length === 1 ? 'Die Stelle im Dokument zeigen' : 'Die nächste von ' + item.marks.length + ' Stellen zeigen';
+                chip.setAttribute('aria-label', 'Punkt ' + item.n + ': ' + chip.title);
+                head.appendChild(chip);
+            }
+            head.appendChild(el('span', 'visually-hidden', item.ok ? 'Erfüllt: ' : 'Offen: '));
+            head.appendChild(document.createTextNode(item.label));
+            if (li.classList.contains('document-fresh')) head.appendChild(el('span', 'document-new', 'neu erfüllt'));
+            text.appendChild(head);
+            if (item.n && item.marks && item.marks.length > 1) {
+                const where = el('div', 'document-where', item.marks.length + ' Stellen');
+                where.dataset.for = item.n;
+                text.appendChild(where);
+            }
+            if (!item.ok && item.message) {
+                const message = el('div', 'document-message');
+                message.innerHTML = item.message;
+                text.appendChild(message);
+            }
+            li.appendChild(text);
+            list.appendChild(li);
+        });
+        side.appendChild(list);
+        let note = 'So zeichnet LibreOffice deine Seiten; in Word kann eine Zeile ein Wort früher umbrechen.';
+        if (report.page_count > report.pages.length) note += ' Gezeigt sind die ersten ' + report.pages.length + ' von ' + report.page_count + ' Seiten.';
+        side.appendChild(el('p', 'document-note', note));
+        wrap.appendChild(side);
+
+        const view = el('div', 'document-view');
+        wrap.appendChild(view);
+        body.appendChild(wrap);
+        const marks = [].concat.apply([], report.items.map(function (i) { return i.marks || []; }));
+        // the view stays where it was between checks (not after the last
+        // one, which shows the whole clean page)
+        const control = report.pages.length
+            ? viewer(view, report.pages, marks, all ? null : card.documentView, all ? null : function (v) { card.documentView = v; })
+            : { place: function () {}, sheets: [] };
+        // check again from here, after saving in Word, without scrolling up
+        if (card.documentRecheck) {
+            const again = el('button', 'btn btn-sm btn-success document-recheck');
+            again.type = 'button';
+            again.innerHTML = "<i class='bi bi-arrow-repeat' aria-hidden='true'></i>Erneut prüfen";
+            again.addEventListener('click', function () { card.documentRecheck(); });
+            const tools = view.querySelector('.document-tools');
+            if (tools) tools.appendChild(again);
+        }
+        connect(wrap, control, report.items);
+        if (all) celebrate(wrap, side, control, report);
+        // the verdict and the page together in view (the panel is as high
+        // as the window allows below the verdict, default.css)
+        const box = card.querySelector('.task-feedback');
+        const r = wrap.getBoundingClientRect();
+        if (box && (r.bottom > window.innerHeight || r.top < 0)) box.scrollIntoView({ block: 'start' });
+        fit(wrap);
+    }
+
+    // the stored line (»01 Einladung.docx: 6 von 8, …«) under the button
+    function showStored(card, answer) {
+        const line = card.querySelector('.document-name');
+        if (!line || card.documentHandle || card.documentFile) return;
+        line.textContent = answer ? 'Zuletzt geprüft: ' + answer : 'oder hierher ziehen';
+    }
+
+    window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored };
+})();

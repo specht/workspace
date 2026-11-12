@@ -1,3 +1,4 @@
+require 'erb'
 require 'cgi'
 require 'digest'
 require_relative 'task_check'
@@ -237,6 +238,24 @@ module TaskCard
                 io << "<input type='text' class='form-control task-input task-command' name='answer' spellcheck='false' autocomplete='off' placeholder='Befehl' aria-labelledby='#{h.(field)}-title'>"
                 where = check['dir'] ? "/workspace/#{check['dir'].to_s.sub(%r{/+\z}, '')}" : '/workspace'
                 reads = "Läuft in deinem Workspace in <code>#{h.(where)}</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen."
+            when 'document'
+                # A document from Word, LibreOffice or Nextcloud Office
+                # (DocumentCheck, document_task.js): the starting file to
+                # download, then the student's own file, chosen once and read
+                # again with each »Prüfen« where the browser can (Chrome,
+                # Edge), else chosen or dropped anew.
+                file = check['file']
+                # the address with each part encoded (»01 Einladung.docx«)
+                href = '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
+                io << "<div class='document-task'>"
+                io << "<a class='document-starter' href='#{h.(href)}' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage: #{h.(File.basename(file))}</a>"
+                io << "<div class='document-drop'>"
+                io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>Dokument wählen</button>"
+                io << "<span class='document-name' aria-live='polite'>oder hierher ziehen</span>"
+                io << "<input type='file' class='document-input' accept='.docx,.odt,.doc,.rtf' hidden aria-hidden='true' tabindex='-1'>"
+                io << '</div></div>'
+                reads = 'Dein Dokument geht an den Server. Dort liest LibreOffice es, ohne Makros auszuführen, und zeichnet deine Seiten; die Prüfung sieht nach, wie der Text gebaut ist. ' \
+                    'Gespeichert wird nur das Ergebnis, nicht die Datei. Weil LibreOffice die Seiten zeichnet, kann eine Zeile in Word ein Wort früher umbrechen.'
             when 'submit'
                 if check['pick']
                     io << "<label class='task-pick-label' for='#{h.(field)}-pick'>Welche Datei gibst du ab?</label>"

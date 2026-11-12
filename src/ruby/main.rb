@@ -1557,12 +1557,27 @@ class Main < Sinatra::Base
         groups.to_h { |group| [group, set[group]] }
     end
 
+    # The office programs a teacher ranked for each group (»Office-Programme
+    # der Klasse«, g.office_suites), { group => [programs] }; nil where none.
+    def group_office_suites(groups)
+        return {} if groups.empty?
+
+        rows = neo4j_query(<<~END_OF_QUERY, :groups => groups).to_a
+            MATCH (g:GroupSetting) WHERE g.group IN $groups
+            RETURN g.group AS group, g.office_suites AS suites;
+        END_OF_QUERY
+        set = rows.to_h { |row| [row['group'], CodeLanguages.ranked_office(row['suites'])] }
+        groups.to_h { |group| [group, set[group]] }
+    end
+
     # The activities of the catalog that offer more than one language, for
     # the class's ranking: [{ title, languages }] in catalog order
-    def multi_language_activities
+    # office: those that offer office programs instead
+    def multi_language_activities(office: false)
         pinnable_slugs.filter_map do |slug|
             languages = (@@content[slug] || {})[:languages] || []
             next if languages.size < 2
+            next if CodeLanguages.office?(languages) != office
 
             { :title => plain_title(slug), :languages => languages }
         end
@@ -1711,6 +1726,11 @@ class Main < Sinatra::Base
         return nil if languages.empty?
 
         @page_code_language ||= {}
+        # an office page: the person's program, else the class's
+        if CodeLanguages.office?(languages)
+            own = user_logged_in? ? @session_user[:office_suite] : nil
+            return @page_code_language[slug] ||= CodeLanguages.resolve([own], user_logged_in? ? group_office_suites(my_groups) : {}, languages)
+        end
         @page_code_language[slug] ||= begin
             own = user_logged_in? ? @session_user[:code_language] : nil
             groups = user_logged_in? ? group_code_languages(my_groups) : {}
@@ -1732,7 +1752,10 @@ class Main < Sinatra::Base
     def code_language_setup(slug)
         return '' if page_code_language(slug).nil?
 
-        chosen = user_logged_in? && CodeLanguages.known?(@session_user[:code_language])
+        office = CodeLanguages.office?((@@content[slug] || {})[:languages] || [])
+        chosen = user_logged_in? && CodeLanguages.known?(@session_user[office ? :office_suite : :code_language])
+        # a guest's choice in the browser, one for each family
+        stored = office ? 'office-suite' : 'code-language'
         <<~END_OF_STRING
             <script>
             (function () {
@@ -1766,7 +1789,7 @@ class Main < Sinatra::Base
                 if (document.fonts) document.fonts.ready.then(place);
                 if (!loggedIn && !#{chosen}) {
                     try {
-                        const stored = localStorage.getItem('code-language');
+                        const stored = localStorage.getItem('#{stored}');
                         if (stored && container.querySelector("[data-set-language='" + stored + "']")) show(stored);
                     } catch (e) {}
                 }
@@ -1777,7 +1800,7 @@ class Main < Sinatra::Base
                         if (loggedIn) {
                             api_call('/api/set_code_language', { language: language }, function () {}, { no_please_wait: true });
                         } else {
-                            try { localStorage.setItem('code-language', language); } catch (e) {}
+                            try { localStorage.setItem('#{stored}', language); } catch (e) {}
                         }
                     });
                 });
@@ -1832,6 +1855,7 @@ class Main < Sinatra::Base
         code = tasks[:on_page].any? { |id| %w[sql cypher function pip tests turtle].include?((tasks[:by_id][id] || {}).dig('check', 'type')) }
         pip = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'type') == 'pip' }
         turtle = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'type') == 'turtle' }
+        document = tasks[:on_page].any? { |id| (tasks[:by_id][id] || {}).dig('check', 'type') == 'document' }
         code_input = if code
             keywords = {
                 :sql => Rouge::Lexers::SQL.keywords.to_a,
@@ -1855,6 +1879,7 @@ class Main < Sinatra::Base
             "#{pip ? "<script src='/include/pip_world.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "#{pip ? "<script src='/include/pip_journey.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "#{turtle ? "<script src='/include/turtle/turtle_canvas.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
+            "#{document ? "<script src='/include/document_task.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "<script src='/include/tasks.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" \
             "#{config[:meeting] && config[:meeting][:teacher] ? "<script src='/include/meeting_status.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}" \
             "#{config[:meeting] ? "<script src='/include/meeting_point.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" : ''}"
@@ -2654,6 +2679,20 @@ class Main < Sinatra::Base
             "Bei den Katas, bei Pip und bei der Schildkröte werden Dart und Java auf dem Server zuerst übersetzt: " \
             "Die Antwort kommt dort langsamer als in Ruby, Python und JavaScript.</p>" \
             "<div class='class-languages' data-languages='#{h.(data.to_json)}'></div></section>"
+        # The office programs, ranked the same way: which one the pages of
+        # the section Office describe (where a button is).
+        office = {
+            :group => group, :ranked => group_office_suites([group])[group] || [CodeLanguages::OFFICE.first],
+            :default => CodeLanguages::OFFICE.first,
+            :languages => CodeLanguages::OFFICE.map { |l| { :id => l, :name => CodeLanguages::NAMES[l], :icon => CodeLanguages::ICONS[l] } },
+            :activities => multi_language_activities(:office => true),
+            :api => '/api/set_group_office_suites', :title => 'class-office-title',
+            :words => { :more => 'Weitere Programme', :least => 'Die Klasse braucht mindestens ein Programm.', :none => 'keines dieser Programme' },
+        }
+        io << "<section class='class-setting class-setting-languages'><h3 class='class-setting-title' id='class-office-title'>Office-Programme der Klasse</h3>" \
+            "<p class='class-setting-hint'>Die Seiten im Abschnitt Office sagen, wo in diesem Programm ein Knopf oder ein Menü ist: in Word, LibreOffice oder Nextcloud Office. " \
+            "Jede Seite nimmt das erste Programm dieser Liste. Lernende können auf der Seite selbst umschalten.</p>" \
+            "<div class='class-languages' data-languages='#{h.(office.to_json)}'></div></section>"
         io << "<script src='/include/class_languages.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         # Copy buttons on every code block for the group's students, or only
         # where the page has them (group_copy_all_code?).
@@ -3737,6 +3776,16 @@ class Main < Sinatra::Base
         assert(user_logged_in?)
         data = parse_request_data(:required_keys => [:language])
         assert(CodeLanguages.known?(data[:language]))
+        # an office program is a choice of its own (CodeLanguages)
+        if CodeLanguages::OFFICE.include?(data[:language])
+            neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :suite => data[:language]})
+                MATCH (u:User {email: $email})
+                SET u.office_suite = $suite
+                RETURN u;
+            END_OF_STRING
+            respond(:yay => 'sure')
+            return
+        end
         # JavaScript, Dart and Java only where a page offers them
         # (CodeLanguages): they do not replace the choice between Ruby and
         # Python, and picking one of those again leaves them behind.
@@ -3771,6 +3820,22 @@ class Main < Sinatra::Base
             MERGE (g:GroupSetting {group: $group})
             SET g.code_languages = $languages
             REMOVE g.code_language;
+        END_OF_STRING
+        respond(:yay => 'sure')
+    end
+
+    # The office programs a teacher ranks for a group (»Office-Programme der
+    # Klasse«): known ones, each once, at least one.
+    post '/api/set_group_office_suites' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:group, :languages], :types => { :languages => Array })
+        group = data[:group]
+        assert(class_groups.include?(group))
+        suites = data[:languages]
+        assert(!suites.empty? && suites.all? { |l| l.is_a?(String) && CodeLanguages::OFFICE.include?(l) } && suites.uniq.size == suites.size)
+        neo4j_query(<<~END_OF_STRING, {:group => group, :suites => suites})
+            MERGE (g:GroupSetting {group: $group})
+            SET g.office_suites = $suites;
         END_OF_STRING
         respond(:yay => 'sure')
     end

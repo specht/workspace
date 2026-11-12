@@ -12,8 +12,10 @@ test('a teacher ranks the languages of a group, and the group sees them', async 
   teacher.on('pageerror', (e) => errors.push(e.message));
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
   await teacher.goto('/klasse?group=E2E&tab=einstellungen');
-  const before = JSON.parse((await teacher.locator('.class-languages').getAttribute('data-languages'))!).ranked as string[];
-  const ranked = () => teacher.locator('.cl-list .cl-item').evaluateAll((items) => items.map((i) => (i as HTMLElement).dataset.lang));
+  // the programming languages (below them the office programs, the same list)
+  const languages = teacher.locator('.class-languages').first();
+  const before = JSON.parse((await languages.getAttribute('data-languages'))!).ranked as string[];
+  const ranked = () => languages.locator('.cl-list .cl-item').evaluateAll((items) => items.map((i) => (i as HTMLElement).dataset.lang));
   const saved = () => teacher.waitForResponse((r) => r.url().includes('/api/set_group_code_languages'));
   try {
     expect((await (await teacher.request.post('/api/set_group_code_languages', { data: { group: 'E2E', languages: ['ruby'] } })).json()).yay).toBe('sure');
@@ -27,7 +29,7 @@ test('a teacher ranks the languages of a group, and the group sees them', async 
     await expect(ruby.locator('.cl-remove')).toHaveAttribute('aria-disabled', 'true');
     await ruby.focus();
     await teacher.keyboard.press('Delete');
-    await expect(teacher.locator('.cl-say')).toHaveText('Die Klasse braucht mindestens eine Sprache.');
+    await expect(languages.locator('.cl-say')).toHaveText('Die Klasse braucht mindestens eine Sprache.');
     expect(await ranked()).toEqual(['ruby']);
 
     // a tap adds JavaScript at the end, the keyboard moves it up
@@ -38,7 +40,7 @@ test('a teacher ranks the languages of a group, and the group sees them', async 
     save = saved();
     await teacher.locator(".cl-item[data-lang='javascript']").focus();
     await teacher.keyboard.press('ArrowUp');
-    await expect(teacher.locator('.cl-say')).toHaveText('JavaScript ist jetzt an Stelle 1 von 2.');
+    await expect(languages.locator('.cl-say')).toHaveText('JavaScript ist jetzt an Stelle 1 von 2.');
     await save;
     expect(await ranked()).toEqual(['javascript', 'ruby']);
     // Enter on a language below adds it; Delete removes one from the list
@@ -51,7 +53,7 @@ test('a teacher ranks the languages of a group, and the group sees them', async 
     await teacher.keyboard.press('Delete');
     await save;
     expect(await ranked()).toEqual(['javascript', 'python']);
-    await expect(teacher.locator('.cl-preview')).toContainText('JavaScript');
+    await expect(languages.locator('.cl-preview')).toContainText('JavaScript');
 
     // kept after a reload
     await teacher.reload();

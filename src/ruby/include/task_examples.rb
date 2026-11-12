@@ -45,16 +45,22 @@ require_relative 'kata_runner'
 # A Kata (function) has no files: answer: is the code, and the task's
 # starter must fail by itself (automatic_cases).
 #
+# A document task gets document: a file relative to the activity's folder
+# (stufen/einladung.docx, or ../../static/… for the starting file), read by
+# the office service like an upload; say: is then looked for in the
+# messages of the checklist as well. Without the service (outside the
+# containers) its examples wait for a machine that has it.
+#
 # Only checks that run without a Workspace container or a database are run
 # here (FAST_TYPES); ruby, python and function checks run with the local
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit interleaving turtle unit_tests phone].freeze
+    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit interleaving turtle unit_tests phone document].freeze
     # Checks that need examples to be tested at all.
-    NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit interleaving turtle unit_tests phone].freeze
+    NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit interleaving turtle unit_tests phone document].freeze
     # answer with compare: regex needs examples as well (see missing).
-    CASE_KEYS = %w[archive files answer say variables].freeze
+    CASE_KEYS = %w[archive files answer say variables document].freeze
 
     Outcome = Struct.new(:activity, :task, :language, :kind, :index, :ok, :detail, keyword_init: true) do
         def label
@@ -163,6 +169,8 @@ module TaskExamples
             outcome.detail = 'malformed example'
             return outcome
         end
+        return run_document(dir, id, task, kind, example, index, outcome, problems) if task['check']['type'] == 'document'
+
         Dir.mktmpdir('task-example') do |root|
             if (archive = example['archive'])
                 file = File.expand_path(archive.to_s, dir)
@@ -230,6 +238,35 @@ module TaskExamples
             elsif !outcome.ok
                 outcome.detail = "#{result.status}: #{result.message}"
             end
+        end
+        outcome
+    end
+
+    # An example of a document task: the file through the office service,
+    # then the check (DocumentCheck).
+    def self.run_document(dir, id, task, kind, example, index, outcome, problems)
+        file = File.expand_path(example['document'].to_s, dir)
+        unless example['document'] && File.file?(file)
+            problems << "#{FILE}: #{id} #{kind} ##{index + 1}: no file #{example['document']}"
+            outcome.ok = false
+            outcome.detail = "no file #{example['document']}"
+            return outcome
+        end
+        model = begin
+            OfficeClient.analyze(File.binread(file), File.basename(file))
+        rescue OfficeClient::Unavailable
+            return nil
+        end
+        result = TaskCheck.check(task, model)
+        said = ([result.message] + ((result.report || {})[:items] || []).map { |i| i[:message] }).compact.join("\n")
+        expected = kind == 'pass' ? %i[correct] : %i[wrong invalid]
+        outcome.ok = expected.include?(result.status)
+        if outcome.ok && kind == 'fail' && example['say'] && !said.include?(example['say'].to_s)
+            outcome.ok = false
+            outcome.detail = "rejected, but no message says »#{example['say']}«: #{said}"
+        elsif !outcome.ok
+            open = ((result.report || {})[:items] || []).reject { |i| i[:ok] }.map { |i| i[:label] }
+            outcome.detail = "#{result.status}: #{result.message} #{open.join('; ')}"
         end
         outcome
     end

@@ -227,6 +227,16 @@ der ersten Gruppe mit einer Einstellung. Die eigene Wahl auf einer Seite
 (Ruby oder Python, `u.code_language`, und JavaScript, Dart oder Java auf den
 Seiten, die sie anbieten) geht vor.
 
+## Office-Programme der Klasse
+
+Darunter ordnet die Lehrkraft genauso die Office-Programme: Word,
+LibreOffice, Nextcloud Office (`/api/set_group_office_suites`,
+`GroupSetting.office_suites`). Die Seiten im Abschnitt Office sagen damit,
+wo im Programm der Klasse ein Knopf oder ein Menü ist
+(`<!-- language: word -->` …, `languages: [word, libreoffice, nextcloud]`).
+Lernende schalten auf der Seite um (`u.office_suite`); das ändert nichts an
+ihrer Programmiersprache und umgekehrt (`CodeLanguages::OFFICE`).
+
 ## Kopierknöpfe
 
 Voreingestellt hat jeder Codeblock einen Kopierknopf, für alle. Auf der

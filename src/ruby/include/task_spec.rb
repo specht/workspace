@@ -9,6 +9,7 @@ require_relative 'er_check'
 require_relative 'classes_check'
 require_relative 'schema_check'
 require_relative 'keyboard_check'
+require_relative 'document_check'
 require_relative 'story_check'
 require_relative 'scene_color'
 require_relative 'html_lite'
@@ -80,6 +81,7 @@ module TaskSpec
         'interleaving' => 'M8',
         'unit_tests' => 'M8',
         'phone' => 'M8',
+        'document' => 'M9',
     }.freeze
 
     # Check types that need the network; they are never used in exams.
@@ -710,6 +712,10 @@ module TaskSpec
             # Reads the Keyboard-Tutorial's state file in /workspace.
             allowed += %w[section]
             errors.concat(KeyboardCheck.spec_errors(check))
+        when 'document'
+            # A document the student uploads, read by the office service.
+            allowed += %w[file rules]
+            errors.concat(DocumentCheck.spec_errors(check))
         end
         extra = check.keys - allowed
         errors << "unknown keys for #{type}: #{extra.join(', ')}" unless extra.empty?

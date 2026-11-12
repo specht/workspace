@@ -259,6 +259,11 @@
             field.dispatchEvent(new CustomEvent('task-answer', { detail: { answer: answer || '', updated: state ? state.updated : null } }));
             return;
         }
+        if (card.dataset.type === 'document') {
+            // the line for the class overview: which points were open
+            if (window.DocumentTask) DocumentTask.showStored(card, answer || null);
+            return;
+        }
         if (card.dataset.type === 'submit') {
             const select = card.querySelector('.task-pick');
             const parts = String(answer || '').split(/ · |: /);
@@ -431,6 +436,12 @@
             card.turtle.toggle();
             return;
         }
+        // a document (document_task.js): the file goes up as a form
+        if (card.dataset.type === 'document') {
+            if (!window.DocumentTask) return;
+            DocumentTask.check(card, function () { setBusy(card, true); }, function (data) { received(card, data); });
+            return;
+        }
         const answer = readAnswer(card);
         if (KATA.includes(card.dataset.type)) {
             kata(card, 'check', answer);
@@ -442,20 +453,27 @@
 
     function send(card, answer) {
         api_call('/api/task/check', { task: card.dataset.task, answer: answer, language: card.dataset.language }, function (data) {
-            setBusy(card, false);
-            if (!data.success) {
-                showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
-                return;
-            }
-            showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
-            if (data.state) {
-                setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
-                card.querySelector('.task-delete').hidden = false;
-                if (card.dataset.type === 'submit') showSubmission(card, data.state.answer);
-                // the editor's draft now builds on this answer (circuit_editor.js)
-                if (card.dataset.type === 'circuit') card.querySelector('.circuit-answer').dispatchEvent(new CustomEvent('task-checked', { detail: data.state }));
-            }
+            received(card, data);
         }, { no_please_wait: true });
+    }
+
+    function received(card, data) {
+        setBusy(card, false);
+        if (!data.success) {
+            showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
+            return;
+        }
+        showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
+        // a document's checklist and its pages with the marks
+        if (data.report && window.DocumentTask) DocumentTask.render(card, data.report);
+        if (data.state) {
+            setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
+            card.querySelector('.task-delete').hidden = false;
+            if (card.dataset.type === 'submit') showSubmission(card, data.state.answer);
+            // the editor's draft now builds on this answer (circuit_editor.js)
+            if (card.dataset.type === 'circuit') card.querySelector('.circuit-answer').dispatchEvent(new CustomEvent('task-checked', { detail: data.state }));
+            if (card.dataset.type === 'document' && window.DocumentTask) DocumentTask.showStored(card, data.state.answer);
+        }
     }
 
     // A Kata (KataCheck): the run is queued on the server and the card asks
@@ -976,6 +994,8 @@
                 e.preventDefault();
                 submit(card);
             });
+            // a document: choosing or dropping a file checks it at once
+            if (card.dataset.type === 'document' && window.DocumentTask) DocumentTask.setup(card, function () { submit(card); });
             // SQL and a Kata's code: Enter makes a new line, Ctrl+Enter
             // (Cmd+Enter) checks.
             const sql = card.querySelector('.task-sql, .task-code');

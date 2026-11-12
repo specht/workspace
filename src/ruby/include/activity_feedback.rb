@@ -51,7 +51,7 @@ module ActivityFeedback
 
     # What the form sends, as it is stored: the choices among their
     # values, the texts stripped and cut, the languages among
-    # CodeLanguages::LANGUAGES (without those the activity has), contact
+    # CodeLanguages::PROGRAMMING (without those the activity has), contact
     # true or false. nil when nothing is answered (contact alone is no
     # answer).
     def self.normalize(raw, offered: [])
@@ -65,7 +65,7 @@ module ActivityFeedback
             text = raw[key].to_s.gsub("\r\n", "\n").strip[0, max]
             answers[key] = text.empty? ? nil : text
         end
-        answers['languages'] = Array(raw['languages']).map(&:to_s) & (CodeLanguages::LANGUAGES - offered)
+        answers['languages'] = Array(raw['languages']).map(&:to_s) & (CodeLanguages::PROGRAMMING - offered)
         answers['contact'] = raw['contact'] == true
         answered?(answers) ? answers : nil
     end
@@ -126,11 +126,11 @@ module ActivityFeedback
     # switch between (languages:), else those its line »language:« names
     # (»Ruby / Python«, »C« has none of them).
     def self.current_languages(content)
-        offered = Array(content[:languages]).map(&:to_s) & CodeLanguages::LANGUAGES
+        offered = Array(content[:languages]).map(&:to_s) & CodeLanguages::PROGRAMMING
         return offered unless offered.empty?
 
         names = content[:language].to_s.split(%r{\s*/\s*}).map { |n| n.strip.downcase }
-        CodeLanguages::LANGUAGES.select { |id| names.include?(CodeLanguages::NAMES[id].downcase) }
+        CodeLanguages::PROGRAMMING.select { |id| names.include?(CodeLanguages::NAMES[id].downcase) }
     end
 
     def self.label(key, value)
@@ -214,7 +214,7 @@ module ActivityFeedback
         io << "<fieldset class='feedback-question'><legend>In welcher Programmiersprache hättest du die Aktivität gern (zusätzlich)?</legend>"
         io << "<p class='feedback-hint-line'>Jetzt: #{h(info[:language])}</p>" unless info[:language].to_s.strip.empty?
         io << "<div class='feedback-choices'>"
-        CodeLanguages::LANGUAGES.each do |id|
+        CodeLanguages::PROGRAMMING.each do |id|
             name = CodeLanguages::NAMES[id]
             box = "feedback-language-#{id}"
             if current.include?(id)
@@ -282,11 +282,11 @@ module ActivityFeedback
             counts = CHOICES.to_h do |key, choices|
                 [key, choices.to_h { |value, _| [value, entries.count { |e| e[:answers][key] == value }] }]
             end
-            languages = CodeLanguages::LANGUAGES.to_h { |id| [id, entries.count { |e| Array(e[:answers]['languages']).include?(id) }] }
+            languages = CodeLanguages::PROGRAMMING.to_h { |id| [id, entries.count { |e| Array(e[:answers]['languages']).include?(id) }] }
             {
                 :activity => activity, :title => list.first[:title], :slug => list.first[:slug], :duration => list.first[:duration],
                 :count => entries.size, :newest => entries.first[:at], :counts => counts,
-                :languages => languages.select { |_, n| n > 0 }.sort_by { |id, n| [-n, CodeLanguages::LANGUAGES.index(id)] }.to_h,
+                :languages => languages.select { |_, n| n > 0 }.sort_by { |id, n| [-n, CodeLanguages::PROGRAMMING.index(id)] }.to_h,
                 :languages_texts => entries.filter_map { |e| e[:answers]['languages_text'] },
                 :entries => entries,
             }

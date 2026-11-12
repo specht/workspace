@@ -3945,7 +3945,10 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 [data-code-language='python'] .code-language:not([data-language~='python']),
 [data-code-language='javascript'] .code-language:not([data-language~='javascript']),
 [data-code-language='dart'] .code-language:not([data-language~='dart']),
-[data-code-language='java'] .code-language:not([data-language~='java']) {
+[data-code-language='java'] .code-language:not([data-language~='java']),
+[data-code-language='word'] .code-language:not([data-language~='word']),
+[data-code-language='libreoffice'] .code-language:not([data-language~='libreoffice']),
+[data-code-language='nextcloud'] .code-language:not([data-language~='nextcloud']) {
     display: none;
 }
 
@@ -17274,4 +17277,501 @@ html[data-bs-theme="dark"] .mail-mark.bi-x-circle-fill { color: #ff6b6b; }
 }
 body.mail-app-open {
     overflow: hidden;
+}
+
+/* A document task (document_task.js, DocumentCheck): the starting file and
+   the student's document on the card, then the checklist and the pages as
+   LibreOffice drew them, with a numbered mark at each place a point fails.
+   The page is paper in both themes, so the marks keep the light colours of
+   the mail viewer (the place found: orange line on light orange). */
+.document-task {
+    --document-mark: #f76707;
+    --document-mark-fill: rgba(255, 146, 43, 0.22);
+    --document-num: #c2410c;
+    --document-num-ink: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin-bottom: 0.75em;
+}
+.document-starter {
+    align-self: flex-start;
+}
+.document-starter .bi {
+    margin-right: 0.35em;
+}
+.document-drop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 0.75em;
+    padding: 0.6em 0.75em;
+    border: 1px dashed var(--widget-line, #ced4da);
+    border-radius: 0.5em;
+}
+.document-name {
+    color: var(--bs-secondary-color);
+    font-size: 0.92em;
+}
+.document-name strong {
+    color: var(--bs-body-color);
+    font-weight: 600;
+}
+.task-card.document-dragging .document-drop {
+    border-style: solid;
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg-subtle);
+}
+.document-report {
+    --document-mark: #f76707;
+    --document-mark-fill: rgba(255, 146, 43, 0.22);
+    --document-band: rgba(255, 146, 43, 0.12);
+    --document-num: #c2410c;
+    --document-num-ink: #ffffff;
+    margin-top: 0.75em;
+}
+.document-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+}
+.document-checklist li {
+    display: flex;
+    gap: 0.5em;
+    align-items: flex-start;
+}
+.document-checklist li > .bi {
+    margin-top: 0.15em;
+    flex: none;
+}
+.document-ok > .bi {
+    color: var(--bs-success);
+}
+.document-open > .bi {
+    color: var(--bs-secondary-color);
+}
+.document-ok .document-label {
+    color: var(--bs-secondary-color);
+}
+.document-label {
+    font-weight: 600;
+}
+.document-ok .document-label {
+    font-weight: 400;
+}
+.document-message {
+    font-size: 0.92em;
+    margin-top: 0.1em;
+}
+.document-message p:last-child {
+    margin-bottom: 0;
+}
+.document-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5em;
+    height: 1.5em;
+    margin-left: 0.3em;
+    padding: 0 0.35em;
+    border: none;
+    border-radius: 0.75em;
+    background: var(--document-num);
+    color: var(--document-num-ink);
+    font-size: 0.78em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    vertical-align: 0.1em;
+    cursor: pointer;
+}
+.document-chip:focus-visible {
+    outline: 2px solid var(--bs-body-color);
+    outline-offset: 1px;
+}
+.document-chip.document-active {
+    box-shadow: 0 0 0 3px var(--document-mark-fill), 0 0 0 4px var(--document-mark);
+}
+.document-report {
+    --document-desk: #e9ecef;
+    display: grid;
+    grid-template-columns: minmax(15em, 21em) minmax(0, 1fr);
+    gap: 0.9em;
+    /* the verdict line above and this panel in one screen, below the bar
+       at the top (the card scrolls there after a check, document_task.js) */
+    height: clamp(22rem, calc(100svh - 9rem), 60rem);
+    margin-top: 0.75em;
+}
+html[data-bs-theme="dark"] .document-report {
+    --document-desk: #2b2e33;
+}
+.document-side {
+    min-height: 0;
+    overflow: auto;
+    padding-right: 0.25em;
+}
+.document-view {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    border: 1px solid var(--widget-line, #ced4da);
+    border-radius: 0.5em;
+    overflow: hidden;
+    background: var(--bs-body-bg);
+}
+.document-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.4em 0.5em;
+    border-bottom: 1px solid var(--widget-line, #ced4da);
+}
+.document-tools .btn .bi {
+    margin: 0;
+}
+.document-zoom {
+    min-width: 3.6em;
+    text-align: center;
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+    color: var(--bs-secondary-color);
+}
+.document-recheck {
+    margin-left: auto;
+}
+.document-recheck .bi {
+    margin-right: 0.35em !important;
+}
+.document-viewport {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    touch-action: none;
+    cursor: grab;
+    background: var(--document-desk);
+}
+.document-viewport:focus-visible {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: -2px;
+}
+.document-viewport.document-grabbing {
+    cursor: grabbing;
+}
+.document-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: 0 0;
+}
+.document-stage.document-gliding {
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.document-sheet {
+    position: absolute;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+.document-sheet img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    user-select: none;
+    pointer-events: none;
+}
+.document-mark {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 2px;
+    pointer-events: none;
+    transition: opacity 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+/* spaces: one dot per space, as the formatting marks show them */
+.document-mark-gap {
+    background-image: radial-gradient(circle at 50% 55%, var(--document-mark) 0 0.9px, transparent 1.2px);
+    background-repeat: repeat-x;
+    background-position: 0 0;
+}
+/* an empty paragraph: its ¶ at the text's edge on a faint band */
+.document-mark-blank {
+    background: var(--document-band);
+}
+.document-mark-blank .document-glyph {
+    left: 1px;
+}
+.document-glyph {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--document-mark);
+    font-family: "DejaVu Sans", Arial, sans-serif;
+    font-weight: 700;
+    line-height: 1;
+}
+/* a line break by hand: its ↵ right after the last word of the line */
+.document-mark-spot .document-glyph {
+    left: 1px;
+}
+/* a missing gap between two paragraphs */
+.document-mark-tight::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    border-top: 2px dotted var(--document-mark);
+}
+/* a paragraph (its alignment): only framed while its point is active */
+.document-mark-box {
+    border: 1.5px dashed transparent;
+}
+/* one point active: its places come forward, the others step back */
+.document-report[data-active] .document-mark:not(.document-active),
+.document-report[data-active] .document-badge:not(.document-active) {
+    opacity: 0.25;
+}
+.document-mark.document-active {
+    background-color: var(--document-mark-fill);
+}
+.document-mark-box.document-active {
+    border-color: var(--document-mark);
+}
+/* the numbers in the left margin, like comments; their size stays the
+   same at every zoom (--inv = 1 / zoom) */
+.document-badge {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--document-num);
+    color: var(--document-num-ink);
+    font: 700 11px/1 var(--bs-body-font-family, sans-serif);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transform: translate(calc(-100% - var(--k, 0) * 22px * var(--inv, 1)), -50%) scale(var(--inv, 1));
+    transform-origin: right center;
+    box-shadow: 0 0 0 1.5px #ffffff;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.document-badge.document-active {
+    box-shadow: 0 0 0 1.5px #ffffff, 0 0 0 4px var(--document-mark-fill);
+}
+/* the list: a point's number before its name, the number of its places */
+.document-checklist li[data-n] {
+    cursor: default;
+}
+.document-checklist li.document-active .document-label {
+    color: var(--document-num);
+}
+.document-where {
+    font-size: 0.82em;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+.document-chip {
+    margin: 0 0.4em 0 0;
+}
+.document-new {
+    display: inline-block;
+    margin-left: 0.5em;
+    padding: 0.05em 0.5em;
+    border-radius: 999px;
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+    font-size: 0.75em;
+    font-weight: 600;
+    vertical-align: 0.1em;
+}
+.document-gain {
+    display: flex;
+    gap: 0.4em;
+    align-items: center;
+    margin: 0 0 0.6em;
+    color: var(--bs-success-text-emphasis);
+    font-weight: 600;
+}
+.document-fresh > .bi {
+    animation: document-pop 0.6s ease-out;
+}
+@keyframes document-pop {
+    0% { transform: scale(0.4); }
+    60% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+/* all points met */
+.document-done {
+    display: flex;
+    gap: 0.8em;
+    align-items: center;
+    margin-bottom: 0.9em;
+    padding: 0.8em 0.9em;
+    border-radius: 0.6em;
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+.document-done-mark {
+    flex: none;
+    width: 3em;
+    height: 3em;
+}
+.document-done-mark circle {
+    fill: var(--bs-success);
+    stroke: none;
+}
+.document-done-mark path {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 4.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 0;
+}
+.document-done-title {
+    font-size: 1.25em;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.document-done-text {
+    font-size: 0.92em;
+}
+.document-stamp {
+    position: absolute;
+    padding: 4px 10px;
+    border: 2.5px solid #2f9e44;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.85);
+    color: #2f9e44;
+    font: 800 11px/1.1 var(--bs-body-font-family, sans-serif);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transform: rotate(-8deg);
+    opacity: 0.9;
+    pointer-events: none;
+}
+.document-shine {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(105deg, transparent 35%, rgba(64, 192, 87, 0.22) 50%, transparent 65%);
+    background-size: 250% 100%;
+}
+/* the moment it is met (not with reduced motion): the points tick one
+   after the other, the check draws itself, the stamp lands, a light
+   passes over the page */
+.document-success-now .document-checklist li > .bi {
+    animation: document-pop 0.5s ease-out both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+}
+.document-success-now .document-done {
+    animation: document-rise 0.45s ease-out both;
+}
+.document-success-now .document-done-mark circle {
+    animation: document-pop 0.5s ease-out both;
+}
+.document-success-now .document-done-mark path {
+    animation: document-draw 0.5s 0.3s ease-out both;
+}
+.document-success-now .document-stamp {
+    animation: document-stamp 0.45s 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.document-success-now .document-shine {
+    animation: document-shine 1.3s 0.5s ease-in-out both;
+}
+@keyframes document-rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes document-draw {
+    from { stroke-dashoffset: 36; }
+    to { stroke-dashoffset: 0; }
+}
+@keyframes document-stamp {
+    0% { opacity: 0; transform: rotate(-8deg) scale(2.2); }
+    100% { opacity: 0.9; transform: rotate(-8deg) scale(1); }
+}
+@keyframes document-shine {
+    0% { opacity: 1; background-position: 120% 0; }
+    100% { opacity: 1; background-position: -20% 0; }
+}
+/* in a narrow card (a phone, or the browser on half of the screen beside
+   Word) the page on top, the checklist below, both in the window */
+.task-card[data-type='document'] .task-feedback-body {
+    container-type: inline-size;
+}
+@container (max-width: 46em) {
+    .document-report {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1.6fr) minmax(0, 1fr);
+    }
+    .document-view {
+        order: -1;
+    }
+}
+.document-note {
+    margin: 0.75em 0 0;
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+.document-xray {
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 0.85em;
+}
+.document-saved {
+    color: var(--bs-secondary-color);
+    font-size: 0.92em;
+}
+/* an office program in »Office-Programme der Klasse«: an icon for a logo */
+.cl-icon {
+    width: 22px;
+    font-size: 20px;
+    line-height: 22px;
+    text-align: center;
+    color: var(--bs-secondary-color);
+}
+
+.task-card[data-type='document'] .task-feedback {
+    scroll-margin-top: 4rem;
+}
+/* how short the loop is in this browser (document_task.js) */
+.document-browser {
+    display: flex;
+    gap: 0.45em;
+    align-items: baseline;
+    margin: 0;
+    font-size: 0.88em;
+    color: var(--bs-secondary-color);
+}
+/* a click on a point: the view travels there slowly enough to follow,
+   then the places pulse once */
+.document-stage.document-gliding.document-travel {
+    transition-duration: 0.65s;
+    transition-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+}
+.document-mark.document-arrived {
+    animation: document-arrive 0.9s ease-out;
+}
+@keyframes document-arrive {
+    0% { box-shadow: 0 0 0 0 rgba(247, 103, 7, 0.55); }
+    100% { box-shadow: 0 0 0 14px rgba(247, 103, 7, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .document-mark.document-arrived {
+        animation: none;
+        outline: 2px solid var(--document-mark);
+    }
 }

@@ -24,6 +24,7 @@ require_relative 'interleaving_check'
 require_relative 'turtle_check'
 require_relative 'glsl_check'
 require_relative 'unit_tests_check'
+require_relative 'document_check'
 
 # Checks a student's answer to a task (docs/aufgaben.md, »Prüfen«).
 #
@@ -39,7 +40,7 @@ module TaskCheck
     # read files or git status (/api/class/check_now).
     LIVE_TYPES = (FILE_TYPES + %w[git keyboard]).freeze
     # Types this version can check.
-    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit interleaving turtle unit_tests phone]).freeze
+    RUNS = (ANSWER_TYPES + FILE_TYPES + %w[git submit measure command server scene sql cypher er classes schema keyboard python ruby prolog javascript c java dart function pip tests circuit interleaving turtle unit_tests phone document]).freeze
 
     # status:
     #   :correct, :wrong   – checked; counts as an attempt
@@ -55,7 +56,8 @@ module TaskCheck
     # problem:  code of what was missing (file checks)
     # plan:     the files a submit check will copy (SubmissionStore::Plan)
     # replay: what the card plays back (Pip's run, PipCheck.replay)
-    Result = Struct.new(:status, :message, :solution, :read, :warnings, :problem, :plan, :replay, keyword_init: true) do
+    # report: a document's checklist, pages and marks (DocumentCheck.report)
+    Result = Struct.new(:status, :message, :solution, :read, :warnings, :problem, :plan, :replay, :report, keyword_init: true) do
         def counts?
             %i[correct wrong sent].include?(status)
         end
@@ -125,6 +127,7 @@ module TaskCheck
         return check_circuit(task, check, answer) if type == 'circuit'
         return check_interleaving(task, check, answer) if type == 'interleaving'
         return check_turtle(task, check, answer, turtle) if type == 'turtle'
+        return check_document(task, check, answer) if type == 'document'
         return check_workspace(task, check, answer, workspace, git, runner) unless ANSWER_TYPES.include?(type)
 
         missing = variables_used(check).reject { |name| variables[name].is_a?(String) && !variables[name].empty? }
@@ -298,6 +301,28 @@ module TaskCheck
 
     # circuit: a netlist from the Logik-Werkstatt, simulated on the server
     # (CircuitCheck); nothing in it runs.
+    # answer: what the office service read in the uploaded document
+    # (OfficeClient.analyze); the task's starting file is read the same way
+    # for the rule text.
+    STATIC_ROOT = File.expand_path('../../static', __dir__)
+
+    def self.check_document(task, check, answer)
+        return Result.new(:status => :invalid, :message => 'Wähle zuerst dein Dokument aus.') unless answer.is_a?(Hash)
+        if answer['error']
+            return Result.new(:status => :invalid, :problem => answer['error'],
+                :message => OfficeClient::ERRORS[answer['error']] || OfficeClient::ERRORS['failed'])
+        end
+        starter = begin
+            OfficeClient.analyze_file(File.join(STATIC_ROOT, check['file']))
+        rescue OfficeClient::Unavailable, SystemCallError
+            nil
+        end
+        status, items, message = DocumentCheck.evaluate(check, answer, starter)
+        Result.new(:status => status, :message => message, :read => DocumentCheck.xray(answer),
+            :solution => status == :correct ? task['solution'] : nil,
+            :report => DocumentCheck.report(items, answer))
+    end
+
     def self.check_circuit(task, check, answer)
         status, message, read = CircuitCheck.check(task, check, answer)
         Result.new(:status => status, :message => message, :read => read,

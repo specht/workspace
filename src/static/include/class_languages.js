@@ -14,6 +14,11 @@
         if (root.dataset.ready) return;
         root.dataset.ready = '1';
         const data = JSON.parse(root.dataset.languages);
+        // the office programs use the same list (»Office-Programme der
+        // Klasse«): their API, heading and words come with the data
+        const words = Object.assign({ more: 'Weitere Sprachen', least: 'Die Klasse braucht mindestens eine Sprache.', none: 'keine dieser Sprachen' }, data.words || {});
+        const api = data.api || '/api/set_group_code_languages';
+        const title = data.title || 'class-languages-title';
         const names = {};
         data.languages.forEach((l) => { names[l.id] = l.name; });
         const count = {};
@@ -22,9 +27,9 @@
         if (!ranked.length) ranked = [data.default];
         const activities = (n) => (n === 1 ? 'einer Aktivität' : `${n} Aktivitäten`);
 
-        root.innerHTML = "<ol class='cl-list' aria-labelledby='class-languages-title'></ol>" +
-            "<h4 class='class-setting-subtitle cl-more-title'>Weitere Sprachen</h4>" +
-            "<ul class='cl-more' aria-label='Weitere Sprachen'></ul>" +
+        root.innerHTML = `<ol class='cl-list' aria-labelledby='${esc(title)}'></ol>` +
+            `<h4 class='class-setting-subtitle cl-more-title'>${esc(words.more)}</h4>` +
+            `<ul class='cl-more' aria-label='${esc(words.more)}'></ul>` +
             "<p class='class-setting-hint cl-preview'></p>" +
             "<p class='visually-hidden cl-say' aria-live='polite'></p>";
         const list = root.querySelector('.cl-list');
@@ -42,7 +47,8 @@
             li.tabIndex = 0;
             li.innerHTML = "<span class='cl-rank' aria-hidden='true'></span>" +
                 "<i class='bi bi-grip-vertical cl-grip' aria-hidden='true'></i>" +
-                `<img class='cl-logo' src='/images/languages/${esc(l.id)}.webp' alt='' width='22' height='22'>` +
+                (l.icon ? `<i class='bi ${esc(l.icon)} cl-logo cl-icon' aria-hidden='true'></i>`
+                    : `<img class='cl-logo' src='/images/languages/${esc(l.id)}.webp' alt='' width='22' height='22'>`) +
                 `<span class='cl-name'>${esc(l.name)}</span>` +
                 `<span class='cl-count'>in ${activities(count[l.id])}</span>` +
                 "<span class='cl-tools'>" +
@@ -87,7 +93,7 @@
                 const last = ranked.length === 1;
                 const remove = li.querySelector('.cl-remove');
                 remove.setAttribute('aria-disabled', last ? 'true' : 'false');
-                remove.title = last ? 'Die Klasse braucht mindestens eine Sprache.' : `${names[id]} entfernen`;
+                remove.title = last ? words.least : `${names[id]} entfernen`;
                 li.querySelector('.cl-up').disabled = i === 0;
                 li.querySelector('.cl-down').disabled = i === ranked.length - 1;
             });
@@ -134,7 +140,7 @@
             clearTimeout(timer);
             const languages = ranked.slice();
             timer = setTimeout(() => {
-                api_call('/api/set_group_code_languages', { group: data.group, languages }, () => show_success_message('Gespeichert.'), { no_please_wait: true });
+                api_call(api, { group: data.group, languages }, () => show_success_message('Gespeichert.'), { no_please_wait: true });
             }, 350);
         }
 
@@ -172,7 +178,7 @@
         };
         const remove = (id) => {
             if (ranked.length === 1) {
-                tell('Die Klasse braucht mindestens eine Sprache.');
+                tell(words.least);
                 const li = items[id];
                 if (!reduced) li.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(0)' }], { duration: 260 });
                 return;

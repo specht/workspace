@@ -58,6 +58,51 @@ class Main < Sinatra::Base
             :state => state,
         )
     end
+    # A document task (DocumentCheck): the student's file comes as a form
+    # upload, goes to the office service, which reads it and draws its
+    # pages, and is checked against the task's rules. The file itself is not
+    # kept: only the result and a line for the class overview (which points
+    # are open) are stored, as for every task.
+    post '/api/task/document' do
+        assert(user_logged_in?)
+        assert(tasks_visible?)
+        key = params['task'].to_s
+        halt 400 if key.empty? || key.size > 120
+        found = find_task(key)
+        halt 404 if found.nil? || found[:task]['check']['type'] != 'document'
+        entry = params['file']
+        halt 400 unless entry.is_a?(Hash) && entry[:tempfile] || entry.is_a?(Hash) && entry['tempfile']
+        upload = entry[:tempfile] || entry['tempfile']
+        name = File.basename((entry[:filename] || entry['filename']).to_s.encode('UTF-8', :invalid => :replace, :undef => :replace))[0, 200]
+        bytes = upload.read(OfficeClient::MAX_BYTES + 1).to_s
+        begin
+            model = OfficeClient.analyze(bytes, name)
+        rescue OfficeClient::Unavailable => e
+            STDERR.puts "Document task #{found[:key]}: #{e.message}"
+            respond(:status => 'unavailable',
+                :message => render_task_markdown('Dokumente kann ich gerade nicht lesen. Versuch es in ein paar Minuten noch einmal.'))
+            return
+        ensure
+            upload.close! rescue nil
+        end
+        result = TaskCheck.check(found[:task], model)
+        state = nil
+        if result.counts?
+            state = store_task_result(found, result.status.to_s, DocumentCheck.summary(name, result.report[:items]))
+        end
+        report = result.report
+        if report
+            report = report.merge(:items => report[:items].map { |i| i.merge(:message => i[:message] ? render_task_markdown(i[:message]) : nil) })
+        end
+        respond(
+            :status => result.status.to_s,
+            :message => render_task_markdown(result.message),
+            :solution => render_task_markdown(result.solution, :lineno => true),
+            :read => render_task_markdown(result.read),
+            :report => report,
+            :state => state,
+        )
+    end
     # Files a submit task with pick: offers from the student's Workspace.
     post '/api/task/options' do
         assert(user_logged_in?)

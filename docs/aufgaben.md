@@ -1941,6 +1941,41 @@ der sie auch gebaut wird. Die Rückmeldung nennt die Schritte, die noch
 fehlen. Der Server liest nur die Datei, der Workspace muss nicht laufen; die
 Klassenübersicht kann das Kapitel deshalb auch für alle auf einmal prüfen.
 
+### document
+
+```yaml
+check:
+  type: document
+  file: formatting-marks/01 Einladung.docx   # die Vorlage, unter src/static
+  rules:
+    - text                # jedes Wort der Vorlage ist noch da
+    - spaces              # keine Leerzeichen hintereinander
+    - empty_paragraphs    # keine leeren Absätze (am Ende zählen sie nicht)
+    - line_breaks         # keine Zeilenumbrüche von Hand (Umschalt+Enter)
+    - { align: center, paragraph: 'Einladung zum Elternabend' }
+    - { gaps: 6pt, before: ['Liebe Eltern', 'im Mai fährt'] }
+```
+
+Ein Dokument aus Word, LibreOffice oder Nextcloud Office (`.docx`, `.odt`,
+`.doc`, `.rtf`, höchstens 10 MB). Die Karte bietet die Vorlage an und nimmt
+die Datei der Lernenden als Upload (`POST /api/task/document`); der Dienst
+`office` (`src/office/server.py`) liest sie mit LibreOffice, ohne Makros und
+ohne verknüpfte Inhalte zu laden, und zeichnet die Seiten als SVG.
+`DocumentCheck` prüft die Regeln; jede ist ein Punkt der Liste auf der Karte,
+`label:` ersetzt seinen Namen, `say:` den Satz, wenn er fehlt. `align:` und
+`gaps:` finden Absätze an einem Stück ihres Texts (`paragraph:`, `before:`).
+
+Die Karte zeigt die Liste neben der Seite, beides in einem Fenster (auch im
+halben Bildschirm neben Word); jeder offene Punkt hat eine Nummer, die neben
+seinen Stellen am Rand steht, und auf der Seite steht dort, was die
+Formatierungszeichen zeigen würden (· ¶ ↵). Die Seite lässt sich ziehen und
+zoomen; ein Klick auf eine Nummer fährt zur nächsten Stelle. In Chrome und
+Edge behält die Seite die Datei im Blick und prüft nach jedem Speichern von
+selbst (`document_task.js`). Gespeichert werden nur das Ergebnis und eine
+Zeile für die Klassenübersicht (»01 Einladung.docx: 6 von 8, offen: …«), nicht
+die Datei. Beispiele: `document: stufen/einladung.docx` in
+`task-examples.yaml`; ohne den Dienst warten sie.
+
 ### story
 
 ```yaml
@@ -2121,7 +2156,7 @@ Die Karte enthält nie, wogegen geprüft wird: `expect`, `correct` und
 Antwort mit der Rückmeldung.
 
 Der Workspace prüft `answer`, `choice`, `number` und `reflection` (seit M2)
-sowie `files`, `html`, `css`, `references`, `git` und `submit` (seit M3).
+sowie `files`, `html`, `css`, `references`, `git` und `submit` (seit M3); `document` (seit M9) liest ein hochgeladenes Dokument.
 Karten der übrigen Arten zeigen »Zeig dein Ergebnis deiner Lehrkraft«.
 
 Karten, die im Workspace nachsehen, nennen unter dem Text die echten Pfade, die

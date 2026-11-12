@@ -45,11 +45,24 @@ require 'cgi'
 # A page without languages: in its meta (a Handbuch page) may use the same
 # markers to show both: a Ruby part and a Python part right after each other
 # stand side by side, each labelled with its language (pair).
+#
+# The office programs are a second family with the same markers and
+# variants (docs/plan-textverarbeitung.md): a page of the section Office
+# offers languages: [word, libreoffice, nextcloud], and <!-- language:
+# word --> marks what only Word users read (where a button is). A person's
+# choice of program (u.office_suite) and a class's ranking (g.office_suites,
+# »Office-Programme der Klasse«) are kept apart from the programming
+# languages: choosing Word changes nothing about Ruby or Python.
 module CodeLanguages
-    LANGUAGES = %w[ruby python javascript dart java].freeze
-    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript', 'dart' => 'Dart', 'java' => 'Java' }.freeze
+    PROGRAMMING = %w[ruby python javascript dart java].freeze
+    OFFICE = %w[word libreoffice nextcloud].freeze
+    LANGUAGES = (PROGRAMMING + OFFICE).freeze
+    NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript', 'dart' => 'Dart', 'java' => 'Java',
+              'word' => 'Word', 'libreoffice' => 'LibreOffice', 'nextcloud' => 'Nextcloud Office' }.freeze
+    # the office programs have no logo of their own here, but an icon
+    ICONS = { 'word' => 'bi-file-earmark-word', 'libreoffice' => 'bi-file-earmark-richtext', 'nextcloud' => 'bi-cloud' }.freeze
     # What a teacher can rank for a class
-    GROUP_LANGUAGES = LANGUAGES
+    GROUP_LANGUAGES = PROGRAMMING
     # What a person's own switch stores as their choice for every page
     OWN_LANGUAGES = %w[ruby python].freeze
     DEFAULT = 'ruby'
@@ -60,6 +73,18 @@ module CodeLanguages
 
     def self.known?(language)
         LANGUAGES.include?(language.to_s)
+    end
+
+    # A page whose languages are office programs (the switch, the stored
+    # choice and the class's ranking are those of the office programs).
+    def self.office?(languages)
+        !languages.empty? && languages.all? { |l| OFFICE.include?(l) }
+    end
+
+    # A class's ranked office programs as stored, nil for none.
+    def self.ranked_office(value)
+        list = Array(value).map(&:to_s).select { |l| OFFICE.include?(l) }.uniq
+        list.empty? ? nil : list
     end
 
     # The languages a page offers, from its meta block; [] for a page in one
@@ -191,11 +216,11 @@ module CodeLanguages
     def self.switch_html(languages, current)
         buttons = languages.map do |l|
             pressed = l == current
+            logo = ICONS[l] ? "<i class='bi #{ICONS[l]}' aria-hidden='true'></i>" : "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>"
             "<button type='button' class='code-language-option' data-set-language='#{l}' aria-pressed='#{pressed}'>" \
-                "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>" \
-                "<span class='code-language-option-name' data-name='#{NAMES[l]}'>#{NAMES[l]}</span></button>"
+                "#{logo}<span class='code-language-option-name' data-name='#{NAMES[l]}'>#{NAMES[l]}</span></button>"
         end
-        "<span class='code-language-switch' role='group' aria-label='Programmiersprache'>" \
+        "<span class='code-language-switch' role='group' aria-label='#{office?(languages) ? 'Office-Programm' : 'Programmiersprache'}'>" \
             "<span class='code-language-thumb' aria-hidden='true'></span>#{buttons.join}</span>"
     end
 end
