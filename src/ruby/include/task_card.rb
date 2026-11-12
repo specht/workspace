@@ -267,7 +267,7 @@ module TaskCard
                 io << "<div class='document-drop'>"
                 io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>#{pdf ? 'PDF wählen' : sheet ? 'Tabelle wählen' : slides ? 'Präsentation wählen' : 'Dokument wählen'}</button>"
                 io << "<span class='document-name' aria-live='polite'>oder hierher ziehen</span>"
-                io << "<input type='file' class='document-input' accept='#{pdf ? '.pdf' : sheet ? '.ods,.xlsx,.xls' : '.docx,.odt,.doc,.rtf'}' hidden aria-hidden='true' tabindex='-1'>"
+                io << "<input type='file' class='document-input' accept='#{pdf ? '.pdf' : sheet ? '.ods,.xlsx,.xls' : slides ? '.odp,.pptx,.ppt' : '.docx,.odt,.doc,.rtf'}' hidden aria-hidden='true' tabindex='-1'>"
                 io << '</div></div>'
                 reads = sheet ? 'Deine Tabelle geht an den Server. Dort liest LibreOffice jede Zelle, ohne Makros auszuführen, und zeichnet die Tabelle; um zu sehen, ob sie wirklich rechnet, ändert die Prüfung dort eine Zahl und rechnet neu, in einer Kopie. ' \
                     'Gespeichert werden das Ergebnis und die zuletzt geprüfte Fassung deiner Tabelle, damit du an ihr weiterarbeiten kannst; die nächste Prüfung ersetzt sie, »Ergebnis löschen« löscht sie.' :

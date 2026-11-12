@@ -610,3 +610,33 @@ test('the accounts of the trip are handed in as a table and a PDF', async ({ pag
   await pdf.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-accounts/stufen/abrechnung.pdf'));
   await expect(pdf).toHaveAttribute('data-status', 'correct');
 });
+
+// »Eine Folie, ein Gedanke«: a presentation, its slides read and drawn; the
+// card offers the .odp to LibreOffice and the .pptx to PowerPoint, and
+// checks both
+test('a presentation is checked for titles, words, sizes and notes', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/good-slides');
+  await states;
+  // the switch names PowerPoint on a page of slides
+  await expect(page.locator(".code-language-switch-office[data-office-kind='slides']")).toContainText('PowerPoint');
+  const card = page.locator(".task-card[data-task='good-slides/folien']:visible");
+  await expect(card.locator('.document-input')).toHaveAttribute('accept', '.odp,.pptx,.ppt');
+  await expect(card.locator('.document-starter')).toHaveAttribute('href', /01%20Kraniche\.(odp|pptx)$/);
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/good-slides/01 Kraniche.pptx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(4);
+  await expect(report.locator('.document-checklist')).toContainText('Jeder Titel sagt, worum es auf der Folie geht');
+  await expect(report.locator('.document-mark').first()).toBeAttached();
+  if (shots) await page.screenshot({ path: path.join(shots, 'slides-wrong.png') });
+  // a table where a presentation belongs
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-cells/stufen/kosten.xlsx'));
+  await expect(card).toContainText('Das ist eine Tabelle. Hier gehört deine Präsentation hin');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/good-slides/stufen/folien.odp'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(6);
+  if (shots) await page.screenshot({ path: path.join(shots, 'slides-correct.png') });
+});
