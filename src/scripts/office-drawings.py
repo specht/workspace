@@ -972,12 +972,46 @@ def satz():
 
 # ---- the card of the series in the catalog
 
+# The cards of the series: a ground in the colour of the programs (blue
+# for text, green for tables, orange for slides, as Word and Writer, Excel
+# and Calc, PowerPoint and Impress have them), a gentle gradient with a faint
+# motif of the kind of document: lines of writing paper, a grid of cells
+CARD_GROUNDS = {
+    'text': ('#e9f0fb', '#d6e3f6', '#c3d4ee'),
+    'sheet': ('#e8f4ec', '#d3eadb', '#b9dcc5'),
+    'slides': ('#fcefe6', '#f8dccb', '#f0c3a8'),
+}
+
+
+def card_ground(w, h, kind):
+    light, deep, motif = CARD_GROUNDS[kind]
+    out = [f"<defs><linearGradient id='ground-{kind}' x1='0' y1='0' x2='1' y2='1'>"
+           f"<stop offset='0' stop-color='{light}'/><stop offset='1' stop-color='{deep}'/></linearGradient></defs>",
+           f"<rect x='0' y='0' width='{w}' height='{h}' fill='url(#ground-{kind})'/>"]
+    if kind == 'text':
+        # writing paper: ruled lines and a margin
+        for y in range(22, h, 18):
+            out.append(line(0, y, w, y, motif, 1))
+        out.append(line(38, 0, 38, h, motif, 1.6))
+    elif kind == 'sheet':
+        # a sheet's cells, its head row and column a little deeper
+        out.append(rect(0, 0, w, 16, motif, extra=" fill-opacity='0.55'") + rect(0, 0, 22, h, motif, extra=" fill-opacity='0.55'"))
+        for x in range(22, w, 54):
+            out.append(line(x, 0, x, h, motif, 1))
+        for y in range(16, h, 18):
+            out.append(line(0, y, w, y, motif, 1))
+    else:
+        # a projector's beam from the top left
+        out.append(f"<path d='M -10 -10 L {w * 0.75:.0f} {h + 10} L {w + 10} {h * 0.55:.0f} Z' fill='{motif}' fill-opacity='0.5'/>")
+    return ''.join(out)
+
+
 def karte():
     """three sheets of the series fanned out: the invitation with its
     formatting marks and a check's numbered mark, the report's contents,
     the newspaper page with a green tick"""
     w, h = 480, 270
-    body = [rect(0, 0, w, h, '#eef3fb')]
+    body = [card_ground(w, h, 'text')]
     sw, sh = 150, 212
 
     def sheet(cx, cy, angle, inner):
@@ -1589,7 +1623,7 @@ def karte_tabellen():
     chart with a green tick"""
     import math
     w, h = 480, 270
-    body = [rect(0, 0, w, h, '#eef3fb')]
+    body = [card_ground(w, h, 'sheet')]
     sw, sh = 150, 212
 
     def sheet(cx, cy, angle, inner):

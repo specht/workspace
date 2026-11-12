@@ -65,6 +65,11 @@ DARK = {
     '#e3ecfa' => '#e3ecfa', # pale blue behind a part of the sheet
     '#e6e8eb' => '#e6e8eb', # the grey of a field (a page number)
     '#2e7d32' => '#2e7d32', # green of a tick on a sheet (a check passed)
+    # the cards of the Office series (office-drawings.py, card_ground): a
+    # ground in the programs' colour, light to deep, and its faint motif
+    '#e9f0fb' => '#16202e', '#d6e3f6' => '#1d2a3d', '#c3d4ee' => '#2a3b55',   # text: blue
+    '#e8f4ec' => '#152219', '#d3eadb' => '#1b2d21', '#b9dcc5' => '#294232',   # tables: green
+    '#fcefe6' => '#2a1b13', '#f8dccb' => '#352218', '#f0c3a8' => '#4a2e1f',   # slides: orange
 }.freeze
 
 # in docker/drawings, the same fonts and tools on every machine: started
