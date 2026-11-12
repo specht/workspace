@@ -317,7 +317,17 @@ object, so any language can play:
 → {"keys": 1}                    ask for up to 1 key
 ← {"keys": "4"}                  the caller pressed 4 ("" after a timeout)
 → {"hangup": true}
+→ {"transfer": "123"}            the call goes on in the published game 123,
+                                 as if dialled; this game ends ({"error": …}
+                                 for a number without a game)
 ```
+
+`transfer` (the maintainer, 12 November 2026: »wir leiten Sie jetzt an die
+Hotline weiter«) goes to another game of the Telefonbuch only, never to a
+number outside. The runner and the line (`line.py`: the menu again with the
+number as dialled) allow five forwards a call, all games of a call within
+its time; the emulator says where the call would go and ends, since it does
+not know the published games.
 
 The library per language turns this into `say("…")`, `keys(1)` and so on
 (Python, Ruby, JavaScript first; Java, C#, Dart, Go later, as the

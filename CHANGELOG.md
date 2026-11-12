@@ -21,6 +21,8 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Telefonspiel: `transfer '123'` leitet einen Anruf an ein anderes veröffentlichtes Spiel weiter. Nach dem Update `./config.rb restart phone_line`; im Workspace (`telefon`) erst mit einem neu gebauten Workspace-Image (`./build-image.sh`).
+
 - Neuer Dienst `office` (LibreOffice ohne Fenster, `docker/office`, `src/office`) für die Aufgaben mit hochgeladenem Dokument im neuen Abschnitt Office: Nach dem Update `./config.rb build office && ./config.rb up -d office ruby` (der Ruby-Dienst kommt ins neue Netz `office`). Das Image holt beim Bauen Microsofts Core-Fonts (`ttf-mscorefonts-installer`, Debian contrib). Gespeichert werden je Aufgabe eine Zeile, welche Punkte offen sind, und die zuletzt geprüfte Fassung des Dokuments als Abgabe der Person (zum Weiterarbeiten, für die Lehrkraft der Gruppe); sie wird von der nächsten Prüfung ersetzt und geht mit »Ergebnis löschen« und dem Konto (`privacy.rb`). Die Blätter stehen noch in keiner Liste der Produktion, sind aber unter ihrer Adresse erreichbar (`/formatting-marks` und folgende).
 - »Betrieb« auf `/admin` prüft einmal am Tag, ob der Sprachdienst noch von YouTube laden kann (fünf Sekunden eines Videos, mit `PHONE_YOUTUBE_COOKIES`); misslingt es, bekommt die Administration einmal am Tag eine Mail. Gespeichert wird nur das letzte Ergebnis in `data/internal/youtube-check.json`. Nach dem Update `./config.rb restart phone_speech`.
 

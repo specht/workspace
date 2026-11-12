@@ -33,6 +33,8 @@ APP = 'telefonspiel'
 GAMES = os.environ.get('PHONE_GAMES', '/games')
 RTP_PORTS = range(20000, 20100)
 GAME_SECONDS = int(os.environ.get('PHONE_GAME_SECONDS', '900'))   # a call at most 15 minutes
+# how often one call may be forwarded from game to game (transfer)
+MAX_TRANSFERS = 5
 GAME_MEMORY = 512 * 1024 * 1024
 GAME_CPU = 120                                                    # seconds of processor time
 
@@ -191,7 +193,12 @@ class Call(game.Phone):
         await self.say('Bis bald!')
         return None
 
-    async def run_game(self, code):
+    def transfer_problem(self, number):
+        if number not in self.games():
+            return f'transfer: Ein Spiel mit der Nummer {number} gibt es nicht.'
+        return None
+
+    async def run_game(self, code, seconds=GAME_SECONDS):
         self.folder = os.path.join(GAMES, code)
         with open(os.path.join(self.folder, 'game.json')) as f:
             meta = json.load(f)
@@ -200,7 +207,7 @@ class Call(game.Phone):
         reason, status = await game.run_game(
             self, game.command_for(meta['command']), self.folder, env,
             lambda kind, line: log(f'[{code} {kind}]', line),
-            preexec_fn=game_limits, seconds=GAME_SECONDS)
+            preexec_fn=game_limits, seconds=seconds)
         self.log('game ended:', reason, status)
         if reason == 'time':
             await self.say('Die Zeit ist um. Tschüss!')
@@ -209,8 +216,18 @@ class Call(game.Phone):
         try:
             await self.setup()
             code = await self.menu()
-            if code and not self.ended.is_set():
-                await self.run_game(code)
+            # a game may forward the call to another game's number
+            # (transfer); five times at most, so that two games cannot pass
+            # a call back and forth for ever
+            # all of them together within the call's time
+            deadline = time.monotonic() + GAME_SECONDS
+            for _ in range(1 + MAX_TRANSFERS):
+                left = int(deadline - time.monotonic())
+                if not code or self.ended.is_set() or left <= 0:
+                    break
+                self.transfer_to = None
+                await self.run_game(code, left)
+                code = self.transfer_to
             if not self.ended.is_set():
                 self.mixer.say(silence(600))
                 await asyncio.sleep(0.6)

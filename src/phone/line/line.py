@@ -34,6 +34,7 @@ emulator.show = lambda *args, **kwargs: None          # no terminal here: nothin
 GAMES = os.environ.get('PHONE_GAMES', '/games')
 LINES = int(os.environ.get('PHONE_LINES', '10'))       # calls at once
 SECONDS = int(os.environ.get('PHONE_GAME_SECONDS', '900'))
+MAX_TRANSFERS = 5                                       # how often one call may go from game to game
 MEMORY = 512 * 1024 * 1024
 CPU = 120
 RESCAN = 30                                             # seconds between looks for new game folders
@@ -125,6 +126,18 @@ class LinePhone(emulator.Emulator):
         super().__init__(server)
         self.switched = False
 
+    def transfer_problem(self, number):
+        """a forwarded call goes only to a published game"""
+        import json
+        try:
+            with open(os.path.join(GAMES, 'published.json')) as f:
+                numbers = {str(g.get('number')) for g in json.load(f).get('games', []) if isinstance(g, dict)}
+        except (OSError, ValueError):
+            numbers = set()
+        if number not in numbers:
+            return f'transfer: Ein Spiel mit der Nummer {number} gibt es nicht.'
+        return None
+
     async def execute(self, command):
         if isinstance(command, dict) and 'game' in command:
             folder = str(command['game'])
@@ -151,18 +164,31 @@ class Line(emulator.Server):
         return ''                                       # the display says nothing until a game names itself
 
     async def run_call(self):
-        self.folder = GAMES
-        self.phone = phone = LinePhone(self)
-        env = game.environment()
-        env['PHONE_DIALED'] = self.dialed
-        if self.trial:
-            import json
-            env['PHONE_TRIAL'] = json.dumps(self.trial)
-        try:
-            reason, _ = await game.run_game(phone, self.command, HERE, env, lambda kind, line: print('game', kind, line, file=sys.stderr, flush=True) if kind == 'err' else None,
-                                            preexec_fn=limits, seconds=SECONDS)
-        except OSError:
-            reason = 'ended'
+        dialed, trial = self.dialed, self.trial
+        deadline = time.monotonic() + SECONDS
+        # a game may forward the call to another game's number (transfer):
+        # the menu starts again as if that number had been dialled, five
+        # times at most, all within the call's time
+        for _ in range(1 + MAX_TRANSFERS):
+            self.folder = GAMES
+            self.phone = phone = LinePhone(self)
+            env = game.environment()
+            env['PHONE_DIALED'] = dialed
+            if trial:
+                import json
+                env['PHONE_TRIAL'] = json.dumps(trial)
+            left = int(deadline - time.monotonic())
+            if left <= 0:
+                reason = 'time'
+                break
+            try:
+                reason, _ = await game.run_game(phone, self.command, HERE, env, lambda kind, line: print('game', kind, line, file=sys.stderr, flush=True) if kind == 'err' else None,
+                                                preexec_fn=limits, seconds=left)
+            except OSError:
+                reason = 'ended'
+            if reason != 'transfer' or self.phone is not phone:
+                break
+            dialed, trial = phone.transfer_to, None
         if self.phone is phone:
             self.phone = None
             self.send({'ended': reason})

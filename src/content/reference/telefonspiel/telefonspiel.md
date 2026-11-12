@@ -72,7 +72,7 @@ prüfen auch die Aufgaben dein Spiel.
 ## Alle Befehle
 
 <!-- part: befehle -->
-<!-- short: `say`, `play`, `keys`, `music`, `sleep`, `hangup`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
+<!-- short: `say`, `play`, `keys`, `music`, `sleep`, `hangup`, `transfer`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
 ### Auf einen Blick
 
 <div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
@@ -91,6 +91,7 @@ prüfen auch die Aufgaben dein Spiel.
 <tr><th>Musik aus</th><td><code>music nil</code></td><td><code>music(None)</code></td><td><code>music(null);</code></td></tr>
 <tr><th>Warten</th><td><code>sleep 3</code></td><td><code>sleep(3)</code></td><td><code>sleep(3);</code></td></tr>
 <tr><th>Auflegen</th><td><code>hangup</code></td><td><code>hangup()</code></td><td><code>hangup();</code></td></tr>
+<tr><th>An ein anderes Spiel weiterleiten</th><td><code>transfer '123'</code></td><td><code>transfer('123')</code></td><td><code>transfer('123');</code></td></tr>
 <tr><th>Der Name des Spiels</th><td><code>title 'Die Höhle'</code></td><td><code>title('Die Höhle')</code></td><td><code>title('Die Höhle');</code></td></tr>
 <tr><th>Ein Satz fürs Telefonbuch</th><td><code>subtitle '…'</code></td><td><code>subtitle('…')</code></td><td><code>subtitle('…');</code></td></tr>
 </tbody>
@@ -176,6 +177,29 @@ sleep` hielte das Programm an, ohne dass das Telefon davon weiß.
 Ein Anruf endet, wenn das Programm zu Ende ist. `hangup` legt sofort auf, egal
 in welcher Funktion das Spiel gerade ist; danach läuft nichts mehr, und auf
 dem Telefon ertönt das Besetztzeichen.
+<!-- /part -->
+
+<!-- part: transfer -->
+<!-- short: `transfer` leitet den Anruf an das Spiel mit dieser Nummer weiter, als hätte man sie gewählt; das eigene Spiel endet. -->
+### transfer
+
+`transfer` leitet den Anruf an ein anderes Spiel im Telefonbuch weiter, zum
+Beispiel an die Hotline, die jemand anderes aus der Klasse geschrieben hat:
+
+```ruby
+say 'Wir leiten Sie jetzt an die Hotline weiter.'
+transfer '123'
+```
+
+Der Anruf geht im Spiel mit dieser Nummer weiter, als hätte man sie gewählt,
+und das eigene Spiel endet an dieser Stelle. Die Nummer hat drei oder vier
+Ziffern. Gibt es kein veröffentlichtes Spiel mit dieser Nummer, bricht das
+Spiel mit einem Fehler in dieser Zeile ab. Ein Anruf kann höchstens fünfmal
+weitergeleitet werden, und alle Spiele eines Anrufs teilen sich seine Zeit.
+
+Mit `telefon` im Workspace sagt das Telefon nur, wohin es weiterleiten würde,
+und der Anruf endet dort: Die veröffentlichten Spiele kennt nur das
+Telefonbuch.
 <!-- /part -->
 
 <!-- part: name -->

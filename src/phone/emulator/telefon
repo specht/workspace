@@ -327,6 +327,9 @@ class Server:
             show('Aufgelegt.', '1')
         elif reason == 'hangup':
             show('Das Spiel hat aufgelegt.', '1')
+        elif reason == 'transfer':
+            # the published games are on the server, not here
+            show(f'Weitergeleitet an {phone.transfer_to}: Auf dem echten Telefon geht der Anruf im Spiel mit dieser Nummer weiter.', '1')
         elif status:
             show(f'Das Spiel ist mit einem Fehler beendet (Exit-Code {status}); die Meldung steht oben.', '1;31')
         else:
@@ -522,6 +525,8 @@ async def test(command, folder, answers, seconds):
         return
     if reason == 'hangup':
         print('Ende: Das Spiel hat aufgelegt.', flush=True)
+    elif reason == 'transfer':
+        print(f'Ende: Weitergeleitet an {phone.transfer_to}.', flush=True)
     elif reason == 'time':
         print(f'Ende: Das Spiel lief länger als {seconds} Sekunden.', flush=True)
     elif reason == 'ended' and status:

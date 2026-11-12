@@ -1,4 +1,4 @@
-"""The Telefonspiel in Python: say, play, keys, music, sleep, hangup.
+"""The Telefonspiel in Python: say, play, keys, music, sleep, hangup, transfer.
 
 Every function writes one command as a line of JSON and waits for the
 answer, so a game is an ordinary program that runs from top to bottom.
@@ -74,4 +74,11 @@ def sleep(seconds):
 def hangup():
     """end the call"""
     _command({'hangup': True})
+    raise SystemExit(0)
+
+
+def transfer(number):
+    """forward the call to the published game with this number: the call
+    goes on there as if the caller had dialled it, and this game ends"""
+    _command({'transfer': str(number)})
     raise SystemExit(0)

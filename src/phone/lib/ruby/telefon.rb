@@ -1,4 +1,4 @@
-# The Telefonspiel in Ruby: say, play, keys, music, hangup.
+# The Telefonspiel in Ruby: say, play, keys, music, hangup, transfer.
 #
 # Every method writes one command as a line of JSON and waits for the
 # answer, so a game is an ordinary program that runs from top to bottom.
@@ -77,5 +77,12 @@ end
 # end the call
 def hangup
     Telefon.command('hangup' => true)
+    exit 0
+end
+
+# forward the call to the published game with this number: the call goes
+# on there as if the caller had dialled it, and this game ends
+def transfer(number)
+    Telefon.command('transfer' => number.to_s)
     exit 0
 end

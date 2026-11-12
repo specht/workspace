@@ -188,6 +188,8 @@ class Phone:
     def __init__(self):
         self.keys = asyncio.Queue()
         self.ended = asyncio.Event()
+        # the number a game forwarded the call to (transfer)
+        self.transfer_to = None
 
     def log(self, *parts):
         pass
@@ -214,6 +216,10 @@ class Phone:
 
     async def sleep(self, ms):
         await asyncio.sleep(max(0.0, float(ms)) / 1000)
+
+    def transfer_problem(self, number):
+        """why the call cannot go on in the game of this number, or None"""
+        return None
 
     async def read_keys(self, count, timeout_ms):
         digits = ''
@@ -270,13 +276,25 @@ class Phone:
             return {'keys': digits}
         if command.get('hangup'):
             return None
+        if 'transfer' in command:
+            # the call goes on in the published game of this number, as if
+            # the caller had dialled it; this game ends here
+            number = str(command['transfer']).strip()
+            if not re.fullmatch(r'\d{3,4}', number):
+                return {'error': f'transfer: Eine Spielnummer hat drei oder vier Ziffern, nicht »{number}«.'}
+            problem = self.transfer_problem(number)
+            if problem:
+                return {'error': problem}
+            self.transfer_to = number
+            return None
         return {'error': 'unknown command'}
 
 
 async def run_game(phone, command, cwd, env, output, preexec_fn=None, seconds=900):
     """run the game until it ends, hangs up, the caller hangs up or the time
     is over; output(kind, line) gets its ordinary lines ('out', 'err').
-    Returns why it ended: 'ended', 'hangup', 'caller', 'time'."""
+    Returns why it ended: 'ended', 'hangup', 'transfer' (phone.transfer_to
+    says where), 'caller', 'time'."""
     process = await asyncio.create_subprocess_exec(
         *command, cwd=cwd, env=env, preexec_fn=preexec_fn, start_new_session=preexec_fn is None,
         stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
@@ -304,7 +322,7 @@ async def run_game(phone, command, cwd, env, output, preexec_fn=None, seconds=90
             if phone.ended.is_set():
                 return 'caller'
             if answer is None:
-                return 'hangup'
+                return 'transfer' if phone.transfer_to else 'hangup'
             try:
                 process.stdin.write((json.dumps(answer, ensure_ascii=False) + '\n').encode('utf-8'))
                 await process.stdin.drain()
