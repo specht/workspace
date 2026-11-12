@@ -5,12 +5,14 @@
 // the checklist fails. Point and mark light up together (as in the mail
 // viewer).
 //
-// Where the browser can keep hold of a file (Chrome, Edge: the File System
-// Access API), »Vorlage speichern« saves the starting file through the page
-// itself, and »Prüfen« reads that file again each time, after the student
-// saved it in Word; a document chosen with »Dokument wählen« or dropped on
-// the card is kept the same way. Other browsers download the starting file
-// and need the document chosen or dropped for each check.
+// The starting file and the last version are plain downloads (they show
+// in the browser's downloads, to open from there). Where the browser can
+// keep hold of a file (Chrome, Edge on https: the File System Access API),
+// the document chosen once with »Prüfen« or »Dokument wählen« (the dialog
+// opens in Downloads) or dropped on the card is kept: the page looks at it
+// every two seconds and checks it after each save, and says which file it
+// watches and when it was saved last. Other browsers need the document
+// chosen or dropped for each check.
 //
 // tasks.js calls setup(card, check), check(card, busy, done),
 // render(card, report) and showStored(card, answer).
@@ -38,69 +40,24 @@
         return e.dataTransfer && Array.from(e.dataTransfer.types || []).indexOf('Files') >= 0;
     }
 
-    // what the card says about the chosen document
-    function chosen(card, name) {
+    // what the card says about the chosen document; for one the page keeps
+    // hold of, when it was saved last, so that a save the page does not
+    // see (another file, another format) shows
+    function chosen(card, name, saved) {
         const line = card.querySelector('.document-name');
         line.textContent = '';
+        if (card.documentHandle) {
+            const eye = el('i', 'bi bi-eye');
+            eye.setAttribute('aria-hidden', 'true');
+            line.appendChild(eye);
+            line.appendChild(document.createTextNode(' Im Blick: '));
+        }
         line.appendChild(el('strong', null, name));
-        if (card.documentHandle) line.appendChild(document.createTextNode(': Speichere in Word, dann »Prüfen«.'));
+        if (card.documentHandle && saved) {
+            line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in Word oder LibreOffice, dann prüft die Seite von selbst.'));
+        }
         card.querySelector('.document-pick').lastChild.textContent = 'Anderes Dokument';
     }
-
-    // Chrome and Edge: a starting file saved through the page (»Vorlage
-    // speichern«, a link with class document-starter in the text or on the
-    // card), which the page then keeps hold of: every card with the same
-    // starting file reads it. Elsewhere the link is a plain download.
-    const SAVED = {};
-
-    function useSaved(card, handle) {
-        card.documentHandle = handle;
-        card.documentFile = null;
-        const line = card.querySelector('.document-name');
-        line.textContent = '';
-        line.appendChild(el('strong', null, handle.name));
-        line.appendChild(document.createTextNode(' ist gespeichert. Öffne sie in Word oder LibreOffice; »Prüfen« liest sie, sobald du dort gespeichert hast.'));
-        card.querySelector('.document-pick').lastChild.textContent = 'Anderes Dokument';
-    }
-
-    function bindStarter(link) {
-        if (!CAN_KEEP || link.dataset.bound) return;
-        link.dataset.bound = 'true';
-        link.addEventListener('click', async function (e) {
-            e.preventDefault();
-            const href = link.getAttribute('href');
-            const note = link.parentNode.querySelector('.document-saved') || link.insertAdjacentElement('afterend', el('span', 'document-saved'));
-            let handle;
-            try {
-                handle = await window.showSaveFilePicker({ suggestedName: link.dataset.name || decodeURIComponent(href.split('/').pop()), types: TYPES });
-            } catch (err) {
-                return;    // closed without saving
-            }
-            try {
-                const response = await fetch(href, { credentials: 'same-origin' });
-                if (!response.ok) throw new Error(String(response.status));
-                const writable = await handle.createWritable();
-                await writable.write(await response.blob());
-                await writable.close();
-            } catch (err) {
-                note.textContent = ' Die Vorlage konnte ich nicht speichern. Versuch es noch einmal.';
-                return;
-            }
-            SAVED[href] = handle;
-            note.textContent = ' Gespeichert als ' + handle.name + '.';
-            // the last version on a card: that card goes on with it
-            const own = link.closest('.task-card');
-            if (own) useSaved(own, handle);
-            document.querySelectorAll('.task-card .document-starter[href="' + href + '"]').forEach(function (other) {
-                const card = other.closest('.task-card');
-                if (card) useSaved(card, handle);
-            });
-        });
-    }
-
-    const bindAll = function () { document.querySelectorAll('a.document-starter').forEach(bindStarter); };
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindAll);
-    else bindAll();
 
     function invalid(text) {
         return { success: true, status: 'invalid', message: '<p>' + text + '</p>' };
@@ -113,9 +70,7 @@
         card.documentRecheck = check;
         const button = box.querySelector('.document-pick');
         const input = box.querySelector('.document-input');
-        const starter = box.querySelector('.document-starter');
 
-        if (starter) bindStarter(starter);
         // how short the loop is in this browser, and why another one helps
         const note = el('p', 'document-browser');
         // Chrome and Edge keep hold of a file only on https (or localhost)
@@ -128,9 +83,6 @@
             : "<i class='bi bi-info-circle' aria-hidden='true'></i>In Chrome und Edge genügt es, in Word oder LibreOffice zu speichern, und die Seite prüft von selbst. " +
               'Dieser Browser kann eine Datei nicht im Blick behalten: Wähle sie vor jedem Prüfen neu oder zieh sie auf die Karte.';
         box.appendChild(note);
-        // a starting file saved before (a link in the text above the card)
-        const saved = starter && SAVED[starter.getAttribute('href')];
-        if (saved) useSaved(card, saved);
 
         button.addEventListener('click', async function () {
             if (!CAN_KEEP) {
@@ -139,7 +91,7 @@
             }
             let handle;
             try {
-                [handle] = await window.showOpenFilePicker({ types: TYPES, multiple: false });
+                [handle] = await window.showOpenFilePicker({ types: TYPES, multiple: false, id: 'workspace-document', startIn: 'downloads' });
             } catch (err) {
                 if (err && err.name === 'AbortError') return;
                 input.click();
@@ -212,6 +164,10 @@
                 return;
             }
             const seen = card.documentSeen;
+            if (seen.shown !== file.lastModified) {
+                seen.shown = file.lastModified;
+                chosen(card, file.name, file.lastModified);
+            }
             if (file.lastModified === seen.time && file.size === seen.size) return;
             // a save in progress: wait until the size holds still
             if (seen.pending !== file.lastModified + ':' + file.size) {
@@ -222,9 +178,23 @@
         }, WATCH_MS);
     }
 
+    // »Erneut prüfen« on a kept file that has not changed since its last
+    // check: no new check, but what may have happened (the result stays)
+    function unchanged(card, file) {
+        chosen(card, file.name, file.lastModified);
+        const line = card.querySelector('.document-name');
+        const note = el('span', 'document-unchanged');
+        note.innerHTML = '<br>Seit der letzten Prüfung hat sich diese Datei nicht geändert. Hast du gespeichert? ' +
+            'LibreOffice fragt beim Speichern nach dem Dateiformat: Mit <em>Word…-Format verwenden</em> bleibt es dieselbe Datei, <em>ODF-Format verwenden</em> legt daneben eine neue .odt-Datei an. ' +
+            'Bearbeitest du eine andere Datei (etwa eine zweite aus den Downloads), wähle sie mit <em>Anderes Dokument</em>.';
+        line.appendChild(note);
+    }
+
     // Reads the document (again, if the browser keeps hold of it) and
     // sends it. busy() when it goes; done(data) with the server's answer.
     async function check(card, busy, done) {
+        // one check at a time (a click while the page checks after a save)
+        if (card.documentBusy) return;
         let file = card.documentFile;
         // A file chosen without a handle is what it was when it was chosen:
         // once Word saved it again, the browser cannot read it any more. So
@@ -241,6 +211,12 @@
                     await card.documentHandle.requestPermission({ mode: 'read' });
                 }
                 file = await card.documentHandle.getFile();
+                const seen = card.documentSeen;
+                if (seen && seen.checked && file.lastModified === seen.time && file.size === seen.size) {
+                    unchanged(card, file);
+                    return;
+                }
+                chosen(card, file.name, file.lastModified);
             } catch (err) {
                 card.documentHandle = null;
                 done(invalid('Die Datei kann ich nicht mehr lesen. Wurde sie verschoben, umbenannt oder gelöscht? Wähle sie noch einmal.'));
@@ -277,6 +253,7 @@
             if (!response.ok) throw new Error(String(response.status));
             const data = await response.json();
             data.success = true;
+            card.documentSeen.checked = true;
             done(data);
         } catch (err) {
             done({ success: false });
@@ -953,7 +930,6 @@
         link.dataset.name = stored.name;
         line.appendChild(link);
         line.appendChild(document.createTextNode(', ' + when(stored.at) + '. Zum Weiterarbeiten, auch zu Hause.'));
-        bindStarter(link);
     }
 
     // the stored line (»01 Einladung.docx: 6 von 8, …«) under the button

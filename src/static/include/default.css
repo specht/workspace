@@ -17315,6 +17315,14 @@ body.mail-app-open {
 .document-starter {
     align-self: flex-start;
 }
+.document-name .bi-eye {
+    color: var(--bs-secondary-color);
+}
+.document-unchanged {
+    display: inline-block;
+    margin-top: 0.3em;
+    color: var(--bs-warning-text-emphasis, #664d03);
+}
 .document-starter-name {
     margin-left: 0.4em;
     font-weight: 400;

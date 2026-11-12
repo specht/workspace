@@ -24,12 +24,20 @@ handed out on paper got no feedback because nobody could check them all.
   for text and spacing, type, lists and tabs, tables, pictures. Each
   is a point of the checklist; its places are marks on the page, in points.
   Examples in `task-examples.yaml` with `document:`.
-- **The card** (`document_task.js`): the starting file, saved through the
-  page in Chrome and Edge (`showSaveFilePicker`), so the page keeps hold of
-  it; a document chosen or dropped is kept the same way. While the page is
-  visible it looks at the file every two seconds and checks it after each
-  save. Firefox and Safari choose or drop the file for each check; the card
-  says so and why Chrome or Edge shorten the loop.
+- **The card** (`document_task.js`): the starting file as a plain download
+  (in the browser's downloads, opened from there). In Chrome and Edge on
+  https the document chosen once (the dialog opens in Downloads) or dropped
+  is kept; while the page is visible it looks at the file every two seconds
+  and checks it after each save, and the line under the button says which
+  file it watches and when it was saved last; »Erneut prüfen« on a file
+  unchanged since its last check says so (LibreOffice's question about the
+  format, a second file) instead of checking again. Firefox and Safari
+  choose or drop the file for each check; the card says so and why Chrome or
+  Edge shorten the loop. Saving the starting file through the page
+  (`showSaveFilePicker`) was dropped on 12 November 2026: Chrome does not
+  count such a file as a download, so it was not in the downloads to open,
+  and LibreOffice could easily open another copy than the one the page
+  watched.
 - **The result:** the checklist beside the page, both in one window, at half
   a desktop (the size this is made for: Word on one half, the page on the
   other) the page above the list. One number per open point, in the left
