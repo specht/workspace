@@ -90,30 +90,24 @@ tasks:
         - { align: right, paragraph: '2. März' }
         - { gaps: 6pt, before: ['Liebe Eltern', 'im Mai fährt', 'Der Elternabend ist', 'Bitte sagen Sie', 'Mit freundlichen Grüßen'] }
     hint:
-      - Fang mit den Formatierungszeichen an. Jeder Punkt (·) vor einem Wort am Zeilenanfang ist ein Leerzeichen, das weg muss.
-      - Ein leerer Absatz ist ein ¶ allein in einer Zeile. Stell den Cursor davor und drück <kbd>Entf</kbd>.
-      - Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>; such nach zwei Leerzeichen, ersetze durch eins.
+      - "Schalte zuerst die Formatierungszeichen ein: im Programm unter *Ansicht* oder mit dem Knopf **¶**. Lösch dann jeden Punkt (·) vor einem Wort am Zeilenanfang, jedes ¶ allein in einer Zeile und jedes ↵ am Zeilenende: Stell den Cursor davor und drück <kbd>Entf</kbd>."
+      - "Stell den Cursor in den Absatz, den du ändern willst. Zentrieren und rechtsbündig: die Knöpfe neben fett und kursiv. Den Abstand nach einem Absatz: im Absatz-Dialog, im Feld für den Abstand danach."
+      - "Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>: Such nach zwei Leerzeichen, ersetze durch eins und klick *Alle ersetzen*. Speichere danach und prüfe noch einmal."
     word:
       hint:
-        - Schalte zuerst die Formatierungszeichen ein, im Register *Start* mit dem Knopf **¶**. Jeder Punkt (·) vor einem Wort am Zeilenanfang ist ein Leerzeichen, das weg muss.
-        - Ein leerer Absatz ist ein ¶ allein in einer Zeile. Stell den Cursor davor und drück <kbd>Entf</kbd>. Ein ↵ am Zeilenende löschst du genauso.
-        - "Zentrieren und rechtsbündig: Cursor in den Absatz, dann im Register *Start* in der Gruppe *Absatz* die Knöpfe, oder <kbd>Strg</kbd>+<kbd>E</kbd> und <kbd>Strg</kbd>+<kbd>R</kbd>."
-        - "Den Abstand stellst du im Register *Layout* ein, im Feld *Abstand: Nach*. Der Cursor steht dabei in dem Absatz, nach dem die Lücke sein soll."
-        - Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>; such nach zwei Leerzeichen, ersetze durch eins und klick *Alle ersetzen*.
+        - "Schalte zuerst die Formatierungszeichen ein: im Register *Start* mit dem Knopf **¶**. Lösch dann jeden Punkt (·) vor einem Wort am Zeilenanfang, jedes ¶ allein in einer Zeile und jedes ↵ am Zeilenende: Stell den Cursor davor und drück <kbd>Entf</kbd>."
+        - "Stell den Cursor in den Absatz, den du ändern willst. Zentrieren und rechtsbündig: im Register *Start* in der Gruppe *Absatz*, oder <kbd>Strg</kbd>+<kbd>E</kbd> und <kbd>Strg</kbd>+<kbd>R</kbd>. Den Abstand nach einem Absatz: im Register *Layout*, im Feld *Abstand: Nach*."
+        - "Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>: Such nach zwei Leerzeichen, ersetze durch eins und klick *Alle ersetzen*. Speichere danach und prüfe noch einmal."
     libreoffice:
       hint:
-        - Schalte zuerst die Formatierungszeichen ein, unter *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Formatierungszeichen* oder mit <kbd>Strg</kbd>+<kbd>F10</kbd>. Jeder Punkt (·) vor einem Wort am Zeilenanfang ist ein Leerzeichen, das weg muss.
-        - Ein leerer Absatz ist ein ¶ allein in einer Zeile. Stell den Cursor davor und drück <kbd>Entf</kbd>. Ein ↵ am Zeilenende löschst du genauso.
-        - "Zentrieren und rechtsbündig: Cursor in den Absatz, dann die Knöpfe in der Leiste oben neben fett und kursiv, oder <kbd>Strg</kbd>+<kbd>E</kbd> und <kbd>Strg</kbd>+<kbd>R</kbd>."
-        - Den Abstand stellst du unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Einzüge und Abstände* ein, im Feld *Unter dem Absatz*. Der Cursor steht dabei in dem Absatz, nach dem die Lücke sein soll.
-        - Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>; such nach zwei Leerzeichen, ersetze durch eins und klick *Alle ersetzen*.
+        - "Schalte zuerst die Formatierungszeichen ein: *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Formatierungszeichen* oder <kbd>Strg</kbd>+<kbd>F10</kbd>. Lösch dann jeden Punkt (·) vor einem Wort am Zeilenanfang, jedes ¶ allein in einer Zeile und jedes ↵ am Zeilenende: Stell den Cursor davor und drück <kbd>Entf</kbd>."
+        - "Stell den Cursor in den Absatz, den du ändern willst. Zentrieren und rechtsbündig: die Knöpfe in der Leiste oben neben fett und kursiv, oder <kbd>Strg</kbd>+<kbd>E</kbd> und <kbd>Strg</kbd>+<kbd>R</kbd>. Den Abstand nach einem Absatz: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Einzüge und Abstände*, im Feld *Unter dem Absatz*."
+        - "Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>: Such nach zwei Leerzeichen, ersetze durch eins und klick *Alle ersetzen*. Speichere danach und prüfe noch einmal."
     nextcloud:
       hint:
-        - Schalte zuerst die Formatierungszeichen ein, unter *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Formatierungszeichen*. Jeder Punkt (·) vor einem Wort am Zeilenanfang ist ein Leerzeichen, das weg muss.
-        - Ein leerer Absatz ist ein ¶ allein in einer Zeile. Stell den Cursor davor und drück <kbd>Entf</kbd>. Ein ↵ am Zeilenende löschst du genauso.
-        - "Zentrieren und rechtsbündig: Cursor in den Absatz, dann die Knöpfe im Register *Start* neben fett und kursiv."
-        - Den Abstand stellst du unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* ein, im Feld *Unter dem Absatz*. Der Cursor steht dabei in dem Absatz, nach dem die Lücke sein soll.
-        - Doppelte Leerzeichen findest du mit *Suchen und Ersetzen*; such nach zwei Leerzeichen, ersetze durch eins und klick *Alle ersetzen*.
+        - "Schalte zuerst die Formatierungszeichen ein: *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Formatierungszeichen*. Lösch dann jeden Punkt (·) vor einem Wort am Zeilenanfang, jedes ¶ allein in einer Zeile und jedes ↵ am Zeilenende: Stell den Cursor davor und drück <kbd>Entf</kbd>."
+        - "Stell den Cursor in den Absatz, den du ändern willst. Zentrieren und rechtsbündig: die Knöpfe im Register *Start* neben fett und kursiv. Den Abstand nach einem Absatz: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz*, im Feld *Unter dem Absatz*."
+        - "Doppelte Leerzeichen findet *Suchen und Ersetzen*: Such nach zwei Leerzeichen, ersetze durch eins und klick *Alle ersetzen*. Speichere danach und prüfe noch einmal."
 
   - id: ausdruck
     title: Zwei gleiche Ausdrucke

@@ -3,7 +3,7 @@ Lernende schreiben einen eigenen Artikel und bauen ihn mit allem, was die Reihe 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Die Blätter der Reihe, zuletzt <a href='/pages-and-contents'>Seiten und Verzeichnisse</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
-<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>25 Minuten:</b> Thema wählen, Text schreiben, Zwischenüberschriften.</li>
 <li><b>15 Minuten:</b> Liste, Bild mit Unterschrift, Quelle und Alternativtext, Seitenzahl, prüfen, bis alles erfüllt ist.</li>
 </ul></td></tr>

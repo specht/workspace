@@ -3,7 +3,7 @@ Lernende bauen eine Packliste mit getippten Strichen zu einer echten Liste um un
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/formatting-marks'>Was das Auge nicht sieht</a> (Formatierungszeichen, Suchen und Ersetzen) und <a href='/character-formatting'>Schrift mit Absicht</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
-<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>15 Minuten:</b> die Vermutung zur anderen Schrift, die Liste.</li>
 <li><b>15 Minuten:</b> Tab und Tabstopp, das Lineal.</li>
 <li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, der Versuch mit einer anderen Schrift.</li>

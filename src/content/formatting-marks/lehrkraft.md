@@ -3,7 +3,7 @@ Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zen
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Eine Textverarbeitung: Word, LibreOffice Writer oder Nextcloud Office. Dateien speichern und wiederfinden.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
-<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>10 Minuten:</b> Vermutung zur größeren Schrift, die Vorlage holen, Formatierungszeichen, Absätze zählen.</li>
 <li><b>20 Minuten:</b> Ausrichtung, Abstand statt leerer Absätze, Zeilenumbrüche und doppelte Leerzeichen.</li>
 <li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, die zwei gleichen Ausdrucke.</li>

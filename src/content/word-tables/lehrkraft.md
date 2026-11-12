@@ -3,7 +3,7 @@ Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabel
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/lists-and-tabs'>Listen und Tabstopps</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
-<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>15 Minuten:</b> die Vermutung zum längeren Eintrag, Text in Tabelle umwandeln, die Zahl der Spalten.</li>
 <li><b>15 Minuten:</b> die Kopfzeile.</li>
 <li><b>10 Minuten:</b> prüfen, eine Zeile einfügen.</li>

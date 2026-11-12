@@ -3,7 +3,7 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/word-tables'>Tabellen</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
-<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>15 Minuten:</b> die Vermutung zu den Nummern, das Seitenverhältnis mit der Rechenaufgabe, der Textumbruch.</li>
 <li><b>15 Minuten:</b> Beschriftungen, der Alternativtext.</li>
 <li><b>10 Minuten:</b> prüfen, die Karte nach oben schieben und die Felder aktualisieren.</li>

@@ -3,7 +3,7 @@ Lernende ersetzen leere Absätze durch Seitenumbrüche, ein getipptes »Seite 1�
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/paragraph-styles'>Formatvorlagen</a>: Das Inhaltsverzeichnis entsteht aus den Überschriften mit ihren Vorlagen.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
-<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>10 Minuten:</b> die Vermutung zum längeren Montag, die leeren Absätze zählen, Seitenumbrüche.</li>
 <li><b>20 Minuten:</b> die Seitenzahl als Feld, das Inhaltsverzeichnis, eine Überschrift umbenennen und das Verzeichnis aktualisieren.</li>
 <li><b>10 Minuten:</b> prüfen.</li>
