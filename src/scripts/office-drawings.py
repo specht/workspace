@@ -943,8 +943,123 @@ def karte():
     svg('karte', 'formatting-marks', w, h, body, 'Die Karte der Reihe: drei Blätter, Einladung, Inhaltsverzeichnis, Zeitungsseite')
 
 
+
+# ---- spreadsheets (docs/plan-tabellenkalkulation.md)
+
+HEAD_BG = '#e6e8eb'      # the letters and numbers at the edge, as on a sheet
+
+
+def grid(x, y, cols, rows, cw, ch, cells=None, fills=None, head=True, size=12):
+    """a piece of a spreadsheet: column letters over it, row numbers beside
+    it (cols: letters, rows: numbers); cells: {(col, row): (text, align,
+    weight)}; fills: {(col, row): colour}"""
+    out = []
+    hx, hy = (24, 18) if head else (0, 0)
+    w, h = hx + cw * len(cols), hy + ch * len(rows)
+    out.append(rect(x, y, w, h, PAPER, EDGE, 1, 2))
+    if head:
+        out.append(rect(x, y, w, hy, HEAD_BG) + rect(x, y, hx, h, HEAD_BG))
+        for i, c in enumerate(cols):
+            out.append(text(x + hx + cw * i + cw / 2, y + 13, c, 11, INK, 'middle'))
+        for j, r in enumerate(rows):
+            out.append(text(x + hx / 2, y + hy + ch * j + ch / 2 + 4, str(r), 11, INK, 'middle'))
+    for (c, r), colour in (fills or {}).items():
+        i, j = cols.index(c), rows.index(r)
+        out.append(rect(x + hx + cw * i, y + hy + ch * j, cw, ch, colour))
+    for i in range(len(cols) + 1):
+        out.append(line(x + hx + cw * i, y, x + hx + cw * i, y + h, EDGE, 1))
+    for j in range(len(rows) + 1):
+        out.append(line(x, y + hy + ch * j, x + w, y + hy + ch * j, EDGE, 1))
+    for (c, r), value in (cells or {}).items():
+        label, align, weight = (value + ('left', '400'))[:3] if isinstance(value, tuple) else (value, 'left', '400')
+        i, j = cols.index(c), rows.index(r)
+        tx = x + hx + cw * i + (cw - 5 if align == 'right' else cw / 2 if align == 'middle' else 5)
+        anchor = 'end' if align == 'right' else 'middle' if align == 'middle' else 'start'
+        out.append(text(tx, y + hy + ch * j + ch / 2 + size * 0.36, label, size, INK, anchor, weight))
+    return ''.join(out), (x + hx, y + hy)
+
+
+def cell_box(x0, y0, cols, rows, cw, ch, c, r):
+    return x0 + cw * cols.index(c), y0 + ch * rows.index(r), cw, ch
+
+
+def adresse():
+    """a cell's address: its column's letter and its row's number"""
+    w, h = 500, 220
+    cols, rows = ['A', 'B', 'C', 'D'], [1, 2, 3, 4, 5, 6]
+    cw, ch = 74, 26
+    fills = {('C', r): PBLUE_BG for r in rows}
+    fills.update({(c, 4): PBLUE_BG for c in cols})
+    fills[('C', 4)] = PAMBER_BG
+    body = []
+    g, (x0, y0) = grid(20, 20, cols, rows, cw, ch, {('C', 4): ('24,50', 'right')}, fills)
+    body.append(g)
+    bx, by, bw, bh = cell_box(x0, y0, cols, rows, cw, ch, 'C', 4)
+    body.append(rect(bx, by, bw, bh, 'none', PAMBER, 2.4))
+    lx = x0 + cw * 4 + 22
+    body.append(arrow(lx - 4, by + bh / 2, bx + bw + 4, by + bh / 2, AMBER))
+    body.append(text(lx, by + bh / 2 - 6, 'Zelle C4', 16, TEXT, weight='700'))
+    body.append(text(lx, by + bh / 2 + 13, 'Spalte C, Zeile 4', 13, GREY))
+    svg('adresse', 'spreadsheet-cells', w, h, body, 'Die Zelle C4: Spalte C und Zeile 4')
+
+
+def formel():
+    """a result typed, against a formula that takes its numbers from cells"""
+    w, h = 560, 270
+    cols, rows = ['B', 'C', 'D'], [5]
+    cw, ch = 76, 28
+    body = []
+    for k, (title, formula) in enumerate([('getippt', False), ('eine Formel', True)]):
+        y = 30 + k * 130
+        body.append(text(20, y + 34, title, 15, TEXT, weight='600'))
+        shown = {('B', 5): ('29', 'right'), ('C', 5): ('148,00', 'right'), ('D', 5): ('4.292,00', 'right', '700')}
+        g, (x0, y0) = grid(130, y, cols, rows, cw, ch, shown)
+        body.append(g)
+        dx, dy, dw, dh = cell_box(x0, y0, cols, rows, cw, ch, 'D', 5)
+        if formula:
+            for c in ('B', 'C'):
+                sx, sy, sw, sh = cell_box(x0, y0, cols, rows, cw, ch, c, 5)
+                # an arc under the row, from the cell into D5
+                lift = 22 if c == 'C' else 40
+                ex = dx + dw / 2 + (10 if c == 'B' else -10)
+                body.append(f"<path d='M {sx + sw / 2:.1f} {sy + sh + 2:.1f} C {sx + sw / 2:.1f} {sy + sh + lift:.1f} {ex:.1f} {dy + dh + lift:.1f} {ex:.1f} {dy + dh + 11:.1f}' fill='none' stroke='{BLUE}' stroke-width='1.6'/>")
+                body.append(f"<polygon points='{ex:.1f},{dy + dh + 2:.1f} {ex - 5:.1f},{dy + dh + 11:.1f} {ex + 5:.1f},{dy + dh + 11:.1f}' fill='{BLUE}'/>")
+            body.append(text(dx + dw + 16, dy + 12, '=B5*C5', 15, BLUE, weight='700', family="'IBM Plex Mono', monospace"))
+            body.append(text(dx + dw + 16, dy + 31, 'rechnet mit B5 und C5', 12, GREY))
+        else:
+            body.append(text(dx + dw + 16, dy + 12, '4292', 15, PAMBER, weight='700', family="'IBM Plex Mono', monospace"))
+            body.append(text(dx + dw + 16, dy + 31, 'weiß nichts von B5 und C5', 12, GREY))
+    svg('formel', 'spreadsheet-cells', w, h, body, 'Ein getipptes Ergebnis gegen eine Formel, die mit B5 und C5 rechnet')
+
+
+def ausfuellen():
+    """filling down: the formula moves with its row"""
+    w, h = 520, 180
+    cols, rows = ['B', 'C', 'D'], [4, 5, 6, 7]
+    cw, ch = 96, 30
+    cells = {('B', r): (str(n), 'right') for r, n in zip(rows, [1, 29, 27, 29])}
+    for r in rows:
+        cells[('D', r)] = (f'=B{r}*C{r}', 'left', '700' if r == 4 else '400')
+    cells.update({('C', 4): ('1.250,00', 'right'), ('C', 5): ('148,00', 'right'), ('C', 6): ('24,50', 'right'), ('C', 7): ('9,00', 'right')})
+    fills = {('D', r): PBLUE_BG for r in rows[1:]}
+    body = []
+    g, (x0, y0) = grid(20, 20, cols, rows, cw, ch, cells, fills, size=13)
+    body.append(g)
+    dx, dy, dw, dh = cell_box(x0, y0, cols, rows, cw, ch, 'D', 4)
+    body.append(rect(dx, dy, dw, dh, 'none', PAMBER, 2.4))
+    # the small square at the corner, dragged down
+    body.append(rect(dx + dw - 4, dy + dh - 4, 8, 8, PAMBER))
+    body.append(arrow(dx + dw + 14, dy + dh, dx + dw + 14, dy + dh * 4 - 4, AMBER, 2))
+    lx = dx + dw + 30
+    body.append(text(lx, dy + 20, 'das kleine Quadrat', 13, TEXT, weight='600'))
+    body.append(text(lx, dy + 37, 'nach unten ziehen', 13, GREY))
+    body.append(text(lx, dy + dh * 3 - 4, 'jede Zeile rechnet', 13, TEXT, weight='600'))
+    body.append(text(lx, dy + dh * 3 + 13, 'mit ihrer eigenen Zeile', 13, GREY))
+    svg('ausfuellen', 'spreadsheet-cells', w, h, body, 'Eine Formel nach unten ausgefüllt: B4*C4 wird B5*C5, B6*C6, B7*C7')
+
+
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
-                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte]}
+                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, ausfuellen]}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:

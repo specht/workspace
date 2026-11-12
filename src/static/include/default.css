@@ -17812,6 +17812,12 @@ html[data-bs-theme="dark"] .document-report {
 .document-mark-box {
     border: 1.5px dashed transparent;
 }
+/* a cell of a spreadsheet (document_check_sheet.rb): marked at once */
+.document-mark-cell {
+    background-color: var(--document-mark-fill);
+    border: 1.5px solid var(--document-mark);
+    mix-blend-mode: multiply;
+}
 /* one point active: its places come forward, the others step back */
 .document-report[data-active] .document-mark:not(.document-active),
 .document-report[data-active] .document-badge:not(.document-active) {

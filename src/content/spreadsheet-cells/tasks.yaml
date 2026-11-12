@@ -1,0 +1,104 @@
+# Aufgaben zu »Zellen, die rechnen«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/spreadsheet-cells/01 Kosten.xlsx), die fertige
+# Tabelle und eine Stufe mit getipptem Gesamtbetrag macht dokumente.py.
+format: 1
+activity: spreadsheet-cells
+tasks:
+  - id: vorher
+    title: Ein neuer Preis
+    prediction: true
+    prompt: |
+      Die Jugendherberge wird teurer: 152 € statt 148 € pro Person. Jemand
+      ändert in der Tabelle den Preis in C5. Was passiert mit der Summe in D5
+      und mit dem Gesamtbetrag?
+    check:
+      type: choice
+      options:
+        - Beide ändern sich, die Tabelle rechnet neu.
+        - Nur die Summe in D5 ändert sich, der Gesamtbetrag nicht.
+        - Nichts ändert sich, beide zeigen die alten Zahlen.
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es, wenn die Tabelle rechnen würde. Wie sind die Summen hineingekommen?
+      - when: { picked: 1 }
+        say: Auch D5 ist eine getippte Zahl, wie der Gesamtbetrag. Weiß sie, woher sie kommt?
+    solution: |
+      Nichts ändert sich: In D5 und im Gesamtbetrag stehen getippte Zahlen, die
+      nichts von C5 wissen.
+
+  - id: ablesen
+    title: Eine Zelle finden
+    prompt: |
+      Welche Zahl steht in der Zelle C6 der Vorlage?
+    check:
+      type: number
+      expect: 24.5
+      tolerance: 0.001
+    feedback:
+      - when: { between: [27, 27] }
+        say: Das ist B6, die Anzahl. Erst kommt die Spalte, dann die Zeile.
+      - when: { between: [661.5, 661.5] }
+        say: Das ist D6, die Summe. Sieh nach, welcher Buchstabe über der Spalte steht.
+    hint: Erst die Spalte, dann die Zeile. Die Buchstaben stehen über der Tabelle, die Zahlen links daneben.
+    solution: |
+      24,50: der Preis des Kletterwalds, Spalte C, Zeile 6.
+
+  - id: kopiert
+    title: Nach unten gezogen
+    prediction: true
+    prompt: |
+      In D4 steht `=B4*C4`. Du ziehst das kleine Quadrat unten rechts an D4 nach
+      unten bis D8. Was steht danach in D7?
+    check:
+      type: choice
+      options:
+        - "`=B4*C4`, dieselbe Formel wie in D4"
+        - "`=B7*C7`"
+        - "Die Zahl aus D4, 1.250,00"
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Dann stünde in jeder Zeile der Bus. Merkt sich die Formel die Adressen oder den Weg zu ihnen?
+      - when: { picked: 2 }
+        say: Beim Ausfüllen kommt die Formel in die Zellen, nicht ihr Ergebnis.
+    solution: |
+      `=B7*C7`: Die Formel rechnet in jeder Zeile mit den Zahlen ihrer eigenen
+      Zeile.
+
+  - id: kosten
+    title: Die Kosten, die selbst rechnen
+    prompt: |
+      Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
+      an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
+      prüfst.
+    check:
+      type: document
+      file: spreadsheet-cells/01 Kosten.xlsx
+      rules:
+        - { same_data: 'A3:C8' }
+        - { formulas: ['D4:D8', 'D9'] }
+        - { functions: { D9: SUM } }
+        - { values: { D4: 1250, D5: 4292, D6: 661.5, D7: 261, D8: 130.5, D9: 6595 } }
+        - { recalc: { set: { C5: 152 }, expect: { D5: 4408, D9: 6711 } } }
+    hint:
+      - Fang mit der ersten Zeile an. Eine Formel beginnt mit =, die Summe des Busses ist Anzahl mal Preis aus derselben Zeile.
+      - Die Formel aus D4 ziehst du am kleinen Quadrat unten rechts bis D8 nach unten.
+      - Den Gesamtbetrag in D9 rechnet die Funktion SUMME über D4 bis D8.
+    libreoffice:
+      hint:
+        - "Klick in D4, tipp `=B4*C4` und drück <kbd>Enter</kbd>. Was in einer Zelle steht, zeigt die *Eingabezeile* über der Tabelle."
+        - "Klick wieder in D4 und zieh das kleine Quadrat unten rechts an der Zelle bis D8 nach unten."
+        - "Klick in D9 und tipp `=SUMME(D4:D8)`, oder klick über der Tabelle auf **Σ** (*Funktion auswählen*) <i class='bi bi-chevron-right' aria-hidden='true'></i> *Summe*."
+    word:
+      hint:
+        - "Klick in D4, tipp `=B4*C4` und drück <kbd>Enter</kbd>. Was in einer Zelle steht, zeigt die *Bearbeitungsleiste* über der Tabelle."
+        - "Klick wieder in D4 und zieh das kleine Quadrat unten rechts an der Zelle bis D8 nach unten."
+        - "Klick in D9 und tipp `=SUMME(D4:D8)`, oder klick im Register *Start* auf **Σ** *AutoSumme*."
+    nextcloud:
+      hint:
+        - "Klick in D4, tipp `=B4*C4` und drück <kbd>Enter</kbd>. Was in einer Zelle steht, zeigt die Zeile über der Tabelle."
+        - "Klick wieder in D4 und zieh das kleine Quadrat unten rechts an der Zelle bis D8 nach unten."
+        - "Klick in D9 und tipp `=SUMME(D4:D8)`, oder klick über der Tabelle auf **Σ** <i class='bi bi-chevron-right' aria-hidden='true'></i> *Summe*."

@@ -452,3 +452,32 @@ test('an article is checked for its newspaper layout', async ({ page, e2eEmail }
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
 });
+
+// A spreadsheet (»Zellen, die rechnen«): the service reads every cell,
+// draws the sheet and changes a price in its copy; typed results do not
+// follow, formulas do.
+test('a spreadsheet is checked for its formulas and whether it calculates', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/spreadsheet-cells');
+  await states;
+  // the switch names Excel on a page of spreadsheets
+  await expect(page.locator(".code-language-switch-office[data-office-kind='sheet']")).toContainText('Excel');
+  const card = page.locator(".task-card[data-task='spreadsheet-cells/kosten']:visible");
+  await expect(card.locator('.document-input')).toHaveAttribute('accept', '.ods,.xlsx,.xls');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/spreadsheet-cells/01 Kosten.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
+  await expect(report.locator('.document-checklist')).toContainText('Rechnet mit, wenn sich eine Zahl ändert');
+  await expect(report.locator('.document-mark').first()).toBeAttached();
+  if (shots) await page.screenshot({ path: path.join(shots, 'sheet-wrong.png') });
+  // a text document where a table belongs
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/formatting-marks/stufen/einladung.docx'));
+  await expect(card).toContainText('Das ist ein Textdokument');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-cells/stufen/kosten.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
+  if (shots) await page.screenshot({ path: path.join(shots, 'sheet-correct.png') });
+});

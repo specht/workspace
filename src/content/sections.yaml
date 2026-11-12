@@ -133,6 +133,8 @@
 #   # its own, the class page shows them as a whole too
 #   series:
 #     - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
+    # the sheets on spreadsheets (docs/plan-tabellenkalkulation.md), in development
+    - [spreadsheet-cells]
 
 - key: writing
   compact: true
@@ -158,6 +160,7 @@
     - headers-and-footnotes
     - newspaper-page
     - trip-newspaper
+    - .spreadsheet-cells
   # the sheets on word processing (docs/plan-textverarbeitung.md), one card;
   # here until the section Office has a second series. Each is pinned on its
   # own, the class page shows them as a whole too

@@ -936,6 +936,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1949 -->
+<!-- part: bricklin-frankston -->
+### Dan Bricklin und Bob Frankston
+
+<div class='person pair'>
+<div class='portraits'><div class='portrait'><img src='bricklin.webp' alt='Dan Bricklin 2010: ein lächelnder Mann mit Brille, grauem Haar und grauem Bart, von unten fotografiert.'><span>Dan Bricklin</span></div><div class='portrait'><img src='frankston.webp' alt='Bob Frankston 2005: ein Mann mit Brille und weißem Hemd, der nach unten schaut, im Freien.'><span>Bob Frankston</span></div></div>
+<p><strong>Dan Bricklin</strong> (geboren 1951) und <strong>Bob Frankston</strong> (geboren 1949), amerikanische Informatiker. Bricklin studierte Wirtschaft in Harvard und sah einem Professor zu, der an der Tafel einen Plan für eine Firma durchrechnete: Änderte sich eine Zahl, wischte er jede Zahl weg, die davon abhing, und rechnete sie neu. Bricklin wollte eine Tafel, die das selbst tut. Mit Frankston gründete er die Firma Software Arts, und zusammen schrieben sie VisiCalc, die erste Tabellenkalkulation für einen Heimcomputer: 1979 für den Apple II.</p>
+<p>Viele kauften damals einen Apple II nur, um VisiCalc zu benutzen. Patentieren konnten die beiden ihre Idee nicht, Programme ließen sich damals nicht patentieren; so durften andere sie nachbauen: Lotus 1-2-3, Excel und Calc.</p>
+<p class='person-credit'>Fotos: Paul Downey, 2010, CC BY 2.0 (<a href='https://commons.wikimedia.org/wiki/File:Dan_Bricklin_(2010)_(cropped).jpg'>Wikimedia Commons</a>); Joi Ito, 2005, CC BY 2.0 (<a href='https://commons.wikimedia.org/wiki/File:Bob_Frankston,_crop.jpg'>Wikimedia Commons</a>), beide zugeschnitten</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1949 -->
 <!-- part: livingstone-jackson -->
 ### Ian Livingstone und Steve Jackson
 

@@ -88,7 +88,7 @@ module DocumentCheck
         return {} if c.nil? || r.nil? || !r['visible']
 
         { :page => sheet_index + 1, :x => sheet['header_w'].to_f + c['x'], :y => sheet['header_h'].to_f + r['y'],
-          :w => c['w'], :h => r['h'], :kind => 'box', :title => title }
+          :w => c['w'], :h => r['h'], :kind => 'cell', :title => title }
     end
 
     def self.shown(cell)
