@@ -23,11 +23,13 @@
     /* the real number on a label under the phone, like the paper label on
        an old desk phone (phone_games_api.rb, phone_book_label) */
     .phone-book-label {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: start;
         width: 290px;
         max-width: 100%;
-        /* the frame of the phone keeps room for its shadow below it */
-        margin: -2.4rem auto 0;
-        position: relative;
+        margin: .4rem 0 0 1.5rem;
+        transform: rotate(-2.5deg);
         padding: .55rem .9rem .6rem;
         background: url('/include/phone-book-paper.webp') var(--pb-paper);
         background-size: 384px 384px;
@@ -42,6 +44,10 @@
     .pb-label-head { font-variant: small-caps; letter-spacing: .08em; font-size: .9rem; color: var(--pb-quiet); }
     .pb-label-number { font-size: 1.5rem; font-weight: 700; line-height: 1.25; white-space: nowrap; font-variant-numeric: lining-nums; }
     .pb-label-example { font-weight: 400; opacity: .45; }
+    @media (max-width: 900px) {
+        /* right under the phone (its frame keeps room for the shadow below) */
+        .phone-book-label { grid-column: auto; grid-row: auto; justify-self: center; margin: -3.4rem 0 0; transform: rotate(-1.5deg); }
+    }
     .pb-label-how { font-size: .9rem; font-style: italic; color: var(--pb-quiet); hyphens: none; }
     .phone-book-layout {
         display: grid;
@@ -50,8 +56,14 @@
         align-items: start;
         margin-top: 1.5rem;
     }
+    /* the phone left over two rows; the book right, and below it the label
+       with the real number, lying on the desk a little turned. One column
+       on a narrow screen: phone, label, book */
+    .phone-book-phone { grid-column: 1; grid-row: 1 / span 2; }
+    .phone-book-pages { grid-column: 2; grid-row: 1; }
     @media (max-width: 900px) {
         .phone-book-layout { grid-template-columns: minmax(0, 1fr); }
+        .phone-book-phone, .phone-book-pages { grid-column: auto; grid-row: auto; }
     }
     /* the phone: the line itself (src/phone/line), in a frame */
     .phone-book-line { display: block; width: 340px; height: 740px; max-width: 100%; border: 0; margin: -12px auto 0; background: transparent; }
@@ -147,11 +159,11 @@
     <h1 class='visually-hidden'>Telefonbuch</h1>
     #{phone_book_page}
     <div class='phone-book-layout'>
-        <div>
+        <div class='phone-book-phone'>
             <iframe class='phone-book-line' src='/telefonbuch/telefon/?line' title='Telefon' allow='autoplay; screen-wake-lock'></iframe>
-            #{phone_book_label}
         </div>
-        <div>
+        #{phone_book_label}
+        <div class='phone-book-pages'>
             <div class='phone-book' id='phone-book'></div>
         </div>
     </div>
