@@ -102,6 +102,11 @@ nicht, sie zeigt, worum es gerade geht. Daraus folgen drei Regeln:
 - **Stichwörter statt Sätze.** Auf der Folie stehen ein paar Stichwörter,
   mit dem Titel höchstens 25 Wörter. Die ganzen Sätze sagst du.
 
+Noch besser als Stichwörter ist oft ein Bild mit ganz wenig Text: ein Foto
+der Kraniche am Abendhimmel sagt mehr als »Ketten und Keile am Himmel«. Um
+Bilder auf Folien geht es auf einem späteren Blatt; hier kommt zuerst der
+Text von der Folie herunter.
+
 _task(titel)
 
 <div class='history' id='history-takahashi'>
