@@ -429,23 +429,18 @@ class Main < Sinatra::Base
             "<script src='/include/phone_review.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
-    # /telefonbuch: the real number on a label under the phone, like the
-    # paper label with its own number on an old desk phone (the maintainer):
-    # from outside, with a game's number after it as an extension. The
-    # phone on the page itself takes a game's number only, never a real one
+    # /telefonbuch: the real number on a label, which phone_book.js sticks
+    # on the closed book's cover (the maintainer); without JavaScript it
+    # stays beside the book. The phone on the page itself takes a game's
+    # number only, never a real one
     def phone_book_label
         number = Main.phone_number
         return '' unless number
 
-        direct = defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL
-        first = PhoneGames.phone_book(phone_games_all.select { |g| g[:state] == 'published' }).first
-        game = first ? first[:number] : '123'
-        # the game's number pale: an example, not part of the line's number
-        shown = CGI.escapeHTML(number) + (direct ? "<span class='pb-label-example'>-#{CGI.escapeHTML(game)}</span>" : '')
-        how = direct ? 'die Nummer des Spiels gleich dahinter' : 'dann die Nummer des Spiels eingeben'
-        "<div class='phone-book-label'><div class='pb-label-head'>Von außen anrufen</div>" \
-            "<div class='pb-label-number'>#{shown}</div>" \
-            "<div class='pb-label-how'>#{CGI.escapeHTML(how)}</div></div>"
+        # the number alone (the maintainer); how to dial a game directly the
+        # book's remark at the end says
+        "<div class='phone-book-label'><div class='pb-label-head'>Von jedem Telefon</div>" \
+            "<div class='pb-label-number'>#{CGI.escapeHTML(number)}</div></div>"
     end
 
     # /telefonbuch: the published games, sorted by title, as the pages of a
@@ -459,10 +454,17 @@ class Main < Sinatra::Base
         entries = games.map do |g|
             { :number => g[:number], :word => g[:word], :title => g[:title], :description => g[:description] }
         end
-        # with a real number, it stands on a label under the phone
-        # (phone_book_label); without one, the remark at the end of the book
-        # says that one is being worked on
-        line = number ? nil : 'Wir arbeiten an einer echten Telefonnummer, unter der man die Spiele auch mit einem Telefon anrufen kann.'
+        # the remark at the end of the book: the real number and how to dial
+        # a game directly (its label on the cover shows the number alone);
+        # without one, that one is being worked on
+        line = if number
+            direct = defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL
+            game = games.first ? games.first[:number] : '123'
+            direct ? "Von jedem Telefon: #{number}. Wer die Nummer eines Spiels gleich dahinter wählt, kommt sofort zum Spiel, zum Beispiel #{number}-#{game}." :
+                "Von jedem Telefon: #{number}, dann die Nummer des Spiels eingeben."
+        else
+            'Wir arbeiten an einer echten Telefonnummer, unter der man die Spiele auch mit einem Telefon anrufen kann.'
+        end
         # the notes stand at the end of the book, as a remark (phone_book.js)
         notes = { :line => line,
                   :own => 'Schreib dein eigenes Telefonspiel:', :link => 'hier entlang', :href => '/telefonspiel' }

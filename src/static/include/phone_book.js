@@ -8,6 +8,9 @@
 // long descriptions take more room). The notes stand in a colophon, on the
 // right page of the spread after the last entries (a blank page beside it),
 // so there is always a page to turn to; on a narrow screen on the next page.
+// The book starts closed: its cover, with the label of the real number
+// (phone_book_label) stuck on it, turns over the spine like a page when
+// tapped or with →, and turning back from the first spread closes it.
 // A number in the address (/telefonbuch?nummer=123: a game in the
 // Workspace forwarded its call there): the phone has it dialled already.
 (function () {
@@ -27,6 +30,15 @@
     let pages = [{ kind: 'entries', list: [] }];     // and { kind: 'blank' }, { kind: 'colophon' }
     let at = 0;                       // the first page shown (even on a spread)
     let turning = false;
+    // the book starts closed, its cover where the right page will lie; the
+    // label with the real number (phone_book_label) moves onto the cover
+    let closed = true;
+    const label = document.querySelector('.phone-book-layout > .phone-book-label');
+    if (label) label.remove();
+    const coverHtml = () =>
+        `<div class='phone-book-leaf right phone-book-cover' data-side='cover' role='button' tabindex='0' aria-label='Telefonbuch aufschlagen'>` +
+        `<div class='pb-cover-title'>Telefonbuch</div><div class='pb-cover-sub'>Hackschule Workspace</div><div class='pb-cover-rule'></div>` +
+        (label ? label.outerHTML : '') + `<div class='pb-cover-open'>Zum Aufschlagen antippen oder klicken</div></div>`;
 
     const narrow = () => window.matchMedia('(max-width: 640px)').matches;
     const step = () => narrow() ? 1 : 2;
@@ -93,8 +105,12 @@
     }
 
     function layout() {
+        // the pages are measured on an open book, the cover has their size
+        const wasClosed = closed;
+        closed = false;
         render();
         paginate();
+        closed = wasClosed;
         render();
     }
 
@@ -104,13 +120,60 @@
     }
 
     function render() {
+        if (closed) {
+            book.innerHTML = `<div class='phone-book-spread closed'>${narrow() ? '' : "<div class='phone-book-leaf left pb-gap'></div>"}${coverHtml()}</div>`;
+            return;
+        }
         if (!narrow()) at -= at % 2;
         book.innerHTML = `<div class='phone-book-spread'>${narrow() ? leaf('right', at) : leaf('left', at) + leaf('right', at + 1)}</div>`;
+    }
+
+    // the cover turns over the spine like a page: open, the first spread
+    // lies under it; closed, it comes back from the left
+    function openOrClose(open) {
+        if (turning || closed !== open) return;
+        if (narrow() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            closed = !open;
+            at = 0;
+            render();
+            return;
+        }
+        turning = true;
+        at = 0;
+        closed = false;
+        render();
+        const spread = book.querySelector('.phone-book-spread');
+        const sheet = document.createElement('div');
+        sheet.className = `phone-book-turning ${open ? 'forward' : 'backward'}`;
+        sheet.innerHTML = open ? `<div class='front'>${coverHtml()}</div><div class='back'>${leaf('left', 0)}</div>`
+            : `<div class='front'>${leaf('left', 0)}</div><div class='back'>${coverHtml()}</div>`;
+        sheet.querySelectorAll('.phone-book-leaf').forEach((l) => { l.style.height = '100%'; });
+        // under the turning cover: the right page of the first spread, the
+        // left one not yet there (open) or already gone (close)
+        spread.firstElementChild.style.visibility = 'hidden';
+        if (!open) spread.classList.add('closing');
+        book.appendChild(sheet);
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            sheet.style.transform = `rotateY(${open ? -180 : 180}deg)`;
+        }));
+        sheet.addEventListener('transitionend', () => {
+            turning = false;
+            closed = !open;
+            render();
+        }, { once: true });
     }
 
     // a page turns around the spine: its front is the page it was, its back
     // the page it becomes
     function turn(direction) {
+        if (closed) {
+            if (direction > 0) openOrClose(true);
+            return;
+        }
+        if (direction < 0 && at === 0) {
+            openOrClose(false);
+            return;
+        }
         const target = at + direction * step();
         if (turning || target < 0 || target >= pages.length) return;
         if (narrow() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -145,6 +208,10 @@
         if (e.target.closest('a')) return;
         if (swiped) { swiped = false; return; }
         const page = e.target.closest('.phone-book-leaf');
+        if (closed) {
+            if (page && page.classList.contains('phone-book-cover')) openOrClose(true);
+            return;
+        }
         if (!page || page.classList.contains('empty')) return;
         // one page at a time: its left half turns back, its right half on
         if (narrow()) {
@@ -170,6 +237,12 @@
             turn(dx < 0 ? 1 : -1);
         }
     }, { passive: true });
+    book.addEventListener('keydown', (e) => {
+        if (closed && (e.key === 'Enter' || e.key === ' ') && e.target.closest('.phone-book-cover')) {
+            e.preventDefault();
+            openOrClose(true);
+        }
+    });
     document.addEventListener('keydown', (e) => {
         if (e.target.closest('input, textarea, select')) return;
         if (e.key === 'ArrowLeft') turn(-1);
