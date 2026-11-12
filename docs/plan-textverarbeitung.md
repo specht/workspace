@@ -303,6 +303,17 @@ built by hand; each is a page of a series of its own, about one lesson.
   function checks run code.
 - **Presentations:** Impress, one SVG per slide, marks on the shapes
   (placeholders, text running over, pictures without alt text, the master).
+- **Nextcloud Office through a share link** (the maintainer, 12 November
+  2026): a student pastes a public link to the document (`…/s/<token>`)
+  into the card once; each check fetches the current file
+  (`…/s/<token>/download`), with no download or upload. The teacher of a
+  group names the school's Nextcloud, where the school has one (a group
+  setting, like the Git server; never fetched from another host), https
+  only, a size limit, no redirect elsewhere. The page asks for a link that
+  only reads; the link is a key and is stored like the last checked version
+  (gone with »Ergebnis löschen« and the account, `privacy.rb`). Schools may
+  forbid public links or want a password or an expiry date: the card says
+  what went wrong. After the presentation series.
 - **The Word add-in:** the worksheet in a pane beside the document, checking
   what is on screen without saving; needs the school's IT to install it.
 - **Card picture and title** of worksheet 1, and the word »Office« as the
