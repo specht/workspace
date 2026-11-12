@@ -2736,11 +2736,71 @@ class Main < Sinatra::Base
 
     # The tab »Fortschritt«: the activity, a toolbar (look into the
     # Workspaces now, is the template current) and the board.
+    # The series of activities (sections.yaml series:) with tasks for this
+    # group: [[key, title, [[activity, title, tasks, slug], …]]]; key is
+    # 'series:' and the first member's slug.
+    def class_series(group, activities)
+        by_key = activities.to_h { |a, t, tasks| [a, [a, t, tasks]] }
+        @@sections.values.flat_map { |section| Array(section[:series]) }.filter_map do |list|
+            members = series_of(list.first.to_s) || []
+            sheets = members.filter_map do |slug|
+                key = (@@content[slug][:tasks] || {})[:activity]
+                by_key[key] && (by_key[key] + [slug])
+            end
+            next if sheets.size < 2
+            ["series:#{members.first}", plain_title(members.first), sheets]
+        end
+    end
+
+    # A whole series at once (»Reihe: …«): a row per student, a column per
+    # activity, each cell how many of its tasks are solved, linking to its
+    # board; the open points of a document task in its title.
+    def class_series_html(group, series)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        _, _, sheets = series
+        members = class_members(group)
+        emails = members.map { |m| m[:email] }
+        states = sheets.to_h { |key, _, _, _| [key, class_board_states(emails, key)] }
+        io = +"<div class='class-series'><table class='table class-series-table'><thead><tr><th scope='col'>Name</th>"
+        sheets.each_with_index do |(key, title, tasks, _), i|
+            io << "<th scope='col'><a href='/klasse?group=#{CGI.escape(group)}&amp;tab=fortschritt&amp;activity=#{CGI.escape(key)}' title='#{h.(title)}: alle Aufgaben'>" \
+                "<span class='class-series-number'>#{i + 1}</span>#{h.(title)}</a><span class='class-series-count'>#{tasks.size} Aufgaben</span></th>"
+        end
+        io << "<th scope='col'>Fertig</th></tr></thead><tbody>"
+        members.each do |m|
+            io << "<tr><th scope='row'>#{h.(m[:name])}</th>"
+            finished = 0
+            sheets.each do |key, title, tasks, _|
+                mine = states[key][m[:email]] || {}
+                done = tasks.count { |t| StudentHome::DONE.include?((mine[t[:id]] || {})[:status].to_s) }
+                finished += 1 if done == tasks.size
+                level = done == tasks.size ? 'done' : (mine.empty? ? 'none' : 'part')
+                # what a document check left open (»01 Einladung.docx: 6 von 8, …«)
+                notes = tasks.select { |t| t[:type] == 'document' }.filter_map { |t| (mine[t[:id]] || {})[:last_answer] }
+                tip = ["#{title}: #{done} von #{tasks.size} Aufgaben gelöst", *notes].join("\n")
+                io << "<td class='class-series-cell class-series-#{level}' title='#{h.(tip)}'>" \
+                    "#{level == 'done' ? "<i class='bi bi-check-lg' aria-hidden='true'></i>" : ''}#{done}/#{tasks.size}</td>"
+            end
+            io << "<td class='class-series-total'>#{finished} von #{sheets.size}</td></tr>"
+        end
+        io << '</tbody></table></div>'
+        io << "<p class='class-setting-hint'>Ein Klick auf ein Blatt zeigt seine Aufgaben einzeln; über einer Zelle steht, was bei einem Dokument noch offen ist.</p>"
+        io
+    end
+
     def class_progress_html(group)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         activities = class_activities(group)
         prefs = class_prefs
         wanted = [params['activity'], (prefs['activities'] || {})[group]]
+        series = class_series(group, activities)
+        # a whole series chosen (»Reihen« in the list)
+        if (chosen = wanted.compact.map { |key| series.find { |k, _, _| k == key } }.compact.first) &&
+           wanted.compact.first == chosen[0]
+            remember_class_prefs(group, chosen[0])
+            io = +"<div class='class-toolbar'>#{class_activity_form(group, activities, series, chosen[0])}</div>"
+            return io << class_series_html(group, chosen)
+        end
         activity = wanted.compact.map { |key| activities.find { |a, _, _| a == key } }.compact.first || activities.first
         return "<p>Noch keine Aktivität hat Aufgaben auf ihrer Seite.</p>" if activity.nil?
 
@@ -2748,14 +2808,7 @@ class Main < Sinatra::Base
         remember_class_prefs(group, activity_key)
         slug = @@content.find { |_, c| (c[:tasks] || {})[:activity] == activity_key }&.first
         io = +"<div class='class-toolbar'>"
-        io << "<form method='get' action='/klasse' class='class-activity-select'>"
-        io << "<input type='hidden' name='group' value='#{h.(group)}'><input type='hidden' name='tab' value='fortschritt'>"
-        # searchable (class_board.js): the list of all activities is too long
-        # to scroll, and a native list that tall picked an entry by itself
-        io << "<label>Aktivität <select class='form-select class-activity-choice' name='activity'>"
-        slugs = @@content.each_with_object({}) { |(s, c), all| all[c[:tasks][:activity]] ||= s if c[:tasks] }
-        io << grouped_activity_options(activities.map { |a, t, _| [a, t, slugs[a]] }, activity_key)
-        io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
+        io << class_activity_form(group, activities, series, activity_key)
         io << "<a class='class-activity-link' href='/#{h.(slug)}' title='#{h.(title)} öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i>Zur Seite</a>" if slug
         # the group's repository of the activity, on the Workspace's Git server
         browse = slug && (@@content[slug] || {})[:class_repo] && git_browse_url((group_class_repos([group])[group] || {})[slug])
@@ -2797,6 +2850,29 @@ class Main < Sinatra::Base
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
         io << class_scene_galleries_html(activity_key, tasks, board[:own] ? members + [viewer] : members)
         io << class_kata_hand_ins_html(activity_key, tasks, members)
+        io
+    end
+
+    # The list of the class page's progress: every activity with tasks, by
+    # section, and on top the series as a whole (class_series).
+    def class_activity_form(group, activities, series, selected)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        io = +"<form method='get' action='/klasse' class='class-activity-select'>"
+        io << "<input type='hidden' name='group' value='#{h.(group)}'><input type='hidden' name='tab' value='fortschritt'>"
+        # searchable (class_board.js): the list of all activities is too long
+        # to scroll, and a native list that tall picked an entry by itself
+        io << "<label>Aktivität <select class='form-select class-activity-choice' name='activity'>"
+        unless series.empty?
+            io << "<optgroup label='Reihen, alle Blätter'>"
+            series.each do |key, title, sheets|
+                io << "<option value='#{h.(key)}' data-search='#{h.("Reihe #{sheets.map { |_, t, _, _| t }.join(' ')}")}'#{key == selected ? ' selected' : ''}>" \
+                    "Reihe: #{h.(title)} (#{sheets.size} Blätter)</option>"
+            end
+            io << '</optgroup>'
+        end
+        slugs = @@content.each_with_object({}) { |(s, c), all| all[c[:tasks][:activity]] ||= s if c[:tasks] }
+        io << grouped_activity_options(activities.map { |a, t, _| [a, t, slugs[a]] }, selected)
+        io << "</select></label><noscript><button class='btn btn-primary'>Anzeigen</button></noscript></form>"
         io
     end
 

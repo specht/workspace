@@ -17865,3 +17865,59 @@ body.document-full-open {
         font-size: 0.92em;
     }
 }
+
+/* the class page: a whole series at once (class_series_html) */
+.class-series {
+    overflow-x: auto;
+}
+.class-series-table {
+    width: auto;
+    min-width: 100%;
+    font-variant-numeric: tabular-nums;
+}
+.class-series-table thead th {
+    vertical-align: bottom;
+    font-weight: 600;
+}
+.class-series-table thead a {
+    display: inline-flex;
+    gap: 0.35em;
+    align-items: baseline;
+    color: inherit;
+}
+.class-series-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5em;
+    height: 1.5em;
+    border-radius: 0.75em;
+    background: var(--bs-secondary-bg);
+    font-size: 0.8em;
+}
+.class-series-count {
+    display: block;
+    font-weight: 400;
+    font-size: 0.8em;
+    color: var(--bs-secondary-color);
+}
+.class-series-cell {
+    text-align: center;
+    white-space: nowrap;
+}
+.class-series-done {
+    background: var(--bs-success-bg-subtle) !important;
+    color: var(--bs-success-text-emphasis);
+    font-weight: 600;
+}
+.class-series-part {
+    background: var(--bs-warning-bg-subtle) !important;
+    color: var(--bs-warning-text-emphasis);
+}
+.class-series-none {
+    color: var(--bs-secondary-color);
+}
+.class-series-total {
+    white-space: nowrap;
+    font-weight: 600;
+}
