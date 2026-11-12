@@ -395,17 +395,26 @@ class Main < Sinatra::Base
         entries = games.map do |g|
             { :number => g[:number], :word => g[:word], :title => g[:title], :description => g[:description] }
         end
-        line = if number
+        # the number above phone and book, where one sees it first (the
+        # maintainer); without one, the remark at the end of the book says
+        # that one is being worked on
+        call = ''
+        line = nil
+        if number
             direct = defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL
-            direct ? "Ruf #{number} mit der Nummer des Spiels dahinter an, zum Beispiel #{number} 123." :
-                "Ruf #{number} an und gib die Nummer des Spiels ein."
+            # a game's number as an extension: 030/22908772-123
+            example = "#{number}-#{games.first ? games.first[:number] : '123'}"
+            how = direct ? "Wähl die Nummer des Spiels gleich dahinter, zum Beispiel <span class='pb-call-example'>#{CGI.escapeHTML(example)}</span>." :
+                'Ruf an und gib die Nummer des Spiels ein.'
+            call = "<div class='phone-book-call'><i class='bi bi-telephone' aria-hidden='true'></i>" \
+                "<div><div class='pb-call-number'>#{CGI.escapeHTML(number)}</div><div class='pb-call-how'>#{how}</div></div></div>"
         else
-            'Wir arbeiten an einer echten Telefonnummer, unter der man die Spiele auch mit einem Telefon anrufen kann.'
+            line = 'Wir arbeiten an einer echten Telefonnummer, unter der man die Spiele auch mit einem Telefon anrufen kann.'
         end
         # the notes stand at the end of the book, as a remark (phone_book.js)
         notes = { :line => line,
                   :own => 'Schreib dein eigenes Telefonspiel:', :link => 'hier entlang', :href => '/telefonspiel' }
-        "<script>window.PHONE_BOOK = #{JSON.generate(entries).gsub('</', '<\/')}; " \
+        call + "<script>window.PHONE_BOOK = #{JSON.generate(entries).gsub('</', '<\/')}; " \
             "window.PHONE_BOOK_NOTES = #{JSON.generate(notes).gsub('</', '<\/')};</script>"
     end
 end

@@ -20,6 +20,35 @@
         --pb-dim: brightness(.78) contrast(1.05);
         --pb-shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 18px 40px -16px rgba(0, 0, 0, .8);
     }
+    /* the number, above phone and book: on the book's cover colour, in its
+       type, large enough to see first (phone_games_api.rb) */
+    .phone-book-call {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding: .9rem 1.4rem;
+        background: var(--pb-cover);
+        color: var(--pb-ink);
+        border-radius: 10px;
+        box-shadow: var(--pb-shadow);
+        font-family: 'XCharter', 'Charter', 'Bitstream Charter', Georgia, serif;
+    }
+    .phone-book-call > .bi { font-size: 2.2rem; line-height: 1; }
+    .phone-book-call .pb-call-number {
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1.15;
+        font-variant-numeric: lining-nums;
+        white-space: nowrap;
+    }
+    .phone-book-call .pb-call-how { font-size: 1.05rem; }
+    .phone-book-call .pb-call-example { font-weight: 700; white-space: nowrap; }
+    [data-bs-theme='dark'] .phone-book-call { filter: var(--pb-dim); }
+    @media (max-width: 480px) {
+        .phone-book-call { padding: .8rem 1rem; gap: .8rem; }
+        .phone-book-call > .bi, .phone-book-call .pb-call-number { font-size: 1.6rem; }
+    }
     .phone-book-layout {
         display: grid;
         grid-template-columns: 340px minmax(0, 1fr);
