@@ -126,7 +126,9 @@ class Call(game.Phone):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('0.0.0.0', self.port))
         self.sock.setblocking(False)
-        host = socket.gethostbyname(socket.gethostname())
+        # its address on the network it shares with Asterisk (PHONE_RTP_HOST,
+        # its alias there; on several networks the host name is ambiguous)
+        host = socket.gethostbyname(os.environ.get('PHONE_RTP_HOST') or socket.gethostname())
         media = await self.ari('POST', '/channels/externalMedia', app=APP,
                                external_host=f'{host}:{self.port}', format='g722',
                                encapsulation='rtp', transport='udp', direction='both')

@@ -386,6 +386,138 @@ docker_compose[:networks][:phone] = { :driver => 'bridge', :internal => true }
 docker_compose[:services][:nginx][:networks] << 'phone'
 docker_compose[:services][:phone_speech][:networks]['phone'] = { :aliases => ['phone-speech'] }
 
+# The real line of the Telefonspiel (docs/plan-telefonspiel.md), where the
+# SIP access of a provider is in credentials.rb (PHONE_SIP_SERVER, _USER,
+# _PASSWORD; only one installation may register with it at a time).
+# Asterisk answers the calls (and never makes one, modules.conf) on two
+# networks of its own: phone_trunk with the internet for the provider,
+# phone_call with the runner only. The runner plays the Telefonbuch's menu
+# and the published games in the same sandbox as phone_line, and reaches
+# the speech service on phone. Asterisk's configuration is written here,
+# from src/phone/asterisk without its test telephone, with the trunk, the
+# server's public address for the audio (PHONE_PUBLIC_ADDRESS, else what
+# WEBSITE_HOST resolves to) and a password for ARI made once.
+if defined?(PHONE_SIP_SERVER) && defined?(PHONE_SIP_USER) && defined?(PHONE_SIP_PASSWORD) && !PHONE_SIP_PASSWORD.to_s.empty?
+    require 'ipaddr'
+    require 'resolv'
+    require 'securerandom'
+    phone_conf = File.join(INTERNAL_PATH, 'phone-asterisk')
+    FileUtils.mkpath(phone_conf)
+    ari_secret = File.join(INTERNAL_PATH, 'phone-ari-password')
+    File.write(ari_secret, SecureRandom.hex(24)) unless File.exist?(ari_secret)
+    ari_password = File.read(ari_secret).strip
+    public_address = if defined?(PHONE_PUBLIC_ADDRESS) && PHONE_PUBLIC_ADDRESS
+        PHONE_PUBLIC_ADDRESS
+    else
+        # behind a router at home (a local or private address, or none):
+        # Asterisk finds its way through the registration
+        begin
+            address = Resolv.getaddress(WEBSITE_HOST.split(':').first)
+            ip = IPAddr.new(address)
+            ip.private? || ip.loopback? ? nil : address
+        rescue Resolv::ResolvError, IPAddr::InvalidAddressError
+            nil
+        end
+    end
+    external = public_address ? "external_media_address = #{public_address}\nexternal_signaling_address = #{public_address}\n" : ''
+    %w[asterisk.conf logger.conf modules.conf rtp.conf extensions.conf http.conf cdr.conf].each do |name|
+        FileUtils.cp(File.join('src/phone/asterisk', name), File.join(phone_conf, name))
+    end
+    File.write(File.join(phone_conf, 'ari.conf'), <<~CONF)
+        ; written by config.rb: ARI for the runner, on the network phone_call only
+        [general]
+        enabled = yes
+
+        [runner]
+        type = user
+        read_only = no
+        password = #{ari_password}
+    CONF
+    File.write(File.join(phone_conf, 'pjsip.conf'), <<~CONF)
+        ; written by config.rb from credentials.rb: the provider's trunk, nothing else
+        [transport-udp]
+        type = transport
+        protocol = udp
+        bind = 0.0.0.0:5060
+        #{external}local_net = 10.0.0.0/8
+        local_net = 172.16.0.0/12
+        local_net = 192.168.0.0/16
+
+        [trunk]
+        type = registration
+        transport = transport-udp
+        outbound_auth = trunk
+        server_uri = sip:#{PHONE_SIP_SERVER}
+        client_uri = sip:#{PHONE_SIP_USER}@#{PHONE_SIP_SERVER}
+        contact_user = #{PHONE_SIP_USER}
+        retry_interval = 30
+        forbidden_retry_interval = 300
+        expiration = 300
+        line = yes
+        endpoint = trunk
+
+        [trunk]
+        type = auth
+        auth_type = userpass
+        username = #{PHONE_SIP_USER}
+        password = #{PHONE_SIP_PASSWORD}
+
+        [trunk]
+        type = aor
+        contact = sip:#{PHONE_SIP_SERVER}
+        qualify_frequency = 60
+
+        [trunk]
+        type = endpoint
+        context = from-trunk
+        disallow = all
+        allow = g722,alaw,ulaw
+        outbound_auth = trunk
+        aors = trunk
+        from_user = #{PHONE_SIP_USER}
+        from_domain = #{PHONE_SIP_SERVER}
+        direct_media = no
+        rtp_symmetric = yes
+        force_rport = yes
+        rewrite_contact = yes
+        dtmf_mode = rfc4733
+
+        [trunk]
+        type = identify
+        endpoint = trunk
+        match = #{PHONE_SIP_SERVER}
+    CONF
+    FileUtils.chmod(0o644, Dir[File.join(phone_conf, '*')])
+    docker_compose[:services][:phone_asterisk] = {
+        :build => './docker/phone-asterisk',
+        :volumes => ["#{phone_conf}:/etc/asterisk:ro"],
+        :ports => ['5060:5060/udp', '10000-10099:10000-10099/udp'],
+        :networks => { 'phone_trunk' => {}, 'phone_call' => { :aliases => ['asterisk'] } },
+        :mem_limit => '512m',
+        :pids_limit => 200,
+        :restart => 'always',
+    }
+    docker_compose[:services][:phone_runner] = {
+        :build => './docker/phone-runner',
+        :volumes => ['./src/phone:/phone:ro', "#{INTERNAL_PATH}/phone-games:/games:ro"],
+        :environment => { 'PHONE_SPEECH' => 'http://phone-speech:8000', 'PHONE_GAMES' => '/games',
+                          'PHONE_ARI' => 'http://asterisk:8088/ari', 'PHONE_ARI_USER' => 'runner', 'PHONE_ARI_PASSWORD' => ari_password,
+                          # its own address on phone_call, where Asterisk sends a call's audio
+                          'PHONE_RTP_HOST' => 'phone-runner',
+                          'PHONE_NUMBER' => defined?(PHONE_NUMBER) ? PHONE_NUMBER.to_s : '',
+                          'PHONE_DIRECT_DIAL' => defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL ? '1' : '' },
+        :networks => { 'phone' => {}, 'phone_call' => { :aliases => ['phone-runner'] } },
+        :tmpfs => ['/tmp:size=64m'],
+        :mem_limit => '2g',
+        :pids_limit => 400,
+        :cpus => 2.0,
+        :restart => 'always',
+        :depends_on => [:phone_asterisk, :phone_speech],
+    }
+    docker_compose[:networks][:phone_trunk] = { :driver => 'bridge' }
+    docker_compose[:networks][:phone_call] = { :driver => 'bridge', :internal => true }
+end
+
 # The office service (docs/plan-textverarbeitung.md): reads the documents
 # students upload to a document task with LibreOffice and draws their pages
 # (src/office/server.py). On a network of its own with the backend only,
