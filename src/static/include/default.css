@@ -2154,6 +2154,19 @@ h2 > .squircle {
         display: none;
     }
 }
+/* Word chosen on an Office page (page_kinds.rb): a quiet line on its own,
+   that free programs do the same */
+.office-free-note {
+    display: block;
+    flex-basis: 100%;
+    margin-top: 0.3em;
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
+}
+.office-free-note .bi {
+    margin-right: 0.35em;
+}
+
 /* a series' own number before its title, as in the row over the page */
 .autotoc > .items > button .autotoc-number {
     margin-right: 0.45em;

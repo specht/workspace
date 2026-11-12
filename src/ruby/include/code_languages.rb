@@ -48,14 +48,14 @@ require 'cgi'
 #
 # The office programs are a second family with the same markers and
 # variants (docs/plan-textverarbeitung.md): a page of the section Office
-# offers languages: [word, libreoffice, nextcloud], and <!-- language:
+# offers languages: [libreoffice, word, nextcloud], and <!-- language:
 # word --> marks what only Word users read (where a button is). A person's
 # choice of program (u.office_suite) and a class's ranking (g.office_suites,
 # »Office-Programme der Klasse«) are kept apart from the programming
 # languages: choosing Word changes nothing about Ruby or Python.
 module CodeLanguages
     PROGRAMMING = %w[ruby python javascript dart java].freeze
-    OFFICE = %w[word libreoffice nextcloud].freeze
+    OFFICE = %w[libreoffice word nextcloud].freeze
     LANGUAGES = (PROGRAMMING + OFFICE).freeze
     NAMES = { 'ruby' => 'Ruby', 'python' => 'Python', 'javascript' => 'JavaScript', 'dart' => 'Dart', 'java' => 'Java',
               'word' => 'Word', 'libreoffice' => 'LibreOffice', 'nextcloud' => 'Nextcloud Office' }.freeze

@@ -311,14 +311,14 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
-                :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache, dazu der letzte Code, der die Prüfung bestanden hat, damit spätere Aufgaben die eigenen Funktionen daraus übernehmen, und bei diesen späteren Aufgaben, welche Fassung der Funktionen sie beim Speichern enthielten; bei einem eigenen Bild der Turtle-Grafik jedes Bild, das die Person dort angelegt hat, mit Namen und Code; bei einer Schaltung aus der Logik-Werkstatt die Schaltung; bei einem Dokument aus Word, LibreOffice oder Nextcloud Office, welche Punkte der Prüfung offen sind), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
+                :data => 'Aufgaben: letzte Antwort (bei einer Kata, einer Programmieraufgabe in der Karte, der Code, für jede Sprache, dazu der letzte Code, der die Prüfung bestanden hat, damit spätere Aufgaben die eigenen Funktionen daraus übernehmen, und bei diesen späteren Aufgaben, welche Fassung der Funktionen sie beim Speichern enthielten; bei einem eigenen Bild der Turtle-Grafik jedes Bild, das die Person dort angelegt hat, mit Namen und Code; bei einer Schaltung aus der Logik-Werkstatt die Schaltung; bei einem Dokument aus LibreOffice, Word oder Nextcloud Office, welche Punkte der Prüfung offen sind), Ergebnis der automatischen Prüfung, Zahl und Zeitpunkte der Versuche',
                 :categories => [:content],
                 :purpose => 'Rückmeldung an die Person; Überblick für die Lehrkraft; zusammengefasst und ohne Namen: welche Aufgaben genutzt werden und wo sie schwerfallen, um sie zu verbessern',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe (vom Code und von Schaltungen in der Karte nur das Ergebnis); die Administration nur als Zahlen je Schule, Klasse, Aktivität und Aufgabe, ohne Namen der Lernenden und ohne Antworten, und nur, wo mindestens fünf Lernende dahinterstehen',
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
-                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, die zuletzt geprüfte Fassung eines Dokuments aus Word, LibreOffice oder Nextcloud Office (zum Weiterarbeiten, auch zu Hause) oder eines daraus exportierten PDFs, oder der Code einer gelösten Kata, den die Person selbst einreicht (bei einem Bild der Turtle-Grafik mit seinem Namen und dem Bild, das der Server aus dem Programm gezeichnet hat)',
+                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, die zuletzt geprüfte Fassung eines Dokuments aus LibreOffice, Word oder Nextcloud Office (zum Weiterarbeiten, auch zu Hause) oder eines daraus exportierten PDFs, oder der Code einer gelösten Kata, den die Person selbst einreicht (bei einem Bild der Turtle-Grafik mit seinem Namen und dem Bild, das der Server aus dem Programm gezeichnet hat)',
                 :categories => [:content],
                 :purpose => 'Abgabe an die Lehrkraft; eingereichte Katas zum Besprechen im Unterricht, ohne Namen gezeigt',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe',

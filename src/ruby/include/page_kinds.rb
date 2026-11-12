@@ -141,6 +141,13 @@ module PageKinds
             html = +"<div class='page-kind page-kind-activity'>"
             html << "<span class='page-kind-label'><i class='bi bi-signpost-2'></i>#{kind}</span>"
             html << CodeLanguages.switch_html(languages, code_language) if switch
+            # Word chosen: a quiet line that free programs do the same (the
+            # maintainer: no promotion of Microsoft's software to children);
+            # shown only with Word, like the page's parts for one program
+            if switch && CodeLanguages.office?(languages) && languages.include?('word')
+                html << "<span class='code-language office-free-note' data-language='word'><i class='bi bi-info-circle' aria-hidden='true'></i>" \
+                        "Es geht auch kostenlos: <a href='https://de.libreoffice.org/'>LibreOffice</a> und Nextcloud Office können alles, was diese Blätter brauchen.</span>"
+            end
             if show_duration && entry[:duration].is_a?(String) && !entry[:duration].strip.empty?
                 html << "<span class='page-kind-duration'><i class='bi bi-clock'></i>#{h.(entry[:duration].strip)}</span>"
             end

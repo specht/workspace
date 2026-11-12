@@ -14,8 +14,8 @@ module OfficeClient
     FORMATS = %w[docx odt doc rtf pdf].freeze
     # what the service answers when it cannot read a document, for the card
     ERRORS = {
-        'format' => 'Das ist kein Textdokument, das ich lesen kann. Speichere es als .docx (Word) oder .odt (LibreOffice).',
-        'not_text' => 'Das ist kein Textdokument. Speichere es als .docx (Word) oder .odt (LibreOffice).',
+        'format' => 'Das ist kein Textdokument, das ich lesen kann. Speichere es als .odt (LibreOffice) oder .docx (Word).',
+        'not_text' => 'Das ist kein Textdokument. Speichere es als .odt (LibreOffice) oder .docx (Word).',
         'timeout' => 'Das Lesen hat zu lange gedauert. Ist die Datei sehr groß? Versuch es noch einmal.',
         'failed' => 'Diese Datei konnte ich nicht lesen. Öffne sie noch einmal, speichere sie als .docx und lade sie neu hoch.',
         'too_big' => 'Die Datei ist größer als 10 MB. Sind große Bilder darin?',

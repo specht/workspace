@@ -239,7 +239,7 @@ module TaskCard
                 where = check['dir'] ? "/workspace/#{check['dir'].to_s.sub(%r{/+\z}, '')}" : '/workspace'
                 reads = "Läuft in deinem Workspace in <code>#{h.(where)}</code>, höchstens #{(check['timeout'] || 10).to_i} Sekunden, als Gast: Der Befehl kann lesen, aber nichts verändern oder löschen."
             when 'document'
-                # A document from Word, LibreOffice or Nextcloud Office
+                # A document from LibreOffice, Word or Nextcloud Office
                 # (DocumentCheck, document_task.js): the starting file to
                 # download, then the student's own file, chosen once and read
                 # again with each »Prüfen« where the browser can (Chrome,

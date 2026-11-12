@@ -1,5 +1,5 @@
 // The card of a document task (DocumentCheck, docs/plan-textverarbeitung.md):
-// the student's document from Word, LibreOffice or Nextcloud Office goes
+// the student's document from LibreOffice, Word or Nextcloud Office goes
 // to the server as a form upload; the answer is a checklist and the pages
 // as LibreOffice drew them, with a numbered mark at each place a point of
 // the checklist fails. Point and mark light up together (as in the mail
@@ -57,7 +57,7 @@
         }
         line.appendChild(el('strong', null, name));
         if (card.documentHandle && saved) {
-            line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in Word oder LibreOffice, dann prüft die Seite von selbst.'));
+            line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in LibreOffice oder Word, dann prüft die Seite von selbst.'));
         }
         card.querySelector('.document-pick').lastChild.textContent = wantsPdf(card) ? 'Anderes PDF' : 'Anderes Dokument';
         mirror(card);
@@ -93,11 +93,11 @@
         // Chrome and Edge keep hold of a file only on https (or localhost)
         const chromium = /Chrome\/|Edg\//.test(navigator.userAgent);
         note.innerHTML = CAN_KEEP
-            ? "<i class='bi bi-lightning-charge' aria-hidden='true'></i>Hier genügt es, in Word oder LibreOffice zu speichern: Die Seite merkt es und prüft von selbst."
+            ? "<i class='bi bi-lightning-charge' aria-hidden='true'></i>Hier genügt es, in LibreOffice oder Word zu speichern: Die Seite merkt es und prüft von selbst."
             : chromium && !window.isSecureContext
             ? "<i class='bi bi-info-circle' aria-hidden='true'></i>Diese Seite läuft ohne https, und dann darf auch Chrome eine Datei nicht im Blick behalten. " +
               'Wähle sie vor jedem Prüfen neu oder zieh sie auf die Karte.'
-            : "<i class='bi bi-info-circle' aria-hidden='true'></i>In Chrome und Edge genügt es, in Word oder LibreOffice zu speichern, und die Seite prüft von selbst. " +
+            : "<i class='bi bi-info-circle' aria-hidden='true'></i>In Chrome und Edge genügt es, in LibreOffice oder Word zu speichern, und die Seite prüft von selbst. " +
               'Dieser Browser kann eine Datei nicht im Blick behalten: Wähle sie vor jedem Prüfen neu oder zieh sie auf die Karte.';
         box.appendChild(note);
 
