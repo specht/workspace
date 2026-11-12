@@ -71,7 +71,8 @@ Programm einfügt, entsteht aus den Überschriften mit ihren Formatvorlagen
 (das letzte Blatt) und kennt ihre Seiten. Nach einer Änderung aktualisierst
 du es, dann stimmt es wieder.
 
-<img class='drawing' style='width: 35em' src='verzeichnis.svg' alt='Links die Titelseite »Reisebericht der 7b« mit »Inhalt«: »Montag: Anreise« bis Seite 2, »Dienstag: Kletterwald« 3, »Mittwoch: Wanderung« 4, mit Punkten bis zur Zahl. Rechts drei Seiten mit diesen Überschriften oben und ihrer Seitenzahl unten, ein Pfeil von jeder Überschrift zu ihrer Zeile im Inhalt'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='verzeichnis-wide.svg' alt='Links die Titelseite »Reisebericht der 7b« mit »Inhalt«: »Montag: Anreise« bis Seite 2, »Dienstag: Kletterwald« 3, »Mittwoch: Wanderung« 4, mit Punkten bis zur Zahl. Rechts drei Seiten mit diesen Überschriften oben und ihrer Seitenzahl unten, ein Pfeil von jeder Überschrift zu ihrer Zeile im Inhalt'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='verzeichnis.svg' alt='Oben die Titelseite »Reisebericht der 7b« mit »Inhalt«: »Montag: Anreise« bis Seite 2, »Dienstag: Kletterwald« 3, »Mittwoch: Wanderung« 4, mit Punkten bis zur Zahl. Unten drei Seiten mit diesen Überschriften oben und ihrer Seitenzahl unten, ein Pfeil von jeder Überschrift zu ihrer Zeile im Inhalt'>
 
 <!-- language: word -->
 In Word löschst du das getippte Verzeichnis, stellst den Cursor an seine

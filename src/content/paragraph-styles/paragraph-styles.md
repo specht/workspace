@@ -75,7 +75,8 @@ Absatzvorlagen *Überschrift 1*. Die Übersicht der Überschriften ist der
 _task(ebene)
 
 <!-- after: ebene -->
-<img class='drawing' style='width: 35em' src='ebenen.svg' alt='Links ein Blatt mit »Montag: Anreise« und »Mittwoch: Wanderung« als großen Überschriften, unter dem Mittwoch kleiner »Am Vormittag: um den See« und »Am Nachmittag: über den Moorpfad«. Rechts die Übersicht der Überschriften: die beiden Tage, darunter eingerückt die zwei Teile des Mittwochs. Ebene 1: die Tage; Ebene 2: die Teile eines Tages, eingerückt unter ihrem Tag'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='ebenen-wide.svg' alt='Links ein Blatt mit »Montag: Anreise« und »Mittwoch: Wanderung« als großen Überschriften, unter dem Mittwoch kleiner »Am Vormittag: um den See« und »Am Nachmittag: über den Moorpfad«. Rechts die Übersicht der Überschriften: die beiden Tage, darunter eingerückt die zwei Teile des Mittwochs. Ebene 1: die Tage; Ebene 2: die Teile eines Tages, eingerückt unter ihrem Tag'>
+<img class='drawing d-lg-none' style='width: 17.25em' src='ebenen.svg' alt='Oben ein Blatt mit »Montag: Anreise« und »Mittwoch: Wanderung« als großen Überschriften, unter dem Mittwoch kleiner »Am Vormittag: um den See« und »Am Nachmittag: über den Moorpfad«. Unten die Übersicht der Überschriften: die beiden Tage, darunter eingerückt die zwei Teile des Mittwochs. Ebene 1: die Tage; Ebene 2: die Teile eines Tages, eingerückt unter ihrem Tag'>
 <!-- /after -->
 
 **Jetzt bist du dran:** Gib den fünf Tagen die Vorlage »Überschrift 1« und
@@ -133,7 +134,8 @@ Die Klassenleitung möchte die Überschriften der Tage grün, in der Farbe der
 Formatvorlage änderst du nur die Vorlage, und jeder Absatz mit dieser Vorlage
 ändert sich mit.
 
-<img class='drawing' style='width: 35em' src='vorlage.svg' alt='Links ein Kasten »Formatvorlage Überschrift 1: grün, 16 pt, fett«, Pfeile von ihm zu drei Überschriften auf einem Blatt. »Montag: Anreise« und »Dienstag: Kletterwald« sind grün; »Mittwoch: Wanderung« ist blau, daneben »blau von Hand«, und sein Pfeil ist gestrichelt'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='vorlage-wide.svg' alt='Links ein Kasten »Formatvorlage Überschrift 1: grün, 16 pt, fett«, Pfeile von ihm zu drei Überschriften auf einem Blatt. »Montag: Anreise« und »Dienstag: Kletterwald« sind grün; »Mittwoch: Wanderung« ist blau, daneben »blau von Hand«, und sein Pfeil ist gestrichelt'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='vorlage.svg' alt='Oben ein Kasten »Formatvorlage Überschrift 1: grün, 16 pt, fett«, Pfeile von ihm zu drei Überschriften auf einem Blatt. »Montag: Anreise« und »Dienstag: Kletterwald« sind grün; »Mittwoch: Wanderung« ist blau, daneben »blau von Hand«, und sein Pfeil ist gestrichelt'>
 
 <!-- language: word -->
 In Word klickst du mit der rechten Maustaste in der Liste der Formatvorlagen

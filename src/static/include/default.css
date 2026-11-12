@@ -17424,6 +17424,11 @@ body.mail-app-open {
    lighter after »Vorlage herunterladen« */
 .document-starter {
     align-self: flex-start;
+    /* on a phone the file's name goes onto a line of its own rather than
+       past the edge of the screen */
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
 }
 /* a check running: the page a little paler until the new result comes */
 .document-checking .document-viewport {
@@ -17467,6 +17472,8 @@ body.mail-app-open {
     color: var(--bs-warning-text-emphasis, #664d03);
 }
 .document-starter-name {
+    display: inline-block;
+    white-space: nowrap;
     margin-left: 0.4em;
     font-weight: 400;
     opacity: 0.85;

@@ -74,7 +74,8 @@ auf jeder Seite dieselbe; wer dort eine Zahl tippt, bekommt sie auf jede Seite.
 Die Seitenzahl ist darum ein **Feld**, wie die Nummer einer Bildunterschrift:
 Das Programm setzt auf jeder Seite ihre eigene Zahl ein.
 
-<img class='drawing' style='width: 35em' src='fusszeile.svg' alt='Zwei Reihen mit je drei Seiten, unten auf jeder die Fußzeile. Oben »getippt«: auf jeder Seite »Seite 1«. Unten »ein Feld«: »Seite 1«, »Seite 2«, »Seite 3«, die Zahl grau hinterlegt wie ein Feld'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='fusszeile-wide.svg' alt='Zwei Reihen mit je drei Seiten, unten auf jeder die Fußzeile. Oben »getippt«: auf jeder Seite »Seite 1«. Unten »ein Feld«: »Seite 1«, »Seite 2«, »Seite 3«, die Zahl grau hinterlegt wie ein Feld'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='fusszeile.svg' alt='Zwei Reihen mit je drei Seiten, unten auf jeder die Fußzeile. Oben »getippt«: auf jeder Seite »Seite 1«. Unten »ein Feld«: »Seite 1«, »Seite 2«, »Seite 3«, die Zahl grau hinterlegt wie ein Feld'>
 
 <!-- language: word -->
 In Word klickst du doppelt in die Fußzeile, löschst die getippte 1 und wählst

@@ -43,7 +43,8 @@ Hol dir das Programm:
 In einer **Tabelle** hat jede Angabe ihre eigene **Zelle**. Wird ein Eintrag
 länger, wächst seine Zeile nach unten, und alles bleibt in seiner Spalte.
 
-<img class='drawing' style='width: 35em' src='zelle.svg' alt='Eine Tabelle mit den Spalten Tag, Zeit und Programm. Die Zelle mit »Wanderung um den See, mit Picknick am Aussichtsturm« ist eingerahmt: Der Eintrag geht über zwei Zeilen, und die ganze Zeile ist höher. Die Zeile des Donnerstags ist blau hinterlegt, »eine Zeile«; die Spalte Zeit gelb, »eine Spalte«'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='zelle-wide.svg' alt='Eine Tabelle mit den Spalten Tag, Zeit und Programm. Die Zelle mit »Wanderung um den See, mit Picknick am Aussichtsturm« ist eingerahmt: Der Eintrag geht über zwei Zeilen, und die ganze Zeile ist höher. Die Zeile des Donnerstags ist blau hinterlegt, »eine Zeile«; die Spalte Zeit gelb, »eine Spalte«'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='zelle.svg' alt='Eine Tabelle mit den Spalten Tag, Zeit und Programm. Die Zelle mit »Wanderung um den See, mit Picknick am Aussichtsturm« ist eingerahmt: Der Eintrag geht über zwei Zeilen, und die ganze Zeile ist höher. Die Zeile des Donnerstags ist blau hinterlegt, »eine Zeile«; die Spalte Zeit gelb, »eine Spalte«'>
  Aus
 Text mit Tabs macht das Programm eine Tabelle auf einmal: Jeder Tab wird eine
 neue Spalte, jeder Absatz eine Zeile.
@@ -72,7 +73,8 @@ nach, was mit dem Donnerstag passiert.
 Die erste Zeile mit Tag, Zeit und Programm ist die **Kopfzeile** der Tabelle.
 Wird eine Tabelle länger als eine Seite, soll sie auf jeder Seite oben stehen.
 
-<img class='drawing' style='width: 35em' src='kopfzeile.svg' alt='Zwei Seiten nebeneinander. Auf der ersten beginnt unten eine Tabelle mit der Kopfzeile »Tag, Programm«, dann Montag bis Mittwoch. Die zweite Seite beginnt oben wieder mit der Kopfzeile, eingerahmt, dann Donnerstag und Freitag'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='kopfzeile-wide.svg' alt='Zwei Seiten nebeneinander. Auf der ersten beginnt unten eine Tabelle mit der Kopfzeile »Tag, Programm«, dann Montag bis Mittwoch. Die zweite Seite beginnt oben wieder mit der Kopfzeile, eingerahmt, dann Donnerstag und Freitag'>
+<img class='drawing d-lg-none' style='width: 15.88em' src='kopfzeile.svg' alt='Zwei Seiten untereinander. Auf der ersten beginnt unten eine Tabelle mit der Kopfzeile »Tag, Programm«, dann Montag bis Mittwoch. Die zweite Seite beginnt oben wieder mit der Kopfzeile, eingerahmt, dann Donnerstag und Freitag'>
 
 <!-- language: word -->
 In Word stellst du den Cursor in die erste Zeile und klickst im Register

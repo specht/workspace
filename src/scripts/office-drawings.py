@@ -152,14 +152,33 @@ def glyph_path(char, family_file, size, x, y):
     return pen.getCommands(), scale, glyphs[name].width * scale
 
 
+
+def two_ways(name, folder, wide, about, panels, gap=14, shared=()):
+    """a drawing of panels side by side for the desktop (name-wide.svg) and
+    the same panels one under another for a phone (name.svg), so that its
+    text stays readable there (docs/checkliste.md, »Auf dem Handy«);
+    panels: [(elements, (x, y, w, h)), …] in the desktop's coordinates;
+    shared: what only the row needs (an arrow between two panels)"""
+    w, h = wide
+    svg(f'{name}-wide', folder, w, h, [e for els, _ in panels for e in els] + list(shared), about)
+    body, y, width = [], 10, 0
+    for els, (x0, y0, pw, ph) in panels:
+        body.append(f"<g transform='translate({10 - x0:.1f} {y - y0:.1f})'>" + ''.join(els) + '</g>')
+        y += ph + gap
+        width = max(width, pw)
+    svg(name, folder, round(width + 20), round(y - gap + 10), body, about)
+
+
 # ---- Was das Auge nicht sieht
 
 def abstand():
     """an empty paragraph against spacing after a paragraph"""
     w, h = 560, 236
-    body = []
+    panels = []
     for i, (title, spaced) in enumerate([('mit einem leeren Absatz', False), ('mit Abstand danach', True)]):
         x = 18 + i * 280
+        body = []
+        panels.append((body, (x, 4, 244, 222)))
         body.append(text(x + 120, 24, title, 15, TEXT, 'middle', '600'))
         body.append(paper(x, 38, 244, 182))
         tx, y = x + 22, 76
@@ -184,8 +203,7 @@ def abstand():
         for k, length in enumerate([196, 188, 120]):
             body.append(bar(tx, y + k * 22, length))
         body.append(text(tx + 124, y + 2 * 22 + 1, '¶', 15, PBLUE))
-    svg('abstand', 'formatting-marks', w, h, body,
-        'Ein leerer Absatz gegen Abstand danach')
+    two_ways('abstand', 'formatting-marks', (w, h), 'Ein leerer Absatz gegen Abstand danach', panels)
 
 
 # ---- Schrift mit Absicht
@@ -194,12 +212,14 @@ def serifen():
     """the same word with and without serifs, the serifs marked"""
     w, h = 560, 214
     size = 92
-    body = []
+    panels = []
     serif_file = _ttf(FONTS / 'XCharter' / 'XCharter-Roman.woff2')
     serif_font = TTFont(serif_file)
     for i, (label, names, family) in enumerate([('mit Serifen', 'Times New Roman, Georgia', 'serif'),
                                                 ('ohne Serifen', 'Arial, Verdana, Calibri', 'sans')]):
         cx = 140 + i * 280
+        body = []
+        panels.append((body, (cx - 130, 4 if i == 0 else 36, 260, 200 if i == 0 else 168)))
         word = 'Hand'
         font = serif_font if family == 'serif' else TTFont(str(FONTS / 'IBM_Plex_Sans' / 'IBMPlexSans-Regular.ttf'))
         file_size = size
@@ -246,13 +266,13 @@ def serifen():
         body.append(text(cx, 168, label, 16, TEXT, 'middle', '600'))
         body.append(text(cx, 190, names, 14, GREY, 'middle'))
     # what the blue is
-    body.append(text(140, 26, 'Serifen: die Füßchen an den Enden', 14, BLUE, 'middle'))
-    svg('serifen', 'character-formatting', w, h, body, 'Hand mit und ohne Serifen')
+    panels[0][0].append(text(140, 26, 'Serifen: die Füßchen an den Enden', 14, BLUE, 'middle'))
+    two_ways('serifen', 'character-formatting', (w, h), 'Hand mit und ohne Serifen', panels)
 
 
-def hervorheben():
+def hervorheben(phone=False):
     """underlining across descenders, and the shape of a word in capitals"""
-    w, h = 560, 262
+    w, h = (360, 336) if phone else (560, 262)
     body = []
     # underlined: the line runs through g, p and y
     word, size = 'Gruppe gegen Typen', 30
@@ -266,15 +286,18 @@ def hervorheben():
         if c in 'gpy':
             body.append(f"<circle cx='{x + cw / 2:.1f}' cy='{under + 1:.1f}' r='7' fill='none' stroke='{RED}' stroke-width='1.6'/>")
         x += cw
-    body.append(text(x0 + measure(word, size) + 18, base - 4, 'unterstrichen:', 14, GREY))
-    body.append(text(x0 + measure(word, size) + 18, base + 14, 'die Linie schneidet g, p, y', 14, GREY))
+    if phone:
+        body.append(text(x0, base + 34, 'unterstrichen: die Linie schneidet g, p, y', 14, GREY))
+    else:
+        body.append(text(x0 + measure(word, size) + 18, base - 4, 'unterstrichen:', 14, GREY))
+        body.append(text(x0 + measure(word, size) + 18, base + 14, 'die Linie schneidet g, p, y', 14, GREY))
     # the shape of a word: lower case has one, capitals are a rectangle
     size = 32
     up = set('bdfhklt') | set('ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ')
     down = set('gjpqy')
     for row, (word, notes) in enumerate([('Kuchenverkauf', ('eine Form, an der', 'man das Wort erkennt')),
                                          ('KUCHENVERKAUF', ('jedes Wort', 'ein Rechteck'))]):
-        base = 150 + row * 86
+        base = (150 + row * 104) if phone else (150 + row * 86)
         body.append(text(x0, base, word, size, TEXT))
         # the outline: the height of each letter, a step at each change
         asc, xh, desc = base - size * 0.73, base - size * 0.53, base + size * 0.24
@@ -292,9 +315,12 @@ def hervorheben():
             pts += [(b, y + 3), (a, y + 3)]
         d = 'M ' + ' L '.join(f'{px:.1f} {py:.1f}' for px, py in pts) + ' Z'
         body.append(f"<path d='{d}' fill='none' stroke='{BLUE}' stroke-width='1.8' stroke-linejoin='round'/>")
-        body.append(text(x + 18, base - 6, notes[0], 14, GREY))
-        body.append(text(x + 18, base + 12, notes[1], 14, GREY))
-    svg('hervorheben', 'character-formatting', w, h, body,
+        if phone:
+            body.append(text(x0, base + 34, f'{notes[0]} {notes[1]}', 14, GREY))
+        else:
+            body.append(text(x + 18, base - 6, notes[0], 14, GREY))
+            body.append(text(x + 18, base + 12, notes[1], 14, GREY))
+    svg(variant('hervorheben', phone), 'character-formatting', w, h, body,
         'Unterstreichung durch die Unterlängen, und die Form eines Worts in Klein- und Großbuchstaben')
 
 
@@ -303,10 +329,12 @@ def hervorheben():
 def liste():
     """a list typed with dashes against one the program keeps"""
     w, h = 560, 220
-    body = []
+    panels = []
     items = ['Schlafsack', 'Regenjacke, falls es am Mittwoch regnet', 'Taschenlampe']
     for i, (title, typed) in enumerate([('getippt', True), ('eine Liste des Programms', False)]):
         x = 18 + i * 280
+        body = []
+        panels.append((body, (x, 4, 244, 210)))
         body.append(text(x + 122, 24, title, 15, TEXT, 'middle', '600'))
         body.append(paper(x, 38, 244, 166))
         tx, y = x + 18, 70
@@ -333,14 +361,14 @@ def liste():
         else:
             body.append(line(indent - 3, 52, indent - 3, 176, PBLUE, 1.2, " stroke-dasharray='3 3'"))
             body.append(text(indent - 3, 190, 'jede Zeile beginnt hier', 13, PBLUE))
-    svg('liste', 'lists-and-tabs', w, h, body, 'Eine getippte Liste gegen eine Liste des Programms')
+    two_ways('liste', 'lists-and-tabs', (w, h), 'Eine getippte Liste gegen eine Liste des Programms', panels)
 
 
-def tabstopp():
+def tabstopp(phone=False):
     """the ruler with a right-aligned tab stop; one tab jumps to it, in two fonts"""
-    w, h = 560, 222
+    w, h = (360, 262) if phone else (560, 222)
     body = []
-    x0, x1 = 30, 530         # the text area: 0 to 16 cm
+    x0, x1 = (26, 334) if phone else (30, 530)         # the text area: 0 to 16 cm
     cm = (x1 - x0) / 16
     # the ruler
     body.append(rect(x0 - 10, 26, x1 - x0 + 20, 26, '#f3f4f6', '#d1d5db', 1, 2))
@@ -372,19 +400,24 @@ def tabstopp():
         n = int((dots_to - dots_from) / 6)
         body.append(text(dots_from, y, '.' * n, 16, INK, family=SANS, extra=" letter-spacing='1.6'"))
         body.append(serif_text(stop, y, price, 16, INK, 'end')[0] if key == 'serif' else text(stop, y, price, 16, INK, 'end'))
-    body.append(text(x0, 194, 'ein Tab (→) springt zum Tabstopp; die Punkte sind das Füllzeichen', 13, GREY))
-    body.append(text(x0, 212, 'jeder Preis endet am Tabstopp, in jeder Schrift', 13, GREY))
-    svg('tabstopp', 'lists-and-tabs', w, h, body, 'Ein rechtsbündiger Tabstopp mit Füllzeichen')
+    if phone:
+        for k, t in enumerate(['ein Tab (→) springt zum Tabstopp;', 'die Punkte sind das Füllzeichen;', 'jeder Preis endet am Tabstopp,',
+                               'in jeder Schrift']):
+            body.append(text(x0 - 10, 194 + k * 18, t, 13, GREY))
+    else:
+        body.append(text(x0, 194, 'ein Tab (→) springt zum Tabstopp; die Punkte sind das Füllzeichen', 13, GREY))
+        body.append(text(x0, 212, 'jeder Preis endet am Tabstopp, in jeder Schrift', 13, GREY))
+    svg(variant('tabstopp', phone), 'lists-and-tabs', w, h, body, 'Ein rechtsbündiger Tabstopp mit Füllzeichen')
 
 
 # ---- Tabellen
 
-def zelle():
+def zelle(phone=False):
     """a table: a cell, a row, a column, and a long entry that makes its row taller"""
-    w, h = 560, 232
+    w, h = (360, 318) if phone else (560, 232)
     body = []
-    x0, y0 = 30, 34
-    cols = [92, 62, 200]
+    x0, y0 = (18, 22) if phone else (30, 34)
+    cols = [84, 52, 190] if phone else [92, 62, 200]
     rows = [30, 30, 50, 30]
     xs = [x0]
     for c in cols:
@@ -409,6 +442,17 @@ def zelle():
         body.append(line(xs[0], y, xs[-1], y, EDGE, 1.2))
     # the cell
     body.append(rect(xs[2] + 1, ys[2] + 1, cols[2] - 2, rows[2] - 2, 'none', PAMBER, 2.2))
+    if phone:
+        ly = ys[-1] + 44
+        body.append(rect(x0, ly - 12, 18, 14, 'none', PAMBER, 2.2))
+        body.append(text(x0 + 28, ly, 'eine Zelle: wird der Eintrag länger,', 13, TEXT))
+        body.append(text(x0 + 28, ly + 17, 'wird sie höher', 13, TEXT))
+        body.append(rect(x0, ly + 30, 18, 14, PBLUE_BG, EDGE, 1))
+        body.append(text(x0 + 28, ly + 42, 'eine Zeile', 13, TEXT))
+        body.append(rect(x0, ly + 55, 18, 14, PAMBER_BG, EDGE, 1))
+        body.append(text(x0 + 28, ly + 67, 'eine Spalte', 13, TEXT))
+        svg('zelle', 'word-tables', w, h, body, 'Eine Tabelle mit Zelle, Zeile und Spalte')
+        return
     lx = xs[-1] + 30
     body.append(arrow(lx - 4, ys[2] + 12, xs[-1] - 8, ys[2] + 18, PAMBER))
     body.append(text(lx, ys[2] + 10, 'eine Zelle:', 13, TEXT, weight='600'))
@@ -418,17 +462,19 @@ def zelle():
     body.append(text(lx, ys[3] + 24, 'eine Zeile', 13, TEXT, weight='600'))
     body.append(arrow(xs[1] + cols[1] / 2 + 30, ys[-1] + 34, xs[1] + cols[1] / 2 + 4, ys[-1] + 4, AMBER))
     body.append(text(xs[1] + cols[1] / 2 + 34, ys[-1] + 38, 'eine Spalte', 13, TEXT, weight='600'))
-    svg('zelle', 'word-tables', w, h, body, 'Eine Tabelle mit Zelle, Zeile und Spalte')
+    svg('zelle-wide', 'word-tables', w, h, body, 'Eine Tabelle mit Zelle, Zeile und Spalte')
 
 
 def kopfzeile():
     """a table over two pages, its header row on both"""
     w, h = 560, 252
-    body = []
+    panels = []
     pw, ph = 200, 226
     days = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
     for p in range(2):
         x, y = 40 + p * 270, 12
+        body = []
+        panels.append((body, (x, y, pw + 34 if p else pw, ph)))
         body.append(paper(x, y, pw, ph))
         tx, tw = x + 20, pw - 40
         if p == 0:
@@ -457,8 +503,8 @@ def kopfzeile():
             body.append(text(tx, ty + 128, 'die Kopfzeile', 13, TEXT, weight='600'))
             body.append(text(tx, ty + 145, 'steht wieder oben', 13, GREY))
             body.append(arrow(tx + tw + 12, ty + 118, tx + tw + 8, ty + 30, PAMBER))
-    body.append(text(253, 130, '→', 26, GREY, 'middle'))
-    svg('kopfzeile', 'word-tables', w, h, body, 'Eine Tabelle über zwei Seiten, die Kopfzeile auf beiden')
+    two_ways('kopfzeile', 'word-tables', (w, h), 'Eine Tabelle über zwei Seiten, die Kopfzeile auf beiden', panels,
+             shared=[text(253, 130, '→', 26, GREY, 'middle')])
 
 
 # ---- Bilder im Text
@@ -485,15 +531,17 @@ def _handles(x, y, w, h, active):
 def seitenverhaeltnis():
     """a picture 3 to 2, pulled at a side (distorted) and at a corner (larger, the same shape)"""
     w, h = 560, 200
-    body = []
+    panels = [([], (14, 70, 124, 112)), ([], (164, 58, 184, 142)), ([], (372, 38, 172, 162))]
     base = 150
     # the original
     ow, oh = 108, 72
     x = 22
+    body = panels[0][0]
     body.append(_landscape(x, base - oh, ow, oh) + _handles(x, base - oh, ow, oh, ''))
     body.append(text(x + ow / 2, base + 26, 'das Bild, 3 zu 2', 13, TEXT, 'middle', '600'))
     # pulled at the side
     x = 172
+    body = panels[1][0]
     sw, sh = 168, 72
     body.append(rect(x, base - oh, ow, oh, 'none', GREY, 1, extra=" stroke-dasharray='3 3'"))
     body.append(_landscape(x, base - sh, sw, sh) + _handles(x, base - sh, sw, sh, 'r'))
@@ -502,22 +550,24 @@ def seitenverhaeltnis():
     body.append(text(x + sw / 2, base + 43, 'nur breiter, verzerrt', 13, GREY, 'middle'))
     # pulled at the corner
     x = 380
+    body = panels[2][0]
     cw, ch = 156, 104
     body.append(rect(x, base - oh, ow, oh, 'none', GREY, 1, extra=" stroke-dasharray='3 3'"))
     body.append(_landscape(x, base - ch, cw, ch) + _handles(x, base - ch, cw, ch, 'tr'))
     body.append(arrow(x + ow + 2, base - oh - 2, x + cw - 8, base - ch + 8, PAMBER))
     body.append(text(x + cw / 2, base + 26, 'an der Ecke gezogen:', 13, TEXT, 'middle', '600'))
     body.append(text(x + cw / 2, base + 43, 'größer, dieselbe Form', 13, GREY, 'middle'))
-    svg('seitenverhaeltnis', 'pictures-in-text', w, h, body,
-        'Ein Bild an der Seite und an der Ecke gezogen')
+    two_ways('seitenverhaeltnis', 'pictures-in-text', (w, h), 'Ein Bild an der Seite und an der Ecke gezogen', panels)
 
 
 def umbruch():
     """a picture in the line, against text that flows around it"""
     w, h = 560, 250
-    body = []
+    panels = []
     for i, (title, around) in enumerate([('in der Zeile', False), ('Text fließt herum', True)]):
         x = 18 + i * 280
+        body = []
+        panels.append((body, (x, 4, 244, 232)))
         body.append(text(x + 122, 24, title, 15, TEXT, 'middle', '600'))
         body.append(paper(x, 38, 244, 196))
         tx, tw = x + 18, 208
@@ -547,24 +597,24 @@ def umbruch():
             for k in range(3):
                 body.append(bar(tx, ly, tw - (k % 3) * 20))
                 ly += 14
-    svg('umbruch', 'pictures-in-text', w, h, body, 'Ein Bild in der Zeile gegen Text, der um das Bild fließt')
+    two_ways('umbruch', 'pictures-in-text', (w, h), 'Ein Bild in der Zeile gegen Text, der um das Bild fließt', panels)
 
 
 # ---- Formatvorlagen
 
-def vorlage():
+def vorlage(phone=False):
     """one style, many headings: change the style, and every heading changes; by hand wins"""
-    w, h = 560, 268
+    w, h = (360, 470) if phone else (560, 268)
     body = []
     # the style
-    sx, sy = 16, 88
+    sx, sy = (16, 14) if phone else (16, 88)
     body.append(rect(sx, sy, 170, 92, '#eef3fb', BLUE, 1.4, 6))
     body.append(text(sx + 12, sy + 24, 'Formatvorlage', 12, GREY))
     body.append(text(sx + 12, sy + 46, 'Überschrift 1', 16, TEXT, weight='600'))
     body.append(text(sx + 12, sy + 68, 'grün, 16 pt, fett', 13, TEXT))
     # the sheet with its headings
-    px, py = 262, 14
-    body.append(paper(px, py, 282, 240))
+    px, py = (16, 150) if phone else (262, 14)
+    body.append(paper(px, py, 282 if not phone else 326, 240))
     heads = [('Montag: Anreise', PGREEN, False), ('Dienstag: Kletterwald', PGREEN, False), ('Mittwoch: Wanderung', PBLUE, True)]
     y = py + 36
     targets = []
@@ -579,23 +629,35 @@ def vorlage():
             body.append(bar(px + 18, y + 6, 236 - k * 50))
             y += 14
         y += 32
-    for tx, ty, by_hand in targets:
-        body.append(arrow(sx + 172, sy + 46, tx - 2, ty, AMBER if by_hand else BLUE, 1.5, dashed=by_hand))
-    body.append(text(sx, sy + 120, 'Ändert sich die Vorlage,', 13, GREY))
-    body.append(text(sx, sy + 137, 'ändert sich jede Überschrift', 13, GREY))
-    body.append(text(sx, sy + 154, 'mit ihr, außer dort, wo etwas', 13, GREY))
-    body.append(text(sx, sy + 171, 'von Hand gesetzt ist.', 13, GREY))
-    svg('vorlage', 'paragraph-styles', w, h, body, 'Eine Formatvorlage für viele Überschriften, Formatierung von Hand gewinnt')
+    if phone:
+        # from the style down along the right edge of the sheet to each heading
+        for k, (tx, ty, by_hand) in enumerate(targets):
+            colour = AMBER if by_hand else BLUE
+            lane = 334 - k * 6
+            dash = " stroke-dasharray='5 4'" if by_hand else ''
+            hx = tx + 6 + measure(heads[k][0], 16, '700') + (96 if by_hand else 8)
+            body.append(f"<path d='M {sx + 172} {sy + 46 + k * 8} L {lane} {sy + 46 + k * 8} L {lane} {ty} L {hx + 10} {ty}' fill='none' stroke='{colour}' stroke-width='1.5'{dash}/>")
+            body.append(f"<polygon points='{hx},{ty} {hx + 9},{ty - 4} {hx + 9},{ty + 4}' fill='{colour}'/>")
+        for k, t in enumerate(['Ändert sich die Vorlage, ändert sich jede', 'Überschrift mit ihr, außer dort, wo etwas', 'von Hand gesetzt ist.']):
+            body.append(text(sx, py + 266 + k * 18, t, 13, GREY))
+    else:
+        for tx, ty, by_hand in targets:
+            body.append(arrow(sx + 172, sy + 46, tx - 2, ty, AMBER if by_hand else BLUE, 1.5, dashed=by_hand))
+        body.append(text(sx, sy + 120, 'Ändert sich die Vorlage,', 13, GREY))
+        body.append(text(sx, sy + 137, 'ändert sich jede Überschrift', 13, GREY))
+        body.append(text(sx, sy + 154, 'mit ihr, außer dort, wo etwas', 13, GREY))
+        body.append(text(sx, sy + 171, 'von Hand gesetzt ist.', 13, GREY))
+    svg(variant('vorlage', phone), 'paragraph-styles', w, h, body, 'Eine Formatvorlage für viele Überschriften, Formatierung von Hand gewinnt')
 
 
 # ---- Seiten und Verzeichnisse
 
-def verzeichnis():
+def verzeichnis(phone=False):
     """the table of contents comes from the headings and their pages"""
-    w, h = 560, 262
+    w, h = (360, 530) if phone else (560, 262)
     body = []
     # the title page with the contents
-    tx0, ty0 = 14, 14
+    tx0, ty0 = (30, 10) if phone else (14, 14)
     body.append(paper(tx0, ty0, 236, 234))
     body.append(text(tx0 + 20, ty0 + 40, 'Reisebericht der 7b', 17, PGREEN, weight='700'))
     body.append(text(tx0 + 20, ty0 + 78, 'Inhalt', 14, INK, weight='700'))
@@ -612,35 +674,46 @@ def verzeichnis():
         lines_y.append(y)
     # the pages of the days
     for k, (title, page) in enumerate(entries):
-        px, py = 364, 10 + k * 84
+        px, py = (30, 270 + k * 84) if phone else (364, 10 + k * 84)
         body.append(paper(px, py, 182, 76))
         body.append(text(px + 12, py + 22, title, 11, PGREEN, weight='700'))
         for j in range(2):
             body.append(bar(px + 12, py + 38 + j * 11, 140 - j * 30, h=4))
         body.append(text(px + 91, py + 68, str(page), 10, INK, 'middle'))
-        body.append(arrow(px - 4, py + 18, tx0 + 240, lines_y[k] - 4, BLUE, 1.4))
+        if phone:
+            # from the page's heading along the left edge up to its line in the contents
+            lane, ey = 8 + k * 6, lines_y[k] - 4
+            body.append(f"<path d='M {px - 2} {py + 18} L {lane} {py + 18} L {lane} {ey} L {tx0 + 8} {ey}' fill='none' stroke='{BLUE}' stroke-width='1.4'/>")
+            body.append(f"<polygon points='{tx0 + 16},{ey} {tx0 + 7},{ey - 4} {tx0 + 7},{ey + 4}' fill='{BLUE}'/>")
+        else:
+            body.append(arrow(px - 4, py + 18, tx0 + 240, lines_y[k] - 4, BLUE, 1.4))
     body.append(text(tx0 + 20, ty0 + 206, 'aus den Überschriften', 12, BLUE))
     body.append(text(tx0 + 20, ty0 + 222, 'und den Seiten, auf denen sie stehen', 12, BLUE))
-    svg('verzeichnis', 'pages-and-contents', w, h, body, 'Das Inhaltsverzeichnis entsteht aus den Überschriften und ihren Seiten')
+    svg(variant('verzeichnis', phone), 'pages-and-contents', w, h, body, 'Das Inhaltsverzeichnis entsteht aus den Überschriften und ihren Seiten')
 
 
-def fusszeile():
+def fusszeile(phone=False):
     """a typed page number against a field in the footer"""
-    w, h = 560, 290
+    w, h = (360, 336) if phone else (560, 290)
     body = []
+    pw = 102 if phone else 132
     for row, (title, field) in enumerate([('getippt', False), ('ein Feld', True)]):
-        y0 = 12 + row * 142
-        body.append(text(16, y0 + 44, title, 15, TEXT, weight='600'))
+        if phone:
+            y0 = 30 + row * 166
+            body.append(text(16, y0 - 10, title, 15, TEXT, weight='600'))
+        else:
+            y0 = 12 + row * 142
+            body.append(text(16, y0 + 44, title, 15, TEXT, weight='600'))
         for p in range(3):
-            x = 110 + p * 148
-            body.append(paper(x, y0, 132, 104))
+            x = (16 + p * 114) if phone else (110 + p * 148)
+            body.append(paper(x, y0, pw, 104))
             for j in range(4):
-                body.append(bar(x + 12, y0 + 20 + j * 12, 108 - (j + p) % 3 * 16, h=4))
+                body.append(bar(x + 12, y0 + 20 + j * 12, pw - 24 - (j + p) % 3 * 16, h=4))
             # the footer, the same on every page
-            body.append(line(x + 8, y0 + 76, x + 124, y0 + 76, EDGE, 1, " stroke-dasharray='3 3'"))
+            body.append(line(x + 8, y0 + 76, x + pw - 8, y0 + 76, EDGE, 1, " stroke-dasharray='3 3'"))
             label = 'Seite '
             lw = measure(label, 12)
-            fx = x + 66 - (lw + 12) / 2
+            fx = x + pw / 2 - (lw + 12) / 2
             body.append(text(fx, y0 + 94, label, 12, INK))
             number = str(p + 1) if field else '1'
             if field:
@@ -648,8 +721,8 @@ def fusszeile():
             body.append(text(fx + lw + 5, y0 + 94, number, 12, PAMBER if not field and p else INK, 'middle',
                              weight='700' if not field and p else '400'))
         note = ('auf jeder Seite »Seite 1«' if not field else 'auf jeder Seite ihre eigene Zahl')
-        body.append(text(110, y0 + 124, note, 13, GREY))
-    svg('fusszeile', 'headers-and-footnotes', w, h, body, 'Die Seitenzahl getippt und als Feld in der Fußzeile')
+        body.append(text(16 if phone else 110, y0 + 124, note, 13, GREY))
+    svg(variant('fusszeile', phone), 'headers-and-footnotes', w, h, body, 'Die Seitenzahl getippt und als Feld in der Fußzeile')
 
 
 
@@ -709,10 +782,10 @@ def seite():
 
 # ---- the unit and alignment (Was das Auge nicht sieht)
 
-def punkt():
+def punkt(phone=False):
     """the point: 72 to an inch, about 0,35 mm; a 12 pt letter measured from
     the top of its tallest to the bottom of its lowest letters"""
-    w, h = 560, 280
+    w, h = (360, 372) if phone else (560, 280)
     body = []
     # a ruler: 1 cm, drawn larger than life, with 1 pt and 12 pt measured
     # along it from 0 (lengths along the ruler, so it is clear what is meant)
@@ -733,12 +806,15 @@ def punkt():
     body.append(line(x0, y0 - 38, x0, y0 - 44, AMBER, 1.4) + line(x0, y0 - 44, x0 + twelve, y0 - 44, AMBER, 1.4) +
                 line(x0 + twelve, y0 - 44, x0 + twelve, y0 - 38, AMBER, 1.4))
     body.append(text(x0 + twelve + 8, y0 - 40, '12 pt ≈ 4,2 mm', 13, AMBER, weight='600'))
-    body.append(text(x0 + 10 * mm + 30, y0 - 14, '72 pt = 2,54 cm (ein Zoll)', 13, GREY))
-    body.append(text(x0 + 10 * mm + 30, y0 + 4, '28 pt ≈ 1 cm', 13, GREY))
+    if phone:
+        body.append(text(x0 - 14, y0 + 58, '72 pt = 2,54 cm (ein Zoll), 28 pt ≈ 1 cm', 13, GREY))
+    else:
+        body.append(text(x0 + 10 * mm + 30, y0 - 14, '72 pt = 2,54 cm (ein Zoll)', 13, GREY))
+        body.append(text(x0 + 10 * mm + 30, y0 + 4, '28 pt ≈ 1 cm', 13, GREY))
     # 12 pt: the size of a letter, from the top of the tallest to the
     # bottom of the lowest, drawn at the same scale (12 pt = 4,23 mm)
     size = 12 * 0.3528 * mm   # the em at this scale
-    base = 222
+    base = 262 if phone else 222
     gx = x0 + 20
     top, bottom = base - size * 0.78, base + size * 0.22
     # the box of the size (the font's em: 0,78 above the line, 0,22 below)
@@ -752,19 +828,25 @@ def punkt():
     body.append(text(bx + 18, (top + bottom) / 2 + 14, 'das Feld, in das die', 12, GREY))
     body.append(text(bx + 18, (top + bottom) / 2 + 30, 'Buchstaben passen; ein H', 12, GREY))
     body.append(text(bx + 18, (top + bottom) / 2 + 46, 'ist etwas kleiner', 12, GREY))
-    body.append(text(x0 + 330, 186, 'Schrift und Abstände misst', 13, GREY))
-    body.append(text(x0 + 330, 203, 'die Textverarbeitung in pt;', 13, GREY))
-    body.append(text(x0 + 330, 220, 'Seitenränder und Bilder in cm.', 13, GREY))
-    svg('punkt', 'formatting-marks', w, h, body, 'Ein Punkt (pt) neben einem Zentimeter, und wie groß 12 pt sind')
+    if phone:
+        body.append(text(x0 - 14, base + 72, 'Schrift und Abstände misst die Textverarbeitung', 13, GREY))
+        body.append(text(x0 - 14, base + 90, 'in pt; Seitenränder und Bilder in cm.', 13, GREY))
+    else:
+        body.append(text(x0 + 330, 186, 'Schrift und Abstände misst', 13, GREY))
+        body.append(text(x0 + 330, 203, 'die Textverarbeitung in pt;', 13, GREY))
+        body.append(text(x0 + 330, 220, 'Seitenränder und Bilder in cm.', 13, GREY))
+    svg(variant('punkt', phone), 'formatting-marks', w, h, body, 'Ein Punkt (pt) neben einem Zentimeter, und wie groß 12 pt sind')
 
 
 def ausrichtung():
     """left, centred, right: the same paragraph three times"""
     w, h = 560, 150
-    body = []
+    panels = []
     lines = [196, 160, 182, 92]
     for i, (title, mode) in enumerate([('linksbündig', 'left'), ('zentriert', 'center'), ('rechtsbündig', 'right')]):
         x = 10 + i * 186
+        body = []
+        panels.append((body, (x, 4, 168, 136)))
         body.append(text(x + 84, 22, title, 14, TEXT, 'middle', '600'))
         body.append(paper(x, 34, 168, 104))
         tx, tw = x + 14, 140
@@ -774,7 +856,7 @@ def ausrichtung():
             length = length * tw / 200
             bx = tx if mode == 'left' else tx + tw - length if mode == 'right' else tx + (tw - length) / 2
             body.append(bar(bx, 62 + k * 18, length))
-    svg('ausrichtung', 'formatting-marks', w, h, body, 'Derselbe Absatz linksbündig, zentriert und rechtsbündig')
+    two_ways('ausrichtung', 'formatting-marks', (w, h), 'Derselbe Absatz linksbündig, zentriert und rechtsbündig', panels)
 
 
 # ---- levels (Formatvorlagen)
@@ -783,6 +865,7 @@ def ebenen():
     """headings in levels: the document beside its outline"""
     w, h = 560, 240
     body = []
+    panels = [(body, (16, 14, 250, 212))]
     px, py = 16, 14
     body.append(paper(px, py, 250, 212))
     y = py + 32
@@ -804,6 +887,8 @@ def ebenen():
             y += 28
     # the outline: what the program shows beside the text
     ox, oy = 300, 30
+    body = []
+    panels.append((body, (ox - 12, oy - 14, 256, 210)))
     body.append(rect(ox - 12, oy - 14, 256, 150, '#f3f4f6', '#d1d5db', 1, 6))
     body.append(text(ox, oy + 6, 'Übersicht der Überschriften', 12, GREY))
     yy = oy + 34
@@ -814,7 +899,7 @@ def ebenen():
     body.append(text(ox, oy + 156, 'Ebene 1: die Tage', 13, BLUE))
     body.append(text(ox, oy + 174, 'Ebene 2: die Teile eines Tages,', 13, BLUE))
     body.append(text(ox, oy + 190, 'eingerückt unter ihrem Tag', 13, BLUE))
-    svg('ebenen', 'paragraph-styles', w, h, body, 'Überschriften in Ebenen und die Übersicht, die das Programm daraus macht')
+    two_ways('ebenen', 'paragraph-styles', (w, h), 'Überschriften in Ebenen und die Übersicht, die das Programm daraus macht', panels)
 
 
 # ---- the newspaper page (Die Zeitungsseite)
@@ -856,13 +941,15 @@ def spalten():
 def satz():
     """an office document's look against a newspaper's: ragged right with
     spacing between paragraphs, justified with a first-line indent"""
-    w, h = 560, 240
-    body = []
+    w, h = 560, 304
+    panels = []
     paragraphs = [[200, 186, 194, 120], [192, 200, 176, 198, 88], [198, 184, 140]]
     for i, (title, news) in enumerate([('wie ein neues Dokument', False), ('wie in der Zeitung', True)]):
         x = 18 + i * 280
+        body = []
+        panels.append((body, (x, 4, 244, 292)))
         body.append(text(x + 122, 24, title, 15, TEXT, 'middle', '600'))
-        body.append(paper(x, 36, 244, 192))
+        body.append(paper(x, 36, 244, 256))
         tx, tw = x + 18, 208
         y = 58
         for k, para in enumerate(paragraphs):
@@ -883,7 +970,7 @@ def satz():
         else:
             body.append(text(tx, y + 12, 'rechts flatternd, Lücken', 12, GREY))
             body.append(text(tx, y + 27, 'zwischen den Absätzen', 12, GREY))
-    svg('satz', 'newspaper-page', w, h, body, 'Flattersatz mit Abstand gegen Blocksatz mit Einzug')
+    two_ways('satz', 'newspaper-page', (w, h), 'Flattersatz mit Abstand gegen Blocksatz mit Einzug', panels)
 
 
 
@@ -1515,7 +1602,8 @@ DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabsto
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 # the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)
-TWO_WAYS = {adresse, formel, ausfuellen, zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, sortieren, diagrammarten, achse}
+TWO_WAYS = {adresse, formel, ausfuellen, zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, sortieren, diagrammarten, achse,
+            hervorheben, tabstopp, zelle, vorlage, verzeichnis, fusszeile, punkt}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:

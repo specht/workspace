@@ -30,7 +30,8 @@ Zeile reicht bis zum Rand der Spalte, und die Absätze stehen dicht
 untereinander. So passt mehr auf eine Seite, und das Auge springt am Ende
 einer kurzen Zeile leicht in die nächste.
 
-<img class='drawing' style='width: 35em' src='satz.svg' alt='Zwei Blätter mit denselben drei Absätzen als graue Zeilen. Links »wie ein neues Dokument«: die Zeilen enden verschieden weit rechts, zwischen den Absätzen eine Lücke. Rechts »wie in der Zeitung«: jede Zeile reicht bis zum rechten Rand, außer der letzten eines Absatzes, keine Lücken, die erste Zeile jedes neuen Absatzes eingerückt'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='satz-wide.svg' alt='Zwei Blätter mit denselben drei Absätzen als graue Zeilen. Links »wie ein neues Dokument«: die Zeilen enden verschieden weit rechts, zwischen den Absätzen eine Lücke. Rechts »wie in der Zeitung«: jede Zeile reicht bis zum rechten Rand, außer der letzten eines Absatzes, keine Lücken, die erste Zeile jedes neuen Absatzes eingerückt'>
+<img class='drawing d-lg-none' style='width: 16.5em' src='satz.svg' alt='Zwei Blätter mit denselben drei Absätzen als graue Zeilen. Oben »wie ein neues Dokument«: die Zeilen enden verschieden weit rechts, zwischen den Absätzen eine Lücke. Unten »wie in der Zeitung«: jede Zeile reicht bis zum rechten Rand, außer der letzten eines Absatzes, keine Lücken, die erste Zeile jedes neuen Absatzes eingerückt'>
 
 ## Spalten und Ränder
 

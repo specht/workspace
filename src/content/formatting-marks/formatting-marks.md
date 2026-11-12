@@ -37,7 +37,8 @@ Punkt ist ungefähr 0,35 mm; die 12 pt des Briefs sind gut 4 mm, das Feld, in
 das ein Buchstabe mit allem passt, was nach oben und unten herausragt. Auch
 Abstände misst sie in pt, Seitenränder und Bilder dagegen in cm.
 
-<img class='drawing' style='width: 35em' src='punkt.svg' alt='Oben ein Zentimeter, vergrößert, mit Millimeterstrichen. Vom Anfang aus ist ein winziges blaues Stück markiert: 1 pt ≈ 0,35 mm; darüber eine orange Klammer bis gut 4 mm: 12 pt ≈ 4,2 mm. Daneben: 72 pt = 2,54 cm (ein Zoll), 28 pt ≈ 1 cm. Darunter groß »Hg« in einem blauen Feld, so hoch wie die orange Klammer lang ist: 12 pt ≈ 4,2 mm, das Feld, in das die Buchstaben passen; ein H ist etwas kleiner'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='punkt-wide.svg' alt='Oben ein Zentimeter, vergrößert, mit Millimeterstrichen. Vom Anfang aus ist ein winziges blaues Stück markiert: 1 pt ≈ 0,35 mm; darüber eine orange Klammer bis gut 4 mm: 12 pt ≈ 4,2 mm. Daneben: 72 pt = 2,54 cm (ein Zoll), 28 pt ≈ 1 cm. Darunter groß »Hg« in einem blauen Feld, so hoch wie die orange Klammer lang ist: 12 pt ≈ 4,2 mm, das Feld, in das die Buchstaben passen; ein H ist etwas kleiner'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='punkt.svg' alt='Oben ein Zentimeter, vergrößert, mit Millimeterstrichen. Vom Anfang aus ist ein winziges blaues Stück markiert: 1 pt ≈ 0,35 mm; darüber eine orange Klammer bis gut 4 mm: 12 pt ≈ 4,2 mm. Darunter: 72 pt = 2,54 cm (ein Zoll), 28 pt ≈ 1 cm. Darunter groß »Hg« in einem blauen Feld, so hoch wie die orange Klammer lang ist: 12 pt ≈ 4,2 mm, das Feld, in das die Buchstaben passen; ein H ist etwas kleiner'>
 
 _task(groesser)
 
@@ -108,7 +109,8 @@ Ob ein Absatz links, in der Mitte oder rechts steht, ist seine
 **Ausrichtung**. Sie gehört zum Absatz, nicht zu den Leerzeichen davor: Ein
 zentrierter Absatz bleibt in der Mitte, wie groß die Schrift auch wird.
 
-<img class='drawing' style='width: 35em' src='ausrichtung.svg' alt='Derselbe Absatz aus vier Zeilen dreimal. Linksbündig: alle Zeilen beginnen am linken Rand. Zentriert: jede Zeile steht in der Mitte. Rechtsbündig: alle Zeilen enden am rechten Rand'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='ausrichtung-wide.svg' alt='Derselbe Absatz aus vier Zeilen dreimal. Linksbündig: alle Zeilen beginnen am linken Rand. Zentriert: jede Zeile steht in der Mitte. Rechtsbündig: alle Zeilen enden am rechten Rand'>
+<img class='drawing d-lg-none' style='width: 11.75em' src='ausrichtung.svg' alt='Derselbe Absatz aus vier Zeilen dreimal. Linksbündig: alle Zeilen beginnen am linken Rand. Zentriert: jede Zeile steht in der Mitte. Rechtsbündig: alle Zeilen enden am rechten Rand'>
 
 <table class='table'>
 <tr><th>Ausrichtung</th><th>Tasten</th></tr>
@@ -146,7 +148,8 @@ ihr. Abstand zwischen zwei Absätzen gibst du besser dem Absatz selbst: Jeder
 Absatz hat einen **Abstand davor** und einen **Abstand danach**, in Punkt (pt).
 12 pt sind ungefähr eine Zeile.
 
-<img class='drawing' style='width: 35em' src='abstand.svg' alt='Zwei Blätter nebeneinander. Links »mit einem leeren Absatz«: unter »Liebe Eltern,¶« eine Zeile, in der nur ein ¶ steht, markiert als »leerer Absatz«, dann der Brief. Rechts »mit Abstand danach«: »Liebe Eltern,¶« in einem blauen Feld, das unter der Zeile weitergeht, mit einer Klammer »12 pt« daneben, dann der Brief, gleich weit entfernt wie links'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='abstand-wide.svg' alt='Zwei Blätter nebeneinander. Links »mit einem leeren Absatz«: unter »Liebe Eltern,¶« eine Zeile, in der nur ein ¶ steht, markiert als »leerer Absatz«, dann der Brief. Rechts »mit Abstand danach«: »Liebe Eltern,¶« in einem blauen Feld, das unter der Zeile weitergeht, mit einer Klammer »12 pt« daneben, dann der Brief, gleich weit entfernt wie links'>
+<img class='drawing d-lg-none' style='width: 16.5em' src='abstand.svg' alt='Zwei Blätter untereinander. Oben »mit einem leeren Absatz«: unter »Liebe Eltern,¶« eine Zeile, in der nur ein ¶ steht, markiert als »leerer Absatz«, dann der Brief. Unten »mit Abstand danach«: »Liebe Eltern,¶« in einem blauen Feld, das unter der Zeile weitergeht, mit einer Klammer »12 pt« daneben, dann der Brief, gleich weit entfernt wie links'>
 
 <!-- language: word -->
 In Word stellst du den Abstand im Register *Layout* ein, im Feld *Abstand:

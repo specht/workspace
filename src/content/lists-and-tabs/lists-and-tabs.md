@@ -49,7 +49,8 @@ Eine **Liste**, die das Programm führt, setzt das Zeichen selbst davor, rückt
 jeden Punkt gleich ein, auch wenn er über zwei Zeilen geht, und zählt bei einer
 nummerierten Liste von selbst weiter.
 
-<img class='drawing' style='width: 35em' src='liste.svg' alt='Zwei Blätter mit derselben Packliste: Schlafsack, »Regenjacke, falls es am Mittwoch regnet« über zwei Zeilen, Taschenlampe. Links getippt, mit Strichen: Die zweite Zeile der Regenjacke beginnt am Rand, unter dem Strich. Rechts eine Liste mit Punkten: Jede Zeile beginnt an derselben Linie, auch die zweite'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='liste-wide.svg' alt='Zwei Blätter mit derselben Packliste: Schlafsack, »Regenjacke, falls es am Mittwoch regnet« über zwei Zeilen, Taschenlampe. Links getippt, mit Strichen: Die zweite Zeile der Regenjacke beginnt am Rand, unter dem Strich. Rechts eine Liste mit Punkten: Jede Zeile beginnt an derselben Linie, auch die zweite'>
+<img class='drawing d-lg-none' style='width: 16.5em' src='liste.svg' alt='Zwei Blätter mit derselben Packliste: Schlafsack, »Regenjacke, falls es am Mittwoch regnet« über zwei Zeilen, Taschenlampe. Oben getippt, mit Strichen: Die zweite Zeile der Regenjacke beginnt am Rand, unter dem Strich. Unten eine Liste mit Punkten: Jede Zeile beginnt an derselben Linie, auch die zweite'>
 
 <!-- language: word -->
 In Word markierst du die Zeilen und klickst im Register *Start* auf
@@ -91,7 +92,8 @@ Position 16 cm, Typ *Rechts*, Füllzeichen *.......*.
 _task(tab-zeichen)
 
 <!-- after: tab-zeichen -->
-<img class='drawing' style='width: 35em' src='tabstopp.svg' alt='Oben das Lineal von 0 bis 16 cm, bei 16 cm das Zeichen eines rechtsbündigen Tabstopps. Darunter zwei Zeilen, »Busfahrt hin und zurück« in einer serifenlosen Schrift und »Jugendherberge« in einer mit Serifen: hinter dem Text je ein blauer Pfeil, dann Punkte bis zum Preis, und beide Preise enden genau unter dem Tabstopp'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='tabstopp-wide.svg' alt='Oben das Lineal von 0 bis 16 cm, bei 16 cm das Zeichen eines rechtsbündigen Tabstopps. Darunter zwei Zeilen, »Busfahrt hin und zurück« in einer serifenlosen Schrift und »Jugendherberge« in einer mit Serifen: hinter dem Text je ein blauer Pfeil, dann Punkte bis zum Preis, und beide Preise enden genau unter dem Tabstopp'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='tabstopp.svg' alt='Oben das Lineal von 0 bis 16 cm, bei 16 cm das Zeichen eines rechtsbündigen Tabstopps. Darunter zwei Zeilen, »Busfahrt hin und zurück« in einer serifenlosen Schrift und »Jugendherberge« in einer mit Serifen: hinter dem Text je ein blauer Pfeil, dann Punkte bis zum Preis, und beide Preise enden genau unter dem Tabstopp'>
 <!-- /after -->
 
 **Jetzt bist du dran:** Ersetz in jeder Zeile der Kosten die Leerzeichen

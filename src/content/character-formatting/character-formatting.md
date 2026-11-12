@@ -54,7 +54,8 @@ Schriften gibt es mit **Serifen**, den kleinen Füßchen an den Enden der
 Buchstaben (Times New Roman, Georgia), und **ohne Serifen** (Arial, Verdana,
 Calibri).
 
-<img class='drawing' style='width: 35em' src='serifen.svg' alt='Das Wort »Hand« zweimal, groß. Links mit Serifen: blaue Ringe um die kleinen Querstriche an den Enden der Striche, unten an jedem Fuß und oben am H und am d. Rechts dasselbe Wort ohne Serifen, die Striche enden glatt'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='serifen-wide.svg' alt='Das Wort »Hand« zweimal, groß. Links mit Serifen: blaue Ringe um die kleinen Querstriche an den Enden der Striche, unten an jedem Fuß und oben am H und am d. Rechts dasselbe Wort ohne Serifen, die Striche enden glatt'>
+<img class='drawing d-lg-none' style='width: 17.5em' src='serifen.svg' alt='Das Wort »Hand« zweimal, groß. Oben mit Serifen: blaue Ringe um die kleinen Querstriche an den Enden der Striche, unten an jedem Fuß und oben am H und am d. Unten dasselbe Wort ohne Serifen, die Striche enden glatt'>
 
 Für ein Blatt reichen zwei: eine für die Überschrift, eine für den
 Text. Mehr Schriften machen ein Blatt nicht lebendiger, sondern unruhig, und
@@ -104,7 +105,8 @@ ein Link und macht die Unterlängen schwer lesbar (g, p, y). **Großbuchstaben**
 liest man langsamer: Wörter erkennen wir an ihrer Form, und in Großbuchstaben
 haben alle Wörter dieselbe Form, ein Rechteck.
 
-<img class='drawing' style='width: 35em' src='hervorheben.svg' alt='Oben »Gruppe gegen Typen« unterstrichen; rote Ringe zeigen, wo die Linie durch g, p und y geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='hervorheben-wide.svg' alt='Oben »Gruppe gegen Typen« unterstrichen; rote Ringe zeigen, wo die Linie durch g, p und y geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='hervorheben.svg' alt='Oben »Gruppe gegen Typen« unterstrichen; rote Ringe zeigen, wo die Linie durch g, p und y geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
 
 _task(hervorheben)
 

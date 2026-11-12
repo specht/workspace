@@ -51,7 +51,8 @@ nicht mehr, und alles darauf wird verzerrt. Genau das ist dem Kranich
 passiert. Zieht man dagegen an einer Ecke, wächst das Bild in beide
 Richtungen gleich.
 
-<img class='drawing' style='width: 35em' src='seitenverhaeltnis.svg' alt='Drei Fassungen desselben Bilds, eine Landschaft mit runder Sonne, mit acht Anfassern am Rahmen. Links das Bild im Verhältnis 3 zu 2. In der Mitte am Anfasser der rechten Seite gezogen: nur breiter, die Sonne ist ein liegendes Oval. Rechts an der Ecke oben rechts gezogen: größer, dieselbe Form, die Sonne bleibt rund'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='seitenverhaeltnis-wide.svg' alt='Drei Fassungen desselben Bilds, eine Landschaft mit runder Sonne, mit acht Anfassern am Rahmen. Links das Bild im Verhältnis 3 zu 2. In der Mitte am Anfasser der rechten Seite gezogen: nur breiter, die Sonne ist ein liegendes Oval. Rechts an der Ecke oben rechts gezogen: größer, dieselbe Form, die Sonne bleibt rund'>
+<img class='drawing d-lg-none' style='width: 12.75em' src='seitenverhaeltnis.svg' alt='Drei Fassungen desselben Bilds, eine Landschaft mit runder Sonne, mit acht Anfassern am Rahmen. Oben das Bild im Verhältnis 3 zu 2. Darunter am Anfasser der rechten Seite gezogen: nur breiter, die Sonne ist ein liegendes Oval. Unten an der Ecke oben rechts gezogen: größer, dieselbe Form, die Sonne bleibt rund'>
 
 <!-- language: word -->
 In Word klickst du mit der rechten Maustaste auf das Foto und wählst *Größe
@@ -88,7 +89,8 @@ und links viel Platz frei. Damit der Text neben dem Bild weiterläuft, braucht
 das Bild einen anderen **Textumbruch**: Dann fließt der Text um das Bild herum,
 und du kannst das Bild an den Rand schieben.
 
-<img class='drawing' style='width: 35em' src='umbruch.svg' alt='Zwei Blätter. Links »in der Zeile«: Das Bild steht in einer Zeile wie ein großer Buchstabe, daneben nur ein kurzes Wort auf der Höhe seiner Unterkante, rechts davon eine leere Fläche. Rechts »Text fließt herum«: Das Bild steht am rechten Rand, die Zeilen daneben sind kürzer und gehen darunter wieder über die ganze Breite'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='umbruch-wide.svg' alt='Zwei Blätter. Links »in der Zeile«: Das Bild steht in einer Zeile wie ein großer Buchstabe, daneben nur ein kurzes Wort auf der Höhe seiner Unterkante, rechts davon eine leere Fläche. Rechts »Text fließt herum«: Das Bild steht am rechten Rand, die Zeilen daneben sind kürzer und gehen darunter wieder über die ganze Breite'>
+<img class='drawing d-lg-none' style='width: 16.5em' src='umbruch.svg' alt='Zwei Blätter. Oben »in der Zeile«: Das Bild steht in einer Zeile wie ein großer Buchstabe, daneben nur ein kurzes Wort auf der Höhe seiner Unterkante, rechts davon eine leere Fläche. Unten »Text fließt herum«: Das Bild steht am rechten Rand, die Zeilen daneben sind kürzer und gehen darunter wieder über die ganze Breite'>
 
 <!-- language: word -->
 In Word klickst du auf das Foto und dann auf den Knopf *Layoutoptionen*, der
