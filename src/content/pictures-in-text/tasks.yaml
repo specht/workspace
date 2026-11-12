@@ -1,0 +1,96 @@
+# Aufgaben zu »Bilder im Text«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/pictures-in-text/05 Kraniche.docx) und den
+# fertigen Artikel (stufen/kraniche.docx) macht dokumente.py.
+format: 1
+activity: pictures-in-text
+tasks:
+  - id: nummern
+    title: Die Karte nach oben
+    prediction: true
+    prompt: |
+      Die Redaktion der Zeitung möchte die Karte ganz oben haben. Jemand
+      schneidet die Karte samt ihrer Unterschrift aus und fügt sie über dem
+      ersten Absatz ein. Was steht danach unter den beiden Bildern?
+    check:
+      type: choice
+      options:
+        - Unter der Karte »Abbildung 1«, unter dem Kranich »Abbildung 2«.
+        - Unter der Karte »Abbildung 2«, unter dem Kranich »Abbildung 1«.
+        - Unter beiden »Abbildung 1«.
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es richtig. Aber wer hat die Nummern in die Unterschriften geschrieben?
+      - when: { picked: 2 }
+        say: Hat jemand an den Unterschriften selbst etwas geändert?
+    solution: |
+      Die Karte steht oben und heißt weiter »Abbildung 2«, der Kranich
+      darunter »Abbildung 1«. Die Nummern sind getippt: Sie bleiben, was
+      jemand geschrieben hat, egal wo das Bild steht.
+
+  - id: hoehe
+    title: Die richtige Höhe
+    prompt: |
+      Das Foto des Kranichs ist 1500 Pixel breit und 1000 Pixel hoch. Du
+      machst es 7,5 cm breit. Wie hoch muss es werden, damit der Kranich
+      nicht verzerrt ist? Antworte in cm.
+    check:
+      type: number
+      expect: 5
+      tolerance: 0.05
+    feedback:
+      - when: { between: [11, 11.5] }
+        say: Andersherum. Das Foto ist breiter als hoch, also muss es auch auf dem Papier breiter als hoch sein.
+      - when: { between: [7.4, 7.6] }
+        say: Dann wäre es so hoch wie breit, quadratisch. Das Foto ist aber breiter als hoch.
+    hint:
+      - Das Foto ist anderthalbmal so breit wie hoch, denn 1500 geteilt durch 1000 ist 1,5.
+      - Also ist es auf dem Papier auch anderthalbmal so breit wie hoch.
+    solution: |
+      5 cm. Das Foto ist anderthalbmal so breit wie hoch (1500 : 1000 = 3 : 2),
+      und 7,5 cm geteilt durch 1,5 sind 5 cm.
+
+  - id: alternativtext
+    title: Ein guter Alternativtext
+    prompt: |
+      Welcher Alternativtext passt zum Foto des Kranichs?
+    check:
+      type: choice
+      options:
+        - IMG_4711.JPG
+        - Bild
+        - Ein grauer Kranich mit schwarz-weißem Hals und rotem Fleck auf dem Kopf steht in einer hohen Wiese.
+        - "Abbildung 1: Ein Kranich in einer Wiese in der Uckermark. Foto: Charles J. Sharp, CC BY-SA 4.0"
+      correct: 2
+    feedback:
+      - when: { picked: 0 }
+        say: Ein Screenreader liest »IMG Unterstrich 4711 Punkt JPG« vor. Was weiß man danach über das Foto?
+      - when: { picked: 1 }
+        say: Dass dort ein Bild ist, sagt der Screenreader schon selbst. Was ist darauf zu sehen?
+      - when: { picked: 3 }
+        say: Die Bildunterschrift steht schon unter dem Foto und wird sowieso vorgelesen. Sie sagt, wo das Foto entstanden ist, aber nicht, was darauf zu sehen ist.
+    solution: |
+      Der Satz, der beschreibt, was auf dem Foto zu sehen ist: ein grauer
+      Kranich mit schwarz-weißem Hals und rotem Fleck in einer Wiese. Die
+      Unterschrift steht ohnehin darunter, und der Dateiname sagt nichts.
+
+  - id: artikel
+    title: Der Artikel mit Bildern
+    prompt: |
+      Prüfe deinen Artikel. Die Prüfung markiert auf deiner Seite jede Stelle,
+      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      prüfst.
+    check:
+      type: document
+      file: pictures-in-text/05 Kraniche.docx
+      rules:
+        - text
+        - { ratio: true, names: ['das Foto', 'die Karte'] }
+        - { wrap: 1, side: right, names: ['das Foto', 'die Karte'] }
+        - { captions: true, names: ['das Foto', 'die Karte'] }
+        - { alt_text: true, names: ['das Foto', 'die Karte'] }
+    hint:
+      - Fang beim Foto an. Setz es zurück auf seine Originalgröße und mach es dann 7,5 cm breit, mit gesperrtem Seitenverhältnis.
+      - Damit Text neben dem Foto stehen kann, braucht es einen anderen Textumbruch (Word) oder Umlauf (LibreOffice). Schieb es danach an den rechten Rand neben den ersten Absatz.
+      - Lösch die getippten Unterschriften erst, wenn die eingefügten darunter stehen. Den Text hinter der Nummer schreibst du wieder dazu.

@@ -28,13 +28,26 @@ require_relative 'office_client'
 #       - { tabs: ['Busfahrt', …], align: [right, decimal] }   # one tab each, at one tab stop of this kind
 #       - { table: ['Montag', 'Dienstag', …], columns: 3, header: 'Tag' }   # these in the cells of one table
 #       - no_tabs              # no tab anywhere
+#       - alt_text             # every picture has an alt text that says what is on it
+#       - ratio                # no picture stretched or squeezed
+#       - captions             # every picture has a caption whose number is a field
+#       - { wrap: 1, side: right }   # the starting file's first picture has text beside it, at the right
+#
+# The rules about pictures may carry names: (how the messages call the
+# pictures, in the order of the starting file: ['das Foto', 'die Karte']).
+# A picture of the upload is the starting file's picture with the same
+# number of pixels.
 #
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
+    EDGE_PUNCT = /\A[[:punct:]»«„“”‚‘’–•·]+|[[:punct:]»«„“”‚‘’–•·]+\z/
+    # a caption typed by hand or written by the program
+    CAPTION_TEXT = /\A\s*(?:Abbildung|Abb\.|Bild|Grafik|Foto|Figure|Fig\.|Illustration)\s*(\d+)/i
+    WRAP_NAMES = { 'none' => '»Oben und unten«', 'through' => '»Hinter den Text« oder »Vor den Text«' }.freeze
     TAB_ALIGN = { 'right' => 'rechtsbündig', 'decimal' => 'dezimal', 'center' => 'zentriert', 'left' => 'linksbündig' }.freeze
     ALIGN = { 'left' => 'linksbündig', 'center' => 'zentriert', 'right' => 'rechtsbündig', 'justify' => 'im Blocksatz' }.freeze
     MAX_MARKS = 20
@@ -72,6 +85,8 @@ module DocumentCheck
                 when 'size' then %w[size paragraphs]
                 when 'tabs' then %w[tabs align]
                 when 'table' then %w[table columns header]
+                when 'wrap' then %w[wrap side names]
+                when 'alt_text', 'ratio', 'captions' then [name, 'names']
                 else [name]
             end
             extra = rule.keys - known
@@ -85,6 +100,9 @@ module DocumentCheck
             %w[bold sparing list tabs table].each do |k|
                 errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].all? { |b| b.is_a?(String) })
             end
+            errors << 'wrap must be the number of a picture of the starting file (1, 2, …)' if name == 'wrap' && !(rule['wrap'].is_a?(Integer) && rule['wrap'].positive?)
+            errors << 'side must be left or right' if name == 'wrap' && rule.key?('side') && !%w[left right].include?(rule['side'])
+            errors << 'names must be a list of text' if rule.key?('names') && !(rule['names'].is_a?(Array) && rule['names'].all? { |n| n.is_a?(String) })
             errors << 'size needs paragraphs: (pieces of their text)' if name == 'size' && !(rule['paragraphs'].is_a?(Array) && rule['paragraphs'].all? { |b| b.is_a?(String) })
             %w[label say].each { |k| errors << "#{k} must be text" if rule.key?(k) && !rule[k].is_a?(String) }
         end
@@ -210,7 +228,9 @@ module DocumentCheck
         return item if starter.nil? || starter['paragraphs'].nil?
 
         # typed list markers (»-«, »•«) are no words: a real list has none
-        words = ->(ps) { ps.flat_map { |p| p['text'].to_s.split(/\s+/) }.reject { |w| w.empty? || w.match?(/\A[-–•*·]+\z/) } }
+        # nor punctuation at the edges of a word (»1:« of a caption the
+        # program wrote as »1«)
+        words = ->(ps) { ps.flat_map { |p| p['text'].to_s.split(/\s+/) }.map { |w| w.gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
         # the whole document, the cells of tables too
         have = words.(all || body).tally
         missing = words.(starter['paragraphs']).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
@@ -618,6 +638,184 @@ module DocumentCheck
         item.ok = false
         item.marks = found.map { |p| para_mark(p).merge(:title => "#{p['text'].count("\t")} Tabs") }
         item.message = "In #{found.size == 1 ? "»#{short(found.first, 3)}«" : "#{found.size} Absätzen, zum Beispiel »#{short(found.first, 3)}«,"} stehen noch Tabs. In der Tabelle trennen die Spalten, nicht die Tabs."
+        item
+    end
+
+    # ---- pictures
+
+    # The upload's pictures, each with its number in the starting file
+    # (the one with the same pixels) and the name the rule gives it.
+    def self.pictures(rule, model, starter)
+        mine = ((model || {})['pictures'] || []).sort_by { |p| [(p['box'] || {})['page'] || 99, (p['box'] || {})['y'] || 0] }
+        theirs = ((starter || {})['pictures'] || []).sort_by { |p| [(p['box'] || {})['page'] || 99, (p['box'] || {})['y'] || 0] }
+        free = theirs.each_with_index.to_a
+        names = Array(rule['names'])
+        mine.map do |pic|
+            hit = free.find { |q, _| q['pixels'] && q['pixels'] == pic['pixels'] }
+            free.delete(hit) if hit
+            n = hit ? hit[1] : nil
+            name = n && names[n] ? names[n] : (n ? "das #{n + 1}. Bild" : 'ein Bild')
+            pic.merge('number' => n && n + 1, 'called' => name)
+        end
+    end
+
+    def self.cap(text)
+        text.sub(/\A./) { |c| c.upcase }
+    end
+
+    def self.picture_mark(pic, title)
+        b = pic['box']
+        return nil if b.nil?
+        { :page => b['page'], :x => b['x'], :y => b['y'], :w => b['w'], :h => b['h'], :kind => 'box', :title => title }
+    end
+
+    def self.alt_problem(pic)
+        alt = squish(pic['description'].to_s.empty? ? pic['title'] : pic['description'])
+        return :empty if alt.empty?
+        return :file if alt.match?(/\.(jpe?g|png|gif|bmp|webp|tiff?|heic|svg)\z/i) || (alt.match?(/\d/) && !alt.include?(' ') && alt.match?(/[_\-.]/))
+        return :auto if alt.match?(/automatisch generiert|automatically generated/i)
+        return :short if alt.split(' ').size < 3
+        nil
+    end
+
+    def self.rule_alt_text(rule, _body, starter, _all = nil, model = nil)
+        item = Item.new(:rule => 'alt_text', :label => 'Jedes Bild hat einen Alternativtext', :ok => true, :marks => [])
+        bad = pictures(rule, model, starter).filter_map { |pic| (k = alt_problem(pic)) && [pic, k] }
+        return item if bad.empty?
+
+        item.ok = false
+        item.marks = bad.filter_map { |pic, k| picture_mark(pic, { :empty => 'kein Alternativtext', :file => 'Dateiname', :auto => 'geraten', :short => 'zu kurz' }[k]) }
+        said = bad.first(2).map do |pic, k|
+            alt = q(squish(pic['description'].to_s.empty? ? pic['title'] : pic['description']))
+            case k
+            when :empty then "#{cap(pic['called'])} hat keinen Alternativtext."
+            when :file then "Der Alternativtext für #{pic['called']} ist ein Dateiname: »#{alt}«."
+            when :auto then "Den Alternativtext für #{pic['called']} hat das Programm geraten: »#{alt.sub(/\s*Automatisch generierte Beschreibung\.?\z/i, '').sub(/[.\s]+\z/, '')}«. Er sagt nicht, was darauf zu sehen ist."
+            else "»#{alt}« sagt zu wenig über #{pic['called']}."
+            end
+        end
+        item.message = "#{said.join(' ')}#{bad.size > 2 ? " (und #{bad.size - 2} weitere Bilder)" : ''} " \
+            'Ein Alternativtext sagt in einem Satz, was auf dem Bild zu sehen ist. Ein Screenreader liest ihn vor, wenn jemand das Bild nicht sehen kann.'
+        item
+    end
+
+    # shown width/height against the picture's own (without what is cropped)
+    def self.stretch(pic)
+        return nil unless pic['width'].to_f.positive? && pic['height'].to_f.positive?
+        w, h = pic['actual'] || pic['pixels']
+        return nil unless w.to_f.positive? && h.to_f.positive?
+        l, r, t, b = pic['actual'] ? (pic['crop'] || [0, 0, 0, 0]) : [0, 0, 0, 0]
+        own = (w - l - r).to_f / (h - t - b)
+        return nil unless own.positive?
+        (pic['width'] / pic['height']) / own
+    end
+
+    def self.rule_ratio(rule, _body, starter, _all = nil, model = nil)
+        item = Item.new(:rule => 'ratio', :label => 'Kein Bild verzerrt', :ok => true, :marks => [])
+        bad = pictures(rule, model, starter).filter_map { |pic| (f = stretch(pic)) && (f - 1).abs > 0.03 && [pic, f] }
+        return item if bad.empty?
+
+        item.ok = false
+        item.marks = bad.filter_map { |pic, f| picture_mark(pic, f > 1 ? 'in die Breite gezogen' : 'in die Höhe gezogen') }
+        said = bad.first(2).map do |pic, f|
+            "#{cap(pic['called'])} ist um #{((f > 1 ? f : 1 / f) - 1).*(100).round} % in die #{f > 1 ? 'Breite' : 'Höhe'} gezogen."
+        end
+        item.message = "#{said.join(' ')} Ziehst du an einer Seite, wird das Bild verzerrt; zieh an einer Ecke, " \
+            'dann bleibt das Seitenverhältnis. Ein verzerrtes Bild setzt du in seinen Eigenschaften auf die Originalgröße zurück.'
+        item
+    end
+
+    # A caption near a picture: a paragraph with a number range or one that
+    # starts like a caption, just below or above it.
+    def self.caption_for(pic, all)
+        b = pic['box']
+        return nil if b.nil?
+        near = all.select do |p|
+            pb = p['box']
+            next false if pb.nil? || pb['page'] != b['page'] || p['plain'].empty?
+            next false unless caption?(p)
+            below = pb['top'] - (b['y'] + b['h'])
+            above = b['y'] - pb['bottom']
+            overlap = [pb['right'], b['x'] + b['w']].min - [pb['left'], b['x']].max
+            overlap > 10 && ((-6..40).cover?(below) || (-6..30).cover?(above))
+        end
+        near.min_by { |p| [(p['box']['top'] - (b['y'] + b['h'])).abs, (b['y'] - p['box']['bottom']).abs].min }
+    end
+
+    def self.sequence?(p)
+        (p['portions'] || []).any? { |q| q['sequence'] }
+    end
+
+    def self.caption?(p)
+        sequence?(p) || p['plain'].match?(CAPTION_TEXT)
+    end
+
+    def self.rule_captions(rule, _body, starter, all = nil, model = nil)
+        all ||= []
+        item = Item.new(:rule => 'captions', :label => 'Bildunterschriften, die selbst zählen', :ok => true, :marks => [])
+        missing = []
+        typed = []
+        pictures(rule, model, starter).each do |pic|
+            c = caption_for(pic, all)
+            if c.nil?
+                missing << pic
+                mark = picture_mark(pic, 'keine Bildunterschrift')
+                item.marks << mark if mark
+            elsif !sequence?(c)
+                typed << c
+            end
+        end
+        # typed captions that stand elsewhere
+        typed |= all.select { |p| !sequence?(p) && p['plain'].match?(CAPTION_TEXT) }
+        return item if missing.empty? && typed.empty?
+
+        item.ok = false
+        typed.each do |p|
+            m = p['text'].to_s.match(CAPTION_TEXT)
+            item.marks.concat(m ? range_marks(p, m.begin(1), m.end(1), 'getippt') : [para_mark(p).merge(:title => 'getippt')])
+        end
+        said = []
+        said << (typed.size == 1 ? "Die Nummer in »#{short(typed.first, 3)}« ist getippt." :
+            "#{typed.size} Bildunterschriften haben getippte Nummern, zum Beispiel »#{short(typed.first, 3)}«.") unless typed.empty?
+        said << "#{cap(names(missing.map { |pic| pic['called'] }))} #{missing.size == 1 ? 'hat' : 'haben'} keine Bildunterschrift direkt darunter." unless missing.empty?
+        item.message = "#{said.join(' ')} Fügst du die Beschriftung mit dem Programm ein, ist ihre Nummer ein Feld, das die Bilder zählt; " \
+            'nach dem Aktualisieren stimmt sie wieder, auch wenn ein Bild dazukommt oder weiter nach oben wandert.'
+        item
+    end
+
+    def self.rule_wrap(rule, _body, starter, _all = nil, model = nil)
+        n = rule['wrap'].to_i
+        side = rule['side']
+        pics = pictures(rule, model, starter)
+        pic = pics.find { |p| p['number'] == n }
+        called = Array(rule['names'])[n - 1] || "das #{n}. Bild"
+        item = Item.new(:rule => 'wrap', :label => "#{cap(called)} steht #{side == 'left' ? 'links' : side == 'right' ? 'rechts' : ''} neben dem Text".squeeze(' '), :ok => true, :marks => [])
+        if pic.nil?
+            item.ok = false
+            item.message = "#{cap(called)} finde ich nicht mehr."
+            return item
+        end
+        place = pic['frame'] || pic
+        margins = (model || {})['margins'] || {}
+        text_width = margins['right'].to_f - margins['left'].to_f
+        width = (pic['frame'] || {})['width'] || pic['width']
+        b = pic['box']
+        problem = if place['anchor'] == 'as_character'
+            "#{cap(called)} steht in der Zeile wie ein großer Buchstabe; daneben kann kein Text stehen."
+        elsif !%w[parallel dynamic left right].include?(place['wrap'])
+            "#{cap(called)} hat den Textumbruch #{WRAP_NAMES[place['wrap']] || place['wrap']}; der Text fließt nicht daneben."
+        elsif text_width.positive? && width.to_f > text_width * 0.7
+            "#{cap(called)} ist so breit, dass daneben kaum Platz für Text bleibt."
+        elsif side && b && text_width.positive? && ((b['x'] + b['w'] / 2.0 > margins['left'] + text_width / 2.0) != (side == 'right'))
+            "#{cap(called)} steht #{side == 'right' ? 'links' : 'rechts'}; es soll #{side == 'right' ? 'rechts' : 'links'} neben dem Text stehen."
+        end
+        return item if problem.nil?
+
+        item.ok = false
+        mark = picture_mark(pic, place['anchor'] == 'as_character' ? 'in der Zeile' : 'Textumbruch')
+        item.marks << mark if mark
+        item.message = "#{problem} Stell in Word den Textumbruch »Quadrat« ein, in LibreOffice die Verankerung »Am Absatz« und den Umlauf »Parallel«; " \
+            'dann fließt der Text neben dem Bild, und du schiebst es an den Rand.'
         item
     end
 

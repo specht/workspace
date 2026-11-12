@@ -118,6 +118,18 @@ def read_portion(portion):
         item['field'] = next((n.split('.')[-1] for n in names if n.startswith('com.sun.star.text.textfield.')
                               or n.startswith('com.sun.star.text.TextField.')), 'Unknown')
         item['text'] = portion.getString()
+        # a number range (Word: SEQ): the number of a caption, counted by
+        # the program; its name is the label (»Abbildung«)
+        if item['field'] == 'SetExpression':
+            try:
+                if field.SubType == 1:
+                    item['sequence'] = field.TextFieldMaster.Name
+            except Exception:
+                pass
+    elif kind == 'Frame':
+        # a picture in the line (»Mit Text in Zeile«): no text, but the
+        # paragraph is not empty
+        item['text'] = ''
     else:
         return None
     item['bold'] = portion.CharWeight >= 150
@@ -217,6 +229,136 @@ def collect(text, styles, where, out, starts):
                 collect(cell, styles, {'table': name, 'cell': cell_name}, out, starts)
 
 
+def text_boxes(doc):
+    """The frames with text: LibreOffice's own (a picture with its caption)
+    and Word's text boxes, which LibreOffice reads as a shape on the draw
+    page holding a frame (then the shape is what the text flows around).
+    [(frame, shape or None)]"""
+    found = []
+    try:
+        frames = doc.TextFrames
+        for name in frames.getElementNames():
+            found.append((frames.getByName(name), None))
+    except Exception:
+        traceback.print_exc()
+    try:
+        page = doc.DrawPage
+        for i in range(page.getCount()):
+            shape = page.getByIndex(i)
+            try:
+                if shape.TextBox and shape.TextBoxContent is not None:
+                    found.append((shape.TextBoxContent, shape))
+            except Exception:
+                pass
+    except Exception:
+        traceback.print_exc()
+    seen, out = set(), []
+    for frame, shape in found:
+        if frame.Name not in seen:
+            seen.add(frame.Name)
+            out.append((frame, shape))
+    return out
+
+
+def collect_frames(boxes, styles, out, starts):
+    """The paragraphs in frames and text boxes: a caption that LibreOffice
+    puts in a frame with its picture, or Word in a text box beside it."""
+    for frame, _ in boxes:
+        try:
+            where = {'frame': frame.Name}
+            try:
+                where['width'] = pt(frame.Size.Width)
+            except Exception:
+                pass
+            collect(frame.getText(), styles, where, out, starts)
+        except Exception:
+            traceback.print_exc()
+
+
+WRAP = {'NONE': 'none', 'THROUGH': 'through', 'THROUGHT': 'through', 'PARALLEL': 'parallel',
+        'DYNAMIC': 'dynamic', 'LEFT': 'left', 'RIGHT': 'right'}
+
+
+def placement(obj):
+    return {'anchor': enum_value(obj.AnchorType).lower(), 'wrap': WRAP.get(enum_value(obj.TextWrap), 'none'),
+            'hori': obj.HoriOrient}
+
+
+def read_pictures(doc, boxes):
+    """The pictures: their alt text, size (shown and as stored), how they
+    sit in the text, and the frame they are in, if any (a caption frame
+    of LibreOffice: then the frame is what the text flows around)."""
+    out = []
+    try:
+        objects = doc.GraphicObjects
+        names = objects.getElementNames()
+    except Exception:
+        return out
+    for name in names:
+        try:
+            o = objects.getByName(name)
+            item = {'name': name, 'title': o.Title or '', 'description': o.Description or '',
+                    'width': pt(o.Size.Width), 'height': pt(o.Size.Height)}
+            item.update(placement(o))
+            try:
+                px = o.Graphic.SizePixel
+                item['pixels'] = [px.Width, px.Height]
+            except Exception:
+                item['pixels'] = None
+            try:
+                a = o.ActualSize
+                c = o.GraphicCrop
+                item['actual'] = [a.Width, a.Height]
+                item['crop'] = [c.Left, c.Right, c.Top, c.Bottom]
+            except Exception:
+                pass
+            try:
+                text = o.Anchor.getText()
+                if text.supportsService('com.sun.star.text.TextFrame'):
+                    shape = next((sh for fr, sh in boxes if fr.Name == text.Name), None)
+                    item['frame'] = dict(placement(shape or text), name=text.Name,
+                                         width=pt(text.Size.Width), height=pt(text.Size.Height))
+            except Exception:
+                pass
+            out.append(item)
+        except Exception:
+            traceback.print_exc()
+    return out
+
+
+IMAGE = re.compile(r'<image top="([-\d.]+)" left="([-\d.]+)" width="([\d.]+)" height="([\d.]+)"')
+PAGE_NO = re.compile(r'<page number="(\d+)"')
+
+
+def place_pictures(pictures, pdf, folder):
+    """Where each picture landed: the images of the PDF (pdftohtml), each
+    matched to the picture whose shown size it has."""
+    base = os.path.join(folder, 'images')
+    subprocess.run(['pdftohtml', '-xml', '-zoom', '1', '-noroundcoord', '-q', '-nodrm', pdf, base],
+                   capture_output=True, timeout=30)
+    try:
+        with open(base + '.xml', encoding='utf-8', errors='replace') as f:
+            xml = f.read()
+    except OSError:
+        return
+    found = []
+    for chunk in xml.split('</page>'):
+        m = PAGE_NO.search(chunk)
+        if not m:
+            continue
+        for top, left, w, h in IMAGE.findall(chunk):
+            found.append({'page': int(m.group(1)), 'x': float(left), 'y': float(top), 'w': float(w), 'h': float(h)})
+    for p in pictures:
+        best = None
+        for f in found:
+            d = abs(f['w'] - p['width']) + abs(f['h'] - p['height'])
+            if d <= 0.15 * (p['width'] + p['height']) and (best is None or d < best[0]):
+                best = (d, f)
+        if best:
+            found.remove(best[1])
+            p['box'] = {k: round(v, 1) if isinstance(v, float) else v for k, v in best[1].items()}
+
+
 def page_margins(doc):
     styles = doc.StyleFamilies.getByName('PageStyles')
     cursor = doc.Text.createTextCursor()
@@ -288,6 +430,9 @@ def place(paragraphs, dests, pages, margins):
         page_no, top, x, (end_page, end_top) = s
         page = pages[page_no - 1]
         size = max([q['size'] for q in p['portions']] or [12])
+        # in a frame: only the words within its width (the text beside it
+        # is at the same height)
+        width = (p.get('where') or {}).get('width')
         line = size * 1.2
         mine = []
         for pg in range(page_no, end_page + 1):
@@ -295,6 +440,8 @@ def place(paragraphs, dests, pages, margins):
                 lo = top - 1 if pg == page_no else -1
                 hi = end_top + line * 0.75 if pg == end_page else 1e9
                 mid = (w[1] + w[3]) / 2
+                if width and not (x - 2 <= w[0] and w[2] <= x + width + 2):
+                    continue
                 if lo <= mid <= hi:
                     mine.append([pg] + list(w))
         # the next paragraph on the same page bounds an empty one
@@ -303,9 +450,10 @@ def place(paragraphs, dests, pages, margins):
             bottom = max(w[4] for w in mine if w[0] == end_page) if any(w[0] == end_page for w in mine) else end_top + line
         else:
             bottom = following[1] if following and following[0] == page_no and following[1] > top else top + line
+        left, right = (x, x + width) if width else (margins['left'], margins['right'])
         p['box'] = {'page': page_no, 'top': round(top, 1), 'bottom': round(bottom, 1),
                     'end_page': end_page, 'x': round(x, 1),
-                    'left': margins['left'], 'right': margins['right']}
+                    'left': round(left, 1), 'right': round(right, 1)}
         p['words'] = [[w[0]] + [round(v, 1) for v in w[1:5]] + [w[5]] for w in mine]
 
 
@@ -334,7 +482,10 @@ def analyze(data, filename):
             paragraphs, starts = [], []
             del TABLES[:]
             collect(doc.Text, styles, {}, paragraphs, starts)
+            boxes = text_boxes(doc)
+            collect_frames(boxes, styles, paragraphs, starts)
             tables = list(TABLES)
+            pictures = read_pictures(doc, boxes)
             margins = page_margins(doc)
             for i, (text, start, end) in enumerate(starts):
                 for name, at in ((f'p{i}', start), (f'e{i}', end)):
@@ -352,6 +503,7 @@ def analyze(data, filename):
         dests = destinations(pdf)
         pages = words(pdf, folder)
         place(paragraphs, dests, pages, margins)
+        place_pictures(pictures, pdf, folder)
         # each page as SVG: vector, sharp at any zoom on the card; the
         # letters become paths, so the fonts need not be on the viewer's
         # machine (shown as <img>, nothing in it runs)
@@ -365,7 +517,7 @@ def analyze(data, filename):
             with open(target, 'rb') as f:
                 svg = base64.b64encode(f.read()).decode('ascii')
             out_pages.append({'width': pages[i]['width'], 'height': pages[i]['height'], 'svg': svg})
-        return {'paragraphs': paragraphs, 'tables': tables, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
+        return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
 

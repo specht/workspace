@@ -1964,6 +1964,10 @@ check:
     - { tabs: ['Busfahrt', 'Zusammen'], align: [right, decimal] }   # je ein Tab, ein Tabstopp dieser Art, alle an einer Stelle
     - { table: ['Montag', 'Freitag'], columns: 3, header: 'Programm' }   # in den Zellen einer Tabelle, die Kopfzeile wiederholt sich
     - no_tabs             # kein Tab mehr im Dokument
+    - { ratio: true, names: ['das Foto', 'die Karte'] }   # kein Bild verzerrt
+    - { wrap: 1, side: right, names: […] }   # das erste Bild der Vorlage mit Text daneben, rechts
+    - { captions: true, names: […] }   # unter (oder über) jedem Bild eine Beschriftung, deren Nummer ein Feld ist
+    - { alt_text: true, names: […] }   # jedes Bild mit einem Alternativtext, kein Dateiname, nicht geraten
 ```
 
 Ein Dokument aus Word, LibreOffice oder Nextcloud Office (`.docx`, `.odt`,
@@ -1977,6 +1981,17 @@ ohne verknüpfte Inhalte zu laden, und zeichnet die Seiten als SVG.
 (`paragraph:`, `before:`, `paragraphs:`, die Liste selbst), `bold:` die Stücke
 selbst. Die Regeln zur Schrift lesen die Abschnitte eines Absatzes mit
 gleicher Formatierung und markieren die Wörter, die betroffen sind.
+
+Die Regeln zu Bildern finden ein Bild der Vorlage im Upload an seinen Pixeln
+wieder (dieselbe Datei, egal wie groß sie gezeigt wird); `names:` sagt, wie
+die Meldungen die Bilder der Vorlage nennen, in ihrer Reihenfolge, und `wrap:`
+zählt sie ab 1. `ratio` vergleicht die gezeigte Form mit der eigenen (3 %
+Spielraum, zugeschnittene Ränder abgezogen). `wrap` verlangt einen Umbruch,
+bei dem Text daneben steht; steckt das Bild in einem Rahmen (LibreOffices
+Beschriftung) oder Textfeld, zählt dessen Umbruch. `captions` sucht direkt
+unter oder über dem Bild einen Absatz mit einem Nummernkreis (Word: `SEQ`)
+oder einem Anfang wie »Abbildung 2«; getippte Nummern markiert es, auch in
+Absätzen weiter weg. Der Text in Rahmen und Textfeldern zählt für `text` mit.
 
 Die Karte zeigt die Liste neben der Seite, beides in einem Fenster (auch im
 halben Bildschirm neben Word); jeder offene Punkt hat eine Nummer, die neben

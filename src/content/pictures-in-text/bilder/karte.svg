@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" font-family="PT Sans, sans-serif">
+  <!-- made by karte.py -->
+  <defs>
+    <pattern id="marsh" width="34" height="22" patternUnits="userSpaceOnUse">
+      <path d="M6 16h14M9 16v-6M13 16v-8M17 16v-5" stroke="#6f8f5a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </pattern>
+    <pattern id="shallow" width="18" height="10" patternUnits="userSpaceOnUse">
+      <path d="M2 6q3-3 6 0t6 0" stroke="#6fa6cc" stroke-width="1.6" fill="none"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="800" fill="#f1f3e6"/>
+  <g fill="#c4dba6" stroke="#a5c385" stroke-width="2">
+    <path d="M0 0h360c-20 60-90 80-150 90-70 12-120 50-160 100-20 26-40 40-50 42z"/>
+    <path d="M1200 0v240c-60-20-100-60-130-110-24-40-60-70-120-86-30-8-50-24-60-44z"/>
+    <path d="M0 650c70-26 150-16 200 26 34 30 50 70 56 124H0z"/>
+  </g>
+  <g fill="#a9c98a">
+    <circle cx="60" cy="50" r="15"/><circle cx="110" cy="90" r="13"/><circle cx="180" cy="40" r="14"/><circle cx="250" cy="34" r="12"/><circle cx="46" cy="130" r="12"/>
+    <circle cx="1130" cy="50" r="15"/><circle cx="1070" cy="96" r="13"/><circle cx="1160" cy="150" r="14"/><circle cx="1000" cy="36" r="12"/>
+    <circle cx="50" cy="720" r="14"/><circle cx="120" cy="700" r="12"/><circle cx="170" cy="756" r="13"/>
+  </g>
+  <ellipse cx="1038" cy="438" rx="120" ry="150" fill="#dfe8cf"/>
+  <ellipse cx="1038" cy="438" rx="120" ry="150" fill="url(#marsh)"/>
+  <path d="M890.0 410.0C882.3 439.7 837.3 476.1 806.5 500.0C775.7 523.9 741.1 539.0 705.0 553.4C668.9 567.8 631.7 582.2 590.0 586.4C548.3 590.6 502.6 588.0 455.0 578.4C407.4 568.8 346.9 546.9 304.2 528.8C261.5 510.7 219.4 489.7 198.7 469.9C178.0 450.1 176.2 431.0 180.0 410.0C183.8 389.0 192.5 363.8 221.3 343.8C250.0 323.8 309.3 307.5 352.4 290.2C395.6 273.0 436.8 250.9 480.1 240.3C523.4 229.8 568.6 224.9 612.2 227.1C655.9 229.3 701.9 237.9 742.0 253.7C782.1 269.5 828.2 295.7 852.8 321.8C877.5 347.8 897.7 380.3 890.0 410.0Z" fill="#a8cfe8" stroke="#5f93bd" stroke-width="4"/>
+  <ellipse cx="260" cy="410" rx="70" ry="44" fill="url(#shallow)"/>
+  <path d="M936.0 410.0C928.0 444.8 881.0 487.9 846.3 516.6C811.7 545.2 770.7 564.9 728.0 582.1C685.3 599.3 639.3 615.4 590.0 619.5C540.7 623.7 486.3 619.4 432.0 607.0C377.7 594.7 310.8 567.1 264.4 545.4C218.0 523.6 175.5 499.3 153.7 476.8C132.0 454.2 130.2 433.5 134.0 410.0C137.8 386.5 146.5 358.9 176.7 335.8C206.8 312.7 267.4 292.2 314.8 271.2C362.1 250.3 410.4 223.2 460.7 210.3C510.9 197.5 564.9 191.4 616.2 194.1C667.5 196.8 722.0 207.6 768.4 226.6C814.8 245.5 866.6 277.2 894.5 307.8C922.5 338.3 944.0 375.2 936.0 410.0Z" fill="none" stroke="#9a7a52" stroke-width="5" stroke-dasharray="3 10" stroke-linecap="round"/>
+  <path d="M904 319C1128 298 1128 578 853 511" fill="none" stroke="#7a5a32" stroke-width="7" stroke-dasharray="14 7"/>
+  <g transform="translate(590 660)">
+    <path d="M-34 0v-36l34-26 34 26v36z" fill="#d9734e" stroke="#8f4a31" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="-9" y="-20" width="18" height="20" fill="#f1f3e6"/>
+  </g>
+  <g transform="translate(590 189)">
+    <path d="M-16 0l8-62h16l8 62z" fill="#8a6a43" stroke="#5e472b" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="-20" y="-76" width="40" height="16" fill="#8a6a43" stroke="#5e472b" stroke-width="3"/>
+  </g>
+  <g fill="#2f3b2a" font-size="30" font-weight="bold">
+    <text x="638" y="650">Jugendherberge</text>
+    <text x="624" y="163">Aussichtsturm</text>
+    <text x="1048" y="628" text-anchor="middle">Moorpfad</text>
+  </g>
+  <g fill="#2f6690" font-size="22" text-anchor="middle">
+    <text x="270" y="480">Schlafplatz</text>
+    <text x="270" y="506">der Kraniche</text>
+  </g>
+  <text x="620" y="420" text-anchor="middle" font-size="46" font-style="italic" fill="#2f6690" letter-spacing="2">Kranichsee</text>
+  <g transform="translate(1130 700)">
+    <path d="M0-50l16 40-16-10-16 10z" fill="#2f3b2a"/>
+    <text y="18" text-anchor="middle" font-size="26" font-weight="bold" fill="#2f3b2a">N</text>
+  </g>
+  <g transform="translate(860 760)" fill="#2f3b2a">
+    <rect width="80" height="10"/>
+    <rect x="80" width="80" height="10" fill="#f1f3e6" stroke="#2f3b2a" stroke-width="2"/>
+    <text x="0" y="-8" font-size="20" text-anchor="middle">0</text>
+    <text x="160" y="-8" font-size="20" text-anchor="middle">500 m</text>
+  </g>
+</svg>

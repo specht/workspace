@@ -1,0 +1,20 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Der fertige Artikel (stufen/kraniche.docx, von
+# LibreOffice gebaut: das Foto mit Unterschrift in einem Rahmen rechts) muss
+# die Prüfung bestehen, die Vorlage an ihr scheitern, und der Artikel mit
+# noch getippten Nummern an den Unterschriften. Alle macht dokumente.py.
+format: 1
+activity: pictures-in-text
+examples:
+  artikel:
+    pass:
+      - document: stufen/kraniche.docx
+    fail:
+      - document: ../../static/pictures-in-text/05 Kraniche.docx
+        say: Breite gezogen
+      - document: ../../static/pictures-in-text/05 Kraniche.docx
+        say: keinen Alternativtext
+      - document: ../../static/pictures-in-text/05 Kraniche.docx
+        say: wie ein großer Buchstabe
+      - document: stufen/kraniche-getippt.docx
+        say: getippte Nummern

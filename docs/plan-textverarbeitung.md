@@ -21,7 +21,7 @@ handed out on paper got no feedback because nobody could check them all.
   40 seconds. Fonts: Microsoft's core fonts (installed while the image is
   built), Carlito and Caladea for Calibri and Cambria (same widths).
 - **The check type `document`** (`DocumentCheck`, docs/aufgaben.md): rules
-  `text`, `spaces`, `empty_paragraphs`, `line_breaks`, `align`, `gaps`. Each
+  for text and spacing, type, lists and tabs, tables, pictures. Each
   is a point of the checklist; its places are marks on the page, in points.
   Examples in `task-examples.yaml` with `document:`.
 - **The card** (`document_task.js`): the starting file, saved through the
@@ -59,6 +59,12 @@ handed out on paper got no feedback because nobody could check them all.
   a document check left open.
 
 ## Decisions
+
+- **No Aptos** (the maintainer, 12 November 2026): Word's default font since
+  2024 is not installed; Microsoft wants a licence of its own for using it on
+  a server. The starting files set Calibri, whose widths Carlito has. A
+  document begun in a new Word is drawn with another font and may break
+  its lines elsewhere; the checks do not depend on that.
 
 - **Upload, not Office in the browser.** Students learn the program they
   will meet at school and at home; the website only checks. Nextcloud Office
@@ -98,8 +104,17 @@ built by hand; each is a page of a series of its own, about one lesson.
    stops (a longer entry starts again at the left margin: the prediction);
    text into a table, three columns, a header row repeated on every page;
    the service reports tables (rows, columns, header row).
-5. **Bilder im Text:** text wrapping, a caption with a numbering field, an
-   alt text that is not the file name.
+5. **Bilder im Text** (built, `pictures-in-text`): an article about the
+   cranes for the trip newspaper; the photo stretched to the width of the
+   text, captions typed, no alt text (the map's guessed by Word). The
+   picture back in its own proportions, text beside it, captions with a
+   numbering field, alt texts; moving the map up as the prediction. The
+   service reports pictures (alt text, size and pixels, anchor, wrapping,
+   the frame or Word text box they are in, where they landed through
+   `pdftohtml -xml`) and the paragraphs in frames and text boxes. The photo
+   is from Wikimedia Commons (CC BY-SA 4.0, credited in its caption); the
+   map is drawn (`bilder/karte.py`). The solution is built by LibreOffice
+   through UNO (a frame with picture and caption, saved as a Word text box).
 6. **Formatvorlagen** (two lessons): ten headings formatted by hand; heading
    styles, the style changed once, no level skipped.
 7. **Seiten und Verzeichnisse:** page number as a field in the footer, page
@@ -110,22 +125,28 @@ built by hand; each is a page of a series of its own, about one lesson.
 
 ## Open
 
-- **For worksheets 5 to 8:**
+- **For worksheets 6 to 8:**
   - **Several pages in the viewer:** a page display, jumping between pages,
     the page of each place in the list.
   - **Reading more of the document:** headers and footers (with their
     fields), the table of contents through UNO (`DocumentIndexes`, compared
-    with the headings), styles and their changes, tables, pictures with alt
-    text and wrapping.
+    with the headings), styles and their changes.
+- **Keeping hold of the file needs https:** Chrome and Edge offer the File
+  System Access API only in a secure context (https or localhost). On the
+  development site (`http://workspace.test:8030`) and in the Playwright
+  tests Chrome chooses the file again for each check, like Firefox; the
+  automatic check after saving has only been tried in code, not in a
+  browser. Try it on the https site.
 - **Try on a school PC:**
   - whether the page sees the file after Word saved it (Word writes a new
     file and swaps it in), and whether it can read it while Word has it open;
   - whether a page reload keeps the file (the handle in IndexedDB, with the
     browser asking again).
-- **Aptos** (Word's default since 2024): Microsoft offers it for download but
-  wants a licence of its own for using it on a server. Without it, a
-  document begun in a new Word breaks lines elsewhere on the drawn page. The
-  starting files set Calibri. The maintainer decides.
+- **Try a picture from Word:** a picture with »Quadrat« and a caption Word
+  inserted (Word puts it in a text box of its own). The check finds a
+  caption by where it stands, so it should pass; built by hand for the
+  examples, LibreOffice laid such a text box elsewhere than Word would, so
+  that case has no example yet.
 - **Pictures of the program** (where a button is): Collabora Online in a
   container, driven by the screenshot generator with Playwright, for
   LibreOffice and Nextcloud Office; Word by hand, a few per worksheet. Not

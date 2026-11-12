@@ -213,3 +213,30 @@ test('a programme is checked for its table', async ({ page, e2eEmail }, testInfo
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(3);
 });
+
+test('an article is checked for its pictures', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/pictures-in-text');
+  await states;
+  const card = page.locator(".task-card[data-task='pictures-in-text/artikel']");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/pictures-in-text/05 Kraniche.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  // stretched, in the line, typed numbers, no alt text
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(4);
+  // the marks of the pictures lie on the page: the photo carries three points
+  await expect(report.locator('.document-mark')).not.toHaveCount(0);
+  if (shots) await page.screenshot({ path: path.join(shots, 'pictures-wrong.png') });
+  // on http (the test's site) Chrome cannot keep hold of the file: the
+  // button beside the page asks for it again instead of sending the copy
+  // taken when it was chosen, which Word's next save makes unreadable
+  const recheck = report.locator('.document-recheck');
+  await expect(recheck).toHaveAttribute('aria-label', 'Datei neu wählen und prüfen');
+  const [chooser] = await Promise.all([page.waitForEvent('filechooser'), recheck.click()]);
+  await chooser.setFiles(path.join(repo, 'src/content/pictures-in-text/stufen/kraniche.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
+  if (shots) await page.screenshot({ path: path.join(shots, 'pictures-correct.png') });
+});

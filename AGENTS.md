@@ -59,7 +59,7 @@ address from `credentials.rb` and the code `123456`.
   numpy, ffmpeg and Pillow for the image; the maintainer's open decisions
 - [docs/plan-textverarbeitung.md](docs/plan-textverarbeitung.md): the section Office: documents from
   Word, LibreOffice or Nextcloud Office uploaded to a card, read by the service `office`, checked and
-  marked on the student's own page; worksheet 1 built, the series and spreadsheets and presentations planned
+  marked on the student's own page; worksheets 1 to 5 of the series built, 6 to 8, spreadsheets and presentations planned
 - [docs/plan-barrierefreiheit.md](docs/plan-barrierefreiheit.md): an activity planned, not built: a
   website full of barriers that students use as others do, then fix chapter by chapter (alt texts,
   labels, buttons, contrast as a function of their own, structure, focus), with the new checks it needs
