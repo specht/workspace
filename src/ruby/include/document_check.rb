@@ -26,11 +26,13 @@ require_relative 'office_client'
 #       - no_caps              # no capitals set by formatting
 #       - { list: ['Schlafsack', …] }   # these paragraphs a real list, no »- « typed
 #       - { tabs: ['Busfahrt', …], align: [right, decimal] }   # one tab each, at one tab stop of this kind
+#       - { table: ['Montag', 'Dienstag', …], columns: 3, header: 'Tag' }   # these in the cells of one table
+#       - no_tabs              # no tab anywhere
 #
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TAB_ALIGN = { 'right' => 'rechtsbündig', 'decimal' => 'dezimal', 'center' => 'zentriert', 'left' => 'linksbündig' }.freeze
@@ -69,6 +71,7 @@ module DocumentCheck
                 when 'gaps' then %w[gaps before]
                 when 'size' then %w[size paragraphs]
                 when 'tabs' then %w[tabs align]
+                when 'table' then %w[table columns header]
                 else [name]
             end
             extra = rule.keys - known
@@ -79,7 +82,7 @@ module DocumentCheck
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
             errors << 'fonts must be a number' if name == 'fonts' && !rule['fonts'].is_a?(Integer)
             errors << 'size must be [min, max] in pt' if name == 'size' && !(rule['size'].is_a?(Array) && rule['size'].size == 2 && rule['size'].all? { |v| v.is_a?(Numeric) })
-            %w[bold sparing list tabs].each do |k|
+            %w[bold sparing list tabs table].each do |k|
                 errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].all? { |b| b.is_a?(String) })
             end
             errors << 'size needs paragraphs: (pieces of their text)' if name == 'size' && !(rule['paragraphs'].is_a?(Array) && rule['paragraphs'].all? { |b| b.is_a?(String) })
@@ -103,7 +106,7 @@ module DocumentCheck
         paragraphs = (model['paragraphs'] || []).map { |p| p.merge('plain' => squish(p['text'])) }
         body = paragraphs.select { |p| (p['where'] || {}).empty? }
         items = (check['rules'] || []).map do |rule|
-            item = send("rule_#{rule_name(rule)}", rule.is_a?(Hash) ? rule : {}, body, starter)
+            item = send("rule_#{rule_name(rule)}", rule.is_a?(Hash) ? rule : {}, body, starter, paragraphs, model)
             item.label = rule['label'] if rule.is_a?(Hash) && rule['label']
             item.message = rule['say'] if rule.is_a?(Hash) && rule['say'] && !item.ok
             item
@@ -202,13 +205,14 @@ module DocumentCheck
 
     # ---- the rules
 
-    def self.rule_text(_rule, body, starter)
+    def self.rule_text(_rule, body, starter, all = nil, _model = nil)
         item = Item.new(:rule => 'text', :label => 'Der Text ist noch vollständig', :ok => true, :marks => [])
         return item if starter.nil? || starter['paragraphs'].nil?
 
         # typed list markers (»-«, »•«) are no words: a real list has none
         words = ->(ps) { ps.flat_map { |p| p['text'].to_s.split(/\s+/) }.reject { |w| w.empty? || w.match?(/\A[-–•*·]+\z/) } }
-        have = words.(body).tally
+        # the whole document, the cells of tables too
+        have = words.(all || body).tally
         missing = words.(starter['paragraphs']).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
         return item if missing.empty?
 
@@ -218,7 +222,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_spaces(_rule, body, _starter)
+    def self.rule_spaces(_rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'spaces', :label => 'Keine Leerzeichen hintereinander', :ok => true, :marks => [])
         places = []
         body.each do |p|
@@ -242,7 +246,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_empty_paragraphs(_rule, body, _starter)
+    def self.rule_empty_paragraphs(_rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'empty_paragraphs', :label => 'Keine leeren Absätze', :ok => true, :marks => [])
         # empty paragraphs at the very end change nothing on the page
         last = body.rindex { |p| !empty?(p) } || -1
@@ -266,7 +270,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_line_breaks(_rule, body, _starter)
+    def self.rule_line_breaks(_rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'line_breaks', :label => 'Keine Zeilenumbrüche von Hand', :ok => true, :marks => [])
         found = body.select { |p| p['text'].to_s.include?("\n") }
         return item if found.empty?
@@ -285,7 +289,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_align(rule, body, _starter)
+    def self.rule_align(rule, body, _starter, _all = nil, _model = nil)
         want = rule['align'].to_s
         name = rule['paragraph'].to_s
         item = Item.new(:rule => 'align', :label => "»#{name}« ist #{ALIGN[want]}", :ok => false, :marks => [])
@@ -306,7 +310,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_gaps(rule, body, _starter)
+    def self.rule_gaps(rule, body, _starter, _all = nil, _model = nil)
         min = pt(rule['gaps'])
         item = Item.new(:rule => 'gaps', :label => 'Abstand zwischen den Absätzen', :ok => true, :marks => [])
         problems = []
@@ -386,7 +390,7 @@ module DocumentCheck
         list.size == 1 ? list.first : "#{list[0..-2].join(', ')} und #{list[-1]}"
     end
 
-    def self.rule_fonts(rule, body, _starter)
+    def self.rule_fonts(rule, body, _starter, _all = nil, _model = nil)
         most = rule['fonts'].to_i
         item = Item.new(:rule => 'fonts', :label => most == 1 ? 'Eine Schriftart' : "Höchstens #{most} Schriftarten", :ok => true, :marks => [])
         used = Hash.new { |hash, k| hash[k] = [] }
@@ -404,7 +408,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_size(rule, body, _starter)
+    def self.rule_size(rule, body, _starter, _all = nil, _model = nil)
         low, high = rule['size']
         item = Item.new(:rule => 'size', :label => "Text in #{low.to_s.sub(/\.0\z/, '')} bis #{high.to_s.sub(/\.0\z/, '')} pt", :ok => true, :marks => [])
         bad = find_paragraphs(body, rule['paragraphs']).flat_map do |p|
@@ -420,7 +424,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_bold(rule, body, _starter)
+    def self.rule_bold(rule, body, _starter, _all = nil, _model = nil)
         pieces = Array(rule['bold'])
         item = Item.new(:rule => 'bold', :label => "#{names(pieces.map { |x| "»#{x}«" })} fett", :ok => true, :marks => [])
         problems = []
@@ -445,7 +449,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_sparing(rule, body, _starter)
+    def self.rule_sparing(rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'sparing', :label => 'Fett nur, wo es wichtig ist', :ok => true, :marks => [])
         whole = find_paragraphs(body, rule['sparing']).select do |p|
             seen = ranges(p).select { |_, _, q| visible?(q) }
@@ -461,12 +465,12 @@ module DocumentCheck
         item
     end
 
-    def self.rule_no_underline(_rule, body, _starter)
+    def self.rule_no_underline(_rule, body, _starter, _all = nil, _model = nil)
         portion_rule(body, 'no_underline', 'Nichts unterstrichen', 'unterstrichen', ->(q) { q['underline'] },
             'Unterstrichen sieht aus wie ein Link und macht die Buchstaben unten schwer lesbar. Zum Hervorheben gibt es fett.')
     end
 
-    def self.rule_no_caps(_rule, body, _starter)
+    def self.rule_no_caps(_rule, body, _starter, _all = nil, _model = nil)
         portion_rule(body, 'no_caps', 'Keine Großbuchstaben als Format', 'Großbuchstaben', ->(q) { q['caps'] },
             'Text nur aus Großbuchstaben liest man langsamer, weil die Wörter ihre Form verlieren. Die Einstellung heißt »Großbuchstaben« oder »Versalien«.')
     end
@@ -486,7 +490,7 @@ module DocumentCheck
 
     # ---- lists and tab stops
 
-    def self.rule_list(rule, body, _starter)
+    def self.rule_list(rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'list', :label => 'Eine echte Liste', :ok => true, :marks => [])
         problems = []
         Array(rule['list']).each do |piece|
@@ -517,7 +521,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_tabs(rule, body, _starter)
+    def self.rule_tabs(rule, body, _starter, _all = nil, _model = nil)
         kinds = Array(rule['align'] || %w[right decimal]).map(&:to_s)
         item = Item.new(:rule => 'tabs', :label => 'Preise an einem Tabstopp', :ok => true, :marks => [])
         problems = []
@@ -561,6 +565,59 @@ module DocumentCheck
         end
         item.message = "#{said.join(' ')} " \
             'Ein Tab springt zum nächsten Tabstopp; ein rechtsbündiger Tabstopp am Rand stellt die Preise genau untereinander, in jeder Schrift.'
+        item
+    end
+
+    # ---- tables
+
+    def self.rule_table(rule, body, _starter, all = nil, model = nil)
+        all ||= body
+        pieces = Array(rule['table'])
+        item = Item.new(:rule => 'table', :label => 'Eine Tabelle', :ok => true, :marks => [])
+        found = pieces.map { |piece| [piece, all.find { |p| p['plain'].include?(piece) }] }
+        outside = found.select { |_, p| p && (p['where'] || {})['table'].nil? }
+        missing = found.select { |_, p| p.nil? }.map(&:first)
+        held = found.filter_map { |_, p| p && (p['where'] || {})['table'] }.uniq
+        table = held.size == 1 ? ((model || {})['tables'] || []).find { |t| t['name'] == held.first } : nil
+        problems = []
+        problems << "#{q(names(missing.map { |m| "»#{m}«" }))} finde ich nicht mehr." unless missing.empty?
+        unless outside.empty?
+            first = short(outside.first[1], 3)
+            problems << (outside.size == pieces.size ? "Die Zeilen stehen noch nicht in einer Tabelle, zum Beispiel »#{first}«." :
+                "#{outside.size} Zeilen stehen außerhalb der Tabelle, zum Beispiel »#{first}«.")
+            outside.each { |_, p| item.marks << para_mark(p).merge(:title => 'nicht in der Tabelle') }
+        end
+        problems << 'Die Zeilen stehen in mehreren Tabellen; eine reicht.' if held.size > 1
+        if problems.empty? && table
+            if rule['columns'] && table['cols'] && table['cols'] != rule['columns'].to_i
+                problems << "Die Tabelle hat #{table['cols']} Spalten; Tag, Zeit und Programm brauchen #{rule['columns']}."
+            end
+            # the header among the cells of this table, the same text first
+            cells = all.select { |p| (p['where'] || {})['table'] == held.first }
+            header = rule['header'] && (cells.find { |p| p['plain'] == rule['header'].to_s } || cells.find { |p| p['plain'].include?(rule['header'].to_s) })
+            if header && (header['where'] || {})['cell'].to_s !~ /\A[A-Z]+1\z/
+                problems << "»#{q(rule['header'])}« steht nicht in der ersten Zeile; die Überschriften der Spalten gehören nach oben."
+            elsif header && !table['repeat_header']
+                problems << 'Die erste Zeile ist noch keine Überschrift, die sich auf jeder Seite wiederholt.'
+                item.marks << para_mark(header).merge(:title => 'Überschrift wiederholen')
+            end
+        end
+        return item if problems.empty?
+
+        item.ok = false
+        item.message = "#{problems.join(' ')} In einer Tabelle hat jede Angabe ihre Zelle; wird ein Eintrag länger, wächst seine Zeile, und alles bleibt in seiner Spalte."
+        item
+    end
+
+    def self.rule_no_tabs(_rule, body, _starter, all = nil, _model = nil)
+        all ||= body
+        item = Item.new(:rule => 'no_tabs', :label => 'Keine Tabs mehr', :ok => true, :marks => [])
+        found = all.select { |p| p['text'].to_s.include?("\t") }
+        return item if found.empty?
+
+        item.ok = false
+        item.marks = found.map { |p| para_mark(p).merge(:title => "#{p['text'].count("\t")} Tabs") }
+        item.message = "In #{found.size == 1 ? "»#{short(found.first, 3)}«" : "#{found.size} Absätzen, zum Beispiel »#{short(found.first, 3)}«,"} stehen noch Tabs. In der Tabelle trennen die Spalten, nicht die Tabs."
         item
     end
 

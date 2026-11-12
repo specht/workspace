@@ -194,3 +194,22 @@ test('a packing list is checked for its list and tab stops', async ({ page, e2eE
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(4);
 });
+
+// »Tabellen«: the programme in tabs fails two points; as a table with a
+// repeated header row it passes all three.
+test('a programme is checked for its table', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/word-tables');
+  await states;
+  const card = page.locator(".task-card[data-task='word-tables/programm']");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/word-tables/04 Programm.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(2);
+  if (shots) await page.screenshot({ path: path.join(shots, 'table-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/word-tables/stufen/programm.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(3);
+});

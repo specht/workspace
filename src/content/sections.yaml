@@ -117,10 +117,11 @@
     - .formatting-marks
     - .character-formatting
     - .lists-and-tabs
+    - .word-tables
   # the worksheets on word processing, one after the other: each pinned on
   # its own, the class page shows them as a whole too
   series:
-    - [formatting-marks, character-formatting, lists-and-tabs]
+    - [formatting-marks, character-formatting, lists-and-tabs, word-tables]
 
 - key: writing
   compact: true

@@ -1,0 +1,60 @@
+# Aufgaben zu »Tabellen«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/word-tables/04 Programm.docx) und das fertige
+# Programm (stufen/programm.docx) macht dokumente.py.
+format: 1
+activity: word-tables
+tasks:
+  - id: laenger
+    title: Ein längerer Eintrag
+    prediction: true
+    prompt: |
+      Beim Mittwoch kommt etwas dazu: »mit Picknick am Aussichtsturm und
+      Rückweg über den Moorpfad«. Der Eintrag passt nicht mehr in eine Zeile.
+      Wo steht sein Rest?
+    check:
+      type: choice
+      options:
+        - In der nächsten Zeile, unter »Wanderung«, in der Spalte Programm.
+        - In der nächsten Zeile ganz links, unter »Mittwoch«.
+        - Er wird abgeschnitten.
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Für die zweite Zeile eines Absatzes gibt es keinen Tab. Wo fängt sie an?
+      - when: { picked: 2 }
+        say: Text wird nie abgeschnitten; das Programm bricht ihn um. Wo fängt die neue Zeile an?
+    solution: |
+      Ganz links, unter »Mittwoch«: Die neue Zeile fängt am Rand an, und der
+      Tab gilt nur für die erste.
+
+  - id: spalten
+    title: Aus Tabs werden Spalten
+    prompt: |
+      Jede Zeile des Programms hat zwei Tabs. Wie viele Spalten bekommt die
+      Tabelle, wenn du den Text umwandelst?
+    check:
+      type: number
+      expect: 3
+      tolerance: 0
+    feedback:
+      - when: { between: [2, 2] }
+        say: Zwei Tabs trennen drei Stücke Text.
+    solution: Drei. Zwei Tabs trennen drei Stücke Text, und jedes bekommt seine Spalte.
+
+  - id: programm
+    title: Das Programm als Tabelle
+    prompt: |
+      Prüfe dein Programm. Die Prüfung markiert auf deiner Seite jede Stelle,
+      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      prüfst.
+    check:
+      type: document
+      file: word-tables/04 Programm.docx
+      rules:
+        - text
+        - { table: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'], columns: 3, header: 'Programm' }
+        - no_tabs
+    hint:
+      - Markier die Kopfzeile und die sechs Zeilen darunter, dann Text in Tabelle umwandeln, getrennt durch Tabstopps.
+      - Die Kopfzeile wiederholt sich, wenn der Haken bei »Überschriften wiederholen« gesetzt ist, mit dem Cursor in der ersten Zeile.

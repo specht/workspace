@@ -1,0 +1,13 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Das Programm als Tabelle (stufen/) muss die Prüfung
+# bestehen, die Vorlage (src/static/word-tables) an ihr scheitern. Beide
+# macht dokumente.py.
+format: 1
+activity: word-tables
+examples:
+  programm:
+    pass:
+      - document: stufen/programm.docx
+    fail:
+      - document: ../../static/word-tables/04 Programm.docx
+        say: Tabelle

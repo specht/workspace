@@ -1962,6 +1962,8 @@ check:
     - no_caps             # keine Großbuchstaben als Format
     - { list: ['Schlafsack', 'Hausschuhe'] }        # eine Liste des Programms, kein »- « getippt
     - { tabs: ['Busfahrt', 'Zusammen'], align: [right, decimal] }   # je ein Tab, ein Tabstopp dieser Art, alle an einer Stelle
+    - { table: ['Montag', 'Freitag'], columns: 3, header: 'Programm' }   # in den Zellen einer Tabelle, die Kopfzeile wiederholt sich
+    - no_tabs             # kein Tab mehr im Dokument
 ```
 
 Ein Dokument aus Word, LibreOffice oder Nextcloud Office (`.docx`, `.odt`,

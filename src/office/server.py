@@ -193,14 +193,25 @@ def iter_enum(container):
         yield e.nextElement()
 
 
+TABLES = []
+
+
 def collect(text, styles, where, out, starts):
-    """Paragraphs of a text (the body or a table cell), in order."""
+    """Paragraphs of a text (the body or a table cell), in order; the
+    tables met on the way go to TABLES (rows, columns, header row)."""
     for element in iter_enum(text):
         if element.supportsService('com.sun.star.text.Paragraph'):
             out.append(read_paragraph(element, styles, where))
             starts.append((element.getText(), element.getStart(), element.getEnd()))
         elif element.supportsService('com.sun.star.text.TextTable'):
             name = element.getName()
+            try:
+                TABLES.append({'name': name, 'rows': element.getRows().getCount(),
+                               'cols': element.getColumns().getCount(),
+                               'repeat_header': bool(element.RepeatHeadline),
+                               'header_rows': int(getattr(element, 'HeaderRowCount', 0) or 0)})
+            except Exception:
+                TABLES.append({'name': name})
             for cell_name in element.getCellNames():
                 cell = element.getCellByName(cell_name)
                 collect(cell, styles, {'table': name, 'cell': cell_name}, out, starts)
@@ -321,7 +332,9 @@ def analyze(data, filename):
         try:
             styles = doc.StyleFamilies.getByName('ParagraphStyles')
             paragraphs, starts = [], []
+            del TABLES[:]
             collect(doc.Text, styles, {}, paragraphs, starts)
+            tables = list(TABLES)
             margins = page_margins(doc)
             for i, (text, start, end) in enumerate(starts):
                 for name, at in ((f'p{i}', start), (f'e{i}', end)):
@@ -352,7 +365,7 @@ def analyze(data, filename):
             with open(target, 'rb') as f:
                 svg = base64.b64encode(f.read()).decode('ascii')
             out_pages.append({'width': pages[i]['width'], 'height': pages[i]['height'], 'svg': svg})
-        return {'paragraphs': paragraphs, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
+        return {'paragraphs': paragraphs, 'tables': tables, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
 

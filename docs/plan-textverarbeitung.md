@@ -94,7 +94,10 @@ built by hand; each is a page of a series of its own, about one lesson.
    »- « typed, the costs lined up with spaces counted for Calibri 12 pt (they
    break in any other font: the prediction); a real list, one tab per line, a
    right-aligned tab stop with dot leaders.
-4. **Tabellen:** the trip's schedule in tabs; a table with a header row.
+4. **Tabellen** (built, `word-tables`): the trip's programme at two tab
+   stops (a longer entry starts again at the left margin: the prediction);
+   text into a table, three columns, a header row repeated on every page;
+   the service reports tables (rows, columns, header row).
 5. **Bilder im Text:** text wrapping, a caption with a numbering field, an
    alt text that is not the file name.
 6. **Formatvorlagen** (two lessons): ten headings formatted by hand; heading
@@ -107,7 +110,7 @@ built by hand; each is a page of a series of its own, about one lesson.
 
 ## Open
 
-- **For worksheets 6 to 8:**
+- **For worksheets 5 to 8:**
   - **Several pages in the viewer:** a page display, jumping between pages,
     the page of each place in the list.
   - **Reading more of the document:** headers and footers (with their
