@@ -61,24 +61,23 @@ tasks:
         - text
         - empty_paragraphs
         - { page_breaks: ['Montag:', 'Dienstag:', 'Mittwoch:', 'Donnerstag:', 'Freitag:'], label: 'Jeder Tag beginnt mit einem Seitenumbruch' }
-        - page_numbers
         - toc
     hint:
       - Lösch zuerst die leeren Absätze, dann setz vor jeden Tag einen Seitenumbruch.
       - Das getippte Inhaltsverzeichnis löschst du ganz und fügst an seiner Stelle ein echtes ein.
-      - Die Seitenzahl kommt als Feld in die Fußzeile; das getippte »Seite 1« löschst du.
+      - Nach einer Änderung aktualisierst du das Verzeichnis, dann nennt es die Überschriften, wie sie jetzt heißen.
     word:
       hint:
         - "Lösch die leeren Absätze vor jedem Tag und setz dort mit <kbd>Strg</kbd>+<kbd>Enter</kbd> einen Seitenumbruch."
-        - "Klick doppelt in die Fußzeile, lösch die getippte 1 und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenzahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Aktuelle Position*, eine einfache Zahl."
         - "Lösch das getippte Verzeichnis, stell den Cursor an seine Stelle und wähl *Referenzen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Inhaltsverzeichnis*, eine automatische Tabelle."
+        - "Aktualisieren: Rechtsklick ins Verzeichnis <i class='bi bi-chevron-right' aria-hidden='true'></i> *Felder aktualisieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Gesamtes Verzeichnis aktualisieren*."
     libreoffice:
       hint:
         - "Lösch die leeren Absätze vor jedem Tag und setz dort mit <kbd>Strg</kbd>+<kbd>Enter</kbd> einen Seitenumbruch."
-        - "Klick in die Fußzeile, lösch die getippte 1 und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*."
         - "Lösch das getippte Verzeichnis, stell den Cursor an seine Stelle und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Inhaltsverzeichnis…*."
+        - "Aktualisieren: Rechtsklick ins Verzeichnis <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis aktualisieren*."
     nextcloud:
       hint:
         - "Lösch die leeren Absätze vor jedem Tag und setz dort einen Seitenumbruch (*Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenumbruch*)."
-        - "Klick in die Fußzeile, lösch die getippte 1 und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*."
         - "Lösch das getippte Verzeichnis, stell den Cursor an seine Stelle und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Inhaltsverzeichnis…*."
+        - "Aktualisieren: Rechtsklick ins Verzeichnis <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis aktualisieren*."

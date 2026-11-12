@@ -1,0 +1,21 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Der fertige Bericht (stufen/reisebericht.docx, von
+# LibreOffice gebaut) muss die Prüfung bestehen; die Vorlage und derselbe
+# Bericht mit festem Datum scheitern. Alle macht dokumente.py.
+format: 1
+activity: headers-and-footnotes
+examples:
+  bericht:
+    pass:
+      - document: stufen/reisebericht.docx
+    fail:
+      - document: ../../static/headers-and-footnotes/08 Reisebericht.docx
+        say: In der Kopfzeile steht »Reisebericht der 7b« noch nicht
+      - document: ../../static/headers-and-footnotes/08 Reisebericht.docx
+        say: noch kein Datum
+      - document: ../../static/headers-and-footnotes/08 Reisebericht.docx
+        say: noch keine Fußnote
+      - document: ../../static/headers-and-footnotes/08 Reisebericht.docx
+        say: von Hand
+      - document: stufen/datum-fest.docx
+        say: fest

@@ -12,8 +12,6 @@ examples:
     fail:
       - document: ../../static/pages-and-contents/07 Reisebericht.docx
         say: Inhaltsverzeichnis, das jemand getippt hat
-      - document: ../../static/pages-and-contents/07 Reisebericht.docx
-        say: »Seite 1«, getippt
       - document: stufen/verzeichnis-veraltet.docx
         say: nicht mehr aktuell
       - document: stufen/ohne-umbrueche.docx

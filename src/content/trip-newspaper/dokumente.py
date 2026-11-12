@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
 from page_picture import page_picture as draw_page  # noqa: E402
 
 STATIC = os.path.join(HERE, '..', '..', 'static', 'trip-newspaper')
-STARTER = '08 Artikel.docx'
+STARTER = '09 Artikel.docx'
 PHOTO = os.path.join(HERE, '..', 'pictures-in-text', 'bilder', 'kranich-uckermark.jpg')
 GREEN = RGBColor(0x2E, 0x6B, 0x3A)
 
@@ -175,4 +175,4 @@ if __name__ == '__main__':
               top_cm=1.6, height_cm=26.6, left_cm=1.8, width_cm=17.4)
     draw_page(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'teaser.webp'),
               top_cm=1.6, height_cm=9.8, left_cm=1.8, width_cm=17.4)
-    print('written: static/trip-newspaper/08 Artikel.docx, stufen/*.docx, bilder/artikel.svg, teaser.webp')
+    print('written: static/trip-newspaper/09 Artikel.docx, stufen/*.docx, bilder/artikel.svg, teaser.webp')

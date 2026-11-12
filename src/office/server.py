@@ -126,9 +126,20 @@ def read_portion(portion):
                     item['sequence'] = field.TextFieldMaster.Name
             except Exception:
                 pass
+        # a date (Word: DATE): fixed, or today's whenever the document opens
+        if item['field'] == 'DateTime':
+            try:
+                item['date'] = bool(field.IsDate)
+                item['fixed'] = bool(field.IsFixed)
+            except Exception:
+                pass
     elif kind == 'Frame':
         # a picture in the line (»Mit Text in Zeile«): no text, but the
         # paragraph is not empty
+        item['text'] = ''
+    elif kind == 'Footnote':
+        # the mark of a footnote the program numbers; its text is in
+        # footnotes (read_footnotes)
         item['text'] = ''
     else:
         return None
@@ -139,6 +150,8 @@ def read_portion(portion):
     item['font'] = portion.CharFontName
     item['color'] = portion.CharColor
     item['caps'] = portion.CharCaseMap == 1
+    # raised (a footnote's number typed and made superscript by hand)
+    item['superscript'] = (portion.CharEscapement or 0) > 0
     item['direct'] = [n for n in CHAR_PROPS if is_direct(portion, n)]
     return item
 
@@ -156,6 +169,9 @@ def read_paragraph(para, styles, where):
         if item:
             portions.append(item)
     text = para.getString()
+    # without the numbers of footnotes (»Karabiner1«): the text as it reads
+    if any(q['type'] == 'Footnote' for q in portions):
+        text = ''.join(q.get('text', '') for q in portions)
     numbering = None
     try:
         if para.NumberingIsNumber and para.NumberingRules is not None:
@@ -260,6 +276,19 @@ def update_indexes(indexes):
             x['up_to_date'] = x['entries'] == x['current']
         except Exception:
             traceback.print_exc()
+
+
+def read_footnotes(doc):
+    """The footnotes the program numbers: their mark and their text."""
+    out = []
+    try:
+        notes = doc.getFootnotes()
+        for i in range(notes.getCount()):
+            note = notes.getByIndex(i)
+            out.append({'label': note.getAnchor().getString(), 'text': note.getString()})
+    except Exception:
+        traceback.print_exc()
+    return out
 
 
 def read_page_parts(doc, styles):
@@ -666,6 +695,7 @@ def analyze(data, filename):
             styles_used = read_styles(doc, [p['style'] for p in paragraphs] +
                                       ['Title'] + [f'Heading {n}' for n in range(1, 4)])
             page_parts = read_page_parts(doc, styles)
+            footnotes = read_footnotes(doc)
             margins = page_margins(doc)
             for i, (text, start, end) in enumerate(starts):
                 for name, at in ((f'p{i}', start), (f'e{i}', end)):
@@ -691,7 +721,8 @@ def analyze(data, filename):
         # machine (shown as <img>, nothing in it runs)
         out_pages = pdf_pages(pdf, folder, pages)
         return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used,
-                'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
+                'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'footnotes': footnotes,
+                'pages': out_pages, 'page_count': len(pages), 'margins': margins}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
 

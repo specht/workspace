@@ -112,7 +112,7 @@ These hold for word processing and for the series still to come
   class uses; its ways and shortcuts are those of the program chosen at the
   top of the page (`<!-- language: word -->` and so on in `lehrkraft.md`,
   as on the page).
-- **Exporting as PDF belongs to the curriculum:** sheet 8 ends with the
+- **Exporting as PDF belongs to the curriculum:** sheet 9 ends with the
   article exported as PDF, a check of its own (`accept: pdf`: a PDF, its
   fonts embedded, the article's words), read by poppler.
 - **Grading:** the last checked version is the hand-in; the teacher sees it
@@ -202,25 +202,40 @@ built by hand; each is a page of a series of its own, about one lesson.
    report, six pages: each day pushed onto its page with empty paragraphs
    (the generator presses Enter until the heading jumps, through the
    service's layout), a table of contents typed with dots, »Seite 1« typed
-   in the footer. Page breaks, the page number as a field, a table of
-   contents from the headings. The service reports indexes (updated in
+   in the footer. Page breaks and a table of contents from the headings; the
+   typed »Seite 1« stays for the next sheet (the page number moved there,
+   12 November 2026, so that each sheet keeps to 45 minutes). The service reports indexes (updated in
    memory after the pages are drawn, to tell whether the student's was up
    to date), headers and footers with their fields and where the footer is
    on each page; the viewer shows the page in view and goes from page to
    page. Found on the way: a page break in the style »Überschrift 1« also
    moves Word's heading of the table of contents, which is based on it; the
    solution sets the break on each day.
-8. **The hand-in:** an article of one's own for the trip newspaper, every
+8. **Kopfzeile, Fußzeile, Fußnoten** (built, `headers-and-footnotes`; the
+   maintainer asked for headers, footers, footnotes and a date field, 12
+   November 2026): the report as sheet 7 leaves it, »Reisebericht der 7b«
+   typed at the top of every day's page, »Seite 1« typed in the footer, two
+   notes numbered by hand (»Karabiner¹«). The name into the header with
+   »Stand:« and the date as a field that updates, the page number as a field,
+   two footnotes. The service reads footnotes (their mark is left out of the
+   paragraph's text), date fields (fixed or not) and raised digits; rules
+   `header_text`, `header_date`, `footnotes`, and `text` with `except:`.
+   Found on the way: LibreOffice's *Einfügen › Feldbefehl › Datum* inserts a
+   fixed date; one that updates is under *Weitere Feldbefehle…*. The typed
+   head is the line with the page break: deleting it loses the break (the
+   page says to set it again).
+9. **The hand-in:** an article of one's own for the trip newspaper, every
    earlier point checked at once, the file handed in for the teacher to grade
-   (stored like a `submit`, viewed with its marked pages on the class page).
+   (stored like a `submit`, viewed with its marked pages on the class page);
+   then the article exported as PDF.
 
 ## Open
 
 - **Grading** (the maintainer asked how; to decide): see the proposal in the
   conversation of 12 November 2026, summed up here once decided.
-- **The curriculum graph:** a series (the eight sheets, the Backrooms levels)
+- **The curriculum graph:** a series (the nine sheets, the Backrooms levels)
   as one node (the maintainer, 12 November 2026); until then the stored
-  layout lacks sheet 8 (production orders quickly, the graph test is red).
+  layout is recomputed whenever a sheet is added.
 - **Every sheet to 45 minutes**, »Formatvorlagen« first.
 - **Illustrations where the sheets only explain** (the maintainer, 12 November
   2026; the site's rule): every sheet looked through for passages that say
@@ -231,14 +246,16 @@ built by hand; each is a page of a series of its own, about one lesson.
   that is the same on every page with the field that is not. The finished
   title page after the check does not count: it comes after the
   explanation.
-- **Hints per program on every task** (the maintainer, 12 November 2026):
-  sheet 1's document task has them (`word:`, `libreoffice:`, `nextcloud:`
-  under the task, each with its own `hint:` list, from »what« to »where
-  exactly«); every other task of sheets 1 to 8 still has only the hints for
-  all programs. Menu names from the programs' German translations (for
-  LibreOffice the `.po` files of its translations), not from memory.
+- **Hints per program** (the maintainer, 12 November 2026): every
+  document check has them (`word:`, `libreoffice:`, `nextcloud:` under the
+  task, each with its own `hint:` list, three steps in the order of the
+  work); the other tasks (predictions, counting) have hints for all
+  programs where a program's menu matters. Menu names from the programs'
+  German translations (for LibreOffice the `.po` files of its translations),
+  not from memory; Word's and Nextcloud Office's to be checked in the
+  programs themselves.
 
-- **For worksheet 8:** the page of each place in the list (the viewer
+- **For worksheet 9:** the page of each place in the list (the viewer
   shows the page in view and goes to a place's page already).
 - **Keeping hold of the file needs https:** Chrome and Edge offer the File
   System Access API only in a secure context (https or localhost). On the

@@ -1,0 +1,125 @@
+# Aufgaben zu »Kopfzeile, Fußzeile, Fußnoten«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/headers-and-footnotes/08 Reisebericht.docx), den
+# fertigen Bericht und die Stufe mit festem Datum macht dokumente.py.
+format: 1
+activity: headers-and-footnotes
+tasks:
+  - id: kopf
+    title: Oben auf jeder Seite
+    prediction: true
+    prompt: |
+      Du klickst auf der dritten Seite in die Kopfzeile und schreibst
+      »Reisebericht der 7b« hinein. Wo steht es danach?
+    check:
+      type: choice
+      options:
+        - Nur oben auf der dritten Seite.
+        - Oben auf jeder Seite.
+        - Oben auf der dritten Seite und auf allen danach.
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es, wenn jede Seite ihre eigene Kopfzeile hätte. Die Kopfzeile gehört aber zu allen Seiten gemeinsam.
+      - when: { picked: 2 }
+        say: Die Kopfzeile kennt kein »ab hier«. Sie ist auf jeder Seite dieselbe, auch auf den Seiten davor.
+    solution: |
+      Oben auf jeder Seite: Die Kopfzeile ist auf allen Seiten dieselbe.
+
+  - id: getippt
+    title: Von Hand oben auf den Seiten
+    prompt: |
+      Schalte die Formatierungszeichen ein. Wie oft hat jemand »Reisebericht der
+      7b« oben auf eine Seite getippt? Den großen Titel auf der ersten Seite
+      zählst du nicht mit.
+    check:
+      type: number
+      expect: 5
+      tolerance: 0
+    feedback:
+      - when: { between: [6, 6] }
+        say: Der große Titel auf der ersten Seite ist kein Kopf einer Seite, sondern der Titel des Berichts. Zähl ihn nicht mit.
+    hint: Jeder Tag hat eine eigene Seite. Sieh nach, was über jeder Überschrift steht.
+    solution: |
+      Fünfmal, über jedem Tag einmal.
+
+  - id: datum
+    title: Der Stand in einer Woche
+    prediction: true
+    prompt: |
+      In der Kopfzeile steht »Stand:« und dahinter das Datum als Feld. Du
+      speicherst den Bericht heute und öffnest ihn in einer Woche wieder. Was
+      steht dann hinter »Stand:«?
+    check:
+      type: choice
+      options:
+        - Das Datum von heute, dem Tag des Speicherns.
+        - Das Datum in einer Woche, dem Tag des Öffnens.
+        - Nichts, bis jemand das Feld neu einfügt.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es bei einem getippten oder einem festen Datum. Dieses Feld rechnet das Datum jedes Mal neu aus.
+      - when: { picked: 2 }
+        say: Ein Feld bleibt im Dokument. Das Programm setzt beim Öffnen nur seinen Wert neu ein.
+    solution: |
+      Das Datum des Tags, an dem du ihn öffnest: Das Feld setzt jedes Mal das
+      heutige Datum ein.
+
+  - id: wandert
+    title: Die Fußnote auf Reisen
+    prediction: true
+    prompt: |
+      Die Fußnote zum Moorpfad steht unten auf der Seite zum Mittwoch. Jemand
+      schreibt so viel zum Vormittag dazu, dass der Absatz mit dem Moorpfad
+      auf die nächste Seite rutscht. Wo steht die Fußnote danach?
+    check:
+      type: choice
+      options:
+        - Unten auf der Seite zum Mittwoch, wo sie vorher stand.
+        - Unten auf der nächsten Seite, wo jetzt der Moorpfad steht.
+        - Am Ende des ganzen Berichts.
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es bei einer getippten Anmerkung. Eine Fußnote gehört zu ihrem Wort, nicht zu einer Seite.
+      - when: { picked: 2 }
+        say: Am Ende des Dokuments stehen Endnoten. Eine Fußnote steht unten auf der Seite ihres Worts.
+    solution: |
+      Unten auf der Seite, auf der jetzt der Moorpfad steht: Das Programm hält
+      jede Fußnote auf der Seite ihres Worts.
+
+  - id: bericht
+    title: Der Bericht mit Kopf, Fuß und Fußnoten
+    prompt: |
+      Prüfe deinen Bericht. Die Prüfung markiert auf deiner Seite jede Stelle,
+      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      prüfst.
+    check:
+      type: document
+      file: headers-and-footnotes/08 Reisebericht.docx
+      rules:
+        - { text: true, except: ['Reisebericht der 7b'] }
+        - { header_text: 'Reisebericht der 7b' }
+        - header_date
+        - page_numbers
+        - { footnotes: 2 }
+    hint:
+      - Fang oben an. Schreib den Namen des Berichts in die Kopfzeile und lösch die getippten Zeilen oben auf den Seiten.
+      - Dahinter kommen »Stand:« und das Datum als Feld, das sich aktualisiert. Die Seitenzahl in der Fußzeile wird auch ein Feld.
+      - Zuletzt die Fußnoten. Lösch die getippte Zahl und die getippte Anmerkung und füg an derselben Stelle eine Fußnote ein.
+    word:
+      hint:
+        - "Klick doppelt in den oberen Rand, schreib »Reisebericht der 7b« hinein und lösch die getippten Zeilen oben auf den Seiten. Rutscht ein Tag hoch, setz mit <kbd>Strg</kbd>+<kbd>Enter</kbd> wieder einen Seitenumbruch."
+        - "In der Kopfzeile: »Stand:«, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Datum und Uhrzeit* mit Haken bei *Automatisch aktualisieren*. In der Fußzeile: die 1 löschen, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenzahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Aktuelle Position*."
+        - "Für jede Anmerkung: die getippte Zahl und den getippten Satz löschen, den Cursor hinter das Wort, *Referenzen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Fußnote einfügen*, den Satz unten hineinschreiben."
+    libreoffice:
+      hint:
+        - "Schalte unter *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopf-/Fußzeile* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopfzeile* die Kopfzeile ein, schreib »Reisebericht der 7b« hinein und lösch die getippten Zeilen oben auf den Seiten. Rutscht ein Tag hoch, setz mit <kbd>Strg</kbd>+<kbd>Enter</kbd> wieder einen Seitenumbruch."
+        - "In der Kopfzeile: »Stand:«, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Feldbefehle…*, *Dokument*, Typ *Datum*, *Datum* (nicht *Datum (fix)*). In der Fußzeile: die 1 löschen, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*."
+        - "Für jede Anmerkung: die getippte Zahl und den getippten Satz löschen, den Cursor hinter das Wort, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Fuß-/Endnote* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Fußnote*, den Satz unten hineinschreiben."
+    nextcloud:
+      hint:
+        - "Schalte unter *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopf-/Fußzeile* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopfzeile* die Kopfzeile ein, schreib »Reisebericht der 7b« hinein und lösch die getippten Zeilen oben auf den Seiten. Rutscht ein Tag hoch, setz wieder einen Seitenumbruch (*Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenumbruch*)."
+        - "In der Kopfzeile: »Stand:«, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Feldbefehle…*, *Dokument*, Typ *Datum*, *Datum* (nicht *Datum (fix)*). In der Fußzeile: die 1 löschen, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*."
+        - "Für jede Anmerkung: die getippte Zahl und den getippten Satz löschen, den Cursor hinter das Wort, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Fuß-/Endnote* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Fußnote*, den Satz unten hineinschreiben."

@@ -53,10 +53,14 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
+    # a footnote's number typed by hand (»Karabiner¹«, »¹ Ein Karabiner …«)
+    SUPERSCRIPT_DIGITS = /[¹²³⁴⁵⁶⁷⁸⁹⁰]/
+    # a date typed by hand: »12.11.2026«, »12. November«
+    TYPED_DATE = /\b\d{1,2}\.\s?\d{1,2}\.(?:\d{2,4})?|#{DocumentDates::DATE.source}/
     EDGE_PUNCT = /\A[[:punct:]»«„“”‚‘’–•·]+|[[:punct:]»«„“”‚‘’–•·]+\z/
     # a caption typed by hand or written by the program
     CAPTION_TEXT = /\A\s*(?:Abbildung|Abb\.|Bild|Grafik|Foto|Figure|Fig\.|Illustration)\s*(\d+)/i
@@ -97,6 +101,7 @@ module DocumentCheck
             end
             next unless rule.is_a?(Hash)
             known = %w[label say] + case name
+                when 'text' then %w[text except]
                 when 'align' then %w[align paragraph]
                 when 'gaps' then %w[gaps before]
                 when 'size' then %w[size paragraphs]
@@ -122,7 +127,9 @@ module DocumentCheck
             errors << 'side must be left or right' if name == 'wrap' && rule.key?('side') && !%w[left right].include?(rule['side'])
             errors << 'headings needs a list of pieces of text and level: (1, 2, …)' if name == 'headings' && !(rule['headings'].is_a?(Array) && rule['level'].is_a?(Integer) && rule['level'].positive?)
             errors << 'style_changed needs the name of a paragraph style (Heading 1)' if name == 'style_changed' && !(rule['style_changed'].is_a?(String) && !rule['style_changed'].empty?)
-            %w[words heading_count picture_count pdf_words].each do |k|
+            errors << 'except must be a list of paragraphs (their whole text)' if name == 'text' && rule.key?('except') && !(rule['except'].is_a?(Array) && rule['except'].all? { |x| x.is_a?(String) })
+            errors << 'header_text must be a piece of text' if name == 'header_text' && !(rule['header_text'].is_a?(String) && !rule['header_text'].empty?)
+            %w[words heading_count picture_count pdf_words footnotes].each do |k|
                 errors << "#{k} must be a positive number" if name == k && !(rule[k].is_a?(Integer) && rule[k].positive?)
             end
             errors << 'names must be a list of text' if rule.key?('names') && !(rule['names'].is_a?(Array) && rule['names'].all? { |n| n.is_a?(String) })
@@ -256,7 +263,7 @@ module DocumentCheck
 
     # ---- the rules
 
-    def self.rule_text(_rule, body, starter, all = nil, _model = nil)
+    def self.rule_text(rule, body, starter, all = nil, model = nil)
         item = Item.new(:rule => 'text', :label => 'Der Text ist noch vollständig', :ok => true, :marks => [])
         return item if starter.nil? || starter['paragraphs'].nil?
 
@@ -265,12 +272,17 @@ module DocumentCheck
         # program wrote as »1«)
         # any date is the same word: the starting file's dates were filled
         # in on the day of its download (DocumentDates)
-        words = ->(ps) { ps.flat_map { |p| DocumentDates.normalize(p['text']).split(/\s+/) }.map { |w| w.gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
-        # the whole document, the cells of tables too
-        have = words.(all || body).tally
+        words = ->(ps) { ps.flat_map { |p| DocumentDates.normalize(p['text']).split(/\s+/) }.map { |w| w.gsub(SUPERSCRIPT_DIGITS, '').gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
+        # the whole document, the cells of tables too, and what moved into
+        # footnotes, headers and footers (a note typed in the text)
+        extra = (model && model['footnotes'] || []).map { |n| { 'text' => n['text'] } } +
+            (model && model['page_parts'] || []).flat_map { |part| %w[header footer].map { |k| { 'text' => (part[k] || {})['text'].to_s } } }
+        have = words.(Array(all || body) + extra).tally
         # lines of a table of contents typed in the starting file (dots or a
         # tab, then a page number) are replaced by a real one
-        theirs = starter['paragraphs'].reject { |p| p['text'].to_s.match?(TYPED_TOC_LINE) }
+        # and lines that go into the header (except:, typed on every page)
+        skip = Array(rule.is_a?(Hash) ? rule['except'] : nil).map { |x| squish(x) }
+        theirs = starter['paragraphs'].reject { |p| p['text'].to_s.match?(TYPED_TOC_LINE) || skip.include?(squish(p['text'])) }
         missing = words.(theirs).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
         return item if missing.empty?
 
@@ -1085,6 +1097,70 @@ module DocumentCheck
         count = model['text'].to_s.split(/\s+/).count { |w| w.match?(/[[:alnum:]]/) }
         item = Item.new(:rule => 'pdf_words', :label => "Dein Artikel, mindestens #{want} Wörter", :ok => count >= want, :marks => [])
         item.message = "In diesem PDF stehen #{count} #{count == 1 ? 'Wort' : 'Wörter'}; dein Artikel hat mindestens #{want}. Ist es das PDF deines Artikels?" unless item.ok
+        item
+    end
+
+    # ---- header, footer and footnotes (»Kopfzeile, Fußzeile, Fußnoten«)
+
+    def self.headers(model)
+        (model['page_parts'] || []).map { |part| part['header'] }.compact
+    end
+
+    # a line that belongs at the top of every page: in the header, and not
+    # typed at the top of the pages any more (the title page keeps its title)
+    def self.rule_header_text(rule, body, _starter, _all = nil, model = nil)
+        want = rule['header_text'].to_s
+        item = Item.new(:rule => 'header_text', :label => "»#{want}« in der Kopfzeile", :ok => false, :marks => [])
+        in_header = headers(model).any? { |h| squish(h['text']).include?(squish(want)) }
+        typed = body.select { |p| p['plain'] == squish(want) && !%w[Title Titel].include?(p['style']) }
+        item.ok = in_header && typed.empty?
+        return item if item.ok
+
+        item.marks = typed.map { |p| para_mark(p).merge(:title => 'getippt') }
+        item.message = if !in_header
+            "In der Kopfzeile steht »#{q(want)}« noch nicht. Schreib es einmal in die Kopfzeile, dann steht es auf jeder Seite." +
+                (typed.empty? ? '' : " Die getippten Zeilen oben auf den Seiten löschst du danach.")
+        else
+            "»#{q(want)}« steht #{typed.size == 1 ? 'noch einmal' : "noch #{typed.size}-mal"} getippt oben auf einer Seite. " \
+                'Lösch diese Zeilen: Die Kopfzeile zeigt es schon auf jeder Seite.'
+        end
+        item
+    end
+
+    # the date in the header as a field that shows today's date whenever
+    # the document is opened, not typed and not fixed
+    def self.rule_header_date(_rule, _body, _starter, _all = nil, model = nil)
+        item = Item.new(:rule => 'header_date', :label => 'Das Datum als Feld in der Kopfzeile', :ok => false, :marks => [])
+        fields = headers(model).flat_map { |h| h['portions'] || [] }.select { |x| x['field'] == 'DateTime' && x['date'] != false }
+        item.ok = fields.any? { |x| !x['fixed'] }
+        return item if item.ok
+
+        item.message = if fields.any?
+            'Das Datum in der Kopfzeile ist fest: Es bleibt das Datum, an dem du es eingefügt hast. Füg eins ein, das sich aktualisiert.'
+        elsif headers(model).any? { |h| h['text'].to_s.match?(TYPED_DATE) }
+            'Das Datum in der Kopfzeile ist getippt. Lösch es und füg das Datum als Feld ein, dann zeigt es immer den Tag, an dem jemand das Dokument öffnet.'
+        else
+            'In der Kopfzeile steht noch kein Datum. Schreib »Stand:« hinein und füg dahinter das Datum als Feld ein.'
+        end
+        item
+    end
+
+    # footnotes the program numbers: at least so many, none numbered by
+    # hand (a raised digit in the text, a note typed at the end of a page)
+    def self.rule_footnotes(rule, body, _starter, _all = nil, model = nil)
+        want = rule['footnotes'].to_i
+        count = (model['footnotes'] || []).size
+        item = Item.new(:rule => 'footnotes', :label => "Mindestens #{want} Fußnoten des Programms", :ok => false, :marks => [])
+        typed = body.select do |p|
+            p['text'].to_s.match?(SUPERSCRIPT_DIGITS) ||
+                (p['portions'] || []).any? { |x| x['superscript'] && x['text'].to_s.match?(/\A\s*\d+\s*\z/) }
+        end
+        item.ok = count >= want && typed.empty?
+        return item if item.ok
+
+        item.marks = typed.map { |p| para_mark(p).merge(:title => 'von Hand nummeriert') }
+        item.message = (count.zero? ? 'Dein Dokument hat noch keine Fußnote des Programms.' : "Dein Dokument hat #{count} #{count == 1 ? 'Fußnote' : 'Fußnoten'} des Programms; es sollen mindestens #{want} sein.") +
+            (typed.empty? ? '' : " #{typed.size == 1 ? 'Ein Absatz hat' : "#{typed.size} Absätze haben"} noch eine Nummer von Hand. Lösch die getippte Nummer und die getippte Anmerkung und füg an derselben Stelle eine Fußnote ein.")
         item
     end
 

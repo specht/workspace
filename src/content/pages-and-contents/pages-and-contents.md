@@ -62,28 +62,6 @@ In Nextcloud Office steht er auch unter *Einfügen* <i class='bi bi-chevron-righ
 Seitenumbruch. Mach danach den Montag länger und sieh nach, wo der Dienstag
 jetzt steht.
 
-## Seitenzahlen
-
-Unten auf jeder Seite steht »Seite 1«, auch auf der letzten. Die **Fußzeile**
-ist auf jeder Seite dieselbe; wer dort eine Zahl tippt, bekommt sie auf jede
-Seite. Die Seitenzahl ist darum ein **Feld**, wie die Nummer einer
-Bildunterschrift: Das Programm setzt auf jeder Seite ihre eigene Zahl ein.
-
-<img class='drawing' style='width: 35em' src='fusszeile.svg' alt='Zwei Reihen mit je drei Seiten, unten auf jeder die Fußzeile. Oben »getippt«: auf jeder Seite »Seite 1«. Unten »ein Feld«: »Seite 1«, »Seite 2«, »Seite 3«, die Zahl grau hinterlegt wie ein Feld'>
-
-<!-- language: word -->
-In Word klickst du doppelt in die Fußzeile, löschst die getippte 1 und wählst
-im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenzahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Aktuelle Position* eine einfache Zahl.
-<!-- /language -->
-<!-- language: libreoffice -->
-In LibreOffice klickst du in die Fußzeile, löschst die getippte 1 und wählst
-*Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*.
-<!-- /language -->
-<!-- language: nextcloud -->
-In Nextcloud Office klickst du in die Fußzeile, löschst die getippte 1 und
-wählst *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*.
-<!-- /language -->
-
 ## Ein Inhaltsverzeichnis
 
 Das Inhaltsverzeichnis auf der Titelseite hat jemand getippt, mit Punkten bis
@@ -125,6 +103,6 @@ _task(bericht)
 <img class='paper' src='bilder/titelseite-fertig.svg' alt='Die fertige Titelseite: unter dem Titel ein Inhaltsverzeichnis mit allen Tagen und ihren Teilen, die Seitenzahlen rechtsbündig am Rand, mit Punkten dorthin'>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Schreib in den Dienstag so viel dazu, dass er über zwei Seiten geht, und aktualisiere das Verzeichnis. Achte auf die Seitenzahlen im Verzeichnis und unten auf den Seiten.
+<strong>Ausprobieren:</strong> Schreib in den Dienstag so viel dazu, dass er über zwei Seiten geht, und aktualisiere das Verzeichnis. Achte auf die Seitenzahlen im Verzeichnis.
 </div>
 <!-- /after -->

@@ -402,3 +402,29 @@ test('the article as PDF is checked, and each card says which file it wants', as
   await article.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel.pdf'));
   await expect(article).toContainText('Das ist eine PDF-Datei');
 });
+
+// »Kopfzeile, Fußzeile, Fußnoten«: what is typed at the top and bottom of
+// the pages goes into the header and footer as fields, the notes numbered
+// by hand become footnotes.
+test('a report is checked for its header, date, page number and footnotes', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/headers-and-footnotes');
+  await states;
+  const card = page.locator(".task-card[data-task='headers-and-footnotes/bericht']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/headers-and-footnotes/08 Reisebericht.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(4);
+  await expect(report.locator('.document-checklist li.document-ok')).toContainText('Der Text ist noch vollständig');
+  // the typed heads and the notes numbered by hand are marked on the pages
+  await expect(report.locator('.document-mark').first()).toBeAttached();
+  if (shots) await page.screenshot({ path: path.join(shots, 'headers-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/headers-and-footnotes/stufen/datum-fest.docx'));
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(1);
+  await expect(report.locator('.document-checklist li.document-open')).toContainText('Das Datum als Feld in der Kopfzeile');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/headers-and-footnotes/stufen/reisebericht.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
+});

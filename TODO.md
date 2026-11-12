@@ -82,7 +82,7 @@ generated screenshots:
 * [ ] Case server: try the SSH chapter with a whole class (1000 accounts, per-account limits, everyone on `museum.bitstein` at once) before switching it on elsewhere
 * [ ] Pixel wall: check how it behaves with a whole class painting on one Workspace
 
-* [ ] Office, word processing (`docs/plan-textverarbeitung.md`, »Open«): hints per program (Word, LibreOffice, Nextcloud Office) on every task of sheets 1 to 8, as sheet 1's document task has them; every sheet to 45 minutes
+* [ ] Office, word processing (`docs/plan-textverarbeitung.md`, »Open«): try each sheet with a class and adjust to 45 minutes; check the menu names of Word and Nextcloud Office in the programs themselves
 
 Do not turn PixelRAM into a second raylib by adding drawing primitives for convenience.
 

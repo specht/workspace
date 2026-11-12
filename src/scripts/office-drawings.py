@@ -647,11 +647,65 @@ def fusszeile():
                              weight='700' if not field and p else '400'))
         note = ('auf jeder Seite »Seite 1«' if not field else 'auf jeder Seite ihre eigene Zahl')
         body.append(text(110, y0 + 124, note, 13, GREY))
-    svg('fusszeile', 'pages-and-contents', w, h, body, 'Die Seitenzahl getippt und als Feld in der Fußzeile')
+    svg('fusszeile', 'headers-and-footnotes', w, h, body, 'Die Seitenzahl getippt und als Feld in der Fußzeile')
+
+
+
+# ---- Kopfzeile, Fußzeile, Fußnoten
+
+def seite():
+    """a page and its parts: the header, the text with a footnote's number,
+    the footnote above the footer, the footer"""
+    w, h = 420, 430
+    body = []
+    px, py, pw, ph = 16, 14, 272, 400
+    body.append(paper(px, py, pw, ph))
+    tx, tw = px + 22, pw - 44
+    # the header: its own area above the text
+    body.append(rect(tx - 6, py + 12, tw + 12, 30, PBLUE_BG, r=3))
+    body.append(text(tx, py + 32, 'Reisebericht der 7b', 11, INK))
+    body.append(text(tx + tw, py + 32, 'Stand: 12.11.2026', 11, INK, 'end'))
+    # the text
+    y = py + 74
+    body.append(text(tx, y, 'Dienstag: Kletterwald', 14, PGREEN, weight='700'))
+    y += 22
+    for k in range(3):
+        body.append(bar(tx, y, tw - (k % 2) * 30))
+        y += 14
+    body.append(text(tx, y + 2, 'Immer ein Karabiner', 11, INK))
+    kw = measure('Immer ein Karabiner', 11)
+    body.append(text(tx + kw + 1, y - 3, '1', 8, PAMBER, weight='700'))
+    body.append(bar(tx + kw + 10, y, tw - kw - 10))
+    y += 14
+    for k in range(4):
+        body.append(bar(tx, y, tw - (k % 3) * 24))
+        y += 14
+    # the footnote, above the footer, under a short line
+    fy = py + ph - 76
+    body.append(line(tx, fy, tx + 70, fy, INK, 0.8))
+    body.append(rect(tx - 6, fy + 5, tw + 12, 26, PAMBER_BG, r=3))
+    body.append(text(tx, fy + 22, '1', 8, PAMBER, weight='700'))
+    body.append(text(tx + 7, fy + 25, 'Ein Karabiner ist ein Haken mit …', 10, INK))
+    # the footer
+    body.append(rect(tx - 6, py + ph - 40, tw + 12, 28, PBLUE_BG, r=3))
+    body.append(text(px + pw / 2, py + ph - 21, 'Seite 3', 11, INK, 'middle'))
+    # what each part is
+    lx = px + pw + 22
+    # (the footnote's label a little higher, above its two lines of note,
+    # so that the footer's label has its own place below)
+    for label, at, ly, colour in [('Kopfzeile', py + 27, py + 27, BLUE), ('Text', py + 150, py + 150, GREY),
+                                  ('Fußnote', fy + 18, fy - 34, AMBER), ('Fußzeile', py + ph - 26, py + ph - 26, BLUE)]:
+        body.append(line(px + pw - 8, at, lx - 6, ly, colour, 1.2))
+        body.append(text(lx, ly + 5, label, 15, TEXT, weight='600'))
+    body.append(text(lx, py + 27 + 22, 'auf jeder Seite', 12, GREY))
+    body.append(text(lx, py + ph - 26 + 22, 'auf jeder Seite', 12, GREY))
+    body.append(text(lx, fy - 34 + 22, 'auf der Seite', 12, GREY))
+    body.append(text(lx, fy - 34 + 38, 'ihres Worts', 12, GREY))
+    svg('seite', 'headers-and-footnotes', w, h, body, 'Eine Seite mit Kopfzeile, Text, Fußnote und Fußzeile')
 
 
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
-                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile]}
+                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite]}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:
