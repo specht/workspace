@@ -225,6 +225,16 @@ Nothing at the moment.
 - [x] `latex` (1 November 2026): page, cards and teacher note read, nothing to
   change: the pictures of the finished paper wait in after blocks, 2.46 s
   checks out, the »??« question is not answered before it.
+- [x] the seven sheets on spreadsheets, `spreadsheet-cells` to
+  `trip-accounts` (12 November 2026, a0fb6c7b; still in development): pages,
+  cards and teacher notes read on the desktop and at 390 px, light and dark.
+  The paragraph after »Was C7 zeigt« told that C7 shows no error, now in its
+  after block; an alt text with »E33>=4« swallowed the WENN paragraph and its
+  prediction (fixed for every page in the pipeline, d293f4e4); »Umschalt« for
+  Shift; full stops after »…«; Playfair's chart was a thumbnail in its box,
+  now a figure under it; the drawings got phone arrangements; the Office
+  switch made every Office page 7 px wider than a phone. Facts with sources
+  in history-sources.yaml; Star Division 1985, not 1984.
 
 ### Web
 
