@@ -5,10 +5,10 @@ Lernende schreiben einen eigenen Artikel und bauen ihn mit allem, was die Reihe 
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>25 Minuten:</b> Thema wählen, Text schreiben, Zwischenüberschriften.</li>
-<li><b>15 Minuten:</b> Liste, Bild mit Unterschrift, Quelle und Alternativtext, Seitenzahl, prüfen, bis alles erfüllt ist.</li>
+<li><b>15 Minuten:</b> Liste, Bild mit Unterschrift, Quelle und Alternativtext, Seitenzahl, prüfen, bis alles erfüllt ist, zuletzt als PDF exportieren.</li>
 </ul></td></tr>
-<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet: Die Liste der Punkte auf der Seite, und dass jeder Punkt sein Blatt hat. Wo freie Fotos zu finden sind (Wikimedia Commons) und wie ihre Quelle in die Bildunterschrift kommt. Dass die zuletzt geprüfte Fassung die Abgabe ist.</td></tr>
-<tr><th>Abgabe</th><td>Die zuletzt geprüfte Fassung bleibt gespeichert. Auf der Klassenseite stehen unter der Aufgabe die Abgaben: je Person das Ergebnis der Prüfung (»Artikel.docx: 14 von 16, offen: …«), <em>Ansehen</em> zeigt die Seiten mit allen Markierungen so, wie die Person sie gesehen hat, <em>Herunterladen</em> die Datei selbst. Eine neue Prüfung ersetzt die Abgabe.</td></tr>
+<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet: Die Liste der Punkte auf der Seite, und dass jeder Punkt sein Blatt hat. Wo freie Fotos zu finden sind (Wikimedia Commons) und wie ihre Quelle in die Bildunterschrift kommt. Dass die zuletzt geprüfte Fassung die Abgabe ist. Wie man den Artikel als PDF exportiert und dass das PDF eine Kopie zum Weitergeben ist, kein Ersatz für das Dokument.</td></tr>
+<tr><th>Abgabe</th><td>Die zuletzt geprüfte Fassung bleibt gespeichert. Auf der Klassenseite stehen unter der Aufgabe die Abgaben: je Person das Ergebnis der Prüfung (»Artikel.docx: 14 von 16, offen: …«), <em>Ansehen</em> zeigt die Seiten mit allen Markierungen so, wie die Person sie gesehen hat, <em>Herunterladen</em> die Datei selbst. Eine neue Prüfung ersetzt die Abgabe. Das PDF ist eine Aufgabe für sich (»Der Artikel als PDF«), mit ihren Abgaben genauso darunter.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Mindestens 200 Wörter; keine doppelten Leerzeichen, leeren Absätze oder Zeilenumbrüche von Hand; höchstens zwei Schriftarten, nichts unterstrichen, keine Großbuchstaben als Format; keine getippten Listenzeichen.</li>
 <li>Mindestens zwei Überschriften mit Formatvorlage, keine Ebene übersprungen, keine von Hand formatiert.</li>

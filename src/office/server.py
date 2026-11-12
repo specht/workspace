@@ -581,8 +581,56 @@ def place(paragraphs, dests, pages, margins):
         p['words'] = [[w[0]] + [round(v, 1) for v in w[1:5]] + [w[5]] for w in mine]
 
 
+def pdf_pages(pdf, folder, pages):
+    """each page of a PDF as SVG, as the card shows it"""
+    out = []
+    for i in range(min(len(pages), MAX_PAGES)):
+        target = os.path.join(folder, f'page-{i + 1}.svg')
+        subprocess.run(['pdftocairo', '-svg', '-f', str(i + 1), '-l', str(i + 1), pdf, target],
+                       capture_output=True, timeout=60)
+        if not os.path.exists(target):
+            break
+        with open(target, 'rb') as f:
+            svg = base64.b64encode(f.read()).decode('ascii')
+        out.append({'width': pages[i]['width'], 'height': pages[i]['height'], 'svg': svg})
+    return out
+
+
+FONT_LINE = re.compile(r'^(\S+)\s+.*\s(yes|no)\s+(yes|no)\s+(yes|no)\s+\d+\s+\d+\s*$')
+
+
+def analyze_pdf(data):
+    """A PDF someone exported (the hand-in as PDF): read by poppler, not
+    LibreOffice; its pages, its text and its fonts, whether each is
+    embedded (so that it looks the same on every computer)."""
+    folder = tempfile.mkdtemp(prefix='pdf-')
+    try:
+        pdf = os.path.join(folder, 'in.pdf')
+        with open(pdf, 'wb') as f:
+            f.write(data)
+        if not data.startswith(b'%PDF'):
+            return {'error': 'format', 'formats': sorted(FORMATS | {'pdf'})}
+        pages = words(pdf, folder)
+        if not pages:
+            return {'error': 'pdf'}
+        text = subprocess.run(['pdftotext', '-layout', '-l', str(MAX_PAGES), pdf, '-'],
+                              capture_output=True, timeout=30).stdout.decode('utf-8', errors='replace')
+        listing = subprocess.run(['pdffonts', pdf], capture_output=True, timeout=30).stdout.decode('utf-8', errors='replace')
+        fonts = []
+        for line in listing.splitlines()[2:]:
+            m = FONT_LINE.match(line)
+            if m:
+                fonts.append({'name': m.group(1).split('+')[-1], 'embedded': m.group(2) == 'yes'})
+        return {'pdf': True, 'paragraphs': [], 'text': text[:200000], 'fonts': fonts,
+                'pages': pdf_pages(pdf, folder, pages), 'page_count': len(pages)}
+    finally:
+        shutil.rmtree(folder, ignore_errors=True)
+
+
 def analyze(data, filename):
     ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
+    if ext == 'pdf':
+        return analyze_pdf(data)
     if ext not in FORMATS:
         return {'error': 'format', 'formats': sorted(FORMATS)}
     folder = tempfile.mkdtemp(prefix='job-')
@@ -641,16 +689,7 @@ def analyze(data, filename):
         # each page as SVG: vector, sharp at any zoom on the card; the
         # letters become paths, so the fonts need not be on the viewer's
         # machine (shown as <img>, nothing in it runs)
-        out_pages = []
-        for i in range(min(len(pages), MAX_PAGES)):
-            target = os.path.join(folder, f'page-{i + 1}.svg')
-            subprocess.run(['pdftocairo', '-svg', '-f', str(i + 1), '-l', str(i + 1), pdf, target],
-                           capture_output=True, timeout=60)
-            if not os.path.exists(target):
-                break
-            with open(target, 'rb') as f:
-                svg = base64.b64encode(f.read()).decode('ascii')
-            out_pages.append({'width': pages[i]['width'], 'height': pages[i]['height'], 'svg': svg})
+        out_pages = pdf_pages(pdf, folder, pages)
         return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used,
                 'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
     finally:

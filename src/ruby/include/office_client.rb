@@ -9,7 +9,9 @@ require 'net/http'
 module OfficeClient
     URL = ENV['OFFICE_URL'] || 'http://office:8000'
     MAX_BYTES = 10 * 1024 * 1024
-    FORMATS = %w[docx odt doc rtf].freeze
+    # pdf: a document exported as PDF (a check with accept: pdf), read by
+    # poppler, not LibreOffice
+    FORMATS = %w[docx odt doc rtf pdf].freeze
     # what the service answers when it cannot read a document, for the card
     ERRORS = {
         'format' => 'Das ist kein Textdokument, das ich lesen kann. Speichere es als .docx (Word) oder .odt (LibreOffice).',
@@ -18,6 +20,7 @@ module OfficeClient
         'failed' => 'Diese Datei konnte ich nicht lesen. Öffne sie noch einmal, speichere sie als .docx und lade sie neu hoch.',
         'too_big' => 'Die Datei ist größer als 10 MB. Sind große Bilder darin?',
         'empty' => 'Die Datei ist leer.',
+        'pdf' => 'Diese PDF-Datei konnte ich nicht lesen. Exportiere sie noch einmal aus deinem Programm.',
     }.freeze
 
     class Unavailable < StandardError; end

@@ -1,7 +1,8 @@
 # The documents of »Die Zeitung der Klassenfahrt«: the starting file (a
 # title and one line, the article is the student's own), an article built
 # as the series taught (the solution, task-examples.yaml) and the same
-# article put together in a hurry (a stage that must fail). Run in the
+# article put together in a hurry (a stage that must fail); the article and
+# the empty starting file exported as PDF (the check of the PDF). Run in the
 # office image:
 #
 #     src/scripts/office python3 src/content/trip-newspaper/dokumente.py
@@ -146,6 +147,21 @@ def article(path, hurried=False):
     doc.save(path)
 
 
+def to_pdf(docx, target):
+    """the document exported as PDF, as Word or LibreOffice export it
+    (the fonts embedded): an example for the check of the PDF"""
+    import shutil
+    import subprocess
+    import tempfile
+    work = tempfile.mkdtemp()
+    try:
+        subprocess.run(['soffice', '--headless', f'-env:UserInstallation=file://{work}/profile',
+                        '--convert-to', 'pdf', '--outdir', work, docx], check=True, capture_output=True)
+        shutil.copy(os.path.join(work, os.path.splitext(os.path.basename(docx))[0] + '.pdf'), target)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
 if __name__ == '__main__':
     os.makedirs(STATIC, exist_ok=True)
     os.makedirs(os.path.join(HERE, 'stufen'), exist_ok=True)
@@ -153,6 +169,8 @@ if __name__ == '__main__':
     starter(os.path.join(STATIC, STARTER))
     article(os.path.join(HERE, 'stufen', 'artikel.docx'))
     article(os.path.join(HERE, 'stufen', 'artikel-eilig.docx'), hurried=True)
+    to_pdf(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'stufen', 'artikel.pdf'))
+    to_pdf(os.path.join(STATIC, STARTER), os.path.join(HERE, 'stufen', 'vorlage.pdf'))
     draw_page(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'bilder', 'artikel.svg'),
               top_cm=1.6, height_cm=26.6, left_cm=1.8, width_cm=17.4)
     draw_page(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'teaser.webp'),

@@ -1980,6 +1980,22 @@ check:
     - toc                 # ein Inhaltsverzeichnis des Programms, aktuell, keines getippt
 ```
 
+Ein Dokument, als PDF exportiert, prüft eine Aufgabe mit `accept: pdf` (ohne
+`file:`; die Karte bietet keine Vorlage an und nimmt nur `.pdf`). Der Dienst
+liest es mit poppler, nicht mit LibreOffice: seine Seiten (die Karte zeigt sie
+ohne Markierungen), seinen Text und seine Schriften. Die Regeln dazu: `pdf`
+(eine Seite mindestens), `pdf_fonts` (jede Schrift steckt in der Datei; eine,
+die fehlt, sieht auf einem anderen Computer anders aus) und
+`{ pdf_words: 200 }`. Ein PDF bei einer Aufgabe ohne `accept: pdf` und ein
+Dokument bei einer mit bekommen einen Satz, welche Datei hierhin gehört.
+
+```yaml
+check:
+  type: document
+  accept: pdf
+  rules: [pdf, pdf_fonts, { pdf_words: 200 }]
+```
+
 Ein Dokument aus Word, LibreOffice oder Nextcloud Office (`.docx`, `.odt`,
 `.doc`, `.rtf`, höchstens 10 MB). Die Karte bietet die Vorlage an und nimmt
 die Datei der Lernenden als Upload (`POST /api/task/document`); der Dienst

@@ -714,7 +714,7 @@ module TaskSpec
             errors.concat(KeyboardCheck.spec_errors(check))
         when 'document'
             # A document the student uploads, read by the office service.
-            allowed += %w[file rules dates]
+            allowed += %w[file rules dates accept]
             errors.concat(DocumentCheck.spec_errors(check))
             errors.concat(DocumentDates.spec_errors(check['dates'])) if check.key?('dates')
         end

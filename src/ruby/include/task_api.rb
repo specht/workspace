@@ -197,7 +197,8 @@ class Main < Sinatra::Base
         halt 404 if file.nil?
         response.headers['Cache-Control'] = 'no-store'
         types = { 'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                  'odt' => 'application/vnd.oasis.opendocument.text', 'doc' => 'application/msword', 'rtf' => 'application/rtf' }
+                  'odt' => 'application/vnd.oasis.opendocument.text', 'doc' => 'application/msword', 'rtf' => 'application/rtf',
+                  'pdf' => 'application/pdf' }
         respond_raw_with_mimetype_and_filename(file[1], types[File.extname(file[0]).delete('.').downcase] || 'application/octet-stream', file[0])
     end
     # A document hand-in with its marked pages, as the student saw it at the

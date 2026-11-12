@@ -32,3 +32,32 @@ tasks:
     hint:
       - Fang mit dem Text an, dann die Zwischenüberschriften mit ihren Formatvorlagen, zuletzt Bild und Seitenzahl.
       - Jeder Punkt der Liste hat ein Blatt der Reihe, auf dem er erklärt ist. Die Links stehen oben auf dieser Seite.
+
+  - id: pdf
+    title: Der Artikel als PDF
+    prompt: |
+      Exportiere deinen fertigen Artikel als PDF und lade hier das PDF hoch.
+      Dein Dokument bleibt, wie es ist; das PDF ist eine Kopie zum Weitergeben.
+    check:
+      type: document
+      accept: pdf
+      rules:
+        - pdf
+        - pdf_fonts
+        - { pdf_words: 200 }
+    hint:
+      - Ein PDF speicherst du nicht, du exportierst es. Wo das geht, steht auf dieser Seite über der Aufgabe.
+      - Lade das PDF hoch, nicht die .docx. Es liegt dort, wo du es beim Exportieren gespeichert hast.
+    word:
+      hint:
+        - "Wähl *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen* und speichere das PDF neben deinem Artikel."
+        - "Lade das PDF hoch, nicht die .docx. Es liegt dort, wo du es beim Exportieren gespeichert hast."
+    libreoffice:
+      hint:
+        - "Wähl *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*, dann *Exportieren*, und speichere das PDF neben deinem Artikel."
+        - "Lade das PDF hoch, nicht die .odt oder .docx. Es liegt dort, wo du es beim Exportieren gespeichert hast."
+    nextcloud:
+      hint:
+        - "Wähl *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Herunterladen als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF-Dokument (.pdf)*. Das PDF landet in deinen Downloads."
+        - "Lade das PDF aus deinen Downloads hoch."
+

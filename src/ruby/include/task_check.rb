@@ -312,10 +312,21 @@ module TaskCheck
             return Result.new(:status => :invalid, :problem => answer['error'],
                 :message => OfficeClient::ERRORS[answer['error']] || OfficeClient::ERRORS['failed'])
         end
-        starter = begin
-            OfficeClient.analyze_file(File.join(STATIC_ROOT, check['file']))
-        rescue OfficeClient::Unavailable, SystemCallError
-            nil
+        # a PDF where the document itself is checked, or the other way round
+        wants_pdf = check['accept'] == 'pdf'
+        if answer['pdf'] && !wants_pdf
+            return Result.new(:status => :invalid, :problem => 'pdf',
+                :message => 'Das ist eine PDF-Datei. Hier prüfe ich dein Dokument selbst: Lade die Datei hoch, die du in deinem Programm speicherst (.docx oder .odt).')
+        elsif !answer['pdf'] && wants_pdf
+            return Result.new(:status => :invalid, :problem => 'not_pdf',
+                :message => 'Hier gehört das PDF hin, das du aus deinem Programm exportiert hast, nicht das Dokument selbst.')
+        end
+        starter = if check['file']
+            begin
+                OfficeClient.analyze_file(File.join(STATIC_ROOT, check['file']))
+            rescue OfficeClient::Unavailable, SystemCallError
+                nil
+            end
         end
         status, items, message = DocumentCheck.evaluate(check, answer, starter)
         Result.new(:status => status, :message => message, :read => DocumentCheck.xray(answer),

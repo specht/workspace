@@ -318,7 +318,7 @@ module Privacy
                 :how_long => 'bis die Person sie selbst löscht, sonst ' + ACCOUNT_END,
             },
             {
-                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, die zuletzt geprüfte Fassung eines Dokuments aus Word, LibreOffice oder Nextcloud Office (zum Weiterarbeiten, auch zu Hause), oder der Code einer gelösten Kata, den die Person selbst einreicht (bei einem Bild der Turtle-Grafik mit seinem Namen und dem Bild, das der Server aus dem Programm gezeichnet hat)',
+                :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, die zuletzt geprüfte Fassung eines Dokuments aus Word, LibreOffice oder Nextcloud Office (zum Weiterarbeiten, auch zu Hause) oder eines daraus exportierten PDFs, oder der Code einer gelösten Kata, den die Person selbst einreicht (bei einem Bild der Turtle-Grafik mit seinem Namen und dem Bild, das der Server aus dem Programm gezeichnet hat)',
                 :categories => [:content],
                 :purpose => 'Abgabe an die Lehrkraft; eingereichte Katas zum Besprechen im Unterricht, ohne Namen gezeigt',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe',

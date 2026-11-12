@@ -112,8 +112,9 @@ These hold for word processing and for the series still to come
   class uses; its ways and shortcuts are those of the program chosen at the
   top of the page (`<!-- language: word -->` and so on in `lehrkraft.md`,
   as on the page).
-- **Exporting as PDF belongs to the curriculum** (to come: in which sheet,
-  and how the check sees the PDF).
+- **Exporting as PDF belongs to the curriculum:** sheet 8 ends with the
+  article exported as PDF, a check of its own (`accept: pdf`: a PDF, its
+  fonts embedded, the article's words), read by poppler.
 - **Grading:** the last checked version is the hand-in; the teacher sees it
   with its marked pages on the class page (Ansehen, Herunterladen). How a
   grade comes out of it is still being decided (see »Open«).
@@ -217,7 +218,6 @@ built by hand; each is a page of a series of its own, about one lesson.
 
 - **Grading** (the maintainer asked how; to decide): see the proposal in the
   conversation of 12 November 2026, summed up here once decided.
-- **PDF export** as part of a sheet, with a check that reads the PDF.
 - **The curriculum graph:** a series (the eight sheets, the Backrooms levels)
   as one node (the maintainer, 12 November 2026); until then the stored
   layout lacks sheet 8 (production orders quickly, the graph test is red).

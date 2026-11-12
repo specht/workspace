@@ -28,6 +28,9 @@
             'application/rtf': ['.rtf'],
         },
     }];
+    // a check of an exported PDF (accept: pdf, data-accept on the card's box)
+    const PDF_TYPES = [{ description: 'PDF-Dateien', accept: { 'application/pdf': ['.pdf'] } }];
+    const wantsPdf = (card) => !!card.querySelector(".document-task[data-accept='pdf']");
 
     function el(tag, className, text) {
         const node = document.createElement(tag);
@@ -56,7 +59,7 @@
         if (card.documentHandle && saved) {
             line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in Word oder LibreOffice, dann prüft die Seite von selbst.'));
         }
-        card.querySelector('.document-pick').lastChild.textContent = 'Anderes Dokument';
+        card.querySelector('.document-pick').lastChild.textContent = wantsPdf(card) ? 'Anderes PDF' : 'Anderes Dokument';
         mirror(card);
     }
 
@@ -105,7 +108,7 @@
             }
             let handle;
             try {
-                [handle] = await window.showOpenFilePicker({ types: TYPES, multiple: false, id: 'workspace-document', startIn: 'downloads' });
+                [handle] = await window.showOpenFilePicker({ types: wantsPdf(card) ? PDF_TYPES : TYPES, multiple: false, id: wantsPdf(card) ? 'workspace-pdf' : 'workspace-document', startIn: 'downloads' });
             } catch (err) {
                 if (err && err.name === 'AbortError') return;
                 input.click();
@@ -902,8 +905,11 @@
         const done = el('div', 'document-done');
         done.innerHTML = "<svg class='document-done-mark' viewBox='0 0 52 52' aria-hidden='true'>" +
             "<circle cx='26' cy='26' r='23'></circle><path d='M15 27 l7 7 l15 -16'></path></svg>" +
-            "<div><div class='document-done-title'>Sauber gebaut</div>" +
-            "<div class='document-done-text'>Ändere die Schrift, wie du willst: Dein Dokument hält.</div></div>";
+            (report.pdf
+                ? "<div><div class='document-done-title'>Fertig zum Weitergeben</div>" +
+                  "<div class='document-done-text'>So sieht dein PDF auf jedem Computer aus.</div></div>"
+                : "<div><div class='document-done-title'>Sauber gebaut</div>" +
+                  "<div class='document-done-text'>Ändere die Schrift, wie du willst: Dein Dokument hält.</div></div>");
         side.insertBefore(done, side.firstChild);
         side.querySelectorAll('.document-checklist li').forEach(function (li, i) { li.style.setProperty('--i', String(i)); });
         control.sheets.slice(0, 1).forEach(function (sheet) {
@@ -995,7 +1001,8 @@
             list.appendChild(li);
         });
         side.appendChild(list);
-        let note = 'So zeichnet LibreOffice deine Seiten; in Word kann eine Zeile ein Wort früher umbrechen.';
+        let note = report.pdf ? 'Das sind die Seiten deines PDFs, so wie jeder sie sieht.'
+            : 'So zeichnet LibreOffice deine Seiten; in Word kann eine Zeile ein Wort früher umbrechen.';
         if (report.page_count > report.pages.length) note += ' Gezeigt sind die ersten ' + report.pages.length + ' von ' + report.page_count + ' Seiten.';
         side.appendChild(el('p', 'document-note', note));
         wrap.appendChild(side);

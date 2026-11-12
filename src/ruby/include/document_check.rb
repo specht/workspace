@@ -53,7 +53,7 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -81,7 +81,11 @@ module DocumentCheck
     def self.spec_errors(check)
         errors = []
         file = check['file']
-        errors << 'file: the starting document below src/static' unless file.is_a?(String) && !file.empty? && !file.start_with?('/') && !file.include?('..')
+        # a check of an exported PDF needs no starting file
+        errors << 'accept must be pdf (or left out)' if check.key?('accept') && check['accept'] != 'pdf'
+        unless check['accept'] == 'pdf' && file.nil?
+            errors << 'file: the starting document below src/static' unless file.is_a?(String) && !file.empty? && !file.start_with?('/') && !file.include?('..')
+        end
         rules = check['rules']
         return errors + ['rules must be a list'] unless rules.is_a?(Array) && !rules.empty?
 
@@ -118,7 +122,7 @@ module DocumentCheck
             errors << 'side must be left or right' if name == 'wrap' && rule.key?('side') && !%w[left right].include?(rule['side'])
             errors << 'headings needs a list of pieces of text and level: (1, 2, …)' if name == 'headings' && !(rule['headings'].is_a?(Array) && rule['level'].is_a?(Integer) && rule['level'].positive?)
             errors << 'style_changed needs the name of a paragraph style (Heading 1)' if name == 'style_changed' && !(rule['style_changed'].is_a?(String) && !rule['style_changed'].empty?)
-            %w[words heading_count picture_count].each do |k|
+            %w[words heading_count picture_count pdf_words].each do |k|
                 errors << "#{k} must be a positive number" if name == k && !(rule[k].is_a?(Integer) && rule[k].positive?)
             end
             errors << 'names must be a list of text' if rule.key?('names') && !(rule['names'].is_a?(Array) && rule['names'].all? { |n| n.is_a?(String) })
@@ -174,7 +178,9 @@ module DocumentCheck
                   :crop => crop(model, marks, i + 1, pg) }
             end,
             :page_count => model['page_count'],
-        }
+            # an exported PDF: its own pages, not drawn by LibreOffice
+            :pdf => model['pdf'] ? true : nil,
+        }.compact
     end
 
     # The part of a page the card shows: from a little above the first
@@ -195,6 +201,13 @@ module DocumentCheck
     # The paragraphs as the check read them, for »Was der Workspace gelesen
     # hat«: spaces as ·, line breaks as ↵, tabs as →, the end as ¶.
     def self.xray(model)
+        if model['pdf']
+            text = model['text'].to_s.gsub(/[ \t]+/, ' ').gsub(/\n{3,}/, "\n\n").strip[0, 3000]
+            fonts = (model['fonts'] || []).map { |f| "#{f['name']}#{f['embedded'] ? '' : ' (nicht eingebettet)'}" }.uniq
+            return "So hat der Server dein PDF gelesen: #{model['page_count']} #{model['page_count'] == 1 ? 'Seite' : 'Seiten'}, " \
+                "Schriften: #{CGI.escapeHTML(fonts.join(', ').then { |f| f.empty? ? 'keine' : f })}.\n\n" \
+                "<pre class='document-xray'><code>#{CGI.escapeHTML(text)}</code></pre>"
+        end
         lines = (model['paragraphs'] || []).first(80).map do |p|
             text = p['text'].to_s.gsub(' ', '·').gsub("\t", '→').gsub("\n", "↵\n  ")
             "#{style_name(p)}, #{ALIGN[p['align']] || p['align']}\n  #{text}¶"
@@ -1043,6 +1056,35 @@ module DocumentCheck
         count = (all || []).sum { |p| p['plain'].split(' ').count { |w| w.match?(/[[:alnum:]]/) } }
         item = Item.new(:rule => 'words', :label => "Mindestens #{want} Wörter", :ok => count >= want, :marks => [])
         item.message = "Dein Text hat #{count} #{count == 1 ? 'Wort' : 'Wörter'}; es sollen mindestens #{want} sein." unless item.ok
+        item
+    end
+
+    # ---- a document exported as PDF (accept: pdf; the service reads it
+    # with poppler: its text, its fonts, its pages)
+
+    def self.rule_pdf(_rule, _body, _starter, _all = nil, model = nil)
+        pages = model['page_count'].to_i
+        item = Item.new(:rule => 'pdf', :label => 'Eine PDF-Datei', :ok => pages.positive?, :marks => [])
+        item.message = 'In diesem PDF finde ich keine Seite.' unless item.ok
+        item
+    end
+
+    # every font in the file: one that is not would look different on a
+    # computer without it (Word and LibreOffice embed them when they export)
+    def self.rule_pdf_fonts(_rule, _body, _starter, _all = nil, model = nil)
+        missing = (model['fonts'] || []).reject { |f| f['embedded'] }.map { |f| f['name'] }.uniq
+        item = Item.new(:rule => 'pdf_fonts', :label => 'Die Schriften sind im PDF', :ok => missing.empty?, :marks => [])
+        item.message = "Die Schrift#{missing.size == 1 ? '' : 'en'} #{names(missing.first(3).map { |n| "»#{q(n)}«" })} " \
+            "#{missing.size == 1 ? 'steckt' : 'stecken'} nicht im PDF; auf einem anderen Computer sieht es dann anders aus. " \
+            'Exportiere noch einmal mit *Datei* und *Exportieren*, nicht über einen PDF-Drucker.' unless item.ok
+        item
+    end
+
+    def self.rule_pdf_words(rule, _body, _starter, _all = nil, model = nil)
+        want = rule['pdf_words'].to_i
+        count = model['text'].to_s.split(/\s+/).count { |w| w.match?(/[[:alnum:]]/) }
+        item = Item.new(:rule => 'pdf_words', :label => "Dein Artikel, mindestens #{want} Wörter", :ok => count >= want, :marks => [])
+        item.message = "In diesem PDF stehen #{count} #{count == 1 ? 'Wort' : 'Wörter'}; dein Artikel hat mindestens #{want}. Ist es das PDF deines Artikels?" unless item.ok
         item
     end
 

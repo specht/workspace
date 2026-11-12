@@ -373,3 +373,32 @@ test('an article of ones own is checked on every point, and the hand-in shows it
   expect(file.ok()).toBe(true);
   expect((await file.body()).equals(fs.readFileSync(path.join(repo, 'src/content/trip-newspaper/stufen/artikel-eilig.docx')))).toBe(true);
 });
+
+// The article exported as PDF (accept: pdf): read by poppler, its pages
+// shown, its fonts and words counted; the document itself is turned away
+// there, and a PDF where the document is checked.
+test('the article as PDF is checked, and each card says which file it wants', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/trip-newspaper');
+  await states;
+  const card = page.locator(".task-card[data-task='trip-newspaper/pdf']:visible");
+  await expect(card.locator('.document-starter')).toHaveCount(0);
+  await expect(card.locator('.document-input')).toHaveAttribute('accept', '.pdf');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel.docx'));
+  // a message, no verdict
+  await expect(card).toContainText('Hier gehört das PDF hin');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/vorlage.pdf'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  await expect(card.locator('.document-report .document-checklist li.document-open')).toContainText('Wörter');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel.pdf'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(card.locator('.document-report .document-checklist li.document-ok')).toHaveCount(3);
+  await expect(card.locator('.document-report .document-sheet img').first()).toBeVisible();
+  if (shots) await page.screenshot({ path: path.join(shots, 'pdf-correct.png') });
+  // a PDF where the document is checked
+  const article = page.locator(".task-card[data-task='trip-newspaper/artikel']:visible");
+  await article.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel.pdf'));
+  await expect(article).toContainText('Das ist eine PDF-Datei');
+});

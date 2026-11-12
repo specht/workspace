@@ -245,17 +245,22 @@ module TaskCard
                 # again with each »Prüfen« where the browser can (Chrome,
                 # Edge), else chosen or dropped anew.
                 file = check['file']
-                # the address with each part encoded (»01 Einladung.docx«);
-                # with its dates filled in on download (DocumentDates)
-                href = check['dates'] ? "/api/task/document_starter/#{key}" : '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
-                io << "<div class='document-task'>"
-                io << "<a class='document-starter btn btn-primary' href='#{h.(href)}' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>#{h.(File.basename(file))}</span></a>"
+                pdf = check['accept'] == 'pdf'
+                io << "<div class='document-task'#{pdf ? " data-accept='pdf'" : ''}>"
+                if file
+                    # the address with each part encoded (»01 Einladung.docx«);
+                    # with its dates filled in on download (DocumentDates)
+                    href = check['dates'] ? "/api/task/document_starter/#{key}" : '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
+                    io << "<a class='document-starter btn btn-primary' href='#{h.(href)}' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>#{h.(File.basename(file))}</span></a>"
+                end
                 io << "<div class='document-drop'>"
-                io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>Dokument wählen</button>"
+                io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>#{pdf ? 'PDF wählen' : 'Dokument wählen'}</button>"
                 io << "<span class='document-name' aria-live='polite'>oder hierher ziehen</span>"
-                io << "<input type='file' class='document-input' accept='.docx,.odt,.doc,.rtf' hidden aria-hidden='true' tabindex='-1'>"
+                io << "<input type='file' class='document-input' accept='#{pdf ? '.pdf' : '.docx,.odt,.doc,.rtf'}' hidden aria-hidden='true' tabindex='-1'>"
                 io << '</div></div>'
-                reads = 'Dein Dokument geht an den Server. Dort liest LibreOffice es, ohne Makros auszuführen, und zeichnet deine Seiten; die Prüfung sieht nach, wie der Text gebaut ist. ' \
+                reads = pdf ? 'Dein PDF geht an den Server. Dort zeichnet ein Programm (poppler) seine Seiten und liest seinen Text und seine Schriften; ausgeführt wird darin nichts. ' \
+                    'Gespeichert werden das Ergebnis und die zuletzt geprüfte Fassung deines PDFs; die nächste Prüfung ersetzt sie, »Ergebnis löschen« löscht sie.' :
+                    'Dein Dokument geht an den Server. Dort liest LibreOffice es, ohne Makros auszuführen, und zeichnet deine Seiten; die Prüfung sieht nach, wie der Text gebaut ist. ' \
                     'Gespeichert werden das Ergebnis und die zuletzt geprüfte Fassung deines Dokuments, damit du an ihr weiterarbeiten kannst, auch zu Hause; die nächste Prüfung ersetzt sie, »Ergebnis löschen« löscht sie. Weil LibreOffice die Seiten zeichnet, kann eine Zeile in Word ein Wort früher umbrechen.'
             when 'submit'
                 if check['pick']

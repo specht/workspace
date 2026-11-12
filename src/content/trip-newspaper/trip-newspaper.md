@@ -68,3 +68,34 @@ So kann ein fertiger Artikel aussehen:
 
 <img class='paper' src='bilder/artikel.svg' alt='Ein fertiger Artikel »Ein Tag im Kletterwald«: Titel, Einleitung, zwei grüne Zwischenüberschriften, eine Liste mit drei Regeln, ein Foto eines Kranichs mit Bildunterschrift und Quelle, ein letzter Absatz'>
 <!-- /after -->
+
+## Als PDF weitergeben
+
+Die Redaktion setzt aus allen Artikeln die Zeitung zusammen. Schickst du ihr
+dein Dokument, sieht es bei ihr vielleicht anders aus: eine Schrift, die auf
+ihrem Computer fehlt, ein anderes Programm, das eine Zeile anders umbricht.
+Ein **PDF** sieht überall gleich aus. Die Schriften stecken in der Datei, und
+jede Seite ist fertig gesetzt, wie gedruckt. Ändern kann man es dafür kaum
+noch: Wer weiterschreibt, schreibt im Dokument weiter und exportiert danach ein
+neues PDF.
+
+<!-- language: word -->
+In Word wählst du *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen* und
+speicherst das PDF neben deinem Artikel.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice wählst du *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*, dann
+*Exportieren*, und speicherst das PDF neben deinem Artikel.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office wählst du *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Herunterladen als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF-Dokument (.pdf)*; das
+PDF landet in deinen Downloads.
+<!-- /language -->
+
+_task(pdf)
+
+<!-- after: pdf -->
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Öffne dein PDF im Browser und leg es neben dein Dokument. Achte auf die Schrift, auf die Stellen, an denen die Zeilen umbrechen, und auf die Seitenzahl.
+</div>
+<!-- /after -->
