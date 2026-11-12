@@ -140,7 +140,7 @@ module PageKinds
             kind = h.(kind_label(entry[:kind], switch ? nil : entry[:language]) || 'Aktivität')
             html = +"<div class='page-kind page-kind-activity'>"
             html << "<span class='page-kind-label'><i class='bi bi-signpost-2'></i>#{kind}</span>"
-            html << CodeLanguages.switch_html(languages, code_language) if switch
+            html << CodeLanguages.switch_html(languages, code_language, entry[:office_kind] || 'text') if switch
             # Word chosen: a quiet line that free programs do the same (the
             # maintainer: no promotion of Microsoft's software to children);
             # shown only with Word, like the page's parts for one program

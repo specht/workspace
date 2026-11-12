@@ -79,7 +79,7 @@ class Main < Sinatra::Base
         name = File.basename((entry[:filename] || entry['filename']).to_s.encode('UTF-8', :invalid => :replace, :undef => :replace))[0, 200]
         bytes = upload.read(OfficeClient::MAX_BYTES + 1).to_s
         begin
-            model = OfficeClient.analyze(bytes, name)
+            model = OfficeClient.analyze(bytes, name, :probes => DocumentCheck.probes(found[:task]['check']))
         rescue OfficeClient::Unavailable => e
             STDERR.puts "Document task #{found[:key]}: #{e.message}"
             respond(:status => 'unavailable',
@@ -198,7 +198,8 @@ class Main < Sinatra::Base
         response.headers['Cache-Control'] = 'no-store'
         types = { 'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                   'odt' => 'application/vnd.oasis.opendocument.text', 'doc' => 'application/msword', 'rtf' => 'application/rtf',
-                  'pdf' => 'application/pdf' }
+                  'pdf' => 'application/pdf', 'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+                  'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xls' => 'application/vnd.ms-excel' }
         respond_raw_with_mimetype_and_filename(file[1], types[File.extname(file[0]).delete('.').downcase] || 'application/octet-stream', file[0])
     end
     # A document hand-in with its marked pages, as the student saw it at the
@@ -215,7 +216,7 @@ class Main < Sinatra::Base
         report = nil
         problem = nil
         begin
-            result = TaskCheck.check(found[:task], OfficeClient.analyze(file[1], file[0]))
+            result = TaskCheck.check(found[:task], OfficeClient.analyze(file[1], file[0], :probes => DocumentCheck.probes(found[:task]['check'])))
             report = link_document_pages(result.report)
             report = report.merge(:items => report[:items].map { |i| i.merge(:message => i[:message] ? render_task_markdown(i[:message]) : nil) }) if report
             problem = result.message unless report

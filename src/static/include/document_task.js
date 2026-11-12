@@ -31,6 +31,16 @@
     // a check of an exported PDF (accept: pdf, data-accept on the card's box)
     const PDF_TYPES = [{ description: 'PDF-Dateien', accept: { 'application/pdf': ['.pdf'] } }];
     const wantsPdf = (card) => !!card.querySelector(".document-task[data-accept='pdf']");
+    // a spreadsheet (data-accept='sheet'): its own file types
+    const SHEET_TYPES = [{
+        description: 'Tabellen',
+        accept: {
+            'application/vnd.oasis.opendocument.spreadsheet': ['.ods'],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+            'application/vnd.ms-excel': ['.xls'],
+        },
+    }];
+    const wantsSheet = (card) => !!card.querySelector(".document-task[data-accept='sheet']");
 
     function el(tag, className, text) {
         const node = document.createElement(tag);
@@ -59,7 +69,7 @@
         if (card.documentHandle && saved) {
             line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in LibreOffice oder Word, dann prüft die Seite von selbst.'));
         }
-        card.querySelector('.document-pick').lastChild.textContent = wantsPdf(card) ? 'Anderes PDF' : 'Anderes Dokument';
+        card.querySelector('.document-pick').lastChild.textContent = wantsPdf(card) ? 'Anderes PDF' : wantsSheet(card) ? 'Andere Tabelle' : 'Anderes Dokument';
         mirror(card);
     }
 
@@ -108,7 +118,7 @@
             }
             let handle;
             try {
-                [handle] = await window.showOpenFilePicker({ types: wantsPdf(card) ? PDF_TYPES : TYPES, multiple: false, id: wantsPdf(card) ? 'workspace-pdf' : 'workspace-document', startIn: 'downloads' });
+                [handle] = await window.showOpenFilePicker({ types: wantsPdf(card) ? PDF_TYPES : wantsSheet(card) ? SHEET_TYPES : TYPES, multiple: false, id: wantsPdf(card) ? 'workspace-pdf' : wantsSheet(card) ? 'workspace-sheet' : 'workspace-document', startIn: 'downloads' });
             } catch (err) {
                 if (err && err.name === 'AbortError') return;
                 input.click();
@@ -905,7 +915,10 @@
         const done = el('div', 'document-done');
         done.innerHTML = "<svg class='document-done-mark' viewBox='0 0 52 52' aria-hidden='true'>" +
             "<circle cx='26' cy='26' r='23'></circle><path d='M15 27 l7 7 l15 -16'></path></svg>" +
-            (report.pdf
+            (report.sheet
+                ? "<div><div class='document-done-title'>Rechnet richtig</div>" +
+                  "<div class='document-done-text'>Ändere eine Zahl: Alles, was mit ihr rechnet, rechnet mit.</div></div>"
+                : report.pdf
                 ? "<div><div class='document-done-title'>Fertig zum Weitergeben</div>" +
                   "<div class='document-done-text'>So sieht dein PDF auf jedem Computer aus.</div></div>"
                 : "<div><div class='document-done-title'>Sauber gebaut</div>" +
@@ -1001,7 +1014,8 @@
             list.appendChild(li);
         });
         side.appendChild(list);
-        let note = report.pdf ? 'Das sind die Seiten deines PDFs, so wie jeder sie sieht.'
+        let note = report.sheet ? 'So sieht deine Tabelle aus, gezeichnet aus ihren Zellen; die Formeln stehen unter »Was der Workspace gelesen hat«.'
+            : report.pdf ? 'Das sind die Seiten deines PDFs, so wie jeder sie sieht.'
             : 'So zeichnet LibreOffice deine Seiten; in Word kann eine Zeile ein Wort früher umbrechen.';
         if (report.page_count > report.pages.length) note += ' Gezeigt sind die ersten ' + report.pages.length + ' von ' + report.page_count + ' Seiten.';
         side.appendChild(el('p', 'document-note', note));

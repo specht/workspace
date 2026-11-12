@@ -38,6 +38,8 @@ MAX_PAGES = 12
 JOB_SECONDS = 40
 PIPE = 'workspace_office'
 FORMATS = {'docx', 'odt', 'doc', 'rtf'}
+# spreadsheets (sheet.py)
+SHEETS = {'xlsx', 'ods', 'xls'}
 
 # 1/100 mm (UNO) to PDF points
 def pt(hmm):
@@ -72,6 +74,7 @@ class Office:
         for _ in range(100):
             try:
                 context = resolver.resolve(f'uno:pipe,name={PIPE};urp;StarOffice.ComponentContext')
+                self.ctx, self.smgr = context, context.ServiceManager
                 self.desktop = context.ServiceManager.createInstanceWithContext('com.sun.star.frame.Desktop', context)
                 return
             except Exception:
@@ -693,12 +696,12 @@ def analyze_pdf(data):
         shutil.rmtree(folder, ignore_errors=True)
 
 
-def analyze(data, filename):
+def analyze(data, filename, probes=None):
     ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
     if ext == 'pdf':
         return analyze_pdf(data)
-    if ext not in FORMATS:
-        return {'error': 'format', 'formats': sorted(FORMATS)}
+    if ext not in FORMATS | SHEETS:
+        return {'error': 'format', 'formats': sorted(FORMATS | SHEETS)}
     folder = tempfile.mkdtemp(prefix='job-')
     try:
         source = os.path.join(folder, f'in.{ext}')
@@ -711,6 +714,12 @@ def analyze(data, filename):
         doc = OFFICE.desktop.loadComponentFromURL(url, '_blank', 0, (
             prop('Hidden', True), prop('ReadOnly', False), prop('MacroExecutionMode', 0),
             prop('UpdateDocMode', 0), prop('Silent', True)))
+        if doc is not None and doc.supportsService('com.sun.star.sheet.SpreadsheetDocument'):
+            import sheet
+            try:
+                return sheet.analyze(OFFICE, doc, folder, probes)
+            finally:
+                doc.close(True)
         if doc is None or not doc.supportsService('com.sun.star.text.TextDocument'):
             if doc is not None:
                 doc.close(True)
@@ -765,14 +774,14 @@ def analyze(data, filename):
         shutil.rmtree(folder, ignore_errors=True)
 
 
-def run_job(data, filename):
+def run_job(data, filename, probes=None):
     """One job with a time limit: LibreOffice is killed and started again
     when a document takes too long or brings it down."""
     result = {}
 
     def work():
         try:
-            result['value'] = analyze(data, filename)
+            result['value'] = analyze(data, filename, probes)
         except Exception as e:
             traceback.print_exc()
             result['value'] = {'error': 'failed', 'detail': f'{type(e).__name__}'}
@@ -818,8 +827,15 @@ class Handler(BaseHTTPRequestHandler):
             return self.answer(413, {'error': 'too_big', 'max': MAX_BYTES})
         data = self.rfile.read(length)
         name = os.path.basename(self.headers.get('X-Filename') or 'upload.docx')
+        # a spreadsheet's probes (sheet.py), as base64 JSON
+        probes = None
+        if self.headers.get('X-Probes'):
+            try:
+                probes = json.loads(base64.b64decode(self.headers.get('X-Probes')).decode('utf-8'))
+            except Exception:
+                return self.answer(400, {'error': 'probes'})
         started = time.time()
-        result = run_job(data, name)
+        result = run_job(data, name, probes)
         result['seconds'] = round(time.time() - started, 2)
         self.answer(200, result)
 

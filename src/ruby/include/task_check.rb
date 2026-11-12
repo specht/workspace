@@ -312,6 +312,14 @@ module TaskCheck
             return Result.new(:status => :invalid, :problem => answer['error'],
                 :message => OfficeClient::ERRORS[answer['error']] || OfficeClient::ERRORS['failed'])
         end
+        # a spreadsheet where a text is checked, or the other way round
+        if DocumentCheck.sheet_check?(check) && !DocumentCheck.sheet?(answer) && !answer['pdf']
+            return Result.new(:status => :invalid, :problem => 'not_sheet',
+                :message => 'Das ist ein Textdokument. Hier gehört deine Tabelle hin, gespeichert als .ods (LibreOffice) oder .xlsx (Excel).')
+        elsif !DocumentCheck.sheet_check?(check) && DocumentCheck.sheet?(answer)
+            return Result.new(:status => :invalid, :problem => 'sheet',
+                :message => 'Das ist eine Tabelle. Hier gehört dein Textdokument hin, gespeichert als .odt (LibreOffice) oder .docx (Word).')
+        end
         # a PDF where the document itself is checked, or the other way round
         wants_pdf = check['accept'] == 'pdf'
         if answer['pdf'] && !wants_pdf

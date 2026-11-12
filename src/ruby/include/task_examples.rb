@@ -253,7 +253,7 @@ module TaskExamples
             return outcome
         end
         model = begin
-            OfficeClient.analyze(File.binread(file), File.basename(file))
+            OfficeClient.analyze(File.binread(file), File.basename(file), :probes => DocumentCheck.probes(task['check']))
         rescue OfficeClient::Unavailable
             return nil
         end

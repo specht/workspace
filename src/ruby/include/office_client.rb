@@ -1,3 +1,4 @@
+require 'base64'
 require 'json'
 require 'net/http'
 
@@ -11,10 +12,10 @@ module OfficeClient
     MAX_BYTES = 10 * 1024 * 1024
     # pdf: a document exported as PDF (a check with accept: pdf), read by
     # poppler, not LibreOffice
-    FORMATS = %w[docx odt doc rtf pdf].freeze
+    FORMATS = %w[docx odt doc rtf pdf xlsx ods xls].freeze
     # what the service answers when it cannot read a document, for the card
     ERRORS = {
-        'format' => 'Das ist kein Textdokument, das ich lesen kann. Speichere es als .odt (LibreOffice) oder .docx (Word).',
+        'format' => 'Diese Datei kann ich nicht lesen. Speichere ein Textdokument als .odt oder .docx, eine Tabelle als .ods oder .xlsx.',
         'not_text' => 'Das ist kein Textdokument. Speichere es als .odt (LibreOffice) oder .docx (Word).',
         'timeout' => 'Das Lesen hat zu lange gedauert. Ist die Datei sehr groß? Versuch es noch einmal.',
         'failed' => 'Diese Datei konnte ich nicht lesen. Öffne sie noch einmal, speichere sie als .docx und lade sie neu hoch.',
@@ -28,7 +29,9 @@ module OfficeClient
     # bytes and the file's name (for its format) to the service; returns the
     # parsed answer, a Hash with 'paragraphs', 'pages' …, or with 'error'.
     # Raises Unavailable when the service cannot be reached.
-    def self.analyze(bytes, filename)
+    # probes: for a spreadsheet, cells to change and read after recalculating
+    # (DocumentCheck.probes), sent along as base64 JSON
+    def self.analyze(bytes, filename, probes: nil)
         ext = File.extname(filename.to_s).delete('.').downcase
         return { 'error' => 'format' } unless FORMATS.include?(ext)
         return { 'error' => 'too_big' } if bytes.bytesize > MAX_BYTES
@@ -40,6 +43,7 @@ module OfficeClient
         http.read_timeout = 90
         request = Net::HTTP::Post.new(uri)
         request['X-Filename'] = "upload.#{ext}"
+        request['X-Probes'] = Base64.strict_encode64(JSON.generate(probes)) if probes && !probes.empty?
         request['Content-Type'] = 'application/octet-stream'
         request.body = bytes
         response = http.request(request)

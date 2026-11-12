@@ -19,7 +19,7 @@ FROM debian:trixie-slim
 RUN sed -i 's/^Components: main$/Components: main contrib/' /etc/apt/sources.list.d/debian.sources \
     && echo 'ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true' | debconf-set-selections
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libreoffice-writer-nogui python3-uno python3-docx \
+        libreoffice-writer-nogui libreoffice-calc-nogui python3-uno python3-docx \
         poppler-utils webp python3-pil \
         ca-certificates wget cabextract ttf-mscorefonts-installer \
         fontconfig fonts-crosextra-carlito fonts-crosextra-caladea \

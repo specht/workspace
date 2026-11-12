@@ -776,6 +776,8 @@ class Main < Sinatra::Base
                     :language => page_meta['language'],
                     # Programming languages the page offers (CodeLanguages), [] for one.
                     :languages => page_languages,
+                    # an Office page's documents: text (the default), sheet, slides
+                    :office_kind => page_meta['office'],
                     :duration => page_meta['duration'],
                     # Activities this one builds on (requires:), information
                     # for the strip above the page and the catalog card.

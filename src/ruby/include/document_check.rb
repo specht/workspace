@@ -1,4 +1,5 @@
 require_relative 'document_dates'
+require_relative 'document_check_sheet'
 require 'cgi'
 require_relative 'office_client'
 
@@ -53,7 +54,7 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -87,6 +88,12 @@ module DocumentCheck
         file = check['file']
         # a check of an exported PDF needs no starting file
         errors << 'accept must be pdf (or left out)' if check.key?('accept') && check['accept'] != 'pdf'
+        Array(check['rules']).each do |rule|
+            next unless rule.is_a?(Hash) && rule.key?('recalc')
+
+            r = rule['recalc']
+            errors << 'recalc needs set: {cell: value} and expect: {cell: value}' unless r.is_a?(Hash) && r['set'].is_a?(Hash) && r['expect'].is_a?(Hash)
+        end
         unless check['accept'] == 'pdf' && file.nil?
             errors << 'file: the starting document below src/static' unless file.is_a?(String) && !file.empty? && !file.start_with?('/') && !file.include?('..')
         end
@@ -101,6 +108,7 @@ module DocumentCheck
             end
             next unless rule.is_a?(Hash)
             known = %w[label say] + case name
+                when *SHEET_RULES then [name, 'sheet']
                 when 'text' then %w[text except]
                 when 'styled' then %w[styled]
                 when 'align' then %w[align paragraph]
@@ -159,7 +167,10 @@ module DocumentCheck
     def self.evaluate(check, model, starter)
         paragraphs = (model['paragraphs'] || []).map { |p| p.merge('plain' => squish(p['text'])) }
         body = paragraphs.select { |p| (p['where'] || {}).empty? }
-        items = (check['rules'] || []).map do |rule|
+        # each recalc rule reads its probe (in their order, as probes sent them)
+        probe = -1
+        rules = (check['rules'] || []).map { |r| r.is_a?(Hash) && r.key?('recalc') ? r.merge('_probe' => (probe += 1)) : r }
+        items = rules.map do |rule|
             item = send("rule_#{rule_name(rule)}", rule.is_a?(Hash) ? rule : {}, body, starter, paragraphs, model)
             item.label = rule['label'] if rule.is_a?(Hash) && rule['label']
             item.message = rule['say'] if rule.is_a?(Hash) && rule['say'] && !item.ok
@@ -193,6 +204,8 @@ module DocumentCheck
             :page_count => model['page_count'],
             # an exported PDF: its own pages, not drawn by LibreOffice
             :pdf => model['pdf'] ? true : nil,
+            # a spreadsheet: its sheets drawn from their cells
+            :sheet => sheet?(model) ? true : nil,
         }.compact
     end
 
@@ -214,6 +227,16 @@ module DocumentCheck
     # The paragraphs as the check read them, for »Was der Workspace gelesen
     # hat«: spaces as ·, line breaks as ↵, tabs as →, the end as ¶.
     def self.xray(model)
+        if sheet?(model)
+            lines = (model['sheets'] || []).each_with_index.flat_map do |s, i|
+                (s['cells'] || []).select { |c| c['type'] == 'formula' }.first(60).map do |c|
+                    "#{model['sheets'].size > 1 ? "#{s['name']}!" : ''}#{c['cell']}: #{german_formula(c['formula'])}  →  #{c['shown']}"
+                end
+            end
+            text = lines.empty? ? 'Keine einzige Formel: Jede Zahl ist getippt.' : lines.join("\n")
+            return "So hat der Server deine Tabelle gelesen, die Formeln und was sie zeigen:\n\n" \
+                "<pre class='document-xray'><code>#{CGI.escapeHTML(text)}</code></pre>"
+        end
         if model['pdf']
             text = model['text'].to_s.gsub(/[ \t]+/, ' ').gsub(/\n{3,}/, "\n\n").strip[0, 3000]
             fonts = (model['fonts'] || []).map { |f| "#{f['name']}#{f['embedded'] ? '' : ' (nicht eingebettet)'}" }.uniq

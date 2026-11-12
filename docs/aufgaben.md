@@ -1994,6 +1994,40 @@ check:
     - { line_spacing: 1.0 }   # Zeilenabstand höchstens so viel (1.0: einzeilig)
 ```
 
+Eine **Tabelle** (`.xlsx`, `.ods`) prüft dieselbe Aufgabe, wenn `file:` eine
+ist (docs/plan-tabellenkalkulation.md). Der Dienst liest jede Zelle (Wert,
+Formel, angezeigter Text, Zahlenformat, fett), Spalten und Zeilen, Filter,
+bedingte Formatierungen und Diagramme, und zeichnet jedes Blatt als Raster;
+die Markierungen stehen auf den Zellen. Zellen heißen wie im Programm
+(»B3«, »D4:D8«), auf dem ersten Blatt, sonst mit `sheet: 1`.
+
+```yaml
+check:
+  type: document
+  file: spreadsheet-cells/01 Kosten.xlsx
+  rules:
+    - { same_data: 'A3:C8' }           # die Daten der Vorlage unverändert
+    - { formulas: ['D4:D8', 'D9'] }    # dort Formeln, keine getippten Zahlen
+    - { functions: { D9: SUM } }       # mit dieser Funktion (englisch, wie gespeichert; die Meldung sagt SUMME)
+    - { values: { D9: 6595 } }         # diese Ergebnisse
+    - { recalc: { set: { C5: 152 }, expect: { D5: 4408, D9: 6711 } } }   # eine Zahl ändern, neu rechnen: so muss es dann aussehen
+    - { absolute: { cells: 'E4:E8', ref: 'B12' } }   # kopierte Formeln mit $B$12
+    - { number_format: { 'C4:D9': currency, 'B2': percent, 'A4:A9': date, 'E4:E8': { decimals: 1 } } }
+    - { text_numbers: 'B4:D9' }        # keine Zahl als Text getippt (»12,50 €«)
+    - { bold_cells: 'A3:D3' }
+    - { sorted: { range: 'A4:D30', by: B, order: desc } }   # sortiert, und noch dieselben Zeilen wie in der Vorlage
+    - autofilter                       # ein Filter über der Tabelle
+    - { conditional: 'E4:E30' }        # eine bedingte Formatierung dort
+    - { chart: { type: column, title: true, axis_titles: true, range: 'A3:B8' } }
+    - no_errors                        # keine Formel zeigt #DIV/0!, #NAME? …
+```
+
+`recalc` schickt die Änderung mit dem Upload an den Dienst: Er ändert die
+Zellen in seiner Kopie, rechnet neu, liest die anderen und setzt alles
+zurück. Eine Tabelle mit getippten Ergebnissen zeigt dann die alten Zahlen.
+Eine Seite mit Tabellen trägt `office: sheet` im Meta-Block: Der Schalter
+nennt dann Excel statt Word.
+
 Ein Dokument, als PDF exportiert, prüft eine Aufgabe mit `accept: pdf` (ohne
 `file:`; die Karte bietet keine Vorlage an und nimmt nur `.pdf`). Der Dienst
 liest es mit poppler, nicht mit LibreOffice: seine Seiten (die Karte zeigt sie

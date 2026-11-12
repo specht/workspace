@@ -61,6 +61,10 @@ module CodeLanguages
               'word' => 'Word', 'libreoffice' => 'LibreOffice', 'nextcloud' => 'Nextcloud Office' }.freeze
     # the office programs have no logo of their own here, but an icon
     ICONS = { 'word' => 'bi-file-earmark-word', 'libreoffice' => 'bi-file-earmark-richtext', 'nextcloud' => 'bi-cloud' }.freeze
+    # on a page of spreadsheets (office: sheet) the same choice names
+    # Microsoft's program Excel: the choice is the suite, not one program
+    KIND_NAMES = { 'sheet' => { 'word' => 'Excel' } }.freeze
+    KIND_ICONS = { 'sheet' => { 'word' => 'bi-file-earmark-excel', 'libreoffice' => 'bi-file-earmark-spreadsheet' } }.freeze
     # What a teacher can rank for a class
     GROUP_LANGUAGES = PROGRAMMING
     # What a person's own switch stores as their choice for every page
@@ -218,9 +222,11 @@ module CodeLanguages
     def self.switch_html(languages, current, office_kind = 'text')
         buttons = languages.map do |l|
             pressed = l == current
-            logo = ICONS[l] ? "<i class='bi #{ICONS[l]}' aria-hidden='true'></i>" : "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>"
+            icon = (KIND_ICONS[office_kind.to_s] || {})[l] || ICONS[l]
+            name = (KIND_NAMES[office_kind.to_s] || {})[l] || NAMES[l]
+            logo = icon ? "<i class='bi #{icon}' aria-hidden='true'></i>" : "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>"
             "<button type='button' class='code-language-option' data-set-language='#{l}' aria-pressed='#{pressed}'>" \
-                "#{logo}<span class='code-language-option-name' data-name='#{NAMES[l]}'>#{NAMES[l]}</span></button>"
+                "#{logo}<span class='code-language-option-name' data-name='#{name}'>#{name}</span></button>"
         end
         office = office?(languages)
         "<span class='code-language-switch#{office ? ' code-language-switch-office' : ''}'#{office ? " data-office-kind='#{CGI.escapeHTML(office_kind.to_s)}'" : ''} role='group' aria-label='#{office ? 'Office-Programm' : 'Programmiersprache'}'>" \
