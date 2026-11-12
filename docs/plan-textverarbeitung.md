@@ -104,6 +104,9 @@ These hold for word processing and for the series still to come
   where the function is, for the program the student chose (Word,
   LibreOffice, Nextcloud Office), and the hints go from »what« to »where
   exactly«. Students get stuck in the program's menus more than in the idea.
+- **Illustrations where a page explains something visual** (the site's
+  rule; the maintainer named serifs on »Schrift mit Absicht«): a drawing of
+  its own, as SVG, not only a sentence.
 - **The teacher note suggests a demonstration** of the sheet's most important
   functions before the class starts, at the projector, in the program the
   class uses.
@@ -210,6 +213,9 @@ built by hand; each is a page of a series of its own, about one lesson.
 - **Grading** (the maintainer asked how; to decide): see the proposal in the
   conversation of 12 November 2026, summed up here once decided.
 - **PDF export** as part of a sheet, with a check that reads the PDF.
+- **The curriculum graph:** a series (the eight sheets, the Backrooms levels)
+  as one node (the maintainer, 12 November 2026); until then the stored
+  layout lacks sheet 8 (production orders quickly, the graph test is red).
 - **Every sheet to 45 minutes**, »Formatvorlagen« first; the hints with the
   way through the menus per program; the demonstration in the teacher notes.
 

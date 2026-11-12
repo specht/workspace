@@ -1492,7 +1492,7 @@ class Main < Sinatra::Base
     # list of them with ticks (page_pin.js).
     def page_pin_button(slug)
         return '' unless user_logged_in? && (teacher_account_logged_in? || admin_logged_in?)
-        return '' unless pinnable_pages.include?(slug)
+        return '' unless pinnable_for_me.include?(slug)
 
         groups = own_class_groups
         return '' if groups.empty?
@@ -1927,7 +1927,7 @@ class Main < Sinatra::Base
         return '' if points.empty?
 
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        slugs = activities_with_tasks.to_h { |a| [a[:activity], a[:slug]] }
+        slugs = activities_with_tasks(nil, :drafts => pinned_drafts(own_class_groups)).to_h { |a| [a[:activity], a[:slug]] }
         today = Date.today
         rows = points.filter_map do |p|
             _, title, tasks = class_activities(p[:group]).find { |a, _, _| a == p[:activity] }
@@ -2108,8 +2108,10 @@ class Main < Sinatra::Base
     # order: [{ slug:, activity:, title:, tasks: [{ id:, title:, type:, version:, prediction: }] }]
     # variant_of: slug -> the variant whose tasks count (ClassRepos), for
     # a person or a group; nil counts the page as it is.
-    def activities_with_tasks(variant_of = nil)
-        @@content.select { |_, c| c[:tasks] && !(c[:tasks][:on_page] || []).empty? && (DEVELOPMENT || !c[:dev_only]) && !c[:teacher_only] }
+    # drafts: activities still in development that count all the same (pinned
+    # for the group in question, pinned_drafts)
+    def activities_with_tasks(variant_of = nil, drafts: [])
+        @@content.select { |slug, c| c[:tasks] && !(c[:tasks][:on_page] || []).empty? && (DEVELOPMENT || !c[:dev_only] || drafts.include?(slug)) && !c[:teacher_only] }
             .map do |slug, c|
                 on_page = tasks_in_variant(c, variant_of && variant_of.call(slug))[:on_page]
                 tasks = on_page.map do |id|
@@ -2126,7 +2128,7 @@ class Main < Sinatra::Base
     # Activities for the class board of a group: [[activity, title, tasks]],
     # the tasks as the group sees them.
     def class_activities(group)
-        activities_with_tasks(->(slug) { group_page_variant(slug, group) }).map { |a| [a[:activity], a[:title], a[:tasks]] }.sort_by { |_, title, _| title.downcase }
+        activities_with_tasks(->(slug) { group_page_variant(slug, group) }, :drafts => pinned_drafts([group])).map { |a| [a[:activity], a[:title], a[:tasks]] }.sort_by { |_, title, _| title.downcase }
     end
 
     # The logged-in person's TaskStates as { 'activity/id' => state }, once per request.
@@ -2140,7 +2142,7 @@ class Main < Sinatra::Base
     end
 
     def my_progress
-        @my_progress ||= StudentHome.progress(activities_with_tasks(->(slug) { class_repo_variant(slug) }), my_task_states)
+        @my_progress ||= StudentHome.progress(activities_with_tasks(->(slug) { class_repo_variant(slug) }, :drafts => pinned_drafts(my_groups)), my_task_states)
     end
 
     # Groups the logged-in person is a member of (all of them, not only the first).
@@ -2170,6 +2172,30 @@ class Main < Sinatra::Base
 
     # What a teacher may pin: the activities of the catalog and the Handbuch pages.
     def pinnable_pages = pinnable_slugs + pinnable_reference_slugs
+
+    # Activities still in development (».slug« in sections.yaml) that an
+    # administrator may pin for a class to try them with it: in production
+    # in no list, but once pinned they count for that class (its students'
+    # start page, the class page's progress, their own progress).
+    def draft_slugs
+        @@section_order.flat_map { |key| (@@sections[key] || {})[:entries] || [] }
+            .select { |slug| @@content[slug] && @@content[slug][:dev_only] }
+    end
+
+    # The drafts pinned for one of these groups (in development: none
+    # needed, everything counts anyway).
+    def pinned_drafts(groups)
+        return [] if DEVELOPMENT || groups.empty?
+
+        drafts = draft_slugs
+        pins_for_groups(groups).map { |p| p[:slug] }.uniq & drafts
+    end
+
+    # What the logged-in person may pin: the catalog and the Handbuch, and for
+    # administrators the drafts too.
+    def pinnable_for_me
+        admin_logged_in? && !DEVELOPMENT ? pinnable_pages + draft_slugs : pinnable_pages
+    end
 
     # Activities a student may see in the catalog (and a teacher may pin).
     def pinnable_slugs
@@ -2239,8 +2265,9 @@ class Main < Sinatra::Base
         return '' unless user_logged_in? && tasks_visible?
         return '' unless my_running_tests.empty?
 
-        allowed = pinnable_slugs
-        pinnable = pinnable_pages
+        drafts = pinned_drafts(my_groups)
+        allowed = pinnable_slugs + drafts
+        pinnable = pinnable_pages + drafts
         pinned = pins_for_groups(my_groups).select { |p| pinnable.include?(p[:slug]) }.uniq { |p| p[:slug] }.map do |p|
             c = @@content[p[:slug]]
             reference = PageKinds.reference?(p[:slug])
@@ -2269,7 +2296,7 @@ class Main < Sinatra::Base
         Main.load_invitations()
         data = parse_request_data(:required_keys => [:group, :slug], :max_value_lengths => {:group => 200, :slug => 100})
         halt 403 unless class_groups.include?(data[:group])
-        halt 404 unless pinnable_pages.include?(data[:slug])
+        halt 404 unless pinnable_for_me.include?(data[:slug])
         neo4j_query(<<~END_OF_QUERY, :key => "#{data[:group]}|#{data[:slug]}", :group => data[:group], :slug => data[:slug], :by => @session_user[:email], :ts => Time.now.to_i)
             MERGE (p:Pin {key: $key})
             SET p.group = $group, p.slug = $slug, p.by = $by, p.ts = $ts;
@@ -2473,7 +2500,8 @@ class Main < Sinatra::Base
         io << "<div class='class-pins-add'><select class='form-select class-pin-select' aria-label='Aktivität oder Handbuch-Seite suchen und anheften'>" \
               "<option value=''>Aktivität oder Handbuch-Seite suchen und anheften …</option>"
         pinned = pins.map { |p| p[:slug] }
-        io << grouped_activity_options(pinnable_pages.reject { |s| pinned.include?(s) }.map { |s| [s, plain_title(s), s] })
+        drafts = admin_logged_in? && !DEVELOPMENT ? draft_slugs : []
+        io << grouped_activity_options((pinnable_pages + drafts).reject { |s| pinned.include?(s) }.map { |s| [s, drafts.include?(s) ? "#{plain_title(s)} (in Arbeit)" : plain_title(s), s] })
         io << '</select></div></section>'
         io
     end
@@ -2940,7 +2968,7 @@ class Main < Sinatra::Base
     def my_card_progress
         @my_card_progress ||= begin
             begun = my_progress.to_h { |p| [p[:slug], p] }
-            activities_with_tasks(->(slug) { class_repo_variant(slug) }).filter_map do |a|
+            activities_with_tasks(->(slug) { class_repo_variant(slug) }, :drafts => pinned_drafts(my_groups)).filter_map do |a|
                 entry = begun[a[:slug]]
                 next unless entry
 
