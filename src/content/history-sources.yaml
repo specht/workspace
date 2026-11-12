@@ -459,3 +459,46 @@ playfair:
         quote: "what were likely the first pie chart and circle graph"
   - text: Die drei Diagramme dieses Blatts sind also über zweihundert Jahre alt
     none: 'eine Folgerung aus 1786 und 1801'
+
+columbia:
+  - text: Die Folie, deren Titel das Falsche sagte, 2003
+    none: 'die Überschrift des Kastens'
+  - text: Beim Start der Raumfähre Columbia traf ein Stück Schaumstoff vom Außentank den linken Flügel
+    sources:
+      - url: https://en.wikipedia.org/wiki/Space_Shuttle_Columbia_disaster
+        quote: 'Damage to the left wing''s leading edge by debris from the external tank during launch'
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'SOFI=Spray-On Foam Insulation (Report Volume I, August 2003, S. 191)'
+  - text: Während die Columbia noch im All war, sollten Ingenieure abschätzen, ob der Flügel beschädigt war
+    sources:
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'The 3 reports were created by engineers for high-level NASA officials who were deciding whether the threat of wing damage required further investigation before the Columbia attempted return. (S. 191)'
+  - text: Ihre Ergebnisse zeigten sie auf Folien
+    sources:
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'The Debris Assessment Team presented its analysis in a formal briefing to the Mission Evaluation Room that relied on PowerPoint slides from Boeing. (S. 191)'
+  - text: 'Der Titel einer Folie lautete »Review of Test Data Indicates Conservatism for Tile Penetration«, sinngemäß: Die Testdaten zeigen, dass vorsichtig gerechnet wurde'
+    sources:
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'Review Of Test Data Indicates Conservatism for Tile Penetration (die Folie, S. 191)'
+  - text: Erst in der letzten Zeile unten stand, dass das Schaumstück nach einer Schätzung 640-mal so groß war wie die Stücke, mit denen getestet worden war
+    sources:
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'Only at the bottom of the slide do engineers state a key piece of information: that one estimate of the debris that struck Columbia was 640 times larger than the data used to calibrate the model on which engineers based their damage assessments. (S. 191)'
+  - text: Die Verantwortlichen hielten die Columbia für sicher
+    sources:
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'The officials were satisfied that the reports indicated that the Columbia was not in danger, and no attempts to further examine the threat were made. (S. 191)'
+  - text: Am 1. Februar 2003 zerbrach sie beim Rückflug, alle sieben Menschen an Bord starben
+    sources:
+      - url: https://en.wikipedia.org/wiki/Space_Shuttle_Columbia_disaster
+        quote: 'On February 1, 2003, Space Shuttle Columbia disintegrated as it re-entered the atmosphere over Texas and Louisiana, killing all seven astronauts on board.'
+  - text: Die Kommission, die das Unglück untersuchte, schrieb, man verstehe leicht, wie jemand diese Folie lesen könne, ohne zu merken, dass es um Leben und Tod geht
+    sources:
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'it is easy to understand how a senior manager might read this PowerPoint slide and not realize that it addresses a life-threatening situation. (S. 191)'
+  - text: Edward Tufte, ein Fachmann für die Darstellung von Informationen, schlug einen Titel vor, der das Wichtige gesagt hätte
+    sources:
+      - url: https://www.nasa.gov/wp-content/uploads/2025/04/caib-report.pdf
+        quote: 'Dr. Edward Tufte of Yale University, an expert in information presentation … This difference led Tufte to suggest that a more appropriate headline would be "Review of Test Data Indicates Irrelevance of Two Models." (S. 191)'
+

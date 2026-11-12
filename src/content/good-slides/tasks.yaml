@@ -1,0 +1,85 @@
+# Aufgaben zu »Eine Folie, ein Gedanke«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/good-slides/01 Kraniche.pptx und .odp), die
+# fertigen Folien und eine Stufe ohne Notizen macht dokumente.py.
+format: 1
+activity: good-slides
+tasks:
+  - id: publikum
+    title: Während du sprichst
+    prediction: true
+    prompt: |
+      Vorn hängt die Folie »Zug« mit sieben ganzen Sätzen, und du erzählst
+      dazu, was die Kraniche im Herbst tun. Was macht dein Publikum?
+    check:
+      type: choice
+      options:
+        - Es hört dir zu und schaut ab und zu auf die Folie.
+        - Es liest die Folie und hört dir dabei kaum noch zu.
+        - Es liest und hört zugleich, so versteht es alles doppelt.
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Steht viel Text vor ihnen, fangen die meisten an zu lesen, ob sie wollen oder nicht. Was wird dann aus deinen Worten?
+      - when: { picked: 2 }
+        say: Versuch einmal, einen Text zu lesen, während jemand etwas anderes dazu erzählt. Bekommst du beides mit?
+    solution: |
+      Es liest und hört dir kaum noch zu. Lesen und Zuhören zugleich klappt
+      schlecht: Wer liest, verpasst, was du sagst.
+
+  - id: titel
+    title: Ein Titel, der etwas sagt
+    prompt: |
+      Die zweite Folie heißt »Allgemeines«. Welcher Titel sagt am besten, was
+      man sich von ihr merken soll?
+    check:
+      type: choice
+      options:
+        - Allgemeines
+        - Aussehen und Größe
+        - Der Kranich ist ein großer Vogel
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: »Allgemeines« passt über jede Folie. Was soll man von dieser Folie behalten?
+      - when: { picked: 1 }
+        say: Das nennt zwei Themen, aber keine Aussage. Was ist über Aussehen und Größe zu sagen?
+    solution: |
+      »Der Kranich ist ein großer Vogel«: ein kurzer Satz mit der Aussage der
+      Folie. Wer nur die Titel liest, kennt schon den Kern des Vortrags.
+
+  - id: folien
+    title: Ein Gedanke pro Folie
+    prompt: |
+      Prüfe deine Präsentation. Die Prüfung markiert auf deinen Folien, was
+      noch fehlt. Speichere in deinem Programm, bevor du prüfst.
+    check:
+      type: document
+      file: good-slides/01 Kraniche.pptx
+      rules:
+        - titles
+        - { title_words: 3 }
+        - { max_words: 25 }
+        - { min_size: 24 }
+        - no_overflow
+        - { notes: ['Flügel sind von Spitze zu Spitze', 'aus Skandinavien und aus dem Baltikum', 'kein Fuchs sie im Wasser', 'Moore und Feuchtwiesen geschützt'] }
+    hint:
+      - Fang mit der Folie »Zug« an. Sie erzählt zwei Gedanken; mach zwei Folien daraus.
+      - Schneide auf jeder Folie die ganzen Sätze aus und füge sie in die Notizen unter der Folie ein. Auf die Folie kommen drei Stichwörter.
+      - Gib jeder Folie einen Titel, der in einem kurzen Satz sagt, was man sich merken soll. Die Sätze in 18 pt bekommen wieder die Größe des Layouts.
+    libreoffice:
+      hint:
+        - "Klick links auf die Folie »Zug«, dann *Folie* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Folie doppeln*. Lösch in der ersten Folie die Sätze zu den Rufen, in der zweiten die zum Zug."
+        - "*Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Notizen* zeigt unter der Folie das Feld für die Notizen. Markier die Sätze auf der Folie, schneide sie aus (<kbd>Strg</kbd>+<kbd>X</kbd>) und füge sie in die Notizen ein (<kbd>Strg</kbd>+<kbd>V</kbd>). Zurück geht es mit *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Normal*."
+        - "Markier den Text auf der Folie und drück <kbd>Strg</kbd>+<kbd>M</kbd> (*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*): Die 18 pt verschwinden, die Schrift des Layouts kommt zurück."
+    word:
+      hint:
+        - "Klick links mit der rechten Maustaste auf die Folie »Zug« und wähl *Folie duplizieren*. Lösch in der ersten Folie die Sätze zu den Rufen, in der zweiten die zum Zug."
+        - "Unten in der Statusleiste öffnet *Notizen* das Feld unter der Folie. Markier die Sätze auf der Folie, schneide sie aus (<kbd>Strg</kbd>+<kbd>X</kbd>) und füge sie in die Notizen ein (<kbd>Strg</kbd>+<kbd>V</kbd>)."
+        - "Markier den Text auf der Folie und drück <kbd>Strg</kbd>+<kbd>Leertaste</kbd>: Die 18 pt verschwinden, die Schrift des Layouts kommt zurück."
+    nextcloud:
+      hint:
+        - "Klick links mit der rechten Maustaste auf die Folie »Zug« und wähl *Folie doppeln*. Lösch in der ersten Folie die Sätze zu den Rufen, in der zweiten die zum Zug."
+        - "*Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Notizen* zeigt unter der Folie das Feld für die Notizen. Markier die Sätze auf der Folie, schneide sie aus (<kbd>Strg</kbd>+<kbd>X</kbd>) und füge sie in die Notizen ein (<kbd>Strg</kbd>+<kbd>V</kbd>)."
+        - "Markier den Text auf der Folie und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*: Die 18 pt verschwinden, die Schrift des Layouts kommt zurück."

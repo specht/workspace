@@ -1,0 +1,18 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die fertigen Folien bestehen die Prüfung, als .pptx
+# und als .odp; die Vorlage und die Folien, deren Sätze gelöscht statt in die
+# Notizen verschoben sind, scheitern. Alle macht dokumente.py.
+format: 1
+activity: good-slides
+examples:
+  folien:
+    pass:
+      - document: stufen/folien.pptx
+      - document: stufen/folien.odp
+    fail:
+      - document: ../../static/good-slides/01 Kraniche.pptx
+        say: nennt nur ein Thema
+      - document: ../../static/good-slides/01 Kraniche.odp
+        say: Wörter
+      - document: stufen/geloescht.pptx
+        say: steht in keiner Notiz

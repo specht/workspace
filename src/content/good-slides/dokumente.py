@@ -77,6 +77,7 @@ if __name__ == '__main__':
     referat('starter').save(os.path.join(STATIC, STARTER))
     referat('good').save(os.path.join(HERE, 'stufen', 'folien'))
     referat('deleted').save(os.path.join(HERE, 'stufen', 'geloescht'))
-    slide_pictures(os.path.join(STATIC, STARTER + '.pptx'), {3: os.path.join(HERE, 'bilder', 'textwand.svg')})
+    # the whole Referat as the slide sorter shows it, slide by slide
+    slide_pictures(os.path.join(STATIC, STARTER + '.pptx'), {n: os.path.join(HERE, 'bilder', f'vorlage-{n}.svg') for n in range(1, 6)})
     slide_pictures(os.path.join(HERE, 'stufen', 'folien.pptx'), {3: os.path.join(HERE, 'bilder', 'zug.svg')})
     print('written: static/good-slides/01 Kraniche.pptx/.odp, stufen/folien.*, stufen/geloescht.*, bilder/*.svg')

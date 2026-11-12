@@ -18256,7 +18256,7 @@ body.document-full-open {
 .reading-timer .rt-head { display: flex; flex-wrap: wrap; gap: 0.5em; align-items: baseline; margin-bottom: 0.6em; }
 .reading-timer .rt-title { font-weight: 600; color: var(--widget-ink); }
 .reading-timer .rt-pill { font-size: 0.8em; padding: 0.1em 0.6em; border-radius: 1em; background: var(--widget-chip); color: var(--widget-ink); }
-.reading-timer .rt-screen { container-type: inline-size; }
+.reading-timer .rt-screen { container-type: inline-size; max-width: 44em; margin: 0 auto; }
 .reading-timer .rt-idle { margin: 0.4em 0 0.8em; }
 .reading-timer .rt-slide-shown {
     position: relative;
@@ -18271,7 +18271,12 @@ body.document-full-open {
     font-family: Carlito, Calibri, 'IBM Plex Sans', sans-serif;
 }
 .reading-timer .rt-slide-title { font-size: 4.4cqw; text-align: center; margin-bottom: 2.5cqw; line-height: 1.15; }
-.reading-timer .rt-slide-body { font-size: 1.85cqw; line-height: 1.3; }
+.reading-timer .rt-slide-body { font-size: max(1.85cqw, 11px); line-height: 1.3; }
+/* on a phone the letters keep a size one can read; the slide grows with them */
+@container (max-width: 560px) {
+    .reading-timer .rt-slide-shown { aspect-ratio: auto; min-height: 56.25cqw; padding-bottom: 6cqw; }
+    .reading-timer .rt-slide-title { font-size: max(4.4cqw, 17px); }
+}
 .reading-timer .rt-slide-body ul { margin: 0; padding-left: 2.5cqw; }
 .reading-timer .rt-slide-number { position: absolute; right: 2cqw; bottom: 1.2cqw; font-size: 1.4cqw; color: #666; }
 .reading-timer .rt-controls { display: flex; flex-wrap: wrap; gap: 0.5em; align-items: center; }

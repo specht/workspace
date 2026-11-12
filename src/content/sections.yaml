@@ -80,6 +80,9 @@
     - sort-and-filter
     - spreadsheet-charts
     - trip-accounts
+    # presentations, in development (docs/plan-praesentationen.md): only on the
+    # development site until the series is complete
+    - .good-slides
   # the worksheets of each series, one after the other: each pinned on its
   # own, the class page shows them as a whole too
   series:
