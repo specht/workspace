@@ -5259,6 +5259,26 @@ ul.task-teacher-list .task-teacher-answer {
     margin: 0.4em 0 0;
 }
 
+/* »Nextcloud der Schule« (class_nextcloud.js) */
+.class-nextcloud-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
+    margin-top: 0.6em;
+}
+.class-nextcloud-row .form-control {
+    flex: 1 1 18em;
+    max-width: 32em;
+}
+.class-nextcloud-state {
+    margin: 0.4em 0 0;
+    font-size: 90%;
+}
+.class-nextcloud-state .bi {
+    margin-right: 0.35em;
+}
+
 /* »Sprachen der Klasse« (class_languages.js): the ranked languages as rows
    with a number, a grip, the logo, the name and how many activities offer
    it; the others below, quieter, each added with a tap. A row being dragged
@@ -17509,6 +17529,24 @@ body.mail-app-open {
 .document-name strong {
     color: var(--bs-body-color);
     font-weight: 600;
+}
+/* a share link of the class's Nextcloud instead of a file (document_task.js) */
+.document-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    margin-top: 0.6em;
+}
+.document-link label {
+    font-size: 0.92em;
+}
+.document-link label .bi {
+    color: var(--bs-primary);
+}
+.document-link-hint {
+    margin: 0;
+    font-size: 0.85em;
+    color: var(--bs-secondary-color);
 }
 .task-card.document-dragging .document-drop {
     border-style: solid;

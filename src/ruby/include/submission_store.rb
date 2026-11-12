@@ -144,14 +144,18 @@ module SubmissionStore
     # A Kata handed in (Einreichen, KataHandIns): its code as the one file
     # of a submission, so that deleting and exporting treat it like any
     # other hand-in.
-    def self.write_text(target, name, text)
+    # extra: further files after it, { name => text } (a document's share
+    # link, NextcloudLink), gone with the submission.
+    def self.write_text(target, name, text, extra: {})
         FileUtils.mkdir_p(File.dirname(target))
         tmp = "#{target}.#{Process.pid}.#{Thread.current.object_id}.tmp"
-        bytes = text.to_s.b
         File.open(tmp, 'wb') do |out|
             gz = Zlib::GzipWriter.new(out)
             Gem::Package::TarWriter.new(gz) do |tar|
-                tar.add_file_simple(name, 0o644, bytes.bytesize) { |entry| entry.write(bytes) }
+                [[name, text], *extra.to_a].each do |file, content|
+                    bytes = content.to_s.b
+                    tar.add_file_simple(file, 0o644, bytes.bytesize) { |entry| entry.write(bytes) }
+                end
             end
             gz.finish
         end
@@ -188,6 +192,22 @@ module SubmissionStore
                         next unless entry.file?
 
                         return [entry.full_name, entry.read(max).to_s.force_encoding('UTF-8').scrub]
+                    end
+                end
+            end
+        end
+        nil
+    rescue Errno::ENOENT, Zlib::Error
+        nil
+    end
+
+    # The text of the file called name in a stored submission, or nil.
+    def self.read_entry(target, name, max: 4096)
+        File.open(target, 'rb') do |f|
+            Zlib::GzipReader.wrap(f) do |gz|
+                Gem::Package::TarReader.new(gz) do |tar|
+                    tar.each do |entry|
+                        return entry.read(max).to_s.force_encoding('UTF-8').scrub if entry.file? && entry.full_name == name
                     end
                 end
             end

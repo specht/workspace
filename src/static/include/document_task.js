@@ -14,8 +14,15 @@
 // watches and when it was saved last. Other browsers need the document
 // chosen or dropped for each check.
 //
+// Where the student's class has the school's Nextcloud (a setting on the
+// class page, NextcloudLink on the server), the card also takes a share
+// link of the document there: the server fetches the file with each check,
+// and keeps the link with the last version, so that it is there on the next
+// visit. A file chosen or dropped replaces the link, a link typed replaces
+// the file.
+//
 // tasks.js calls setup(card, check), check(card, busy, done),
-// render(card, report) and showStored(card, answer).
+// render(card, report), showStored(card, answer) and nextcloud(server).
 (function () {
     const MAX_BYTES = 10 * 1024 * 1024;
     const CAN_KEEP = typeof window.showOpenFilePicker === 'function' && typeof window.showSaveFilePicker === 'function';
@@ -73,6 +80,8 @@
     // hold of, when it was saved last, so that a save the page does not
     // see (another file, another format) shows
     function chosen(card, name, saved) {
+        const field = card.querySelector('.document-link-input');
+        if (field) field.value = '';
         const line = card.querySelector('.document-name');
         line.textContent = '';
         if (card.documentHandle) {
@@ -280,6 +289,11 @@
     async function check(card, busy, done) {
         // one check at a time (a click while the page checks after a save)
         if (card.documentBusy) return;
+        const field = card.querySelector('.document-link-input');
+        if (field && field.value.trim() && !card.documentHandle && !card.documentFile) {
+            checkLink(card, field.value.trim(), busy, done);
+            return;
+        }
         let file = card.documentFile;
         // A file chosen without a handle is what it was when it was chosen:
         // once Word saved it again, the browser cannot read it any more. So
@@ -356,6 +370,87 @@
             // a check that brought no new result: the old one as it was
             if (shown && shown.isConnected) unindicate(card);
         }
+    }
+
+    // The document behind a share link of the class's Nextcloud: the server
+    // fetches it (NextcloudLink) and checks it as an upload; what went wrong
+    // with the link comes back as an invalid answer.
+    async function checkLink(card, link, busy, done) {
+        busy();
+        card.documentBusy = true;
+        const shown = card.documentReportEl && card.documentReportEl.isConnected ? card.documentReportEl : null;
+        indicate(card, 'Holt das Dokument aus Nextcloud …');
+        const form = new FormData();
+        form.append('task', card.dataset.task);
+        form.append('link', link);
+        try {
+            const response = await fetch('/api/task/document', { method: 'POST', body: form, credentials: 'same-origin' });
+            if (!response.ok) throw new Error(String(response.status));
+            const data = await response.json();
+            data.success = true;
+            if (data.status !== 'invalid') {
+                card.documentCheckedAt = Date.now();
+                const line = card.querySelector('.document-name');
+                line.textContent = '';
+                const icon = el('i', 'bi bi-cloud');
+                icon.setAttribute('aria-hidden', 'true');
+                line.append(icon, document.createTextNode(' Aus Nextcloud: '), el('strong', null, data.stored ? data.stored.name : link));
+                mirror(card);
+            }
+            unindicate(card);
+            done(data);
+        } catch (err) {
+            done({ success: false });
+        } finally {
+            card.documentBusy = false;
+            if (shown && shown.isConnected) unindicate(card);
+        }
+    }
+
+    // The field for a share link under the drop zone of every document card
+    // of the page, for a class with a Nextcloud (the states' answer names
+    // it); filled with the link of the last version checked from there.
+    function nextcloud(server) {
+        if (!server) return;
+        const host = server.replace(/^https:\/\//, '');
+        document.querySelectorAll('.task-card').forEach(function (card) {
+            const box = card.querySelector('.document-task');
+            if (!box || box.querySelector('.document-link')) return;
+            const id = 'document-link-' + card.dataset.task.replace(/[^A-Za-z0-9_-]/g, '-');
+            const row = el('div', 'document-link');
+            const label = el('label', null);
+            label.htmlFor = id;
+            const icon = el('i', 'bi bi-cloud');
+            icon.setAttribute('aria-hidden', 'true');
+            label.append(icon, document.createTextNode(' Oder ein Link zum Teilen aus eurer Nextcloud (' + host + '):'));
+            const field = el('input', 'form-control form-control-sm document-link-input');
+            field.type = 'url';
+            field.id = id;
+            field.placeholder = server + '/s/…';
+            field.spellcheck = false;
+            field.autocomplete = 'off';
+            field.value = card.documentStoredLink || '';
+            const hint = el('p', 'document-link-hint', 'In Nextcloud: Teilen, dann »Öffentlicher Link«, ohne Passwort. Jedes Prüfen holt die gespeicherte Fassung; speichere vorher in Nextcloud Office. ' +
+                'Der Link wird mit der geprüften Fassung gespeichert, damit er beim nächsten Mal hier steht; »Ergebnis löschen« löscht beide.');
+            hint.id = id + '-hint';
+            field.setAttribute('aria-describedby', hint.id);
+            // a link typed: the file chosen before is let go
+            field.addEventListener('input', function () {
+                if (!field.value.trim()) return;
+                card.documentFile = null;
+                card.documentHandle = null;
+                const line = card.querySelector('.document-name');
+                if (line) line.textContent = 'Geprüft wird das Dokument hinter dem Link darunter.';
+            });
+            field.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                if (card.documentRecheck) card.documentRecheck();
+            });
+            row.append(label, field, hint);
+            const drop = box.querySelector('.document-drop');
+            drop.parentNode.insertBefore(row, drop.nextSibling);
+        });
     }
 
     // Where the website cannot scroll the panel to the top of the window
@@ -1127,10 +1222,15 @@
     // the stored line (»01 Einladung.docx: 6 von 8, …«) under the button
     function showStored(card, answer, stored) {
         if (stored) showFile(card, stored);
+        if (stored && stored.link) {
+            card.documentStoredLink = stored.link;
+            const field = card.querySelector('.document-link-input');
+            if (field && !field.value) field.value = stored.link;
+        }
         const line = card.querySelector('.document-name');
         if (!line || card.documentHandle || card.documentFile) return;
         line.textContent = answer ? 'Zuletzt geprüft: ' + answer : 'oder hierher ziehen';
     }
 
-    window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored, showFile: showFile };
+    window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored, showFile: showFile, nextcloud: nextcloud };
 })();

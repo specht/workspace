@@ -40,6 +40,7 @@ require './include/login_names.rb'
 require './include/database_provisioning.rb'
 require './include/case_server.rb'
 require './include/git_server.rb'
+require './include/nextcloud_link.rb'
 require './include/git_browse.rb'
 require './include/git_overview.rb'
 require './include/trusted_template.rb'
@@ -1570,6 +1571,25 @@ class Main < Sinatra::Base
         groups.to_h { |group| [group, set[group]] }
     end
 
+    # The school's Nextcloud a teacher named for a group (NextcloudLink):
+    # { group => 'https://host[/path]' } for the groups that have one.
+    def group_nextcloud(groups)
+        return {} if groups.empty?
+
+        neo4j_query(<<~END_OF_QUERY, :groups => groups).to_a.to_h { |row| [row['group'], row['url']] }
+            MATCH (g:GroupSetting) WHERE g.group IN $groups AND g.nextcloud IS NOT NULL
+            RETURN g.group AS group, g.nextcloud AS url;
+        END_OF_QUERY
+    end
+
+    # The Nextcloud of the logged-in person's groups, the first one named;
+    # nil without one.
+    def my_nextcloud
+        return nil unless user_logged_in?
+
+        group_nextcloud(my_groups).values.compact.min
+    end
+
     # The activities of the catalog that offer more than one language, for
     # the class's ranking: [{ title, languages }] in catalog order
     # office: those that offer office programs instead
@@ -2722,6 +2742,7 @@ class Main < Sinatra::Base
             "Jede Seite nimmt das erste Programm dieser Liste. Lernende können auf der Seite selbst umschalten.</p>" \
             "<div class='class-languages' data-languages='#{h.(office.to_json)}'></div></section>"
         io << "<script src='/include/class_languages.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
+        io << class_nextcloud_html(group)
         # Copy buttons on every code block for the group's students, or only
         # where the page has them (group_copy_all_code?).
         copy_all = group_copy_all_code?([group])
@@ -2737,6 +2758,27 @@ class Main < Sinatra::Base
         io << class_repos_html(group)
         io << class_school_html(group)
         io << "</div>"
+    end
+
+    # The school's Nextcloud for the group (NextcloudLink): with it, the
+    # document cards of the section Office take a share link of a document
+    # there instead of an upload. The Workspace asks the address for
+    # status.php before it keeps it.
+    def class_nextcloud_html(group)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        url = group_nextcloud([group])[group]
+        "<section class='class-setting class-nextcloud' data-group='#{h.(group)}'>" \
+            "<h3 class='class-setting-title'><label for='class-nextcloud-url'>Nextcloud der Schule</label></h3>" \
+            "<p class='class-setting-hint' id='class-nextcloud-hint'>Hat eure Schule eine Nextcloud, können Lernende bei den Aufgaben im Abschnitt Office " \
+            "statt einer Datei einen Link zum Teilen aus Nextcloud einfügen: Jede Prüfung holt dann die aktuelle Fassung des Dokuments von dort. " \
+            "Gib die Adresse ein, unter der ihr die Nextcloud im Browser öffnet. Der Workspace fragt dort nach, ob eine Nextcloud antwortet, und holt später nur von dieser Adresse. " \
+            "Erlaubt eure Schule keine öffentlichen Links, geht es nur mit Hochladen.</p>" \
+            "<div class='class-nextcloud-row'>" \
+            "<input type='url' class='form-control' id='class-nextcloud-url' placeholder='https://cloud.schule.de' value='#{h.(url)}' spellcheck='false' autocomplete='off' aria-describedby='class-nextcloud-hint class-nextcloud-state'>" \
+            "<button type='button' class='btn btn-primary btn-sm class-nextcloud-save'>Prüfen und speichern</button>" \
+            "<button type='button' class='btn btn-outline-secondary btn-sm class-nextcloud-remove'#{url ? '' : ' hidden'}>Nextcloud entfernen</button>" \
+            "</div><p class='class-nextcloud-state' id='class-nextcloud-state' aria-live='polite'>#{url ? "<i class='bi bi-check-lg' aria-hidden='true'></i>Eingetragen: #{h.(url)}" : 'Keine Nextcloud eingetragen.'}</p></section>" \
+            "<script src='/include/class_nextcloud.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
     # The class repositories of the group (ClassRepos), in the tab
@@ -3970,6 +4012,35 @@ class Main < Sinatra::Base
             SET g.office_suites = $suites;
         END_OF_STRING
         respond(:yay => 'sure')
+    end
+
+    # The school's Nextcloud for a group (class_nextcloud_html): checked
+    # with status.php before it is kept; an empty url takes it away.
+    post '/api/set_group_nextcloud' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:group, :url], :max_value_lengths => { :url => 300 })
+        group = data[:group]
+        assert(class_groups.include?(group))
+        if data[:url].to_s.strip.empty?
+            neo4j_query(<<~END_OF_STRING, { :group => group })
+                MATCH (g:GroupSetting {group: $group})
+                REMOVE g.nextcloud;
+            END_OF_STRING
+            respond(:url => nil)
+            return
+        end
+        begin
+            url = NextcloudLink.server(data[:url])
+            info = NextcloudLink.verify(url)
+        rescue NextcloudLink::Refused => e
+            respond(:refused => e.message)
+            return
+        end
+        neo4j_query(<<~END_OF_STRING, { :group => group, :url => url })
+            MERGE (g:GroupSetting {group: $group})
+            SET g.nextcloud = $url;
+        END_OF_STRING
+        respond(:url => url, :product => info[:product], :version => info[:version], :maintenance => info[:maintenance])
     end
 
     # Every code block copyable for a group's students (the default), or only

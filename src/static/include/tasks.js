@@ -937,6 +937,8 @@
                 const del = card.querySelector('.task-delete');
                 if (del) del.hidden = false;
             });
+            // a class with the school's Nextcloud: document cards take a share link too
+            if (!ownOnly && data.nextcloud && window.DocumentTask) DocumentTask.nextcloud(data.nextcloud);
             foldDoneIncludes();
         }, { no_please_wait: true });
     }

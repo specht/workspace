@@ -73,11 +73,28 @@ class Main < Sinatra::Base
         halt 400 if key.empty? || key.size > 120
         found = find_task(key)
         halt 404 if found.nil? || found[:task]['check']['type'] != 'document'
-        entry = params['file']
-        halt 400 unless entry.is_a?(Hash) && entry[:tempfile] || entry.is_a?(Hash) && entry['tempfile']
-        upload = entry[:tempfile] || entry['tempfile']
-        name = File.basename((entry[:filename] || entry['filename']).to_s.encode('UTF-8', :invalid => :replace, :undef => :replace))[0, 200]
-        bytes = upload.read(OfficeClient::MAX_BYTES + 1).to_s
+        # the document as a file, or a share link of the class's Nextcloud
+        # (NextcloudLink), fetched from there with each check
+        link = nil
+        upload = nil
+        if params['link'].is_a?(String)
+            server = my_nextcloud
+            halt 400 if server.nil? || params['link'].size > 500
+            begin
+                token = NextcloudLink.token(server, params['link'])
+                name, bytes = NextcloudLink.fetch(server, token, :max_bytes => OfficeClient::MAX_BYTES)
+            rescue NextcloudLink::Refused => e
+                respond(:status => 'invalid', :message => render_task_markdown(e.message))
+                return
+            end
+            link = "#{server}/s/#{token}"
+        else
+            entry = params['file']
+            halt 400 unless entry.is_a?(Hash) && entry[:tempfile] || entry.is_a?(Hash) && entry['tempfile']
+            upload = entry[:tempfile] || entry['tempfile']
+            name = File.basename((entry[:filename] || entry['filename']).to_s.encode('UTF-8', :invalid => :replace, :undef => :replace))[0, 200]
+            bytes = upload.read(OfficeClient::MAX_BYTES + 1).to_s
+        end
         begin
             model = OfficeClient.analyze(bytes, name, :probes => DocumentCheck.probes(found[:task]['check']))
         rescue OfficeClient::Unavailable => e
@@ -86,7 +103,7 @@ class Main < Sinatra::Base
                 :message => render_task_markdown('Dokumente kann ich gerade nicht lesen. Versuch es in ein paar Minuten noch einmal.'))
             return
         ensure
-            upload.close! rescue nil
+            upload&.close! rescue nil
         end
         result = TaskCheck.check(found[:task], model)
         # the document itself, as the person's last version of this task:
@@ -97,7 +114,7 @@ class Main < Sinatra::Base
         if model.is_a?(Hash) && !model['error']
             name = name.gsub(/[\x00-\x1f\/\\]/, '_').sub(/\A\.+/, '')[0, 90]
             name = 'dokument.docx' if name.empty?
-            SubmissionStore.write_text(submission_path(found[:key]), name, bytes)
+            SubmissionStore.write_text(submission_path(found[:key]), name, bytes, :extra => link ? { NextcloudLink::LINK_FILE => link } : {})
             stored = document_stored(found[:key])
         end
         state = nil
@@ -170,7 +187,8 @@ class Main < Sinatra::Base
 
         name = SubmissionStore.read_file(path, :max => 0)&.first
         activity, id = task_key.split('/', 2)
-        { :name => name, :at => File.mtime(path).to_i, :url => "/api/task/document_file/#{activity}/#{id}" }
+        { :name => name, :at => File.mtime(path).to_i, :url => "/api/task/document_file/#{activity}/#{id}",
+          :link => SubmissionStore.read_entry(path, NextcloudLink::LINK_FILE) }.compact
     end
     # The starting file of a document task with its dates filled in for
     # today (DocumentDates; check: dates in tasks.yaml), for anyone, as the
@@ -488,7 +506,9 @@ class Main < Sinatra::Base
         # person's own functions in their starters and answers.
         starters, answers = OwnFunctions.for_person(entry[:tasks][:by_id], correct, states.transform_values { |s| s[:answer] }.compact, given)
         answers.each { |id, answer| states[id][:answer] = answer }
-        respond(:states => states, :starters => starters)
+        # the class's Nextcloud: document cards take a share link from there
+        nextcloud = entry[:tasks][:by_id].values.any? { |t| t['check']['type'] == 'document' } ? my_nextcloud : nil
+        respond(:states => states, :starters => starters, :nextcloud => nextcloud)
     end
     # The answers of a group to the open tasks of an activity, for the
     # teacher's view under the cards (tasks.js).

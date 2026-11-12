@@ -237,6 +237,28 @@ wo im Programm der Klasse ein Knopf oder ein Menü ist
 Lernende schalten auf der Seite um (`u.office_suite`); das ändert nichts an
 ihrer Programmiersprache und umgekehrt (`CodeLanguages::OFFICE`).
 
+## Nextcloud der Schule
+
+Hat die Schule eine Nextcloud, trägt die Lehrkraft darunter ihre Adresse
+ein (`/api/set_group_nextcloud`, `GroupSetting.nextcloud`, `class_nextcloud.js`).
+Der Workspace fragt dort `status.php` ab und behält die Adresse nur, wenn eine
+Nextcloud antwortet; eine Adresse einer Seite darin (`…/apps/files/`) wird auf
+die Adresse der Nextcloud gekürzt. Nur https auf Port 443, ein Name statt
+einer IP-Adresse, und jede Adresse, auf die der Name zeigt, muss im Internet
+liegen (`NextcloudLink`).
+
+Die Lernenden der Gruppe sehen dann unter jeder Karte mit Dokument ein Feld
+für einen Link zum Teilen (`…/s/<Token>`, ohne Passwort). Jede Prüfung holt
+die gespeicherte Fassung über `…/s/<Token>/download`, nur von dieser
+Nextcloud, Weiterleitungen nur innerhalb von ihr, höchstens 10 MB; ein Link
+mit Passwort, abgelaufen, gelöscht oder auf einen Ordner bekommt eine
+Meldung, was zu tun ist. Der Link liegt im Archiv der zuletzt geprüften
+Fassung (`.nextcloud-link`), steht beim nächsten Besuch wieder im Feld und
+geht mit ihr. Eine Datei, die danach gewählt wird, ersetzt ihn. Wer in
+mehreren Gruppen mit Nextcloud ist, bekommt die erste Adresse in
+alphabetischer Ordnung. Nextcloud Office speichert nicht nach jedem
+Tastendruck: Die Karte bittet, vor dem Prüfen zu speichern.
+
 ## Kopierknöpfe
 
 Voreingestellt hat jeder Codeblock einen Kopierknopf, für alle. Auf der
