@@ -972,37 +972,24 @@ def satz():
 
 # ---- the card of the series in the catalog
 
-# The cards of the series: a ground in the colour of the programs (blue
-# for text, green for tables, orange for slides, as Word and Writer, Excel
-# and Calc, PowerPoint and Impress have them), a gentle gradient with a faint
-# motif of the kind of document: lines of writing paper, a grid of cells
-CARD_GROUNDS = {
-    'text': ('#e9f0fb', '#d6e3f6', '#c3d4ee'),
-    'sheet': ('#e8f4ec', '#d3eadb', '#b9dcc5'),
-    'slides': ('#fcefe6', '#f8dccb', '#f0c3a8'),
-}
+# The cards of the series: white like the site's other drawn cards, with a
+# very faint grey motif of the kind of document (lines of writing paper, a
+# grid of cells, a beamer's light); the colour of the program (blue for text,
+# green for tables, as Word and Writer, Excel and Calc have them) is in the
+# drawing itself, not the ground (the maintainer, 12 November 2026)
+CARD_MOTIF = '#eceef1'
+PGREEN_LIGHT = '#8fbf9a'        # a second green of the table card's pie
 
 
 def card_ground(w, h, kind):
-    light, deep, motif = CARD_GROUNDS[kind]
-    out = [f"<defs><linearGradient id='ground-{kind}' x1='0' y1='0' x2='1' y2='1'>"
-           f"<stop offset='0' stop-color='{light}'/><stop offset='1' stop-color='{deep}'/></linearGradient></defs>",
-           f"<rect x='0' y='0' width='{w}' height='{h}' fill='url(#ground-{kind})'/>"]
+    out = [rect(0, 0, w, h, '#ffffff')]
     if kind == 'text':
-        # writing paper: ruled lines and a margin
-        for y in range(22, h, 18):
-            out.append(line(0, y, w, y, motif, 1))
-        out.append(line(38, 0, 38, h, motif, 1.6))
+        out += [line(0, y, w, y, CARD_MOTIF, 1) for y in range(22, h, 18)]
     elif kind == 'sheet':
-        # a sheet's cells, its head row and column a little deeper
-        out.append(rect(0, 0, w, 16, motif, extra=" fill-opacity='0.55'") + rect(0, 0, 22, h, motif, extra=" fill-opacity='0.55'"))
-        for x in range(22, w, 54):
-            out.append(line(x, 0, x, h, motif, 1))
-        for y in range(16, h, 18):
-            out.append(line(0, y, w, y, motif, 1))
+        out += [line(x, 0, x, h, CARD_MOTIF, 1) for x in range(22, w, 54)]
+        out += [line(0, y, w, y, CARD_MOTIF, 1) for y in range(16, h, 18)]
     else:
-        # a projector's beam from the top left
-        out.append(f"<path d='M -10 -10 L {w * 0.75:.0f} {h + 10} L {w + 10} {h * 0.55:.0f} Z' fill='{motif}' fill-opacity='0.5'/>")
+        out.append(f"<path d='M -10 -10 L {w * 0.75:.0f} {h + 10} L {w + 10} {h * 0.55:.0f} Z' fill='{CARD_MOTIF}'/>")
     return ''.join(out)
 
 
@@ -1031,7 +1018,7 @@ def karte():
         inv.append(bar(x0, y0 + 104 + k * 11, length, h=3))
     body.append(sheet(120, 142, -9, ''.join(inv)))
     # the report's contents
-    toc = [text(x0, y0 + 4, 'Reisebericht', 13, PGREEN, weight='700'), text(x0, y0 + 30, 'Inhalt', 9, INK, weight='700')]
+    toc = [text(x0, y0 + 4, 'Reisebericht', 13, PBLUE, weight='700'), text(x0, y0 + 30, 'Inhalt', 9, INK, weight='700')]
     for k, (title, page) in enumerate([('Montag', 2), ('Dienstag', 3), ('Mittwoch', 4), ('Donnerstag', 5), ('Freitag', 6)]):
         y = y0 + 46 + k * 13
         toc.append(text(x0, y, title, 8, INK))
@@ -1039,7 +1026,7 @@ def karte():
         toc.append(text(sw / 2 - 14, y, str(page), 8, INK, 'end'))
     body.append(sheet(240, 132, 3, ''.join(toc)))
     # the newspaper page, in front
-    news = [text(x0, y0 + 4, 'Kraniche', 14, PGREEN, weight='700')]
+    news = [text(x0, y0 + 4, 'Kraniche', 14, PBLUE, weight='700')]
     col = (sw - 28 - 8) / 2
     for c in range(2):
         cx = x0 + c * (col + 8)
@@ -1556,7 +1543,7 @@ def _panel(kind, x, y, pw, ph):
         cx, cy, r = x + pw / 2, y + ph / 2, min(pw, ph) / 2 - 18
         shares = [46.3, 148, 24.5, 9, 4.5]
         a = -math.pi / 2
-        for v, c in zip(shares, [PBLUE, PAMBER, PGREEN, BAR, EDGE]):
+        for v, c in zip(shares, [PGREEN, PAMBER, PGREEN_LIGHT, BAR, EDGE]):
             b = a + v / sum(shares) * 2 * math.pi
             large = 1 if b - a > math.pi else 0
             out.append(f"<path d='M {cx:.1f} {cy:.1f} L {cx + r * math.cos(a):.1f} {cy + r * math.sin(a):.1f} "
@@ -1646,7 +1633,7 @@ def karte_tabellen():
     mx, my = x0 + hx + cw * 2, y0 + ch * 2
     g.append(rect(mx, my, cw, ch, PAMBER_BG) + rect(mx, my, cw, ch, 'none', PAMBER, 1.6))
     g.append(text(mx + cw - 3, my + 11, '661,50', 7, INK, 'end'))
-    g.append(text(x0, y0 + ch * 10 + 22, '=B5*C5', 13, PBLUE, weight='700', family="'IBM Plex Mono', monospace"))
+    g.append(text(x0, y0 + ch * 10 + 22, '=B5*C5', 13, PGREEN, weight='700', family="'IBM Plex Mono', monospace"))
     body.append(sheet(120, 142, -9, ''.join(g)))
     # a pie chart
     pie = [text(0, y0 + 4, 'Wofür ein Kind', 10, INK, 'middle', '700'), text(0, y0 + 17, 'bezahlt', 10, INK, 'middle', '700')]
@@ -1669,7 +1656,7 @@ def karte_tabellen():
     slot = (sw / 2 - 12 - left) / 4
     for i, v in enumerate([4.4, 3.6, 2.6, 4.0]):
         bh = v / 5 * (bottom - top)
-        col.append(rect(left + slot * i + slot * 0.2, bottom - bh, slot * 0.6, bh, PBLUE))
+        col.append(rect(left + slot * i + slot * 0.2, bottom - bh, slot * 0.6, bh, PGREEN))
     col.append(line(left, bottom, sw / 2 - 12, bottom, INK, 1))
     body.append(sheet(358, 140, 7, ''.join(col)))
     svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
