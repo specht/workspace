@@ -133,6 +133,12 @@ end
 # wählt man das Spiel im Menü.
 # PHONE_NUMBER = '+49 30 1234567'
 # PHONE_DIRECT_DIAL = false
+# Der SIP-Zugang des Anbieters (bei easybell: SIP-Benutzername, SIP-Passwort,
+# SIP-Registrar/Proxy aus dem Kundenportal). Ob er angehängte Ziffern
+# weiterreicht, prüft src/phone/test/trunk-digits.sh.
+# PHONE_SIP_SERVER = 'voip.easybell.de'
+# PHONE_SIP_USER = 'K1234567T1'
+# PHONE_SIP_PASSWORD = '…'
 
 # Musik von YouTube für das Telefonspiel: Manche Server bittet YouTube, sich
 # anzumelden (»Sign in to confirm you're not a bot«). Dann hilft eine Datei
