@@ -3,8 +3,9 @@ a phone game itself, run by line.py in the sandbox. It reads the published
 games from the list the Workspace writes (PHONE_GAMES/published.json), reads
 their titles five at a time in random order, and takes the number of a game
 (three or four digits) at any moment. A number dialled before the call
-(PHONE_DIALED) skips all that: its game, or »Kein Anschluss unter dieser
-Nummer«. Then the menu becomes the game: the game's
+(PHONE_DIALED) skips all that: its game, or the three tones and »Kein
+Anschluss unter dieser Nummer« before the menu. After two rounds of titles
+without a key it says goodbye. Then the menu becomes the game: the game's
 interpreter replaces this process, so the game talks over the same pipes and
 stays in the same sandbox.
 """
@@ -12,11 +13,14 @@ import json
 import os
 import random
 
-from telefon import _command, hangup, keys, say, title
+from telefon import _command, hangup, keys, play, say, title
 
 GAMES = os.environ.get('PHONE_GAMES', '/games')
 LANGUAGES = {'.py': ['python3'], '.rb': ['ruby'], '.js': ['node']}
 BATCH = 5
+# rounds of titles without a key before the menu says goodbye (the maintainer:
+# a forgotten call should not hold one of the line's few channels)
+QUIET_ROUNDS = 2
 DIALED = os.environ.get('PHONE_DIALED', '')
 # a game tried from /telefon-freigabe before it is published (line.py checks the ticket)
 TRIAL = json.loads(os.environ.get('PHONE_TRIAL') or 'null')   # the number dialled before the call (line.py), or ''
@@ -76,13 +80,16 @@ def dial(first, games):
 
 
 def connect(number, games):
-    """a number dialled before the call: its game, or what a real line says"""
+    """a number dialled before the call: its game; else what a real line
+    says (the three tones, »Kein Anschluss unter dieser Nummer«), and then
+    the menu, so that a typo does not cost a new call"""
     for game in games:
         if game['number'] == number:
             start(game)
     title('Kein Anschluss')
+    play('kein-anschluss.wav')
     say('Kein Anschluss unter dieser Nummer.')
-    hangup()
+    title('')
 
 
 def main():
@@ -91,16 +98,21 @@ def main():
     games = load()
     if DIALED:
         connect(DIALED, games)
-        return
     say('Hier ist das Telefonbuch des Hackschule Workspace.', interrupt=True)
     if not games:
         say('Noch steht kein Spiel im Telefonbuch.')
         return
     say('Gib die Nummer eines Spiels ein.', interrupt=True)
+    quiet = 0
     while True:
         first = typed()
         if first and dial(first, games):
             return
+        if quiet >= QUIET_ROUNDS:
+            say('Ruf gern wieder an. Tschüss!')
+            hangup()
+            return
+        pressed = False
         order = random.sample(games, len(games))
         for i in range(0, len(order), BATCH):
             for game in order[i:i + BATCH]:
@@ -111,12 +123,16 @@ def main():
             if not first:
                 say('Für weitere Spiele drück die Raute.', interrupt=True)
                 first = keys(3, timeout=10)
+                if first:
+                    pressed = True
                 if len(first) == 3:
                     dial(first, games)
                     first = ''
                     continue
             if first:
+                pressed = True
                 dial(first, games)
+        quiet = 0 if pressed else quiet + 1
 
 
 main()

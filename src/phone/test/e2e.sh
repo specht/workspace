@@ -4,7 +4,9 @@
 # their own, with one published game (123, the demo Zahlenraten). The
 # telephone calls 100, the line's number here: the Telefonbuch's menu
 # answers, it types 123 and guesses. Then it calls 100123, the number with
-# the game's dialled after it: the game answers at once, without the menu.
+# the game's dialled after it: the game answers at once, without the menu;
+# 100999, a number without a game (the tones, »Kein Anschluss«, the menu);
+# and 100 without pressing a key (after two rounds of titles, goodbye).
 # The test checks the runner's log and keeps the recordings in $OUT.
 #   src/phone/test/e2e.sh            (from the repository; images phone-asterisk,
 #                                     phone-speech, phone-runner, phone-testclient built)
@@ -59,6 +61,17 @@ call 100123 25 4@14
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-direct.log"
 check "$OUT/runner-direct.log" "game 1" "say 'Ich denke mir eine Zahl"
 if grep -q "say 'Hier ist das Telefonbuch" "$OUT/runner-direct.log"; then echo "WRONG the menu answered a call dialled with the game's number"; fail=1; else echo "ok    no menu when dialled directly"; fi
+# 3. a number without a game after the line's: the three tones, »Kein
+# Anschluss«, then the menu
+lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
+call 100999 16
+docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-none.log"
+check "$OUT/runner-none.log" "play kein-anschluss.wav" "say 'Kein Anschluss unter dieser Nummer" "say 'Hier ist das Telefonbuch"
+# 4. the bare number and no key: after two rounds of titles, goodbye
+lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
+call 100 75
+docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-quiet.log"
+check "$OUT/runner-quiet.log" "say 'Ruf gern wieder an" "game ended: hangup"
 heard=$(ls "$OUT"/out/*-dec.wav | head -1)
 seconds=$(docker run --rm -v "$OUT:/t" phone-testclient sh -c "sox /t/out/$(basename "$heard") -n stat 2>&1 | sed -n 's/^Length (seconds): *//p'")
 echo "heard ${seconds} s: $heard"

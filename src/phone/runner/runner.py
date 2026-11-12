@@ -80,8 +80,10 @@ def direct_digits(exten):
     if not DIRECT_DIAL or not LINE_NUMBER or not re.fullmatch(r'\+?\d+', exten or ''):
         return ''
     # only the line's number with digits after it: a trunk reports the
-    # whole number, never a game's alone
-    return game.game_number(exten, LINE_NUMBER) if game.international(exten).startswith(game.international(LINE_NUMBER)) else ''
+    # whole number, never a game's alone. Digits of any length go to the
+    # menu, which says »Kein Anschluss« for a number without a game
+    number, line = game.international(exten), game.international(LINE_NUMBER)
+    return number[len(line):][:8] if number.startswith(line) else ''
 
 
 def published():
@@ -134,7 +136,16 @@ class Call(game.Phone):
         remote = (vars_['UNICASTRTP_LOCAL_ADDRESS'], int(vars_['UNICASTRTP_LOCAL_PORT']))
         bridge = await self.ari('POST', '/bridges', type='mixing')
         self.bridge = bridge['id']
-        await self.ari('POST', f'/bridges/{self.bridge}/addChannel', channel=f'{self.channel},{self.media_channel}')
+        # the stream enters the app a moment after it was made (the first
+        # call after Asterisk started was refused, 422): a few tries
+        for attempt in range(20):
+            try:
+                await self.ari('POST', f'/bridges/{self.bridge}/addChannel', channel=f'{self.channel},{self.media_channel}')
+                break
+            except RuntimeError as error:
+                if ' 422 ' not in str(error) or attempt == 19:
+                    raise
+                await asyncio.sleep(0.05)
         self.mixer = Mixer(self.sock, remote)
         asyncio.get_running_loop().add_reader(self.sock.fileno(), self._receive)
         self.mixer.start()
@@ -186,6 +197,24 @@ class Call(game.Phone):
         if getattr(self, 'interruptible', False):
             self.cut = True
             self.mixer.cut_speech()
+
+    async def play(self, source, interrupt=False):
+        """a recording of the game's folder (or the menu's: its tones) in
+        place of the voice; returns when it has been heard, like say"""
+        self.log('play', source)
+        try:
+            samples = await sounds.music(self.runner.session, self.folder, str(source))
+        except Exception as error:
+            self.log('play failed:', repr(error))
+            return
+        if self.ended.is_set():
+            return
+        self.cut = False
+        self.interruptible = interrupt
+        try:
+            await self.mixer.say(samples)
+        finally:
+            self.interruptible = False
 
     async def music(self, source, volume=1.0, start=0.0, stop=None):
         self.log('music', source, volume, start, stop)

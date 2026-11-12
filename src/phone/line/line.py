@@ -184,7 +184,8 @@ class Line(emulator.Server):
         # the menu starts again as if that number had been dialled, five
         # times at most, all within the call's time
         for _ in range(1 + MAX_TRANSFERS):
-            self.folder = GAMES
+            # the menu's folder (its tones) until it becomes a game
+            self.folder = HERE
             self.phone = phone = LinePhone(self)
             env = game.environment()
             env['PHONE_DIALED'] = dialed
