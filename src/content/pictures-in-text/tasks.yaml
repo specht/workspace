@@ -58,7 +58,7 @@ tasks:
     check:
       type: choice
       options:
-        - IMG_4711.JPG
+        - "`IMG_4711.JPG`"
         - Bild
         - Ein grauer Kranich mit schwarz-weißem Hals und rotem Fleck auf dem Kopf steht in einer hohen Wiese.
         - "Abbildung 1: Ein Kranich in einer Wiese in der Uckermark. Foto: Charles J. Sharp, CC BY-SA 4.0"

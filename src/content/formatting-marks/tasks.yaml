@@ -90,7 +90,7 @@ tasks:
         - { align: right, paragraph: '2. März' }
         - { gaps: 6pt, before: ['Liebe Eltern', 'im Mai fährt', 'Der Elternabend ist', 'Bitte sagen Sie', 'Mit freundlichen Grüßen'] }
     hint:
-      - Fang mit den Formatierungszeichen an. Jeder Punkt · vor einem Wort am Zeilenanfang ist ein Leerzeichen, das weg muss.
+      - Fang mit den Formatierungszeichen an. Jeder Punkt (·) vor einem Wort am Zeilenanfang ist ein Leerzeichen, das weg muss.
       - Ein leerer Absatz ist ein ¶ allein in einer Zeile. Stell den Cursor davor und drück <kbd>Entf</kbd>.
       - Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>; such nach zwei Leerzeichen, ersetze durch eins.
 

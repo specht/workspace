@@ -113,7 +113,7 @@ Datum und richte es rechtsbündig aus. Der Cursor muss dafür nur irgendwo im
 Absatz stehen; markieren musst du nichts.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Stell den Cursor in die Überschrift und drück abwechselnd <kbd>Strg</kbd>+<kbd>L</kbd>, <kbd>Strg</kbd>+<kbd>E</kbd> und <kbd>Strg</kbd>+<kbd>R</kbd>. Achte darauf, was mit den Punkten · vor dem Text passiert, solange sie noch da sind.
+<strong>Ausprobieren:</strong> Stell den Cursor in die Überschrift und drück abwechselnd <kbd>Strg</kbd>+<kbd>L</kbd>, <kbd>Strg</kbd>+<kbd>E</kbd> und <kbd>Strg</kbd>+<kbd>R</kbd>. Achte darauf, was mit den Punkten (·) vor dem Text passiert, solange sie noch da sind.
 </div>
 
 ## Abstand statt leerer Absätze
