@@ -17921,3 +17921,7 @@ body.document-full-open {
     white-space: nowrap;
     font-weight: 600;
 }
+/* a piece of text (a font, a size, bold missing): underlined in orange */
+.document-mark-word {
+    box-shadow: inset 0 -2px 0 var(--document-mark);
+}

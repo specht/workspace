@@ -154,6 +154,17 @@ def read_paragraph(para, styles, where):
         context = bool(para.ParaContextMargin)
     except Exception:
         context = False
+    # tab stops set on the paragraph (not the default ones every few cm)
+    tabs = []
+    try:
+        for stop in para.ParaTabStops:
+            align = enum_value(stop.Alignment).lower()
+            if align == 'default':
+                continue
+            fill = stop.FillChar if isinstance(stop.FillChar, str) else ' '
+            tabs.append({'at': pt(stop.Position), 'align': align, 'fill': fill if fill.strip() else ''})
+    except Exception:
+        pass
     return {
         'text': text,
         'style': style,
@@ -166,6 +177,7 @@ def read_paragraph(para, styles, where):
         # no spacing between paragraphs of the same style (Word: »Keinen
         # Abstand zwischen Absätzen gleicher Formatierung einfügen«)
         'context_margin': context,
+        'tabs': tabs,
         'indent_left': pt(para.ParaLeftMargin),
         'indent_first': pt(para.ParaFirstLineIndent),
         'break': enum_value(para.BreakType),

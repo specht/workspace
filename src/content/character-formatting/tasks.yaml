@@ -1,0 +1,91 @@
+# Aufgaben zu »Schrift mit Absicht«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/character-formatting/02 Aushang.docx) und den
+# fertigen Aushang (stufen/aushang.docx) macht dokumente.py.
+format: 1
+activity: character-formatting
+tasks:
+  - id: schriften
+    title: Schriften zählen
+    prompt: |
+      Stell den Cursor nacheinander in jede Zeile des Aushangs. Wie viele
+      verschiedene Schriftarten zählst du?
+    check:
+      type: number
+      expect: 7
+      tolerance: 0
+    feedback:
+      - when: { between: [5, 6] }
+        say: Fast. Hat die Zeile unter der Überschrift auch eine eigene Schrift? Und »Danke!«?
+    hint:
+      - Die Schrift steht im Feld ganz links, wenn der Cursor im Text steht.
+      - Jede Zeile hat eine andere, nur zwei nicht. Und es gibt keine zwei Zeilen mit derselben.
+    solution: |
+      Sieben: Impact, Comic Sans MS, Times New Roman, Courier New, Verdana,
+      Arial und Georgia, eine für jeden Absatz.
+
+  - id: loeschen
+    title: Formatierung löschen
+    prediction: true
+    prompt: |
+      Du markierst die vier Absätze vom Donnerstag bis zur Klassenleitung und
+      löschst die Formatierung. Was passiert mit ihnen?
+    check:
+      type: choice
+      options:
+        - Sie bekommen alle dieselbe Schrift und Größe, und fett, unterstrichen und Großbuchstaben sind weg.
+        - Nur fett verschwindet; Schrift und Größe bleiben.
+        - Sie bekommen alle die Schrift der Überschrift.
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: Gelöscht wird alles, was von Hand an den Buchstaben eingestellt ist, auch Schrift und Größe.
+      - when: { picked: 2 }
+        say: Die Überschrift ist auch nur von Hand formatiert. Wohin geht ein Text zurück, an dem nichts eingestellt ist?
+    solution: |
+      Sie bekommen die Schrift und Größe, die das Dokument für normalen Text
+      vorsieht, hier Calibri in 12 pt. Fett, unterstrichen und Großbuchstaben
+      sind weg, weil sie von Hand gesetzt waren.
+
+  - id: hervorheben
+    title: Im Vorbeigehen lesen
+    prompt: |
+      Auf dem Aushang soll ein Wort auffallen, das jemand im Vorbeigehen lesen
+      muss. Welche Hervorhebung passt?
+    check:
+      type: choice
+      options:
+        - fett
+        - unterstrichen
+        - ganz in Großbuchstaben
+        - eine andere Schriftart
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Unterstrichen sieht aus wie ein Link und macht die Unterlängen schwer lesbar.
+      - when: { picked: 2 }
+        say: Großbuchstaben liest man langsamer, weil alle Wörter dieselbe Form bekommen.
+      - when: { picked: 3 }
+        say: Eine weitere Schrift macht das Blatt unruhig; der Blick fragt, ob das etwas anderes ist.
+    solution: Fett, und nur dort, wo es wirklich wichtig ist.
+
+  - id: aushang
+    title: Der Aushang, mit Absicht gesetzt
+    prompt: |
+      Prüfe deinen Aushang. Die Prüfung markiert auf deiner Seite jede Stelle,
+      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      prüfst.
+    check:
+      type: document
+      file: character-formatting/02 Aushang.docx
+      rules:
+        - text
+        - { fonts: 2 }
+        - { size: [11, 12], paragraphs: ['Am Donnerstag', 'Wo:', 'Ein Stück kostet', 'Wer einen Kuchen'] }
+        - { sparing: ['Am Donnerstag', 'Wo:', 'Ein Stück kostet', 'Wer einen Kuchen'] }
+        - { bold: ['14. März', 'großen Pause', 'vor der Mensa'] }
+        - no_underline
+        - no_caps
+    hint:
+      - Fang mit Formatierung löschen an, dann ist der Text wieder einheitlich.
+      - Danach setzt du nur noch drei Stellen fett.

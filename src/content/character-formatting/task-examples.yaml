@@ -1,0 +1,13 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Der fertige Aushang (stufen/) muss die Prüfung
+# bestehen, die Vorlage (src/static/character-formatting) an ihr scheitern.
+# Beide macht dokumente.py.
+format: 1
+activity: character-formatting
+examples:
+  aushang:
+    pass:
+      - document: stufen/aushang.docx
+    fail:
+      - document: ../../static/character-formatting/02 Aushang.docx
+        say: Schriftarten

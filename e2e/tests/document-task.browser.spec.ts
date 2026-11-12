@@ -155,3 +155,42 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await expect(report).not.toHaveClass(/document-fullscreen/);
   await expect(page).toHaveURL(/formatting-marks/);
 });
+
+// »Schrift mit Absicht«: the flyer in seven fonts fails six points, each
+// with its places marked; the flyer set with intent passes all seven.
+test('a flyer is checked for its fonts, sizes and emphasis', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/character-formatting');
+  await states;
+  const card = page.locator(".task-card[data-task='character-formatting/aushang']");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/character-formatting/02 Aushang.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(6);
+  await expect(report.locator('.document-mark-word').first()).toBeAttached();
+  if (shots) await page.screenshot({ path: path.join(shots, 'flyer-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/character-formatting/stufen/aushang.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
+});
+
+// »Listen und Tabstopps«: typed dashes and prices pushed with spaces fail
+// three points; a real list and a right-aligned tab stop pass all four.
+test('a packing list is checked for its list and tab stops', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/lists-and-tabs');
+  await states;
+  const card = page.locator(".task-card[data-task='lists-and-tabs/packliste']");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/lists-and-tabs/03 Packliste.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
+  if (shots) await page.screenshot({ path: path.join(shots, 'packing-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/lists-and-tabs/stufen/packliste.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(4);
+});

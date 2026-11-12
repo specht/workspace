@@ -1,0 +1,13 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Das fertige Blatt (stufen/) muss die Prüfung
+# bestehen, die Vorlage (src/static/lists-and-tabs) an ihr scheitern.
+# Beide macht dokumente.py.
+format: 1
+activity: lists-and-tabs
+examples:
+  packliste:
+    pass:
+      - document: stufen/packliste.docx
+    fail:
+      - document: ../../static/lists-and-tabs/03 Packliste.docx
+        say: Tab

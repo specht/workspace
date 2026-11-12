@@ -1954,6 +1954,14 @@ check:
     - line_breaks         # keine Zeilenumbrüche von Hand (Umschalt+Enter)
     - { align: center, paragraph: 'Einladung zum Elternabend' }
     - { gaps: 6pt, before: ['Liebe Eltern', 'im Mai fährt'] }
+    - { fonts: 2 }        # höchstens zwei Schriftarten
+    - { size: [11, 12], paragraphs: ['Am Donnerstag', 'Wo:'] }   # deren Text in 11 bis 12 pt
+    - { bold: ['14. März', 'vor der Mensa'] }       # diese Stücke fett
+    - { sparing: ['Am Donnerstag', 'Wo:'] }         # diese Absätze nicht ganz fett
+    - no_underline        # nichts unterstrichen
+    - no_caps             # keine Großbuchstaben als Format
+    - { list: ['Schlafsack', 'Hausschuhe'] }        # eine Liste des Programms, kein »- « getippt
+    - { tabs: ['Busfahrt', 'Zusammen'], align: [right, decimal] }   # je ein Tab, ein Tabstopp dieser Art, alle an einer Stelle
 ```
 
 Ein Dokument aus Word, LibreOffice oder Nextcloud Office (`.docx`, `.odt`,
@@ -1962,8 +1970,11 @@ die Datei der Lernenden als Upload (`POST /api/task/document`); der Dienst
 `office` (`src/office/server.py`) liest sie mit LibreOffice, ohne Makros und
 ohne verknüpfte Inhalte zu laden, und zeichnet die Seiten als SVG.
 `DocumentCheck` prüft die Regeln; jede ist ein Punkt der Liste auf der Karte,
-`label:` ersetzt seinen Namen, `say:` den Satz, wenn er fehlt. `align:` und
-`gaps:` finden Absätze an einem Stück ihres Texts (`paragraph:`, `before:`).
+`label:` ersetzt seinen Namen, `say:` den Satz, wenn er fehlt. `align:`,
+`gaps:`, `size:` und `sparing:` finden Absätze an einem Stück ihres Texts
+(`paragraph:`, `before:`, `paragraphs:`, die Liste selbst), `bold:` die Stücke
+selbst. Die Regeln zur Schrift lesen die Abschnitte eines Absatzes mit
+gleicher Formatierung und markieren die Wörter, die betroffen sind.
 
 Die Karte zeigt die Liste neben der Seite, beides in einem Fenster (auch im
 halben Bildschirm neben Word); jeder offene Punkt hat eine Nummer, die neben

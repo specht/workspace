@@ -52,10 +52,11 @@ handed out on paper got no feedback because nobody could check them all.
   pictures (`src/scripts/office`).
 - **Tests:** `e2e/tests/document-task.browser.spec.ts` (at 960 × 1040, then
   full width and a phone with full screen), the examples, `task_examples.rb`.
-- **The series in the class overview** is open: each worksheet is an
-  activity of its own (pinned on its own, week by week), and the overview
-  needs one view of the whole series, a row per student and a column per
-  worksheet.
+- **The series in the class overview** (`class_series_html`): each worksheet
+  is an activity of its own, pinned on its own week by week; »Reihe: …« in
+  the list of activities shows the whole series, a row per student, a column
+  per worksheet, each cell how many tasks are solved and, in its title, what
+  a document check left open.
 
 ## Decisions
 
@@ -85,10 +86,14 @@ built by hand; each is a page of a series of its own, about one lesson.
 
 1. **Was das Auge nicht sieht** (built): formatting marks, alignment,
    spacing instead of empty paragraphs, line breaks.
-2. **Schrift mit Absicht:** at most two fonts, body 11 to 12 pt, emphasis on
-   date, time and place, not bold, underline and capitals at once.
-3. **Listen und Tabstopps:** a packing list with »- «, a price list lined up
-   with spaces; real lists, a right-aligned tab stop with dot leaders.
+2. **Schrift mit Absicht** (built, `character-formatting`): the 7b's flyer
+   for a cake sale in seven fonts; two fonts, the text in 11 to 12 pt, bold
+   only on date, time and place, nothing underlined, no capitals as format;
+   deleting the formatting as a prediction.
+3. **Listen und Tabstopps** (built, `lists-and-tabs`): a packing list with
+   »- « typed, the costs lined up with spaces counted for Calibri 12 pt (they
+   break in any other font: the prediction); a real list, one tab per line, a
+   right-aligned tab stop with dot leaders.
 4. **Tabellen:** the trip's schedule in tabs; a table with a header row.
 5. **Bilder im Text:** text wrapping, a caption with a numbering field, an
    alt text that is not the file name.

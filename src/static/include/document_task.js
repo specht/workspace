@@ -313,6 +313,9 @@
             if (!line) { line = { mid: mid, points: [] }; lines.push(line); }
             if (line.points.indexOf(m.n) < 0) line.points.push(m.n);
         });
+        // how many numbers the fullest line has (room in the margin, viewer)
+        let most = 0;
+        lines.forEach(function (line) { most = Math.max(most, line.points.length); });
         lines.forEach(function (line) {
             line.points.sort(function (a, b) { return a - b; }).forEach(function (n, k) {
                 const badge = el('button', 'document-badge', String(n));
@@ -326,6 +329,7 @@
                 sheet.appendChild(badge);
             });
         });
+        return most;
     }
 
     // The pages one below the other on a stage that moves and zooms:
@@ -342,6 +346,7 @@
         const viewport = el('div', 'document-viewport');
         const stage = el('div', 'document-stage');
         const GAP = 24;
+        let most = 1;
         const width = Math.max.apply(null, pages.map(function (p) { return p.width; }));
         let y = 0;
         const tops = [];
@@ -360,7 +365,7 @@
             sheet.appendChild(img);
             const own = marks.filter(function (m) { return m.page === i + 1; });
             own.forEach(function (m) { sheet.appendChild(markNode(m)); });
-            gutter(sheet, own, page.crop ? page.crop.left : 70);
+            most = Math.max(most, gutter(sheet, own, page.crop ? page.crop.left : 70));
             stage.appendChild(sheet);
             sheets.push(sheet);
             y += page.height + GAP;
@@ -414,7 +419,8 @@
         // the view, with room on the left for two numbers in the margin
         // (GUTTER, on the screen) and a little on the right, its first line
         // near the top
-        const GUTTER = 58;
+        // room for as many numbers as the fullest line has, two at least
+        const GUTTER = 14 + 22 * Math.max(2, most);
         function start(animate) {
             const v = size();
             const page = pages[0];

@@ -1,0 +1,69 @@
+# Aufgaben zu »Listen und Tabstopps«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/lists-and-tabs/03 Packliste.docx) und das fertige
+# Blatt (stufen/packliste.docx) macht dokumente.py.
+format: 1
+activity: lists-and-tabs
+tasks:
+  - id: andere-schrift
+    title: Eine andere Schrift
+    prediction: true
+    prompt: |
+      Jemand stellt die Kosten in eine andere Schrift, Georgia statt Calibri,
+      in derselben Größe. Was passiert mit den Preisen?
+    check:
+      type: choice
+      options:
+        - Sie bleiben genau untereinander.
+        - Sie stehen nicht mehr ganz untereinander, aber noch rechts.
+        - Jeder Preis rutscht in eine eigene Zeile.
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Die Leerzeichen sind für eine Schrift gezählt. Ist ein Leerzeichen in einer anderen Schrift gleich breit?
+      - when: { picked: 1 }
+        say: Fast. Werden die Leerzeichen breiter, wird die ganze Zeile länger. Passt sie dann noch?
+    solution: |
+      Jeder Preis rutscht in eine eigene Zeile: Die Leerzeichen sind in
+      Georgia breiter, die Zeile wird länger als die Seite breit ist, und das
+      Programm bricht vor dem Preis um.
+
+  - id: tab-zeichen
+    title: Ein Tab im Text
+    prompt: |
+      Mit welchem Zeichen zeigen die Formatierungszeichen einen Tab?
+    check:
+      type: choice
+      options:
+        - "→"
+        - "·"
+        - "¶"
+        - "↵"
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Der Punkt ist ein Leerzeichen.
+      - when: { picked: 2 }
+        say: Das ist das Ende eines Absatzes.
+      - when: { picked: 3 }
+        say: Das ist ein Zeilenumbruch von Hand.
+    solution: Ein Pfeil nach rechts, →.
+
+  - id: packliste
+    title: Liste und Preise, sauber gebaut
+    prompt: |
+      Prüfe dein Blatt. Die Prüfung markiert auf deiner Seite jede Stelle, an
+      der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      prüfst.
+    check:
+      type: document
+      file: lists-and-tabs/03 Packliste.docx
+      rules:
+        - text
+        - { list: ['Schlafsack', 'Hausschuhe', 'Regenjacke', 'Taschenlampe', 'Badesachen', 'Krankenkassenkarte'] }
+        - spaces
+        - { tabs: ['Busfahrt', 'Jugendherberge', 'Kletterwald', 'Schifffahrt', 'Zusammen'], align: [right, decimal] }
+    hint:
+      - Die getippten Striche zuerst löschen, dann die sechs Zeilen markieren und die Liste einschalten.
+      - Mit Suchen und Ersetzen (Strg+H) findest du zwei Leerzeichen hintereinander. In jeder Zeile der Kosten bleibt nur ein Tab.
+      - Den Tabstopp setzt du für alle fünf Zeilen auf einmal, wenn sie markiert sind.
