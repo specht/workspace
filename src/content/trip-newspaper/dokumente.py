@@ -130,6 +130,8 @@ def article(path, hurried=False):
         shape._inline.docPr.set('descr', ALT)
     c = doc.add_paragraph(style='Caption')
     c.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    # no wider than the picture above it: 9 cm in the middle of 16 cm
+    c.paragraph_format.left_indent = c.paragraph_format.right_indent = Cm(3.5)
     if hurried:
         c.add_run(f'Abbildung 1: {CAPTION}')
     else:
@@ -172,7 +174,7 @@ if __name__ == '__main__':
     to_pdf(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'stufen', 'artikel.pdf'))
     to_pdf(os.path.join(STATIC, STARTER), os.path.join(HERE, 'stufen', 'vorlage.pdf'))
     draw_page(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'bilder', 'artikel.svg'),
-              top_cm=1.6, height_cm=26.6, left_cm=1.8, width_cm=17.4)
+              top_cm=1.6, height_cm=27.6, left_cm=1.8, width_cm=17.4)
     draw_page(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'teaser.webp'),
               top_cm=1.6, height_cm=9.8, left_cm=1.8, width_cm=17.4)
     print('written: static/trip-newspaper/09 Artikel.docx, stufen/*.docx, bilder/artikel.svg, teaser.webp')
