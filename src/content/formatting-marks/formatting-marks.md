@@ -109,7 +109,7 @@ Ob ein Absatz links, in der Mitte oder rechts steht, ist seine
 **Ausrichtung**. Sie gehört zum Absatz, nicht zu den Leerzeichen davor: Ein
 zentrierter Absatz bleibt in der Mitte, wie groß die Schrift auch wird.
 
-<div class='gallery centered small'>
+<div class='gallery centered'>
 <figure><img class='drawing' src='ausrichtung-links.svg' alt='Ein Absatz aus vier Zeilen, linksbündig: Alle Zeilen beginnen am linken Rand.'><figcaption>linksbündig<br><kbd>Strg</kbd>+<kbd>L</kbd></figcaption></figure>
 <figure><img class='drawing' src='ausrichtung-mitte.svg' alt='Derselbe Absatz zentriert: Jede Zeile steht in der Mitte.'><figcaption>zentriert<br><kbd>Strg</kbd>+<kbd>E</kbd></figcaption></figure>
 <figure><img class='drawing' src='ausrichtung-rechts.svg' alt='Derselbe Absatz rechtsbündig: Alle Zeilen enden am rechten Rand.'><figcaption>rechtsbündig<br><kbd>Strg</kbd>+<kbd>R</kbd></figcaption></figure>
