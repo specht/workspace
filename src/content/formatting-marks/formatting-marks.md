@@ -109,15 +109,8 @@ Ob ein Absatz links, in der Mitte oder rechts steht, ist seine
 **Ausrichtung**. Sie gehört zum Absatz, nicht zu den Leerzeichen davor: Ein
 zentrierter Absatz bleibt in der Mitte, wie groß die Schrift auch wird.
 
-<img class='drawing d-none d-lg-block' style='width: 35em' src='ausrichtung-wide.svg' alt='Derselbe Absatz aus vier Zeilen dreimal. Linksbündig: alle Zeilen beginnen am linken Rand. Zentriert: jede Zeile steht in der Mitte. Rechtsbündig: alle Zeilen enden am rechten Rand'>
-<img class='drawing d-lg-none' style='width: 11.75em' src='ausrichtung.svg' alt='Derselbe Absatz aus vier Zeilen dreimal. Linksbündig: alle Zeilen beginnen am linken Rand. Zentriert: jede Zeile steht in der Mitte. Rechtsbündig: alle Zeilen enden am rechten Rand'>
-
-<table class='table'>
-<tr><th>Ausrichtung</th><th>Tasten</th></tr>
-<tr><td>linksbündig</td><td><kbd>Strg</kbd>+<kbd>L</kbd></td></tr>
-<tr><td>zentriert</td><td><kbd>Strg</kbd>+<kbd>E</kbd></td></tr>
-<tr><td>rechtsbündig</td><td><kbd>Strg</kbd>+<kbd>R</kbd></td></tr>
-</table>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='ausrichtung-wide.svg' alt='Derselbe Absatz aus vier Zeilen dreimal, unter jedem seine Tasten. Linksbündig, Strg+L: alle Zeilen beginnen am linken Rand. Zentriert, Strg+E: jede Zeile steht in der Mitte. Rechtsbündig, Strg+R: alle Zeilen enden am rechten Rand'>
+<img class='drawing d-lg-none' style='width: 11.75em' src='ausrichtung.svg' alt='Derselbe Absatz aus vier Zeilen dreimal, unter jedem seine Tasten. Linksbündig, Strg+L: alle Zeilen beginnen am linken Rand. Zentriert, Strg+E: jede Zeile steht in der Mitte. Rechtsbündig, Strg+R: alle Zeilen enden am rechten Rand'>
 
 <!-- language: word -->
 Die Knöpfe dafür stehen in Word im Register *Start*, in der Gruppe *Absatz*.

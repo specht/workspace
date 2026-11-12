@@ -838,15 +838,44 @@ def punkt(phone=False):
     svg(variant('punkt', phone), 'formatting-marks', w, h, body, 'Ein Punkt (pt) neben einem Zentimeter, und wie groß 12 pt sind')
 
 
+def keycap(x, y, label, size=13):
+    """a key as the page's <kbd> draws it: a light cap with a shadow below,
+    its left edge at x, its baseline at y; returns the elements and the
+    right edge"""
+    width = measure(label, size, '600') + 12
+    # the page's colours for a pale area and a line, which have dark versions
+    out = (rect(x, y - size - 3, width, size + 10, '#d1d5db', r=4) +
+           rect(x, y - size - 4, width, size + 8, '#f3f4f6', '#d1d5db', 1, 4) +
+           text(x + width / 2, y, label, size, TEXT, 'middle', '600'))
+    return out, x + width
+
+
+def keys_line(cx, y, labels, size=13):
+    """keys like Strg + L, centred on cx"""
+    widths = [measure(k, size, '600') + 12 for k in labels]
+    plus = measure('+', size) + 8
+    x = cx - (sum(widths) + plus * (len(labels) - 1)) / 2
+    out = []
+    for i, label in enumerate(labels):
+        if i:
+            out.append(text(x + plus / 2, y, '+', size, GREY, 'middle'))
+            x += plus
+        cap, x = keycap(x, y, label, size)
+        out.append(cap)
+    return ''.join(out)
+
+
 def ausrichtung():
-    """left, centred, right: the same paragraph three times"""
-    w, h = 560, 150
+    """left, centred, right: the same paragraph three times, each with its
+    keys (the same in Word, LibreOffice and Nextcloud Office)"""
+    w, h = 560, 182
     panels = []
     lines = [196, 160, 182, 92]
-    for i, (title, mode) in enumerate([('linksbündig', 'left'), ('zentriert', 'center'), ('rechtsbündig', 'right')]):
+    for i, (title, mode, key) in enumerate([('linksbündig', 'left', 'L'), ('zentriert', 'center', 'E'), ('rechtsbündig', 'right', 'R')]):
         x = 10 + i * 186
         body = []
-        panels.append((body, (x, 4, 168, 136)))
+        panels.append((body, (x, 4, 168, 172)))
+        body.append(keys_line(x + 84, 166, ['Strg', key]))
         body.append(text(x + 84, 22, title, 14, TEXT, 'middle', '600'))
         body.append(paper(x, 34, 168, 104))
         tx, tw = x + 14, 140
