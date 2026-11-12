@@ -367,7 +367,7 @@ module Privacy
                 :how_long => 'zwei Tage; ein Aufkleber mit Foto, sobald er gedruckt ist, ungedruckt nach zwei Stunden; die Kennung des Browsers eine Stunde oder bis zum Neustart des Servers',
             },
             {
-                :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen die E-Mail-Adresse steht: Anmeldung, Zustimmung zur Nutzungsordnung, Abmelden anderer Sitzungen, Start oder Zurücksetzen eines Workspace oder einer Datenbank, Platz schaffen im Workspace, Datenexport, Sperren, Ankündigen und Löschen eines Kontos, Einreichen, Zurückziehen und Freigeben eines Telefonspiels; dazu, welche Lehrkraft Gruppen, Einladungen, Abgaben und Git-Repositorys geändert hat, und Fehler beim Prüfen einer Aufgabe, mit Datum und Uhrzeit',
+                :data => 'Protokolle des Servers: welche Seite wann mit welchem Ergebnis abgerufen wurde, ohne IP-Adresse und ohne Namen; Meldungen der Programme, in denen bei manchen Vorgängen die E-Mail-Adresse steht: Anmeldung, Zustimmung zur Nutzungsordnung, Abmelden anderer Sitzungen, Start oder Zurücksetzen eines Workspace oder einer Datenbank, Platz schaffen im Workspace, Datenexport, Sperren, Ankündigen und Löschen eines Kontos, Einreichen, Zurückziehen, Freigeben und Umbenennen eines Telefonspiels; dazu, welche Lehrkraft Gruppen, Einladungen, Abgaben und Git-Repositorys geändert hat, und Fehler beim Prüfen einer Aufgabe, mit Datum und Uhrzeit',
                 :categories => [:traffic],
                 :purpose => 'Betrieb, Sicherheit und Fehlersuche',
                 :who => 'Administration',

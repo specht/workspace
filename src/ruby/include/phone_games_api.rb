@@ -270,6 +270,27 @@ class Main < Sinatra::Base
         respond(:state => data[:decision] == 'publish' ? 'published' : 'rejected')
     end
 
+    # The maintainer changes how a game stands in the Telefonbuch: its title
+    # and subtitle (pending or published). The Telefonbuch and the line's
+    # menu read them from here; the game's own title '…' in its code was
+    # only read when it was submitted
+    post '/api/phone/rename' do
+        admins_only!
+        data = parse_request_data(:required_keys => [:id, :title, :description],
+            :max_value_lengths => { :title => PhoneGames::MAX_TITLE * 2, :description => PhoneGames::MAX_DESCRIPTION * 2 })
+        game = phone_game(data[:id])
+        halt 404 unless game && game[:state] != 'rejected'
+        title = PhoneGames.clean_text(data[:title], PhoneGames::MAX_TITLE)
+        description = PhoneGames.clean_text(data[:description], PhoneGames::MAX_DESCRIPTION)
+        halt 400, { :error => 'title' }.to_json if title.empty?
+        halt 400, { :error => 'description' }.to_json if description.empty?
+        neo4j_query('MATCH (g:PhoneGame {id: $id}) SET g.title = $title, g.description = $description;',
+                    :id => game[:id], :title => title, :description => description)
+        phone_games_publish_list
+        log_event "Telefonspiel umbenannt von #{@session_user[:email]}: #{PhoneGames.label(game)} #{game[:title]} → #{title}"
+        respond(:title => title, :description => description)
+    end
+
     # --- the pages --------------------------------------------------------
 
     # In the profile, beside the shared live apps: the person's
@@ -358,6 +379,19 @@ class Main < Sinatra::Base
         else
             ''
         end
+        # title and subtitle as the Telefonbuch shows them, to change
+        rename = if game[:state] == 'rejected'
+            ''
+        else
+            "<form class='pg-rename mb-4' data-id='#{h.(game[:id])}'><h2 class='h5'>Im Telefonbuch</h2>" \
+                "<div class='mb-2'><label class='form-label' for='pg-title'>Titel</label>" \
+                "<input class='form-control' id='pg-title' maxlength='#{PhoneGames::MAX_TITLE}' value='#{h.(game[:title])}' required></div>" \
+                "<div class='mb-2'><label class='form-label' for='pg-description'>Untertitel</label>" \
+                "<input class='form-control' id='pg-description' maxlength='#{PhoneGames::MAX_DESCRIPTION}' value='#{h.(game[:description])}' required></div>" \
+                "<button class='btn btn-outline-primary' type='submit'><i class='bi bi-check-lg'></i> Speichern</button>" \
+                "<span class='pg-rename-result ms-2'></span>" \
+                "<p class='form-text mb-0'>Telefonbuch und Menü der Leitung zeigen das gleich; das Programm selbst bleibt, wie es ist.</p></form>"
+        end
         buttons = if game[:state] == 'pending'
             "<div class='pg-decide' data-id='#{h.(game[:id])}'>" \
                 "<p class='pg-prepared text-body-secondary'><span class='spinner-border spinner-border-sm' aria-hidden='true'></span> Sätze werden vorbereitet …</p>" \
@@ -370,13 +404,13 @@ class Main < Sinatra::Base
             ''
         end
         "<p class='mt-4 mb-0'><a href='/telefon-freigabe'><i class='bi bi-arrow-left'></i> Alle Telefonspiele</a></p>" \
-            "<h1 class='mt-2'>#{h.(PhoneGames.label(game))} #{h.(game[:title])}</h1>" \
-            "<p class='abstract'>#{h.(game[:description])}</p>" \
+            "<h1 class='mt-2'>#{h.(PhoneGames.label(game))} <span class='pg-title'>#{h.(game[:title])}</span></h1>" \
+            "<p class='abstract pg-description'>#{h.(game[:description])}</p>" \
             "<table class='table'><tr><th>Von</th><td>#{h.(game[:email])}</td></tr>" \
             "<tr><th>Eingereicht</th><td>#{Time.at(game[:submitted].to_i).strftime('%d.%m.%Y %H:%M')}</td></tr>" \
             "<tr><th>Stand</th><td>#{h.(state)}</td></tr>" \
             "<tr><th>Dateien</th><td>#{files.map { |f| "<code>#{h.(f)}</code>" }.join(', ')}</td></tr></table>" \
-            "#{try}#{buttons}" \
+            "#{try}#{rename}#{buttons}" \
             "<h2 class='mt-4'>Was das Spiel sagt und spielt</h2><p>Die festen Sätze, die eigenen Aufnahmen (mit dem, was Whisper darin verstanden hat) und die Musik, in der Reihenfolge des Programms; Sätze, die erst beim Spielen entstehen, fehlen.</p><ol>#{list}</ol>" \
             "#{recordings}" \
             "<h2 class='mt-4'>Probelauf</h2><p>Der Anfang des Spiels mit <code>telefon --test</code>, ohne eine Taste, beim Einreichen im Workspace.</p><pre class='pg-transcript'>#{h.(game[:transcript])}</pre>" \

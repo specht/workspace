@@ -1,6 +1,6 @@
 // The maintainer's buttons on /telefon-freigabe (phone_games_api.rb): try
-// the game on the line, publish, or reject with a reason; »Ablehnen«
-// waits for the reason.
+// the game on the line, change its title and subtitle in the Telefonbuch,
+// publish, or reject with a reason; »Ablehnen« waits for the reason.
 (function () {
     const tryBox = document.querySelector('.pg-try');
     if (tryBox) {
@@ -71,3 +71,24 @@
     reject.addEventListener('click', () => decide('reject'));
 })();
 
+
+(function () {
+    const form = document.querySelector('.pg-rename');
+    if (!form) return;
+    const result = form.querySelector('.pg-rename-result');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = form.querySelector('#pg-title').value.trim();
+        const description = form.querySelector('#pg-description').value.trim();
+        result.textContent = '';
+        api_call('/api/phone/rename', { id: form.dataset.id, title, description }, (data) => {
+            if (data.success) {
+                document.querySelector('.pg-title').textContent = data.title;
+                document.querySelector('.pg-description').textContent = data.description;
+                result.innerHTML = "<span class='text-success'><i class='bi bi-check-lg'></i> Gespeichert.</span>";
+            } else {
+                result.textContent = 'Das hat nicht geklappt. Stehen Titel und Untertitel beide da?';
+            }
+        });
+    });
+})();
