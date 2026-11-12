@@ -395,10 +395,11 @@ class Main < Sinatra::Base
         direct = defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL
         first = PhoneGames.phone_book(phone_games_all.select { |g| g[:state] == 'published' }).first
         game = first ? first[:number] : '123'
-        shown = direct ? "#{number}-#{game}" : number
+        # the game's number pale: an example, not part of the line's number
+        shown = CGI.escapeHTML(number) + (direct ? "<span class='pb-label-example'>-#{CGI.escapeHTML(game)}</span>" : '')
         how = direct ? 'die Nummer des Spiels gleich dahinter' : 'dann die Nummer des Spiels eingeben'
         "<div class='phone-book-label'><div class='pb-label-head'>Von außen anrufen</div>" \
-            "<div class='pb-label-number'>#{CGI.escapeHTML(shown)}</div>" \
+            "<div class='pb-label-number'>#{shown}</div>" \
             "<div class='pb-label-how'>#{CGI.escapeHTML(how)}</div></div>"
     end
 
