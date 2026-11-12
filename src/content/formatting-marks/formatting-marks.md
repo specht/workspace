@@ -47,7 +47,7 @@ lange Zeile um, und gleich danach kommt der Umbruch, den jemand getippt hat.
 
 Hol dir die Einladung und öffne sie:
 
-<p><a class='document-starter btn btn-outline-secondary' href='/formatting-marks/01%20Einladung.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage: 01 Einladung.docx</a></p>
+<p><a class='document-starter btn btn-primary' href='/formatting-marks/01%20Einladung.docx' download><i class='bi bi-download' aria-hidden='true'></i>Vorlage herunterladen<span class='document-starter-name'>01 Einladung.docx</span></a></p>
 
 Jede Textverarbeitung kann die Zeichen zeigen, die nicht gedruckt werden. Sie
 heißen **Formatierungszeichen**.
@@ -71,7 +71,7 @@ Dann siehst du drei Zeichen, die vorher nicht da waren:
 <tr><th>Zeichen</th><th>Bedeutung</th><th>Taste</th></tr>
 <tr><td><strong>·</strong></td><td>ein Leerzeichen</td><td><kbd>Leertaste</kbd></td></tr>
 <tr><td><strong>¶</strong></td><td>das Ende eines Absatzes</td><td><kbd>Enter</kbd></td></tr>
-<tr><td><strong>↵</strong></td><td>ein Zeilenumbruch von Hand: neue Zeile, aber derselbe Absatz</td><td><kbd>Umschalt</kbd>+<kbd>Enter</kbd></td></tr>
+<tr><td><strong>↵</strong></td><td>ein Zeilenumbruch von Hand: neue Zeile, aber derselbe Absatz</td><td><kbd>Shift</kbd>+<kbd>Enter</kbd></td></tr>
 </table>
 
 Ein **Absatz** ist alles bis zum nächsten ¶, auch wenn er über mehrere Zeilen

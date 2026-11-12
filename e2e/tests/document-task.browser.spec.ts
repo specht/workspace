@@ -15,17 +15,20 @@ const starter = path.join(repo, 'src/static/formatting-marks/01 Einladung.docx')
 const solution = path.join(repo, 'src/content/formatting-marks/stufen/einladung.docx');
 const shots = process.env.DOCUMENT_TASK_SHOTS;
 
-// »Seitenbreite« fits the text with its numbers in the margin, »Ganze Seite«
-// the whole sheet, each without much room left over
+// »Seitenbreite« fits the whole sheet from edge to edge with its numbers in
+// the margin, »Ganze Seite« the whole sheet in the view, each without much
+// room left over
 async function checkFits(report: Locator, slack: number) {
   const viewport = report.locator('.document-viewport');
   await report.getByRole('button', { name: 'Seitenbreite' }).click();
   await expect.poll(async () => {
     const view = (await viewport.boundingBox())!;
+    const sheet = (await report.locator('.document-sheet').first().boundingBox())!;
     const badges = await report.locator('.document-badge').evaluateAll((all) => all.map((b) => b.getBoundingClientRect().left));
-    const boxes = await report.locator('.document-mark-box').evaluateAll((all) => all.map((b) => b.getBoundingClientRect().right));
-    const right = Math.max(...boxes);
-    return Math.min(...badges) >= view.x - 1 && right <= view.x + view.width + 1 && right >= view.x + view.width - slack;
+    return Math.min(...badges) >= view.x - 1 && sheet.x >= view.x - 1 &&
+      // where the numbers need more room than the sheet's margin (a phone),
+      // the sheet is a little narrower than the view, in its middle
+      sheet.x + sheet.width <= view.x + view.width + 1 && sheet.width >= Math.min(view.width - slack, 0.85 * view.width);
   }, { timeout: 3000 }).toBe(true);
   await report.getByRole('button', { name: 'Ganze Seite' }).click();
   await expect.poll(async () => {
@@ -90,10 +93,17 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await card.locator('.document-input').setInputFiles(starter);
   await recheck;
   await expect(report.locator('.document-zoom')).toHaveText(kept!);
-  // the mouse wheel zooms at the pointer
+  // the mouse wheel alone scrolls the website and says how to zoom;
+  // Ctrl and the wheel zoom at the pointer
   const viewport = report.locator('.document-viewport');
   await viewport.hover();
+  await page.mouse.wheel(0, -100);
+  await expect(report.locator('.document-wheel-hint')).toHaveClass(/document-wheel-hint-on/);
+  await expect(report.locator('.document-zoom')).toHaveText(kept!);
+  await viewport.hover();
+  await page.keyboard.down('Control');
   await page.mouse.wheel(0, -300);
+  await page.keyboard.up('Control');
   await expect(report.locator('.document-zoom')).not.toHaveText(kept!);
   await expect(card.locator('.document-browser')).toContainText('genügt es, in Word oder LibreOffice zu speichern');
   if (shots) { await page.waitForTimeout(500); await page.screenshot({ path: path.join(shots, 'document-zoomed.png') }); }

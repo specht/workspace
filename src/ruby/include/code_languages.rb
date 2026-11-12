@@ -213,14 +213,17 @@ module CodeLanguages
     # The name keeps the width it has in bold (data-name, default.css), and a
     # pill behind the buttons slides to the chosen one (main.rb,
     # code_language_setup).
-    def self.switch_html(languages, current)
+    # office_kind: what the page's documents are (text, sheet, slides),
+    # whose colour the chosen office program takes
+    def self.switch_html(languages, current, office_kind = 'text')
         buttons = languages.map do |l|
             pressed = l == current
             logo = ICONS[l] ? "<i class='bi #{ICONS[l]}' aria-hidden='true'></i>" : "<img src='/images/languages/#{l}.webp' alt='' width='16' height='16'>"
             "<button type='button' class='code-language-option' data-set-language='#{l}' aria-pressed='#{pressed}'>" \
                 "#{logo}<span class='code-language-option-name' data-name='#{NAMES[l]}'>#{NAMES[l]}</span></button>"
         end
-        "<span class='code-language-switch' role='group' aria-label='#{office?(languages) ? 'Office-Programm' : 'Programmiersprache'}'>" \
+        office = office?(languages)
+        "<span class='code-language-switch#{office ? ' code-language-switch-office' : ''}'#{office ? " data-office-kind='#{CGI.escapeHTML(office_kind.to_s)}'" : ''} role='group' aria-label='#{office ? 'Office-Programm' : 'Programmiersprache'}'>" \
             "<span class='code-language-thumb' aria-hidden='true'></span>#{buttons.join}</span>"
     end
 end

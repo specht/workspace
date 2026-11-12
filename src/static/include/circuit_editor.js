@@ -592,7 +592,7 @@ html[data-bs-theme="dark"] .circuit-editor[data-free], html[data-bs-theme="dark"
                 el.append(body, this.status);
             } else {
                 const note = D.html('p', { class: 'ce-phone-note', text: 'Zum Bauen brauchst du einen größeren Bildschirm, ein Tablet oder einen Computer. Hier kannst du die Schaltung ansehen und die Schalter umlegen.' });
-                const keys = D.html('p', { class: 'ce-keys', html: 'Tastatur: <kbd>Tab</kbd> zum nächsten Teil, Pfeiltasten schieben, <kbd>Entf</kbd> löscht, <kbd>V</kbd> und dann eine Ziffer am Ziel ziehen eine Leitung in diesen Eingang, <kbd>Strg</kbd>+<kbd>Z</kbd> nimmt zurück. Mehrere Teile: einen Rahmen um sie ziehen oder mit <kbd>Umschalt</kbd> anklicken, <kbd>Strg</kbd>+<kbd>A</kbd> wählt alle, <kbd>Strg</kbd>+<kbd>D</kbd> verdoppelt. Ein Rechtsklick öffnet ein Menü.' });
+                const keys = D.html('p', { class: 'ce-keys', html: 'Tastatur: <kbd>Tab</kbd> zum nächsten Teil, Pfeiltasten schieben, <kbd>Entf</kbd> löscht, <kbd>V</kbd> und dann eine Ziffer am Ziel ziehen eine Leitung in diesen Eingang, <kbd>Strg</kbd>+<kbd>Z</kbd> nimmt zurück. Mehrere Teile: einen Rahmen um sie ziehen oder mit <kbd>Shift</kbd> anklicken, <kbd>Strg</kbd>+<kbd>A</kbd> wählt alle, <kbd>Strg</kbd>+<kbd>D</kbd> verdoppelt. Ein Rechtsklick öffnet ein Menü.' });
                 el.append(note, this.palette, this.actions, this.form, body, this.status, keys);
                 this.buildActions();
                 this.renderPalette();

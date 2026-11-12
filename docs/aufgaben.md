@@ -1951,7 +1951,7 @@ check:
     - text                # jedes Wort der Vorlage ist noch da
     - spaces              # keine Leerzeichen hintereinander
     - empty_paragraphs    # keine leeren Absätze (am Ende zählen sie nicht)
-    - line_breaks         # keine Zeilenumbrüche von Hand (Umschalt+Enter)
+    - line_breaks         # keine Zeilenumbrüche von Hand (Shift+Enter)
     - { align: center, paragraph: 'Einladung zum Elternabend' }
     - { gaps: 6pt, before: ['Liebe Eltern', 'im Mai fährt'] }
     - { fonts: 2 }        # höchstens zwei Schriftarten

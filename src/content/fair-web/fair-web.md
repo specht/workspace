@@ -61,7 +61,7 @@ an: Ein Banner für Cookies, ein Menü, ein Bild, Termine, ein Formular.
 
 Leg die Maus zur Seite. Klick einmal in die Seite im Browser, damit sie die
 Tastatur bekommt; mit <kbd>Tab</kbd> springst du dann zum nächsten Link,
-Knopf oder Feld, mit <kbd>Umschalt</kbd>+<kbd>Tab</kbd> zurück, mit
+Knopf oder Feld, mit <kbd>Shift</kbd>+<kbd>Tab</kbd> zurück, mit
 <kbd>Enter</kbd> drückst du einen Knopf.
 
 _task(tab-vorhersage)

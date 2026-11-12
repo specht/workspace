@@ -91,6 +91,10 @@ class WordingTest < Minitest::Test
         assert_empty hits(/\bMessung(en)?\b/, sound)
     end
 
+    def test_shift_not_umschalt
+        assert_empty hits(/\bUmschalt\b(?!e)/)
+    end
+
     def test_multiplizieren_not_malnehmen
         assert_empty hits(/\bmal\s?(nehmen|genommen|nimmt|nimm)\b/i)
     end

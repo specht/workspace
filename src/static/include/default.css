@@ -4062,6 +4062,22 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     opacity: 1;
 }
 
+/* the office program chosen: in the colour of the documents of the page,
+   blue for word processing, green for spreadsheets, orange for
+   presentations (CodeLanguages.switch_html, office_kind) */
+.code-language-switch-office {
+    --office-tint: #1f5fbf;
+}
+.code-language-switch-office[data-office-kind='sheet'] {
+    --office-tint: #1d7a46;
+}
+.code-language-switch-office[data-office-kind='slides'] {
+    --office-tint: #c2541c;
+}
+.code-language-switch-office .code-language-option[aria-pressed='true'] {
+    color: var(--office-tint);
+}
+
 /* the name as wide as the wider of its regular and its bold form (in
    some fonts the bold one is narrower), so that nothing moves when it
    becomes bold */
@@ -17294,11 +17310,15 @@ body.mail-app-open {
     gap: 0.5em;
     margin-bottom: 0.75em;
 }
+/* the starting file: the site's primary button, the name of the file
+   lighter after »Vorlage herunterladen« */
 .document-starter {
     align-self: flex-start;
 }
-.document-starter .bi {
-    margin-right: 0.35em;
+.document-starter-name {
+    margin-left: 0.4em;
+    font-weight: 400;
+    opacity: 0.85;
 }
 .document-drop {
     display: flex;
@@ -17395,7 +17415,8 @@ body.mail-app-open {
     box-shadow: 0 0 0 3px var(--document-mark-fill), 0 0 0 4px var(--document-mark);
 }
 .document-report {
-    --document-desk: #e9ecef;
+    /* a calm grey under the page, the same in and out of full screen */
+    --document-desk: #eceff1;
     display: grid;
     grid-template-columns: minmax(15em, 21em) minmax(0, 1fr);
     gap: 0.9em;
@@ -17411,37 +17432,79 @@ html[data-bs-theme="dark"] .document-report {
     min-height: 0;
     overflow: auto;
     padding-right: 0.25em;
+    scrollbar-width: thin;
 }
+/* no frame: the tools stand on the feedback, the page lies on a soft desk */
 .document-view {
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
-    border: 1px solid var(--widget-line, #ced4da);
-    border-radius: 0.5em;
-    overflow: hidden;
-    background: var(--bs-body-bg);
+    /* the tools fold to icons by the width of the view itself */
+    container-type: inline-size;
 }
 .document-tools {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.35em;
-    padding: 0.4em 0.5em;
-    border-bottom: 1px solid var(--widget-line, #ced4da);
+    padding: 0 0 0.45em;
+}
+/* the zoom and the fits as joined groups, full screen at the right with
+   »prüfen« */
+.document-tools {
+    column-gap: 0.6em;
+}
+.document-tool-group .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+}
+/* joined: neighbours share one line of border (1 px, not 2) */
+.document-tool-group > .btn + .btn {
+    margin-left: -1px;
+}
+.document-tool-group > .btn:hover,
+.document-tool-group > .btn:focus-visible,
+.document-tool-group > .btn[aria-pressed='true'] {
+    z-index: 1;
+}
+.document-tool-group .btn[aria-pressed='true'] {
+    background: var(--bs-secondary-bg, #e9ecef);
+    color: var(--bs-emphasis-color, #212529);
+    border-color: var(--bs-secondary, #6c757d);
+}
+.document-tool-label {
+    font-size: 0.92em;
+}
+.document-full-toggle {
+    margin-left: auto;
+}
+@container (max-width: 34em) {
+    .document-tool-label {
+        display: none;
+    }
+    .document-recheck-long {
+        display: none;
+    }
+    .document-recheck-word {
+        text-transform: capitalize;
+    }
 }
 .document-tools .btn .bi {
     margin: 0;
 }
-.document-zoom {
-    min-width: 3.6em;
-    text-align: center;
+/* the zoom between minus and plus: part of the group, not a button */
+.document-tool-group .document-zoom {
+    min-width: 4.2em;
+    justify-content: center;
     font-size: 0.85em;
     font-variant-numeric: tabular-nums;
     color: var(--bs-secondary-color);
+    pointer-events: none;
 }
 .document-recheck {
-    margin-left: auto;
+    margin-left: 0.6em;
 }
 .document-recheck .bi {
     margin-right: 0.35em !important;
@@ -17453,7 +17516,29 @@ html[data-bs-theme="dark"] .document-report {
     overflow: hidden;
     touch-action: none;
     cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    border-radius: 0.6em;
     background: var(--document-desk);
+}
+/* a plain wheel scrolls the website; this says how to zoom */
+.document-wheel-hint {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    transform: translate(-50%, -50%);
+    padding: 0.45em 0.9em;
+    border-radius: 0.5em;
+    background: rgba(33, 37, 41, 0.78);
+    color: #ffffff;
+    font-size: 0.9em;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.document-wheel-hint.document-wheel-hint-on {
+    opacity: 1;
 }
 .document-viewport:focus-visible {
     outline: 2px solid var(--bs-primary);
@@ -17798,7 +17883,7 @@ html[data-bs-theme="dark"] .document-report {
     .document-tools .btn {
         padding: 0.15em 0.4em;
     }
-    .document-zoom {
+    .document-tool-group .document-zoom {
         min-width: 3em;
         font-size: 0.78em;
     }
@@ -17851,7 +17936,7 @@ body.document-full-open {
     .document-fullscreen .document-tools .btn {
         padding: 0.15em 0.4em;
     }
-    .document-fullscreen .document-zoom {
+    .document-fullscreen .document-tool-group .document-zoom {
         min-width: 3em;
         font-size: 0.78em;
     }

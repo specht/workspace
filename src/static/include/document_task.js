@@ -360,10 +360,10 @@
 
     // The pages one below the other on a stage that moves and zooms:
     // dragging moves it (one finger or the mouse), two fingers, Ctrl and
-    // the wheel or a double click zoom, the wheel alone moves the page up
-    // and down and hands over to the website at the end, the buttons and
-    // the keys (+, -, 0, arrows) do the same. It starts on the part of the
-    // first page that has text (crop), as wide as the view.
+    // the wheel or a double click zoom, the wheel alone scrolls the website
+    // (in full screen it moves the page), the buttons and the keys (+, -,
+    // 0, arrows) do the same. It starts on the part of the first page that
+    // has text (crop): the sheet as wide as the view, on a phone its text.
     // keep: { z, tx, ty } of the view before the new check, kept there,
     // or 'whole' for the whole first page
     // (the card redraws the result with each check); remember(view) is
@@ -403,14 +403,19 @@
         view.appendChild(viewport);
 
         let z = 1, tx = 0, ty = 0;
+        // 'whole' or 'width' while a fit is in effect; fitting: inside one
+        let fit = null, fitting = false;
         const MIN = 0.15, MAX = 6;
         const size = function () { return { w: viewport.clientWidth, h: viewport.clientHeight }; };
         const offset = function (i) { return (width - pages[i].width) / 2; };
-        // keep part of the stage in view, centred where it is smaller
+        // keep the stage in view: where it is smaller than the view, wholly
+        // inside it, where it stands (re-centring it would push against a
+        // zoom at the pointer); where larger, with no more than a strip of
+        // desk beside it
         function clamp() {
             const v = size();
             const sw = width * z, sh = height * z, keep = 48;
-            tx = sw <= v.w ? (v.w - sw) / 2 : Math.min(keep, Math.max(v.w - sw - keep, tx));
+            tx = sw <= v.w ? Math.max(Math.min(tx, v.w - sw), 0) : Math.min(keep, Math.max(v.w - sw - keep, tx));
             ty = sh <= v.h ? Math.max(Math.min(ty, v.h - sh), 0) : Math.min(keep, Math.max(v.h - sh - keep, ty));
         }
         function apply(animate) {
@@ -421,6 +426,8 @@
             // a line of the page (13 pt), down to 12 px
             viewport.style.setProperty('--inv', String(Math.max(12, Math.min(18, 13 * z)) / 18 / z));
             zoomLabel.textContent = Math.round(z * 100) + ' %';
+            if (!fitting) fit = null;
+            showFit();
             if (remember) remember({ z: z, tx: tx, ty: ty });
         }
         function zoomAt(x, y, factor, animate) {
@@ -441,13 +448,12 @@
             ty = (v.h - r.h * z) / 2 - r.y * z;
             apply(animate);
         }
-        // »Seitenbreite«, and the first view: the text of page 1 as wide as
-        // the view, with room on the left for two numbers in the margin
-        // (GUTTER, on the screen) and a little on the right, its first line
-        // near the top
+        // The first view on a narrow view (a phone): the text of page 1 as
+        // wide as the view, with room on the left for the numbers in the
+        // margin (GUTTER, on the screen), its first line near the top.
         // room for as many numbers as the fullest line has, two at least
         const GUTTER = 14 + 22 * Math.max(2, most);
-        function start(animate) {
+        function text(animate) {
             const v = size();
             const page = pages[0];
             const c = page.crop || { x: 0, y: 0, w: page.width, h: page.height };
@@ -458,33 +464,74 @@
             ty = edge() - c.y * z;
             apply(animate);
         }
+        // »Seitenbreite«: the whole sheet from edge to edge, as large as the
+        // numbers in its left margin allow, from its top edge
+        function sheetWidth(animate) {
+            fitting = true;
+            fit = 'width';
+            const v = size();
+            const page = pages[0];
+            const c = page.crop || { x: 0, y: 0, w: page.width, h: page.height };
+            const left = c.left !== undefined ? c.left : c.x;
+            z = Math.max(MIN, Math.min(MAX, (v.w - 2 * edge()) / page.width, (v.w - GUTTER - edge()) / (page.width - left)));
+            tx = v.w - edge() - (offset(0) + page.width) * z;
+            ty = edge();
+            apply(animate);
+            fitting = false;
+        }
+        // the first view: the sheet's width where there is room, the text's
+        // on a phone
+        function start(animate) {
+            if (size().w < 560) text(animate);
+            else sheetWidth(animate);
+        }
         // »Ganze Seite«: the whole first sheet, as large as fits
         function whole(animate) {
+            fitting = true;
+            fit = 'whole';
             show({ x: offset(0), y: 0, w: pages[0].width, h: pages[0].height }, null, animate, edge());
+            fitting = false;
         }
 
-        // the tools above the page
+        // the tools above the page: the zoom as one group, the two fits as
+        // one (with their names, the one in effect pressed), full screen
+        // and »prüfen« at the right; a narrow view keeps only the icons
         const tools = el('div', 'document-tools');
-        const button = function (icon, label, act) {
+        const button = function (icon, label, act, parent, text) {
             const b = el('button', 'btn btn-sm btn-outline-secondary');
             b.type = 'button';
-            b.innerHTML = "<i class='bi " + icon + "' aria-hidden='true'></i>";
+            b.innerHTML = "<i class='bi " + icon + "' aria-hidden='true'></i>" +
+                (text ? "<span class='document-tool-label'>" + text + '</span>' : '');
             b.setAttribute('aria-label', label);
             b.title = label;
             b.addEventListener('click', act);
-            tools.appendChild(b);
+            (parent || tools).appendChild(b);
             return b;
         };
         const middle = function () { const v = size(); return [v.w / 2, v.h / 2]; };
-        button('bi-zoom-out', 'Verkleinern', function () { const m = middle(); zoomAt(m[0], m[1], 1 / 1.4, true); });
-        const zoomLabel = el('span', 'document-zoom', '100 %');
-        tools.appendChild(zoomLabel);
-        button('bi-zoom-in', 'Vergrößern', function () { const m = middle(); zoomAt(m[0], m[1], 1.4, true); });
-        button('bi-file-earmark', 'Ganze Seite', function () { whole(true); });
-        button('bi-arrows', 'Seitenbreite', function () { start(true); });
+        const zooms = el('div', 'btn-group document-tool-group');
+        zooms.setAttribute('role', 'group');
+        zooms.setAttribute('aria-label', 'Zoom');
+        tools.appendChild(zooms);
+        button('bi-dash-lg', 'Verkleinern', function () { const m = middle(); zoomAt(m[0], m[1], 1 / 1.25, true); }, zooms);
+        const zoomLabel = el('span', 'btn btn-sm btn-outline-secondary document-zoom', '100 %');
+        zooms.appendChild(zoomLabel);
+        button('bi-plus-lg', 'Vergrößern', function () { const m = middle(); zoomAt(m[0], m[1], 1.25, true); }, zooms);
+        const fits = el('div', 'btn-group document-tool-group');
+        fits.setAttribute('role', 'group');
+        fits.setAttribute('aria-label', 'Einpassen');
+        tools.appendChild(fits);
+        const fitWhole = button('bi-file-earmark', 'Ganze Seite', function () { whole(true); }, fits, 'Ganze Seite');
+        const fitWidth = button('bi-arrows', 'Seitenbreite', function () { sheetWidth(true); }, fits, 'Seitenbreite');
+        // apart from the fits, at the right beside »prüfen«
         const full = button('bi-arrows-fullscreen', 'Vollbild', function () { toggleFull(); });
         full.classList.add('document-full-toggle');
         view.insertBefore(tools, viewport);
+        // which fit is in effect, until the page is zoomed or moved
+        function showFit() {
+            fitWhole.setAttribute('aria-pressed', String(fit === 'whole'));
+            fitWidth.setAttribute('aria-pressed', String(fit === 'width'));
+        }
 
         // dragging and pinching
         const pointers = new Map();
@@ -492,6 +539,10 @@
         viewport.addEventListener('pointerdown', function (e) {
             if (e.button !== 0 && e.pointerType === 'mouse') return;
             if (e.target.closest('.document-badge')) return;
+            // no selection and no dragging of the picture by the browser:
+            // either would cancel the pointer in the middle of a move
+            if (e.pointerType === 'mouse') e.preventDefault();
+            viewport.focus({ preventScroll: true });
             viewport.setPointerCapture(e.pointerId);
             pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
             viewport.classList.add('document-grabbing');
@@ -524,38 +575,81 @@
         };
         viewport.addEventListener('pointerup', up);
         viewport.addEventListener('pointercancel', up);
+        viewport.addEventListener('lostpointercapture', up);
         viewport.addEventListener('dblclick', function (e) {
             if (e.target.closest('.document-badge')) return;
             const box = viewport.getBoundingClientRect();
             zoomAt(e.clientX - box.left, e.clientY - box.top, 2, true);
         });
-        // The wheel zooms at the pointer, as in a map. Two fingers on a
-        // touchpad move the page (they scroll sideways too, a wheel never
-        // does), and pinching on it zooms (the browser sends Ctrl with it).
-        let touchpad = 0;
+        // The wheel scrolls the website; Ctrl (or ⌘) and the wheel zoom at
+        // the pointer, and so does pinching on a touchpad (the browser sends
+        // Ctrl with it). In full screen, where there is nothing to scroll,
+        // the wheel and two fingers move the page.
+        const hint = el('div', 'document-wheel-hint', /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘ und Mausrad zoomen' : 'Strg und Mausrad zoomen');
+        hint.setAttribute('aria-hidden', 'true');
+        viewport.appendChild(hint);
+        let hintTimer = null;
+        // zooming by the wheel: toward a target, a third of the way each frame
+        let goal = null;
+        let gliding = false;
+        function glide(x, y, factor) {
+            const base = goal ? goal.z : z;
+            goal = { x: x, y: y, z: Math.min(MAX, Math.max(MIN, base * factor)) };
+            if (reduced()) {
+                zoomAt(x, y, goal.z / z, false);
+                goal = null;
+                return;
+            }
+            if (gliding) return;
+            gliding = true;
+            const step = function () {
+                if (!goal) { gliding = false; return; }
+                const left = goal.z / z;
+                if (Math.abs(left - 1) < 0.002) {
+                    zoomAt(goal.x, goal.y, left, false);
+                    goal = null;
+                    gliding = false;
+                    return;
+                }
+                zoomAt(goal.x, goal.y, Math.pow(left, 0.35), false);
+                requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
         viewport.addEventListener('wheel', function (e) {
-            e.preventDefault();
             const box = viewport.getBoundingClientRect();
             const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
             const dx = e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX;
-            if (dx !== 0 || (e.deltaMode === 0 && Math.abs(dy) < 40 && dy % 1 !== 0)) touchpad = Date.now();
-            if (!e.ctrlKey && !e.metaKey && Date.now() - touchpad < 600) {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                // a notch of a mouse wheel (whole steps, 100 or more, or
+                // lines): 12 %, eased over a few frames; pinching on a
+                // touchpad (small, fractional steps) follows the fingers
+                const notch = e.deltaMode === 1 || (Math.abs(dy) >= 50 && dy % 1 === 0);
+                if (notch) glide(e.clientX - box.left, e.clientY - box.top, dy < 0 ? 1.12 : 1 / 1.12);
+                else zoomAt(e.clientX - box.left, e.clientY - box.top, Math.exp(-dy * 0.008), false);
+                return;
+            }
+            if (view.closest('.document-fullscreen')) {
+                e.preventDefault();
                 tx -= dx;
                 ty -= dy;
                 apply(false);
                 return;
             }
-            zoomAt(e.clientX - box.left, e.clientY - box.top, Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0025)), false);
+            hint.classList.add('document-wheel-hint-on');
+            clearTimeout(hintTimer);
+            hintTimer = setTimeout(function () { hint.classList.remove('document-wheel-hint-on'); }, 1100);
         }, { passive: false });
         viewport.tabIndex = 0;
         viewport.setAttribute('role', 'group');
-        viewport.setAttribute('aria-label', 'Dein Dokument: Ziehen verschiebt, das Mausrad, Plus und Minus zoomen, 0 zeigt die Seitenbreite');
+        viewport.setAttribute('aria-label', 'Dein Dokument: Ziehen verschiebt, Strg und das Mausrad, Plus und Minus zoomen, 0 zeigt die Seitenbreite');
         viewport.addEventListener('keydown', function (e) {
             const m = middle();
             const step = 60;
             const keys = {
                 '+': function () { zoomAt(m[0], m[1], 1.4, true); }, '=': function () { zoomAt(m[0], m[1], 1.4, true); },
-                '-': function () { zoomAt(m[0], m[1], 1 / 1.4, true); }, '0': function () { start(true); },
+                '-': function () { zoomAt(m[0], m[1], 1 / 1.4, true); }, '0': function () { sheetWidth(true); },
                 ArrowUp: function () { ty += step; apply(true); }, ArrowDown: function () { ty -= step; apply(true); },
                 ArrowLeft: function () { tx += step; apply(true); }, ArrowRight: function () { tx -= step; apply(true); },
             };

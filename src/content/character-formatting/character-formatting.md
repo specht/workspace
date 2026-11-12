@@ -32,7 +32,7 @@ gleichzeitig entgegen.
 
 Hol dir den Aushang:
 
-<p><a class='document-starter btn btn-outline-secondary' href='/character-formatting/02%20Aushang.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage: 02 Aushang.docx</a></p>
+<p><a class='document-starter btn btn-primary' href='/character-formatting/02%20Aushang.docx' download><i class='bi bi-download' aria-hidden='true'></i>Vorlage herunterladen<span class='document-starter-name'>02 Aushang.docx</span></a></p>
 
 Welche Schriftart ein Text hat, siehst du, wenn der Cursor darin steht:
 

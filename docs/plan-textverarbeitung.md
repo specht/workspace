@@ -133,10 +133,12 @@ built by hand; each is a page of a series of its own, about one lesson.
     with the headings), styles and their changes.
 - **Keeping hold of the file needs https:** Chrome and Edge offer the File
   System Access API only in a secure context (https or localhost). On the
-  development site (`http://workspace.test:8030`) and in the Playwright
-  tests Chrome chooses the file again for each check, like Firefox; the
-  automatic check after saving has only been tried in code, not in a
-  browser. Try it on the https site.
+  development site (`http://workspace.test:8030`) Chrome chooses the file
+  again for each check, like Firefox, unless the address is entered at
+  `chrome://flags/#unsafely-treat-insecure-origin-as-secure` (as the
+  Playwright tests start Chrome). The tests hand files to the input, without
+  a handle, so the automatic check after saving has not run in a test; try
+  it on the https site or with that flag.
 - **Try on a school PC:**
   - whether the page sees the file after Word saved it (Word writes a new
     file and swaps it in), and whether it can read it while Word has it open;

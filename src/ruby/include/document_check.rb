@@ -305,7 +305,7 @@ module DocumentCheck
         end
         breaks = found.sum { |p| p['text'].count("\n") }
         item.message = "»#{short(found.first)}« hat #{breaks == 1 ? 'einen Zeilenumbruch' : "#{breaks} Zeilenumbrüche"} von Hand " \
-            '(Umschalt+Enter). Innerhalb eines Absatzes bricht das Programm die Zeilen selbst um; ein Umbruch von Hand steht auch dann noch, wenn die Zeile längst woanders endet.'
+            '(Shift+Enter). Innerhalb eines Absatzes bricht das Programm die Zeilen selbst um; ein Umbruch von Hand steht auch dann noch, wenn die Zeile längst woanders endet.'
         item
     end
 
@@ -352,7 +352,8 @@ module DocumentCheck
             end
             gap = [q['space_after'].to_f, p['space_before'].to_f].max
             gap = 0 if q['context_margin'] && p['context_margin'] && q['style'] == p['style']
-            next if gap >= min - 0.05
+            # 90 %: LibreOffice counts in cm, and 0.2 cm are 5.7 pt
+            next if gap >= min * 0.9 - 0.01
 
             problems << "Zwischen »#{short(q, 3)}« und »#{short(p, 3)}« ist #{gap.zero? ? 'kein Abstand' : "nur #{gap.round} pt Abstand"}."
             item.marks << between_mark(q, p).merge(:kind => 'tight', :title => "#{gap.round} pt Abstand")

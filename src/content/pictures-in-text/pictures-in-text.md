@@ -41,7 +41,7 @@ Bildern fällt das noch auf; in einem Referat mit zwölf Bildern nicht mehr.
 
 Hol dir den Artikel:
 
-<p><a class='document-starter btn btn-outline-secondary' href='/pictures-in-text/05%20Kraniche.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage: 05 Kraniche.docx</a></p>
+<p><a class='document-starter btn btn-primary' href='/pictures-in-text/05%20Kraniche.docx' download><i class='bi bi-download' aria-hidden='true'></i>Vorlage herunterladen<span class='document-starter-name'>05 Kraniche.docx</span></a></p>
 
 Ein Foto besteht aus Pixeln, dieses aus 1500 nebeneinander und 1000
 untereinander. Wie breit es im Verhältnis zu seiner Höhe ist, heißt

@@ -68,7 +68,7 @@ tasks:
       - when: { picked: 2 }
         say: Bricht das Programm um, steht am Zeilenende tatsächlich nichts. Hier steht aber etwas.
     solution: |
-      Ein ↵: Jemand hat <kbd>Umschalt</kbd>+<kbd>Enter</kbd> gedrückt, wie
+      Ein ↵: Jemand hat <kbd>Shift</kbd>+<kbd>Enter</kbd> gedrückt, wie
       früher den Hebel an der Schreibmaschine.
 
   - id: einladung

@@ -248,7 +248,7 @@ module TaskCard
                 # the address with each part encoded (»01 Einladung.docx«)
                 href = '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
                 io << "<div class='document-task'>"
-                io << "<a class='document-starter' href='#{h.(href)}' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage: #{h.(File.basename(file))}</a>"
+                io << "<a class='document-starter btn btn-primary' href='#{h.(href)}' download><i class='bi bi-download' aria-hidden='true'></i>Vorlage herunterladen<span class='document-starter-name'>#{h.(File.basename(file))}</span></a>"
                 io << "<div class='document-drop'>"
                 io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>Dokument wählen</button>"
                 io << "<span class='document-name' aria-live='polite'>oder hierher ziehen</span>"
