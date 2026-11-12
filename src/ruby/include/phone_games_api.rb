@@ -336,6 +336,17 @@ class Main < Sinatra::Base
             "<div class='list-group'>#{rows.join}</div>"
     end
 
+    # the game's program, highlighted as code blocks on the pages are
+    # (Rouge, by the file's language)
+    def phone_game_code_html(code, file)
+        return "<pre class='pg-code'>Die Datei fehlt.</pre>" unless code
+
+        lexer = { '.rb' => Rouge::Lexers::Ruby, '.py' => Rouge::Lexers::Python, '.js' => Rouge::Lexers::Javascript }[File.extname(file.to_s)]
+        return "<pre class='pg-code'>#{PhoneGames.h(code)}</pre>" unless lexer
+
+        "<pre class='pg-code long-code'>#{Rouge::Formatters::HTML.new.format(lexer.new.lex(code))}</pre>"
+    end
+
     def phone_game_review_page
         return phone_games_list_html if params[:id].to_s.empty?
 
@@ -409,12 +420,12 @@ class Main < Sinatra::Base
             "<table class='table'><tr><th>Von</th><td>#{h.(game[:email])}</td></tr>" \
             "<tr><th>Eingereicht</th><td>#{Time.at(game[:submitted].to_i).strftime('%d.%m.%Y %H:%M')}</td></tr>" \
             "<tr><th>Stand</th><td>#{h.(state)}</td></tr>" \
-            "<tr><th>Dateien</th><td>#{files.map { |f| "<code>#{h.(f)}</code>" }.join(', ')}</td></tr></table>" \
+            "<tr><th>Dateien</th><td><div class='d-flex flex-wrap gap-1'>#{files.map { |f| "<code>#{h.(f)}</code>" }.join(' ')}</div></td></tr></table>" \
             "#{try}#{rename}#{buttons}" \
             "<h2 class='mt-4'>Was das Spiel sagt und spielt</h2><p>Die festen Sätze, die eigenen Aufnahmen (mit dem, was Whisper darin verstanden hat) und die Musik, in der Reihenfolge des Programms; Sätze, die erst beim Spielen entstehen, fehlen.</p><ol>#{list}</ol>" \
             "#{recordings}" \
             "<h2 class='mt-4'>Probelauf</h2><p>Der Anfang des Spiels mit <code>telefon --test</code>, ohne eine Taste, beim Einreichen im Workspace.</p><pre class='pg-transcript'>#{h.(game[:transcript])}</pre>" \
-            "<h2 class='mt-4'>Programm: <code>#{h.(game[:file])}</code></h2><pre class='pg-code'>#{h.(code || 'Die Datei fehlt.')}</pre>" \
+            "<h2 class='mt-4'>Programm: <code>#{h.(game[:file])}</code></h2>#{phone_game_code_html(code, game[:file])}" \
             "<script src='/include/phone_review.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
