@@ -100,6 +100,22 @@
   series:
     - [level-0-c1d8a2f7, level-1-7e3a91c4, level-2-b52d0f18, level-3-4c9e6a2d]
 
+# Office (docs/plan-textverarbeitung.md): word processing, then
+# spreadsheets and presentations, in Word, LibreOffice or Nextcloud Office.
+# The student uploads the document; the office service reads it, and the
+# card marks on their own page what is still missing. Worksheets that build
+# on each other become a series.
+- key: office
+  label: Office
+  short: Textverarbeitung, Tabellen und Präsentationen, mit Rückmeldung auf deiner eigenen Seite.
+  icon: /images/memo.png
+  description: |
+    Texte gestalten, mit Tabellen rechnen, Präsentationen bauen: in Word,
+    LibreOffice oder Nextcloud Office. Du lädst dein Dokument hoch, und die
+    Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
+  entries:
+    - .formatting-marks
+
 - key: writing
   compact: true
   label: Texte & Präsentationen

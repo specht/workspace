@@ -1,0 +1,13 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die gebaute Einladung (stufen/) muss die Prüfung
+# bestehen, die Vorlage (src/static/formatting-marks) muss an ihr
+# scheitern. Beide macht dokumente.py; gelesen werden sie vom Dienst office.
+format: 1
+activity: formatting-marks
+examples:
+  einladung:
+    pass:
+      - document: stufen/einladung.docx
+    fail:
+      - document: ../../static/formatting-marks/01 Einladung.docx
+        say: Leerzeichen

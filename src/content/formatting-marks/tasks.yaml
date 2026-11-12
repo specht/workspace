@@ -1,0 +1,118 @@
+# Aufgaben zu »Was das Auge nicht sieht«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/formatting-marks/01 Einladung.docx) und die
+# gebaute Einladung (stufen/einladung.docx) macht dokumente.py.
+format: 1
+activity: formatting-marks
+tasks:
+  - id: groesser
+    title: Eine Stufe größer
+    prediction: true
+    prompt: |
+      Die Klassenleitung will die Einladung besser lesbar machen: Sie markiert
+      alles und macht die Schrift überall eine Stufe größer, im Brief von 12 auf
+      14 pt. Was passiert mit der Einladung?
+    check:
+      type: choice
+      options:
+        - Sie wird nur größer. Alles bleibt, wo es war.
+        - Die Überschrift bleibt in der Mitte und das Datum rechts; nur der Brief braucht mehr Zeilen.
+        - Die Überschrift rückt nach rechts, das Datum rutscht in eine neue Zeile, und im Brief folgt auf jede lange Zeile eine kurze.
+        - Der Brief bleibt, wie er ist, weil er schon über die ganze Breite geht.
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es, wenn die Einladung ordentlich gebaut wäre. Ob sie das ist, sieht man auf dem Papier nicht.
+      - when: { picked: 1 }
+        say: Das wäre richtig, wenn die Überschrift wirklich zentriert und das Datum wirklich rechtsbündig wäre.
+    solution: |
+      Die Überschrift und das Datum stehen nur mit Leerzeichen an ihrem Platz,
+      und am Ende jeder Zeile des Briefs steht ein Zeilenumbruch von Hand. Mit
+      größerer Schrift werden die Leerzeichen breiter und die Zeilen länger.
+
+  - id: absaetze
+    title: Absätze zählen
+    prompt: |
+      Schalte die Formatierungszeichen ein. Wie viele Absätze hat die
+      Einladung? Zähl jedes ¶, auch die allein in einer Zeile.
+    check:
+      type: number
+      expect: 16
+      tolerance: 0
+    feedback:
+      - when: { between: [9, 9] }
+        say: Das sind die Absätze mit Text. Die leeren Zeilen sind auch Absätze, jede mit ihrem ¶.
+      - when: { between: [18, 18] }
+        say: Der Brief geht über drei Zeilen, ist aber ein einziger Absatz. Am Ende seiner ersten beiden Zeilen steht ↵, nicht ¶.
+    hint:
+      - Ein Absatz endet mit ¶. Ein ↵ beendet nur die Zeile, nicht den Absatz.
+      - Die Überschrift, die Zeile darunter und das Datum sind schon drei; zähl die leeren Zeilen dazwischen mit.
+    solution: |
+      16: neun Absätze mit Text und sieben leere.
+
+  - id: zeilenende
+    title: Am Ende der ersten Zeile
+    prompt: |
+      Welches Zeichen steht am Ende der ersten Zeile des Briefs, hinter
+      »Auf dem«?
+    check:
+      type: choice
+      options:
+        - "¶: Dort endet ein Absatz."
+        - "↵: ein Zeilenumbruch von Hand"
+        - "Nichts: Dort hat das Programm die Zeile umgebrochen."
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: Sieh genau hin. Der Pfeil ↵ und das ¶ sehen verschieden aus.
+      - when: { picked: 2 }
+        say: Bricht das Programm um, steht am Zeilenende tatsächlich nichts. Hier steht aber etwas.
+    solution: |
+      Ein ↵: Jemand hat <kbd>Umschalt</kbd>+<kbd>Enter</kbd> gedrückt, wie
+      früher den Hebel an der Schreibmaschine.
+
+  - id: einladung
+    title: Die Einladung, sauber gebaut
+    prompt: |
+      Prüfe deine Einladung. Die Prüfung liest dein Dokument und markiert auf
+      deiner Seite jede Stelle, an der noch etwas fehlt. Speichere in Word oder
+      LibreOffice, bevor du prüfst.
+    check:
+      type: document
+      file: formatting-marks/01 Einladung.docx
+      rules:
+        - text
+        - spaces
+        - empty_paragraphs
+        - line_breaks
+        - { align: center, paragraph: 'Einladung zum Elternabend' }
+        - { align: center, paragraph: 'Klassenfahrt der 7b an den Kranichsee' }
+        - { align: right, paragraph: '2. März' }
+        - { gaps: 6pt, before: ['Liebe Eltern', 'im Mai fährt', 'Der Elternabend ist', 'Bitte sagen Sie', 'Mit freundlichen Grüßen'] }
+    hint:
+      - Fang mit den Formatierungszeichen an. Jeder Punkt · vor einem Wort am Zeilenanfang ist ein Leerzeichen, das weg muss.
+      - Ein leerer Absatz ist ein ¶ allein in einer Zeile. Stell den Cursor davor und drück <kbd>Entf</kbd>.
+      - Doppelte Leerzeichen findet <kbd>Strg</kbd>+<kbd>H</kbd>; such nach zwei Leerzeichen, ersetze durch eins.
+
+  - id: ausdruck
+    title: Zwei gleiche Ausdrucke
+    prompt: |
+      Zwei Einladungen sehen ausgedruckt genau gleich aus. Die eine ist mit
+      Leerzeichen und leeren Absätzen gebaut, die andere mit Ausrichtung und
+      Abstand. Woran erkennst du, welche welche ist?
+    check:
+      type: choice
+      options:
+        - Am Ausdruck gar nicht, nur in der Datei, an den Formatierungszeichen oder wenn sich die Schrift ändert.
+        - Die mit Leerzeichen hat größere Lücken zwischen den Wörtern.
+        - Die mit leeren Absätzen hat mehr Seiten.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Die Leerzeichen stehen vor der Überschrift, nicht zwischen den Wörtern. Auf dem Papier ist dort einfach weiß.
+      - when: { picked: 2 }
+        say: Ein leerer Absatz ist so hoch wie ein Abstand von 12 pt. Auf dem Papier ist beides gleich hoch.
+    solution: |
+      Am Ausdruck gar nicht. Den Unterschied sieht man erst mit den
+      Formatierungszeichen oder sobald sich etwas ändert, die Schrift oder ein
+      Wort.
