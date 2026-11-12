@@ -712,26 +712,33 @@ def seite():
 def punkt():
     """the point: 72 to an inch, about 0,35 mm; a 12 pt letter measured from
     the top of its tallest to the bottom of its lowest letters"""
-    w, h = 560, 250
+    w, h = 560, 280
     body = []
-    # a ruler: 1 cm against 28,35 pt, drawn 6 times larger than life
-    x0, y0, mm = 30, 46, 22.0
-    body.append(text(x0, 22, 'ein Zentimeter, vergrößert', 14, GREY))
+    # a ruler: 1 cm, drawn larger than life, with 1 pt and 12 pt measured
+    # along it from 0 (lengths along the ruler, so it is clear what is meant)
+    x0, y0, mm = 30, 96, 22.0
+    body.append(text(x0, 20, 'ein Zentimeter, vergrößert', 14, GREY))
     body.append(line(x0, y0, x0 + 10 * mm, y0, TEXT, 1.4))
     for k in range(11):
         body.append(line(x0 + k * mm, y0, x0 + k * mm, y0 + (12 if k in (0, 5, 10) else 7), TEXT, 1.2))
     body.append(text(x0, y0 + 30, '0', 12, TEXT, 'middle'))
     body.append(text(x0 + 10 * mm, y0 + 30, '1 cm', 12, TEXT, 'middle'))
-    # one point: 0,3528 mm
+    # 1 pt: 0,3528 mm, a blue piece of the ruler from 0
     pt_w = 0.3528 * mm
-    body.append(rect(x0 + 10 * mm + 30, y0 - 18, pt_w, 18, BLUE))
-    body.append(text(x0 + 10 * mm + 30 + pt_w + 8, y0 - 4, '1 pt ≈ 0,35 mm', 14, BLUE, weight='600'))
-    body.append(text(x0 + 10 * mm + 30, y0 + 22, '72 pt = 2,54 cm (ein Zoll)', 13, GREY))
-    body.append(text(x0 + 10 * mm + 30, y0 + 40, '28 pt ≈ 1 cm', 13, GREY))
+    body.append(rect(x0, y0 - 5, pt_w, 5, BLUE))
+    body.append(line(x0 + pt_w / 2, y0 - 7, x0 + 18, y0 - 26, BLUE, 1))
+    body.append(text(x0 + 21, y0 - 24, '1 pt ≈ 0,35 mm', 13, BLUE, weight='600'))
+    # 12 pt: 4,23 mm, a bracket over the ruler from 0
+    twelve = 12 * pt_w
+    body.append(line(x0, y0 - 38, x0, y0 - 44, AMBER, 1.4) + line(x0, y0 - 44, x0 + twelve, y0 - 44, AMBER, 1.4) +
+                line(x0 + twelve, y0 - 44, x0 + twelve, y0 - 38, AMBER, 1.4))
+    body.append(text(x0 + twelve + 8, y0 - 40, '12 pt ≈ 4,2 mm', 13, AMBER, weight='600'))
+    body.append(text(x0 + 10 * mm + 30, y0 - 14, '72 pt = 2,54 cm (ein Zoll)', 13, GREY))
+    body.append(text(x0 + 10 * mm + 30, y0 + 4, '28 pt ≈ 1 cm', 13, GREY))
     # 12 pt: the size of a letter, from the top of the tallest to the
     # bottom of the lowest, drawn at the same scale (12 pt = 4,23 mm)
     size = 12 * 0.3528 * mm   # the em at this scale
-    base = 196
+    base = 222
     gx = x0 + 20
     top, bottom = base - size * 0.78, base + size * 0.22
     # the box of the size (the font's em: 0,78 above the line, 0,22 below)
@@ -739,15 +746,15 @@ def punkt():
     body.append(line(gx - 4, base, gx + measure('Hg', size) + 4, base, EDGE, 1, " stroke-dasharray='3 3'"))
     body.append(text(gx, base, 'Hg', size, INK))
     bx = gx + measure('Hg', size) + 14
-    body.append(line(bx, top, bx + 10, top, BLUE, 1.5) + line(bx + 10, top, bx + 10, bottom, BLUE, 1.5) +
-                line(bx, bottom, bx + 10, bottom, BLUE, 1.5))
-    body.append(text(bx + 18, (top + bottom) / 2 - 4, '12 pt ≈ 4,2 mm', 14, BLUE, weight='600'))
+    body.append(line(bx, top, bx + 10, top, AMBER, 1.5) + line(bx + 10, top, bx + 10, bottom, AMBER, 1.5) +
+                line(bx, bottom, bx + 10, bottom, AMBER, 1.5))
+    body.append(text(bx + 18, (top + bottom) / 2 - 4, '12 pt ≈ 4,2 mm', 14, AMBER, weight='600'))
     body.append(text(bx + 18, (top + bottom) / 2 + 14, 'das Feld, in das die', 12, GREY))
     body.append(text(bx + 18, (top + bottom) / 2 + 30, 'Buchstaben passen; ein H', 12, GREY))
     body.append(text(bx + 18, (top + bottom) / 2 + 46, 'ist etwas kleiner', 12, GREY))
-    body.append(text(x0 + 330, 160, 'Schrift und Abstände misst', 13, GREY))
-    body.append(text(x0 + 330, 177, 'die Textverarbeitung in pt;', 13, GREY))
-    body.append(text(x0 + 330, 194, 'Seitenränder und Bilder in cm.', 13, GREY))
+    body.append(text(x0 + 330, 186, 'Schrift und Abstände misst', 13, GREY))
+    body.append(text(x0 + 330, 203, 'die Textverarbeitung in pt;', 13, GREY))
+    body.append(text(x0 + 330, 220, 'Seitenränder und Bilder in cm.', 13, GREY))
     svg('punkt', 'formatting-marks', w, h, body, 'Ein Punkt (pt) neben einem Zentimeter, und wie groß 12 pt sind')
 
 
@@ -879,8 +886,65 @@ def satz():
     svg('satz', 'newspaper-page', w, h, body, 'Flattersatz mit Abstand gegen Blocksatz mit Einzug')
 
 
+
+# ---- the card of the series in the catalog
+
+def karte():
+    """three sheets of the series fanned out: the invitation with its
+    formatting marks and a check's numbered mark, the report's contents,
+    the newspaper page with a green tick"""
+    w, h = 480, 270
+    body = [rect(0, 0, w, h, '#eef3fb')]
+    sw, sh = 150, 212
+
+    def sheet(cx, cy, angle, inner):
+        return (f"<g transform='translate({cx} {cy}) rotate({angle})'>" +
+                rect(-sw / 2 + 2, -sh / 2 + 3, sw, sh, '#0b0f19', r=3, extra=" fill-opacity='0.12'") +
+                rect(-sw / 2, -sh / 2, sw, sh, PAPER, EDGE, 1, 3) + inner + '</g>')
+
+    x0, y0 = -sw / 2 + 14, -sh / 2 + 22
+    # the invitation, its marks on
+    inv = [text(0, y0 + 2, 'Einladung', 12, INK, 'middle', '700')]
+    inv.append(text(-sw / 2 + 12, y0 + 2, '·' * 9, 12, PBLUE, weight='700'))
+    inv.append(text(sw / 2 - 12, y0 + 22, '·' * 14 + ' 2. März', 8, INK, 'end'))
+    for k, length in enumerate([110, 120, 64]):
+        inv.append(bar(x0, y0 + 46 + k * 11, length, h=3))
+        inv.append(text(x0 + length + 3, y0 + 48 + k * 11, '↵' if k < 2 else '¶', 8, PBLUE))
+    inv.append(text(x0, y0 + 90, '¶', 9, PBLUE))
+    for k, length in enumerate([116, 90]):
+        inv.append(bar(x0, y0 + 104 + k * 11, length, h=3))
+    inv.append(f"<circle cx='{-sw / 2 + 6}' cy='{y0 - 2}' r='8' fill='{PAMBER}'/>" + text(-sw / 2 + 6, y0 + 2, '1', 10, PAPER, 'middle', '700'))
+    body.append(sheet(120, 142, -9, ''.join(inv)))
+    # the report's contents
+    toc = [text(x0, y0 + 4, 'Reisebericht', 13, PGREEN, weight='700'), text(x0, y0 + 30, 'Inhalt', 9, INK, weight='700')]
+    for k, (title, page) in enumerate([('Montag', 2), ('Dienstag', 3), ('Mittwoch', 4), ('Donnerstag', 5), ('Freitag', 6)]):
+        y = y0 + 46 + k * 13
+        toc.append(text(x0, y, title, 8, INK))
+        toc.append(text(x0 + 46, y, '.' * 22, 8, INK))
+        toc.append(text(sw / 2 - 14, y, str(page), 8, INK, 'end'))
+    body.append(sheet(240, 132, 3, ''.join(toc)))
+    # the newspaper page, in front
+    news = [text(x0, y0 + 4, 'Kraniche', 14, PGREEN, weight='700')]
+    col = (sw - 28 - 8) / 2
+    for c in range(2):
+        cx = x0 + c * (col + 8)
+        rows = 13 if c == 0 else 6
+        for k in range(rows):
+            news.append(bar(cx + (6 if k in (0, 6) and c == 0 else 0), y0 + 22 + k * 9, col - (6 if k in (0, 6) and c == 0 else 0) - (col * 0.4 if k in (5, 12) else 0), h=3))
+    # a photo in the second column
+    px, py = x0 + col + 8, y0 + 80
+    news.append(rect(px, py, col, 40, PBLUE_BG) + f"<path d='M {px} {py + 40} L {px} {py + 28} Q {px + col * 0.4} {py + 14} {px + col} {py + 30} L {px + col} {py + 40} Z' fill='{PGREEN}'/>" +
+                f"<circle cx='{px + col * 0.72}' cy='{py + 12}' r='5' fill='{PAMBER}'/>")
+    for k in range(3):
+        news.append(bar(px, py + 52 + k * 9, col - (col * 0.3 if k == 2 else 0), h=3))
+    news.append(f"<circle cx='{sw / 2 - 12}' cy='{-sh / 2 + 14}' r='13' fill='#2e7d32'/>"
+                f"<path d='M {sw / 2 - 18} {-sh / 2 + 14} l 4 5 l 9 -10' fill='none' stroke='{PAPER}' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/>")
+    body.append(sheet(358, 140, 7, ''.join(news)))
+    svg('karte', 'formatting-marks', w, h, body, 'Die Karte der Reihe: drei Blätter, Einladung, Inhaltsverzeichnis, Zeitungsseite')
+
+
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
-                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz]}
+                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte]}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:

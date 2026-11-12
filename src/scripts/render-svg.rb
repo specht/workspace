@@ -64,6 +64,7 @@ DARK = {
     '#fdecc8' => '#fdecc8', # pale amber behind it
     '#e3ecfa' => '#e3ecfa', # pale blue behind a part of the sheet
     '#e6e8eb' => '#e6e8eb', # the grey of a field (a page number)
+    '#2e7d32' => '#2e7d32', # green of a tick on a sheet (a check passed)
 }.freeze
 
 # in docker/drawings, the same fonts and tools on every machine: started

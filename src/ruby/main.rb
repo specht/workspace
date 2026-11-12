@@ -2995,21 +2995,39 @@ class Main < Sinatra::Base
     # row, a thin band with a segment for every task of the page, in its
     # order, and beside it what it adds up to; '' where there is none (no
     # tasks, or a student who has not begun).
+    # slug: an activity, or the members of a series (the card of a series
+    # stands for all of them: their tasks one after the other; the people
+    # are counted per activity, so a series shows the most on any one)
     def usage_html(usage, slug, css_class)
-        content = @@content[slug] || {}
-        return '' unless usage && content[:tasks]
+        slugs = Array(slug).select { |s| (@@content[s] || {})[:tasks] }
+        return '' unless usage && !slugs.empty?
 
         if usage[:mode] == :own
-            mine = usage[:progress][slug]
-            return mine ? CardUsage.own_html(mine[:titles], mine[:marks], :css_class => css_class) : ''
+            mine = slugs.filter_map { |s| usage[:progress][s] }
+            return '' if mine.empty?
+
+            return CardUsage.own_html(mine.flat_map { |m| m[:titles] }, mine.flat_map { |m| m[:marks] }, :css_class => css_class)
         end
         counts = usage[:counts]
-        activity = content[:tasks][:activity]
-        ids = content[:tasks][:on_page] || []
-        per_task = ids.map { |id| counts[:tasks]["#{activity}/#{id}"].to_i }
-        titles = ids.map { |id| content[:tasks][:by_id][id]['title'].to_s }
-        CardUsage.band_html(titles, per_task, :solved => per_task.sum, :people => counts[:people][activity].to_i,
+        titles = []
+        per_task = []
+        people = 0
+        slugs.each do |s|
+            tasks = @@content[s][:tasks]
+            activity = tasks[:activity]
+            ids = tasks[:on_page] || []
+            per_task.concat(ids.map { |id| counts[:tasks]["#{activity}/#{id}"].to_i })
+            titles.concat(ids.map { |id| tasks[:by_id][id]['title'].to_s })
+            people = [people, counts[:people][activity].to_i].max
+        end
+        CardUsage.band_html(titles, per_task, :solved => per_task.sum, :people => people,
                             :css_class => css_class, :of => usage[:mode] == :teacher ? counts[:of] : nil)
+    end
+
+    # The members of the series a card stands for (sections.yaml series:,
+    # those in this catalog), or the card's activity alone.
+    def card_members(section, entries, slug)
+        Array(section[:series]).map { |list| list.map(&:to_s) & entries }.find { |list| list.first == slug && list.size > 1 } || [slug]
     end
 
     # The cards of a catalog section: a slug each, or for a series
@@ -3035,7 +3053,15 @@ class Main < Sinatra::Base
     end
 
     def card_title_text(slug)
-        CGI.unescapeHTML((@@content[slug] || {})[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).strip
+        content = @@content[slug] || {}
+        return content[:card_title].strip if content[:card_title]
+
+        CGI.unescapeHTML(content[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', '')).strip
+    end
+
+    # the title on a card: its own (card_title:), else the page's
+    def card_title_html(content)
+        content[:card_title] ? CGI.escapeHTML(content[:card_title]) : content[:title]
     end
 
     # A card's picture and text. slide: its number in the carousel of a
@@ -3078,7 +3104,7 @@ class Main < Sinatra::Base
             # With it, for a student who solved a task here, how many (»3/7«).
             io.puts StudentHome.card_badges(content[:kind], content[:language]) if catalog == :student
             io.puts "<div class='card-title-row'>"
-            io.puts "<h4>#{content[:title]}</h4>"
+            io.puts "<h4>#{card_title_html(content)}</h4>"
             io.puts "</div>"
             io.puts "<div class='card-part'>#{CGI.escapeHTML(part_title)}</div>" if part_title
             io.puts "<div class='abstract'>#{content[:abstract]}</div>"
@@ -3200,9 +3226,11 @@ class Main < Sinatra::Base
                         parts = !card.is_a?(Array) && content[:parts] && content[:parts].all? { |part| part[:image] } ? content[:parts] : nil
                         io.puts "<div class='hscol#{index >= cards.size - paired ? ' hscol-pair' : ''}'>"
                         pinned_card = catalog == :student && catalog_pins.include?(slug)
-                        band = usage_html(usage, slug, 'card-usage')
+                        # the band of the card: all members of its series (the card of
+                        # a series stands for them all, carousel or not)
+                        band = usage_html(usage, card_members(section, entries, slug), 'card-usage')
                         # a series card has the band's room if any of its members has a band
-                        used_card = members.any? { |member| !usage_html(usage, member, 'card-usage').empty? } ? ' card-with-usage' : ''
+                        used_card = members.any? { |member| !usage_html(usage, member, 'card-usage').empty? } || !band.empty? ? ' card-with-usage' : ''
                         series = members.size > 1 || !parts.nil?
                         if series
                             # a link over the whole card to the member shown, the
@@ -3213,7 +3241,7 @@ class Main < Sinatra::Base
                             io.puts "<a href='/#{slug}' class='tutorial_card3#{pinned_card ? ' card-pinned' : ''}#{used_card}'>"
                         end
                         io.puts "<span class='card-pin' title='Angepinnt'><i class='bi bi-pin-angle-fill' aria-hidden='true'></i><span class='visually-hidden'>Angepinnt</span></span>" if pinned_card
-                        io.puts "<h4>#{content[:title]}</h4>"
+                        io.puts "<h4>#{card_title_html(content)}</h4>"
                         slides = parts ? parts.each_index.map { |i| [slug, i + 1] } : members.map { |member| [member, nil] }
                         slides.each_with_index do |(member, part), slide|
                             card_index += 1 if slide == 0

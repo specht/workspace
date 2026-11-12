@@ -1,6 +1,7 @@
 <div class='meta'>
-image: teaser.webp
-image_alt: "Eine Einladung zum Elternabend der Klasse 7b, ausgedruckt: Überschrift in der Mitte, Datum rechts, darunter ein kurzer Brief"
+image: karte.webp
+image_alt: "Drei Blätter, aufgefächert: eine Einladung mit blauen Punkten vor der Überschrift und einer orangen 1 daneben, ein Reisebericht mit Inhaltsverzeichnis und eine Zeitungsseite »Kraniche« in zwei Spalten mit einem Foto und einem grünen Haken"
+card_title: "Textverarbeitung Schritt für Schritt"
 kind: labor
 duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Herstellung von Medienprodukten)"
@@ -36,7 +37,7 @@ Punkt ist ungefähr 0,35 mm; die 12 pt des Briefs sind gut 4 mm, das Feld, in
 das ein Buchstabe mit allem passt, was nach oben und unten herausragt. Auch
 Abstände misst sie in pt, Seitenränder und Bilder dagegen in cm.
 
-<img class='drawing' style='width: 35em' src='punkt.svg' alt='Oben ein Zentimeter, vergrößert, mit Millimeterstrichen, daneben ein schmaler blauer Balken: 1 pt ≈ 0,35 mm; 72 pt = 2,54 cm (ein Zoll); 28 pt ≈ 1 cm. Darunter groß »Hg« in einem blauen Feld, eine Klammer daneben: 12 pt ≈ 4,2 mm, das Feld, in das die Buchstaben passen; ein H ist etwas kleiner'>
+<img class='drawing' style='width: 35em' src='punkt.svg' alt='Oben ein Zentimeter, vergrößert, mit Millimeterstrichen. Vom Anfang aus ist ein winziges blaues Stück markiert: 1 pt ≈ 0,35 mm; darüber eine orange Klammer bis gut 4 mm: 12 pt ≈ 4,2 mm. Daneben: 72 pt = 2,54 cm (ein Zoll), 28 pt ≈ 1 cm. Darunter groß »Hg« in einem blauen Feld, so hoch wie die orange Klammer lang ist: 12 pt ≈ 4,2 mm, das Feld, in das die Buchstaben passen; ein H ist etwas kleiner'>
 
 _task(groesser)
 

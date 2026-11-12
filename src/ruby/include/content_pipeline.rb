@@ -918,6 +918,11 @@ class Main < Sinatra::Base
                         parsed_content[slug][:title] = root.css('h1').first.to_s.sub('<h1>', '').sub('</h1>', '').strip
                     rescue
                     end
+                    # the card's own title, where the page's would not say what
+                    # the card stands for (the first of a series: card_title:)
+                    if meta.is_a?(Hash) && meta['card_title'].is_a?(String)
+                        parsed_content[slug][:card_title] = meta['card_title']
+                    end
                     begin
                         parsed_content[slug][:abstract] = root.css('.abstract').first.text
                     rescue
