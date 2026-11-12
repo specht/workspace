@@ -2759,6 +2759,12 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     margin: 0;
 }
 
+/* a drawing in a gallery: its caption right under it, not after the
+   margin a drawing keeps in running text */
+.gallery img.drawing {
+    margin: 0 auto;
+}
+
 .gallery figcaption {
     margin-top: 0.35em;
     font-size: 0.85em;

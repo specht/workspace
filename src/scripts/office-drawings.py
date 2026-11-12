@@ -838,54 +838,21 @@ def punkt(phone=False):
     svg(variant('punkt', phone), 'formatting-marks', w, h, body, 'Ein Punkt (pt) neben einem Zentimeter, und wie groß 12 pt sind')
 
 
-def keycap(x, y, label, size=13):
-    """a key as the page's <kbd> draws it: a light cap with a shadow below,
-    its left edge at x, its baseline at y; returns the elements and the
-    right edge"""
-    width = measure(label, size, '600') + 12
-    # the page's colours for a pale area and a line, which have dark versions
-    out = (rect(x, y - size - 3, width, size + 10, '#d1d5db', r=4) +
-           rect(x, y - size - 4, width, size + 8, '#f3f4f6', '#d1d5db', 1, 4) +
-           text(x + width / 2, y, label, size, TEXT, 'middle', '600'))
-    return out, x + width
-
-
-def keys_line(cx, y, labels, size=13):
-    """keys like Strg + L, centred on cx"""
-    widths = [measure(k, size, '600') + 12 for k in labels]
-    plus = measure('+', size) + 8
-    x = cx - (sum(widths) + plus * (len(labels) - 1)) / 2
-    out = []
-    for i, label in enumerate(labels):
-        if i:
-            out.append(text(x + plus / 2, y, '+', size, GREY, 'middle'))
-            x += plus
-        cap, x = keycap(x, y, label, size)
-        out.append(cap)
-    return ''.join(out)
-
-
 def ausrichtung():
-    """left, centred, right: the same paragraph three times, each with its
-    keys (the same in Word, LibreOffice and Nextcloud Office)"""
-    w, h = 560, 182
-    panels = []
+    """left, centred, right: the same paragraph three times, three pictures
+    of a gallery whose captions name each and its keys as text"""
     lines = [196, 160, 182, 92]
-    for i, (title, mode, key) in enumerate([('linksbündig', 'left', 'L'), ('zentriert', 'center', 'E'), ('rechtsbündig', 'right', 'R')]):
-        x = 10 + i * 186
-        body = []
-        panels.append((body, (x, 4, 168, 172)))
-        body.append(keys_line(x + 84, 166, ['Strg', key]))
-        body.append(text(x + 84, 22, title, 14, TEXT, 'middle', '600'))
-        body.append(paper(x, 34, 168, 104))
-        tx, tw = x + 14, 140
-        body.append(line(tx, 44, tx, 128, EDGE, 1, " stroke-dasharray='2 3'") +
-                    line(tx + tw, 44, tx + tw, 128, EDGE, 1, " stroke-dasharray='2 3'"))
+    for name, mode in [('links', 'left'), ('mitte', 'center'), ('rechts', 'right')]:
+        body = [paper(10, 10, 168, 104)]
+        tx, tw = 24, 140
+        body.append(line(tx, 20, tx, 104, EDGE, 1, " stroke-dasharray='2 3'") +
+                    line(tx + tw, 20, tx + tw, 104, EDGE, 1, " stroke-dasharray='2 3'"))
         for k, length in enumerate(lines):
             length = length * tw / 200
             bx = tx if mode == 'left' else tx + tw - length if mode == 'right' else tx + (tw - length) / 2
-            body.append(bar(bx, 62 + k * 18, length))
-    two_ways('ausrichtung', 'formatting-marks', (w, h), 'Derselbe Absatz linksbündig, zentriert und rechtsbündig', panels)
+            body.append(bar(bx, 38 + k * 18, length))
+        svg(f'ausrichtung-{name}', 'formatting-marks', 188, 124, body,
+            {'left': 'Ein Absatz linksbündig', 'center': 'Ein Absatz zentriert', 'right': 'Ein Absatz rechtsbündig'}[mode])
 
 
 # ---- levels (Formatvorlagen)

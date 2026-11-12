@@ -1,0 +1,10 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 188 124' width='188' height='124'>
+  <!-- Ein Absatz rechtsbündig; made by src/scripts/office-drawings.py, then src/scripts/render-svg.rb -->
+<rect x='0.0' y='0.0' width='188.0' height='124.0' rx='0' fill='#ffffff' stroke='none' stroke-width='1'/>
+<rect x='10.0' y='10.0' width='168.0' height='104.0' rx='3' fill='#fdfdfd' stroke='#c9ced6' stroke-width='1.2'/>
+<line x1='24.0' y1='20.0' x2='24.0' y2='104.0' stroke='#c9ced6' stroke-width='1' stroke-dasharray='2 3'/><line x1='164.0' y1='20.0' x2='164.0' y2='104.0' stroke='#c9ced6' stroke-width='1' stroke-dasharray='2 3'/>
+<rect x='26.8' y='33.0' width='137.2' height='5.0' rx='2' fill='#9aa3ae' stroke='none' stroke-width='1'/>
+<rect x='52.0' y='51.0' width='112.0' height='5.0' rx='2' fill='#9aa3ae' stroke='none' stroke-width='1'/>
+<rect x='36.6' y='69.0' width='127.4' height='5.0' rx='2' fill='#9aa3ae' stroke='none' stroke-width='1'/>
+<rect x='99.6' y='87.0' width='64.4' height='5.0' rx='2' fill='#9aa3ae' stroke='none' stroke-width='1'/>
+</svg>
