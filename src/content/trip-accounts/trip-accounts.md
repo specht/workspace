@@ -105,7 +105,7 @@ Seite passt, stellst du die Seite quer und lässt das Programm die Tabelle auf
 eine Seite verkleinern.
 
 <!-- language: libreoffice -->
-In LibreOffice: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…*, im Register *Seite* das *Querformat*, im Register *Tabelle* unter *Skalierungsmodus* »Druckbereich(e) auf Breite/Höhe verkleinern« mit *Breite in Seiten* 1 und *Höhe in Seiten* 1. Exportieren: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*.
+In LibreOffice: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…*, im Register *Seite* das *Querformat*, im Register *Tabelle* unter *Skalierungsmodus* »Druckbereich(e) auf Breite/Höhe verkleinern« mit *Breite in Seiten* 1 und *Höhe in Seiten* 1. Exportieren: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*
 <!-- /language -->
 <!-- language: word -->
 In Excel: Register *Seitenlayout*, *Ausrichtung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Querformat*, und in der Gruppe *An Format anpassen* *Breite* und *Höhe* je »1 Seite«. Exportieren: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen*.

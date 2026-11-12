@@ -49,7 +49,8 @@ links«. In C7 führt derselbe Weg zu B3, in C8 zu B4. Bei den Kosten in Spalte 
 ist das richtig: Jede Zeile soll ihre eigenen Kosten teilen. Bei der Zahl der
 Kinder ist es falsch: Sie steht nur einmal da, in B2.
 
-<img class='drawing' style='width: 37em' src='ohne-dollar.svg' alt='Die Spalten B und C, Zeilen 2 bis 8. In B2 steht 27, in B3 5 %, B4 ist leer. Von C6 führt ein blauer Bogen zu B2: =B6/B2, teilt durch 27, ergibt 46,30 €. Von C7 führt ein oranger Bogen zu B3: =B7/B3, teilt durch 0,05, ergibt 79.920,00 €. Von C8 führt ein oranger Bogen zur leeren Zelle B4: =B8/B4, ergibt #DIV/0!'>
+<img class='drawing d-none d-lg-block' style='width: 37em' src='ohne-dollar-wide.svg' alt='Die Spalten B und C, Zeilen 2 bis 8. In B2 steht 27, in B3 5 %, B4 ist leer. Von C6 führt ein blauer Bogen zu B2: =B6/B2, teilt durch 27, ergibt 46,30 €. Von C7 führt ein oranger Bogen zu B3: =B7/B3, teilt durch 0,05, ergibt 79.920,00 €. Von C8 führt ein oranger Bogen zur leeren Zelle B4: =B8/B4, ergibt #DIV/0!'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='ohne-dollar.svg' alt='Die Spalten B und C, Zeilen 2 bis 8. In B2 steht 27, in B3 5 %, B4 ist leer. Von C6 führt ein blauer Bogen zu B2: =B6/B2, teilt durch 27, ergibt 46,30 €. Von C7 führt ein oranger Bogen zu B3: =B7/B3, teilt durch 0,05, ergibt 79.920,00 €. Von C8 führt ein oranger Bogen zur leeren Zelle B4: =B8/B4, ergibt #DIV/0!'>
 <!-- /after -->
 
 **Jetzt bist du dran:** Füll in der Vorlage die Formel aus C6 nach unten aus,
@@ -57,11 +58,13 @@ bis C10, und sieh dir an, was herauskommt.
 
 _task(zeigt)
 
+<!-- after: zeigt -->
 Eine Zelle, die durch eine leere Zelle teilt, zeigt `#DIV/0!`: Durch null
 kann man nicht teilen. Eine, die durch einen Text teilt, zeigt `#WERT!`. Am
 gefährlichsten ist C7: Sie zeigt keinen Fehler, nur eine falsche Zahl. Mach
 das Ausfüllen rückgängig (<kbd>Strg</kbd>+<kbd>Z</kbd>), sodass wieder nur in
 C6 eine Formel steht.
+<!-- /after -->
 
 ## Das Dollarzeichen
 
@@ -71,12 +74,13 @@ dem B hält die Spalte fest, das `$` vor der 2 die Zeile. Ein Bezug mit `$`
 heißt **absolut**, einer ohne **relativ**: Er wandert relativ zur Zelle mit,
 in der die Formel steht.
 
-<img class='drawing' style='width: 37em' src='mit-dollar.svg' alt='Dieselben Spalten B und C, Zeilen 2 bis 8. Von C6, C7 und C8 führen drei blaue Bögen alle zu B2 mit der 27. Daneben =B6/$B$2, =B7/$B$2, =B8/$B$2, jede teilt durch 27; die Ergebnisse 46,30 €, 148,00 €, 24,50 €. Oben erklärt: $B$2, $ vor B: die Spalte bleibt, $ vor 2: die Zeile bleibt'>
+<img class='drawing d-none d-lg-block' style='width: 37em' src='mit-dollar-wide.svg' alt='Dieselben Spalten B und C, Zeilen 2 bis 8. Von C6, C7 und C8 führen drei blaue Bögen alle zu B2 mit der 27. Daneben =B6/$B$2, =B7/$B$2, =B8/$B$2, jede teilt durch 27; die Ergebnisse 46,30 €, 148,00 €, 24,50 €. Oben erklärt: $B$2, $ vor B: die Spalte bleibt, $ vor 2: die Zeile bleibt'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='mit-dollar.svg' alt='Dieselben Spalten B und C, Zeilen 2 bis 8. Von C6, C7 und C8 führen drei blaue Bögen alle zu B2 mit der 27. Daneben =B6/$B$2, =B7/$B$2, =B8/$B$2, jede teilt durch 27; die Ergebnisse 46,30 €, 148,00 €, 24,50 €. Oben erklärt: $B$2, $ vor B: die Spalte bleibt, $ vor 2: die Zeile bleibt'>
 
 <!-- language: libreoffice -->
 Die Dollarzeichen kannst du tippen. Schneller geht es in der **Eingabezeile**:
 Setz den Cursor in den Bezug, etwa hinter B2, und drück
-<kbd>Umschalt</kbd>+<kbd>F4</kbd>. Jedes Drücken wechselt zwischen `$B$2`,
+<kbd>Shift</kbd>+<kbd>F4</kbd>. Jedes Drücken wechselt zwischen `$B$2`,
 `B$2`, `$B2` und `B2`.
 <!-- /language -->
 <!-- language: word -->

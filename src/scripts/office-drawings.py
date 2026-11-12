@@ -983,9 +983,15 @@ def cell_box(x0, y0, cols, rows, cw, ch, c, r):
     return x0 + cw * cols.index(c), y0 + ch * rows.index(r), cw, ch
 
 
-def adresse():
+def variant(name, phone):
+    """a drawing in two arrangements (docs/checkliste.md, »Auf dem Handy«):
+    in a row for the desktop (name-wide.svg), stacked for a phone (name.svg)"""
+    return name if phone else f'{name}-wide'
+
+
+def adresse(phone=False):
     """a cell's address: its column's letter and its row's number"""
-    w, h = 500, 220
+    w, h = (360, 268) if phone else (500, 220)
     cols, rows = ['A', 'B', 'C', 'D'], [1, 2, 3, 4, 5, 6]
     cw, ch = 74, 26
     fills = {('C', r): PBLUE_BG for r in rows}
@@ -996,45 +1002,57 @@ def adresse():
     body.append(g)
     bx, by, bw, bh = cell_box(x0, y0, cols, rows, cw, ch, 'C', 4)
     body.append(rect(bx, by, bw, bh, 'none', PAMBER, 2.4))
-    lx = x0 + cw * 4 + 22
-    body.append(arrow(lx - 4, by + bh / 2, bx + bw + 4, by + bh / 2, AMBER))
-    body.append(text(lx, by + bh / 2 - 6, 'Zelle C4', 16, TEXT, weight='700'))
-    body.append(text(lx, by + bh / 2 + 13, 'Spalte C, Zeile 4', 13, GREY))
-    svg('adresse', 'spreadsheet-cells', w, h, body, 'Die Zelle C4: Spalte C und Zeile 4')
+    if phone:
+        ly = y0 + ch * len(rows) + 32
+        body.append(text(20, ly, 'Zelle C4', 16, TEXT, weight='700'))
+        body.append(text(20, ly + 19, 'Spalte C, Zeile 4', 13, GREY))
+    else:
+        lx = x0 + cw * 4 + 22
+        body.append(arrow(lx - 4, by + bh / 2, bx + bw + 4, by + bh / 2, AMBER))
+        body.append(text(lx, by + bh / 2 - 6, 'Zelle C4', 16, TEXT, weight='700'))
+        body.append(text(lx, by + bh / 2 + 13, 'Spalte C, Zeile 4', 13, GREY))
+    svg(variant('adresse', phone), 'spreadsheet-cells', w, h, body, 'Die Zelle C4: Spalte C und Zeile 4')
 
 
-def formel():
+def formel(phone=False):
     """a result typed, against a formula that takes its numbers from cells"""
-    w, h = 560, 270
+    w, h = (360, 312) if phone else (560, 270)
     cols, rows = ['B', 'C', 'D'], [5]
     cw, ch = 76, 28
     body = []
     for k, (title, formula) in enumerate([('getippt', False), ('eine Formel', True)]):
-        y = 30 + k * 130
-        body.append(text(20, y + 34, title, 15, TEXT, weight='600'))
-        shown = {('B', 5): ('29', 'right'), ('C', 5): ('148,00', 'right'), ('D', 5): ('4.292,00', 'right', '700')}
-        g, (x0, y0) = grid(130, y, cols, rows, cw, ch, shown)
+        if phone:
+            y = 10 + k * 140
+            body.append(text(20, y + 14, title, 15, TEXT, weight='600'))
+            g, (x0, y0) = grid(20, y + 24, cols, rows, cw, ch, {('B', 5): ('29', 'right'), ('C', 5): ('148,00', 'right'), ('D', 5): ('4.292,00', 'right', '700')})
+        else:
+            y = 30 + k * 130
+            body.append(text(20, y + 34, title, 15, TEXT, weight='600'))
+            g, (x0, y0) = grid(130, y, cols, rows, cw, ch, {('B', 5): ('29', 'right'), ('C', 5): ('148,00', 'right'), ('D', 5): ('4.292,00', 'right', '700')})
         body.append(g)
         dx, dy, dw, dh = cell_box(x0, y0, cols, rows, cw, ch, 'D', 5)
         if formula:
             for c in ('B', 'C'):
                 sx, sy, sw, sh = cell_box(x0, y0, cols, rows, cw, ch, c, 5)
-                # an arc under the row, from the cell into D5
                 lift = 22 if c == 'C' else 40
                 ex = dx + dw / 2 + (10 if c == 'B' else -10)
                 body.append(f"<path d='M {sx + sw / 2:.1f} {sy + sh + 2:.1f} C {sx + sw / 2:.1f} {sy + sh + lift:.1f} {ex:.1f} {dy + dh + lift:.1f} {ex:.1f} {dy + dh + 11:.1f}' fill='none' stroke='{BLUE}' stroke-width='1.6'/>")
                 body.append(f"<polygon points='{ex:.1f},{dy + dh + 2:.1f} {ex - 5:.1f},{dy + dh + 11:.1f} {ex + 5:.1f},{dy + dh + 11:.1f}' fill='{BLUE}'/>")
-            body.append(text(dx + dw + 16, dy + 12, '=B5*C5', 15, BLUE, weight='700', family="'IBM Plex Mono', monospace"))
-            body.append(text(dx + dw + 16, dy + 31, 'rechnet mit B5 und C5', 12, GREY))
+            label, note, colour = '=B5*C5', 'rechnet mit B5 und C5', BLUE
         else:
-            body.append(text(dx + dw + 16, dy + 12, '4292', 15, PAMBER, weight='700', family="'IBM Plex Mono', monospace"))
-            body.append(text(dx + dw + 16, dy + 31, 'weiß nichts von B5 und C5', 12, GREY))
-    svg('formel', 'spreadsheet-cells', w, h, body, 'Ein getipptes Ergebnis gegen eine Formel, die mit B5 und C5 rechnet')
+            label, note, colour = '4292', 'weiß nichts von B5 und C5', PAMBER
+        if phone:
+            tx, ty = 20, dy + dh + (66 if formula else 28)
+        else:
+            tx, ty = dx + dw + 16, dy + 12
+        body.append(text(tx, ty, label, 15, colour, weight='700', family=MONO))
+        body.append(text(tx, ty + 19, note, 12 if not phone else 13, GREY))
+    svg(variant('formel', phone), 'spreadsheet-cells', w, h, body, 'Ein getipptes Ergebnis gegen eine Formel, die mit B5 und C5 rechnet')
 
 
-def ausfuellen():
+def ausfuellen(phone=False):
     """filling down: the formula moves with its row"""
-    w, h = 520, 180
+    w, h = (360, 234) if phone else (520, 180)
     cols, rows = ['B', 'C', 'D'], [4, 5, 6, 7]
     cw, ch = 96, 30
     cells = {('B', r): (str(n), 'right') for r, n in zip(rows, [1, 29, 27, 29])}
@@ -1043,28 +1061,32 @@ def ausfuellen():
     cells.update({('C', 4): ('1.250,00', 'right'), ('C', 5): ('148,00', 'right'), ('C', 6): ('24,50', 'right'), ('C', 7): ('9,00', 'right')})
     fills = {('D', r): PBLUE_BG for r in rows[1:]}
     body = []
-    g, (x0, y0) = grid(20, 20, cols, rows, cw, ch, cells, fills, size=13)
+    g, (x0, y0) = grid(10 if phone else 20, 20, cols, rows, cw, ch, cells, fills, size=13)
     body.append(g)
     dx, dy, dw, dh = cell_box(x0, y0, cols, rows, cw, ch, 'D', 4)
     body.append(rect(dx, dy, dw, dh, 'none', PAMBER, 2.4))
-    # the small square at the corner, dragged down
     body.append(rect(dx + dw - 4, dy + dh - 4, 8, 8, PAMBER))
     body.append(arrow(dx + dw + 14, dy + dh, dx + dw + 14, dy + dh * 4 - 4, AMBER, 2))
-    lx = dx + dw + 30
-    body.append(text(lx, dy + 20, 'das kleine Quadrat', 13, TEXT, weight='600'))
-    body.append(text(lx, dy + 37, 'nach unten ziehen', 13, GREY))
-    body.append(text(lx, dy + dh * 3 - 4, 'jede Zeile rechnet', 13, TEXT, weight='600'))
-    body.append(text(lx, dy + dh * 3 + 13, 'mit ihrer eigenen Zeile', 13, GREY))
-    svg('ausfuellen', 'spreadsheet-cells', w, h, body, 'Eine Formel nach unten ausgefüllt: B4*C4 wird B5*C5, B6*C6, B7*C7')
+    if phone:
+        ly = y0 + ch * 4 + 30
+        body.append(text(10, ly, 'das kleine Quadrat nach unten ziehen:', 13, TEXT, weight='600'))
+        body.append(text(10, ly + 19, 'jede Zeile rechnet mit ihrer eigenen Zeile', 13, GREY))
+    else:
+        lx = dx + dw + 30
+        body.append(text(lx, dy + 20, 'das kleine Quadrat', 13, TEXT, weight='600'))
+        body.append(text(lx, dy + 37, 'nach unten ziehen', 13, GREY))
+        body.append(text(lx, dy + dh * 3 - 4, 'jede Zeile rechnet', 13, TEXT, weight='600'))
+        body.append(text(lx, dy + dh * 3 + 13, 'mit ihrer eigenen Zeile', 13, GREY))
+    svg(variant('ausfuellen', phone), 'spreadsheet-cells', w, h, body, 'Eine Formel nach unten ausgefüllt: B4*C4 wird B5*C5, B6*C6, B7*C7')
 
 
 MONO = "'IBM Plex Mono', monospace"
 
 
-def zahltext():
+def zahltext(phone=False):
     """a number stands right, text typed with its € stands left, and SUMME
     counts only the numbers"""
-    w, h = 590, 196
+    w, h = (360, 282) if phone else (590, 196)
     cols, rows = ['B', 'C'], [4, 5, 6, 7, 8]
     cw, ch = 124, 28
     cells = {('B', 4): 'Familie Arslan', ('B', 5): 'Familie Becker', ('B', 6): 'Familie Çelik', ('B', 7): 'Familie Groß',
@@ -1082,71 +1104,114 @@ def zahltext():
         cy = ry + ch / 2
         body.append(f"<path d='M {right + 3:.1f} {cy:.1f} C {right + lift:.1f} {cy:.1f} {right + lift:.1f} {target:.1f} {right + 12:.1f} {target:.1f}' fill='none' stroke='{BLUE}' stroke-width='1.6'/>")
     body.append(f"<polygon points='{right + 3:.1f},{target:.1f} {right + 12:.1f},{target - 5:.1f} {right + 12:.1f},{target + 5:.1f}' fill='{BLUE}'/>")
-    lx = right + 48
-    _, y4, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', 4)
-    _, y5, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', 5)
-    body.append(text(lx, y4 + 19, 'eine Zahl: steht rechts', 14, TEXT, weight='600'))
-    body.append(text(lx, y5 + 19, 'Text: steht links, wie getippt', 14, AMBER, weight='600'))
-    body.append(text(lx, target - 4, '=SUMME(C4:C7)', 14, BLUE, weight='700', family=MONO))
-    body.append(text(lx, target + 14, 'zählt nur die Zahlen zusammen', 13, GREY))
-    svg('zahltext', 'number-formats', w, h, body, 'Zahlen stehen rechts, getippter Text mit Euro-Zeichen links; SUMME zählt nur die Zahlen')
+    if phone:
+        ly = y0 + ch * 5 + 30
+        body.append(text(20, ly, 'eine Zahl: steht rechts', 14, TEXT, weight='600'))
+        body.append(text(20, ly + 21, 'Text: steht links, wie getippt', 14, AMBER, weight='600'))
+        body.append(text(20, ly + 46, '=SUMME(C4:C7)', 14, BLUE, weight='700', family=MONO))
+        body.append(text(20, ly + 64, 'zählt nur die Zahlen zusammen', 13, GREY))
+    else:
+        lx = right + 48
+        _, y4, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', 4)
+        _, y5, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', 5)
+        body.append(text(lx, y4 + 19, 'eine Zahl: steht rechts', 14, TEXT, weight='600'))
+        body.append(text(lx, y5 + 19, 'Text: steht links, wie getippt', 14, AMBER, weight='600'))
+        body.append(text(lx, target - 4, '=SUMME(C4:C7)', 14, BLUE, weight='700', family=MONO))
+        body.append(text(lx, target + 14, 'zählt nur die Zahlen zusammen', 13, GREY))
+    svg(variant('zahltext', phone), 'number-formats', w, h, body, 'Zahlen stehen rechts, getippter Text mit Euro-Zeichen links; SUMME zählt nur die Zahlen')
 
 
-def formate():
+def formate(phone=False):
     """one number in a cell, shown in three formats; formulas take the number"""
-    w, h = 600, 236
-    body = []
-    # the number itself, as it is stored
-    bx, by = 20, 86
-    body.append(text(bx, by - 30, 'in der Zelle', 13, GREY))
-    body.append(text(bx, by - 13, 'steht die Zahl', 13, GREY))
-    body.append(rect(bx, by, 120, 40, PAPER, PBLUE, 2, 3))
-    body.append(text(bx + 60, by + 27, '232,75', 19, INK, 'middle', '700'))
     shown = [('232,75', 'Zahl, 2 Nachkommastellen'), ('232,75 €', 'Währung'), ('233 €', 'Währung, ohne Nachkommastellen')]
-    for i, (value, label) in enumerate(shown):
-        cy = 30 + i * 62
-        cx = 250
-        body.append(arrow(bx + 124, by + 20, cx - 6, cy + 15, GREY, 1.4))
-        body.append(rect(cx, cy, 110, 30, PAPER, EDGE, 1))
-        body.append(text(cx + 104, cy + 20, value, 15, INK, 'end'))
-        body.append(text(cx + 124, cy + 20, label, 13, TEXT))
-    body.append(text(20, h - 14, 'Jede Formel rechnet mit 232,75, auch wenn die Zelle 233 € zeigt.', 14, BLUE, weight='600'))
-    svg('formate', 'number-formats', w, h, body, 'Eine Zahl, drei Formate: 232,75, 232,75 € und 233 €; gerechnet wird mit 232,75')
+    body = []
+    if phone:
+        w, h = 360, 330
+        bx, by = 20, 44
+        body.append(text(bx, by - 12, 'in der Zelle steht die Zahl', 13, GREY))
+        body.append(rect(bx, by, 120, 40, PAPER, PBLUE, 2, 3))
+        body.append(text(bx + 60, by + 27, '232,75', 19, INK, 'middle', '700'))
+        trunk = bx + 14
+        last = 0
+        for i, (value, label) in enumerate(shown):
+            cy = 118 + i * 52
+            last = cy + 15
+            body.append(arrow(trunk, cy + 15, 44, cy + 15, GREY, 1.4))
+            body.append(rect(46, cy, 106, 30, PAPER, EDGE, 1))
+            body.append(text(146, cy + 20, value, 15, INK, 'end'))
+            body.append(text(164, cy + 20, label if i < 2 else 'Währung, ohne', 13, TEXT))
+            if i == 2:
+                body.append(text(164, cy + 37, 'Nachkommastellen', 13, TEXT))
+        body.append(line(trunk, by + 40, trunk, last, GREY, 1.4))
+        body.append(text(20, h - 32, 'Jede Formel rechnet mit 232,75,', 14, BLUE, weight='600'))
+        body.append(text(20, h - 12, 'auch wenn die Zelle 233 € zeigt.', 14, BLUE, weight='600'))
+    else:
+        w, h = 600, 236
+        bx, by = 20, 86
+        body.append(text(bx, by - 30, 'in der Zelle', 13, GREY))
+        body.append(text(bx, by - 13, 'steht die Zahl', 13, GREY))
+        body.append(rect(bx, by, 120, 40, PAPER, PBLUE, 2, 3))
+        body.append(text(bx + 60, by + 27, '232,75', 19, INK, 'middle', '700'))
+        for i, (value, label) in enumerate(shown):
+            cy = 30 + i * 62
+            cx = 250
+            body.append(arrow(bx + 124, by + 20, cx - 6, cy + 15, GREY, 1.4))
+            body.append(rect(cx, cy, 110, 30, PAPER, EDGE, 1))
+            body.append(text(cx + 104, cy + 20, value, 15, INK, 'end'))
+            body.append(text(cx + 124, cy + 20, label, 13, TEXT))
+        body.append(text(20, h - 14, 'Jede Formel rechnet mit 232,75, auch wenn die Zelle 233 € zeigt.', 14, BLUE, weight='600'))
+    svg(variant('formate', phone), 'number-formats', w, h, body, 'Eine Zahl, drei Formate: 232,75, 232,75 € und 233 €; gerechnet wird mit 232,75')
 
 
-def tage():
+def tage(phone=False):
     """a date is the number of days counted from the end of 1899"""
     import datetime
-    w, h = 640, 176
     days = [datetime.date(2027, 3, d) for d in range(2, 10)]
     names = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
     body = []
-    bw, bh, x0, y0 = 62, 54, 122, 40
-    body.append(text(20, y0 + 20, 'Tag 0:', 13, GREY))
-    body.append(text(20, y0 + 38, 'Ende 1899', 13, GREY))
-    body.append(line(92, y0 + bh / 2, x0 - 8, y0 + bh / 2, GREY, 1.4, " stroke-dasharray='3 4'"))
+    if phone:
+        w, h = 360, 290
+        bw, bh, x0, y0 = 62, 54, 52, 70
+        body.append(text(20, 20, 'oben das Format Datum,', 13, GREY))
+        body.append(text(20, 38, 'unten die Zahl, die in der Zelle steht', 13, GREY))
+        body.append(text(20, y0 - 8, 'Tag 0: Ende 1899', 12, GREY))
+        body.append(line(20, y0 + bh / 2, x0 - 6, y0 + bh / 2, GREY, 1.4, " stroke-dasharray='3 4'"))
+        per_row = 4
+    else:
+        w, h = 640, 176
+        bw, bh, x0, y0 = 62, 54, 122, 40
+        body.append(text(20, y0 + 20, 'Tag 0:', 13, GREY))
+        body.append(text(20, y0 + 38, 'Ende 1899', 13, GREY))
+        body.append(line(92, y0 + bh / 2, x0 - 8, y0 + bh / 2, GREY, 1.4, " stroke-dasharray='3 4'"))
+        body.append(text(x0, 24, 'oben das Format Datum, unten die Zahl, die in der Zelle steht', 13, GREY))
+        per_row = len(days)
     for i, d in enumerate(days):
-        x = x0 + i * bw
+        x = x0 + (i % per_row) * bw
+        y = y0 + (i // per_row) * (bh + 12)
         first_last = i in (0, len(days) - 1)
-        body.append(rect(x, y0, bw, bh, PAMBER_BG if first_last else PAPER, EDGE, 1))
-        body.append(text(x + bw / 2, y0 + 20, f"{names[d.weekday()]} {d.day:02d}.03.", 12, INK, 'middle'))
+        body.append(rect(x, y, bw, bh, PAMBER_BG if first_last else PAPER, EDGE, 1))
+        body.append(text(x + bw / 2, y + 20, f"{names[d.weekday()]} {d.day:02d}.03.", 12, INK, 'middle'))
         serial = (d - datetime.date(1899, 12, 30)).days
-        body.append(text(x + bw / 2, y0 + 42, str(serial), 14, INK, 'middle', '700', MONO))
-    a, b = x0 + bw / 2, x0 + bw * (len(days) - 1) + bw / 2
-    yb = y0 + bh + 14
-    body.append(f"<path d='M {a:.1f} {yb - 6:.1f} L {a:.1f} {yb:.1f} L {b:.1f} {yb:.1f} L {b:.1f} {yb - 6:.1f}' fill='none' stroke='{BLUE}' stroke-width='1.6'/>")
-    body.append(text((a + b) / 2, yb + 26, '=A13-A4', 15, BLUE, 'middle', '700', MONO))
-    body.append(text((a + b) / 2, yb + 46, '46455 − 46448 = 7 Tage', 14, TEXT, 'middle'))
-    body.append(text(x0, 24, 'oben das Format Datum, unten die Zahl, die in der Zelle steht', 13, GREY))
-    svg('tage', 'number-formats', w, h, body, 'Die Tage vom 2. bis 9. März 2027 mit ihren Zahlen 46448 bis 46455; A13 minus A4 ergibt 7 Tage')
+        body.append(text(x + bw / 2, y + 42, str(serial), 14, INK, 'middle', '700', MONO))
+    if phone:
+        yb = y0 + 2 * bh + 12 + 34
+        body.append(text(20, yb, '=A13-A4', 15, BLUE, weight='700', family=MONO))
+        body.append(text(20, yb + 22, '46455 − 46448 = 7 Tage', 14, TEXT))
+    else:
+        a, b = x0 + bw / 2, x0 + bw * (len(days) - 1) + bw / 2
+        yb = y0 + bh + 14
+        body.append(f"<path d='M {a:.1f} {yb - 6:.1f} L {a:.1f} {yb:.1f} L {b:.1f} {yb:.1f} L {b:.1f} {yb - 6:.1f}' fill='none' stroke='{BLUE}' stroke-width='1.6'/>")
+        body.append(text((a + b) / 2, yb + 26, '=A13-A4', 15, BLUE, 'middle', '700', MONO))
+        body.append(text((a + b) / 2, yb + 46, '46455 − 46448 = 7 Tage', 14, TEXT, 'middle'))
+    svg(variant('tage', phone), 'number-formats', w, h, body, 'Die Tage vom 2. bis 9. März 2027 mit ihren Zahlen 46448 bis 46455; A13 minus A4 ergibt 7 Tage')
 
 
-def _bezug(fixed):
+def _bezug(fixed, phone=False):
     """C6's share filled down to C8: without $ each row divides by the cell
     four rows up (B2, B3, B4), with $B$2 all by B2"""
-    w, h = 640, 262
     cols, rows = ['B', 'C'], [2, 3, 4, 5, 6, 7, 8]
-    cw, ch = 104, 28
+    cw, ch = (84, 28) if phone else (104, 28)
+    size = 12 if phone else 13
     cells = {('B', 2): ('27', 'right'), ('B', 3): ('5 %', 'right'), ('B', 5): ('Kosten', 'left', '700'),
              ('C', 5): ('pro Kind', 'left', '700'), ('B', 6): ('1.250,00 €', 'right'), ('B', 7): ('3.996,00 €', 'right'),
              ('B', 8): ('661,50 €', 'right')}
@@ -1157,9 +1222,11 @@ def _bezug(fixed):
         cells.update({('C', 6): ('46,30 €', 'right'), ('C', 7): ('79.920,00 €', 'right'), ('C', 8): ('#DIV/0!', 'right', '700')})
         fills = {('B', 2): PBLUE_BG, ('B', 3): PAMBER_BG, ('B', 4): PAMBER_BG, ('C', 7): PAMBER_BG, ('C', 8): PAMBER_BG}
     body = []
-    g, (x0, y0) = grid(96, 20, cols, rows, cw, ch, cells, fills, size=13)
+    gx = 80 if phone else 96
+    g, (x0, y0) = grid(gx, 20, cols, rows, cw, ch, cells, fills, size=size)
     body.append(g)
-    left = x0 - 24      # the row numbers' column
+    left = x0 - 24
+    notes = []
     for k, r in enumerate((6, 7, 8)):
         target = 2 if fixed else r - 4
         ok = fixed or r == 6
@@ -1169,53 +1236,74 @@ def _bezug(fixed):
         bulge = left - 18 - 16 * k
         body.append(f"<path d='M {left - 2:.1f} {ys:.1f} C {bulge:.1f} {ys:.1f} {bulge:.1f} {yt:.1f} {left - 11:.1f} {yt:.1f}' fill='none' stroke='{colour}' stroke-width='1.6'/>")
         body.append(f"<polygon points='{left - 2:.1f},{yt:.1f} {left - 11:.1f},{yt - 5:.1f} {left - 11:.1f},{yt + 5:.1f}' fill='{colour}'/>")
-        lx = x0 + cw * 2 + 16
+        lx = x0 + cw * 2 + (10 if phone else 16)
         formula = f'=B{r}/$B$2' if fixed else f'=B{r}/B{target}'
-        body.append(text(lx, ys + 5, formula, 14, colour, weight='700', family=MONO))
+        body.append(text(lx, ys + 5, formula, 12 if phone else 14, colour, weight='700', family=MONO))
         note = {6: 'teilt durch 27', 7: 'teilt durch 27' if fixed else 'teilt durch 0,05', 8: 'teilt durch 27' if fixed else 'teilt durch eine leere Zelle'}[r]
-        body.append(text(lx + 112, ys + 5, note, 13, GREY))
-    if fixed:
-        ax, ay = x0 + cw * 2 + 16, y0 + 8
-        body.append(text(ax, ay + 6, '$B$2', 18, BLUE, weight='700', family=MONO))
-        body.append(text(ax + 66, ay - 2, '$ vor B: die Spalte bleibt', 13, TEXT))
-        body.append(text(ax + 66, ay + 15, '$ vor 2: die Zeile bleibt', 13, TEXT))
+        if phone:
+            notes.append((f'C{r} {note}', colour))
+        else:
+            body.append(text(lx + 112, ys + 5, note, 13, GREY))
+    if phone:
+        w = 360
+        y = y0 + ch * len(rows) + 28
+        if fixed:
+            body.append(text(20, y, '$B$2', 16, BLUE, weight='700', family=MONO))
+            body.append(text(76, y - 1, '$ vor B: die Spalte bleibt,', 13, TEXT))
+            body.append(text(76, y + 17, '$ vor 2: die Zeile bleibt', 13, TEXT))
+            y += 44
+            body.append(text(20, y, 'C6, C7 und C8 teilen alle durch 27', 13, GREY))
+            h = y + 16
+        else:
+            body.append(text(20, y, 'nach unten ausgefüllt, ohne $:', 13, GREY))
+            for i, (n, colour) in enumerate(notes):
+                body.append(text(20, y + 20 + i * 19, n, 13, TEXT if colour == BLUE else AMBER))
+            h = y + 20 + 3 * 19
     else:
-        body.append(text(x0 + cw * 2 + 16, y0 + 14, 'nach unten ausgefüllt, ohne $', 13, GREY))
+        w, h = 640, 262
+        if fixed:
+            ax, ay = x0 + cw * 2 + 16, y0 + 8
+            body.append(text(ax, ay + 6, '$B$2', 18, BLUE, weight='700', family=MONO))
+            body.append(text(ax + 66, ay - 2, '$ vor B: die Spalte bleibt', 13, TEXT))
+            body.append(text(ax + 66, ay + 15, '$ vor 2: die Zeile bleibt', 13, TEXT))
+        else:
+            body.append(text(x0 + cw * 2 + 16, y0 + 14, 'nach unten ausgefüllt, ohne $', 13, GREY))
     name = 'mit-dollar' if fixed else 'ohne-dollar'
     about = ('Mit $B$2 teilen C6, C7 und C8 alle durch B2' if fixed
              else 'Ohne $ teilt C7 durch B3 und C8 durch die leere Zelle B4')
-    svg(name, 'absolute-references', w, h, body, about)
+    svg(variant(name, phone), 'absolute-references', w, h, body, about)
 
 
-def ohne_dollar():
-    _bezug(False)
+def ohne_dollar(phone=False):
+    _bezug(False, phone)
 
 
-def mit_dollar():
-    _bezug(True)
+def mit_dollar(phone=False):
+    _bezug(True, phone)
 
 
-def leer_null():
+def leer_null(phone=False):
     """an empty cell is left out of MITTELWERT, a 0 counts"""
-    w, h = 560, 252
+    w, h = (360, 490) if phone else (560, 252)
     rows = [4, 5, 6, 7, 8, 9]
     cw, ch = 70, 28
     body = []
     for k, (title, third, mean, count) in enumerate([('leer gelassen', None, '4', '4 Zahlen'), ('0 getippt', '0', '3,2', '5 Zahlen')]):
-        x = 20 + k * 280
+        x, top = (20, k * 240) if phone else (20 + k * 280, 0)
         cells = {('B', 4): ('5', 'right'), ('B', 5): ('4', 'right'), ('B', 7): ('3', 'right'), ('B', 8): ('4', 'right'),
                  ('B', 9): (mean, 'right', '700')}
         if third:
             cells[('B', 6)] = (third, 'right')
-        fills = {('B', 6): PAMBER_BG}
-        g, (x0, y0) = grid(x, 42, ['B'], rows, cw, ch, cells, fills, size=14)
+        g, (x0, y0) = grid(x, top + 42, ['B'], rows, cw, ch, cells, {('B', 6): PAMBER_BG}, size=14)
         body.append(g)
-        body.append(text(x, 26, title, 15, TEXT, weight='600'))
+        body.append(text(x, top + 26, title, 15, TEXT, weight='600'))
         lx = x0 + cw + 12
         body.append(text(lx, y0 + ch * 5 + 13, '=MITTELWERT(B4:B8)', 13, BLUE, weight='700', family=MONO))
         body.append(text(lx, y0 + ch * 5 + 31, f'zählt {count}', 13, GREY))
         body.append(text(lx, y0 + ch * 2 + 18, 'nicht gezählt' if not third else 'zählt mit', 13, AMBER, weight='600'))
-    svg('leer-null', 'spreadsheet-functions', w, h, body, 'Links bleibt B6 leer, MITTELWERT zählt 4 Zahlen und zeigt 4; rechts steht 0 in B6, MITTELWERT zählt 5 Zahlen und zeigt 3,2')
+    about = ('Links bleibt B6 leer, MITTELWERT zählt 4 Zahlen und zeigt 4; rechts steht 0 in B6, MITTELWERT zählt 5 Zahlen und zeigt 3,2' if not phone
+             else 'Oben bleibt B6 leer, MITTELWERT zählt 4 Zahlen und zeigt 4; unten steht 0 in B6, MITTELWERT zählt 5 Zahlen und zeigt 3,2')
+    svg(variant('leer-null', phone), 'spreadsheet-functions', w, h, body, about)
 
 
 def wenn():
@@ -1228,7 +1316,7 @@ def wenn():
     x, y = 24, 60
     size = 22
     for part, label in parts:
-        width = measure(part, size, '700', 'mono') if 'mono' in str(_FONT_FILES) else len(part) * size * 0.6
+        width = len(part) * size * 0.6
         colour = BLUE if label else INK
         body.append(text(x, y, part, size, colour, weight='700', family=MONO))
         if label:
@@ -1240,10 +1328,9 @@ def wenn():
     svg('wenn', 'spreadsheet-functions', w, h, body, 'Die Teile von WENN: die Bedingung E33>=4, »ja«, wenn sie stimmt, »nein«, wenn nicht')
 
 
-def sortieren():
+def sortieren(phone=False):
     """sorting whole rows keeps each family with its amount; sorting the
     column of names alone puts names beside other families' amounts"""
-    w, h = 700, 236
     rows = [4, 5, 6, 7]
     cw, ch = 92, 28
     before = [('Engel', '245,00 €'), ('Lehmann', '100,00 €'), ('Becker', '245,00 €'), ('Kaya', '')]
@@ -1253,20 +1340,25 @@ def sortieren():
     body = []
     for k, (title, data, wrong) in enumerate([('vorher', before, False), ('ganze Zeilen sortiert', whole, False),
                                               ('nur Spalte B sortiert', alone, True)]):
-        x = 20 + k * 232
-        cells = {}
-        fills = {}
+        x, top = (20, k * 168) if phone else (20 + k * 232, 0)
+        cells, fills = {}, {}
         for r, (n, paid) in zip(rows, data):
             cells[('B', r)] = n
             cells[('D', r)] = (paid, 'right')
             if wrong and dict(before)[n] != paid:
                 fills[('B', r)] = PAMBER_BG
                 fills[('D', r)] = PAMBER_BG
-        g, (x0, y0) = grid(x, 46, ['B', 'D'], rows, cw, ch, cells, fills, size=13)
+        g, _ = grid(x, top + 46, ['B', 'D'], rows, cw, ch, cells, fills, size=13)
         body.append(g)
-        body.append(text(x, 30, title, 14, AMBER if wrong else TEXT, weight='600'))
-    body.append(text(20, h - 16, 'Rechts hat Kaya bezahlt und Lehmann nichts: Die Namen stehen neben fremden Beträgen.', 13, GREY))
-    svg('sortieren', 'sort-and-filter', w, h, body, 'Vier Familien mit ihren Zahlungen: ganze Zeilen sortiert bleiben richtig, nur die Namen sortiert stehen neben fremden Beträgen')
+        body.append(text(x, top + 30, title, 14, AMBER if wrong else TEXT, weight='600'))
+    if phone:
+        w, h = 360, 3 * 168 + 86
+        body.append(text(20, h - 32, 'Unten hat Kaya bezahlt und Lehmann nichts:', 13, GREY))
+        body.append(text(20, h - 13, 'Die Namen stehen neben fremden Beträgen.', 13, GREY))
+    else:
+        w, h = 700, 236
+        body.append(text(20, h - 16, 'Rechts hat Kaya bezahlt und Lehmann nichts: Die Namen stehen neben fremden Beträgen.', 13, GREY))
+    svg(variant('sortieren', phone), 'sort-and-filter', w, h, body, 'Vier Familien mit ihren Zahlungen: ganze Zeilen sortiert bleiben richtig, nur die Namen sortiert stehen neben fremden Beträgen')
 
 
 def _columns(x, y, w, h, values, lo, hi, ticks, colour=PBLUE, labels=None):
@@ -1287,57 +1379,70 @@ def _columns(x, y, w, h, values, lo, hi, ticks, colour=PBLUE, labels=None):
     return ''.join(out)
 
 
-def diagrammarten():
-    """which chart answers which question"""
+def _panel(kind, x, y, pw, ph):
+    """one small chart on paper: 'pie', 'columns' or 'line'"""
     import math
-    w, h = 660, 250
+    out = []
+    if kind == 'pie':
+        out.append(rect(x, y, pw, ph, PAPER, EDGE, 1, 2))
+        cx, cy, r = x + pw / 2, y + ph / 2, min(pw, ph) / 2 - 18
+        shares = [46.3, 148, 24.5, 9, 4.5]
+        a = -math.pi / 2
+        for v, c in zip(shares, [PBLUE, PAMBER, PGREEN, BAR, EDGE]):
+            b = a + v / sum(shares) * 2 * math.pi
+            large = 1 if b - a > math.pi else 0
+            out.append(f"<path d='M {cx:.1f} {cy:.1f} L {cx + r * math.cos(a):.1f} {cy + r * math.sin(a):.1f} "
+                       f"A {r:.1f} {r:.1f} 0 {large} 1 {cx + r * math.cos(b):.1f} {cy + r * math.sin(b):.1f} Z' fill='{c}' stroke='{PAPER}' stroke-width='1.5'/>")
+            a = b
+    elif kind == 'columns':
+        out.append(_columns(x, y, pw, ph, [4.4, 3.6, 2.6, 4.0], 0, 5, [0, 1, 2, 3, 4, 5]))
+    else:
+        out.append(rect(x, y, pw, ph, PAPER, EDGE, 1, 2))
+        left, bottom, top = x + 20, y + ph - 20, y + 16
+        pts = [0, 0.18, 0.4, 0.55, 0.62, 0.8, 0.86, 0.95, 1.0]
+        xs = [left + i * (pw - 40) / (len(pts) - 1) for i in range(len(pts))]
+        ys = [bottom - p * (bottom - top) for p in pts]
+        out.append(line(left, bottom, x + pw - 14, bottom, INK, 1.2) + line(left, bottom, left, top - 4, INK, 1.2))
+        out.append("<polyline points='" + ' '.join(f'{a:.1f},{b:.1f}' for a, b in zip(xs, ys)) + f"' fill='none' stroke='{PBLUE}' stroke-width='2.4'/>")
+    return ''.join(out)
+
+
+def diagrammarten(phone=False):
+    """which chart answers which question"""
+    questions = [('pie', 'Kreis', 'Welcher Teil des Ganzen', 'ist wie groß?'), ('columns', 'Säulen', 'Was ist größer,', 'was kleiner?'),
+                 ('line', 'Linie', 'Wie ändert sich etwas', 'mit der Zeit?')]
     body = []
-    pw, ph, gap = 196, 160, 36
-    questions = [('Kreis', 'Welcher Teil des Ganzen', 'ist wie groß?'), ('Säulen', 'Was ist größer,', 'was kleiner?'),
-                 ('Linie', 'Wie ändert sich etwas', 'mit der Zeit?')]
-    for k, (name, q1, q2) in enumerate(questions):
-        x = 20 + k * (pw + gap - 10)
-        y = 20
-        if k == 0:
-            body.append(rect(x, y, pw, ph, PAPER, EDGE, 1, 2))
-            cx, cy, r = x + pw / 2, y + ph / 2, 60
-            shares = [46.3, 148, 24.5, 9, 4.5]
-            colours = [PBLUE, PAMBER, PGREEN, BAR, EDGE]
-            a = -math.pi / 2
-            total = sum(shares)
-            for v, c in zip(shares, colours):
-                b = a + v / total * 2 * math.pi
-                large = 1 if b - a > math.pi else 0
-                body.append(f"<path d='M {cx:.1f} {cy:.1f} L {cx + r * math.cos(a):.1f} {cy + r * math.sin(a):.1f} "
-                            f"A {r} {r} 0 {large} 1 {cx + r * math.cos(b):.1f} {cy + r * math.sin(b):.1f} Z' fill='{c}' stroke='{PAPER}' stroke-width='1.5'/>")
-                a = b
-        elif k == 1:
-            body.append(_columns(x, y, pw, ph, [4.4, 3.6, 2.6, 4.0], 0, 5, [0, 1, 2, 3, 4, 5]))
-        else:
-            body.append(rect(x, y, pw, ph, PAPER, EDGE, 1, 2))
-            left, bottom, top = x + 20, y + ph - 20, y + 16
-            pts = [0, 0.18, 0.4, 0.55, 0.62, 0.8, 0.86, 0.95, 1.0]
-            xs = [left + i * (pw - 40) / (len(pts) - 1) for i in range(len(pts))]
-            ys = [bottom - p * (bottom - top) for p in pts]
-            body.append(line(left, bottom, x + pw - 14, bottom, INK, 1.2) + line(left, bottom, left, top - 4, INK, 1.2))
-            body.append("<polyline points='" + ' '.join(f'{a:.1f},{b:.1f}' for a, b in zip(xs, ys)) + f"' fill='none' stroke='{PBLUE}' stroke-width='2.4'/>")
-        body.append(text(x + pw / 2, y + ph + 26, name, 15, TEXT, 'middle', '700'))
-        body.append(text(x + pw / 2, y + ph + 46, q1, 13, GREY, 'middle'))
-        body.append(text(x + pw / 2, y + ph + 63, q2, 13, GREY, 'middle'))
-    svg('diagrammarten', 'spreadsheet-charts', w, h, body, 'Drei Diagramme und ihre Fragen: Kreis, welcher Teil des Ganzen wie groß ist; Säulen, was größer und was kleiner ist; Linie, wie sich etwas mit der Zeit ändert')
+    if phone:
+        w, h = 360, 3 * 146 + 10
+        for k, (kind, name, q1, q2) in enumerate(questions):
+            y = 10 + k * 146
+            body.append(_panel(kind, 20, y, 160, 130))
+            body.append(text(196, y + 52, name, 15, TEXT, weight='700'))
+            body.append(text(196, y + 72, q1, 13, GREY))
+            body.append(text(196, y + 89, q2, 13, GREY))
+    else:
+        w, h = 660, 250
+        pw, ph, gap = 196, 160, 36
+        for k, (kind, name, q1, q2) in enumerate(questions):
+            x = 20 + k * (pw + gap - 10)
+            body.append(_panel(kind, x, 20, pw, ph))
+            body.append(text(x + pw / 2, 20 + ph + 26, name, 15, TEXT, 'middle', '700'))
+            body.append(text(x + pw / 2, 20 + ph + 46, q1, 13, GREY, 'middle'))
+            body.append(text(x + pw / 2, 20 + ph + 63, q2, 13, GREY, 'middle'))
+    svg(variant('diagrammarten', phone), 'spreadsheet-charts', w, h, body, 'Drei Diagramme und ihre Fragen: Kreis, welcher Teil des Ganzen wie groß ist; Säulen, was größer und was kleiner ist; Linie, wie sich etwas mit der Zeit ändert')
 
 
-def achse():
+def achse(phone=False):
     """the same two means, the axis from 0 and from 2,5"""
-    w, h = 600, 244
+    w, h = (360, 500) if phone else (600, 244)
     body = []
     names = ['Kletterwald', 'Moormuseum']
     for k, (title, lo, ticks) in enumerate([('Achse ab 0', 0, [0, 1, 2, 3, 4, 5]), ('Achse ab 2,5', 2.5, [2.5, 3, 3.5, 4, 4.5])]):
-        x = 20 + k * 300
+        x, top = (20, k * 248) if phone else (20 + k * 300, 0)
         hi = 5 if lo == 0 else 4.5
-        body.append(text(x, 22, title, 15, AMBER if lo else TEXT, weight='600'))
-        body.append(_columns(x, 34, 260, 200, [4.4, 2.6], lo, hi, ticks, PAMBER if lo else PBLUE, names))
-    svg('achse', 'spreadsheet-charts', w, h, body, 'Dieselben Mittelwerte 4,4 und 2,6 zweimal als Säulen: mit der Achse ab 0 ist die eine knapp doppelt so hoch, mit der Achse ab 2,5 fast zwanzigmal')
+        body.append(text(x, top + 22, title, 15, AMBER if lo else TEXT, weight='600'))
+        body.append(_columns(x, top + 34, 300 if phone else 260, 200, [4.4, 2.6], lo, hi, ticks, PAMBER if lo else PBLUE, names))
+    svg(variant('achse', phone), 'spreadsheet-charts', w, h, body, 'Dieselben Mittelwerte 4,4 und 2,6 zweimal als Säulen: mit der Achse ab 0 ist die eine knapp doppelt so hoch, mit der Achse ab 2,5 fast zwanzigmal')
 
 
 def karte_tabellen():
@@ -1409,7 +1514,11 @@ def karte_tabellen():
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
+# the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)
+TWO_WAYS = {adresse, formel, ausfuellen, zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, sortieren, diagrammarten, achse}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:
         DRAWINGS[name]()
+        if DRAWINGS[name] in TWO_WAYS:
+            DRAWINGS[name](phone=True)

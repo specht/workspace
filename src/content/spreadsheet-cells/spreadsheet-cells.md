@@ -54,7 +54,8 @@ Eine Tabelle besteht aus **Zellen**. Die Spalten heißen A, B, C …, die Zeilen
 1, 2, 3 …, und jede Zelle hat eine **Adresse** aus beidem: erst die Spalte,
 dann die Zeile. In C6 steht der Preis des Kletterwalds.
 
-<img class='drawing' style='width: 32em' src='adresse.svg' alt='Ein Stück einer Tabelle mit den Spalten A bis D und den Zeilen 1 bis 6. Spalte C und Zeile 4 sind blau hinterlegt; wo sie sich kreuzen, ist die Zelle C4 orange eingerahmt: Zelle C4, Spalte C, Zeile 4'>
+<img class='drawing d-none d-lg-block' style='width: 32em' src='adresse-wide.svg' alt='Ein Stück einer Tabelle mit den Spalten A bis D und den Zeilen 1 bis 6. Spalte C und Zeile 4 sind blau hinterlegt; wo sie sich kreuzen, ist die Zelle C4 orange eingerahmt: Zelle C4, Spalte C, Zeile 4'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='adresse.svg' alt='Ein Stück einer Tabelle mit den Spalten A bis D und den Zeilen 1 bis 6. Spalte C und Zeile 4 sind blau hinterlegt; wo sie sich kreuzen, ist die Zelle C4 orange eingerahmt: Zelle C4, Spalte C, Zeile 4'>
 
 Hol dir die Tabelle und öffne sie:
 
@@ -70,7 +71,8 @@ einem Gleichheitszeichen; für die Summe der Jugendherberge schreibst du in D5:
 Geteiltzeichen. Nach <kbd>Enter</kbd> zeigt die Zelle das Ergebnis, die
 Formel steht weiter in ihr. Ändert sich B5 oder C5, rechnet die Zelle neu.
 
-<img class='drawing' style='width: 35em' src='formel.svg' alt='Zweimal die Zeile 5 mit 29, 148,00 und 4.292,00. Oben »getippt«: In D5 steht die Zahl 4292, die nichts von B5 und C5 weiß. Unten »eine Formel«: In D5 steht =B5*C5, zwei blaue Bögen führen von B5 und C5 in D5'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='formel-wide.svg' alt='Zweimal die Zeile 5 mit 29, 148,00 und 4.292,00. Oben »getippt«: In D5 steht die Zahl 4292, die nichts von B5 und C5 weiß. Unten »eine Formel«: In D5 steht =B5*C5, zwei blaue Bögen führen von B5 und C5 in D5'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='formel.svg' alt='Zweimal die Zeile 5 mit 29, 148,00 und 4.292,00. Oben »getippt«: In D5 steht die Zahl 4292, die nichts von B5 und C5 weiß. Unten »eine Formel«: In D5 steht =B5*C5, zwei blaue Bögen führen von B5 und C5 in D5'>
 
 <!-- language: libreoffice -->
 Welche Formel in einer Zelle steht, zeigt LibreOffice in der **Eingabezeile**
@@ -100,7 +102,8 @@ das Programm die Formel in die Zellen darunter und passt sie an.
 _task(kopiert)
 
 <!-- after: kopiert -->
-<img class='drawing' style='width: 33em' src='ausfuellen.svg' alt='Die Spalten B, C und D, Zeilen 4 bis 7. In D4 steht =B4*C4, orange eingerahmt, das kleine Quadrat unten rechts daran, ein Pfeil nach unten. Darunter in D5 =B5*C5, in D6 =B6*C6, in D7 =B7*C7: jede Zeile rechnet mit ihrer eigenen Zeile'>
+<img class='drawing d-none d-lg-block' style='width: 33em' src='ausfuellen-wide.svg' alt='Die Spalten B, C und D, Zeilen 4 bis 7. In D4 steht =B4*C4, orange eingerahmt, das kleine Quadrat unten rechts daran, ein Pfeil nach unten. Darunter in D5 =B5*C5, in D6 =B6*C6, in D7 =B7*C7: jede Zeile rechnet mit ihrer eigenen Zeile'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='ausfuellen.svg' alt='Die Spalten B, C und D, Zeilen 4 bis 7. In D4 steht =B4*C4, orange eingerahmt, das kleine Quadrat unten rechts daran, ein Pfeil nach unten. Darunter in D5 =B5*C5, in D6 =B6*C6, in D7 =B7*C7: jede Zeile rechnet mit ihrer eigenen Zeile'>
 
 Die Formel merkt sich nicht die Adressen B4 und C4, sondern den Weg dorthin:
 »zwei Spalten links und eine links von mir, in meiner Zeile«. In jeder Zeile

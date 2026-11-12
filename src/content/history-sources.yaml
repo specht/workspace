@@ -450,7 +450,7 @@ playfair:
       - url: https://en.wikipedia.org/wiki/William_Playfair
         quote: '"Scottish engineer and political economist"; introduced the "line, area and bar chart" in The Commercial and Political Atlas (1786)'
       - url: https://commons.wikimedia.org/wiki/File:Playfair_TimeSeries.png
-        quote: '"Exports and Imports to and from Denmark & Norway from 1700 to 1780" (das Bild im Kasten)'
+        quote: '"Exports and Imports to and from Denmark & Norway from 1700 to 1780" (das Bild unter dem Kasten)'
   - text: Wo die rote Linie über der gelben liegt
     none: 'aus dem Bild abgelesen, beschriftet »Balance in favour of England«'
   - text: 1801 zeichnete Playfair in seinem Statistical Breviary

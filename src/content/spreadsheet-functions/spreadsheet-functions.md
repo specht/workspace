@@ -49,7 +49,8 @@ Umfrage gibt es weitere:
 _task(leer)
 
 <!-- after: leer -->
-<img class='drawing' style='width: 33em' src='leer-null.svg' alt='Zweimal die Zellen B4 bis B8 mit 5, 4, B6, 3 und 4. Links bleibt B6 leer: nicht gezählt, =MITTELWERT(B4:B8) zählt 4 Zahlen und zeigt 4. Rechts steht in B6 eine 0: Sie zählt mit, MITTELWERT zählt 5 Zahlen und zeigt 3,2'>
+<img class='drawing d-none d-lg-block' style='width: 33em' src='leer-null-wide.svg' alt='Zweimal die Zellen B4 bis B8 mit 5, 4, B6, 3 und 4. Links bleibt B6 leer: nicht gezählt, =MITTELWERT(B4:B8) zählt 4 Zahlen und zeigt 4. Rechts steht in B6 eine 0: Sie zählt mit, MITTELWERT zählt 5 Zahlen und zeigt 3,2'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='leer-null.svg' alt='Untereinander zweimal die Zellen B4 bis B8 mit 5, 4, B6, 3 und 4. Oben bleibt B6 leer: nicht gezählt, =MITTELWERT(B4:B8) zählt 4 Zahlen und zeigt 4. Unten steht in B6 eine 0: Sie zählt mit, MITTELWERT zählt 5 Zahlen und zeigt 3,2'>
 
 Eine leere Zelle ist keine 0. Wer eine Frage auslässt, hat nicht »0 Sterne«
 gegeben, und die Funktionen lassen die leere Zelle aus. Hätten die
@@ -98,7 +99,7 @@ Teile, getrennt durch Semikolons: eine Bedingung, was in der Zelle stehen
 soll, wenn sie stimmt, und was, wenn nicht. Text steht in
 Anführungszeichen.
 
-<img class='drawing' style='width: 25em' src='wenn.svg' alt='Die Formel =WENN(E33>=4;"ja";"nein"), ihre drei Teile unterstrichen: E33>=4 ist die Bedingung, "ja" steht da, wenn sie stimmt, "nein", wenn nicht'>
+<img class='drawing' style='width: 25em' src='wenn.svg' alt='Die Formel WENN mit drei Teilen, unterstrichen: die Bedingung, E33 größer oder gleich 4; »ja«, wenn sie stimmt; »nein«, wenn nicht'>
 
 In einer Bedingung vergleichst du mit `=` (gleich), `<>` (ungleich), `<`,
 `>`, `<=` (kleiner oder gleich) und `>=` (größer oder gleich).

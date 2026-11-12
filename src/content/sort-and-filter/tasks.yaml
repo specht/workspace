@@ -111,12 +111,12 @@ tasks:
     libreoffice:
       hint:
         - "Klick in eine Zelle der Tabelle, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, *Sortierschlüssel 1*: Familie, *Aufsteigend*."
-        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *AutoFilter* (<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>L</kbd>)."
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *AutoFilter* (<kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>)."
         - "Markiere E4 bis E30, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*: *Zellwert* *ist größer als* `0`, *Vorlage zuweisen*: *Schlecht*."
     word:
       hint:
         - "Klick in eine Zelle der Tabelle, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*, *Sortieren nach*: Familie, *A bis Z*."
-        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Filtern* (<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>L</kbd>)."
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Filtern* (<kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>)."
         - "Markiere E4 bis E30, dann *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Regeln zum Hervorheben von Zellen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größer als…*: `0`."
     nextcloud:
       hint:

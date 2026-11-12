@@ -4121,13 +4121,14 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
     transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
-/* On a phone, four or five names do not fit in one row: the languages not
-   chosen show only their logo, their name stays for screen readers. */
+/* On a phone, four or five names do not fit in one row, nor the three
+   long names of the office programs: the languages not chosen show only
+   their logo, their name stays for screen readers. */
 @media (max-width: 575.98px) {
-    .code-language-switch:has(> button:nth-of-type(4)) .code-language-option:not([aria-pressed='true']) {
+    .code-language-switch:is(:has(> button:nth-of-type(4)), .code-language-switch-office) .code-language-option:not([aria-pressed='true']) {
         padding: 0.1em 0.55em;
     }
-    .code-language-switch:has(> button:nth-of-type(4)) .code-language-option:not([aria-pressed='true']) .code-language-option-name {
+    .code-language-switch:is(:has(> button:nth-of-type(4)), .code-language-switch-office) .code-language-option:not([aria-pressed='true']) .code-language-option-name {
         position: absolute;
         width: 1px;
         height: 1px;

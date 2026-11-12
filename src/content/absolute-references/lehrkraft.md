@@ -14,7 +14,7 @@ Lernende rechnen aus, was ein Kind für die Klassenfahrt bezahlt: die Kosten jed
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
 <p>Eine Formel mit einem Bezug auf eine Zelle über der Tabelle nach unten ausfüllen und in zwei, drei Zellen nachsehen, was aus dem Bezug geworden ist; dann das Dollarzeichen setzen und noch einmal ausfüllen.</p>
 <!-- language: libreoffice -->
-<p>Die Dollarzeichen setzt <kbd>Umschalt</kbd>+<kbd>F4</kbd>, wenn der Cursor in der <em>Eingabezeile</em> in einem Bezug steht; jedes Drücken wechselt zwischen <code>$B$2</code>, <code>B$2</code>, <code>$B2</code> und <code>B2</code>.</p>
+<p>Die Dollarzeichen setzt <kbd>Shift</kbd>+<kbd>F4</kbd>, wenn der Cursor in der <em>Eingabezeile</em> in einem Bezug steht; jedes Drücken wechselt zwischen <code>$B$2</code>, <code>B$2</code>, <code>$B2</code> und <code>B2</code>.</p>
 <!-- /language -->
 <!-- language: word -->
 <p>Die Dollarzeichen setzt <kbd>F4</kbd>, wenn der Cursor in der <em>Bearbeitungsleiste</em> in einem Bezug steht; jedes Drücken wechselt zwischen <code>$B$2</code>, <code>B$2</code>, <code>$B2</code> und <code>B2</code>. Auf manchen Laptops braucht <kbd>F4</kbd> die Taste <kbd>Fn</kbd> dazu.</p>

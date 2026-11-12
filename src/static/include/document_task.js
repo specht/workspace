@@ -41,8 +41,10 @@
         },
     }];
     const wantsSheet = (card) => !!card.querySelector(".document-task[data-accept='sheet']");
-    // the programs a card names: Excel for a table, Word for a text
-    const programs = (card) => wantsSheet(card) ? 'LibreOffice oder Excel' : 'LibreOffice oder Word';
+    // the programs a card names: Excel for a table, Word for a text; a PDF
+    // card on a page of tables (office: sheet) names Excel too
+    const sheetPage = () => !!document.querySelector(".code-language-switch-office[data-office-kind='sheet']");
+    const programs = (card) => wantsSheet(card) || (wantsPdf(card) && sheetPage()) ? 'LibreOffice oder Excel' : 'LibreOffice oder Word';
 
     function el(tag, className, text) {
         const node = document.createElement(tag);

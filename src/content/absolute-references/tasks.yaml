@@ -96,7 +96,7 @@ tasks:
       - Unter beide Spalten kommt eine SUMME, und C6 bis D11 bekommen das Format Währung.
     libreoffice:
       hint:
-        - "Klick in C6, dann in der *Eingabezeile* hinter B2 und drück <kbd>Umschalt</kbd>+<kbd>F4</kbd>: Aus B2 wird $B$2. Mit <kbd>Enter</kbd> bestätigen und am kleinen Quadrat bis C10 ziehen."
+        - "Klick in C6, dann in der *Eingabezeile* hinter B2 und drück <kbd>Shift</kbd>+<kbd>F4</kbd>: Aus B2 wird $B$2. Mit <kbd>Enter</kbd> bestätigen und am kleinen Quadrat bis C10 ziehen."
         - "In D6 tippst du `=C6*(1-$B$3)` und ziehst bis D10."
         - "In C11 `=SUMME(C6:C10)`, in D11 ebenso für D. Dann C6 bis D11 markieren und **Als Währung formatieren**."
     word:

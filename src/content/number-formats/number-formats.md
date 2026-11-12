@@ -50,7 +50,8 @@ etwa oder einen Betrag, der aus einer E-Mail kopiert ist, bleibt es Text und
 steht links, wie ein Name. Mit Text rechnet keine Formel, und SUMME lässt
 ihn aus, ohne etwas zu melden.
 
-<img class='drawing' style='width: 37em' src='zahltext.svg' alt='Die Spalten B und C, Zeilen 4 bis 8. In C4 und C6 steht 245 rechts in der Zelle: eine Zahl. In C5 steht »245 €«, in C7 »EUR 245«, beide links und orange hinterlegt: Text, wie getippt. In C8 zeigt =SUMME(C4:C7) 490, zwei blaue Bögen führen nur von C4 und C6 dorthin'>
+<img class='drawing d-none d-lg-block' style='width: 37em' src='zahltext-wide.svg' alt='Die Spalten B und C, Zeilen 4 bis 8. In C4 und C6 steht 245 rechts in der Zelle: eine Zahl. In C5 steht »245 €«, in C7 »EUR 245«, beide links und orange hinterlegt: Text, wie getippt. In C8 zeigt =SUMME(C4:C7) 490, zwei blaue Bögen führen nur von C4 und C6 dorthin'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='zahltext.svg' alt='Die Spalten B und C, Zeilen 4 bis 8. In C4 und C6 steht 245 rechts in der Zelle: eine Zahl. In C5 steht »245 €«, in C7 »EUR 245«, beide links und orange hinterlegt: Text, wie getippt. In C8 zeigt =SUMME(C4:C7) 490, zwei blaue Bögen führen nur von C4 und C6 dorthin'>
 
 _task(fehlt)
 
@@ -69,7 +70,8 @@ Zahl selbst ändert es nicht.
 _task(gerundet)
 
 <!-- after: gerundet -->
-<img class='drawing' style='width: 36em' src='formate.svg' alt='Links die Zahl 232,75, wie sie in der Zelle steht. Drei Pfeile führen zu drei Zellen: 232,75 mit dem Format Zahl und 2 Nachkommastellen, 232,75 € mit dem Format Währung, 233 € mit dem Format Währung ohne Nachkommastellen. Darunter: Jede Formel rechnet mit 232,75, auch wenn die Zelle 233 € zeigt'>
+<img class='drawing d-none d-lg-block' style='width: 36em' src='formate-wide.svg' alt='Links die Zahl 232,75, wie sie in der Zelle steht. Drei Pfeile führen zu drei Zellen: 232,75 mit dem Format Zahl und 2 Nachkommastellen, 232,75 € mit dem Format Währung, 233 € mit dem Format Währung ohne Nachkommastellen. Darunter: Jede Formel rechnet mit 232,75, auch wenn die Zelle 233 € zeigt'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='formate.svg' alt='Links die Zahl 232,75, wie sie in der Zelle steht. Drei Pfeile führen zu drei Zellen: 232,75 mit dem Format Zahl und 2 Nachkommastellen, 232,75 € mit dem Format Währung, 233 € mit dem Format Währung ohne Nachkommastellen. Darunter: Jede Formel rechnet mit 232,75, auch wenn die Zelle 233 € zeigt'>
 
 Die Zelle zeigt 233, gerechnet wird mit 232,75. Deshalb stimmt eine Summe
 manchmal scheinbar nicht: Wer die gezeigten Zahlen im Kopf zusammenzählt,
@@ -119,7 +121,8 @@ und dabei ist das Format verloren gegangen: In Spalte A stehen Zahlen wie
 dem Ende des Jahres 1899. Das Format *Datum* zeigt sie als Tag, Monat und
 Jahr.
 
-<img class='drawing' style='width: 37em' src='tage.svg' alt='Ein Streifen aus acht Tagen, Dienstag 2. März bis Dienstag 9. März; unter jedem Datum seine Zahl, 46448 bis 46455. Links davon, gestrichelt: Tag 0, Ende 1899. Der erste und der letzte Tag sind orange; eine blaue Klammer verbindet sie: =A13-A4, 46455 minus 46448 ergibt 7 Tage'>
+<img class='drawing d-none d-lg-block' style='width: 37em' src='tage-wide.svg' alt='Ein Streifen aus acht Tagen, Dienstag 2. März bis Dienstag 9. März; unter jedem Datum seine Zahl, 46448 bis 46455. Links davon, gestrichelt: Tag 0, Ende 1899. Der erste und der letzte Tag sind orange; eine blaue Klammer verbindet sie: =A13-A4, 46455 minus 46448 ergibt 7 Tage'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='tage.svg' alt='Zwei Reihen aus je vier Tagen, Dienstag 2. März bis Dienstag 9. März; unter jedem Datum seine Zahl, 46448 bis 46455. Links davon, gestrichelt: Tag 0, Ende 1899. Der erste und der letzte Tag sind orange; eine blaue Klammer verbindet sie: =A13-A4, 46455 minus 46448 ergibt 7 Tage'>
 
 Weil ein Datum eine Zahl ist, kann die Tabelle mit ihm rechnen: Ein Datum
 minus ein anderes ergibt die Tage dazwischen, ein Datum plus 14 den Tag zwei

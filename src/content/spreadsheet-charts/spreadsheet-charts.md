@@ -44,7 +44,8 @@ vergleicht Werte miteinander: Was ist größer, was kleiner? Ein
 Säulen waagerecht, heißen sie Balken, ein **Balkendiagramm**; es passt, wenn
 die Namen lang sind.
 
-<img class='drawing' style='width: 38em' src='diagrammarten.svg' alt='Drei kleine Diagramme nebeneinander. Ein Kreis aus fünf Stücken: Welcher Teil des Ganzen ist wie groß? Vier Säulen verschiedener Höhe: Was ist größer, was kleiner? Eine Linie, die von links unten nach rechts oben steigt: Wie ändert sich etwas mit der Zeit?'>
+<img class='drawing d-none d-lg-block' style='width: 38em' src='diagrammarten-wide.svg' alt='Drei kleine Diagramme nebeneinander. Ein Kreis aus fünf Stücken: Welcher Teil des Ganzen ist wie groß? Vier Säulen verschiedener Höhe: Was ist größer, was kleiner? Eine Linie, die von links unten nach rechts oben steigt: Wie ändert sich etwas mit der Zeit?'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='diagrammarten.svg' alt='Drei kleine Diagramme untereinander, die Frage jeweils daneben. Ein Kreis aus fünf Stücken: Welcher Teil des Ganzen ist wie groß? Vier Säulen verschiedener Höhe: Was ist größer, was kleiner? Eine Linie, die von links unten nach rechts oben steigt: Wie ändert sich etwas mit der Zeit?'>
 
 _task(welches)
 
@@ -93,7 +94,8 @@ Wo die senkrechte Achse anfängt, wählt das Programm selbst, und man kann es
 _task(achse)
 
 <!-- after: achse -->
-<img class='drawing' style='width: 36em' src='achse.svg' alt='Zweimal dieselben Säulen für Kletterwald 4,4 und Moormuseum 2,6. Links, die Achse ab 0: Die Säule des Kletterwalds ist knapp doppelt so hoch. Rechts, orange, die Achse ab 2,5: Die Säule des Moormuseums ist ein dünner Strich, die des Kletterwalds fast zwanzigmal so hoch'>
+<img class='drawing d-none d-lg-block' style='width: 36em' src='achse-wide.svg' alt='Zweimal dieselben Säulen für Kletterwald 4,4 und Moormuseum 2,6. Links, die Achse ab 0: Die Säule des Kletterwalds ist knapp doppelt so hoch. Rechts, orange, die Achse ab 2,5: Die Säule des Moormuseums ist ein dünner Strich, die des Kletterwalds fast zwanzigmal so hoch'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='achse.svg' alt='Zweimal dieselben Säulen für Kletterwald 4,4 und Moormuseum 2,6. Oben, die Achse ab 0: Die Säule des Kletterwalds ist knapp doppelt so hoch. Unten, orange, die Achse ab 2,5: Die Säule des Moormuseums ist ein dünner Strich, die des Kletterwalds fast zwanzigmal so hoch'>
 
 Rechts sieht es aus, als hätte das Moormuseum niemandem gefallen. Dabei hat
 es im Mittel 2,6 von 5 Sternen. Säulen vergleichen Höhen; fängt die Achse
@@ -104,10 +106,10 @@ wo die Achse anfängt.
 <!-- /after -->
 
 <div class='history' id='history-playfair'>
-<img class='wide' src='bilder/playfair.webp' alt='Ein handkoloriertes Diagramm von 1786: »Exports and Imports to and from Denmark & Norway from 1700 to 1780«. Zwei Linien, gelb die Einfuhren, rot die Ausfuhren, über den Jahren 1700 bis 1780; zwischen ihnen rosa die Fläche »Balance against«, nach 1755, als die Ausfuhren steigen, gelblich »Balance in favour of England«'>
-<p><strong>Die ersten Diagramme</strong>, 1786. Zahlen zur Wirtschaft standen lange nur in Tabellen. Der schottische Ingenieur William Playfair zeichnete sie in seinem Buch <em>The Commercial and Political Atlas</em> als Linien über den Jahren und als Balken: hier, was England an Dänemark und Norwegen verkaufte und von dort kaufte. Wo die rote Linie über der gelben liegt, verkaufte England mehr, als es kaufte. 1801 zeichnete Playfair in seinem <em>Statistical Breviary</em> das wohl erste Kreisdiagramm. Die drei Diagramme dieses Blatts sind also über zweihundert Jahre alt.</p>
-<p class='history-credit'>William Playfair, 1786, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Playfair_TimeSeries.png'>Wikimedia Commons</a>)</p>
+<p><strong>Die ersten Diagramme</strong>, 1786. Zahlen zur Wirtschaft standen lange nur in Tabellen. Der schottische Ingenieur William Playfair zeichnete sie in seinem Buch <em>The Commercial and Political Atlas</em> als Linien über den Jahren und als Balken; im Bild darunter, was England an Dänemark und Norwegen verkaufte und von dort kaufte. Wo die rote Linie über der gelben liegt, verkaufte England mehr, als es kaufte. 1801 zeichnete Playfair in seinem <em>Statistical Breviary</em> das wohl erste Kreisdiagramm. Die drei Diagramme dieses Blatts sind also über zweihundert Jahre alt.</p>
 </div>
+
+<figure><img class='full' src='bilder/playfair.webp' alt='Ein handkoloriertes Diagramm von 1786: »Exports and Imports to and from Denmark & Norway from 1700 to 1780«. Zwei Linien, gelb die Einfuhren, rot die Ausfuhren, über den Jahren 1700 bis 1780; zwischen ihnen rosa die Fläche »Balance against«, nach 1755, als die Ausfuhren steigen, gelblich »Balance in favour of England«'><figcaption>William Playfair, 1786: Ausfuhren und Einfuhren Englands nach und aus Dänemark und Norwegen, 1700 bis 1780. Gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Playfair_TimeSeries.png'>Wikimedia Commons</a>)</figcaption></figure>
 
 ## Prüfen
 

@@ -53,7 +53,8 @@ deshalb ganz wandern, nicht nur die Spalte, nach der sortiert wird.
 _task(spalte)
 
 <!-- after: spalte -->
-<img class='drawing' style='width: 40em' src='sortieren.svg' alt='Drei kleine Tabellen mit den Spalten B (Familie) und D (Gezahlt). Vorher: Engel 245,00 €, Lehmann 100,00 €, Becker 245,00 €, Kaya ohne Zahlung. Ganze Zeilen sortiert: Becker 245,00 €, Engel 245,00 €, Kaya leer, Lehmann 100,00 €. Nur Spalte B sortiert, orange hinterlegt: Engel steht neben 100,00 €, Kaya neben 245,00 €, Lehmann neben einer leeren Zelle'>
+<img class='drawing d-none d-lg-block' style='width: 40em' src='sortieren-wide.svg' alt='Drei kleine Tabellen mit den Spalten B (Familie) und D (Gezahlt). Vorher: Engel 245,00 €, Lehmann 100,00 €, Becker 245,00 €, Kaya ohne Zahlung. Ganze Zeilen sortiert: Becker 245,00 €, Engel 245,00 €, Kaya leer, Lehmann 100,00 €. Nur Spalte B sortiert, orange hinterlegt: Engel steht neben 100,00 €, Kaya neben 245,00 €, Lehmann neben einer leeren Zelle'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='sortieren.svg' alt='Drei kleine Tabellen untereinander mit den Spalten B (Familie) und D (Gezahlt). Vorher: Engel 245,00 €, Lehmann 100,00 €, Becker 245,00 €, Kaya ohne Zahlung. Ganze Zeilen sortiert: Becker 245,00 €, Engel 245,00 €, Kaya leer, Lehmann 100,00 €. Nur Spalte B sortiert, orange hinterlegt: Engel steht neben 100,00 €, Kaya neben 245,00 €, Lehmann neben einer leeren Zelle'>
 
 Wer so sortiert und speichert, hat die Liste kaputt gemacht: Rechts hat Kaya
 bezahlt und Lehmann nichts, und niemand sieht der Tabelle an, dass es falsch
@@ -102,12 +103,12 @@ zurück.
 
 <!-- language: libreoffice -->
 Den Filter setzt *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*AutoFilter* (<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>L</kbd>), wenn eine Zelle
+*AutoFilter* (<kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>), wenn eine Zelle
 der Liste gewählt ist.
 <!-- /language -->
 <!-- language: word -->
 Den Filter setzt *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Filtern* (<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>L</kbd>), wenn eine Zelle der
+*Filtern* (<kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>), wenn eine Zelle der
 Liste gewählt ist; eine Bedingung findest du am Pfeil unter *Zahlenfilter*.
 <!-- /language -->
 <!-- language: nextcloud -->
@@ -137,16 +138,16 @@ steht: »Ist der Wert größer als 0, dann rot.« Zahlt eine Familie, ist ihre
 Zelle gleich wieder weiß.
 
 <!-- language: libreoffice -->
-Markiere die Zellen, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*. Im Fenster steht die Bedingung als
+Markiere die Zellen, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…* Im Fenster steht die Bedingung als
 *Zellwert* *ist größer als* und die Zahl daneben; unter *Vorlage zuweisen*
 wählst du, wie die Zelle dann aussieht, etwa *Schlecht*: rot hinterlegt.
 <!-- /language -->
 <!-- language: word -->
-Markiere die Zellen, dann *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Regeln zum Hervorheben von Zellen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größer als…*. Im Fenster trägst du die
+Markiere die Zellen, dann *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Regeln zum Hervorheben von Zellen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größer als…* Im Fenster trägst du die
 Zahl ein und wählst, wie die Zelle dann aussieht, etwa eine hellrote Füllung.
 <!-- /language -->
 <!-- language: nextcloud -->
-Markiere die Zellen, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*. Im Fenster steht die Bedingung, etwa *ist
+Markiere die Zellen, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…* Im Fenster steht die Bedingung, etwa *ist
 größer als* und die Zahl daneben, und darunter die Vorlage, die die Zelle dann
 bekommt, etwa *Schlecht*: rot hinterlegt.
 <!-- /language -->
