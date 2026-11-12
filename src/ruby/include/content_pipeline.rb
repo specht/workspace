@@ -4,6 +4,8 @@
 # search engines and previews, and the content cache that lets a restart
 # skip unchanged pages (parse_content). Moved out of main.rb, which loads
 # it before configure reads the content.
+require_relative 'markdown_attributes'
+
 class Main < Sinatra::Base
     # The values for ${...} in a content page: its meta block, the site's
     # contact address and its own address. The class repository's variables
@@ -208,7 +210,7 @@ class Main < Sinatra::Base
     # (hyphens: auto in default.css).
     def self.render_content_markdown(markdown, path, redcarpet)
         markdown = yield(markdown) if block_given?
-        html = redcarpet.render(markdown)
+        html = redcarpet.render(MarkdownAttributes.escape(markdown))
         root = Nokogiri::HTML(html)
         wrap_reference_includes(root)
         PictureRights.withhold(root, path, development: DEVELOPMENT)
