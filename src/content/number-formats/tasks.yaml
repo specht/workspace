@@ -1,0 +1,131 @@
+# Aufgaben zu »Zahlen in Form«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/number-formats/02 Einzahlungen.xlsx), die fertige
+# Tabelle und die Stufen macht dokumente.py.
+format: 1
+activity: number-formats
+tasks:
+  - id: vorher
+    title: Getippt mit Euro-Zeichen
+    prediction: true
+    prompt: |
+      Zehn Familien haben eingezahlt: acht je 245 €, zwei mit Ermäßigung je
+      232,75 €, zusammen 2.425,50 €. Vier der Beträge hat das Elternteil so
+      getippt, wie man sie auf Papier schreibt, mit Euro-Zeichen: `245 €`.
+      In C14 steht `=SUMME(C4:C13)`. Was zeigt C14?
+    check:
+      type: choice
+      options:
+        - 2.425,50, alle Beträge zusammen
+        - Weniger als 2.425,50, die vier getippten Beträge fehlen
+        - Einen Fehler, weil SUMME mit `245 €` nicht rechnen kann
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Für dich ist `245 €` ein Betrag. Weiß die Tabelle, dass in der Zelle eine Zahl gemeint ist?
+      - when: { picked: 2 }
+        say: SUMME beschwert sich nicht. Sie geht über den Bereich und nimmt, was sie zusammenzählen kann.
+    solution: |
+      Weniger: SUMME zählt nur Zahlen zusammen. `245 €` ist für die Tabelle
+      ein Text, wie ein Name, und SUMME lässt ihn ohne Meldung aus.
+
+  - id: fehlt
+    title: Was der Summe fehlt
+    prompt: |
+      Öffne die Vorlage. Wie viel Euro fehlen in der Summe in C14, verglichen
+      mit dem, was die Familien wirklich eingezahlt haben?
+    check:
+      type: number
+      expect: 980
+      tolerance: 0.001
+    feedback:
+      - when: { between: [1445.5, 1445.5] }
+        say: Das zeigt C14. Gefragt ist, wie viel zu den 2.425,50 fehlt.
+      - when: { between: [245, 245] }
+        say: Das ist einer der Beträge. Wie viele Zellen stehen als Text in der Spalte?
+      - when: { between: [735, 735] }
+        say: Zähl noch einmal nach, welche Beträge links in ihrer Zelle stehen.
+    hint: Text steht links in der Zelle, Zahlen stehen rechts. Zähl die Beträge, die links stehen, und rechne.
+    solution: |
+      980 €: Vier Beträge zu 245 € stehen als Text in der Spalte (C5, C7,
+      C10 und C12), 4 · 245 = 980. Die Summe zeigt 1.445,5 statt 2.425,50.
+
+  - id: gerundet
+    title: Was die Zelle zeigt
+    prediction: true
+    prompt: |
+      In A1 und A2 steht je 232,75, in A3 `=A1+A2`; A3 zeigt 465,5. Du
+      gibst A1 und A2 ein Format ohne Nachkommastellen: Beide zeigen jetzt
+      233. A3 lässt du, wie sie ist. Was zeigt A3?
+    check:
+      type: choice
+      options:
+        - "465,5"
+        - "466"
+        - "465"
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: 233 und 233 sind 466. Aber rechnet die Formel mit dem, was die Zelle zeigt?
+      - when: { picked: 2 }
+        say: Abgeschnitten wird nichts. Was steht wirklich in A1?
+    solution: |
+      465,5: Das Format ändert nur, wie eine Zahl aussieht. In A1 und A2
+      steht weiter 232,75, und mit diesen Zahlen rechnet die Formel.
+
+  - id: tage
+    title: Tage zählen
+    prompt: |
+      Wie viele Tage liegen zwischen der ersten Einzahlung (A4) und der
+      letzten (A13)? Lass die Tabelle rechnen: Schreib in eine freie Zelle
+      `=A13-A4`.
+    check:
+      type: number
+      expect: 7
+      tolerance: 0.001
+    feedback:
+      - when: { between: [8, 8] }
+        say: Du hast den ersten Tag mitgezählt. Die Tabelle rechnet den Abstand, letzter Tag minus erster.
+      - when: { between: [46448, 46455] }
+        say: Das ist die Zahl hinter einem der Tage. Zieh die eine von der anderen ab.
+    hint: Zeigt deine Zelle ein Datum wie `07.01.1900`, hat sie das Format Datum mitbekommen. Gib ihr das Format Zahl, dann siehst du die Tage.
+    solution: |
+      7 Tage: Hinter dem 9. März steht 46455, hinter dem 2. März 46448, und
+      46455 − 46448 = 7.
+
+  - id: einzahlungen
+    title: Die Einzahlungen in Form
+    prompt: |
+      Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
+      an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
+      prüfst.
+    check:
+      type: document
+      file: number-formats/02 Einzahlungen.xlsx
+      rules:
+        - { same_data: ['A1:C3', 'A4:B13'] }
+        - { text_numbers: 'C4:C13' }
+        - { values: { C14: 2425.5 } }
+        - { formulas: ['C14'] }
+        - { functions: { C14: SUM } }
+        - { number_format: { 'C4:C14': currency, 'A4:A13': date, C2: percent } }
+    hint:
+      - Zuerst die Beträge, die links in ihrer Zelle stehen. Tipp sie als Zahl, ohne Euro-Zeichen, dann rechnet SUMME mit ihnen.
+      - Markiere alle Beträge mit der Summe, C4 bis C14, und gib ihnen das Format Währung. Das Euro-Zeichen zeigt dann das Format.
+      - Die Zahlen in Spalte A bekommen das Format Datum, die 0,05 in C2 das Format Prozent.
+    libreoffice:
+      hint:
+        - "Klick in C5, tipp `245` und drück <kbd>Enter</kbd>. Ebenso in C7, C10 und C12."
+        - "Markiere C4 bis C14 und klick in der Symbolleiste auf **Als Währung formatieren**, oder Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* (<kbd>Strg</kbd>+<kbd>1</kbd>) <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Zahlen* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Währung*."
+        - "Für A4 bis A13 nimmst du im selben Fenster die Kategorie *Datum*, für C2 *Prozent*, oder die Knöpfe **Als Datum formatieren** und **Als Prozent formatieren**."
+    word:
+      hint:
+        - "Klick in C5, tipp `245` und drück <kbd>Enter</kbd>. Ebenso in C7, C10 und C12."
+        - "Markiere C4 bis C14 und wähle im Register *Start* in der Gruppe *Zahl* im Feld *Zahlenformat* den Eintrag *Währung*, oder <kbd>Strg</kbd>+<kbd>1</kbd> <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Zahlen* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Währung*."
+        - "Für A4 bis A13 wählst du im selben Feld *Datum, kurz*, für C2 *Prozent*."
+    nextcloud:
+      hint:
+        - "Klick in C5, tipp `245` und drück <kbd>Enter</kbd>. Ebenso in C7, C10 und C12."
+        - "Markiere C4 bis C14, dann Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Zahlen* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Währung*."
+        - "Für A4 bis A13 nimmst du im selben Fenster die Kategorie *Datum*, für C2 *Prozent*."

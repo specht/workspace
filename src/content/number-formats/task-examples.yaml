@@ -1,0 +1,17 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die fertige Tabelle muss die Prüfung bestehen, auch
+# mit den Formaten, wie Excel sie speichert (sein Euro-Zeichen als Text im
+# Format); die Vorlage und die Tabelle ohne Formate scheitern. Alle macht
+# dokumente.py.
+format: 1
+activity: number-formats
+examples:
+  einzahlungen:
+    pass:
+      - document: stufen/einzahlungen.xlsx
+      - document: stufen/excel-format.xlsx
+    fail:
+      - document: ../../static/number-formats/02 Einzahlungen.xlsx
+        say: Text, nicht als Zahl
+      - document: stufen/ohne-format.xlsx
+        say: als Währung formatiert

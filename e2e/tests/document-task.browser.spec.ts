@@ -481,3 +481,29 @@ test('a spreadsheet is checked for its formulas and whether it calculates', asyn
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
   if (shots) await page.screenshot({ path: path.join(shots, 'sheet-correct.png') });
 });
+
+// »Zahlen in Form«: amounts typed as text, which SUMME leaves out, and
+// number formats; the formats as Excel stores them pass too (its euro as
+// text in the format).
+test('a spreadsheet is checked for amounts typed as text and for its number formats', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/number-formats');
+  await states;
+  const card = page.locator(".task-card[data-task='number-formats/einzahlungen']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/number-formats/02 Einzahlungen.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
+  await expect(report).toContainText('als Text, nicht als Zahl');
+  await expect(report.locator('.document-mark-cell').first()).toBeAttached();
+  if (shots) await page.screenshot({ path: path.join(shots, 'formats-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/number-formats/stufen/ohne-format.xlsx'));
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(1);
+  await expect(report).toContainText('als Währung formatiert');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/number-formats/stufen/excel-format.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(6);
+  if (shots) await page.screenshot({ path: path.join(shots, 'formats-correct.png') });
+});

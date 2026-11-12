@@ -935,6 +935,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1948 -->
+<!-- part: simonyi -->
+### Charles Simonyi
+
+<div class='person'>
+<img src='simonyi.webp' alt='Charles Simonyi 2006: ein lächelnder Mann mit dunklem Haar, Anzug und Krawatte, vor einem Bild einer Raumstation.'>
+<p><strong>Charles Simonyi</strong> (geboren 1948 in Budapest), ungarisch-amerikanischer Programmierer. Mit 17 Jahren verließ er Ungarn und kehrte nicht zurück. Bei Xerox PARC in Kalifornien schrieb er mit Butler Lampson das Programm Bravo, das 1974 lief: das erste, das einen Text auf dem Bildschirm so zeigte, wie er gedruckt aussehen würde. 1981 holte ihn Bill Gates zu Microsoft, wo er eine Gruppe für Anwendungsprogramme aufbaute. Aus ihr kamen die Tabellenkalkulation Multiplan, dann Word und Excel, die erfolgreichsten Programme der Firma.</p>
+<p>2007 und 2009 flog er als zahlender Gast mit einer Sojus-Rakete zur Internationalen Raumstation.</p>
+<p class='person-credit'>Foto: NASA, 2006, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Charles_simonyi2.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1949 -->
 <!-- part: bricklin-frankston -->
 ### Dan Bricklin und Bob Frankston
@@ -980,6 +992,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Lance Williams</strong> (1949–2017), amerikanischer Grafikforscher. Am New York Institute of Technology erfand er die Mipmaps: jede Textur noch einmal in halber Größe, in Viertelgröße und so weiter, damit weit entfernte Wände nicht flimmern. Jede Grafikkarte rechnet heute so, und auch die Schatten mit einer Tiefenkarte, den Shadow Maps, hat er 1978 beschrieben.</p>
 <p>Auf diesem Foto ist er selbst in Stufen zu sehen, jede halb so groß wie die vorige.</p>
 <p class='person-credit'>Foto: Amberesque, 2004, CC BY-SA 3.0 (<a href='https://commons.wikimedia.org/wiki/File:Lance_Williams.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1950 -->
+<!-- part: kapor -->
+### Mitch Kapor
+
+<div class='person'>
+<img src='kapor.webp' alt='Mitch Kapor 2005 bei einem Vortrag: ein Mann mit Brille, grauem Haar und grauem Bart, ein Mikrofon in der Hand, den Blick nach oben gerichtet.'>
+<p><strong>Mitch Kapor</strong> (geboren 1950), amerikanischer Unternehmer und Programmierer. Er schrieb zwei Programme, die mit den Zahlen aus VisiCalc weiterarbeiteten, VisiPlot und VisiTrend, verkaufte ihre Rechte an VisiCorp, die Firma, die VisiCalc vertrieb, und leitete dort eine Zeit lang die Entwicklung. 1982 gründete er mit dem Programmierer Jonathan Sachs die Firma Lotus. Ihr Programm Lotus 1-2-3 kam im Januar 1983 für den IBM PC heraus, eine Tabellenkalkulation, die auch Diagramme zeichnete, und wurde das Programm, mit dem in den Büros gerechnet wurde. Lotus verkaufte im ersten Jahr für 53 Millionen Dollar.</p>
+<p>1990 gründete Kapor mit John Perry Barlow und John Gilmore die Electronic Frontier Foundation, die sich bis heute für die Rechte der Menschen im Internet einsetzt, und 2003 wurde er der erste Vorsitzende der Mozilla Foundation, die den Browser Firefox herausgibt.</p>
+<p class='person-credit'>Foto: JD Lasica, 2005, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Mitch_Kapor_(48949961).jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 

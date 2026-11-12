@@ -41,6 +41,10 @@ FORMATS = {'docx', 'odt', 'doc', 'rtf'}
 # spreadsheets (sheet.py)
 SHEETS = {'xlsx', 'ods', 'xls'}
 
+# LibreOffice in German: a spreadsheet's numbers and dates shown as a
+# German program shows them (an .xlsx stores its formats without language)
+GERMAN_ENV = dict(os.environ, LANG='de_DE.UTF-8', LC_ALL='de_DE.UTF-8', LANGUAGE='de')
+
 # 1/100 mm (UNO) to PDF points
 def pt(hmm):
     return round(hmm / 2540.0 * 72.0, 2)
@@ -68,7 +72,7 @@ class Office:
             '--nodefault', '--nolockcheck',
             f'-env:UserInstallation=file://{self.profile}',
             f'--accept=pipe,name={PIPE};urp;StarOffice.ComponentContext',
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=GERMAN_ENV)
         local = uno.getComponentContext()
         resolver = local.ServiceManager.createInstanceWithContext('com.sun.star.bridge.UnoUrlResolver', local)
         for _ in range(100):

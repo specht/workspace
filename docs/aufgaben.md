@@ -2013,7 +2013,7 @@ check:
     - { recalc: { set: { C5: 152 }, expect: { D5: 4408, D9: 6711 } } }   # eine Zahl ändern, neu rechnen: so muss es dann aussehen
     - { absolute: { cells: 'E4:E8', ref: 'B12' } }   # kopierte Formeln mit $B$12
     - { number_format: { 'C4:D9': currency, 'B2': percent, 'A4:A9': date, 'E4:E8': { decimals: 1 } } }
-    - { text_numbers: 'B4:D9' }        # keine Zahl als Text getippt (»12,50 €«)
+    - { text_numbers: 'B4:D9' }        # keine Zahl als Text getippt (»12,50 €«, »EUR 12,50«)
     - { bold_cells: 'A3:D3' }
     - { sorted: { range: 'A4:D30', by: B, order: desc } }   # sortiert, und noch dieselben Zeilen wie in der Vorlage
     - autofilter                       # ein Filter über der Tabelle
@@ -2025,6 +2025,9 @@ check:
 `recalc` schickt die Änderung mit dem Upload an den Dienst: Er ändert die
 Zellen in seiner Kopie, rechnet neu, liest die anderen und setzt alles
 zurück. Eine Tabelle mit getippten Ergebnissen zeigt dann die alten Zahlen.
+`number_format: currency` nimmt jedes Format mit €, EUR oder einem
+Währungskürzel: Excel speichert sein Euro-Zeichen als Text im Format, auch
+bei *Buchhaltung*, und Calc liest das als gewöhnliches Zahlenformat.
 Eine Seite mit Tabellen trägt `office: sheet` im Meta-Block: Der Schalter
 nennt dann Excel statt Word.
 

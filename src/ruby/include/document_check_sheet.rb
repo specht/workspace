@@ -135,7 +135,8 @@ module DocumentCheck
     def self.rule_values(rule, _body, _starter, _all = nil, model = nil)
         wants = rule['values'] || {}
         sheet = sheet_of(model, rule)
-        item = Item.new(:rule => 'values', :label => "Die Ergebnisse in #{cells_label(wants.keys)} stimmen", :ok => true, :marks => [])
+        label = wants.size == 1 ? "Das Ergebnis in #{wants.keys.first} stimmt" : "Die Ergebnisse in #{cells_label(wants.keys)} stimmen"
+        item = Item.new(:rule => 'values', :label => label, :ok => true, :marks => [])
         wrong = wants.reject { |n, v| close?((cell(sheet, n) || {})['value'], v) }
         return item if wrong.empty?
 
@@ -247,6 +248,10 @@ module DocumentCheck
                 ok = if kind.is_a?(Hash)
                     decimals = f['format'].to_s[/[.,](0+)/, 1].to_s.size
                     decimals == kind['decimals'].to_i
+                elsif kind == 'currency'
+                    # Excel writes its euro as text in the format (»#,##0.00 "€"«,
+                    # also Buchhaltung), which LibreOffice reads as a plain number format
+                    (f['type'].to_i & FORMAT_KINDS[kind]).positive? || f['format'].to_s.match?(/€|EUR|\[\$[^-\]]/)
                 else
                     (f['type'].to_i & FORMAT_KINDS[kind].to_i).positive?
                 end
@@ -270,7 +275,7 @@ module DocumentCheck
         item = Item.new(:rule => 'text_numbers', :label => 'Keine Zahlen als Text', :ok => true, :marks => [])
         found = Array(rule['text_numbers']).flat_map { |r| cells_of(r) }.select do |n|
             c = cell(sheet, n)
-            c && c['type'] == 'text' && c['text'].to_s.strip.match?(/\A[-+]?[\d.\s]*\d(,\d+)?\s*(€|%|EUR|Euro)?\z/)
+            c && c['type'] == 'text' && c['text'].to_s.strip.match?(/\A(€|EUR|Euro)?\s*[-+]?[\d.\s]*\d(,\d+)?\s*(€|%|EUR|Euro)?\z/)
         end
         return item if found.empty?
 
@@ -372,7 +377,7 @@ module DocumentCheck
         item
     end
 
-    # no cell shows an error (#DIV/0!, #NAME?, #REF!)
+    # no cell shows an error (#DIV/0!, #NAME?, #WERT!, #BEZUG!)
     def self.rule_no_errors(rule, _body, _starter, _all = nil, model = nil)
         sheet = sheet_of(model, rule)
         bad = (sheet['cells'] || []).select { |c| c['type'] == 'formula' && c['error'].to_i.positive? }
@@ -382,7 +387,8 @@ module DocumentCheck
         item.marks = bad.map { |c| cell_mark(model, rule.is_a?(Hash) ? rule['sheet'].to_i : 0, c['cell'], c['shown']) }
         c = bad.first
         item.message = "#{c['cell']} zeigt #{q(c['shown'])}: Die Formel #{q(german_formula(c['formula']))} kann nicht rechnen. " \
-            '#DIV/0! teilt durch null oder eine leere Zelle, #NAME? kennt einen Namen nicht (ein Tippfehler in der Funktion?), #REF! zeigt auf eine gelöschte Zelle.'
+            '#DIV/0! teilt durch null oder eine leere Zelle, #WERT! rechnet mit einem Text, #NAME? kennt einen Namen nicht ' \
+            '(ein Tippfehler in der Funktion?), #BEZUG! zeigt auf eine gelöschte Zelle.'
         item
     end
 end

@@ -41,7 +41,8 @@ class Calc:
         self.profile = tempfile.mkdtemp(prefix='calc-')
         self.process = subprocess.Popen(['soffice', '--headless', '--invisible', '--norestore', '--nologo', '--nolockcheck',
                                          f'-env:UserInstallation=file://{self.profile}', f'--accept=pipe,name={PIPE};urp;'],
-                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                        env=dict(os.environ, LANG='de_DE.UTF-8', LC_ALL='de_DE.UTF-8', LANGUAGE='de'))
         local = uno.getComponentContext()
         resolver = local.ServiceManager.createInstanceWithContext('com.sun.star.bridge.UnoUrlResolver', local)
         for _ in range(150):

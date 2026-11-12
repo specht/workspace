@@ -1058,8 +1058,146 @@ def ausfuellen():
     svg('ausfuellen', 'spreadsheet-cells', w, h, body, 'Eine Formel nach unten ausgefüllt: B4*C4 wird B5*C5, B6*C6, B7*C7')
 
 
+MONO = "'IBM Plex Mono', monospace"
+
+
+def zahltext():
+    """a number stands right, text typed with its € stands left, and SUMME
+    counts only the numbers"""
+    w, h = 590, 196
+    cols, rows = ['B', 'C'], [4, 5, 6, 7, 8]
+    cw, ch = 124, 28
+    cells = {('B', 4): 'Familie Arslan', ('B', 5): 'Familie Becker', ('B', 6): 'Familie Çelik', ('B', 7): 'Familie Groß',
+             ('B', 8): ('Zusammen', 'left', '700'), ('C', 4): ('245', 'right'), ('C', 5): ('245 €', 'left'),
+             ('C', 6): ('245', 'right'), ('C', 7): ('EUR 245', 'left'), ('C', 8): ('490', 'right', '700')}
+    fills = {('C', 5): PAMBER_BG, ('C', 7): PAMBER_BG}
+    body = []
+    g, (x0, y0) = grid(20, 20, cols, rows, cw, ch, cells, fills, size=13)
+    body.append(g)
+    right = x0 + cw * 2
+    _, sy, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', 8)
+    target = sy + ch / 2
+    for r, lift in ((4, 34), (6, 22)):
+        _, ry, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', r)
+        cy = ry + ch / 2
+        body.append(f"<path d='M {right + 3:.1f} {cy:.1f} C {right + lift:.1f} {cy:.1f} {right + lift:.1f} {target:.1f} {right + 12:.1f} {target:.1f}' fill='none' stroke='{BLUE}' stroke-width='1.6'/>")
+    body.append(f"<polygon points='{right + 3:.1f},{target:.1f} {right + 12:.1f},{target - 5:.1f} {right + 12:.1f},{target + 5:.1f}' fill='{BLUE}'/>")
+    lx = right + 48
+    _, y4, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', 4)
+    _, y5, _, _ = cell_box(x0, y0, cols, rows, cw, ch, 'C', 5)
+    body.append(text(lx, y4 + 19, 'eine Zahl: steht rechts', 14, TEXT, weight='600'))
+    body.append(text(lx, y5 + 19, 'Text: steht links, wie getippt', 14, AMBER, weight='600'))
+    body.append(text(lx, target - 4, '=SUMME(C4:C7)', 14, BLUE, weight='700', family=MONO))
+    body.append(text(lx, target + 14, 'zählt nur die Zahlen zusammen', 13, GREY))
+    svg('zahltext', 'number-formats', w, h, body, 'Zahlen stehen rechts, getippter Text mit Euro-Zeichen links; SUMME zählt nur die Zahlen')
+
+
+def formate():
+    """one number in a cell, shown in three formats; formulas take the number"""
+    w, h = 600, 236
+    body = []
+    # the number itself, as it is stored
+    bx, by = 20, 86
+    body.append(text(bx, by - 30, 'in der Zelle', 13, GREY))
+    body.append(text(bx, by - 13, 'steht die Zahl', 13, GREY))
+    body.append(rect(bx, by, 120, 40, PAPER, PBLUE, 2, 3))
+    body.append(text(bx + 60, by + 27, '232,75', 19, INK, 'middle', '700'))
+    shown = [('232,75', 'Zahl, 2 Nachkommastellen'), ('232,75 €', 'Währung'), ('233 €', 'Währung, ohne Nachkommastellen')]
+    for i, (value, label) in enumerate(shown):
+        cy = 30 + i * 62
+        cx = 250
+        body.append(arrow(bx + 124, by + 20, cx - 6, cy + 15, GREY, 1.4))
+        body.append(rect(cx, cy, 110, 30, PAPER, EDGE, 1))
+        body.append(text(cx + 104, cy + 20, value, 15, INK, 'end'))
+        body.append(text(cx + 124, cy + 20, label, 13, TEXT))
+    body.append(text(20, h - 14, 'Jede Formel rechnet mit 232,75, auch wenn die Zelle 233 € zeigt.', 14, BLUE, weight='600'))
+    svg('formate', 'number-formats', w, h, body, 'Eine Zahl, drei Formate: 232,75, 232,75 € und 233 €; gerechnet wird mit 232,75')
+
+
+def tage():
+    """a date is the number of days counted from the end of 1899"""
+    import datetime
+    w, h = 640, 176
+    days = [datetime.date(2027, 3, d) for d in range(2, 10)]
+    names = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So']
+    body = []
+    bw, bh, x0, y0 = 62, 54, 122, 40
+    body.append(text(20, y0 + 20, 'Tag 0:', 13, GREY))
+    body.append(text(20, y0 + 38, 'Ende 1899', 13, GREY))
+    body.append(line(92, y0 + bh / 2, x0 - 8, y0 + bh / 2, GREY, 1.4, " stroke-dasharray='3 4'"))
+    for i, d in enumerate(days):
+        x = x0 + i * bw
+        first_last = i in (0, len(days) - 1)
+        body.append(rect(x, y0, bw, bh, PAMBER_BG if first_last else PAPER, EDGE, 1))
+        body.append(text(x + bw / 2, y0 + 20, f"{names[d.weekday()]} {d.day:02d}.03.", 12, INK, 'middle'))
+        serial = (d - datetime.date(1899, 12, 30)).days
+        body.append(text(x + bw / 2, y0 + 42, str(serial), 14, INK, 'middle', '700', MONO))
+    a, b = x0 + bw / 2, x0 + bw * (len(days) - 1) + bw / 2
+    yb = y0 + bh + 14
+    body.append(f"<path d='M {a:.1f} {yb - 6:.1f} L {a:.1f} {yb:.1f} L {b:.1f} {yb:.1f} L {b:.1f} {yb - 6:.1f}' fill='none' stroke='{BLUE}' stroke-width='1.6'/>")
+    body.append(text((a + b) / 2, yb + 26, '=A13-A4', 15, BLUE, 'middle', '700', MONO))
+    body.append(text((a + b) / 2, yb + 46, '46455 − 46448 = 7 Tage', 14, TEXT, 'middle'))
+    body.append(text(x0, 24, 'oben das Format Datum, unten die Zahl, die in der Zelle steht', 13, GREY))
+    svg('tage', 'number-formats', w, h, body, 'Die Tage vom 2. bis 9. März 2027 mit ihren Zahlen 46448 bis 46455; A13 minus A4 ergibt 7 Tage')
+
+
+def _bezug(fixed):
+    """C6's share filled down to C8: without $ each row divides by the cell
+    four rows up (B2, B3, B4), with $B$2 all by B2"""
+    w, h = 640, 262
+    cols, rows = ['B', 'C'], [2, 3, 4, 5, 6, 7, 8]
+    cw, ch = 104, 28
+    cells = {('B', 2): ('27', 'right'), ('B', 3): ('5 %', 'right'), ('B', 5): ('Kosten', 'left', '700'),
+             ('C', 5): ('pro Kind', 'left', '700'), ('B', 6): ('1.250,00 €', 'right'), ('B', 7): ('3.996,00 €', 'right'),
+             ('B', 8): ('661,50 €', 'right')}
+    if fixed:
+        cells.update({('C', 6): ('46,30 €', 'right'), ('C', 7): ('148,00 €', 'right'), ('C', 8): ('24,50 €', 'right')})
+        fills = {('B', 2): PBLUE_BG}
+    else:
+        cells.update({('C', 6): ('46,30 €', 'right'), ('C', 7): ('79.920,00 €', 'right'), ('C', 8): ('#DIV/0!', 'right', '700')})
+        fills = {('B', 2): PBLUE_BG, ('B', 3): PAMBER_BG, ('B', 4): PAMBER_BG, ('C', 7): PAMBER_BG, ('C', 8): PAMBER_BG}
+    body = []
+    g, (x0, y0) = grid(96, 20, cols, rows, cw, ch, cells, fills, size=13)
+    body.append(g)
+    left = x0 - 24      # the row numbers' column
+    for k, r in enumerate((6, 7, 8)):
+        target = 2 if fixed else r - 4
+        ok = fixed or r == 6
+        colour = BLUE if ok else AMBER
+        ys = y0 + ch * rows.index(r) + ch / 2
+        yt = y0 + ch * rows.index(target) + ch / 2
+        bulge = left - 18 - 16 * k
+        body.append(f"<path d='M {left - 2:.1f} {ys:.1f} C {bulge:.1f} {ys:.1f} {bulge:.1f} {yt:.1f} {left - 11:.1f} {yt:.1f}' fill='none' stroke='{colour}' stroke-width='1.6'/>")
+        body.append(f"<polygon points='{left - 2:.1f},{yt:.1f} {left - 11:.1f},{yt - 5:.1f} {left - 11:.1f},{yt + 5:.1f}' fill='{colour}'/>")
+        lx = x0 + cw * 2 + 16
+        formula = f'=B{r}/$B$2' if fixed else f'=B{r}/B{target}'
+        body.append(text(lx, ys + 5, formula, 14, colour, weight='700', family=MONO))
+        note = {6: 'teilt durch 27', 7: 'teilt durch 27' if fixed else 'teilt durch 0,05', 8: 'teilt durch 27' if fixed else 'teilt durch eine leere Zelle'}[r]
+        body.append(text(lx + 112, ys + 5, note, 13, GREY))
+    if fixed:
+        ax, ay = x0 + cw * 2 + 16, y0 + 8
+        body.append(text(ax, ay + 6, '$B$2', 18, BLUE, weight='700', family=MONO))
+        body.append(text(ax + 66, ay - 2, '$ vor B: die Spalte bleibt', 13, TEXT))
+        body.append(text(ax + 66, ay + 15, '$ vor 2: die Zeile bleibt', 13, TEXT))
+    else:
+        body.append(text(x0 + cw * 2 + 16, y0 + 14, 'nach unten ausgefüllt, ohne $', 13, GREY))
+    name = 'mit-dollar' if fixed else 'ohne-dollar'
+    about = ('Mit $B$2 teilen C6, C7 und C8 alle durch B2' if fixed
+             else 'Ohne $ teilt C7 durch B3 und C8 durch die leere Zelle B4')
+    svg(name, 'absolute-references', w, h, body, about)
+
+
+def ohne_dollar():
+    _bezug(False)
+
+
+def mit_dollar():
+    _bezug(True)
+
+
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
-                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, ausfuellen]}
+                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, ausfuellen,
+                                      zahltext, formate, tage, ohne_dollar, mit_dollar]}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:

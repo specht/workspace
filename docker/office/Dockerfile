@@ -1,6 +1,8 @@
 # The office service (docs/plan-textverarbeitung.md): reads the documents
 # students upload to a document task and draws their pages. LibreOffice
-# without a window (Writer only), Python with UNO to read the document,
+# without a window (Writer and Calc), in German: a spreadsheet shows
+# »#WERT!« and »WAHR« as the programs of the class do (libreoffice-l10n-de;
+# server.py starts it with LANG=de_DE.UTF-8). Python with UNO to read the document,
 # poppler to turn the PDF into pictures and to find where each paragraph
 # landed, and fonts so that a page breaks its lines as in Word:
 # Microsoft's core fonts themselves (Arial, Times New Roman, Courier New,
@@ -24,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates wget cabextract ttf-mscorefonts-installer \
         fontconfig fonts-crosextra-carlito fonts-crosextra-caladea \
         fonts-liberation2 fonts-dejavu-core \
-        hyphen-de hunspell-de-de \
+        hyphen-de hunspell-de-de libreoffice-l10n-de \
     && rm -rf /var/lib/apt/lists/*
 RUN useradd -m -u 1600 office
 USER office

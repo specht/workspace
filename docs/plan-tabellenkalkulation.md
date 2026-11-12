@@ -20,13 +20,25 @@ program: results worked out on a calculator and typed, amounts typed with
 their € as text, a formula copied down that breaks, a list sorted by one
 column alone.
 
+The money adds up across the sheets. The trip costs 6.595 € with the two
+teachers (sheet 1); the families do not pay for the teachers (that the
+school or the state bears their costs is the rule; not checked per state), so a child's
+share comes from the children's costs alone (sheet 3). Each family pays
+245 € in advance, siblings 5 % less, 232,75 € (sheet 2); what is left
+goes back to the families after the trip (sheet 7).
+
 ## The worksheets
 
 1. **Zellen, die rechnen** (`spreadsheet-cells`): the trip's costs with
    every result typed. Cells and addresses, formulas instead of results,
    filling down, SUMME. Prediction: a price changes, what happens to the sum.
-2. **Zahlen in Form** (`number-formats`): amounts typed as »12,50 €«, so
-   SUMME leaves them out. Number formats: currency, percent, date, decimals.
+2. **Zahlen in Form** (`number-formats`): the payments, four amounts
+   copied from e-mails as text (»245 €«, »EUR 245«), so SUMME leaves them
+   out; the dates copied from a bank statement as bare day numbers. Number
+   or text, number formats (currency, percent, date), a format changes the
+   look and not the number (prediction: 232,75 shown as 233), a date is a
+   number of days. History: the 29 February 1900 of Lotus 1-2-3 that Excel
+   keeps; person box Mitch Kapor.
 3. **Feste Bezüge** (`absolute-references`): each family's share and a
    discount from one cell; copying a formula down without $ breaks it.
 4. **Auswerten** (`spreadsheet-functions`): the class's survey after the
@@ -69,6 +81,20 @@ Rules (docs/aufgaben.md, »document«): `formulas`, `values`, `recalc`,
   Excel and shows the spreadsheet icons (`CodeLanguages::KIND_NAMES`).
 - **Files as .xlsx**, which every program opens and saves; .ods works too.
 - **The office image** needed `libreoffice-calc-nogui`.
+- **LibreOffice runs in German** (`LANG=de_DE.UTF-8` for the service and
+  `calc_build.py`): an .xlsx stores its formats without a language, and
+  the drawn sheet should show »245,00 €« and »0,05« as a German program
+  does.
+- **Excel's euro counts as currency.** German Excel writes Währung and
+  Buchhaltung with the € as quoted text in the format (`#,##0.00\ "€"`),
+  which Calc reads as a plain number format; `number_format: currency`
+  accepts any format showing €, EUR or a currency code. The example
+  `number-formats/stufen/excel-format.xlsx` keeps it so.
+- **The year of the data.** The payments are dated March 2027; a date
+  needs a year to be a number of days. The page names no year, the
+  drawing of the days shows the numbers of that March.
+- **Persons on draft sheets** (Bricklin and Frankston, Kapor, Simonyi) are named in
+  `person_boxes_test.rb` (`WAITING`) until the sheets are published.
 
 ## Open
 
