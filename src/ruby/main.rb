@@ -2718,7 +2718,7 @@ class Main < Sinatra::Base
             :words => { :more => 'Weitere Programme', :least => 'Die Klasse braucht mindestens ein Programm.', :none => 'keines dieser Programme' },
         }
         io << "<section class='class-setting class-setting-languages'><h3 class='class-setting-title' id='class-office-title'>Office-Programme der Klasse</h3>" \
-            "<p class='class-setting-hint'>Die Seiten im Abschnitt Office sagen, wo in diesem Programm ein Knopf oder ein Menü ist: in LibreOffice, Word oder Nextcloud Office. " \
+            "<p class='class-setting-hint'>Die Seiten zur Textverarbeitung sagen, wo in diesem Programm ein Knopf oder ein Menü ist: in LibreOffice, Word oder Nextcloud Office. " \
             "Jede Seite nimmt das erste Programm dieser Liste. Lernende können auf der Seite selbst umschalten.</p>" \
             "<div class='class-languages' data-languages='#{h.(office.to_json)}'></div></section>"
         io << "<script src='/include/class_languages.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"

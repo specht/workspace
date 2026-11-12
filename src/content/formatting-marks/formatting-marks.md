@@ -18,6 +18,10 @@ reference: []
 
 # Was das Auge nicht sieht
 
+<p class='abstract'>
+In zehn Blättern baust du Dokumente so, dass sie halten: von einer Einladung, die nur ausgedruckt ordentlich aussieht, bis zu deinem eigenen Artikel für die Zeitung der Klassenfahrt. Du arbeitest in LibreOffice, Word oder Nextcloud Office, und die Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
+</p>
+
 Die Klassenleitung der 7b hat eine Einladung zum Elternabend getippt, in Eile,
 kurz vor der Pause. Ausgedruckt sieht sie ordentlich aus: die Überschrift in
 der Mitte, das Datum rechts, darunter ein kurzer Brief.

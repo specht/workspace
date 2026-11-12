@@ -100,34 +100,39 @@
   series:
     - [level-0-c1d8a2f7, level-1-7e3a91c4, level-2-b52d0f18, level-3-4c9e6a2d]
 
-# Office (docs/plan-textverarbeitung.md): word processing, then
-# spreadsheets and presentations, in LibreOffice, Word or Nextcloud Office.
-# The student uploads the document; the office service reads it, and the
-# card marks on their own page what is still missing. Worksheets that build
-# on each other become a series.
-- key: office
-  label: Office
-  short: Textverarbeitung mit Rückmeldung auf deiner eigenen Seite.
-  icon: /images/memo.png
-  description: |
-    Dokumente sauber bauen, von der Einladung bis zur Zeitungsseite: in
-    LibreOffice, Word oder Nextcloud Office. Du lädst dein Dokument hoch, und
-    die Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
-  entries:
-    - formatting-marks
-    - character-formatting
-    - lists-and-tabs
-    - word-tables
-    - pictures-in-text
-    - paragraph-styles
-    - pages-and-contents
-    - headers-and-footnotes
-    - newspaper-page
-    - trip-newspaper
-  # the worksheets on word processing, one after the other: each pinned on
-  # its own, the class page shows them as a whole too
-  series:
-    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
+# The section Office comes back once it has a second series (spreadsheets,
+# presentations; the maintainer, 12 November 2026: a section of one card
+# looks empty); until then the sheets on word processing are in »Texte &
+# Präsentationen« below. Its entry, to restore:
+#
+# # Office (docs/plan-textverarbeitung.md): word processing, then
+# # spreadsheets and presentations, in LibreOffice, Word or Nextcloud Office.
+# # The student uploads the document; the office service reads it, and the
+# # card marks on their own page what is still missing. Worksheets that build
+# # on each other become a series.
+# - key: office
+#   label: Office
+#   short: Textverarbeitung mit Rückmeldung auf deiner eigenen Seite.
+#   icon: /images/memo.png
+#   description: |
+#     Dokumente sauber bauen, von der Einladung bis zur Zeitungsseite: in
+#     LibreOffice, Word oder Nextcloud Office. Du lädst dein Dokument hoch, und
+#     die Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
+#   entries:
+#     - formatting-marks
+#     - character-formatting
+#     - lists-and-tabs
+#     - word-tables
+#     - pictures-in-text
+#     - paragraph-styles
+#     - pages-and-contents
+#     - headers-and-footnotes
+#     - newspaper-page
+#     - trip-newspaper
+#   # the worksheets on word processing, one after the other: each pinned on
+#   # its own, the class page shows them as a whole too
+#   series:
+#     - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
 
 - key: writing
   compact: true
@@ -143,6 +148,21 @@
     - bif
     - showerjs
     - latex
+    - formatting-marks
+    - character-formatting
+    - lists-and-tabs
+    - word-tables
+    - pictures-in-text
+    - paragraph-styles
+    - pages-and-contents
+    - headers-and-footnotes
+    - newspaper-page
+    - trip-newspaper
+  # the sheets on word processing (docs/plan-textverarbeitung.md), one card;
+  # here until the section Office has a second series. Each is pinned on its
+  # own, the class page shows them as a whole too
+  series:
+    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
 
 - key: web
   compact: true
