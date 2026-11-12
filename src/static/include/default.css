@@ -3940,7 +3940,7 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
        others): from edge to edge, the colour bar at the screen's edge,
        their content where the paragraphs start */
     :is(.autotoc-container, [class*='col-'], .code-language, .after-task-body, details.solution) >
-        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .a11y-demo, .dp-demo, .mail-demo, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
+        :is(div[data-stepper], .bitplane-widget, .qr-damage, .dtmf-widget, .reading-timer, .sampling-widget, .spectrum-widget, .effect-widget, .hearing-widget, .abx-widget, .motion-widget, .a11y-demo, .dp-demo, .mail-demo, .interleaving:not([data-task-editor])):not(:is(.task-card, .hint, .person, .book, .history, .reference-include, .teacher-note) *) {
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         border-right-width: 0;
@@ -9088,6 +9088,7 @@ div[data-stepper],
 .bitplane-widget,
 .qr-damage,
 .dtmf-widget,
+.reading-timer,
 .sampling-widget,
 .spectrum-widget,
 .effect-widget,
@@ -9115,6 +9116,7 @@ html[data-bs-theme="dark"] div[data-stepper],
 html[data-bs-theme="dark"] .bitplane-widget,
 html[data-bs-theme="dark"] .qr-damage,
 html[data-bs-theme="dark"] .dtmf-widget,
+html[data-bs-theme="dark"] .reading-timer,
 html[data-bs-theme="dark"] .sampling-widget,
 html[data-bs-theme="dark"] .spectrum-widget,
 html[data-bs-theme="dark"] .effect-widget,
@@ -11411,9 +11413,16 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
 .kata-set-pin .bi::before {
     display: block;
 }
-.tutorial_card3.card-pinned {
-    outline: 2px solid #0b4fb3;
-    outline-offset: -2px;
+/* the frame as a layer of its own over the card, the picture included (a
+   series card's pictures lie in a layer above the card itself) */
+.tutorial_card3.card-pinned::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid #0b4fb3;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 3;
 }
 
 /* pinned for the group: a pin in the site's blue (as »Aufgabe 1«) on a light
@@ -18240,3 +18249,56 @@ body.document-full-open {
 .document-mark-word {
     box-shadow: inset 0 -2px 0 var(--document-mark);
 }
+
+/* Lesen gegen Zuhören (reading_timer.js, »Eine Folie, ein Gedanke«): the
+   Referat's slides one after the other, as on a projector, the letters
+   sized with the slide (cqw), so that a slide reads as on the wall */
+.reading-timer .rt-head { display: flex; flex-wrap: wrap; gap: 0.5em; align-items: baseline; margin-bottom: 0.6em; }
+.reading-timer .rt-title { font-weight: 600; color: var(--widget-ink); }
+.reading-timer .rt-pill { font-size: 0.8em; padding: 0.1em 0.6em; border-radius: 1em; background: var(--widget-chip); color: var(--widget-ink); }
+.reading-timer .rt-screen { container-type: inline-size; }
+.reading-timer .rt-idle { margin: 0.4em 0 0.8em; }
+.reading-timer .rt-slide-shown {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #fff;
+    color: #111;
+    border: 1px solid var(--widget-line);
+    border-radius: 0.3em;
+    padding: 4cqw 5cqw;
+    margin-bottom: 0.8em;
+    overflow: hidden;
+    font-family: Carlito, Calibri, 'IBM Plex Sans', sans-serif;
+}
+.reading-timer .rt-slide-title { font-size: 4.4cqw; text-align: center; margin-bottom: 2.5cqw; line-height: 1.15; }
+.reading-timer .rt-slide-body { font-size: 1.85cqw; line-height: 1.3; }
+.reading-timer .rt-slide-body ul { margin: 0; padding-left: 2.5cqw; }
+.reading-timer .rt-slide-number { position: absolute; right: 2cqw; bottom: 1.2cqw; font-size: 1.4cqw; color: #666; }
+.reading-timer .rt-controls { display: flex; flex-wrap: wrap; gap: 0.5em; align-items: center; }
+.reading-timer .rt-clock { font-variant-numeric: tabular-nums; color: var(--widget-ink); }
+.reading-timer .rt-result { margin-top: 0.8em; }
+.reading-timer .rt-result p { margin-bottom: 0.4em; }
+.reading-timer .rt-moral { font-weight: 600; }
+
+/* A slide with its notes below it, as the program's notes view shows them
+   (»Eine Folie, ein Gedanke«): the slide as a picture, the notes as text */
+figure.slide-with-notes { max-width: 36em; margin: 1.5em auto; }
+figure.slide-with-notes img.paper { margin: 0 auto; }
+figure.slide-with-notes .slide-notes {
+    border: 1px solid var(--bs-border-color);
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    padding: 0.6em 0.9em 0.7em;
+    font-size: 0.9em;
+    background: var(--bs-tertiary-bg);
+}
+figure.slide-with-notes .slide-notes-label {
+    display: block;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bs-secondary-color);
+    margin-bottom: 0.2em;
+}
+figure.slide-with-notes figcaption { margin-top: 0.5em; font-size: 0.9em; color: var(--bs-secondary-color); }
