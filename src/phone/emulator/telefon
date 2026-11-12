@@ -336,7 +336,10 @@ class Server:
             show('Das Spiel ist zu Ende.', '1')
         if self.phone is phone:
             self.phone = None
-            self.send({'ended': reason})
+            ended = {'ended': reason}
+            if reason == 'transfer':
+                ended['number'] = phone.transfer_to       # the page offers it in the Telefonbuch
+            self.send(ended)
 
     async def start_call(self):
         if self.call and not self.call.done():

@@ -326,8 +326,11 @@ object, so any language can play:
 Hotline weiter«) goes to another game of the Telefonbuch only, never to a
 number outside. The runner and the line (`line.py`: the menu again with the
 number as dialled) allow five forwards a call, all games of a call within
-its time; the emulator says where the call would go and ends, since it does
-not know the published games.
+its time; the emulator ends the call, since it does not know the published
+games, and its page offers the Telefonbuch with the number dialled
+(`/telefonbuch?nummer=123`, its phone `?line&dial=123`; the page finds the
+site's address from its own, `<tag>-<port>.<site>`), so a game can be tried
+with `transfer` before it is published.
 
 The library per language turns this into `say("…")`, `keys(1)` and so on
 (Python, Ruby, JavaScript first; Java, C#, Dart, Go later, as the

@@ -8,6 +8,17 @@
 // long descriptions take more room). The notes stand in a colophon, on the
 // right page of the spread after the last entries (a blank page beside it),
 // so there is always a page to turn to; on a narrow screen on the next page.
+// A number in the address (/telefonbuch?nummer=123: a game in the
+// Workspace forwarded its call there): the phone has it dialled already.
+(function () {
+    const number = new URLSearchParams(location.search).get('nummer') || '';
+    const phone = document.querySelector('iframe.phone-book-line');
+    if (phone && /^\d{3,4}$/.test(number)) {
+        phone.src = '/telefonbuch/telefon/?line&dial=' + number;
+        phone.scrollIntoView({ block: 'center' });
+    }
+})();
+
 (function () {
     const book = document.getElementById('phone-book');
     if (!book) return;

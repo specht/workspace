@@ -82,6 +82,10 @@ main { display: grid; grid-template-columns: 310px minmax(0, 700px); gap: 24px; 
 .keypad button:disabled { opacity: .45; cursor: default; }
 .call { display: grid; grid-template-columns: 1fr 66px 1fr; align-items: center; justify-items: center; margin-top: 18px; }
 .call #call { grid-column: 2; }
+/* after a forward: the way to the Telefonbuch */
+.note a.onward { display: inline-block; margin-top: 6px; padding: 4px 10px; border-radius: 6px; background: #2e7d32; color: #fff; text-decoration: none; font-weight: 600; }
+.note a.onward:hover, .note a.onward:focus-visible { background: #256628; }
+
 /* the line: digits dialled before the call, taken back one at a time */
 .call .erase { grid-column: 3; width: 44px; height: 44px; background: none; color: rgba(255,255,255,.75); }
 .call .erase:hover { color: #fff; }
@@ -280,6 +284,22 @@ const SESSION = LINE ? Array.from(crypto.getRandomValues(new Uint8Array(12)), b 
 if (LINE) {
     document.body.classList.add('line');
     $('title').textContent = '';          // the display says nothing until a game names itself
+}
+// a number handed over in the address (?dial=123: a game in the Workspace
+// forwarded its call there): dialled already, the call button calls it
+const DIAL = LINE ? (new URLSearchParams(location.search).get('dial') || '').replace(/\D/g, '').slice(0, 4) : '';
+if (DIAL) {
+    dialed = DIAL;
+    $('digits').textContent = dialed;
+}
+// The Telefonbuch of the site this page is forwarded from: the Workspace
+// serves it under <tag>-<port>.<the site's host> (nginx_config.rb); null
+// where it runs elsewhere
+function phoneBook(number) {
+    const parts = location.hostname.split('.');
+    if (parts.length < 3 || !/-\d+$/.test(parts[0])) return null;
+    return location.protocol + '//' + parts.slice(1).join('.') + (location.port ? ':' + location.port : '') +
+        '/telefonbuch?nummer=' + encodeURIComponent(number);
 }
 function at(path) {
     const p = path.replace(/^\//, '');
@@ -805,6 +825,7 @@ document.addEventListener('keydown', e => {
 });
 
 const ENDED = { caller: 'Aufgelegt.', hangup: 'Das Spiel hat aufgelegt.', ended: 'Das Spiel ist zu Ende.', time: 'Die Zeit ist um.',
+    transfer: 'Das Spiel hat weitergeleitet.',
     busy: 'Alle Leitungen sind belegt. Versuch es gleich noch einmal.', one: 'Von hier läuft schon ein Anruf.' };
 // the line's display speaks of the other end, not of a game
 if (LINE) Object.assign(ENDED, { hangup: 'Die Gegenseite hat aufgelegt.', ended: 'Der Anruf ist beendet.' });
@@ -816,7 +837,7 @@ events.onmessage = message => {
         if (inCall) { setCall(false); note('Die Verbindung zum Terminal war weg; der Anruf ist beendet.'); }
         $('status').textContent = 'Bereit';
         $('call').disabled = false;
-        $('call').classList.toggle('ready', !inCall && (!LINE || !!TRY));
+        $('call').classList.toggle('ready', !inCall && (!LINE || !!TRY || !!dialed));
         enableKeys();
     } else if (e.replaced) {
         events.close();
@@ -839,7 +860,24 @@ events.onmessage = message => {
         waited();
     } else if (e.ended) {
         setCall(false);
-        note(ENDED[e.ended] || 'Der Anruf ist beendet.');
+        if (e.ended === 'transfer' && !LINE && e.number) {
+            // the published games are in the Telefonbuch, not here: the call
+            // goes on there with the number dialled
+            const div = note(`Das Spiel leitet weiter an ${e.number}. Die veröffentlichten Spiele laufen im Telefonbuch.`);
+            const url = phoneBook(e.number);
+            if (url) {
+                const link = document.createElement('a');
+                link.className = 'onward';
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener';
+                link.textContent = `Im Telefonbuch ${e.number} wählen`;
+                div.appendChild(document.createElement('br'));
+                div.appendChild(link);
+            }
+        } else {
+            note(ENDED[e.ended] || 'Der Anruf ist beendet.');
+        }
         // without the chat (the line) the display says why it ended
         $('status').textContent = LINE && ENDED[e.ended] && e.ended !== 'caller' ? ENDED[e.ended] : 'Bereit';
     }
