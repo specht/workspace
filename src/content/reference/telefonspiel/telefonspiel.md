@@ -197,12 +197,11 @@ Ziffern. Gibt es kein veröffentlichtes Spiel mit dieser Nummer, bricht das
 Spiel mit einem Fehler in dieser Zeile ab. Ein Anruf kann höchstens fünfmal
 weitergeleitet werden, und alle Spiele eines Anrufs teilen sich seine Zeit.
 
-Mit `telefon` im Workspace endet der Anruf an dieser Stelle, denn die
-veröffentlichten Spiele laufen im Telefonbuch. Die Seite des Telefons zeigt
-dann einen Knopf, der das Telefonbuch mit der gewählten Nummer öffnet; ein
-Druck auf den grünen Knopf, und der Anruf geht dort im anderen Spiel weiter.
-So lässt sich ein Spiel mit `transfer` ausprobieren, bevor es veröffentlicht
-ist.
+Mit `telefon` im Workspace geht der Anruf genauso weiter: Das Telefon auf
+der Seite verbindet sich mit dem Telefonbuch, und das andere Spiel spricht im
+selben Anruf weiter. So lässt sich ein Spiel mit `transfer` ausprobieren,
+bevor es veröffentlicht ist. Nach dem Auflegen ruft der grüne Knopf wieder
+das eigene Spiel an.
 <!-- /part -->
 
 <!-- part: name -->

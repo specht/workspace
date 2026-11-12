@@ -16,6 +16,7 @@ import importlib.machinery
 import importlib.util
 import os
 import pwd
+import re
 import resource
 import sys
 import time
@@ -84,6 +85,18 @@ def trial_of(token):
     if not folder.startswith('games/') or os.path.splitext(file)[1] not in ('.py', '.rb', '.js'):
         return None
     return {'folder': folder, 'file': file}
+
+
+def workspace_origin(origin, host):
+    """origin is a Workspace's forwarded port of the site at host
+    (https://<tag>-<port>.<site>, nginx_config.rb), nothing else"""
+    import urllib.parse
+    site = host.split(':')[0].lower()
+    if not origin or not site:
+        return False
+    parts = urllib.parse.urlsplit(origin)
+    name = (parts.hostname or '').lower()
+    return parts.scheme in ('http', 'https') and bool(re.fullmatch(r'[a-z0-9]+-\d+\.' + re.escape(site), name))
 
 
 def folder_path(folder):
@@ -213,7 +226,7 @@ class Router(emulator.Server):
             if len(parts) < 2:
                 return
             method, target = parts[0], parts[1]
-            length, ip = 0, ''
+            length, ip, origin, host = 0, '', '', ''
             while True:
                 line = await asyncio.wait_for(reader.readline(), 30)
                 if line in (b'\r\n', b'\n', b''):
@@ -223,6 +236,16 @@ class Router(emulator.Server):
                     length = min(int(value.strip() or 0), 65536)
                 elif name.strip().lower() == 'x-real-ip':
                     ip = value.strip()
+                elif name.strip().lower() == 'origin':
+                    origin = value.strip()
+                elif name.strip().lower() == 'host':
+                    host = value.strip()
+            # the page of telefon in a Workspace of this site continues a
+            # forwarded call here (page.html): only its origin may read. The
+            # site's name comes from the configuration: nginx passes the
+            # request on with the line's own name as its host
+            site = os.environ.get('PHONE_SITE_HOST') or host
+            emulator.ORIGIN.set(origin if workspace_origin(origin, site) else None)
             body = await reader.readexactly(length) if length else b''
             url = urllib.parse.urlsplit(target)
             query = dict(urllib.parse.parse_qsl(url.query))
@@ -259,7 +282,10 @@ class Router(emulator.Server):
         line.seen = time.monotonic()
         if method == 'POST' and path == '/call':
             busy = sum(1 for other in self.lines.values() if other.calling() and other is not line)
-            mine = any(other.calling() and other.ip == line.ip and other is not line for other in self.lines.values())
+            # one call per visitor's address, but not for a Workspace's page
+            # (a forwarded call): a class shares one address at school
+            mine = emulator.ORIGIN.get() is None and \
+                any(other.calling() and other.ip == line.ip and other is not line for other in self.lines.values())
             if mine or busy >= LINES:
                 line.send({'ended': 'one' if mine else 'busy'})
                 self.respond(writer, 204)

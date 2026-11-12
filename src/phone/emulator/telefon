@@ -14,6 +14,7 @@ library, so it runs in every Workspace without installing anything.
 
 import argparse
 import asyncio
+import contextvars
 import json
 import mimetypes
 import os
@@ -56,6 +57,17 @@ def paint(code, text):
 
 def show(text, code=None):
     print(paint(code, text) if code else text, flush=True)
+
+
+# The origin another page may read this server's answers from, for the
+# request being answered (the Telefonbuch's line sets it for a Workspace's
+# own page, line.py); None: none, as the emulator itself never needs it.
+ORIGIN = contextvars.ContextVar('origin', default=None)
+
+
+def cross_origin():
+    origin = ORIGIN.get()
+    return [f'Access-Control-Allow-Origin: {origin}', 'Vary: Origin'] if origin else []
 
 
 class Emulator(game.Phone):
@@ -278,7 +290,7 @@ class Server:
         # no-transform: code-server's proxy gzips everything else and would
         # hold the stream back until enough bytes collect
         writer.write(b'HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nCache-Control: no-cache, no-transform\r\n'
-                     b'X-Accel-Buffering: no\r\n\r\n')
+                     b'X-Accel-Buffering: no\r\n' + ''.join(h + '\r\n' for h in cross_origin()).encode('latin-1') + b'\r\n')
         self.send({'ready': True, 'title': self.title()})
 
         async def ping():
@@ -379,7 +391,7 @@ class Server:
     def respond(self, writer, status, body=b'', content_type='text/plain; charset=utf-8', headers=()):
         reason = {200: 'OK', 204: 'No Content', 400: 'Bad Request', 404: 'Not Found', 502: 'Bad Gateway'}[status]
         head = [f'HTTP/1.1 {status} {reason}', f'Content-Type: {content_type}',
-                f'Content-Length: {len(body)}', 'Connection: close', *headers]
+                f'Content-Length: {len(body)}', 'Connection: close', *headers, *cross_origin()]
         writer.write(('\r\n'.join(head) + '\r\n\r\n').encode('latin-1') + body)
 
     async def route(self, method, path, query, body, reader, writer):

@@ -371,7 +371,9 @@ docker_compose[:services][:phone_line] = {
     :build => './docker/phone-runner',
     :command => ['python3', '-u', '/phone/line/line.py'],
     :volumes => ['./src/phone:/phone:ro', "#{INTERNAL_PATH}/phone-games:/games:ro"],
-    :environment => { 'PHONE_SPEECH' => 'http://phone-speech:8000', 'PHONE_GAMES' => '/games', 'PHONE_LINES' => '10' },
+    :environment => { 'PHONE_SPEECH' => 'http://phone-speech:8000', 'PHONE_GAMES' => '/games', 'PHONE_LINES' => '10',
+                      # the site, for the pages of telefon in its Workspaces (line.py, workspace_origin)
+                      'PHONE_SITE_HOST' => WEBSITE_HOST },
     :networks => ['phone'],
     :tmpfs => ['/tmp:size=64m'],
     :mem_limit => '2g',
