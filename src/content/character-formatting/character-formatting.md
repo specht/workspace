@@ -5,8 +5,8 @@ kind: labor
 duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Gestaltung von Medienproduktionen)"
 topics: [standardsoftware]
-language: Word / LibreOffice / Nextcloud Office
-languages: [word, libreoffice, nextcloud]
+language: LibreOffice / Word / Nextcloud Office
+languages: [libreoffice, word, nextcloud]
 requires: [formatting-marks]
 reference: []
 </div>

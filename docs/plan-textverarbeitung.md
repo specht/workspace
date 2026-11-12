@@ -112,7 +112,7 @@ These hold for word processing and for the series still to come
   class uses; its ways and shortcuts are those of the program chosen at the
   top of the page (`<!-- language: word -->` and so on in `lehrkraft.md`,
   as on the page).
-- **Exporting as PDF belongs to the curriculum:** sheet 9 ends with the
+- **Exporting as PDF belongs to the curriculum:** sheet 10 ends with the
   article exported as PDF, a check of its own (`accept: pdf`: a PDF, its
   fonts embedded, the article's words), read by poppler.
 - **Grading:** the last checked version is the hand-in; the teacher sees it
@@ -224,7 +224,17 @@ built by hand; each is a page of a series of its own, about one lesson.
    fixed date; one that updates is under *Weitere Feldbefehle…*. The typed
    head is the line with the page break: deleting it loses the break (the
    page says to set it again).
-9. **The hand-in:** an article of one's own for the trip newspaper, every
+9. **Die Zeitungsseite** (built, `newspaper-page`; the maintainer: every
+   basic in the story, the final product polished, 12 November 2026): an
+   article about the cranes set as a newspaper sets it: two columns, 1,5 cm
+   margins, and in »Standard« justified text, automatic hyphenation, a
+   first-line indent instead of spacing, single line spacing. A small
+   calculation (the width of a column) and a prediction (justified text in
+   a narrow column without hyphenation). The office image got `hyphen-de`
+   (without it LibreOffice draws German text unhyphenated) and
+   `hunspell-de-de` (for a spell check to come). Rules `columns`, `margins`,
+   `justify`, `hyphenation`, `first_line_indent`, `line_spacing`.
+10. **The hand-in:** an article of one's own for the trip newspaper, every
    earlier point checked at once, the file handed in for the teacher to grade
    (stored like a `submit`, viewed with its marked pages on the class page);
    then the article exported as PDF.
@@ -233,10 +243,18 @@ built by hand; each is a page of a series of its own, about one lesson.
 
 - **Grading** (the maintainer asked how; to decide): see the proposal in the
   conversation of 12 November 2026, summed up here once decided.
-- **The curriculum graph:** a series (the nine sheets, the Backrooms levels)
+- **The curriculum graph:** a series (the ten sheets, the Backrooms levels)
   as one node (the maintainer, 12 November 2026); until then the stored
   layout is recomputed whenever a sheet is added.
-- **Every sheet to 45 minutes**, »Formatvorlagen« first.
+- **Every sheet to 45 minutes**, »Formatvorlagen« first (sheet 6 got the
+  title and subtitle as styles and »Standard« for the body text).
+- **A spell check for sheet 10:** the student's own article without
+  unknown words (LibreOffice's spell checker with `hunspell-de-de`, now in
+  the image); names and places the class uses need a way to pass.
+- **The program's order:** LibreOffice, Word, Nextcloud Office everywhere
+  (the maintainer, 12 November 2026: no promotion of Microsoft's software to
+  children; Word stays before Nextcloud Office, a real app); with Word
+  chosen, a quiet line under the switch names the free programs.
 - **Illustrations where the sheets only explain** (the maintainer, 12 November
   2026; the site's rule): every sheet looked through for passages that say
   in words what a drawing would show. Named so far: the serifs on »Schrift
@@ -255,7 +273,7 @@ built by hand; each is a page of a series of its own, about one lesson.
   not from memory; Word's and Nextcloud Office's to be checked in the
   programs themselves.
 
-- **For worksheet 9:** the page of each place in the list (the viewer
+- **For worksheet 10:** the page of each place in the list (the viewer
   shows the page in view and goes to a place's page already).
 - **Keeping hold of the file needs https:** Chrome and Edge offer the File
   System Access API only in a secure context (https or localhost). On the

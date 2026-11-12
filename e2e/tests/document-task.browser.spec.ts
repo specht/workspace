@@ -138,7 +138,7 @@ test('a document is checked and its problems are marked on its page', async ({ p
   expect(Math.abs(last.x - first.x)).toBeLessThan(2);
   expect(Math.abs(last.y - first.y)).toBeLessThan(2);
   await expect(report.locator('.document-zoom')).not.toHaveText(kept!);
-  await expect(card.locator('.document-browser')).toContainText('genügt es, in Word oder LibreOffice zu speichern');
+  await expect(card.locator('.document-browser')).toContainText('genügt es, in LibreOffice oder Word zu speichern');
   if (shots) { await page.waitForTimeout(500); await page.screenshot({ path: path.join(shots, 'document-zoomed.png') }); }
 
   // the built invitation: everything ticked, no marks
@@ -319,7 +319,7 @@ test('a diary is checked for its heading styles', async ({ page, e2eEmail }, tes
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(9);
 });
 
-test('a report of seven pages is checked for its breaks, page numbers and contents', async ({ page, e2eEmail }, testInfo) => {
+test('a report of six pages is checked for its breaks and contents', async ({ page, e2eEmail }, testInfo) => {
   await page.setViewportSize({ width: 960, height: 1040 });
   await loginAsE2eUser(page, e2eEmail, testInfo);
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
@@ -329,7 +329,7 @@ test('a report of seven pages is checked for its breaks, page numbers and conten
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/pages-and-contents/07 Reisebericht.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
-  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(4);
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
   // every page drawn, the page in view shown, the next one a click away
   await expect(report.locator('.document-sheet')).toHaveCount(6);
   const where = report.locator('.document-page');
@@ -339,8 +339,8 @@ test('a report of seven pages is checked for its breaks, page numbers and conten
   await report.getByRole('button', { name: 'Ganze Seite' }).click();
   await report.getByRole('button', { name: 'Nächste Seite' }).click();
   await expect(where).toHaveText('3 / 6');
-  // the typed »Seite 1« is marked in the footer of every page
-  await expect(report.locator(".document-mark[data-n='3']")).toHaveCount(6);
+  // the empty paragraphs are marked, the runs of them before each day
+  expect(await report.locator(".document-mark[data-n='1']").count()).toBeGreaterThanOrEqual(5);
   // the toolbar stays one row at half a Full HD screen
   const tools = (await report.locator('.document-tools').boundingBox())!;
   expect(tools.height).toBeLessThan(50);
@@ -360,12 +360,13 @@ test('an article of ones own is checked on every point, and the hand-in shows it
   const card = page.locator(".task-card[data-task='trip-newspaper/artikel']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel-eilig.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
-  await expect(card.locator('.document-report .document-checklist li.document-open')).toHaveCount(6);
+  // (the hurried article is ragged right, without hyphenation, too)
+  await expect(card.locator('.document-report .document-checklist li.document-open')).toHaveCount(8);
   // the hand-in: the last checked version with its marks, as the teacher sees it
   await page.goto('/abgabe/dokument/trip-newspaper/artikel');
   await expect(page.locator('.document-handin-file')).toContainText('artikel-eilig.docx');
   const report = page.locator('.document-handin-card .document-report');
-  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(6);
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(8);
   await expect(report.locator('.document-sheet img')).toHaveCount(1);
   await expect(report.locator('.document-recheck')).toHaveCount(0);
   if (shots) await page.screenshot({ path: path.join(shots, 'handin.png') });
@@ -428,4 +429,26 @@ test('a report is checked for its header, date, page number and footnotes', asyn
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/headers-and-footnotes/stufen/reisebericht.docx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
+});
+
+// »Die Zeitungsseite«: two columns, narrow margins, and in »Standard«
+// justified text with hyphenation, a first-line indent, single spacing.
+test('an article is checked for its newspaper layout', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/newspaper-page');
+  await states;
+  const card = page.locator(".task-card[data-task='newspaper-page/seite']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/newspaper-page/09 Kraniche.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(6);
+  if (shots) await page.screenshot({ path: path.join(shots, 'newspaper-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/newspaper-page/stufen/ohne-trennung.docx'));
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(1);
+  await expect(report.locator('.document-checklist li.document-open')).toContainText('Silbentrennung');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/newspaper-page/stufen/zeitungsseite.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
 });

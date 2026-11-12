@@ -9,7 +9,7 @@ examples:
     pass:
       - document: stufen/artikel.docx
     fail:
-      - document: ../../static/trip-newspaper/09 Artikel.docx
+      - document: ../../static/trip-newspaper/10 Artikel.docx
         say: Wörter
       - document: stufen/artikel-eilig.docx
         say: Listenzeichen

@@ -1,0 +1,23 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die fertige Zeitungsseite muss die Prüfung bestehen;
+# die Vorlage und dieselbe Seite ohne Silbentrennung scheitern. Alle macht
+# dokumente.py.
+format: 1
+activity: newspaper-page
+examples:
+  seite:
+    pass:
+      - document: stufen/zeitungsseite.docx
+    fail:
+      - document: ../../static/newspaper-page/09 Kraniche.docx
+        say: in einer Spalte über die ganze Breite
+      - document: ../../static/newspaper-page/09 Kraniche.docx
+        say: Seitenrand ist noch zu breit
+      - document: ../../static/newspaper-page/09 Kraniche.docx
+        say: Im Blocksatz enden alle Zeilen
+      - document: ../../static/newspaper-page/09 Kraniche.docx
+        say: ohne Einzug
+      - document: ../../static/newspaper-page/09 Kraniche.docx
+        say: Zeilenabstand ist noch
+      - document: stufen/ohne-trennung.docx
+        say: Silbentrennung noch aus

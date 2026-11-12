@@ -1,7 +1,7 @@
 Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größen und fast überall fett benutzt hat: zwei Schriften, eine Größe für den Text, fett nur für Datum, Zeit und Ort. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td><a href='/formatting-marks'>Was das Auge nicht sieht</a>: Formatierungszeichen, Ausrichtung und Abstand. Eine Textverarbeitung: Word, LibreOffice Writer oder Nextcloud Office.</td></tr>
+<tr><th>Voraussetzungen</th><td><a href='/formatting-marks'>Was das Auge nicht sieht</a>: Formatierungszeichen, Ausrichtung und Abstand. Eine Textverarbeitung: LibreOffice Writer, Word oder Nextcloud Office.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>15 Minuten:</b> der Aushang, Schriften zählen, Serifen, Größe.</li>
@@ -22,7 +22,7 @@ Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größ
 <p>Die Schriftart steht im Register <em>Start</em> im Feld ganz links. Formatierung löschen: markieren und <kbd>Strg</kbd>+<kbd>M</kbd>.</p>
 <!-- /language -->
 </td></tr>
-<tr><th>Dateien</th><td>Die Vorlage <code>02 Aushang.docx</code> kommt von der Seite. In Chrome und Edge prüft die Seite nach jedem Speichern von selbst; in Firefox und Safari wird die Datei vor jedem Prüfen gewählt oder auf die Karte gezogen. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
+<tr><th>Dateien</th><td>Die Vorlage <code>02 Aushang.docx</code> kommt von der Seite. Wie die Prüfung arbeitet (zwei Hälften des Bildschirms, Prüfen beim Speichern): die Notiz zum ersten Blatt, <a href='/formatting-marks'>Was das Auge nicht sieht</a>. In Chrome und Edge prüft die Seite nach jedem Speichern von selbst; in Firefox und Safari wird die Datei vor jedem Prüfen gewählt oder auf die Karte gezogen. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig, höchstens zwei Schriftarten, der Text der vier Absätze in 11 bis 12 pt, keiner davon ganz fett, »14. März«, »großen Pause« und »vor der Mensa« fett, nichts unterstrichen, keine Großbuchstaben als Format.</li>
 <li>Großbuchstaben, die jemand eintippt, statt sie als Format zu setzen, zählen als Text: Wer den Satz in Kleinbuchstaben neu tippt, hat die Wörter der Vorlage geändert, und der erste Punkt bleibt offen.</li>

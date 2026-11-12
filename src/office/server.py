@@ -208,6 +208,10 @@ def read_paragraph(para, styles, where):
         'tabs': tabs,
         'indent_left': pt(para.ParaLeftMargin),
         'indent_first': pt(para.ParaFirstLineIndent),
+        # automatic hyphenation; the line spacing (mode 0: proportional, in
+        # percent; 1: at least, 2: leading, 3: fixed, in pt)
+        'hyphenate': bool(para.ParaIsHyphenation),
+        'line_spacing': line_spacing(para),
         'break': enum_value(para.BreakType),
         'numbering': numbering,
         'portions': portions,
@@ -512,13 +516,46 @@ def read_styles(doc, names):
     return out
 
 
+def line_spacing(para):
+    try:
+        spacing = para.ParaLineSpacing
+        mode = int(spacing.Mode)
+        return {'mode': mode, 'value': spacing.Height if mode == 0 else pt(spacing.Height)}
+    except Exception:
+        return None
+
+
 def page_margins(doc):
     styles = doc.StyleFamilies.getByName('PageStyles')
     cursor = doc.Text.createTextCursor()
     name = cursor.PageStyleName
     page = styles.getByName(name)
+    # left and right: where the text begins and ends; margins: the four
+    # page margins themselves
     return {'left': pt(page.LeftMargin), 'right': pt(page.Width - page.RightMargin),
-            'width': pt(page.Width), 'height': pt(page.Height)}
+            'width': pt(page.Width), 'height': pt(page.Height),
+            'margins': {'left': pt(page.LeftMargin), 'right': pt(page.RightMargin),
+                        'top': pt(page.TopMargin), 'bottom': pt(page.BottomMargin)}}
+
+
+def text_columns(doc):
+    """the most text columns anywhere: in a page style in use (Word: Layout
+    › Spalten for the whole document) or in a section (a part in columns)"""
+    most = 1
+    try:
+        family = doc.StyleFamilies.getByName('PageStyles')
+        for name in family.getElementNames():
+            st = family.getByName(name)
+            if st.isInUse() and st.TextColumns is not None:
+                most = max(most, st.TextColumns.ColumnCount)
+        sections = doc.getTextSections()
+        for i in range(sections.getCount()):
+            columns = sections.getByIndex(i).TextColumns
+            if columns is not None:
+                most = max(most, columns.ColumnCount)
+    except Exception:
+        traceback.print_exc()
+    return most
 
 
 DEST = re.compile(r'^\s*(\d+)\s+\[\s*XYZ\s+([-\d.]+)\s+([-\d.]+)\s+\S+\s*\]\s+"([pe]\d+)"')
@@ -697,6 +734,7 @@ def analyze(data, filename):
             page_parts = read_page_parts(doc, styles)
             footnotes = read_footnotes(doc)
             margins = page_margins(doc)
+            columns = text_columns(doc)
             for i, (text, start, end) in enumerate(starts):
                 for name, at in ((f'p{i}', start), (f'e{i}', end)):
                     mark = doc.createInstance('com.sun.star.text.Bookmark')
@@ -722,7 +760,7 @@ def analyze(data, filename):
         out_pages = pdf_pages(pdf, folder, pages)
         return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used,
                 'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'footnotes': footnotes,
-                'pages': out_pages, 'page_count': len(pages), 'margins': margins}
+                'pages': out_pages, 'page_count': len(pages), 'margins': margins, 'columns': columns}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
 

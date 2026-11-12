@@ -22,7 +22,7 @@ Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabel
 <p>Umwandeln: <em>Tabelle</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Umwandeln</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Text in Tabelle</em>, Text trennen bei <em>Tabulatoren</em>. Wiederholen: <em>Tabelle</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Eigenschaften</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Textfluss</em>, Haken bei <em>Überschrift wiederholen</em>.</p>
 <!-- /language -->
 </td></tr>
-<tr><th>Dateien</th><td>Die Vorlage <code>04 Programm.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
+<tr><th>Dateien</th><td>Die Vorlage <code>04 Programm.docx</code> kommt von der Seite. Wie die Prüfung arbeitet (zwei Hälften des Bildschirms, Prüfen beim Speichern): die Notiz zum ersten Blatt, <a href='/formatting-marks'>Was das Auge nicht sieht</a>. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (auch in den Zellen), Montag bis Freitag stehen in einer Tabelle mit drei Spalten, »Programm« in der ersten Zeile, die sich wiederholt, kein Tab mehr im Dokument.</li>
 </ul></td></tr>

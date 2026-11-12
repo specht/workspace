@@ -73,7 +73,7 @@ tasks:
     title: Der Aushang, mit Absicht gesetzt
     prompt: |
       Prüfe deinen Aushang. Die Prüfung markiert auf deiner Seite jede Stelle,
-      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
       prüfst.
     check:
       type: document

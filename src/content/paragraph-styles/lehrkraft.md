@@ -23,7 +23,7 @@ Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind
 <p>Löschen: <kbd>Strg</kbd>+<kbd>M</kbd>. Zuweisen: die Liste der Absatzvorlagen links oben. Ändern: die Seitenleiste mit den Vorlagen, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Vorlage bearbeiten…</em>. Die Übersicht: der Navigator.</p>
 <!-- /language -->
 </td></tr>
-<tr><th>Dateien</th><td>Die Vorlage <code>06 Reisetagebuch.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
+<tr><th>Dateien</th><td>Die Vorlage <code>06 Reisetagebuch.docx</code> kommt von der Seite. Wie die Prüfung arbeitet (zwei Hälften des Bildschirms, Prüfen beim Speichern): die Notiz zum ersten Blatt, <a href='/formatting-marks'>Was das Auge nicht sieht</a>. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig; die fünf Tage haben die Ebene 1, Vormittag, Nachmittag, Schiff und Abend die Ebene 2 (über ihre Formatvorlagen).</li>
 <li>Titel und Untertitel haben die Vorlagen »Titel« und »Untertitel«.</li>

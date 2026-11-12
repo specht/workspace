@@ -1,0 +1,86 @@
+# Aufgaben zu »Die Zeitungsseite«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/newspaper-page/09 Kraniche.docx), die fertige Seite
+# und die Stufe ohne Silbentrennung macht dokumente.py.
+format: 1
+activity: newspaper-page
+tasks:
+  - id: spalte
+    title: Wie breit ist eine Spalte?
+    prompt: |
+      Das Blatt ist 21 cm breit. Links und rechts bleiben je 1,5 cm Rand, und
+      zwischen den beiden Spalten liegen 0,8 cm. Wie breit ist eine Spalte?
+      Antworte in cm.
+    check:
+      type: number
+      expect: 8.6
+      tolerance: 0.05
+    feedback:
+      - when: { between: [9, 9.01] }
+        say: Das wäre ohne den Abstand zwischen den Spalten. Zieh die 0,8 cm auch noch ab.
+      - when: { between: [10.5, 10.5] }
+        say: Das ist die Hälfte des ganzen Blatts. Die Ränder gehören nicht zu den Spalten.
+    hint:
+      - Zieh zuerst ab, was nicht zu den Spalten gehört, und teil den Rest durch zwei.
+      - 21 cm − 2 · 1,5 cm − 0,8 cm, dann geteilt durch 2.
+    solution: |
+      (21 − 1,5 − 1,5 − 0,8) cm : 2 = 8,6 cm.
+
+  - id: luecken
+    title: Blocksatz in einer schmalen Spalte
+    prediction: true
+    prompt: |
+      Der Artikel steht in einer Spalte von 8,6 cm. Jemand stellt ihn auf
+      Blocksatz, ohne Silbentrennung. Was passiert?
+    check:
+      type: choice
+      options:
+        - Alle Zeilen sind gleich lang, und alles sieht gleichmäßig aus.
+        - In manchen Zeilen entstehen große Lücken zwischen den Wörtern.
+        - Lange Wörter ragen über den Rand der Spalte hinaus.
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Gleich lang werden die Zeilen. Aber wohin kommt der Platz, den ein langes Wort hinterlässt, das nicht mehr passt?
+      - when: { picked: 2 }
+        say: Ein Wort, das nicht passt, rutscht in die nächste Zeile. Sieh nach, was mit der Zeile passiert, aus der es rutscht.
+    solution: |
+      In manchen Zeilen entstehen große Lücken: Rutscht ein langes Wort in die
+      nächste Zeile, verteilt der Blocksatz den übrigen Platz auf wenige Lücken.
+
+  - id: seite
+    title: Der Artikel als Zeitungsseite
+    prompt: |
+      Prüfe deinen Artikel. Die Prüfung markiert auf deiner Seite jede Stelle,
+      an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
+      prüfst.
+    check:
+      type: document
+      file: newspaper-page/09 Kraniche.docx
+      rules:
+        - text
+        - { columns: 2 }
+        - { margins: 2 }
+        - justify
+        - hyphenation
+        - first_line_indent
+        - { line_spacing: 1.0 }
+    hint:
+      - Fang mit der Seite an. Zwei Spalten und schmalere Ränder stellst du für die ganze Seite ein.
+      - Alles andere stellst du einmal in der Formatvorlage »Standard« ein, nicht in jedem Absatz.
+      - Blocksatz und Silbentrennung gehören zusammen. Prüf danach, ob Einzug, Abstand und Zeilenabstand stimmen.
+    libreoffice:
+      hint:
+        - "*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*: 2 Spalten, Abstand 0,8 cm. *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…*, Register *Seite*: alle Ränder 1,5 cm."
+        - "Seitenleiste mit den Vorlagen (<kbd>F11</kbd>), Rechtsklick auf *Standard* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*: *Ausrichtung* *Blocksatz*, *Textfluss* *Silbentrennung* *Automatisch*."
+        - "Im selben Fenster, Register *Einzüge und Abstände*: *Erste Zeile* 0,5 cm, *Unter dem Absatz* 0 cm, *Zeilenabstand* *Einzeilig*."
+    nextcloud:
+      hint:
+        - "*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*: 2 Spalten, Abstand 0,8 cm. *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…*, Register *Seite*: alle Ränder 1,5 cm."
+        - "Seitenleiste mit den Vorlagen, Rechtsklick auf *Standard* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*: *Ausrichtung* *Blocksatz*, *Textfluss* *Silbentrennung* *Automatisch*."
+        - "Im selben Fenster, Register *Einzüge und Abstände*: *Erste Zeile* 0,5 cm, *Unter dem Absatz* 0 cm, *Zeilenabstand* *Einzeilig*."
+    word:
+      hint:
+        - "*Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Spalten…*: 2 Spalten, Abstand 0,8 cm. *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenränder* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Benutzerdefinierte Seitenränder…*: alle 1,5 cm."
+        - "Rechtsklick auf *Standard* in der Liste der Formatvorlagen <i class='bi bi-chevron-right' aria-hidden='true'></i> *Ändern…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz…*: *Blocksatz*, *Erste Zeile* 0,5 cm, *Abstand Nach* 0 pt, *Zeilenabstand* *Einfach*."
+        - "Die Silbentrennung: *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Silbentrennung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Automatisch*."

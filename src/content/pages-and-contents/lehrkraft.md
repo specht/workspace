@@ -22,11 +22,11 @@ Lernende ersetzen leere Absätze durch Seitenumbrüche und ein getipptes Inhalts
 <p>Das Verzeichnis: <em>Einfügen</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Verzeichnis</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Inhaltsverzeichnis…</em>; aktualisieren mit Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Verzeichnis aktualisieren</em>.</p>
 <!-- /language -->
 </td></tr>
-<tr><th>Dateien</th><td>Die Vorlage <code>07 Reisebericht.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
+<tr><th>Dateien</th><td>Die Vorlage <code>07 Reisebericht.docx</code> kommt von der Seite. Wie die Prüfung arbeitet (zwei Hälften des Bildschirms, Prüfen beim Speichern): die Notiz zum ersten Blatt, <a href='/formatting-marks'>Was das Auge nicht sieht</a>. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (die getippten Zeilen des Verzeichnisses zählen nicht), keine leeren Absätze; ein leerer Absatz direkt vor einem Seitenumbruch zählt nicht, so legt Word ihn mit <kbd>Strg</kbd>+<kbd>Enter</kbd> an.</li>
 <li>Jeder Tag beginnt mit einem Seitenumbruch (vor der Überschrift oder in ihrer Formatvorlage).</li>
-<li>Es gibt ein Inhaltsverzeichnis des Programms, und es nennt die Überschriften, die im Dokument stehen; die Seitenzahlen darin vergleicht die Prüfung nicht, weil Word und LibreOffice eine Seite verschieden umbrechen können.</li>
+<li>Es gibt ein Inhaltsverzeichnis des Programms, und es nennt die Überschriften, die im Dokument stehen; die Seitenzahlen darin vergleicht die Prüfung nicht, weil LibreOffice und Word eine Seite verschieden umbrechen können.</li>
 </ul></td></tr>
 </table>
 

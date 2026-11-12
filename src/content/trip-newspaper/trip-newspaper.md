@@ -5,9 +5,9 @@ kind: projekt
 duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Medienproduktion als planvoller Prozess, Herstellung von Medienprodukten)"
 topics: [standardsoftware]
-language: Word / LibreOffice / Nextcloud Office
-languages: [word, libreoffice, nextcloud]
-requires: [headers-and-footnotes]
+language: LibreOffice / Word / Nextcloud Office
+languages: [libreoffice, word, nextcloud]
+requires: [newspaper-page]
 reference: []
 </div>
 
@@ -28,7 +28,7 @@ Reihe gelernt hast.
 
 ## Was dein Artikel braucht
 
-Die Prüfung sieht nach allem, was in den acht Blättern vorkam. Wenn du bei
+Die Prüfung sieht nach allem, was in den neun Blättern vorkam. Wenn du bei
 einem Punkt nicht weiterweißt, steht er auf dem Blatt daneben.
 
 <table class='table'>
@@ -41,6 +41,7 @@ einem Punkt nicht weiterweißt, steht er auf dem Blatt daneben.
 <tr><td>mindestens ein Bild, nicht verzerrt, mit Bildunterschrift und Alternativtext</td><td><a href='/pictures-in-text'>Bilder im Text</a></td></tr>
 <tr><td>mindestens zwei Zwischenüberschriften mit Formatvorlage, keine Ebene übersprungen, nicht von Hand formatiert</td><td><a href='/paragraph-styles'>Formatvorlagen</a></td></tr>
 <tr><td>die Seitenzahl als Feld in der Fußzeile</td><td><a href='/headers-and-footnotes'>Kopfzeile, Fußzeile, Fußnoten</a></td></tr>
+<tr><td>der Text im Blocksatz, mit Silbentrennung</td><td><a href='/newspaper-page'>Die Zeitungsseite</a></td></tr>
 </tbody>
 </table>
 
@@ -52,7 +53,7 @@ Blatt <a href='/pictures-in-text'>Bilder im Text</a>.
 
 Hol dir die Vorlage:
 
-<p><a class='document-starter btn btn-primary' href='/trip-newspaper/09%20Artikel.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>09 Artikel.docx</span></a></p>
+<p><a class='document-starter btn btn-primary' href='/trip-newspaper/10%20Artikel.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>10 Artikel.docx</span></a></p>
 
 Ersetze den Titel und die Zeile darunter durch deinen Artikel. Schreib zuerst
 den Text, dann gib den Zwischenüberschriften ihre Formatvorlagen, setz das Bild

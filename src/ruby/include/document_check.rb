@@ -53,7 +53,7 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -131,6 +131,10 @@ module DocumentCheck
             errors << 'except must be a list of paragraphs (their whole text)' if name == 'text' && rule.key?('except') && !(rule['except'].is_a?(Array) && rule['except'].all? { |x| x.is_a?(String) })
             errors << 'styled maps the start of a paragraph to a style (Title, Subtitle, …)' if name == 'styled' && !(rule['styled'].is_a?(Hash) && rule['styled'].all? { |k, v| k.is_a?(String) && v.is_a?(String) })
             errors << 'header_text must be a piece of text' if name == 'header_text' && !(rule['header_text'].is_a?(String) && !rule['header_text'].empty?)
+            errors << 'columns must be a number of columns' if name == 'columns' && !(rule['columns'].is_a?(Integer) && rule['columns'] > 1)
+            %w[margins line_spacing].each do |k|
+                errors << "#{k} must be a number (cm, or times single spacing)" if name == k && !(rule[k].is_a?(Numeric) && rule[k].positive?)
+            end
             %w[words heading_count picture_count pdf_words footnotes].each do |k|
                 errors << "#{k} must be a positive number" if name == k && !(rule[k].is_a?(Integer) && rule[k].positive?)
             end
@@ -960,7 +964,7 @@ module DocumentCheck
         p, set = found.first
         item.message = "#{found.size == 1 ? "»#{short(p)}« ist" : "#{found.size} Überschriften sind, zum Beispiel »#{short(p)}«,"} noch von Hand formatiert " \
             "(#{set.map { |k| DIRECT[k] }.join(', ')}). Was du von Hand einstellst, gewinnt gegen die Formatvorlage: Änderst du die Vorlage, bleibt diese Überschrift, wie sie ist. " \
-            'Markier sie und lösch die Formatierung (Word: Strg+Leertaste, LibreOffice: Strg+M).'
+            'Markier sie und lösch die Formatierung (LibreOffice: Strg+M, Word: Strg+Leertaste).'
         item
     end
 
@@ -1026,6 +1030,96 @@ module DocumentCheck
         item
     end
 
+
+    # ---- a page set like a newspaper (»Die Zeitungsseite«)
+
+    # the paragraphs of running text: not headings, title or captions, with
+    # enough words to fill a line of a column
+    def self.running_text(body)
+        body.select do |p|
+            level(p).zero? && !%w[Title Titel Subtitle Untertitel Caption Beschriftung].include?(p['style']) &&
+                p['plain'].split(' ').size >= 12 && p['numbering'].nil?
+        end
+    end
+
+    def self.rule_columns(rule, _body, _starter, _all = nil, model = nil)
+        want = rule['columns'].to_i
+        have = (model['columns'] || 1).to_i
+        item = Item.new(:rule => 'columns', :label => "Der Text in #{want == 2 ? 'zwei' : want} Spalten", :ok => have >= want, :marks => [])
+        item.message = "Dein Text steht #{have == 1 ? 'in einer Spalte über die ganze Breite' : "in #{have} Spalten"}; in der Zeitung sind es #{want}." unless item.ok
+        item
+    end
+
+    def self.rule_margins(rule, _body, _starter, _all = nil, model = nil)
+        most = rule['margins'].to_f
+        margins = ((model['margins'] || {})['margins'] || {})
+        wide = margins.select { |_, v| v.to_f / 72 * 2.54 > most + 0.05 }
+        names = { 'left' => 'links', 'right' => 'rechts', 'top' => 'oben', 'bottom' => 'unten' }
+        label = "Seitenränder höchstens #{most.to_s.sub(/\.0\z/, '').tr('.', ',')} cm"
+        item = Item.new(:rule => 'margins', :label => label, :ok => wide.empty?, :marks => [])
+        unless item.ok
+            item.message = "Der Seitenrand ist noch zu breit: " +
+                wide.map { |k, v| "#{names[k]} #{format('%.1f', v.to_f / 72 * 2.54).tr('.', ',')} cm" }.join(', ') +
+                '. Schmale Ränder lassen mehr Platz für die Spalten.'
+        end
+        item
+    end
+
+    def self.rule_justify(_rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'justify', :label => 'Der Text im Blocksatz', :ok => true, :marks => [])
+        ragged = running_text(body).reject { |p| p['align'] == 'justify' }
+        return item if ragged.empty?
+
+        item.ok = false
+        item.marks = ragged.map { |p| para_mark(p).merge(:title => ALIGN[p['align']]) }
+        item.message = "#{ragged.size == 1 ? "»#{short(ragged.first)}« ist" : "#{ragged.size} Absätze sind, zum Beispiel »#{short(ragged.first)}«,"} " \
+            "noch #{ALIGN[ragged.first['align']]}. Im Blocksatz enden alle Zeilen eines Absatzes am rechten Rand der Spalte, außer der letzten."
+        item
+    end
+
+    def self.rule_hyphenation(_rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'hyphenation', :label => 'Silbentrennung eingeschaltet', :ok => true, :marks => [])
+        off = running_text(body).reject { |p| p['hyphenate'] }
+        return item if off.empty?
+
+        item.ok = false
+        item.marks = off.map { |p| para_mark(p).merge(:title => 'keine Silbentrennung') }
+        item.message = "#{off.size == 1 ? "In »#{short(off.first)}«" : "In #{off.size} Absätzen"} ist die Silbentrennung noch aus. " \
+            'Ohne sie reißt der Blocksatz in einer schmalen Spalte Löcher zwischen die Wörter.'
+        item
+    end
+
+    # a paragraph that follows another of running text starts with an
+    # indent of its first line (at least 0,3 cm), as in a newspaper
+    def self.rule_first_line_indent(_rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'first_line_indent', :label => 'Neue Absätze mit Einzug der ersten Zeile', :ok => true, :marks => [])
+        texts = running_text(body)
+        flat = body.each_cons(2).filter_map { |a, b| b if texts.include?(a) && texts.include?(b) && b['indent_first'].to_f < 8.5 }
+        return item if flat.empty?
+
+        item.ok = false
+        item.marks = flat.map { |p| para_mark(p).merge(:title => 'kein Einzug') }
+        item.message = "#{flat.size == 1 ? "»#{short(flat.first)}« beginnt" : "#{flat.size} Absätze beginnen, zum Beispiel »#{short(flat.first)}«,"} " \
+            'ohne Einzug. In der Zeitung zeigt ein Einzug der ersten Zeile, wo ein neuer Absatz anfängt, statt einer Lücke.'
+        item
+    end
+
+    # no more than single line spacing in the running text
+    def self.rule_line_spacing(rule, body, _starter, _all = nil, _model = nil)
+        most = rule['line_spacing'].to_f
+        item = Item.new(:rule => 'line_spacing', :label => 'Zeilenabstand einzeilig', :ok => true, :marks => [])
+        wide = running_text(body).select do |p|
+            s = p['line_spacing']
+            s && s['mode'].to_i.zero? && s['value'].to_f > most * 100 + 1
+        end
+        return item if wide.empty?
+
+        item.ok = false
+        item.marks = wide.map { |p| para_mark(p).merge(:title => "#{p['line_spacing']['value'].to_i} %") }
+        item.message = "Der Zeilenabstand ist noch #{wide.first['line_spacing']['value'].to_i} % statt einzeilig. " \
+            'In schmalen Spalten stehen die Zeilen enger.'
+        item
+    end
 
     # ---- pages and the table of contents
 

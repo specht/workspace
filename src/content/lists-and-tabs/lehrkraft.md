@@ -22,7 +22,7 @@ Lernende bauen eine Packliste mit getippten Strichen zu einer echten Liste um un
 <p>Die Aufzählung: im Register <em>Start</em> die Liste mit den Punkten. Der Tabstopp: <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Absatz</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Tabulatoren</em>, Typ <em>Rechts</em>, Füllzeichen <em>.......</em>.</p>
 <!-- /language -->
 </td></tr>
-<tr><th>Dateien</th><td>Die Vorlage <code>03 Packliste.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
+<tr><th>Dateien</th><td>Die Vorlage <code>03 Packliste.docx</code> kommt von der Seite. Wie die Prüfung arbeitet (zwei Hälften des Bildschirms, Prüfen beim Speichern): die Notiz zum ersten Blatt, <a href='/formatting-marks'>Was das Auge nicht sieht</a>. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (getippte Striche zählen nicht als Wörter), die sechs Punkte der Packliste sind eine Liste ohne getippte Zeichen, keine Leerzeichen hintereinander, jede Zeile der Kosten hat genau einen Tab und einen rechtsbündigen oder dezimalen Tabstopp, alle an derselben Stelle.</li>
 <li>Ein Füllzeichen wird nicht verlangt; die Seite schlägt Punkte vor.</li>

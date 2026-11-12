@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
 from page_picture import page_picture as draw_page  # noqa: E402
 
 STATIC = os.path.join(HERE, '..', '..', 'static', 'trip-newspaper')
-STARTER = '09 Artikel.docx'
+STARTER = '10 Artikel.docx'
 PHOTO = os.path.join(HERE, '..', 'pictures-in-text', 'bilder', 'kranich-uckermark.jpg')
 GREEN = RGBColor(0x2E, 0x6B, 0x3A)
 
@@ -52,13 +52,20 @@ OUTRO = ('Am Abend waren wir müde, aber stolz. Beim Abendessen hat jeder erzäh
          'und die Klassenleitung hat versprochen, dass wir im nächsten Jahr wiederkommen.')
 
 
-def base():
+def base(newspaper=False):
+    """newspaper: set as »Die Zeitungsseite« taught, justified with
+    automatic hyphenation (the finished article)"""
     doc = Document()
     section = doc.sections[0]
     section.page_width, section.page_height = Cm(21), Cm(29.7)
     section.left_margin = section.right_margin = Cm(2.5)
     section.top_margin, section.bottom_margin = Cm(2.5), Cm(2)
     normal = doc.styles['Normal']
+    # German, as a German Word or LibreOffice writes it (the hyphenation
+    # follows the language of the text)
+    lang = OxmlElement('w:lang')
+    lang.set(qn('w:val'), 'de-DE')
+    normal.element.get_or_add_rPr().append(lang)
     normal.font.name = 'Calibri'
     normal.font.size = Pt(12)
     normal.paragraph_format.space_before = Pt(0)
@@ -66,6 +73,10 @@ def base():
     normal.paragraph_format.line_spacing = 1.08
     for name in ('Title', 'Heading 1'):
         doc.styles[name].font.color.rgb = GREEN
+        doc.styles[name].paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    if newspaper:
+        normal.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        doc.settings.element.insert(0, OxmlElement('w:autoHyphenation'))
     doc.core_properties.author = 'Klasse 7b'
     return doc
 
@@ -101,7 +112,7 @@ def article(path, hurried=False):
     """hurried: the same article put together as at the start of the
     series: headings bold by hand, a list with typed dashes, the caption's
     number typed, no alt text, »Seite 1« typed in the footer, a double space"""
-    doc = base()
+    doc = base(newspaper=not hurried)
     doc.add_paragraph(TITLE, style='Title')
     doc.add_paragraph(INTRO.replace('. Viele', '.  Viele') if hurried else INTRO)
     for heading, texts in PARTS:
@@ -177,4 +188,4 @@ if __name__ == '__main__':
               top_cm=1.6, height_cm=27.6, left_cm=1.8, width_cm=17.4)
     draw_page(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'teaser.webp'),
               top_cm=1.6, height_cm=9.8, left_cm=1.8, width_cm=17.4)
-    print('written: static/trip-newspaper/09 Artikel.docx, stufen/*.docx, bilder/artikel.svg, teaser.webp')
+    print('written: static/trip-newspaper/10 Artikel.docx, stufen/*.docx, bilder/artikel.svg, teaser.webp')

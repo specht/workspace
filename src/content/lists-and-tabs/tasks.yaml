@@ -54,7 +54,7 @@ tasks:
     title: Liste und Preise, sauber gebaut
     prompt: |
       Prüfe dein Blatt. Die Prüfung markiert auf deiner Seite jede Stelle, an
-      der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
       prüfst.
     check:
       type: document

@@ -1978,6 +1978,19 @@ check:
     - { page_breaks: ['Montag:', 'Dienstag:'] }   # diese Absätze beginnen mit einem Seitenumbruch eine neue Seite
     - page_numbers        # die Seitenzahl in Kopf- oder Fußzeile ist ein Feld, keine getippt
     - toc                 # ein Inhaltsverzeichnis des Programms, aktuell, keines getippt
+    - { text: true, except: ['Reisebericht der 7b'] }   # text, ohne Absätze der Vorlage, die in die Kopfzeile wandern
+    - { header_text: 'Reisebericht der 7b' }   # in der Kopfzeile, nirgends mehr oben auf einer Seite getippt
+    - header_date         # in der Kopfzeile das Datum als Feld, das sich aktualisiert (nicht getippt, nicht fest)
+    - { footnotes: 2 }    # so viele Fußnoten des Programms, keine Nummer von Hand (¹ oder hochgestellt)
+    - { styled: { 'Reisetagebuch der 7b': Title, 'Fünf Tage am Kranichsee': Subtitle } }   # Absätze mit dieser Vorlage
+    - plain_text          # der Text ohne Schriftart, Größe oder Farbe von Hand
+    - { style_changed: 'Standard' }   # eine Formatvorlage sieht anders aus als in der Vorlage
+    - { columns: 2 }      # so viele Spalten (Seitenvorlage oder Bereich)
+    - { margins: 2 }      # kein Seitenrand breiter (cm)
+    - justify             # Absätze Text (ab zwölf Wörtern) im Blocksatz
+    - hyphenation         # dort die Silbentrennung eingeschaltet
+    - first_line_indent   # ein Absatz nach einem Absatz Text mit Einzug der ersten Zeile (ab 0,3 cm)
+    - { line_spacing: 1.0 }   # Zeilenabstand höchstens so viel (1.0: einzeilig)
 ```
 
 Ein Dokument, als PDF exportiert, prüft eine Aufgabe mit `accept: pdf` (ohne

@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates wget cabextract ttf-mscorefonts-installer \
         fontconfig fonts-crosextra-carlito fonts-crosextra-caladea \
         fonts-liberation2 fonts-dejavu-core \
+        hyphen-de hunspell-de-de \
     && rm -rf /var/lib/apt/lists/*
 RUN useradd -m -u 1600 office
 USER office

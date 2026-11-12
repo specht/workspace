@@ -101,7 +101,7 @@
     - [level-0-c1d8a2f7, level-1-7e3a91c4, level-2-b52d0f18, level-3-4c9e6a2d]
 
 # Office (docs/plan-textverarbeitung.md): word processing, then
-# spreadsheets and presentations, in Word, LibreOffice or Nextcloud Office.
+# spreadsheets and presentations, in LibreOffice, Word or Nextcloud Office.
 # The student uploads the document; the office service reads it, and the
 # card marks on their own page what is still missing. Worksheets that build
 # on each other become a series.
@@ -122,11 +122,12 @@
     - .paragraph-styles
     - .pages-and-contents
     - .headers-and-footnotes
+    - .newspaper-page
     - .trip-newspaper
   # the worksheets on word processing, one after the other: each pinned on
   # its own, the class page shows them as a whole too
   series:
-    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, trip-newspaper]
+    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
 
 - key: writing
   compact: true

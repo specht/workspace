@@ -9,7 +9,7 @@ tasks:
     title: Die Übersicht der Überschriften
     prediction: true
     prompt: |
-      Word und LibreOffice können neben dem Text eine Übersicht aller
+      LibreOffice und Word können neben dem Text eine Übersicht aller
       Überschriften zeigen, zum Springen. Wie viele Einträge zeigt sie für
       das Tagebuch?
     check:
@@ -73,7 +73,7 @@ tasks:
     title: Das Tagebuch mit Formatvorlagen
     prompt: |
       Prüfe dein Tagebuch. Die Prüfung markiert auf deiner Seite jede Stelle,
-      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
       prüfst.
     check:
       type: document

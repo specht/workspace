@@ -22,7 +22,7 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 <p>Die Größe: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Eigenschaften…</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Typ</em>, <em>Verhältnis beibehalten</em>, <em>Originalgröße</em>. Der Umbruch: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Verankerung</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Am Absatz</em>, dann <em>Umlauf</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Parallel</em>. Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Beschriftung einfügen…</em>, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Alternativer Text…</em>.</p>
 <!-- /language -->
 </td></tr>
-<tr><th>Dateien</th><td>Die Vorlage <code>05 Kraniche.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause. Das Foto ist von Charles J. Sharp unter CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Common_crane_(Grus_grus)_Uckermark.jpg'>Wikimedia Commons</a>); die Angabe steht in seiner Bildunterschrift und gehört dort hin.</td></tr>
+<tr><th>Dateien</th><td>Die Vorlage <code>05 Kraniche.docx</code> kommt von der Seite. Wie die Prüfung arbeitet (zwei Hälften des Bildschirms, Prüfen beim Speichern): die Notiz zum ersten Blatt, <a href='/formatting-marks'>Was das Auge nicht sieht</a>. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause. Das Foto ist von Charles J. Sharp unter CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Common_crane_(Grus_grus)_Uckermark.jpg'>Wikimedia Commons</a>); die Angabe steht in seiner Bildunterschrift und gehört dort hin.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (auch in Rahmen und Textfeldern), kein Bild ist um mehr als 3 % verzerrt.</li>
 <li>Das Foto hat einen Textumbruch, bei dem Text daneben steht, ist höchstens 70 % so breit wie der Text und steht rechts.</li>
@@ -36,7 +36,7 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 - **Der Text springt unter das Foto:** Das Foto ist zu breit für Text daneben. Kleiner machen, an einer Ecke ziehen.
 - **Die Beschriftung steht weit weg vom Foto:** Word legt die Beschriftung eines Bildes mit Textumbruch in ein eigenes Textfeld. Wird das Foto danach verschoben, wandert das Textfeld nicht unbedingt mit. Beide zusammen verschieben oder die Beschriftung erst einfügen, wenn das Foto steht.
 - **In LibreOffice bleibt *Parallel* grau:** Das Foto ist noch als Zeichen verankert. Erst *Verankerung* auf *Am Absatz* stellen.
-- **Die Nummern stimmen nicht:** Die Felder sind noch nicht aktualisiert (Word: <kbd>Strg</kbd>+<kbd>A</kbd>, <kbd>F9</kbd>; LibreOffice: <kbd>F9</kbd>).
+- **Die Nummern stimmen nicht:** Die Felder sind noch nicht aktualisiert (LibreOffice: <kbd>F9</kbd>; Word: <kbd>Strg</kbd>+<kbd>A</kbd>, <kbd>F9</kbd>).
 
 #### Die Aufgaben
 

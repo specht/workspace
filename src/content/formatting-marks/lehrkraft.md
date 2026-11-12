@@ -1,7 +1,7 @@
 Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zentriert mit Leerzeichen, Abstand aus leeren Absätzen, Zeilen von Hand umbrochen. Am Ende ist sie mit Ausrichtung und Abstand gebaut, und die Prüfung zeigt ihnen auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
-<tr><th>Voraussetzungen</th><td>Eine Textverarbeitung: Word, LibreOffice Writer oder Nextcloud Office. Dateien speichern und wiederfinden.</td></tr>
+<tr><th>Voraussetzungen</th><td>Eine Textverarbeitung: LibreOffice Writer, Word oder Nextcloud Office. Dateien speichern und wiederfinden.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>10 Minuten:</b> Vermutung zur größeren Schrift, die Vorlage holen, Formatierungszeichen, Absätze zählen.</li>
@@ -22,7 +22,18 @@ Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zen
 <p>Im Programm: die Formatierungszeichen ein- und ausschalten (<em>Ansicht</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Formatierungszeichen</em>), einen Absatz zentrieren (der Knopf im Register <em>Start</em>), den Abstand unter <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Absatz</em> im Feld <em>Unter dem Absatz</em>, <kbd>Enter</kbd> und <kbd>Shift</kbd>+<kbd>Enter</kbd> nebeneinander, Suchen und Ersetzen.</p>
 <!-- /language -->
 </td></tr>
-<tr><th>Dateien</th><td>Die Vorlage <code>01 Einladung.docx</code> kommt von der Seite. In Chrome und Edge speichert die Seite sie selbst und prüft sie von selbst, sobald sie in Word gespeichert ist; in Firefox und Safari wird sie heruntergeladen und vor jedem Prüfen gewählt oder auf die Karte gezogen. Die Karte sagt das in jedem Browser. Zum Arbeiten: Word auf der einen Hälfte des Bildschirms, die Seite auf der anderen.</td></tr>
+<tr><th>So prüft die Seite</th><td>
+<p>Das ist das Besondere an dieser Reihe: Die Klasse arbeitet im echten Programm, und die Seite prüft das Dokument, sobald es gespeichert ist. Es lohnt sich, das einmal ganz am Beamer zu zeigen.</p>
+<ul>
+<li><b>Zwei Hälften:</b> links das Programm mit dem Dokument, rechts der Browser mit dieser Seite. Für diese Größe, eine halbe Bildschirmbreite, sind die Seiten gemacht.</li>
+<li><b>Der Anfang:</b> die Vorlage herunterladen (ein gewöhnlicher Download, sie landet in den Downloads), im Programm öffnen, bearbeiten, speichern. Dann auf der Karte <em>Prüfen</em> und die Datei einmal wählen; der Dialog öffnet sich in den Downloads. Ziehen auf die Karte geht auch.</li>
+<li><b>Prüfen beim Speichern (Chrome und Edge, über https):</b> Die Seite merkt sich die gewählte Datei. Solange sie zu sehen ist, sieht sie alle zwei Sekunden nach, und jedes Speichern im Programm (<kbd>Strg</kbd>+<kbd>S</kbd>) löst die nächste Prüfung aus, ohne einen Klick. Die Karte zeigt, welche Datei sie beobachtet und wann sie zuletzt gespeichert wurde; die Markierungen erscheinen auf der eigenen Seite. So sieht jedes Kind nach jedem Schritt, was schon stimmt.</li>
+<li><b>Firefox und Safari</b> können sich keine Datei merken: Dort wählt man sie vor jedem Prüfen neu oder zieht sie auf die Karte. Die Karte sagt in jedem Browser, wie es dort geht.</li>
+<li><b>Nextcloud Office:</b> Das Dokument liegt in der Nextcloud. Vor dem Prüfen lädt man es herunter (<em>Datei</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Herunterladen als</em>) und wählt diese Datei.</li>
+<li><b>Gespeichert</b> werden das Ergebnis und die zuletzt geprüfte Fassung: zum Weiterarbeiten, auch zu Hause, und als Abgabe auf der Klassenseite. <em>Ergebnis löschen</em> löscht beides.</li>
+</ul>
+</td></tr>
+<tr><th>Dateien</th><td>Die Vorlage <code>01 Einladung.docx</code> kommt von der Seite.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Die Datei geht an den Server, LibreOffice liest sie dort und zeichnet die Seiten. Gespeichert werden das Ergebnis, eine Zeile für die Klassenübersicht (welche Punkte offen sind) und die zuletzt geprüfte Fassung der Datei, zum Weiterarbeiten auch zu Hause; die nächste Prüfung ersetzt sie, »Ergebnis löschen« und das Löschen des Kontos löschen sie.</li>
 <li>Geprüft wird: der Text ist vollständig, keine Leerzeichen hintereinander, keine leeren Absätze, keine Zeilenumbrüche von Hand, Überschrift und Unterzeile zentriert, Datum rechtsbündig, mindestens 6 pt Abstand vor den fünf Absätzen, vor denen eine Lücke war.</li>
