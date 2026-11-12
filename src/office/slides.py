@@ -147,10 +147,17 @@ def overflow(shape, kind):
     if get(shape, 'TextAutoGrowHeight'):
         return 0.0
     before = shape.Size
+    # a .pptx placeholder may come with a minimum height larger than the box
+    # itself (LibreOffice's import): growing would jump to it, not to the text
+    minimum = get(shape, 'TextMinimumFrameHeight')
     try:
+        if minimum is not None:
+            shape.TextMinimumFrameHeight = 0
         shape.TextAutoGrowHeight = True
         grown = shape.Size.Height
         shape.TextAutoGrowHeight = False
+        if minimum is not None:
+            shape.TextMinimumFrameHeight = minimum
         shape.Size = before
     except Exception:
         return 0.0

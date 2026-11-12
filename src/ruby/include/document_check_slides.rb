@@ -9,7 +9,7 @@
 # wide): a slide of another size has its letters scaled to that width, and
 # text a box shrinks to fit (»Autofit«) counts at the size it is shown.
 module DocumentCheck
-    SLIDE_RULES = %w[titles min_size max_words no_overflow notes slide_count placeholders].freeze
+    SLIDE_RULES = %w[titles title_words min_size max_words no_overflow notes slide_count placeholders].freeze
     # the shapes that carry the slide's text (not its notes, footer or number)
     SLIDE_TEXT_KINDS = %w[title subtitle body text shape].freeze
     SLIDE_WIDTH = 960.0
@@ -77,6 +77,28 @@ module DocumentCheck
             "#{missing.size > 1 ? 'haben' : 'hat'} keinen Titel im Titelplatzhalter." +
             (boxed ? " Ihr Text #{q(boxed['text'].to_s.lines.first.to_s.strip[0, 40])} steht in einem Textfeld, das jemand von Hand daraufgesetzt hat." : '') +
             ' Ein Titel gehört in den Platzhalter »Titel hinzufügen« des Layouts.'
+        item
+    end
+
+    # the title of every slide with content says something: at least so
+    # many words (»Kraniche ziehen im Herbst nach Süden«, not »Zug«); the
+    # title slide and slides without a body are left out
+    def self.rule_title_words(rule, _body, _starter, _all = nil, model = nil)
+        min = rule['title_words'].to_i
+        item = Item.new(:rule => 'title_words', :label => 'Jeder Titel sagt, worum es auf der Folie geht', :ok => true, :marks => [])
+        short = slides_of(model).select do |s|
+            next false if s['hidden'] || (s['shapes'] || []).none? { |sh| sh['kind'] == 'body' && !sh['text'].to_s.strip.empty? }
+
+            title = title_shape(s)
+            title && title['text'].to_s.scan(/[[:alnum:]][[:alnum:]'’-]*/).size < min
+        end
+        return item if short.empty?
+
+        item.ok = false
+        item.marks = short.map { |s| shape_mark(s, title_shape(s), 'Titel aus einem Wort') }
+        first = title_shape(short.first)
+        item.message = "Der Titel #{q(first['text'].to_s.strip)} auf #{slide_label(short.first)} nennt nur ein Thema. " \
+            'Sag im Titel, was man sich von der Folie merken soll, in einem kurzen Satz.'
         item
     end
 

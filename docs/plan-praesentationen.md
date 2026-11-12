@@ -72,7 +72,16 @@ side of it; the last one is the student's own short talk.
    aloud. Check: notes on every slide, only appearing or fading in, one
    kind of transition at most, the last slide not »Danke«/»Fragen?«.
    History: PechaKucha (Tokyo 2003, 20 slides of 20 seconds).
-6. **Dein Kurzvortrag** (`short-talk`): the hand-in. A topic of one's own,
+6. **Dein Kurzvortrag** (`short-talk`): the hand-in, and taking the
+   presentation elsewhere (the maintainer, 12 November 2026): a prediction
+   (your presentation on a computer without your font: another font stands
+   in, lines break elsewhere, text runs over its box); fonts embedded in
+   the file (PowerPoint's save options, LibreOffice's document properties;
+   a font's licence may forbid it); exporting: a PDF embeds every font and
+   looks the same everywhere, but has no animations and no notes, a slide
+   show file opens straight into the show; the check of embedded PDF fonts
+   (`pdf_fonts`) exists. A link to »Eine Präsentation in HTML erstellen«
+   (`showerjs`): slides as a web page, in any browser. The hand-in itself: a topic of one's own,
    5 to 8 slides for five minutes, every earlier rule checked at once, then
    exported as PDF for a handout. The talk itself is given in class; the
    teacher note brings a feedback sheet for it (what the check cannot see:
@@ -80,6 +89,19 @@ side of it; the last one is the student's own short talk.
 
 The series gets one card (»Präsentieren Schritt für Schritt«), as the other
 two.
+
+## Accessibility (the maintainer, 12 November 2026)
+
+Everywhere it fits: information never by colour alone (about one boy in
+twelve cannot tell red from green), titles in placeholders (a screen reader
+and the outline find them), alt texts, contrast, large type, a sensible
+reading order. Sheet 3 has a slide that marks something important by colour
+only, to be told by a word, a symbol or a place as well; sheet 4 labels the
+lines and bars of a chart directly instead of a legend in colours. The
+information of such an example is real and matters, never made up for the
+exercise: numbers about the cranes from a source that can be cited (how
+many pairs breed in Germany over the decades, NABU or the count of
+Kranichschutz Deutschland), researched before the sheet is written.
 
 ## Starting files
 
@@ -109,10 +131,12 @@ every letter as formatted by hand), `contrast`, `fonts`, `slide_numbers`,
 `Medienbildung: Präsentieren (Medienspezifische Gestaltungsprinzipien;
 Durchführung einer Präsentation)`.
 
-## Open (for the maintainer)
+## Decisions
 
-- The story: a Referat about the cranes (it reuses the trip newspaper's
-  article and photo), or the 7b presenting its trip at the parents' evening.
-- The timer on sheet 1 (how long reading a slide takes) as a widget.
-- Sheet 6 with a feedback sheet for the talk in the teacher note, or also
-  a page for classmates to give feedback.
+- **The cranes** (the maintainer, 12 November 2026): there are no photos
+  of a class trip to use, and cranes are great; the Referat reuses the
+  facts of the trip newspaper's article.
+- **A timer on sheet 1** as a widget: how long reading one slide of text
+  takes, against how long saying it takes.
+- **Feedback from classmates on sheet 6**: a page of its own besides the
+  teacher's feedback sheet (what it stores goes into privacy.rb first).
