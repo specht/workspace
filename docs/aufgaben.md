@@ -1971,9 +1971,12 @@ seinen Stellen am Rand steht, und auf der Seite steht dort, was die
 Formatierungszeichen zeigen würden (· ¶ ↵). Die Seite lässt sich ziehen und
 zoomen; ein Klick auf eine Nummer fährt zur nächsten Stelle. In Chrome und
 Edge behält die Seite die Datei im Blick und prüft nach jedem Speichern von
-selbst (`document_task.js`). Gespeichert werden nur das Ergebnis und eine
-Zeile für die Klassenübersicht (»01 Einladung.docx: 6 von 8, offen: …«), nicht
-die Datei. Beispiele: `document: stufen/einladung.docx` in
+selbst (`document_task.js`). Gespeichert werden das Ergebnis, eine Zeile für
+die Klassenübersicht (»01 Einladung.docx: 6 von 8, offen: …«) und die zuletzt
+geprüfte Fassung als Abgabe der Person (`submission_path`): Die Karte bietet
+sie als »Deine letzte Fassung« zum Weiterarbeiten an, auch zu Hause; die
+Lehrkraft der Gruppe kann sie herunterladen; sie geht mit »Ergebnis löschen«
+und mit dem Konto. Beispiele: `document: stufen/einladung.docx` in
 `task-examples.yaml`; ohne den Dienst warten sie.
 
 ### story

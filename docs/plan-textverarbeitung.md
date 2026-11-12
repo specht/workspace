@@ -16,7 +16,7 @@ handed out on paper got no feedback because nobody could check them all.
   paragraph in memory, exported as PDF and closed. The named destinations of
   the PDF (`pdfinfo -dests`) say where each paragraph landed, the words of
   `pdftotext -bbox` where each word is; each page comes back as SVG
-  (`pdftocairo -svg`). Nothing is stored. On a network of its own with the
+  (`pdftocairo -svg`). The service stores nothing. On a network of its own with the
   backend only, without the internet; one document at a time, killed after
   40 seconds. Fonts: Microsoft's core fonts (installed while the image is
   built), Carlito and Caladea for Calibri and Cambria (same widths).
@@ -51,7 +51,11 @@ handed out on paper got no feedback because nobody could check them all.
   the check. `dokumente.py` makes the starting file, the solution and the
   pictures (`src/scripts/office`).
 - **Tests:** `e2e/tests/document-task.browser.spec.ts` (at 960 × 1040, then
-  full width and a phone), the examples, `task_examples.rb`.
+  full width and a phone with full screen), the examples, `task_examples.rb`.
+- **The series in the class overview** is open: each worksheet is an
+  activity of its own (pinned on its own, week by week), and the overview
+  needs one view of the whole series, a row per student and a column per
+  worksheet.
 
 ## Decisions
 
@@ -67,9 +71,11 @@ handed out on paper got no feedback because nobody could check them all.
   earlier; the card says so. The check does not depend on it.
 - **Vector pages.** SVG keeps the page sharp at any zoom; it is shown as
   `<img>`, so nothing in a student's document runs.
-- **Nothing of the document is stored**, only the result and a line for the
-  class overview (`privacy.rb`). The hand-in at the end of the series will
-  store the file and needs its own line there.
+- **The last checked version is kept** (the maintainer, 12 November 2026),
+  as the person's hand-in of the task: to go on with at home or on another
+  computer (»Deine letzte Fassung«), for the group's teacher to download;
+  replaced by the next check, gone with »Ergebnis löschen« and the account
+  (`privacy.rb`). The hand-in at the end of the series is that version.
 
 ## The series (worksheets)
 
