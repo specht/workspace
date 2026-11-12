@@ -95,17 +95,42 @@ def by_hand(doc, text, size, color=None, before=12, after=4, center=False):
     return p
 
 
+made_by_hand = by_hand   # (solution has a parameter of the same name)
+
+
+# two table groups pasted their text from elsewhere: it kept its font
+PASTED = {'Dienstag: Kletterwald': ('Arial', 11), 'Donnerstag: Schifffahrt': ('Times New Roman', 12.5)}
+
+
+def subtitle_by_hand(doc):
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = p.add_run(INTRO)
+    r.italic = True
+    r.font.size = Pt(13)
+    return p
+
+
+def text(doc, day, words, pasted=True):
+    p = doc.add_paragraph()
+    r = p.add_run(words)
+    if pasted and day in PASTED:
+        r.font.name, size = PASTED[day]
+        r.font.size = Pt(size)
+    return p
+
+
 def starter(path):
     doc = base()
     by_hand(doc, TITLE, 20, before=0, after=6, center=True)
-    doc.add_paragraph(INTRO)
+    subtitle_by_hand(doc)
     for day, parts in DAYS:
         size = 13 if day.startswith('Mittwoch') else 14
         by_hand(doc, day, size, BLUE, before=18, after=6)
-        for part, text in parts:
+        for part, words in parts:
             if part:
                 by_hand(doc, part, 12, before=8, after=2)
-            doc.add_paragraph(text)
+            text(doc, day, words)
     doc.save(path)
 
 
@@ -124,17 +149,32 @@ def matching(doc):
     doc.styles['Title'].font.color.rgb = GREEN
 
 
-def solution(path, by_hand=False, part_style='Heading 2', changed=True):
+def standard(doc):
+    """»Standard« changed once: a font with serifs for all the text"""
+    doc.styles['Normal'].font.name = 'Georgia'
+    doc.styles['Normal'].font.size = Pt(11)
+
+
+def solution(path, by_hand=False, part_style='Heading 2', changed=True, titles=True, pasted=False, body=True):
     """the stages for the examples: by_hand: the styles given, but the
     days still bold, blue and 14 pt by hand; part_style: Heading 3 skips a
-    level; changed: False leaves Überschrift 1 as it was"""
+    level; changed: False leaves Überschrift 1 as it was; titles: False
+    leaves title and subtitle made by hand; pasted: the pasted text keeps
+    its font; body: False leaves »Standard« as it was"""
     doc = base()
     if changed:
         heading1(doc)
         matching(doc)
-    t = doc.add_paragraph(TITLE, style='Title')
-    t.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    doc.add_paragraph(INTRO)
+    if body:
+        standard(doc)
+    if titles:
+        t = doc.add_paragraph(TITLE, style='Title')
+        t.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        sub = doc.add_paragraph(INTRO, style='Subtitle')
+        sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    else:
+        made_by_hand(doc, TITLE, 20, before=0, after=6, center=True)
+        subtitle_by_hand(doc)
     for day, parts in DAYS:
         p = doc.add_paragraph(style='Heading 1')
         r = p.add_run(day)
@@ -142,10 +182,10 @@ def solution(path, by_hand=False, part_style='Heading 2', changed=True):
             r.bold = True
             r.font.size = Pt(14)
             r.font.color.rgb = BLUE
-        for part, text in parts:
+        for part, words in parts:
             if part:
                 doc.add_paragraph(part, style=part_style)
-            doc.add_paragraph(text)
+            text(doc, day, words, pasted)
     doc.save(path)
 
 
@@ -166,6 +206,8 @@ if __name__ == '__main__':
     solution(os.path.join(HERE, 'stufen', 'noch-von-hand.docx'), by_hand=True)
     solution(os.path.join(HERE, 'stufen', 'ebene-3.docx'), part_style='Heading 3')
     solution(os.path.join(HERE, 'stufen', 'vorlage-wie-vorher.docx'), changed=False)
+    solution(os.path.join(HERE, 'stufen', 'titel-von-hand.docx'), titles=False)
+    solution(os.path.join(HERE, 'stufen', 'text-von-hand.docx'), pasted=True, body=False)
     work = tempfile.mkdtemp()
     try:
         picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'tagebuch.svg'), height_cm=14.5)

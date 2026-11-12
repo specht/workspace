@@ -17,3 +17,9 @@ examples:
         say: nicht gleich 3
       - document: stufen/vorlage-wie-vorher.docx
         say: sieht noch aus wie am Anfang
+      - document: stufen/titel-von-hand.docx
+        say: soll aber »Untertitel« haben
+      - document: stufen/text-von-hand.docx
+        say: von Hand. Markier sie
+      - document: stufen/text-von-hand.docx
+        say: Ändere sie einmal, zum Beispiel ihre Schrift

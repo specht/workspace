@@ -307,15 +307,16 @@ test('a diary is checked for its heading styles', async ({ page, e2eEmail }, tes
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/paragraph-styles/06 Reisetagebuch.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
-  // the days and their parts are no headings, the style is as it was
-  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
+  // the days and their parts are no headings, the title is by hand, the
+  // pasted text keeps its font, both styles are as they were
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(6);
   if (shots) await page.screenshot({ path: path.join(shots, 'styles-wrong.png') });
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/paragraph-styles/stufen/noch-von-hand.docx'));
   await expect(report.locator('.document-checklist li.document-open')).toHaveCount(1);
   await expect(report.locator('.document-checklist li.document-open')).toContainText('nicht von Hand formatiert');
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/paragraph-styles/stufen/reisetagebuch.docx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
-  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(6);
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(9);
 });
 
 test('a report of seven pages is checked for its breaks, page numbers and contents', async ({ page, e2eEmail }, testInfo) => {

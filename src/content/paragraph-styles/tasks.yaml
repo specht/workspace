@@ -51,6 +51,24 @@ tasks:
       Überschrift 2: Sie gehören zum Mittwoch, eine Stufe darunter, so wie
       Abschnitte in einem Kapitel.
 
+  - id: einmal
+    title: Einmal für alles
+    prediction: true
+    prompt: |
+      Angenommen, jeder Absatz Text im Tagebuch hat die Vorlage »Standard«, und
+      keiner hat eine Schrift von Hand. Wie oft musst du die Schrift einstellen,
+      damit der ganze Text in Georgia steht?
+    check:
+      type: number
+      expect: 1
+      tolerance: 0
+    feedback:
+      - when: { between: [2, 99] }
+        say: So oft wäre es, wenn du jeden Absatz einzeln änderst. Alle diese Absätze haben aber dieselbe Vorlage.
+    solution: |
+      Einmal: in der Vorlage »Standard«. Jeder Absatz mit dieser Vorlage ändert
+      sich mit.
+
   - id: tagebuch
     title: Das Tagebuch mit Formatvorlagen
     prompt: |
@@ -62,26 +80,30 @@ tasks:
       file: paragraph-styles/06 Reisetagebuch.docx
       rules:
         - text
+        - { styled: { 'Reisetagebuch der 7b': Title, 'Fünf Tage am Kranichsee': Subtitle } }
         - { headings: ['Montag:', 'Dienstag:', 'Mittwoch:', 'Donnerstag:', 'Freitag:'], level: 1, label: 'Die Tage sind Überschrift 1' }
         - { headings: ['Am Vormittag', 'Am Nachmittag', 'Auf dem Schiff', 'Der letzte Abend'], level: 2, label: 'Die Teile eines Tages sind Überschrift 2' }
         - levels
         - no_direct
+        - plain_text
         - { style_changed: 'Heading 1' }
+        - { style_changed: 'Standard' }
     hint:
       - Markier eine Überschrift, lösch ihre Formatierung von Hand und gib ihr dann die Formatvorlage. Das geht für alle Tage nacheinander.
-      - Die Formatvorlage änderst du über einen Rechtsklick auf ihren Namen in der Liste der Formatvorlagen.
+      - Titel und Untertitel genauso, mit den Vorlagen »Titel« und »Untertitel«. Im Text des Dienstags und des Donnerstags löschst du die Formatierung nur.
+      - Die Formatvorlagen »Überschrift 1« und »Standard« änderst du über einen Rechtsklick auf ihren Namen in der Liste der Formatvorlagen.
     word:
       hint:
         - "Markier eine Überschrift, lösch ihre Formatierung mit <kbd>Strg</kbd>+<kbd>Leertaste</kbd> und klick im Register *Start* in der Liste der Formatvorlagen auf *Überschrift 1*. Dann der nächste Tag."
-        - "Vormittag und Nachmittag bekommen *Überschrift 2*. Ob alles stimmt, zeigt *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Navigationsbereich*."
-        - "Die Farbe: Rechtsklick auf *Überschrift 1* in der Liste der Formatvorlagen <i class='bi bi-chevron-right' aria-hidden='true'></i> *Ändern…*. Bleibt eine Überschrift blau, lösch bei ihr noch einmal die Formatierung."
+        - "Vormittag und Nachmittag bekommen *Überschrift 2*, Titel und Zeile darunter *Titel* und *Untertitel*. Im Text des Dienstags und des Donnerstags nur die Formatierung löschen."
+        - "Rechtsklick auf *Überschrift 1* in der Liste der Formatvorlagen <i class='bi bi-chevron-right' aria-hidden='true'></i> *Ändern…*: die Farbe. Rechtsklick auf *Standard* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Ändern…*: Georgia, 11 pt."
     libreoffice:
       hint:
         - "Markier eine Überschrift, lösch ihre Formatierung mit <kbd>Strg</kbd>+<kbd>M</kbd> und gib ihr mit <kbd>Strg</kbd>+<kbd>1</kbd> die Vorlage *Überschrift 1*. Dann der nächste Tag."
-        - "Vormittag und Nachmittag bekommen mit <kbd>Strg</kbd>+<kbd>2</kbd> *Überschrift 2*. Ob alles stimmt, zeigt der Navigator (<kbd>F5</kbd>)."
-        - "Die Farbe: Seitenleiste mit den Vorlagen (<kbd>F11</kbd>), Rechtsklick auf *Überschrift 1* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schriftfarbe*. Bleibt eine Überschrift blau, lösch bei ihr noch einmal die Formatierung."
+        - "Vormittag und Nachmittag bekommen mit <kbd>Strg</kbd>+<kbd>2</kbd> *Überschrift 2*, Titel und Zeile darunter *Titel* und *Untertitel*. Im Text des Dienstags und des Donnerstags nur die Formatierung löschen."
+        - "Seitenleiste mit den Vorlagen (<kbd>F11</kbd>): Rechtsklick auf *Überschrift 1* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schriftfarbe*; Rechtsklick auf *Standard* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schrift*: Georgia, 11 pt."
     nextcloud:
       hint:
         - "Markier eine Überschrift, lösch ihre Formatierung mit <kbd>Strg</kbd>+<kbd>M</kbd> und wähl links oben in der Liste der Absatzvorlagen *Überschrift 1*. Dann der nächste Tag."
-        - "Vormittag und Nachmittag bekommen *Überschrift 2*. Ob alles stimmt, zeigt der *Navigator*."
-        - "Die Farbe: Seitenleiste mit den Vorlagen, Rechtsklick auf *Überschrift 1* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schriftfarbe*. Bleibt eine Überschrift blau, lösch bei ihr noch einmal die Formatierung."
+        - "Vormittag und Nachmittag bekommen *Überschrift 2*, Titel und Zeile darunter *Titel* und *Untertitel*. Im Text des Dienstags und des Donnerstags nur die Formatierung löschen."
+        - "Seitenleiste mit den Vorlagen: Rechtsklick auf *Überschrift 1* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schriftfarbe*; Rechtsklick auf *Standard* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schrift*: Georgia, 11 pt."

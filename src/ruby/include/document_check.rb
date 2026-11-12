@@ -53,7 +53,7 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -102,6 +102,7 @@ module DocumentCheck
             next unless rule.is_a?(Hash)
             known = %w[label say] + case name
                 when 'text' then %w[text except]
+                when 'styled' then %w[styled]
                 when 'align' then %w[align paragraph]
                 when 'gaps' then %w[gaps before]
                 when 'size' then %w[size paragraphs]
@@ -128,6 +129,7 @@ module DocumentCheck
             errors << 'headings needs a list of pieces of text and level: (1, 2, …)' if name == 'headings' && !(rule['headings'].is_a?(Array) && rule['level'].is_a?(Integer) && rule['level'].positive?)
             errors << 'style_changed needs the name of a paragraph style (Heading 1)' if name == 'style_changed' && !(rule['style_changed'].is_a?(String) && !rule['style_changed'].empty?)
             errors << 'except must be a list of paragraphs (their whole text)' if name == 'text' && rule.key?('except') && !(rule['except'].is_a?(Array) && rule['except'].all? { |x| x.is_a?(String) })
+            errors << 'styled maps the start of a paragraph to a style (Title, Subtitle, …)' if name == 'styled' && !(rule['styled'].is_a?(Hash) && rule['styled'].all? { |k, v| k.is_a?(String) && v.is_a?(String) })
             errors << 'header_text must be a piece of text' if name == 'header_text' && !(rule['header_text'].is_a?(String) && !rule['header_text'].empty?)
             %w[words heading_count picture_count pdf_words footnotes].each do |k|
                 errors << "#{k} must be a positive number" if name == k && !(rule[k].is_a?(Integer) && rule[k].positive?)
@@ -947,7 +949,7 @@ module DocumentCheck
 
     def self.rule_no_direct(_rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'no_direct', :label => 'Überschriften nicht von Hand formatiert', :ok => true, :marks => [])
-        found = body.select { |p| level(p).positive? || %w[Title Titel].include?(p['style']) }.filter_map do |p|
+        found = body.select { |p| level(p).positive? || %w[Title Titel Subtitle Untertitel].include?(p['style']) }.filter_map do |p|
             set = (p['portions'] || []).select { |q| visible?(q) }.flat_map { |q| q['direct'] || [] }.uniq & DIRECT.keys
             [p, set] unless set.empty?
         end
@@ -972,10 +974,58 @@ module DocumentCheck
         return item if mine.nil? || theirs.nil? ? false : STYLE_LOOK.any? { |k| mine[k] != theirs[k] }
 
         item.ok = false
-        item.message = "Die Formatvorlage »#{style_label(name)}« sieht noch aus wie am Anfang. Ändere sie einmal, zum Beispiel ihre Farbe: " \
-            'Alle Überschriften mit dieser Vorlage ändern sich mit, auf einmal.'
+        heading = name.start_with?('Heading')
+        item.message = "Die Formatvorlage »#{style_label(name)}« sieht noch aus wie am Anfang. Ändere sie einmal, zum Beispiel ihre #{heading ? 'Farbe' : 'Schrift'}: " \
+            "Alle #{heading ? 'Überschriften' : 'Absätze'} mit dieser Vorlage ändern sich mit, auf einmal."
         item
     end
+
+    # paragraphs (by the start of their text) with the style they need: the
+    # title and the subtitle as styles, not made big by hand
+    def self.rule_styled(rule, body, _starter, _all = nil, _model = nil)
+        wants = rule['styled'] || {}
+        styles = wants.values.map { |v| "»#{style_label(v)}«" }
+        item = Item.new(:rule => 'styled', :label => "#{names(wants.keys.map { |k| "»#{k}«" })} mit #{styles.uniq.size == 1 ? 'der Formatvorlage' : 'den Formatvorlagen'} #{names(styles)}",
+                        :ok => true, :marks => [])
+        problems = []
+        wants.each do |piece, style|
+            p = body.find { |x| x['plain'].start_with?(piece) }
+            if p.nil?
+                problems << "»#{piece}« finde ich nicht mehr."
+                next
+            end
+            next if p['style'] == style || style_name(p) == style_label(style)
+
+            problems << "»#{short(p)}« hat die Vorlage »#{style_name(p)}«, soll aber »#{style_label(style)}« haben."
+            item.marks << para_mark(p).merge(:title => style_name(p))
+        end
+        return item if problems.empty?
+
+        item.ok = false
+        item.message = "#{problems.join(' ')} Auch Titel und Untertitel haben eigene Formatvorlagen; von Hand groß gemacht, " \
+            'weiß das Programm nicht, dass sie ein Titel sind.'
+        item
+    end
+
+    # the body text without formatting set by hand (font, size, colour …):
+    # it shows what »Standard« sets, and changes when »Standard« changes
+    def self.rule_plain_text(_rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'plain_text', :label => 'Der Text ist nicht von Hand formatiert', :ok => true, :marks => [])
+        found = body.select { |p| level(p).zero? && !%w[Title Titel Subtitle Untertitel].include?(p['style']) && !empty?(p) }.filter_map do |p|
+            set = (p['portions'] || []).select { |q| visible?(q) }.flat_map { |q| q['direct'] || [] }.uniq & %w[CharFontName CharHeight CharColor]
+            [p, set] unless set.empty?
+        end
+        return item if found.empty?
+
+        item.ok = false
+        item.marks = found.map { |p, set| para_mark(p).merge(:title => set.map { |k| DIRECT[k] }.join(', ')) }
+        p, set = found.first
+        item.message = "#{found.size == 1 ? "»#{short(p)}« hat" : "#{found.size} Absätze haben, zum Beispiel »#{short(p)}«,"} noch eine " \
+            "#{set.map { |k| DIRECT[k] }.join(' und ')} von Hand. Markier sie und lösch die Formatierung: Dann zeigen sie, was »Standard« vorgibt, " \
+            'und ändern sich mit, wenn du »Standard« änderst.'
+        item
+    end
+
 
     # ---- pages and the table of contents
 

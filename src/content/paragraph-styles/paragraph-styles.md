@@ -23,7 +23,7 @@ Nach der Klassenfahrt haben alle Tischgruppen ein Stück für das
 Reisetagebuch der 7b geschrieben. Jemand hat die Stücke zusammengesetzt und
 jede Überschrift fett, größer und blau gemacht:
 
-<img class='paper' src='bilder/tagebuch.svg' alt='Das Reisetagebuch: ein großer Titel, darunter für jeden Tag eine blaue, fette Überschrift wie »Montag: Anreise«, beim Mittwoch zwei kleinere fette Zeilen »Am Vormittag« und »Am Nachmittag«'>
+<img class='paper' src='bilder/tagebuch.svg' alt='Das Reisetagebuch: ein großer fetter Titel, darunter eine kursive Zeile, dann für jeden Tag eine blaue, fette Überschrift wie »Montag: Anreise«, beim Mittwoch zwei kleinere fette Zeilen »Am Vormittag« und »Am Nachmittag«; der Text des Dienstags steht in einer anderen, etwas breiteren Schrift'>
 
 _task(uebersicht)
 
@@ -78,6 +78,50 @@ _task(ebene)
 den Teilen eines Tages »Überschrift 2«. Öffne danach die Übersicht der
 Überschriften und klick auf den Donnerstag.
 
+## Titel und Untertitel
+
+Auch der Titel des Tagebuchs und die Zeile darunter hat jemand von Hand groß,
+fett und kursiv gemacht. Für sie gibt es eigene Vorlagen, »Titel« und
+»Untertitel«; dann weiß das Programm, was der Titel ist, und jedes Dokument
+mit diesen Vorlagen hat denselben Anfang.
+
+**Jetzt bist du dran:** Lösch die Formatierung von Hand im Titel und in der
+Zeile darunter und gib ihnen die Vorlagen »Titel« und »Untertitel«, aus
+derselben Liste wie die Überschriften.
+
+## Der Text: »Standard«
+
+Zwei Tischgruppen haben ihren Text aus einer Nachricht kopiert, und er hat
+seine Schrift mitgebracht: Der Dienstag steht in Arial, der Donnerstag in
+Times New Roman, etwas größer. Die Klassenleitung möchte den ganzen Text in
+Georgia, 11 pt.
+
+_task(einmal)
+
+<!-- after: einmal -->
+Jeder Absatz, der keine andere Vorlage hat, hat »Standard«. Stellst du die
+Schrift in »Standard« ein, bekommt jeder dieser Absätze sie auf einmal, außer
+denen, die noch eine Schrift von Hand haben. Darum löschst du die zuerst.
+<!-- /after -->
+
+<!-- language: word -->
+In Word klickst du mit der rechten Maustaste in der Liste der Formatvorlagen
+auf *Standard* und wählst *Ändern…*. Dort stellst du Schriftart und Größe ein.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice öffnest du die Seitenleiste mit den Vorlagen (<kbd>F11</kbd>),
+klickst mit der rechten Maustaste auf *Standard* und wählst *Vorlage
+bearbeiten…*. Im Register *Schrift* stellst du Schriftart und Größe ein.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office öffnest du die Seitenleiste mit den Vorlagen, klickst mit
+der rechten Maustaste auf *Standard* und wählst *Vorlage bearbeiten…*. Im
+Register *Schrift* stellst du Schriftart und Größe ein.
+<!-- /language -->
+
+**Jetzt bist du dran:** Lösch die Formatierung von Hand im Text des Dienstags
+und des Donnerstags. Stell dann »Standard« auf Georgia, 11 pt.
+
 ## Eine Vorlage ändern
 
 Die Klassenleitung möchte die Überschriften der Tage grün, in der Farbe der
@@ -113,6 +157,6 @@ _task(tagebuch)
 <img class='paper' src='bilder/tagebuch-fertig.svg' alt='Das fertige Tagebuch: der Titel groß in Grün, die Tage als grüne Überschriften, Vormittag und Nachmittag als kleinere Überschriften darunter'>
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ändere die Schriftart von »Überschrift 1« und dann die von »Standard«. Achte darauf, welche Absätze sich jeweils mitändern.
+<strong>Ausprobieren:</strong> Stell in »Standard« den Abstand nach jedem Absatz auf 12 pt. Achte darauf, ob sich auch der Abstand nach den Überschriften ändert.
 </div>
 <!-- /after -->
