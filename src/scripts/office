@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Runs one command in the image of the office service (docker/office), for
+# the scripts that make the documents of the word processing activities and
+# their pictures:
+#
+#   src/scripts/office python3 src/content/formatting-marks/dokumente.py
+#
+# The repository is mounted at /repo and the command runs in the same
+# folder below it as here, as the calling user, so the files it writes
+# belong to them. No network. At most 4 GB of memory.
+set -euo pipefail
+
+repo=$(cd "$(dirname "$0")/../.." && pwd)
+image=workspace-office-tools
+docker build -q -t "$image" "$repo/docker/office" > /dev/null
+
+here=/repo
+case "$PWD/" in
+    "$repo"/*) here="/repo${PWD#"$repo"}" ;;
+esac
+
+exec docker run --rm --network none --memory 4g \
+    -u "$(id -u):$(id -g)" -e HOME=/tmp \
+    -v "$repo:/repo" -w "$here" "$image" "$@"

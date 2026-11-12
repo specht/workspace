@@ -384,6 +384,27 @@ docker_compose[:networks][:phone] = { :driver => 'bridge', :internal => true }
 docker_compose[:services][:nginx][:networks] << 'phone'
 docker_compose[:services][:phone_speech][:networks]['phone'] = { :aliases => ['phone-speech'] }
 
+# The office service (docs/plan-textverarbeitung.md): reads the documents
+# students upload to a document task with LibreOffice and draws their pages
+# (src/office/server.py). On a network of its own with the backend only,
+# without the internet: a document comes from a student, so LibreOffice
+# opens it where it can reach nothing (no macros, no links updated, one
+# document at a time, killed after 40 seconds). Nothing is stored.
+docker_compose[:services][:office] = {
+    :build => './docker/office',
+    :volumes => ['./src/office:/app:ro'],
+    :networks => { 'office' => { :aliases => ['office'] } },
+    :tmpfs => ['/tmp:size=512m', '/home/office:size=64m,uid=1600'],
+    :mem_limit => '2g',
+    :pids_limit => 200,
+    :cpus => 2.0,
+    :restart => 'always',
+}
+docker_compose[:networks][:office] = { :driver => 'bridge', :internal => true }
+if docker_compose[:services][:ruby]
+    docker_compose[:services][:ruby][:networks] << 'office'
+end
+
 # The only service with the Docker socket next to the peer firewall: it
 # lets the backend start and stop Workspaces and exec into them and the
 # databases, and refuses everything else (docker/docker-guard/guard.rb,

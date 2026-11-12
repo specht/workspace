@@ -21,6 +21,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Neuer Dienst `office` (LibreOffice ohne Fenster, `docker/office`, `src/office`) für die Aufgaben mit hochgeladenem Dokument im neuen Abschnitt Office: Nach dem Update `./config.rb build office && ./config.rb up -d office ruby` (der Ruby-Dienst kommt ins neue Netz `office`). Das Image holt beim Bauen Microsofts Core-Fonts (`ttf-mscorefonts-installer`, Debian contrib). Hochgeladene Dokumente werden gelesen und nicht gespeichert; gespeichert wird je Aufgabe eine Zeile, welche Punkte offen sind (`privacy.rb`).
 - »Betrieb« auf `/admin` prüft einmal am Tag, ob der Sprachdienst noch von YouTube laden kann (fünf Sekunden eines Videos, mit `PHONE_YOUTUBE_COOKIES`); misslingt es, bekommt die Administration einmal am Tag eine Mail. Gespeichert wird nur das letzte Ergebnis in `data/internal/youtube-check.json`. Nach dem Update `./config.rb restart phone_speech`.
 
 - Lesezeichen im Inhaltsverzeichnis links: Angemeldete Personen können Überschriften einer Seite markieren. Gespeichert werden Seite, Überschrift und Zeitpunkt (`Bookmark`-Knoten in Neo4j, am Konto); sie stehen im Export des Kontos, werden mit ihm gelöscht und in der Datenschutzerklärung genannt.
