@@ -374,6 +374,20 @@
             if (!document.body.dataset.documentRoom || +document.body.dataset.documentRoom < add) {
                 document.body.style.paddingBottom = (now - (+document.body.dataset.documentRoom || 0) + add) + 'px';
                 document.body.dataset.documentRoom = String(add);
+                // the room goes again once it is out of sight (scrolled back
+                // up), so that the page ends at its footer, without a jump
+                if (!document.body.documentRoomWatch) {
+                    document.body.documentRoomWatch = function () {
+                        const room = +document.body.dataset.documentRoom || 0;
+                        if (!room) return;
+                        if (window.scrollY + window.innerHeight < document.documentElement.scrollHeight - room) {
+                            const pad = parseFloat(document.body.style.paddingBottom) || 0;
+                            document.body.style.paddingBottom = Math.max(pad - room, 0) ? (pad - room) + 'px' : '';
+                            delete document.body.dataset.documentRoom;
+                        }
+                    };
+                    window.addEventListener('scroll', document.body.documentRoomWatch, { passive: true });
+                }
             }
             box.scrollIntoView({ block: 'start' });
         }
