@@ -450,7 +450,9 @@ function install_autotoc() {
     } else if (series) {
         entries = Array.from(series.querySelectorAll('li')).map((li) => {
             let a = li.querySelector('a');
-            return { label: li.querySelector('.activity-part-title').textContent, href: a ? a.getAttribute('href') : null };
+            let number = li.querySelector('.activity-part-number');
+            return { label: li.querySelector('.activity-part-title').textContent, href: a ? a.getAttribute('href') : null,
+                     number: number ? number.textContent : null };
         });
     } else {
         let h1 = document.querySelector('h1');
@@ -458,9 +460,20 @@ function install_autotoc() {
         autotoc.addClass('autotoc-title-only');
     }
     let current = Math.max(0, entries.findIndex((entry) => !entry.href));
-    autotoc[0].style.setProperty('--entries', entries.length);
+    // Many parts or a long series (the nine Office sheets): the row shows
+    // the current one with the one before and after it, each wide enough
+    // for its title, an arrow on each side (the maintainer, 12 November
+    // 2026); the dots under the row on a phone still count all of them.
+    let windowed = entries.length > 3;
+    let shown = entries.filter((_, i) => !windowed || Math.abs(i - current) <= 1).length;
+    autotoc[0].style.setProperty('--entries', shown);
+    autotoc.toggleClass('autotoc-windowed', windowed);
     entries.forEach((entry, i) => {
         let item = $('<button>', { type: 'button' }).text(entry.label);
+        if (entry.number) item.prepend($('<span>', { class: 'autotoc-number' }).text(entry.number));
+        if (windowed && i === current - 1) item.addClass('autotoc-prev').prepend($("<i class='bi bi-chevron-left' aria-hidden='true'></i>"));
+        if (windowed && i === current + 1) item.addClass('autotoc-next').append($("<i class='bi bi-chevron-right' aria-hidden='true'></i>"));
+        if (windowed && Math.abs(i - current) > 1) item.addClass('autotoc-far');
         if (entry.extra) item.addClass('extra').prepend(extra_chapter_mark());
         if (i === current) item.addClass('active').attr('aria-current', 'page');
         item[0].addEventListener('click', function() {

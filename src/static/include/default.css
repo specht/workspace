@@ -2121,6 +2121,46 @@ h2 > .squircle {
     }
 }
 
+/* Many parts or a long series (_template.html, install_autotoc): on a wide
+   screen only the current one and its neighbours, each with room for its
+   title; a phone keeps showing one at a time, with all the dots. */
+@media (min-width: 769px) {
+    .autotoc.autotoc-windowed > .items > button.autotoc-far {
+        display: none;
+    }
+    .autotoc.autotoc-windowed > .items > button {
+        width: min(24em, calc(100% / var(--entries, 1)));
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+    .autotoc.autotoc-windowed > .items > button:not(.active) {
+        color: var(--bs-secondary-color);
+    }
+    .autotoc.autotoc-windowed > .items > button:not(.active):hover {
+        color: inherit;
+    }
+}
+.autotoc > .items > button .bi-chevron-left {
+    margin-right: 0.4em;
+    font-size: 0.8em;
+}
+.autotoc > .items > button .bi-chevron-right {
+    margin-left: 0.4em;
+    font-size: 0.8em;
+}
+@media (max-width: 768px) {
+    .autotoc > .items > button .bi-chevron-left,
+    .autotoc > .items > button .bi-chevron-right {
+        display: none;
+    }
+}
+/* a series' own number before its title, as in the row over the page */
+.autotoc > .items > button .autotoc-number {
+    margin-right: 0.45em;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.7;
+}
+
 /* A page that is neither in parts nor in a series: the bar shows its
    title, without a line or dots under it. */
 .autotoc.autotoc-title-only > .items > button {
