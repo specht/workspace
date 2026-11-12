@@ -22,20 +22,16 @@
     }
     /* the real number on a label under the phone, like the paper label on
        an old desk phone (phone_games_api.rb, phone_book_label) */
-    /* placed in the page while the book has not taken it onto its cover
-       (phone_book.js; without JavaScript it stays here) */
-    .phone-book-layout > .phone-book-label {
+    .phone-book-label {
         grid-column: 2;
         grid-row: 2;
         justify-self: start;
+        width: 290px;
+        max-width: 100%;
         /* right under the book, lying on the desk */
         align-self: start;
         margin: .6rem 0 0 2rem;
         transform: rotate(-2.5deg);
-    }
-    .phone-book-label {
-        width: 290px;
-        max-width: 100%;
         padding: .55rem .9rem .6rem;
         background: url('/include/phone-book-paper.webp') var(--pb-paper);
         background-size: 384px 384px;
@@ -54,11 +50,11 @@
        is 1320px wide from 1400px on): in that margin, left of the phone */
     @media (min-width: 1940px) {
         .phone-book-layout { position: relative; }
-        .phone-book-layout > .phone-book-label { position: absolute; grid-area: auto; left: calc(-290px - 1.5rem); top: 430px; margin: 0; transform: rotate(-4deg); }
+        .phone-book-label { position: absolute; grid-area: auto; left: calc(-290px - 1.5rem); top: 430px; margin: 0; transform: rotate(-4deg); }
     }
     @media (max-width: 900px) {
         /* at the bottom, under the book (the maintainer) */
-        .phone-book-layout > .phone-book-label { grid-column: auto; grid-row: auto; order: 1; justify-self: center; margin: .4rem 0 1rem; transform: rotate(-1.5deg); }
+        .phone-book-label { grid-column: auto; grid-row: auto; order: 1; justify-self: center; margin: .4rem 0 1rem; transform: rotate(-1.5deg); }
     }
     .pb-label-how { font-size: .9rem; font-style: italic; color: var(--pb-quiet); hyphens: none; }
     .phone-book-layout {
@@ -154,42 +150,6 @@
     .phone-book-page .pb-remark a { color: var(--pb-ink); text-decoration: underline; text-underline-offset: 2px; }
     .phone-book-page .phone-book-none { color: var(--pb-quiet); margin-top: 2rem; text-align: center; }
     /* the page that turns: front and back, around the spine */
-    /* the closed book: its cover where the right page will lie, its left
-       edge the spine; the board's gold, the title embossed, the label with
-       the real number stuck on it at a slant */
-    .phone-book-spread.closed { background: transparent; box-shadow: none; }
-    .phone-book-spread.closed > .pb-gap { visibility: hidden; }
-    .phone-book-leaf.phone-book-cover {
-        background:
-            linear-gradient(90deg, rgba(60, 40, 0, .28), rgba(60, 40, 0, .05) 6%, transparent 12%),
-            radial-gradient(120% 90% at 35% 25%, rgba(255, 255, 255, .18), transparent 60%),
-            var(--pb-cover);
-        background-size: auto;
-        background-position: 0 0;
-        color: #3b2f0b;
-        border-radius: 3px 10px 10px 3px;
-        box-shadow: var(--pb-shadow), inset 0 0 0 1px rgba(60, 40, 0, .25);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 12% 8% 8%;
-        cursor: pointer;
-    }
-    .phone-book-cover > * { mix-blend-mode: normal; }
-    .phone-book-cover .pb-cover-title {
-        font-size: clamp(1.7rem, 2.6vw, 2.7rem);
-        font-weight: 700;
-        hyphens: none;
-        white-space: nowrap;
-        letter-spacing: .02em;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, .35), 0 -1px 0 rgba(60, 40, 0, .35);
-        line-height: 1.1;
-    }
-    .phone-book-cover .pb-cover-sub { font-variant: small-caps; letter-spacing: .12em; margin-top: .4rem; opacity: .8; }
-    .phone-book-cover .pb-cover-rule { width: 40%; border-top: 2px solid rgba(60, 40, 0, .45); margin: 1.2rem 0 0; }
-    .phone-book-cover .phone-book-label { margin-top: auto; transform: rotate(-3deg); box-shadow: inset 0 0 0 3px var(--pb-paper), inset 0 0 0 4px var(--pb-rule), 0 3px 8px rgba(40, 30, 10, .35); }
-    .phone-book-cover .pb-cover-open { margin-top: 1.1rem; font-size: .85rem; opacity: .75; }
     .phone-book-turning {
         position: absolute;
         top: 10px;
