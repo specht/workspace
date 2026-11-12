@@ -1,3 +1,4 @@
+require_relative 'document_dates'
 require 'cgi'
 require_relative 'office_client'
 
@@ -249,7 +250,9 @@ module DocumentCheck
         # typed list markers (»-«, »•«) are no words: a real list has none
         # nor punctuation at the edges of a word (»1:« of a caption the
         # program wrote as »1«)
-        words = ->(ps) { ps.flat_map { |p| p['text'].to_s.split(/\s+/) }.map { |w| w.gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
+        # any date is the same word: the starting file's dates were filled
+        # in on the day of its download (DocumentDates)
+        words = ->(ps) { ps.flat_map { |p| DocumentDates.normalize(p['text']).split(/\s+/) }.map { |w| w.gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
         # the whole document, the cells of tables too
         have = words.(all || body).tally
         # lines of a table of contents typed in the starting file (dots or a
@@ -337,12 +340,16 @@ module DocumentCheck
     def self.rule_align(rule, body, _starter, _all = nil, _model = nil)
         want = rule['align'].to_s
         name = rule['paragraph'].to_s
-        item = Item.new(:rule => 'align', :label => "»#{name}« ist #{ALIGN[want]}", :ok => false, :marks => [])
-        p = body.find { |q| q['plain'].include?(name) }
+        label = DocumentDates.date?(name) ? 'Das Datum' : "»#{name}«"
+        item = Item.new(:rule => 'align', :label => "#{label} ist #{ALIGN[want]}", :ok => false, :marks => [])
+        # a date with whatever date the student's copy got (DocumentDates)
+        found = DocumentDates.pattern(name)
+        p = body.find { |q| q['plain'].match?(found) }
         if p.nil?
-            item.message = "Den Absatz »#{name}« finde ich nicht mehr."
+            item.message = DocumentDates.date?(name) ? 'Das Datum finde ich nicht mehr.' : "Den Absatz »#{name}« finde ich nicht mehr."
             return item
         end
+        name = p['plain'][found]
         item.ok = p['align'] == want
         return item if item.ok
 
@@ -472,16 +479,21 @@ module DocumentCheck
 
     def self.rule_bold(rule, body, _starter, _all = nil, _model = nil)
         pieces = Array(rule['bold'])
-        item = Item.new(:rule => 'bold', :label => "#{names(pieces.map { |x| "»#{x}«" })} fett", :ok => true, :marks => [])
+        label = "#{names(pieces.map { |x| DocumentDates.date?(x) ? 'das Datum' : "»#{x}«" })} fett"
+        item = Item.new(:rule => 'bold', :label => label.sub(/\A\p{Ll}/, &:upcase), :ok => true, :marks => [])
         problems = []
         pieces.each do |piece|
-            p = body.find { |x| x['text'].to_s.include?(piece) }
+            # a date with whatever date the student's copy got (DocumentDates)
+            found = DocumentDates.pattern(piece)
+            p = body.find { |x| x['text'].to_s.match?(found) }
             if p.nil?
                 problems << "»#{piece}« finde ich nicht mehr."
                 next
             end
-            from = p['text'].index(piece)
-            to = from + piece.size
+            m = p['text'].match(found)
+            from = m.begin(0)
+            to = m.end(0)
+            piece = m[0]
             plain = ranges(p).select { |a, b, q| a < to && b > from && visible?(q) && !q['bold'] }
             next if plain.empty?
 

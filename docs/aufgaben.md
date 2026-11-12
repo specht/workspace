@@ -1947,6 +1947,9 @@ Klassenübersicht kann das Kapitel deshalb auch für alle auf einmal prüfen.
 check:
   type: document
   file: formatting-marks/01 Einladung.docx   # die Vorlage, unter src/static
+  dates:                  # Daten der Vorlage, beim Herunterladen eingesetzt
+    '2. März': heute      # der Tag des Herunterladens
+    '9. März': Dienstag   # der erste Dienstag mindestens eine Woche danach
   rules:
     - text                # jedes Wort der Vorlage ist noch da
     - spaces              # keine Leerzeichen hintereinander
@@ -1988,6 +1991,18 @@ ohne verknüpfte Inhalte zu laden, und zeichnet die Seiten als SVG.
 (`paragraph:`, `before:`, `paragraphs:`, die Liste selbst), `bold:` die Stücke
 selbst. Die Regeln zur Schrift lesen die Abschnitte eines Absatzes mit
 gleicher Formatierung und markieren die Wörter, die betroffen sind.
+
+Ein Brief vom »2. März«, im November gelesen, wirkt vergessen. Mit `dates:`
+bekommt die Vorlage beim Herunterladen ihre Daten
+(`/api/task/document_starter/<aktivität>/<aufgabe>`, `DocumentDates`): `heute`
+oder einen Wochentag, den ersten mindestens eine Woche nach dem Tag des
+Herunterladens; der Wochentag ist der, den der Text neben dem Datum nennt
+(»am Dienstag, dem 9. März«). Jedes Datum steht in der Vorlage in einem Stück
+(ein Lauf, wie `dokumente.py` es schreibt). Die Karte bietet die Vorlage dann
+unter dieser Adresse an; ein Knopf auf der Seite selbst verlinkt dieselbe. Wer
+heute herunterlädt und morgen prüft, ist nicht falsch: `text`, `align:` und
+`bold:` lesen jedes deutsche Datum (»24. November«) dort, wo die Vorlage eines
+hat, und die Meldungen nennen es »das Datum«.
 
 Die Regeln zu Bildern finden ein Bild der Vorlage im Upload an seinen Pixeln
 wieder (dieselbe Datei, egal wie groß sie gezeigt wird); `names:` sagt, wie

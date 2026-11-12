@@ -172,6 +172,20 @@ class Main < Sinatra::Base
         activity, id = task_key.split('/', 2)
         { :name => name, :at => File.mtime(path).to_i, :url => "/api/task/document_file/#{activity}/#{id}" }
     end
+    # The starting file of a document task with its dates filled in for
+    # today (DocumentDates; check: dates in tasks.yaml), for anyone, as the
+    # plain file is. Never kept by a browser or proxy: tomorrow it differs.
+    get '/api/task/document_starter/:activity/:id' do
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil? || found[:task]['check']['type'] != 'document'
+        check = found[:task]['check']
+        path = File.join(TaskCheck::STATIC_ROOT, check['file'])
+        halt 404 unless File.file?(path)
+        data = (DocumentDates.fill(path, check['dates']) if check['dates']) || File.binread(path)
+        response.headers['Cache-Control'] = 'no-store'
+        respond_raw_with_mimetype_and_filename(data, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', File.basename(path))
+    end
+
     # The kept document as it was uploaded: one's own, or (email=…) that of
     # a student in a group the logged-in teacher looks after.
     get '/api/task/document_file/:activity/:id' do

@@ -245,8 +245,9 @@ module TaskCard
                 # again with each »Prüfen« where the browser can (Chrome,
                 # Edge), else chosen or dropped anew.
                 file = check['file']
-                # the address with each part encoded (»01 Einladung.docx«)
-                href = '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
+                # the address with each part encoded (»01 Einladung.docx«);
+                # with its dates filled in on download (DocumentDates)
+                href = check['dates'] ? "/api/task/document_starter/#{key}" : '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
                 io << "<div class='document-task'>"
                 io << "<a class='document-starter btn btn-primary' href='#{h.(href)}' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>#{h.(File.basename(file))}</span></a>"
                 io << "<div class='document-drop'>"

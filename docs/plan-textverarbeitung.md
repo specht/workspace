@@ -119,8 +119,11 @@ These hold for word processing and for the series still to come
   grade comes out of it is still being decided (see »Open«).
 - **The size for which everything is made:** half a Full HD screen (960 px
   wide, Word beside the browser); full width and a phone must work too.
-- **Fixed dates in starting files**, without year, fitting the series' story
-  (docs/checkliste.md).
+- **Dates in starting files** without year; a date that stands for today or
+  for something soon is filled in on download (`dates:`, docs/aufgaben.md
+  »document«; the maintainer, 12 November 2026, after first deciding on
+  fixed dates). The pictures on the pages keep the dates of the file in
+  `src/static`.
 - **Predictions whose answer is the same in every program:** a question about
   what happens in Word may have another answer in LibreOffice (applying a
   style to a paragraph formatted by hand); such a prediction is dropped.
@@ -219,6 +222,15 @@ built by hand; each is a page of a series of its own, about one lesson.
   as one node (the maintainer, 12 November 2026); until then the stored
   layout lacks sheet 8 (production orders quickly, the graph test is red).
 - **Every sheet to 45 minutes**, »Formatvorlagen« first.
+- **Illustrations where the sheets only explain** (the maintainer, 12 November
+  2026; the site's rule): every sheet looked through for passages that say
+  in words what a drawing would show. Named so far: the serifs on »Schrift
+  mit Absicht«; on »Seiten und Verzeichnisse« the table of contents (how the
+  headings with their styles and their pages become its lines, the dots to
+  the page number), the page break against empty paragraphs, the footer
+  that is the same on every page with the field that is not. The finished
+  title page after the check does not count: it comes after the
+  explanation.
 - **Hints per program on every task** (the maintainer, 12 November 2026):
   sheet 1's document task has them (`word:`, `libreoffice:`, `nextcloud:`
   under the task, each with its own `hint:` list, from »what« to »where

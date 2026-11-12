@@ -49,11 +49,17 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await page.goto('/formatting-marks');
   await states;
   const card = page.locator(".task-card[data-task='formatting-marks/einladung']:visible");
-  await expect(card.locator('.document-starter')).toHaveAttribute('href', '/formatting-marks/01%20Einladung.docx');
+  // the starting file with today's date and the Elternabend a Tuesday
+  // after it (DocumentDates), as a student downloads it
+  await expect(card.locator('.document-starter')).toHaveAttribute('href', '/api/task/document_starter/formatting-marks/einladung');
+  const download = await page.request.get('/api/task/document_starter/formatting-marks/einladung');
+  expect(download.headers()['content-disposition']).toContain('01%20Einladung.docx');
+  const dated = testInfo.outputPath('01 Einladung.docx');
+  fs.writeFileSync(dated, await download.body());
 
   // the starting file: everything but the text is open
   const checked = page.waitForResponse((r) => r.url().includes('/api/task/document'));
-  await card.locator('.document-input').setInputFiles(starter);
+  await card.locator('.document-input').setInputFiles(dated);
   await checked;
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
@@ -65,6 +71,9 @@ test('a document is checked and its problems are marked on its page', async ({ p
   }).toBe(true);
   await expect(report.locator('.document-checklist li.document-open')).toHaveCount(7);
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(1);
+  // its other dates are its text all the same; its date is found
+  await expect(report.locator('.document-checklist li.document-ok')).toContainText('Der Text ist noch vollständig');
+  await expect(report.locator('.document-checklist li.document-open', { hasText: 'Das Datum ist rechtsbündig' })).toHaveCount(1);
   await expect(report.locator('.document-sheet img')).toHaveCount(1);
   await expect(report.locator('.document-sheet img')).toHaveAttribute('src', /^\/api\/document_page\/[0-9a-f]{40}\.svg$/);
   const marks = report.locator('.document-mark');
@@ -209,7 +218,10 @@ test('a flyer is checked for its fonts, sizes and emphasis', async ({ page, e2eE
   await page.goto('/character-formatting');
   await states;
   const card = page.locator(".task-card[data-task='character-formatting/aushang']:visible");
-  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/character-formatting/02 Aushang.docx'));
+  const download = await page.request.get('/api/task/document_starter/character-formatting/aushang');
+  const dated = testInfo.outputPath('02 Aushang.docx');
+  fs.writeFileSync(dated, await download.body());
+  await card.locator('.document-input').setInputFiles(dated);
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
   await expect(report.locator('.document-checklist li.document-open')).toHaveCount(6);

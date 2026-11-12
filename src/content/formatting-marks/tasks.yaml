@@ -80,6 +80,11 @@ tasks:
     check:
       type: document
       file: formatting-marks/01 Einladung.docx
+      # the letter's date is the day of the download, the Elternabend a
+      # Tuesday at least a week later (»am Dienstag, dem 9. März«)
+      dates:
+        '2. März': heute
+        '9. März': Dienstag
       rules:
         - text
         - spaces

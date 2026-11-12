@@ -78,6 +78,10 @@ tasks:
     check:
       type: document
       file: character-formatting/02 Aushang.docx
+      # the cake sale a Thursday at least a week after the download
+      # (»Am Donnerstag, dem 14. März«)
+      dates:
+        '14. März': Donnerstag
       rules:
         - text
         - { fonts: 2 }

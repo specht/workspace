@@ -47,7 +47,7 @@ lange Zeile um, und gleich danach kommt der Umbruch, den jemand getippt hat.
 
 Hol dir die Einladung und öffne sie:
 
-<p><a class='document-starter btn btn-primary' href='/formatting-marks/01%20Einladung.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>01 Einladung.docx</span></a></p>
+<p><a class='document-starter btn btn-primary' href='/api/task/document_starter/formatting-marks/einladung' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>01 Einladung.docx</span></a></p>
 
 Jede Textverarbeitung kann die Zeichen zeigen, die nicht gedruckt werden. Sie
 heißen **Formatierungszeichen**.
