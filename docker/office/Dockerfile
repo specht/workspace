@@ -1,6 +1,6 @@
 # The office service (docs/plan-textverarbeitung.md): reads the documents
 # students upload to a document task and draws their pages. LibreOffice
-# without a window (Writer and Calc), in German: a spreadsheet shows
+# without a window (Writer, Calc and Impress), in German: a spreadsheet shows
 # »#WERT!« and »WAHR« as the programs of the class do (libreoffice-l10n-de;
 # server.py starts it with LANG=de_DE.UTF-8). Python with UNO to read the document,
 # poppler to turn the PDF into pictures and to find where each paragraph
@@ -12,7 +12,8 @@
 # their widths: Carlito for Calibri, Caladea for Cambria. Aptos (Word's
 # default since 2024) is missing: Microsoft wants a licence of its own for
 # using it on a server. webp and Pillow are for
-# the scripts that draw the pictures of the activities (src/scripts/office).
+# the scripts that draw the pictures of the activities (src/scripts/office),
+# python-pptx for those that write presentations.
 #
 # The code is mounted at /app (src/office). No internet: the service sits
 # on a network of its own with the backend only (config.rb).
@@ -21,13 +22,18 @@ FROM debian:trixie-slim
 RUN sed -i 's/^Components: main$/Components: main contrib/' /etc/apt/sources.list.d/debian.sources \
     && echo 'ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true' | debconf-set-selections
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libreoffice-writer-nogui libreoffice-calc-nogui python3-uno python3-docx \
+        libreoffice-writer-nogui libreoffice-calc-nogui libreoffice-impress-nogui python3-uno python3-docx \
         poppler-utils webp python3-pil \
         ca-certificates wget cabextract ttf-mscorefonts-installer \
         fontconfig fonts-crosextra-carlito fonts-crosextra-caladea \
         fonts-liberation2 fonts-dejavu-core \
         hyphen-de hunspell-de-de libreoffice-l10n-de \
+        python3-lxml python3-xlsxwriter python3-pip \
     && rm -rf /var/lib/apt/lists/*
+# python-pptx for the starting files of the sheets on presentations: it
+# writes a .pptx as PowerPoint does (text styles in the master, letters
+# without formatting of their own), which LibreOffice's export does not
+RUN pip install --break-system-packages --no-deps --no-cache-dir python-pptx==1.0.2
 RUN useradd -m -u 1600 office
 USER office
 ENV HOME=/home/office

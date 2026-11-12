@@ -40,6 +40,8 @@ PIPE = 'workspace_office'
 FORMATS = {'docx', 'odt', 'doc', 'rtf'}
 # spreadsheets (sheet.py)
 SHEETS = {'xlsx', 'ods', 'xls'}
+# presentations (slides.py)
+PRESENTATIONS = {'pptx', 'odp', 'ppt'}
 
 # LibreOffice in German: a spreadsheet's numbers and dates shown as a
 # German program shows them (an .xlsx stores its formats without language)
@@ -704,8 +706,8 @@ def analyze(data, filename, probes=None):
     ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
     if ext == 'pdf':
         return analyze_pdf(data)
-    if ext not in FORMATS | SHEETS:
-        return {'error': 'format', 'formats': sorted(FORMATS | SHEETS)}
+    if ext not in FORMATS | SHEETS | PRESENTATIONS:
+        return {'error': 'format', 'formats': sorted(FORMATS | SHEETS | PRESENTATIONS)}
     folder = tempfile.mkdtemp(prefix='job-')
     try:
         source = os.path.join(folder, f'in.{ext}')
@@ -722,6 +724,12 @@ def analyze(data, filename, probes=None):
             import sheet
             try:
                 return sheet.analyze(OFFICE, doc, folder, probes)
+            finally:
+                doc.close(True)
+        if doc is not None and doc.supportsService('com.sun.star.presentation.PresentationDocument'):
+            import slides
+            try:
+                return slides.analyze(OFFICE, doc, folder)
             finally:
                 doc.close(True)
         if doc is None or not doc.supportsService('com.sun.star.text.TextDocument'):
