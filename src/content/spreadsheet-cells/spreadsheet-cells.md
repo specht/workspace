@@ -99,6 +99,9 @@ Für jede Zeile eine Formel zu tippen, wäre mühsam. Unten rechts an der
 markierten Zelle sitzt ein kleines Quadrat. Ziehst du es nach unten, schreibt
 das Programm die Formel in die Zellen darunter und passt sie an.
 
+<img class='drawing d-none d-lg-block' style='width: 40em' src='quadrat-wide.svg' alt='Links, vergrößert: die Zellen C4 bis D5, D4 orange eingerahmt, an seiner Ecke unten rechts ein kleines orangefarbenes Quadrat, darauf der Mauszeiger als dünnes Kreuz. Rechts: die Spalten C und D, Zeilen 3 bis 8. D4 ist markiert, ein gestrichelter Rahmen reicht von D4 bis D8, der Mauszeiger an seiner Ecke unten, ein Pfeil nach unten; D5 bis D8 sind noch leer'>
+<img class='drawing d-lg-none' style='width: 21.75em' src='quadrat.svg' alt='Oben, vergrößert: die Zellen C4 bis D5, D4 orange eingerahmt, an seiner Ecke unten rechts ein kleines orangefarbenes Quadrat, darauf der Mauszeiger als dünnes Kreuz. Unten: die Spalten C und D, Zeilen 3 bis 8. D4 ist markiert, ein gestrichelter Rahmen reicht von D4 bis D8, der Mauszeiger an seiner Ecke unten, ein Pfeil nach unten; D5 bis D8 sind noch leer'>
+
 _task(kopiert)
 
 <!-- after: kopiert -->

@@ -1137,6 +1137,61 @@ def formel(phone=False):
     svg(variant('formel', phone), 'spreadsheet-cells', w, h, body, 'Ein getipptes Ergebnis gegen eine Formel, die mit B5 und C5 rechnet')
 
 
+def _cross(x, y, arm=8):
+    """the mouse pointer on the small square: a thin cross, white around it"""
+    out = []
+    for colour, width in ((PAPER, 4.2), (INK, 1.6)):
+        out.append(line(x - arm, y, x + arm, y, colour, width) + line(x, y - arm, x, y + arm, colour, width))
+    return ''.join(out)
+
+
+def quadrat():
+    """the small square at a selected cell's corner, before anything is
+    filled: point at it, then drag; the cells below stay empty while the
+    mouse moves (what they get is the prediction »kopiert«)"""
+    cw, ch, zoom = 96, 30, 1.4
+    # the corner, magnified
+    cols, rows = ['C', 'D'], [4, 5]
+    cells = {('C', 4): ('1.250,00', 'right'), ('C', 5): ('148,00', 'right'), ('D', 4): ('1.250,00', 'right')}
+    g, (x0, y0) = grid(0, 0, cols, rows, cw, ch, cells, size=13)
+    dx, dy, dw, dh = cell_box(x0, y0, cols, rows, cw, ch, 'D', 4)
+    ax, ay = 20, 20
+    sx, sy = ax + (dx + dw) * zoom, ay + (dy + dh) * zoom
+    gw, gh = (x0 + cw * 2) * zoom, (y0 + ch * 2) * zoom
+    # the pointer's centre on the square, the square over it so it stays seen
+    label = 'das kleine Quadrat unten rechts'
+    tail = ax + measure(label, 14, '600') + 12
+    a = [f"<g transform='translate({ax} {ay}) scale({zoom})'>{g}{rect(dx, dy, dw, dh, 'none', PAMBER, 2.2)}</g>",
+         _cross(sx, sy, 21),
+         rect(sx - 7, sy - 7, 14, 14, PAMBER, PAPER, 1.8),
+         arrow(tail, ay + gh + 28, sx - 12, sy + 12, AMBER, 1.6, 8),
+         text(ax, ay + gh + 34, label, 14, TEXT, weight='600'),
+         text(ax, ay + gh + 53, 'Zeigst du darauf, wird der Mauszeiger', 13, GREY),
+         text(ax, ay + gh + 70, 'zu einem dünnen Kreuz.', 13, GREY)]
+    panel_a = (a, (ax - 10, ay - 10, gw + 26, gh + 90))
+    # dragging down to D8
+    bx, by = ax + gw + 60, 20
+    cols, rows = ['C', 'D'], [3, 4, 5, 6, 7, 8]
+    cells = {('C', 3): ('Preis', 'left', '700'), ('D', 3): ('Summe', 'left', '700'), ('D', 4): ('1.250,00', 'right')}
+    cells.update({('C', r): (v, 'right') for r, v in zip(rows[1:], ['1.250,00', '148,00', '24,50', '9,00', '4,50'])})
+    g, (x0, y0) = grid(bx, by, cols, rows, cw, ch, cells, size=13)
+    dx, dy, dw, dh = cell_box(x0, y0, cols, rows, cw, ch, 'D', 4)
+    bottom = dy + dh * 5
+    b = [g, rect(dx + 1.5, dy + 1.5, dw - 3, dh * 5 - 3, 'none', GREY, 1.6, extra=" stroke-dasharray='5 3'"),
+         rect(dx, dy, dw, dh, 'none', PAMBER, 2.2),
+         _cross(dx + dw, bottom, 9),
+         arrow(dx + dw + 16, dy + dh, dx + dw + 16, bottom, AMBER, 2),
+         text(bx, bottom + 34, 'Maustaste halten, nach unten ziehen', 14, TEXT, weight='600'),
+         text(bx, bottom + 53, 'bis D8, dann loslassen. Beim Ziehen', 13, GREY),
+         text(bx, bottom + 70, 'zeigt ein Rahmen, wohin es geht.', 13, GREY)]
+    panel_b = (b, (bx - 10, by - 10, dx + dw + 30 - bx + 10, bottom + 90 - by))
+    width = round(bx + max(dx + dw + 30 - bx, 250) + 10)
+    height = round(max(ay + gh + 80, bottom + 80))
+    two_ways('quadrat', 'spreadsheet-cells', (width, height),
+             'Das kleine Quadrat an der markierten Zelle: darauf zeigen, dann nach unten ziehen',
+             [panel_a, panel_b], gap=18)
+
+
 def ausfuellen(phone=False):
     """filling down: the formula moves with its row"""
     w, h = (360, 234) if phone else (520, 180)
@@ -1599,7 +1654,7 @@ def karte_tabellen():
 
 
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
-                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, ausfuellen,
+                                      seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, quadrat, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 # the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)
 TWO_WAYS = {adresse, formel, ausfuellen, zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, sortieren, diagrammarten, achse,
