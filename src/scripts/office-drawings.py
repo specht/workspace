@@ -1008,8 +1008,7 @@ def card_ground(w, h, kind):
 
 def karte():
     """three sheets of the series fanned out: the invitation with its
-    formatting marks and a check's numbered mark, the report's contents,
-    the newspaper page with a green tick"""
+    formatting marks, the report's contents, the newspaper page"""
     w, h = 480, 270
     body = [card_ground(w, h, 'text')]
     sw, sh = 150, 212
@@ -1030,7 +1029,6 @@ def karte():
     inv.append(text(x0, y0 + 90, '¶', 9, PBLUE))
     for k, length in enumerate([116, 90]):
         inv.append(bar(x0, y0 + 104 + k * 11, length, h=3))
-    inv.append(f"<circle cx='{-sw / 2 + 6}' cy='{y0 - 2}' r='8' fill='{PAMBER}'/>" + text(-sw / 2 + 6, y0 + 2, '1', 10, PAPER, 'middle', '700'))
     body.append(sheet(120, 142, -9, ''.join(inv)))
     # the report's contents
     toc = [text(x0, y0 + 4, 'Reisebericht', 13, PGREEN, weight='700'), text(x0, y0 + 30, 'Inhalt', 9, INK, weight='700')]
@@ -1054,8 +1052,6 @@ def karte():
                 f"<circle cx='{px + col * 0.72}' cy='{py + 12}' r='5' fill='{PAMBER}'/>")
     for k in range(3):
         news.append(bar(px, py + 52 + k * 9, col - (col * 0.3 if k == 2 else 0), h=3))
-    news.append(f"<circle cx='{sw / 2 - 12}' cy='{-sh / 2 + 14}' r='13' fill='#2e7d32'/>"
-                f"<path d='M {sw / 2 - 18} {-sh / 2 + 14} l 4 5 l 9 -10' fill='none' stroke='{PAPER}' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/>")
     body.append(sheet(358, 140, 7, ''.join(news)))
     svg('karte', 'formatting-marks', w, h, body, 'Die Karte der Reihe: drei Blätter, Einladung, Inhaltsverzeichnis, Zeitungsseite')
 
@@ -1619,8 +1615,7 @@ def achse(phone=False):
 
 def karte_tabellen():
     """the card of the series on spreadsheets: three sheets fanned out, a
-    grid with a formula and a check's numbered mark, a pie chart, a column
-    chart with a green tick"""
+    grid with a formula, a pie chart, a column chart"""
     import math
     w, h = 480, 270
     body = [card_ground(w, h, 'sheet')]
@@ -1652,7 +1647,6 @@ def karte_tabellen():
     g.append(rect(mx, my, cw, ch, PAMBER_BG) + rect(mx, my, cw, ch, 'none', PAMBER, 1.6))
     g.append(text(mx + cw - 3, my + 11, '661,50', 7, INK, 'end'))
     g.append(text(x0, y0 + ch * 10 + 22, '=B5*C5', 13, PBLUE, weight='700', family="'IBM Plex Mono', monospace"))
-    g.append(f"<circle cx='{x0 - 9}' cy='{my + ch / 2}' r='7' fill='{PAMBER}'/>" + text(x0 - 9, my + ch / 2 + 3.5, '1', 9, PAPER, 'middle', '700'))
     body.append(sheet(120, 142, -9, ''.join(g)))
     # a pie chart
     pie = [text(0, y0 + 4, 'Wofür ein Kind', 10, INK, 'middle', '700'), text(0, y0 + 17, 'bezahlt', 10, INK, 'middle', '700')]
@@ -1677,8 +1671,6 @@ def karte_tabellen():
         bh = v / 5 * (bottom - top)
         col.append(rect(left + slot * i + slot * 0.2, bottom - bh, slot * 0.6, bh, PBLUE))
     col.append(line(left, bottom, sw / 2 - 12, bottom, INK, 1))
-    col.append(f"<circle cx='{sw / 2 - 12}' cy='{-sh / 2 + 14}' r='13' fill='#2e7d32'/>"
-               f"<path d='M {sw / 2 - 18} {-sh / 2 + 14} l 4 5 l 9 -10' fill='none' stroke='{PAPER}' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/>")
     body.append(sheet(358, 140, 7, ''.join(col)))
     svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
 
