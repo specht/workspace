@@ -1,7 +1,8 @@
 # Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
 # für die Prüfungen«): Die fertigen Folien bestehen die Prüfung, als .pptx
-# und als .odp; die Vorlage und die Folien, deren Sätze gelöscht statt in die
-# Notizen verschoben sind, scheitern. Alle macht dokumente.py.
+# und als .odp; die Vorlage, die Folien, auf denen mit den Sätzen auch alles
+# Erzählenswerte verschwunden ist, und die Folien mit den ganzen Sätzen als
+# Text zum Ablesen in den Notizen scheitern. Alle macht dokumente.py.
 format: 1
 activity: good-slides
 examples:
@@ -15,4 +16,6 @@ examples:
       - document: ../../static/good-slides/01 Kraniche.odp
         say: Wörter
       - document: stufen/geloescht.pptx
-        say: steht in keiner Notiz
+        say: steht nichts mehr da
+      - document: stufen/abgelesen.odp
+        say: Text zum Ablesen

@@ -45,29 +45,33 @@ SENTENCES = {
 }
 
 # the slides as they should be: one idea each, a title that says it,
-# keywords; the sentences of each in its notes
+# keywords; in the notes a few cues of what to tell (a cue card, not a text
+# to read out)
 GOOD = [
     ('Der Kranich ist ein großer Vogel', ['gut 1 m hoch', '2 m Flügelspannweite', 'roter Fleck, schwarz-weißer Hals'],
-     SENTENCES['Allgemeines']),
+     SENTENCES['Allgemeines'], ['Hals im Flug lang nach vorn', 'anders als der Reiher']),
     ('Kraniche ziehen im Herbst nach Süden', ['Rast am Kranichsee', 'aus Skandinavien nach Spanien', 'nachts im flachen Wasser'],
-     SENTENCES['Zug'][:4]),
+     SENTENCES['Zug'][:4], ['Tausende rasten am See', 'Skandinavien, Baltikum: weiter nach Spanien, Nordafrika',
+                            'tagsüber Körner auf den Feldern', 'im Wasser sicher vor dem Fuchs']),
     ('Man hört Kraniche, bevor man sie sieht', ['laute, trompetende Rufe', 'Ketten und Keile am Himmel', 'bis zu 10.000 Vögel'],
-     SENTENCES['Zug'][4:]),
+     SENTENCES['Zug'][4:], ['abends über dem See, von Weitem zu hören']),
     ('Schutzgebiete brachten die Kraniche zurück', ['früher nur wenige Paare', 'heute viele Tausend'],
-     SENTENCES['Schutz']),
+     SENTENCES['Schutz'], ['Moore und Feuchtwiesen geschützt']),
 ]
 
 
 def referat(kind):
-    """kind: 'starter', 'good' or 'deleted' (keywords, the sentences gone)"""
+    """kind: 'starter', 'good', 'deleted' (keywords, nothing in the notes)
+    or 'script' (the whole sentences in the notes, a text to read out)"""
     deck = Deck()
     deck.slide('title', 'Kraniche', subtitle='Ein Referat der Klasse 7b')
     if kind == 'starter':
         for name, sentences in SENTENCES.items():
             deck.slide('content', name, sentences).format_body(size=18)
     else:
-        for title, keywords, sentences in GOOD:
-            deck.slide('content', title, keywords, notes=' '.join(sentences) if kind == 'good' else None)
+        for title, keywords, sentences, cues in GOOD:
+            notes = {'good': '\n'.join(cues), 'script': ' '.join(sentences)}.get(kind)
+            deck.slide('content', title, keywords, notes=notes)
     deck.slide('title_only', 'Danke für die Aufmerksamkeit!')
     return deck
 
@@ -77,6 +81,7 @@ if __name__ == '__main__':
     referat('starter').save(os.path.join(STATIC, STARTER))
     referat('good').save(os.path.join(HERE, 'stufen', 'folien'))
     referat('deleted').save(os.path.join(HERE, 'stufen', 'geloescht'))
+    referat('script').save(os.path.join(HERE, 'stufen', 'abgelesen'))
     # the whole Referat as the slide sorter shows it, slide by slide
     slide_pictures(os.path.join(STATIC, STARTER + '.pptx'), {n: os.path.join(HERE, 'bilder', f'vorlage-{n}.svg') for n in range(1, 6)})
     slide_pictures(os.path.join(HERE, 'stufen', 'folien.pptx'), {3: os.path.join(HERE, 'bilder', 'zug.svg')})

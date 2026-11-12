@@ -1,16 +1,16 @@
-Lernende machen aus einem Referat über die Kraniche, dessen Folien voller ganzer Sätze stehen, Folien zum Zuhören: ein Gedanke pro Folie, ein Titel, der ihn sagt, Stichwörter auf der Folie und die Sätze in den Notizen, die Schrift groß genug. Das erste Blatt der Reihe zu Präsentationen. Lernende sehen die Notiz nicht.
+Lernende machen aus einem Referat über die Kraniche, dessen Folien voller ganzer Sätze stehen, Folien zum Zuhören: ein Gedanke pro Folie, ein Titel, der ihn sagt, Stichwörter auf der Folie, die Schrift groß genug, und in den Notizen ein Spickzettel mit Stichpunkten statt eines Textes zum Ablesen. Das erste Blatt der Reihe zu Präsentationen. Lernende sehen die Notiz nicht.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Keine; die Reihen zur Textverarbeitung und zur Tabellenkalkulation helfen beim Umgang mit Dateien und der Prüfung.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
 <li><b>10 Minuten:</b> die Vermutung zum Publikum, das Lesen gegen die Uhr, die drei Regeln, die Frage nach dem Titel.</li>
-<li><b>20 Minuten:</b> die Folie »Zug« teilen, die Sätze in die Notizen, Stichwörter und Titel, dann »Allgemeines« und »Schutz«.</li>
+<li><b>20 Minuten:</b> die Folie »Zug« teilen, die Sätze von der Folie, Stichwörter und Titel, Stichpunkte in die Notizen, dann »Allgemeines« und »Schutz«.</li>
 <li><b>10 Minuten:</b> Schriftgröße, prüfen, bis alles erfüllt ist; wer fertig ist, zeigt eine Folie am Beamer und setzt sich in die letzte Reihe.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
-<p>Eine Folie doppeln; Sätze ausschneiden und in die Notizen einfügen; die Formatierung von Hand entfernen, damit die Schrift des Layouts zurückkommt.</p>
+<p>Eine Folie doppeln; die Notizen unter einer Folie zeigen und Stichpunkte hineinschreiben; die Formatierung von Hand entfernen, damit die Schrift des Layouts zurückkommt.</p>
 <!-- language: libreoffice -->
 <p><em>Folie</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Folie doppeln</em>; <em>Ansicht</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Notizen</em> und zurück mit <em>Ansicht</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Normal</em>; <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Direkte Formatierung löschen</em> (<kbd>Strg</kbd>+<kbd>M</kbd>).</p>
 <!-- /language -->
@@ -28,7 +28,8 @@ Lernende machen aus einem Referat über die Kraniche, dessen Folien voller ganze
 <li>Auf keiner Folie stehen mehr als 25 Wörter, den Titel mitgezählt.</li>
 <li>Keine Schrift ist kleiner als 24 pt, so gemessen, wie sie auf der Folie erscheint (Schrift, die das Programm verkleinert hat, zählt verkleinert; Folien anderer Größe auf eine PowerPoint-Folie umgerechnet).</li>
 <li>Kein Text läuft aus seinem Rahmen oder über den Rand.</li>
-<li>Vier Sätze der Vorlage stehen in den Notizen, aus jeder Folie einer.</li>
+<li>Was das Referat erzählt, ist noch da, auf den Folien oder in den Notizen, in beliebigen Worten (neun Stichwörter wie Skandinavien, Fuchs, Moore).</li>
+<li>Die Notizen sind ein Spickzettel: höchstens 30 Wörter unter einer Folie. Ganze Sätze zum Ablesen fallen durch.</li>
 </ul></td></tr>
-<tr><th>Hintergrund</th><td>Steht derselbe Text gesprochen und geschrieben vor einem Publikum, lenkt der geschriebene vom gesprochenen ab; das Kästchen zur Columbia zeigt, was eine Folie mit einem Titel anrichten kann, der das Falsche sagt. Die Zahlen des Lesetimers rechnen mit etwa 110 gesprochenen Wörtern in der Minute; für Vorträge mit Folien werden 100 bis 125 genannt.</td></tr>
+<tr><th>Hintergrund</th><td>Steht derselbe Text gesprochen und geschrieben vor einem Publikum, lenkt der geschriebene vom gesprochenen ab. Die Zahlen des Lesetimers rechnen mit etwa 110 gesprochenen Wörtern in der Minute; für Vorträge mit Folien werden 100 bis 125 genannt.</td></tr>
 </table>

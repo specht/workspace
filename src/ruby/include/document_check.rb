@@ -130,7 +130,8 @@ module DocumentCheck
             errors << 'gaps must look like 6pt' if name == 'gaps' && pt(rule['gaps']) <= 0
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
             errors << 'fonts must be a number' if name == 'fonts' && !rule['fonts'].is_a?(Integer)
-            errors << "#{name} must be a number" if %w[min_size max_words title_words].include?(name) && !rule[name].is_a?(Numeric)
+            errors << "#{name} must be a number" if %w[min_size max_words title_words notes_words].include?(name) && !rule[name].is_a?(Numeric)
+            errors << 'facts needs a list of pieces of text (alternatives with |)' if name == 'facts' && !(rule['facts'].is_a?(Array) && rule['facts'].all? { |b| b.is_a?(String) })
             errors << 'notes needs a list of pieces of text' if name == 'notes' && !(rule['notes'].is_a?(Array) && rule['notes'].all? { |b| b.is_a?(String) })
             errors << 'slide_count must be [min, max]' if name == 'slide_count' && !(rule['slide_count'].is_a?(Array) && rule['slide_count'].size == 2)
             errors << 'size must be [min, max] in pt' if name == 'size' && !(rule['size'].is_a?(Array) && rule['size'].size == 2 && rule['size'].all? { |v| v.is_a?(Numeric) })

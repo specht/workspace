@@ -36,8 +36,9 @@ side of it; the last one is the student's own short talk.
    message (»Kraniche ziehen im Herbst nach Spanien« instead of »Zug«);
    24 pt at least. Check: every slide a title, at most 25 words a slide,
    no letters under 24 pt, nothing running over, the sentences in the
-   notes. History: the Columbia slide of 2003 (the crucial fact in the
-   smallest line, under a title that said the opposite).
+   notes. The Columbia slide of 2003 was taken out again (the maintainer,
+   12 November 2026: a tragic accident, and a confusing example for the
+   class); a lighter story in its place, if one is found.
 2. **Layouts und Platzhalter** (`slide-layouts`): the Referat built from
    text boxes put on by hand. Prediction: how many titles the outline shows
    (none). Layouts (title slide, title and content, two contents, title
@@ -89,6 +90,15 @@ side of it; the last one is the student's own short talk.
 
 The series gets one card (»Präsentieren Schritt für Schritt«), as the other
 two.
+
+## Notes are a cue card (the maintainer, 12 November 2026)
+
+Students are not to read their talk from the notes. The sentences leave the
+slide and are told freely; the notes keep a few cues of what to tell. The
+check on sheet 1: the Referat's facts are still there, on a slide or in its
+notes (`facts`, in any words), and no slide has more than 30 words of notes
+(`notes_words`); the sentences moved whole into the notes fail as a text to
+read out.
 
 ## Accessibility (the maintainer, 12 November 2026)
 

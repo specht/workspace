@@ -23,7 +23,7 @@ reference: []
 # Eine Folie, ein Gedanke
 
 <p class='abstract'>
-Du machst aus einem Referat voller Sätze Folien, denen man beim Zuhören folgen kann: ein Gedanke pro Folie, ein Titel, der ihn sagt, Stichwörter auf der Folie und die ganzen Sätze in den Notizen, groß genug für die letzte Reihe.
+Du machst aus einem Referat voller Sätze Folien, denen man beim Zuhören folgen kann: ein Gedanke pro Folie, ein Titel, der ihn sagt, Stichwörter auf der Folie, groß genug für die letzte Reihe, und ein Spickzettel in den Notizen.
 </p>
 
 In der 7b hält jemand ein Referat über die Kraniche vom Kranichsee. Die
@@ -104,22 +104,25 @@ nicht, sie zeigt, worum es gerade geht. Daraus folgen drei Regeln:
 
 _task(titel)
 
-<div class='history' id='history-columbia'>
-<p><strong>Die Folie, deren Titel das Falsche sagte</strong>, 2003. Beim Start der Raumfähre Columbia traf ein Stück Schaumstoff vom Außentank den linken Flügel. Während die Columbia noch im All war, sollten Ingenieure abschätzen, ob der Flügel beschädigt war. Ihre Ergebnisse zeigten sie auf Folien. Der Titel einer Folie lautete »Review of Test Data Indicates Conservatism for Tile Penetration«, sinngemäß: Die Testdaten zeigen, dass vorsichtig gerechnet wurde. Erst in der letzten Zeile unten stand, dass das Schaumstück nach einer Schätzung 640-mal so groß war wie die Stücke, mit denen getestet worden war. Die Verantwortlichen hielten die Columbia für sicher. Am 1. Februar 2003 zerbrach sie beim Rückflug, alle sieben Menschen an Bord starben. Die Kommission, die das Unglück untersuchte, schrieb, man verstehe leicht, wie jemand diese Folie lesen könne, ohne zu merken, dass es um Leben und Tod geht. Edward Tufte, ein Fachmann für die Darstellung von Informationen, schlug einen Titel vor, der das Wichtige gesagt hätte: »Review of Test Data Indicates Irrelevance of Two Models«, die Testdaten passen nicht zu diesem Fall.</p>
+<div class='history' id='history-takahashi'>
+<p><strong>Ein Wort pro Folie.</strong> Der japanische Programmierer Masayoshi Takahashi bereitete einen kurzen Vortrag für die RubyConf vor, eine Konferenz über die Programmiersprache Ruby. Auf seine Folien schrieb er nur ein oder zwei kurze Wörter, in riesiger Schrift, ohne Bilder und ohne Diagramme. So eine Folie ist in einem Augenblick gelesen, und danach hört das Publikum wieder zu. Auf Konferenzen von Entwicklerinnen und Entwicklern halten seitdem viele ihre Vorträge so; man nennt es die Takahashi-Methode. Für dein Referat ist ein Wort pro Folie zu wenig, aber die Methode zeigt, wie wenig auf einer Folie stehen muss.</p>
 </div>
 
-## Die Sätze in die Notizen
 
-Die ganzen Sätze verschwinden nicht, sie wandern in die **Notizen**. Unter
-jeder Folie gibt es ein Feld für Notizen. Das Publikum sieht es nicht; du
-siehst es beim Üben und beim Vortrag auf deinem eigenen Bildschirm. So hast
-du alles, was du sagen willst, vor dir, und die Folie zeigt nur, worum es
-geht.
+## Ein Spickzettel in den Notizen
+
+Die ganzen Sätze kommen von der Folie herunter; was in ihnen steht, erzählst
+du frei. Damit du nichts vergisst, gibt es unter jeder Folie die
+**Notizen**. Das Publikum sieht sie nicht, du siehst sie beim Üben und beim
+Vortrag auf deinem eigenen Bildschirm. In die Notizen gehören ein paar
+Stichpunkte, die dich erinnern, was du erzählen willst, wie auf einem
+Spickzettel. Ganze Sätze gehören nicht hinein: Wer abliest, schaut auf den
+Bildschirm statt ins Publikum und klingt wie vorgelesen.
 
 <figure class='slide-with-notes'>
 <img class='paper' src='bilder/zug.svg' alt='Eine Folie mit dem Titel »Kraniche ziehen im Herbst nach Süden« und drei Stichwörtern: Rast am Kranichsee, aus Skandinavien nach Spanien, nachts im flachen Wasser'>
-<div class='slide-notes'><span class='slide-notes-label'>Notizen</span>Im Herbst machen am Kranichsee Tausende Kraniche Rast. Sie kommen aus Skandinavien und aus dem Baltikum und fliegen weiter nach Spanien oder Nordafrika. Tagsüber suchen sie auf den abgeernteten Feldern nach Körnern, abends kommen sie zum Schlafen ins flache Wasser am Ufer. Dort sind sie sicher, weil kein Fuchs sie im Wasser ungesehen erreicht.</div>
-<figcaption>Die erste Hälfte der Folie »Zug«: oben, was das Publikum sieht, unten, was du sagst.</figcaption>
+<div class='slide-notes'><span class='slide-notes-label'>Notizen</span>Tausende rasten am See<br>Skandinavien, Baltikum: weiter nach Spanien, Nordafrika<br>tagsüber Körner auf den Feldern<br>im Wasser sicher vor dem Fuchs</div>
+<figcaption>Die erste Hälfte der Folie »Zug«: oben, was das Publikum sieht, unten der Spickzettel für dich.</figcaption>
 </figure>
 
 <!-- language: libreoffice -->
@@ -133,11 +136,10 @@ In Nextcloud Office zeigt *Ansicht* <i class='bi bi-chevron-right' aria-hidden='
 <!-- /language -->
 
 **Jetzt bist du dran:** Mach aus der Folie »Zug« zwei Folien, eine zum Zug
-und eine zu den Rufen. Schneide auf jeder Folie die ganzen Sätze aus
-(<kbd>Strg</kbd>+<kbd>X</kbd>) und füge sie in ihre Notizen ein
-(<kbd>Strg</kbd>+<kbd>V</kbd>). Auf die Folie schreibst du drei Stichwörter
-und einen Titel, der den Gedanken sagt. Danach kommen »Allgemeines« und
-»Schutz« dran.
+und eine zu den Rufen. Lösch auf jeder Folie die ganzen Sätze; auf die Folie
+schreibst du drei Stichwörter und einen Titel, der den Gedanken sagt. Was
+du darüber hinaus erzählen willst, kommt als Stichpunkte in die Notizen,
+damit nichts verloren geht. Danach kommen »Allgemeines« und »Schutz« dran.
 
 ## Groß genug für die letzte Reihe
 
@@ -159,7 +161,8 @@ Folie zu sehen ist; kleiner gemachter Text zählt mit seiner kleinen Größe.
 
 Speichere deine Präsentation und lass sie prüfen. Die Prüfung liest jede
 Folie: ihren Titel, wie viele Wörter auf ihr stehen, wie groß die Schrift
-ist, ob Text aus seinem Rahmen läuft und ob die ganzen Sätze in den Notizen
-angekommen sind.
+ist, ob Text aus seinem Rahmen läuft, ob alles, was du erzählen willst,
+noch auf den Folien oder in den Notizen steht, und ob die Notizen ein
+Spickzettel geblieben sind.
 
 _task(folien)

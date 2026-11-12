@@ -9,7 +9,7 @@
 # wide): a slide of another size has its letters scaled to that width, and
 # text a box shrinks to fit (»Autofit«) counts at the size it is shown.
 module DocumentCheck
-    SLIDE_RULES = %w[titles title_words min_size max_words no_overflow notes slide_count placeholders].freeze
+    SLIDE_RULES = %w[titles title_words min_size max_words no_overflow notes facts notes_words slide_count placeholders].freeze
     # the shapes that carry the slide's text (not its notes, footer or number)
     SLIDE_TEXT_KINDS = %w[title subtitle body text shape].freeze
     SLIDE_WIDTH = 960.0
@@ -180,6 +180,39 @@ module DocumentCheck
             (on_slide ? ", noch auf #{slide_label(on_slide)}" : '') +
             (missing.size > 1 ? " (und #{missing.size - 1} weitere)" : '') +
             '. Was du sagen willst, steht in den Notizen unter der Folie: Dort liest du es, das Publikum nicht.'
+        item
+    end
+
+    # the Referat's facts are still there, on a slide or in its notes, in
+    # whatever words: each piece of the list (alternatives with |) somewhere
+    def self.rule_facts(rule, _body, _starter, _all = nil, model = nil)
+        pieces = Array(rule['facts'])
+        item = Item.new(:rule => 'facts', :label => 'Was du erzählen willst, ist noch da', :ok => true, :marks => [])
+        all = slides_of(model).flat_map { |s| text_shapes(s).map { |sh| sh['text'].to_s } + [s['notes'].to_s] }
+        text = squish(all.join(' ')).downcase
+        missing = pieces.reject { |p| p.split('|').any? { |alt| text.include?(squish(alt).downcase) } }
+        return item if missing.empty?
+
+        item.ok = false
+        item.message = "Von #{q(missing.first.split('|').first)} steht nichts mehr da, weder auf einer Folie noch in den Notizen" +
+            (missing.size > 1 ? " (und #{missing.size - 1} weitere)" : '') +
+            '. Was nicht auf die Folie kommt, merkst du dir als Stichpunkt in den Notizen.'
+        item
+    end
+
+    # the notes are a cue card, not a text to read out: at most so many
+    # words under a slide
+    def self.rule_notes_words(rule, _body, _starter, _all = nil, model = nil)
+        max = rule['notes_words'].to_i
+        item = Item.new(:rule => 'notes_words', :label => "Die Notizen sind ein Spickzettel, höchstens #{max} Wörter pro Folie", :ok => true, :marks => [])
+        long = slides_of(model).map { |s| [s, s['notes'].to_s.scan(/[[:alnum:]][[:alnum:]'’-]*/).size] }.select { |_, n| n > max }
+        return item if long.empty?
+
+        item.ok = false
+        item.marks = long.map { |s, n| slide_mark(model, s, "#{n} Wörter in den Notizen") }
+        slide, words = long.max_by { |_, n| n }
+        item.message = "Unter #{slide_label(slide)} stehen #{words} Wörter in den Notizen. Das ist ein Text zum Ablesen; " \
+            'wer abliest, schaut auf den Bildschirm statt ins Publikum. Ein paar Stichpunkte reichen, die dich erinnern, was du erzählen willst.'
         item
     end
 

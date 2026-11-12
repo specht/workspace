@@ -63,23 +63,24 @@ tasks:
         - { max_words: 25 }
         - { min_size: 24 }
         - no_overflow
-        - { notes: ['Flügel sind von Spitze zu Spitze', 'aus Skandinavien und aus dem Baltikum', 'kein Fuchs sie im Wasser', 'Moore und Feuchtwiesen geschützt'] }
+        - { facts: ['Reiher', 'Skandinavien', 'Baltikum', 'Nordafrika', 'Körner', 'Fuchs', 'trompet', 'zehntausend|10.000|10 000', 'Moore'] }
+        - { notes_words: 30 }
     hint:
       - Fang mit der Folie »Zug« an. Sie erzählt zwei Gedanken; mach zwei Folien daraus.
-      - Schneide auf jeder Folie die ganzen Sätze aus und füge sie in die Notizen unter der Folie ein. Auf die Folie kommen drei Stichwörter.
+      - Lösch auf jeder Folie die ganzen Sätze. Auf die Folie kommen drei Stichwörter; was du dazu erzählen willst, merkst du dir in den Notizen mit ein paar Stichpunkten.
       - Gib jeder Folie einen Titel, der in einem kurzen Satz sagt, was man sich merken soll. Die Sätze in 18 pt bekommen wieder die Größe des Layouts.
     libreoffice:
       hint:
         - "Klick links auf die Folie »Zug«, dann *Folie* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Folie doppeln*. Lösch in der ersten Folie die Sätze zu den Rufen, in der zweiten die zum Zug."
-        - "*Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Notizen* zeigt unter der Folie das Feld für die Notizen. Markier die Sätze auf der Folie, schneide sie aus (<kbd>Strg</kbd>+<kbd>X</kbd>) und füge sie in die Notizen ein (<kbd>Strg</kbd>+<kbd>V</kbd>). Zurück geht es mit *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Normal*."
+        - "*Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Notizen* zeigt unter der Folie das Feld für die Notizen. Schreib dort ein paar Stichpunkte, keine ganzen Sätze. Zurück geht es mit *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Normal*."
         - "Markier den Text auf der Folie und drück <kbd>Strg</kbd>+<kbd>M</kbd> (*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*): Die 18 pt verschwinden, die Schrift des Layouts kommt zurück."
     word:
       hint:
         - "Klick links mit der rechten Maustaste auf die Folie »Zug« und wähl *Folie duplizieren*. Lösch in der ersten Folie die Sätze zu den Rufen, in der zweiten die zum Zug."
-        - "Unten in der Statusleiste öffnet *Notizen* das Feld unter der Folie. Markier die Sätze auf der Folie, schneide sie aus (<kbd>Strg</kbd>+<kbd>X</kbd>) und füge sie in die Notizen ein (<kbd>Strg</kbd>+<kbd>V</kbd>)."
+        - "Unten in der Statusleiste öffnet *Notizen* das Feld unter der Folie. Schreib dort ein paar Stichpunkte, keine ganzen Sätze."
         - "Markier den Text auf der Folie und drück <kbd>Strg</kbd>+<kbd>Leertaste</kbd>: Die 18 pt verschwinden, die Schrift des Layouts kommt zurück."
     nextcloud:
       hint:
         - "Klick links mit der rechten Maustaste auf die Folie »Zug« und wähl *Folie doppeln*. Lösch in der ersten Folie die Sätze zu den Rufen, in der zweiten die zum Zug."
-        - "*Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Notizen* zeigt unter der Folie das Feld für die Notizen. Markier die Sätze auf der Folie, schneide sie aus (<kbd>Strg</kbd>+<kbd>X</kbd>) und füge sie in die Notizen ein (<kbd>Strg</kbd>+<kbd>V</kbd>)."
+        - "*Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Notizen* zeigt unter der Folie das Feld für die Notizen. Schreib dort ein paar Stichpunkte, keine ganzen Sätze."
         - "Markier den Text auf der Folie und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*: Die 18 pt verschwinden, die Schrift des Layouts kommt zurück."
