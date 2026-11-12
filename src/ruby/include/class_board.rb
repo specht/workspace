@@ -258,15 +258,22 @@ module ClassBoard
         tasks.each_with_index do |t, i|
             text = TEXT_TYPES.include?(t[:type])
             submit = t[:type] == 'submit'
-            next unless text || submit
+            document = t[:type] == 'document'
+            next unless text || submit || document
 
             entries = rows.map { |r| [r, r[:cells][i]] }.reject { |_, c| c.status == 'none' }
             next if entries.empty?
 
-            io << "<details class='class-answers'><summary>#{i + 1}. #{h(t[:title])}: #{entries.size} #{submit ? (entries.size == 1 ? 'Abgabe' : 'Abgaben') : (entries.size == 1 ? 'Antwort' : 'Antworten')}</summary><ul>"
+            io << "<details class='class-answers'><summary>#{i + 1}. #{h(t[:title])}: #{entries.size} #{submit || document ? (entries.size == 1 ? 'Abgabe' : 'Abgaben') : (entries.size == 1 ? 'Antwort' : 'Antworten')}</summary><ul>"
             entries.each do |r, c|
                 io << "<li class='cb-answer cb-#{c.status}'><span class='cb-answer-name'>#{h(r[:name])}</span> "
-                if submit && submission_url && %w[sent stale].include?(c.status)
+                if document
+                    # the last checked version: its marked pages, and the file
+                    query = "?email=#{CGI.escape(r[:email])}"
+                    io << "<span class='cb-answer-text'>#{h(c.answer)}</span> " \
+                        "<a class='cb-document' href='/abgabe/dokument/#{h(activity)}/#{h(t[:id])}#{h(query)}' target='_blank' rel='noopener'><i class='bi bi-eye' aria-hidden='true'></i>Ansehen</a> " \
+                        "<a class='cb-document' href='/api/task/document_file/#{h(activity)}/#{h(t[:id])}#{h(query)}' download><i class='bi bi-download' aria-hidden='true'></i>Herunterladen</a>"
+                elsif submit && submission_url && %w[sent stale].include?(c.status)
                     # A click opens the viewer (submission_viewer.js); without
                     # scripts the link downloads the hand-in.
                     io << "<a class='cb-submission' href='#{h(submission_url.call(r[:email], t[:id]))}' data-view-title='#{h("#{r[:name]}: #{t[:title]}")}'>#{h(c.answer)}</a>"

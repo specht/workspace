@@ -1,3 +1,6 @@
+require 'fileutils'
+require 'digest'
+require 'base64'
 # Tasks on the pages: checking an answer and storing the result, the
 # options of a task, hand-ins (download, view, text), the states of a
 # person's tasks, the answers of a group for its teacher, deleting answers
@@ -101,7 +104,7 @@ class Main < Sinatra::Base
         if result.counts?
             state = store_task_result(found, result.status.to_s, DocumentCheck.summary(name, result.report[:items]))
         end
-        report = result.report
+        report = link_document_pages(result.report)
         if report
             report = report.merge(:items => report[:items].map { |i| i.merge(:message => i[:message] ? render_task_markdown(i[:message]) : nil) })
         end
@@ -117,6 +120,50 @@ class Main < Sinatra::Base
     end
     # The last version of a document task kept for a person: its name, when,
     # and where to fetch it; nil without one.
+    # The drawn pages of a result as addresses instead of inside it: each
+    # page's SVG goes to the cache under the hash of its content (the card's
+    # answer and the hand-in page stay small), kept two days.
+    DOCUMENT_PAGES = '/webcache/document-pages'
+    def link_document_pages(report)
+        return report unless report && report[:pages]
+        FileUtils.mkdir_p(DOCUMENT_PAGES)
+        prune_document_pages
+        pages = report[:pages].map do |page|
+            src = page[:src].to_s
+            next page unless src.start_with?('data:image/svg+xml;base64,')
+            svg = Base64.decode64(src.sub('data:image/svg+xml;base64,', ''))
+            sha = Digest::SHA1.hexdigest(svg)
+            path = File.join(DOCUMENT_PAGES, "#{sha}.svg")
+            File.binwrite(path, svg) unless File.file?(path)
+            page.merge(:src => "/api/document_page/#{sha}.svg")
+        end
+        report.merge(:pages => pages)
+    end
+
+    # at most once an hour: pages older than two days go
+    def prune_document_pages
+        @@document_pages_pruned ||= 0
+        return if Time.now.to_i - @@document_pages_pruned < 3600
+        @@document_pages_pruned = Time.now.to_i
+        Dir.glob(File.join(DOCUMENT_PAGES, '*.svg')).each do |f|
+            File.delete(f) if File.mtime(f) < Time.now - 2 * 86400
+        rescue SystemCallError
+            nil
+        end
+    end
+
+    # a drawn page: only shown as <img> (nothing in it runs), so a sandbox
+    # if someone opens it on its own
+    get '/api/document_page/:name' do
+        name = params[:name].to_s
+        halt 404 unless name.match?(/\A[0-9a-f]{40}\.svg\z/)
+        path = File.join(DOCUMENT_PAGES, name)
+        halt 404 unless File.file?(path)
+        response.headers['Cache-Control'] = 'private, max-age=172800'
+        response.headers['Content-Security-Policy'] = "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox"
+        respond_raw_with_mimetype(File.binread(path), 'image/svg+xml')
+    end
+
     def document_stored(task_key, email = @session_user[:email])
         path = submission_path(task_key, email)
         return nil unless File.file?(path)
@@ -139,6 +186,53 @@ class Main < Sinatra::Base
                   'odt' => 'application/vnd.oasis.opendocument.text', 'doc' => 'application/msword', 'rtf' => 'application/rtf' }
         respond_raw_with_mimetype_and_filename(file[1], types[File.extname(file[0]).delete('.').downcase] || 'application/octet-stream', file[0])
     end
+    # A document hand-in with its marked pages, as the student saw it at the
+    # last check: one's own, or (email=…) that of a student in a group the
+    # logged-in teacher looks after (the class page links it). The stored
+    # file is read and checked again, so the page shows today's rules.
+    get '/abgabe/dokument/:activity/:id' do
+        this_is_a_page_for_logged_in_users!
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil? || found[:task]['check']['type'] != 'document'
+        email = submission_owner_for(params)
+        file = SubmissionStore.read_file(submission_path(found[:key], email))
+        halt 404 if file.nil?
+        report = nil
+        problem = nil
+        begin
+            result = TaskCheck.check(found[:task], OfficeClient.analyze(file[1], file[0]))
+            report = link_document_pages(result.report)
+            report = report.merge(:items => report[:items].map { |i| i.merge(:message => i[:message] ? render_task_markdown(i[:message]) : nil) }) if report
+            problem = result.message unless report
+        rescue OfficeClient::Unavailable
+            problem = 'Dokumente kann ich gerade nicht lesen. Versuch es in ein paar Minuten noch einmal.'
+        end
+        Main.load_invitations()
+        name = (@@invitations[email] || {})[:name] || email
+        at = Time.at(File.mtime(submission_path(found[:key], email)).to_i).strftime('%d.%m.%Y, %H:%M Uhr')
+        download = "/api/task/document_file/#{params[:activity]}/#{params[:id]}#{email == @session_user[:email] ? '' : "?email=#{CGI.escape(email)}"}"
+        h = ->(t) { CGI.escape_html(t.to_s) }
+        content = +"<div class='container document-handin'>"
+        content << "<p class='document-handin-what'><a href='/#{h.(params[:activity])}'>#{h.(PageKinds.plain_title(@@content[params[:activity]] || {}) || params[:activity])}</a>, #{h.(found[:task]['title'])}</p>"
+        content << "<h1>#{h.(name)}</h1>"
+        content << "<p class='document-handin-file'><i class='bi bi-file-earmark-word' aria-hidden='true'></i><strong>#{h.(file[0])}</strong>, zuletzt geprüft am #{h.(at)}. " \
+            "<a href='#{h.(download)}' download><i class='bi bi-download' aria-hidden='true'></i>Herunterladen</a></p>"
+        content << "<p>#{h.(problem)}</p>" if problem
+        # the card's frame, so that the result is drawn as on the card
+        content << "<div class='task-card document-handin-card' data-type='document'><div class='task-feedback'><div class='task-feedback-body'></div></div></div></div>"
+        content << "<script>window.DOCUMENT_HANDIN = #{report.to_json.gsub('</', '<\\/')};</script>" if report
+        content << "<script src='/include/document_task.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
+        content << "<script>if (window.DOCUMENT_HANDIN) DocumentTask.render(document.querySelector('.document-handin-card'), window.DOCUMENT_HANDIN);</script>"
+        path = request.path
+        running_tests = my_running_tests()
+        template = File.read(File.join(@@static_dir, '_template.html'))
+        html = Main.inject_page_metadata(TrustedTemplate.render_page(template, content, binding), request.path)
+        # through respond_raw: the after filter (helper.rb) puts JSON in
+        # place of any other answer with status 200
+        response.headers['Cache-Control'] = 'no-store'
+        respond_raw_with_mimetype(html, 'text/html; charset=utf-8')
+    end
+
     # Files a submit task with pick: offers from the student's Workspace.
     post '/api/task/options' do
         assert(user_logged_in?)

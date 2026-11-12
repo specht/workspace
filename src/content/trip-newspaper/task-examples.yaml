@@ -1,0 +1,19 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Der fertige Artikel muss die Prüfung bestehen; die
+# leere Vorlage und derselbe Artikel, eilig gebaut, scheitern. Alle macht
+# dokumente.py.
+format: 1
+activity: trip-newspaper
+examples:
+  artikel:
+    pass:
+      - document: stufen/artikel.docx
+    fail:
+      - document: ../../static/trip-newspaper/08 Artikel.docx
+        say: Wörter
+      - document: stufen/artikel-eilig.docx
+        say: Listenzeichen
+      - document: stufen/artikel-eilig.docx
+        say: getippt
+      - document: stufen/artikel-eilig.docx
+        say: keinen Alternativtext

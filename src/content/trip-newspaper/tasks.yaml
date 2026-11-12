@@ -1,0 +1,34 @@
+# Aufgaben zu »Die Zeitung der Klassenfahrt«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/trip-newspaper/08 Artikel.docx), ein fertiger
+# Artikel und ein eilig gebauter (stufen/) macht dokumente.py.
+format: 1
+activity: trip-newspaper
+tasks:
+  - id: artikel
+    title: Dein Artikel
+    prompt: |
+      Prüfe deinen Artikel, so oft du willst. Die zuletzt geprüfte Fassung ist
+      deine Abgabe: Deine Lehrkraft sieht sie mit allen Markierungen.
+    check:
+      type: document
+      file: trip-newspaper/08 Artikel.docx
+      rules:
+        - { words: 200 }
+        - spaces
+        - empty_paragraphs
+        - line_breaks
+        - { fonts: 2 }
+        - no_underline
+        - no_caps
+        - typed_lists
+        - { heading_count: 2 }
+        - levels
+        - no_direct
+        - { picture_count: 1 }
+        - ratio
+        - captions
+        - alt_text
+        - page_numbers
+    hint:
+      - Fang mit dem Text an, dann die Zwischenüberschriften mit ihren Formatvorlagen, zuletzt Bild und Seitenzahl.
+      - Jeder Punkt der Liste hat ein Blatt der Reihe, auf dem er erklärt ist. Die Links stehen oben auf dieser Seite.

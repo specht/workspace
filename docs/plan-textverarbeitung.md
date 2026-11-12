@@ -92,6 +92,62 @@ handed out on paper got no feedback because nobody could check them all.
   replaced by the next check, gone with »Ergebnis löschen« and the account
   (`privacy.rb`). The hand-in at the end of the series is that version.
 
+## Requirements for every series of the section (the maintainer)
+
+These hold for word processing and for the series still to come
+(spreadsheets, presentations):
+
+- **45 minutes a sheet, everything included** (12 November 2026): reading,
+  predictions, trying, the check. A sheet that is shorter gets more to do,
+  not a second sheet.
+- **Help where the program is hard to find one's way in:** every step says
+  where the function is, for the program the student chose (Word,
+  LibreOffice, Nextcloud Office), and the hints go from »what« to »where
+  exactly«. Students get stuck in the program's menus more than in the idea.
+- **The teacher note suggests a demonstration** of the sheet's most important
+  functions before the class starts, at the projector, in the program the
+  class uses.
+- **Exporting as PDF belongs to the curriculum** (to come: in which sheet,
+  and how the check sees the PDF).
+- **Grading:** the last checked version is the hand-in; the teacher sees it
+  with its marked pages on the class page (Ansehen, Herunterladen). How a
+  grade comes out of it is still being decided (see »Open«).
+- **The size for which everything is made:** half a Full HD screen (960 px
+  wide, Word beside the browser); full width and a phone must work too.
+- **Fixed dates in starting files**, without year, fitting the series' story
+  (docs/checkliste.md).
+- **Predictions whose answer is the same in every program:** a question about
+  what happens in Word may have another answer in LibreOffice (applying a
+  style to a paragraph formatted by hand); such a prediction is dropped.
+- **Nothing limited per IP address:** a class at school shares one (the
+  Telefonbuch's line had one call per address; it would have thwarted lessons).
+
+## Findings of the word processing series
+
+- **The loop:** the starting file as a plain download (in the browser's
+  downloads, opened from there); chosen once with »Prüfen«, Chrome and Edge
+  keep it (on https only) and check after each save. The card says which file
+  it watches and when it was saved; »Erneut prüfen« on an unchanged file says
+  so. What went wrong in the first lesson-like test: LibreOffice saved into
+  another file (its question about the format, or a second copy in the
+  downloads), and the page watched the first one. School computers keep the
+  downloads on a network drive (H:\), where reading takes a moment.
+- **The viewer:** the wheel scrolls the website, Ctrl and the wheel zoom (one
+  target, eased); fits with names; full screen keeps new results; the busy
+  state on the »prüfen« button beside the page; ragged-right messages; the
+  pages by address, not inside the answer.
+- **What the check must allow:** Word's Ctrl+Enter leaves an empty paragraph
+  before a page break; LibreOffice counts in cm (0.2 cm are 5.7 pt, so
+  gaps from 90 %); a caption may be in a frame (LibreOffice) or a text box
+  (Word); a page break in the style »Überschrift 1« also moves Word's
+  heading of the table of contents.
+- **Generating documents:** python-docx for what students start from, UNO in
+  LibreOffice for what the program itself builds (fields, frames, indexes):
+  a number range's master needs its name before its type, removing a
+  paragraph joins the next one into it, a killed LibreOffice leaves lock
+  files. Pictures for the pages as SVG from LibreOffice's PDF
+  (`src/office/page_picture.py`).
+
 ## The series (worksheets)
 
 The thread: the class trip of the 7b to the Kranichsee. Each worksheet
@@ -150,6 +206,12 @@ built by hand; each is a page of a series of its own, about one lesson.
    (stored like a `submit`, viewed with its marked pages on the class page).
 
 ## Open
+
+- **Grading** (the maintainer asked how; to decide): see the proposal in the
+  conversation of 12 November 2026, summed up here once decided.
+- **PDF export** as part of a sheet, with a check that reads the PDF.
+- **Every sheet to 45 minutes**, »Formatvorlagen« first; the hints with the
+  way through the menus per program; the demonstration in the teacher notes.
 
 - **For worksheet 8:** the page of each place in the list (the viewer
   shows the page in view and goes to a place's page already).

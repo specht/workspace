@@ -66,7 +66,7 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await expect(report.locator('.document-checklist li.document-open')).toHaveCount(7);
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(1);
   await expect(report.locator('.document-sheet img')).toHaveCount(1);
-  await expect(report.locator('.document-sheet img')).toHaveAttribute('src', /^data:image\/svg\+xml/);
+  await expect(report.locator('.document-sheet img')).toHaveAttribute('src', /^\/api\/document_page\/[0-9a-f]{40}\.svg$/);
   const marks = report.locator('.document-mark');
   expect(await marks.count()).toBeGreaterThan(10);
   // one number per open point; pointing at a point brings out its places
@@ -336,4 +336,28 @@ test('a report of seven pages is checked for its breaks, page numbers and conten
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-sheet')).toHaveCount(6);
   if (shots) await page.screenshot({ path: path.join(shots, 'pages-correct.png') });
+});
+
+test('an article of ones own is checked on every point, and the hand-in shows its marked pages', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/trip-newspaper');
+  await states;
+  const card = page.locator(".task-card[data-task='trip-newspaper/artikel']");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel-eilig.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  await expect(card.locator('.document-report .document-checklist li.document-open')).toHaveCount(6);
+  // the hand-in: the last checked version with its marks, as the teacher sees it
+  await page.goto('/abgabe/dokument/trip-newspaper/artikel');
+  await expect(page.locator('.document-handin-file')).toContainText('artikel-eilig.docx');
+  const report = page.locator('.document-handin-card .document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(6);
+  await expect(report.locator('.document-sheet img')).toHaveCount(1);
+  await expect(report.locator('.document-recheck')).toHaveCount(0);
+  if (shots) await page.screenshot({ path: path.join(shots, 'handin.png') });
+  const href = await page.locator('.document-handin-file a[download]').getAttribute('href');
+  const file = await page.request.get(href!);
+  expect(file.ok()).toBe(true);
+  expect((await file.body()).equals(fs.readFileSync(path.join(repo, 'src/content/trip-newspaper/stufen/artikel-eilig.docx')))).toBe(true);
 });

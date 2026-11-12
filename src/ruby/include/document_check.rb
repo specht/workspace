@@ -39,6 +39,10 @@ require_relative 'office_client'
 #       - { page_breaks: ['Montag:', …] }   # these paragraphs begin a new page by a page break
 #       - page_numbers         # the page number in a header or footer is a field, none typed
 #       - toc                  # a table of contents the program made, up to date, none typed
+#       - { words: 200 }       # an own text: at least so many words
+#       - { heading_count: 2 } # at least so many headings with a heading style
+#       - { picture_count: 1 } # at least so many pictures
+#       - typed_lists          # no list marker typed by hand (»- «, »1. «) outside a real list
 #
 # The rules about pictures may carry names: (how the messages call the
 # pictures, in the order of the starting file: ['das Foto', 'die Karte']).
@@ -48,7 +52,7 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -113,6 +117,9 @@ module DocumentCheck
             errors << 'side must be left or right' if name == 'wrap' && rule.key?('side') && !%w[left right].include?(rule['side'])
             errors << 'headings needs a list of pieces of text and level: (1, 2, …)' if name == 'headings' && !(rule['headings'].is_a?(Array) && rule['level'].is_a?(Integer) && rule['level'].positive?)
             errors << 'style_changed needs the name of a paragraph style (Heading 1)' if name == 'style_changed' && !(rule['style_changed'].is_a?(String) && !rule['style_changed'].empty?)
+            %w[words heading_count picture_count].each do |k|
+                errors << "#{k} must be a positive number" if name == k && !(rule[k].is_a?(Integer) && rule[k].positive?)
+            end
             errors << 'names must be a list of text' if rule.key?('names') && !(rule['names'].is_a?(Array) && rule['names'].all? { |n| n.is_a?(String) })
             errors << 'size needs paragraphs: (pieces of their text)' if name == 'size' && !(rule['paragraphs'].is_a?(Array) && rule['paragraphs'].all? { |b| b.is_a?(String) })
             %w[label say].each { |k| errors << "#{k} must be text" if rule.key?(k) && !rule[k].is_a?(String) }
@@ -1014,6 +1021,58 @@ module DocumentCheck
         item.ok = false
         item.message = "#{problems.join(' ')} Ein Inhaltsverzeichnis, das das Programm einfügt, kennt die Überschriften und ihre Seiten; " \
             'nach dem Aktualisieren stimmt es wieder, auch wenn sich Seiten verschoben haben.'
+        item
+    end
+
+    # ---- an own text (the hand-in): counts and lists
+
+    def self.rule_words(rule, _body, _starter, all = nil, _model = nil)
+        want = rule['words'].to_i
+        count = (all || []).sum { |p| p['plain'].split(' ').count { |w| w.match?(/[[:alnum:]]/) } }
+        item = Item.new(:rule => 'words', :label => "Mindestens #{want} Wörter", :ok => count >= want, :marks => [])
+        item.message = "Dein Text hat #{count} #{count == 1 ? 'Wort' : 'Wörter'}; es sollen mindestens #{want} sein." unless item.ok
+        item
+    end
+
+    def self.rule_heading_count(rule, body, _starter, _all = nil, _model = nil)
+        want = rule['heading_count'].to_i
+        count = body.count { |p| level(p).positive? }
+        item = Item.new(:rule => 'heading_count', :label => "Mindestens #{want} Überschriften mit Formatvorlage", :ok => count >= want, :marks => [])
+        return item if item.ok
+
+        # lines that look like headings but are not: short, bold as a whole
+        looks = body.select { |p| level(p).zero? && p['plain'].split(' ').size.between?(1, 8) && !%w[Title Titel].include?(p['style']) && ranges(p).select { |_, _, q| visible?(q) }.all? { |_, _, q| q['bold'] } && !p['plain'].empty? }
+        item.marks = looks.map { |p| para_mark(p).merge(:title => style_name(p)) }
+        item.message = "Dein Text hat #{count == 0 ? 'keine Überschrift' : count == 1 ? 'eine Überschrift' : "#{count} Überschriften"} mit einer Formatvorlage; es sollen mindestens #{want} sein." +
+            (looks.empty? ? '' : " »#{short(looks.first)}« sieht aus wie eine, ist aber ein normaler Absatz.") +
+            ' Gib Zwischenüberschriften die Formatvorlage »Überschrift 1« oder »Überschrift 2«.'
+        item
+    end
+
+    def self.rule_picture_count(rule, _body, _starter, _all = nil, model = nil)
+        want = rule['picture_count'].to_i
+        count = ((model || {})['pictures'] || []).size
+        item = Item.new(:rule => 'picture_count', :label => want == 1 ? 'Mindestens ein Bild' : "Mindestens #{want} Bilder", :ok => count >= want, :marks => [])
+        item.message = "In deinem Text #{count.zero? ? 'ist noch kein Bild' : count == 1 ? 'ist ein Bild' : "sind #{count} Bilder"}; es #{want == 1 ? 'soll mindestens eines' : "sollen mindestens #{want}"} sein: ein Foto oder eine Zeichnung, die zum Text passt." unless item.ok
+        item
+    end
+
+    def self.rule_typed_lists(_rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'typed_lists', :label => 'Listen, die das Programm führt', :ok => true, :marks => [])
+        # a dash or dot alone is a list; a number only with a neighbour that
+        # has one too (»14. Mai fuhren wir …« begins a paragraph, no list)
+        numbered = ->(p) { p && p['text'].to_s.match?(/\A\s*\d{1,2}[.)]\s/) && !p['numbering'] }
+        typed = body.each_with_index.select do |p, i|
+            next false if p['numbering'] || !p['text'].to_s.match?(TYPED_MARKER)
+            next true unless numbered.(p)
+            numbered.(body[i - 1]) && i.positive? || numbered.(body[i + 1])
+        end.map(&:first)
+        return item if typed.empty?
+
+        item.ok = false
+        item.marks = typed.map { |p| para_mark(p).merge(:title => 'Zeichen von Hand') }
+        item.message = "#{typed.size == 1 ? "Vor »#{short(typed.first, 3)}« steht ein Listenzeichen, das jemand getippt hat." : "Vor #{typed.size} Zeilen stehen Listenzeichen, die jemand getippt hat, zum Beispiel vor »#{short(typed.first, 3)}«."} " \
+            'Eine Liste, die das Programm führt, rückt jeden Punkt gleich ein und zählt von selbst weiter.'
         item
     end
 
