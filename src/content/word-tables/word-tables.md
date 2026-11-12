@@ -38,7 +38,7 @@ erste Zeile.
 
 Hol dir das Programm:
 
-<p><a class='document-starter btn btn-primary' href='/word-tables/04%20Programm.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>04 Programm.docx</span><i class='bi bi-download document-starter-get' aria-hidden='true'></i></a></p>
+<p><a class='document-starter btn btn-primary' href='/word-tables/04%20Programm.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>04 Programm.docx</span></a></p>
 
 In einer **Tabelle** hat jede Angabe ihre eigene **Zelle**. Wird ein Eintrag
 länger, wächst seine Zeile nach unten, und alles bleibt in seiner Spalte. Aus

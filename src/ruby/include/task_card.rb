@@ -248,14 +248,14 @@ module TaskCard
                 # the address with each part encoded (»01 Einladung.docx«)
                 href = '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
                 io << "<div class='document-task'>"
-                io << "<a class='document-starter btn btn-primary' href='#{h.(href)}' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>#{h.(File.basename(file))}</span><i class='bi bi-download document-starter-get' aria-hidden='true'></i></a>"
+                io << "<a class='document-starter btn btn-primary' href='#{h.(href)}' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>#{h.(File.basename(file))}</span></a>"
                 io << "<div class='document-drop'>"
                 io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>Dokument wählen</button>"
                 io << "<span class='document-name' aria-live='polite'>oder hierher ziehen</span>"
                 io << "<input type='file' class='document-input' accept='.docx,.odt,.doc,.rtf' hidden aria-hidden='true' tabindex='-1'>"
                 io << '</div></div>'
                 reads = 'Dein Dokument geht an den Server. Dort liest LibreOffice es, ohne Makros auszuführen, und zeichnet deine Seiten; die Prüfung sieht nach, wie der Text gebaut ist. ' \
-                    'Gespeichert wird nur das Ergebnis, nicht die Datei. Weil LibreOffice die Seiten zeichnet, kann eine Zeile in Word ein Wort früher umbrechen.'
+                    'Gespeichert werden das Ergebnis und die zuletzt geprüfte Fassung deines Dokuments, damit du an ihr weiterarbeiten kannst, auch zu Hause; die nächste Prüfung ersetzt sie, »Ergebnis löschen« löscht sie. Weil LibreOffice die Seiten zeichnet, kann eine Zeile in Word ein Wort früher umbrechen.'
             when 'submit'
                 if check['pick']
                     io << "<label class='task-pick-label' for='#{h.(field)}-pick'>Welche Datei gibst du ab?</label>"

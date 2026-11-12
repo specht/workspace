@@ -100,10 +100,33 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await page.mouse.wheel(0, -100);
   await expect(report.locator('.document-wheel-hint')).toHaveClass(/document-wheel-hint-on/);
   await expect(report.locator('.document-zoom')).toHaveText(kept!);
-  await viewport.hover();
+  // a wheel that sends large and small steps (as some mice do): the zoom
+  // only grows, and the point under the pointer stays where it is
+  const box = (await viewport.boundingBox())!;
+  const px = box.x + box.width / 2, py = box.y + box.height / 2;
+  await page.mouse.move(px, py);
+  const under = () => report.locator('.document-stage').evaluate((stage, at) => {
+    const m = /translate\(([-\d.]+)px, ([-\d.]+)px\) scale\(([\d.]+)\)/.exec((stage as HTMLElement).style.transform)!;
+    const tx = +m[1], ty = +m[2], z = +m[3];
+    const v = stage.parentElement!.getBoundingClientRect();
+    return { z, x: (at[0] - v.left - tx) / z, y: (at[1] - v.top - ty) / z };
+  }, [px, py]);
+  const first = await under();
+  const seen = [first.z];
   await page.keyboard.down('Control');
-  await page.mouse.wheel(0, -300);
+  for (const dy of [-100, -12, -12, -100, -8, -100]) {
+    await page.mouse.wheel(0, dy);
+    seen.push((await under()).z);
+  }
   await page.keyboard.up('Control');
+  await page.waitForTimeout(800);
+  const last = await under();
+  seen.push(last.z);
+  for (let i = 1; i < seen.length; i++) expect(seen[i]).toBeGreaterThanOrEqual(seen[i - 1] - 1e-6);
+  expect(last.z).toBeGreaterThan(first.z * 1.3);
+  expect(last.z).toBeLessThan(first.z * 2.2);
+  expect(Math.abs(last.x - first.x)).toBeLessThan(2);
+  expect(Math.abs(last.y - first.y)).toBeLessThan(2);
   await expect(report.locator('.document-zoom')).not.toHaveText(kept!);
   await expect(card.locator('.document-browser')).toContainText('genügt es, in Word oder LibreOffice zu speichern');
   if (shots) { await page.waitForTimeout(500); await page.screenshot({ path: path.join(shots, 'document-zoomed.png') }); }

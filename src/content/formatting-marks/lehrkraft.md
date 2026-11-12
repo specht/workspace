@@ -9,7 +9,7 @@ Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zen
 </ul></td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>01 Einladung.docx</code> kommt von der Seite. In Chrome und Edge speichert die Seite sie selbst und prüft sie von selbst, sobald sie in Word gespeichert ist; in Firefox und Safari wird sie heruntergeladen und vor jedem Prüfen gewählt oder auf die Karte gezogen. Die Karte sagt das in jedem Browser. Zum Arbeiten: Word auf der einen Hälfte des Bildschirms, die Seite auf der anderen.</td></tr>
 <tr><th>Prüfung</th><td><ul>
-<li>Die Datei geht an den Server, LibreOffice liest sie dort und zeichnet die Seiten. Gespeichert werden nur das Ergebnis und eine Zeile für die Klassenübersicht (welche Punkte offen sind), nicht die Datei.</li>
+<li>Die Datei geht an den Server, LibreOffice liest sie dort und zeichnet die Seiten. Gespeichert werden das Ergebnis, eine Zeile für die Klassenübersicht (welche Punkte offen sind) und die zuletzt geprüfte Fassung der Datei, zum Weiterarbeiten auch zu Hause; die nächste Prüfung ersetzt sie, »Ergebnis löschen« und das Löschen des Kontos löschen sie.</li>
 <li>Geprüft wird: der Text ist vollständig, keine Leerzeichen hintereinander, keine leeren Absätze, keine Zeilenumbrüche von Hand, Überschrift und Unterzeile zentriert, Datum rechtsbündig, mindestens 6 pt Abstand vor den fünf Absätzen, vor denen eine Lücke war.</li>
 <li>LibreOffice zeichnet die Seiten. Eine Datei aus Word kann deshalb eine Zeile ein Wort früher umbrechen; die Prüfung selbst hängt daran nicht.</li>
 </ul></td></tr>

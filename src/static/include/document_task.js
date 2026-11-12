@@ -405,6 +405,9 @@
         let z = 1, tx = 0, ty = 0;
         // 'whole' or 'width' while a fit is in effect; fitting: inside one
         let fit = null, fitting = false;
+        // the zoom by the wheel: its target, whether a frame is coming, and
+        // whether the move in progress is one of its steps
+        let goal = null, gliding = false, easing = false;
         const MIN = 0.15, MAX = 6;
         const size = function () { return { w: viewport.clientWidth, h: viewport.clientHeight }; };
         const offset = function (i) { return (width - pages[i].width) / 2; };
@@ -426,6 +429,8 @@
             // a line of the page (13 pt), down to 12 px
             viewport.style.setProperty('--inv', String(Math.max(12, Math.min(18, 13 * z)) / 18 / z));
             zoomLabel.textContent = Math.round(z * 100) + ' %';
+            // anything but the eased zoom itself ends it (a drag, a button)
+            if (!easing) goal = null;
             if (!fitting) fit = null;
             showFit();
             if (remember) remember({ z: z, tx: tx, ty: ty });
@@ -590,14 +595,13 @@
         viewport.appendChild(hint);
         let hintTimer = null;
         // zooming by the wheel: toward a target, a third of the way each frame
-        let goal = null;
-        let gliding = false;
         function glide(x, y, factor) {
             const base = goal ? goal.z : z;
             goal = { x: x, y: y, z: Math.min(MAX, Math.max(MIN, base * factor)) };
             if (reduced()) {
-                zoomAt(x, y, goal.z / z, false);
+                const to = goal.z;
                 goal = null;
+                zoomAt(x, y, to / z, false);
                 return;
             }
             if (gliding) return;
@@ -606,13 +610,18 @@
                 if (!goal) { gliding = false; return; }
                 const left = goal.z / z;
                 if (Math.abs(left - 1) < 0.002) {
+                    easing = true;
                     zoomAt(goal.x, goal.y, left, false);
+                    easing = false;
                     goal = null;
                     gliding = false;
                     return;
                 }
-                zoomAt(goal.x, goal.y, Math.pow(left, 0.35), false);
-                requestAnimationFrame(step);
+                easing = true;
+                zoomAt(goal.x, goal.y, Math.pow(left, 0.4), false);
+                easing = false;
+                if (goal) requestAnimationFrame(step);
+                else gliding = false;
             };
             requestAnimationFrame(step);
         }
@@ -622,12 +631,13 @@
             const dx = e.deltaMode === 1 ? e.deltaX * 16 : e.deltaX;
             if (e.ctrlKey || e.metaKey) {
                 e.preventDefault();
-                // a notch of a mouse wheel (whole steps, 100 or more, or
-                // lines): 12 %, eased over a few frames; pinching on a
-                // touchpad (small, fractional steps) follows the fingers
-                const notch = e.deltaMode === 1 || (Math.abs(dy) >= 50 && dy % 1 === 0);
-                if (notch) glide(e.clientX - box.left, e.clientY - box.top, dy < 0 ? 1.12 : 1 / 1.12);
-                else zoomAt(e.clientX - box.left, e.clientY - box.top, Math.exp(-dy * 0.008), false);
+                // every event moves one target, which the view eases to: a
+                // notch of a mouse wheel at most 12 %, the small steps of a
+                // pinch on a touchpad by their size. (Two ways at once, one
+                // immediate and one eased, pulled against each other with a
+                // wheel that sends both kinds of steps.)
+                const factor = Math.min(1.12, Math.max(1 / 1.12, Math.exp(-dy * 0.01)));
+                glide(e.clientX - box.left, e.clientY - box.top, factor);
                 return;
             }
             if (view.closest('.document-fullscreen')) {
