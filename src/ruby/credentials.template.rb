@@ -131,7 +131,7 @@ end
 # Anschluss ans Telefonnetz ist im Aufbau. PHONE_DIRECT_DIAL: ob der Anbieter
 # drei angehängte Ziffern weiterreicht (»Ruf … 123 an«); ohne diese Zeile
 # wählt man das Spiel im Menü.
-# PHONE_NUMBER = '030/1 23 45 67'
+# PHONE_NUMBER = '030/12 345 678'
 # PHONE_DIRECT_DIAL = false
 # Der SIP-Zugang des Anbieters (bei easybell: SIP-Benutzername, SIP-Passwort,
 # SIP-Registrar/Proxy aus dem Kundenportal). Ob er angehängte Ziffern
