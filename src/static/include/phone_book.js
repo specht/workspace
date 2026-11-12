@@ -39,7 +39,7 @@
 
     const entryHtml = (e) =>
         `<div class='phone-book-entry'><div class='pb-line'><span class='pb-title'>${esc(e.title)}</span><span class='pb-dots'></span>` +
-        `<span class='pb-number'>${e.word ? `${esc(e.word)} <small>${esc(e.number)}</small>` : esc(e.number)}</span></div>` +
+        `<span class='pb-number'>${e.word ? `<small>${esc(e.number)}</small> ${esc(e.word)}` : esc(e.number)}</span></div>` +
         (e.description ? `<div class='pb-description'>${esc(e.description)}</div>` : '') + '</div>';
     const colophonHtml = () =>
         `<div class='pb-remark'><div class='pb-remark-head'>Telefonbuch des Hackschule Workspace</div>` +
