@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Eine Packliste für die Klassenfahrt, jede Zeile mit einem Strich davor, darunter Preise, die mit Leerzeichen nach rechts geschoben sind"
 kind: labor
 duration: 1 Doppelstunde
-curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware)"
+curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Herstellung von Medienprodukten)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office
 languages: [word, libreoffice, nextcloud]

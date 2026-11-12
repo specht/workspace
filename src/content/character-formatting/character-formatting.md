@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Ein Aushang für einen Kuchenverkauf der Klasse 7b, in vielen verschiedenen Schriftarten und fast überall fett"
 kind: labor
 duration: 1 Doppelstunde
-curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware)"
+curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Gestaltung von Medienproduktionen)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office
 languages: [word, libreoffice, nextcloud]

@@ -13,8 +13,8 @@ lines: meta
 # über dem Bild auf /lehrplan
 intro: >-
   Welche Aktivitäten des Workspace zu welchem Teil der Rahmenlehrpläne von Berlin und Brandenburg passen:
-  für jedes Themenfeld der Sekundarstufe I und jeden Inhalt der Oberstufe, mit dem, was die Aktivität
-  dazu übt. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität.
+  für jedes Themenfeld der Sekundarstufe I, jeden Inhalt der Oberstufe und jeden Kompetenzbereich des
+  Basiscurriculums Medienbildung, mit dem, was die Aktivität dazu übt. Dieselbe Zeile steht für Lehrkräfte oben auf jeder Aktivität.
 # der Titel der Zeile oben auf jeder Aktivität
 label: Rahmenlehrplan
 levels:
@@ -78,6 +78,24 @@ levels:
         - Vertiefung Maschinennahe Programmierung
         - Vertiefung Informatik und Gesellschaft
         - Vertiefung Theoretische Informatik
+  # Teil B des Rahmenlehrplans 1–10: für alle Fächer, nicht nur für
+  # Informatik; die Kompetenzbereiche als Namen, ihre Unterbereiche als
+  # Einzelheiten (docs/lehrplan.md).
+  - level: Medienbildung
+    title: Basiscurriculum Medienbildung
+    id: medienbildung
+    source: Rahmenlehrplan Teil B, Basiscurriculum Medienbildung, Jahrgangsstufen 1–10, Berlin und Brandenburg (2015)
+    url: https://bildungsserver.berlin-brandenburg.de/rlp-online/b-fachuebergreifende-kompetenzentwicklung/basiscurriculum-medienbildung/standards
+    pdf: https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/Rahmenlehrplanprojekt/amtliche_Fassung/Teil_B_2015_11_10.pdf
+    ages: [0, 1]
+    groups:
+      Kompetenzbereiche:
+        - Informieren
+        - Kommunizieren
+        - Präsentieren
+        - Produzieren
+        - Analysieren
+        - Reflektieren
 # neben einem Namen, wo der Plan mehr dazu sagt
 notes:
   Sek I:

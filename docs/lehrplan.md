@@ -74,7 +74,8 @@ curriculum: "Sek I: Algorithmisches Problemlösen (algorithmische Grundstrukture
 ## Die Form
 
 - Ein Teil für die Sekundarstufe I (`Sek I: `), einer für die Oberstufe
-  (`Oberstufe: `) oder beide, in dieser Reihenfolge, getrennt durch `; `.
+  (`Oberstufe: `), einer für das Basiscurriculum Medienbildung
+  (`Medienbildung: `), in dieser Reihenfolge, getrennt durch `; `.
 - In einem Teil die Namen aus den Listen unten, getrennt durch `, `, jeder auf
   Wunsch mit Einzelheiten in Klammern. Nur die Einzelheiten sind frei; sie
   nehmen, wo es geht, die Worte des Plans (»algorithmische Grundstrukturen«,
@@ -145,3 +146,25 @@ von 2021). Brandenburg hat eine eigene Fassung:
 | Vertiefung Maschinennahe Programmierung | 3. Kurshalbjahr, Vertiefungsgebiet | |
 | Vertiefung Informatik und Gesellschaft | 3. Kurshalbjahr, Vertiefungsgebiet | |
 | Vertiefung Theoretische Informatik | 3. Kurshalbjahr, Vertiefungsgebiet | |
+
+## Medienbildung
+
+[Basiscurriculum Medienbildung](https://bildungsserver.berlin-brandenburg.de/rlp-online/b-fachuebergreifende-kompetenzentwicklung/basiscurriculum-medienbildung/standards),
+Rahmenlehrplan Teil B ([PDF](https://bildungsserver.berlin-brandenburg.de/fileadmin/bbb/unterricht/rahmenlehrplaene/Rahmenlehrplanprojekt/amtliche_Fassung/Teil_B_2015_11_10.pdf)),
+Jahrgangsstufen 1–10, Berlin und Brandenburg (2015): für alle Fächer, also
+auch für ITG, wo es kein Fach Informatik gibt. Sechs Kompetenzbereiche, jeder
+mit Unterbereichen; die Unterbereiche sind die Einzelheiten. Ein dritter Teil
+der Zeile, nach Sek I und Oberstufe (`Medienbildung: Produzieren (…)`), seit
+dem 12. November 2026 bei den Blättern zur Textverarbeitung.
+
+| Name | Unterbereiche |
+| --- | --- |
+| Informieren | Informationsquellen und ihre spezifischen Merkmale; Suchstrategien; Prüfung und Bewertung von Quellen und Information; Informationsverarbeitung |
+| Kommunizieren | Verantwortungsbewusstsein, Angemessenheit und Adressatenbezug; Kriterien, Merkmale und Strukturen medialer Kommunikation; Kommunikationsbedingungen in der Mediengesellschaft |
+| Präsentieren | Präsentationsarten und ihre sachgerechte Auswahl; Medienspezifische Gestaltungsprinzipien; Durchführung einer Präsentation; Präsentieren in der Mediengesellschaft |
+| Produzieren | Medientechnik; Medienproduktion als planvoller Prozess; Gestaltung von Medienproduktionen; Herstellung von Medienprodukten; Veröffentlichung von Medienproduktionen |
+| Analysieren | Orientierung im Medienangebot; Gestaltung, Aussage und Botschaft von Medienangeboten; Bedeutung und Wirkung von Medienangeboten |
+| Reflektieren | Eigener Mediengebrauch; Die Konstruktion von Wirklichkeit durch Medien; Medien in Politik und Gesellschaft |
+
+Andere Aktivitäten, die hierher passen, haben den Teil noch nicht: die
+Präsentationen (`showerjs`) und LaTeX zum Beispiel.

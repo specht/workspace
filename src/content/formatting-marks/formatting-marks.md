@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Eine Einladung zum Elternabend der Klasse 7b, ausgedruckt: Überschrift in der Mitte, Datum rechts, darunter ein kurzer Brief"
 kind: labor
 duration: 1 Doppelstunde
-curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware)"
+curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Herstellung von Medienprodukten)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office
 languages: [word, libreoffice, nextcloud]

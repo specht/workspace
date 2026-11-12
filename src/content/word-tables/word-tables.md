@@ -3,7 +3,7 @@ image: teaser.webp
 image_alt: "Das Programm der Klassenfahrt: Tag, Zeit und Programm in drei Spalten, mit Tabs gesetzt"
 kind: labor
 duration: 1 Doppelstunde
-curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware)"
+curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Herstellung von Medienprodukten)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office
 languages: [word, libreoffice, nextcloud]
