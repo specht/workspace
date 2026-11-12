@@ -48,6 +48,44 @@
     - pip-3
     - kata-tests
 
+# Office (docs/plan-textverarbeitung.md, docs/plan-tabellenkalkulation.md):
+# word processing and spreadsheets, presentations later, in LibreOffice,
+# Word/Excel or Nextcloud Office. The student uploads the document; the
+# office service reads it, and the card marks on their own page what is
+# still missing. Worksheets that build on each other become a series.
+- key: office
+  label: Office
+  short: Textverarbeitung und Tabellenkalkulation mit Rückmeldung auf deiner eigenen Seite.
+  icon: /images/memo.png
+  description: |
+    Dokumente sauber bauen, von der Einladung bis zur Zeitungsseite, und
+    Tabellen, die selbst rechnen, bis zur Abrechnung der Klassenfahrt: in
+    LibreOffice, Word und Excel oder Nextcloud Office. Du lädst dein Dokument
+    hoch, und die Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
+  entries:
+    - formatting-marks
+    - character-formatting
+    - lists-and-tabs
+    - word-tables
+    - pictures-in-text
+    - paragraph-styles
+    - pages-and-contents
+    - headers-and-footnotes
+    - newspaper-page
+    - trip-newspaper
+    - spreadsheet-cells
+    - number-formats
+    - absolute-references
+    - spreadsheet-functions
+    - sort-and-filter
+    - spreadsheet-charts
+    - trip-accounts
+  # the worksheets of each series, one after the other: each pinned on its
+  # own, the class page shows them as a whole too
+  series:
+    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
+    - [spreadsheet-cells, number-formats, absolute-references, spreadsheet-functions, sort-and-filter, spreadsheet-charts, trip-accounts]
+
 - key: graphics
   compact: true
   label: Grafik
@@ -99,44 +137,6 @@
   # Level 0 to 3, each building on the one before.
   series:
     - [level-0-c1d8a2f7, level-1-7e3a91c4, level-2-b52d0f18, level-3-4c9e6a2d]
-
-# Office (docs/plan-textverarbeitung.md, docs/plan-tabellenkalkulation.md):
-# word processing and spreadsheets, presentations later, in LibreOffice,
-# Word/Excel or Nextcloud Office. The student uploads the document; the
-# office service reads it, and the card marks on their own page what is
-# still missing. Worksheets that build on each other become a series.
-- key: office
-  label: Office
-  short: Textverarbeitung und Tabellenkalkulation mit Rückmeldung auf deiner eigenen Seite.
-  icon: /images/memo.png
-  description: |
-    Dokumente sauber bauen, von der Einladung bis zur Zeitungsseite, und
-    Tabellen, die selbst rechnen, bis zur Abrechnung der Klassenfahrt: in
-    LibreOffice, Word und Excel oder Nextcloud Office. Du lädst dein Dokument
-    hoch, und die Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
-  entries:
-    - formatting-marks
-    - character-formatting
-    - lists-and-tabs
-    - word-tables
-    - pictures-in-text
-    - paragraph-styles
-    - pages-and-contents
-    - headers-and-footnotes
-    - newspaper-page
-    - trip-newspaper
-    - spreadsheet-cells
-    - number-formats
-    - absolute-references
-    - spreadsheet-functions
-    - sort-and-filter
-    - spreadsheet-charts
-    - trip-accounts
-  # the worksheets of each series, one after the other: each pinned on its
-  # own, the class page shows them as a whole too
-  series:
-    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
-    - [spreadsheet-cells, number-formats, absolute-references, spreadsheet-functions, sort-and-filter, spreadsheet-charts, trip-accounts]
 
 - key: writing
   compact: true
