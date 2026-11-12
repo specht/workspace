@@ -273,3 +273,24 @@ test('an article is checked for its pictures', async ({ page, e2eEmail }, testIn
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
   if (shots) await page.screenshot({ path: path.join(shots, 'pictures-correct.png') });
 });
+
+test('a diary is checked for its heading styles', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/paragraph-styles');
+  await states;
+  const card = page.locator(".task-card[data-task='paragraph-styles/tagebuch']");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/paragraph-styles/06 Reisetagebuch.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  // the days and their parts are no headings, the style is as it was
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
+  if (shots) await page.screenshot({ path: path.join(shots, 'styles-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/paragraph-styles/stufen/noch-von-hand.docx'));
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(1);
+  await expect(report.locator('.document-checklist li.document-open')).toContainText('nicht von Hand formatiert');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/paragraph-styles/stufen/reisetagebuch.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(6);
+});

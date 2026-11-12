@@ -1,0 +1,72 @@
+# Aufgaben zu »Formatvorlagen«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/paragraph-styles/06 Reisetagebuch.docx), das
+# fertige Tagebuch und die Stufen für die Beispiele (stufen/) macht
+# dokumente.py.
+format: 1
+activity: paragraph-styles
+tasks:
+  - id: uebersicht
+    title: Die Übersicht der Überschriften
+    prediction: true
+    prompt: |
+      Word und LibreOffice können neben dem Text eine Übersicht aller
+      Überschriften zeigen, zum Springen. Wie viele Einträge zeigt sie für
+      das Tagebuch?
+    check:
+      type: number
+      expect: 0
+      tolerance: 0
+    feedback:
+      - when: { between: [5, 5] }
+        say: So viele Tage hat das Tagebuch. Aber woher weiß das Programm, dass diese Zeilen Überschriften sind?
+      - when: { between: [9, 9] }
+        say: So viele Zeilen sehen aus wie Überschriften. Aber woher weiß das Programm, dass sie es sind?
+    solution: |
+      Keinen. Die Zeilen sehen aus wie Überschriften, weil sie fett, größer
+      und blau sind. Für das Programm sind es normale Absätze mit der
+      Formatvorlage »Standard«, so wie der Text darunter.
+
+  - id: ebene
+    title: Die Teile eines Tages
+    prompt: |
+      Unter »Mittwoch: Wanderung« stehen »Am Vormittag: um den See« und »Am
+      Nachmittag: über den Moorpfad«. Welche Formatvorlage bekommen sie?
+    check:
+      type: choice
+      options:
+        - »Überschrift 1«, wie der Mittwoch
+        - »Überschrift 2«
+        - »Überschrift 3«
+        - »Titel«
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Dann stünden sie auf einer Stufe mit den Tagen. Gehören sie nicht zum Mittwoch?
+      - when: { picked: 2 }
+        say: Dazwischen fehlte dann eine Stufe. Was kommt direkt unter Ebene 1?
+      - when: { picked: 3 }
+        say: Der Titel steht einmal ganz oben über allem.
+    solution: |
+      Überschrift 2: Sie gehören zum Mittwoch, eine Stufe darunter, so wie
+      Abschnitte in einem Kapitel.
+
+  - id: tagebuch
+    title: Das Tagebuch mit Formatvorlagen
+    prompt: |
+      Prüfe dein Tagebuch. Die Prüfung markiert auf deiner Seite jede Stelle,
+      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      prüfst.
+    check:
+      type: document
+      file: paragraph-styles/06 Reisetagebuch.docx
+      rules:
+        - text
+        - { headings: ['Montag:', 'Dienstag:', 'Mittwoch:', 'Donnerstag:', 'Freitag:'], level: 1, label: 'Die Tage sind Überschrift 1' }
+        - { headings: ['Am Vormittag', 'Am Nachmittag', 'Auf dem Schiff', 'Der letzte Abend'], level: 2, label: 'Die Teile eines Tages sind Überschrift 2' }
+        - levels
+        - no_direct
+        - { style_changed: 'Heading 1' }
+    hint:
+      - Markier eine Überschrift, lösch ihre Formatierung von Hand und gib ihr dann die Formatvorlage. Das geht für alle Tage nacheinander.
+      - Die Formatvorlage änderst du über einen Rechtsklick auf ihren Namen in der Liste der Formatvorlagen.

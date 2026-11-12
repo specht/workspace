@@ -167,99 +167,99 @@
     },
     {
       "name": "development",
-      "key": "30133c9f75454576",
-      "cost": 487.25,
-      "quick": 978.22,
+      "key": "3ba00466ef10f64e",
+      "cost": 519.24,
+      "quick": 968.27,
       "orders": [
         [
           0,
           [
-            "git",
-            "working-with-files",
-            "glsl",
-            "pixelram",
-            "pip-1",
-            "tcpip",
-            "drawing",
-            "kata-functions",
-            "formatting-marks",
-            "turtle-1",
             "static-website",
-            "mysql"
+            "tcpip",
+            "working-with-files",
+            "git",
+            "glsl",
+            "pip-1",
+            "pixelram",
+            "kata-functions",
+            "turtle-1",
+            "formatting-marks",
+            "mysql",
+            "drawing"
           ]
         ],
         [
           1,
           [
-            "class-quiz",
-            "terminal-mystery",
-            "glsl>webgl#1",
-            "raylib",
-            "pixelram>gif#1",
-            "raytracing",
-            "raycaster",
-            "pip-1>pip-2#1",
-            "pixelram>jpeg#1",
-            "webserver",
-            "dns",
-            "wetter",
-            "crypto",
-            "fire",
-            "kata-decisions",
-            "character-formatting",
-            "turtle-1>turtle-2#1",
-            "fair-web",
             "hugo",
             "svelte",
+            "fair-web",
+            "webserver",
+            "wetter",
+            "dns",
+            "crypto",
+            "terminal-mystery",
+            "class-quiz",
+            "glsl>webgl#1",
+            "raytracing",
+            "pixelram>gif#1",
+            "pip-1>pip-2#1",
+            "raycaster",
+            "pixelram>jpeg#1",
+            "kata-decisions",
+            "turtle-1>turtle-2#1",
+            "raylib",
+            "character-formatting",
             "bobby_tables",
             "sql-index",
+            "filmdatenbank",
             "sql-joins",
-            "filmdatenbank"
+            "fire"
           ]
         ],
         [
           2,
           [
-            "glsl>webgl#2",
-            "pixelram>gif#2",
-            "raytracing>webgl#1",
-            "pip-1>pip-2#2",
-            "pixelram>jpeg#2",
-            "tracking",
             "nebenlaeufigkeit",
             "pixelwand",
-            "kata-loops",
+            "tracking",
             "totp",
+            "raytracing>webgl#1",
+            "glsl>webgl#2",
+            "pixelram>gif#2",
+            "pip-1>pip-2#2",
+            "pixelram>jpeg#2",
             "telefonspiel",
-            "lists-and-tabs",
+            "kata-loops",
             "turtle-1>turtle-2#2",
+            "lists-and-tabs",
             "neo4j-filmdatenbank"
           ]
         ],
         [
           3,
           [
-            "glsl>webgl#3",
             "pixelram>gif#3",
             "raytracing>webgl#2",
+            "glsl>webgl#3",
             "pip-2",
             "pixelram>jpeg#3",
             "kata-texts",
-            "word-tables",
-            "turtle-1>turtle-2#3"
+            "turtle-1>turtle-2#3",
+            "word-tables"
           ]
         ],
         [
           4,
           [
-            "glsl>webgl#4",
             "pixelram>gif#4",
             "raytracing>webgl#3",
+            "glsl>webgl#4",
             "pip-2>pip-3#1",
             "pixelram>jpeg#4",
             "kata-lists",
-            "pictures-in-text",
-            "turtle-1>turtle-2#4"
+            "turtle-1>turtle-2#4",
+            "pictures-in-text"
           ]
         ],
         [
@@ -268,20 +268,21 @@
             "pixelram>gif#5",
             "webgl",
             "pip-2>pip-3#2",
-            "pixelram>jpeg#5",
             "kata-lists>gaussian-splatting#1",
+            "pixelram>jpeg#5",
             "perzeptron",
-            "kata-dicts",
             "testen",
-            "rle",
-            "kata-lists>suchmaschine#1",
+            "kata-dicts",
             "check-digits",
-            "fraktale-kompression",
             "sandbox-sortieren",
-            "kata-recursion",
             "naechste-nachbarn",
+            "kata-lists>suchmaschine#1",
+            "fraktale-kompression",
+            "rle",
+            "kata-recursion",
             "turtle-1>turtle-2#5",
-            "supermarkt"
+            "supermarkt",
+            "paragraph-styles"
           ]
         ],
         [
@@ -289,17 +290,17 @@
           [
             "pixelram>gif#6",
             "gaussian-splatting",
-            "pip-3",
             "lzw",
-            "automata",
-            "pixelram>jpeg#6",
-            "sprachmodell",
-            "kata-functional",
-            "routenplaner",
-            "huffman",
-            "kata-bits",
-            "suchmaschine",
+            "pip-3",
             "kata-objects",
+            "pixelram>jpeg#6",
+            "huffman",
+            "kata-functional",
+            "kata-bits",
+            "routenplaner",
+            "automata",
+            "sprachmodell",
+            "suchmaschine",
             "laufzeit",
             "prolog",
             "kata-search",
@@ -311,15 +312,15 @@
           7,
           [
             "gif",
-            "calculator",
-            "turingmaschine",
-            "kellerautomat",
-            "regex",
+            "textadventure",
             "jpeg",
             "audio-compression",
             "steganography",
             "logikgatter",
-            "textadventure",
+            "turingmaschine",
+            "kellerautomat",
+            "regex",
+            "calculator",
             "kata-tests",
             "turtle-3"
           ]
@@ -327,10 +328,10 @@
         [
           8,
           [
-            "grammatiken",
             "video-compression",
             "audio-effects",
-            "logikwerkstatt"
+            "logikwerkstatt",
+            "grammatiken"
           ]
         ]
       ]

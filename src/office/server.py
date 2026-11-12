@@ -359,6 +359,28 @@ def place_pictures(pictures, pdf, folder):
             p['box'] = {k: round(v, 1) if isinstance(v, float) else v for k, v in best[1].items()}
 
 
+def read_styles(doc, names):
+    """The paragraph styles the document uses, as they are defined (what a
+    paragraph of that style shows without formatting of its own): font,
+    size, bold, italic, colour, outline level."""
+    out = {}
+    try:
+        family = doc.StyleFamilies.getByName('ParagraphStyles')
+    except Exception:
+        return out
+    for name in sorted(set(names)):
+        try:
+            st = family.getByName(name)
+            out[name] = {'display': st.DisplayName, 'parent': st.ParentStyle,
+                         'font': st.CharFontName, 'size': round(st.CharHeight, 1),
+                         'bold': st.CharWeight >= 150,
+                         'italic': enum_value(st.CharPosture) not in ('NONE', None),
+                         'color': st.CharColor, 'outline': getattr(st, 'OutlineLevel', 0)}
+        except Exception:
+            pass
+    return out
+
+
 def page_margins(doc):
     styles = doc.StyleFamilies.getByName('PageStyles')
     cursor = doc.Text.createTextCursor()
@@ -486,6 +508,10 @@ def analyze(data, filename):
             collect_frames(boxes, styles, paragraphs, starts)
             tables = list(TABLES)
             pictures = read_pictures(doc, boxes)
+            # the headings' and the title's always, to compare with the
+            # starting file even where it does not use them yet
+            styles_used = read_styles(doc, [p['style'] for p in paragraphs] +
+                                      ['Title'] + [f'Heading {n}' for n in range(1, 4)])
             margins = page_margins(doc)
             for i, (text, start, end) in enumerate(starts):
                 for name, at in ((f'p{i}', start), (f'e{i}', end)):
@@ -517,7 +543,7 @@ def analyze(data, filename):
             with open(target, 'rb') as f:
                 svg = base64.b64encode(f.read()).decode('ascii')
             out_pages.append({'width': pages[i]['width'], 'height': pages[i]['height'], 'svg': svg})
-        return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
+        return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
 

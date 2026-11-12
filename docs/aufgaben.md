@@ -1968,6 +1968,10 @@ check:
     - { wrap: 1, side: right, names: […] }   # das erste Bild der Vorlage mit Text daneben, rechts
     - { captions: true, names: […] }   # unter (oder über) jedem Bild eine Beschriftung, deren Nummer ein Feld ist
     - { alt_text: true, names: […] }   # jedes Bild mit einem Alternativtext, kein Dateiname, nicht geraten
+    - { headings: ['Montag:', 'Dienstag:'], level: 1 }   # die Absätze, die so anfangen, sind Überschriften dieser Ebene
+    - levels              # keine Ebene der Überschriften übersprungen
+    - no_direct           # keine Überschrift und kein Titel von Hand formatiert (fett, Größe, Farbe, Schrift)
+    - { style_changed: 'Heading 1' }   # die Formatvorlage selbst sieht anders aus als in der Vorlage
 ```
 
 Ein Dokument aus Word, LibreOffice oder Nextcloud Office (`.docx`, `.odt`,
@@ -1992,6 +1996,14 @@ Beschriftung) oder Textfeld, zählt dessen Umbruch. `captions` sucht direkt
 unter oder über dem Bild einen Absatz mit einem Nummernkreis (Word: `SEQ`)
 oder einem Anfang wie »Abbildung 2«; getippte Nummern markiert es, auch in
 Absätzen weiter weg. Der Text in Rahmen und Textfeldern zählt für `text` mit.
+
+Die Regeln zu Überschriften lesen die Ebene eines Absatzes aus seiner
+Formatvorlage (»Überschrift 1« ist Ebene 1, »Standard« keine). `no_direct`
+markiert Überschriften und Titel, an denen Fett, Größe, Farbe, Schriftart,
+Kursiv, Unterstreichen oder Großbuchstaben von Hand gesetzt sind;
+`style_changed` vergleicht Schrift, Größe, Fett, Kursiv und Farbe der
+Formatvorlage mit derselben Vorlage in der Vorlagedatei (der Dienst meldet
+die benutzten Formatvorlagen und immer »Titel« und »Überschrift 1« bis 3).
 
 Die Karte zeigt die Liste neben der Seite, beides in einem Fenster (auch im
 halben Bildschirm neben Word); jeder offene Punkt hat eine Nummer, die neben

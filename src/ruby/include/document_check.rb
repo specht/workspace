@@ -32,6 +32,10 @@ require_relative 'office_client'
 #       - ratio                # no picture stretched or squeezed
 #       - captions             # every picture has a caption whose number is a field
 #       - { wrap: 1, side: right }   # the starting file's first picture has text beside it, at the right
+#       - { headings: ['Montag', …], level: 1 }   # the paragraphs beginning so are headings of this level
+#       - levels               # no level of heading skipped
+#       - no_direct            # no heading or title formatted by hand (bold, size, colour, font)
+#       - { style_changed: 'Heading 1' }   # the style itself looks other than in the starting file
 #
 # The rules about pictures may carry names: (how the messages call the
 # pictures, in the order of the starting file: ['das Foto', 'die Karte']).
@@ -41,7 +45,7 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     EDGE_PUNCT = /\A[[:punct:]»«„“”‚‘’–•·]+|[[:punct:]»«„“”‚‘’–•·]+\z/
@@ -86,6 +90,7 @@ module DocumentCheck
                 when 'tabs' then %w[tabs align]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
+                when 'headings' then %w[headings level]
                 when 'alt_text', 'ratio', 'captions' then [name, 'names']
                 else [name]
             end
@@ -102,6 +107,8 @@ module DocumentCheck
             end
             errors << 'wrap must be the number of a picture of the starting file (1, 2, …)' if name == 'wrap' && !(rule['wrap'].is_a?(Integer) && rule['wrap'].positive?)
             errors << 'side must be left or right' if name == 'wrap' && rule.key?('side') && !%w[left right].include?(rule['side'])
+            errors << 'headings needs a list of pieces of text and level: (1, 2, …)' if name == 'headings' && !(rule['headings'].is_a?(Array) && rule['level'].is_a?(Integer) && rule['level'].positive?)
+            errors << 'style_changed needs the name of a paragraph style (Heading 1)' if name == 'style_changed' && !(rule['style_changed'].is_a?(String) && !rule['style_changed'].empty?)
             errors << 'names must be a list of text' if rule.key?('names') && !(rule['names'].is_a?(Array) && rule['names'].all? { |n| n.is_a?(String) })
             errors << 'size needs paragraphs: (pieces of their text)' if name == 'size' && !(rule['paragraphs'].is_a?(Array) && rule['paragraphs'].all? { |b| b.is_a?(String) })
             %w[label say].each { |k| errors << "#{k} must be text" if rule.key?(k) && !rule[k].is_a?(String) }
@@ -817,6 +824,101 @@ module DocumentCheck
         item.marks << mark if mark
         item.message = "#{problem} Stell in Word den Textumbruch »Quadrat« ein, in LibreOffice die Verankerung »Am Absatz« und den Umlauf »Parallel«; " \
             'dann fließt der Text neben dem Bild, und du schiebst es an den Rand.'
+        item
+    end
+
+    # ---- headings and styles
+
+    DIRECT = { 'CharWeight' => 'fett', 'CharHeight' => 'Größe', 'CharColor' => 'Farbe', 'CharFontName' => 'Schriftart',
+               'CharPosture' => 'kursiv', 'CharUnderline' => 'unterstrichen', 'CharCaseMap' => 'Großbuchstaben' }.freeze
+
+    def self.level(p)
+        p['outline'].to_i
+    end
+
+    def self.style_label(name)
+        STYLE_NAMES[name] || name
+    end
+
+    def self.rule_headings(rule, body, _starter, _all = nil, _model = nil)
+        want = rule['level'].to_i
+        item = Item.new(:rule => 'headings', :label => "Überschriften der Ebene #{want}", :ok => true, :marks => [])
+        plain = []
+        other = []
+        missing = []
+        Array(rule['headings']).each do |piece|
+            found = body.select { |p| p['plain'].start_with?(piece.to_s) }
+            missing << piece if found.empty?
+            found.each do |p|
+                next if level(p) == want
+                (level(p).zero? ? plain : other) << p
+                item.marks << para_mark(p).merge(:title => level(p).zero? ? style_name(p) : "Ebene #{level(p)}")
+            end
+        end
+        return item if plain.empty? && other.empty? && missing.empty?
+
+        item.ok = false
+        said = []
+        said << "#{q(names(missing.map { |m| "»#{m}«" }))} finde ich nicht mehr." unless missing.empty?
+        unless plain.empty?
+            said << (plain.size == 1 ? "»#{short(plain.first)}« ist ein normaler Absatz (#{q(style_name(plain.first))}), der nur wie eine Überschrift aussieht." :
+                "#{plain.size} Zeilen sind normale Absätze, die nur wie Überschriften aussehen, zum Beispiel »#{short(plain.first)}«.")
+        end
+        other.first(2).each { |p| said << "»#{short(p)}« ist eine Überschrift der Ebene #{level(p)}, soll aber Ebene #{want} sein." }
+        item.message = "#{said.join(' ')} Gib ihnen die Formatvorlage »Überschrift #{want}«: Dann weiß das Programm, dass sie Überschriften sind, " \
+            'zeigt sie in seiner Übersicht und kann ein Inhaltsverzeichnis daraus machen.'
+        item
+    end
+
+    def self.rule_levels(_rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'levels', :label => 'Keine Ebene übersprungen', :ok => true, :marks => [])
+        before = nil
+        jumps = []
+        body.select { |p| level(p).positive? }.each do |p|
+            limit = before ? level(before) + 1 : 1
+            jumps << [before, p] if level(p) > limit
+            before = p
+        end
+        return item if jumps.empty?
+
+        item.ok = false
+        item.marks = jumps.map { |_, p| para_mark(p).merge(:title => "Ebene #{level(p)}") }
+        a, b = jumps.first
+        item.message = (a ? "Nach »#{short(a)}« (Ebene #{level(a)}) kommt »#{short(b)}« als Ebene #{level(b)}." :
+            "Die erste Überschrift, »#{short(b)}«, ist schon Ebene #{level(b)}.") +
+            ' Überschriften gehen Stufe für Stufe hinunter wie die Kapitel eines Buchs: Unter Ebene 1 kommt Ebene 2, nicht gleich 3.'
+        item
+    end
+
+    def self.rule_no_direct(_rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'no_direct', :label => 'Überschriften nicht von Hand formatiert', :ok => true, :marks => [])
+        found = body.select { |p| level(p).positive? || %w[Title Titel].include?(p['style']) }.filter_map do |p|
+            set = (p['portions'] || []).select { |q| visible?(q) }.flat_map { |q| q['direct'] || [] }.uniq & DIRECT.keys
+            [p, set] unless set.empty?
+        end
+        return item if found.empty?
+
+        item.ok = false
+        item.marks = found.map { |p, set| para_mark(p).merge(:title => set.map { |k| DIRECT[k] }.join(', ')) }
+        p, set = found.first
+        item.message = "#{found.size == 1 ? "»#{short(p)}« ist" : "#{found.size} Überschriften sind, zum Beispiel »#{short(p)}«,"} noch von Hand formatiert " \
+            "(#{set.map { |k| DIRECT[k] }.join(', ')}). Was du von Hand einstellst, gewinnt gegen die Formatvorlage: Änderst du die Vorlage, bleibt diese Überschrift, wie sie ist. " \
+            'Markier sie und lösch die Formatierung (Word: Strg+Leertaste, LibreOffice: Strg+M).'
+        item
+    end
+
+    STYLE_LOOK = %w[font size bold italic color].freeze
+
+    def self.rule_style_changed(rule, _body, starter, _all = nil, model = nil)
+        name = rule['style_changed'].to_s
+        item = Item.new(:rule => 'style_changed', :label => "Die Formatvorlage »#{style_label(name)}« geändert", :ok => true, :marks => [])
+        mine = ((model || {})['styles'] || {})[name]
+        theirs = ((starter || {})['styles'] || {})[name]
+        return item if mine.nil? || theirs.nil? ? false : STYLE_LOOK.any? { |k| mine[k] != theirs[k] }
+
+        item.ok = false
+        item.message = "Die Formatvorlage »#{style_label(name)}« sieht noch aus wie am Anfang. Ändere sie einmal, zum Beispiel ihre Farbe: " \
+            'Alle Überschriften mit dieser Vorlage ändern sich mit, auf einmal.'
         item
     end
 

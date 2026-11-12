@@ -1,0 +1,19 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Das fertige Tagebuch (stufen/reisetagebuch.docx)
+# muss die Prüfung bestehen; die Vorlage und die Stufen, in denen je eine
+# Sache fehlt, scheitern an ihr. Alle macht dokumente.py.
+format: 1
+activity: paragraph-styles
+examples:
+  tagebuch:
+    pass:
+      - document: stufen/reisetagebuch.docx
+    fail:
+      - document: ../../static/paragraph-styles/06 Reisetagebuch.docx
+        say: nur wie Überschriften aussehen
+      - document: stufen/noch-von-hand.docx
+        say: noch von Hand formatiert
+      - document: stufen/ebene-3.docx
+        say: nicht gleich 3
+      - document: stufen/vorlage-wie-vorher.docx
+        say: sieht noch aus wie am Anfang

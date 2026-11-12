@@ -119,10 +119,11 @@
     - .lists-and-tabs
     - .word-tables
     - .pictures-in-text
+    - .paragraph-styles
   # the worksheets on word processing, one after the other: each pinned on
   # its own, the class page shows them as a whole too
   series:
-    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text]
+    - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles]
 
 - key: writing
   compact: true

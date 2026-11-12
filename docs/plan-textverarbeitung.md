@@ -123,8 +123,16 @@ built by hand; each is a page of a series of its own, about one lesson.
    is from Wikimedia Commons (CC BY-SA 4.0, credited in its caption); the
    map is drawn (`bilder/karte.py`). The solution is built by LibreOffice
    through UNO (a frame with picture and caption, saved as a Word text box).
-6. **Formatvorlagen** (two lessons): ten headings formatted by hand; heading
-   styles, the style changed once, no level skipped.
+6. **Formatvorlagen** (built, `paragraph-styles`, two lessons): the 7b's
+   trip diary with nine headings formatted by hand (bold, larger, blue,
+   Wednesday a point smaller); the prediction: how many entries the
+   program's list of headings shows (none); the days in »Überschrift 1«,
+   their parts in »Überschrift 2«, nothing by hand on them, »Überschrift 1«
+   changed once. The rules headings, levels, no_direct, style_changed; the
+   service reports the definitions of the styles used. A prediction about a
+   style turned green and a heading blue by hand was dropped: whether
+   applying a style keeps formatting by hand may differ between Word and
+   LibreOffice.
 7. **Seiten und Verzeichnisse:** page number as a field in the footer, page
    breaks, an automatic table of contents that is up to date.
 8. **The hand-in:** an article of one's own for the trip newspaper, every
@@ -133,12 +141,12 @@ built by hand; each is a page of a series of its own, about one lesson.
 
 ## Open
 
-- **For worksheets 6 to 8:**
+- **For worksheets 7 and 8:**
   - **Several pages in the viewer:** a page display, jumping between pages,
     the page of each place in the list.
   - **Reading more of the document:** headers and footers (with their
     fields), the table of contents through UNO (`DocumentIndexes`, compared
-    with the headings), styles and their changes.
+    with the headings).
 - **Keeping hold of the file needs https:** Chrome and Edge offer the File
   System Access API only in a secure context (https or localhost). On the
   development site (`http://workspace.test:8030`) Chrome chooses the file
