@@ -96,7 +96,7 @@ module DocumentCheck
         message = if done == items.size
             "Alle #{items.size} Punkte erfüllt."
         else
-            "#{done} von #{items.size} Punkten erfüllt. Die Nummern zeigen auf die Stellen in deinem Dokument."
+            "#{done} von #{items.size} Punkten erfüllt."
         end
         [done == items.size ? :correct : :wrong, items, message]
     end

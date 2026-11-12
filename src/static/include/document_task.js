@@ -72,7 +72,7 @@
             const note = link.parentNode.querySelector('.document-saved') || link.insertAdjacentElement('afterend', el('span', 'document-saved'));
             let handle;
             try {
-                handle = await window.showSaveFilePicker({ suggestedName: decodeURIComponent(href.split('/').pop()), types: TYPES });
+                handle = await window.showSaveFilePicker({ suggestedName: link.dataset.name || decodeURIComponent(href.split('/').pop()), types: TYPES });
             } catch (err) {
                 return;    // closed without saving
             }
@@ -88,6 +88,9 @@
             }
             SAVED[href] = handle;
             note.textContent = ' Gespeichert als ' + handle.name + '.';
+            // the last version on a card: that card goes on with it
+            const own = link.closest('.task-card');
+            if (own) useSaved(own, handle);
             document.querySelectorAll('.task-card .document-starter[href="' + href + '"]').forEach(function (other) {
                 const card = other.closest('.task-card');
                 if (card) useSaved(card, handle);
@@ -383,7 +386,9 @@
             clamp();
             stage.classList.toggle('document-gliding', !!animate && !reduced());
             stage.style.transform = 'translate(' + tx + 'px, ' + ty + 'px) scale(' + z + ')';
-            viewport.style.setProperty('--inv', String(1 / z));
+            // the numbers keep 18 px on the screen, but never get taller than
+            // a line of the page (13 pt), down to 12 px
+            viewport.style.setProperty('--inv', String(Math.max(12, Math.min(18, 13 * z)) / 18 / z));
             zoomLabel.textContent = Math.round(z * 100) + ' %';
             if (remember) remember({ z: z, tx: tx, ty: ty });
         }
@@ -408,6 +413,13 @@
             const c = pages[0].crop || { x: 0, y: 0, w: pages[0].width, h: pages[0].height };
             z = Math.max(MIN, Math.min(MAX, (v.w - 16) / c.w));
             tx = (v.w - c.w * z) / 2 - (offset(0) + c.x) * z;
+            // a phone: the text at a size to read, from the margin numbers
+            // on; the rest of the line is a drag away
+            if (z < 1) {
+                z = 1;
+                // room for two numbers in the margin before the text
+                tx = 52 - (offset(0) + (c.left || c.x)) * z;
+            }
             ty = 8 - c.y * z;
             apply(animate);
         }
@@ -434,6 +446,8 @@
         button('bi-zoom-in', 'Vergrößern', function () { const m = middle(); zoomAt(m[0], m[1], 1.4, true); });
         button('bi-file-earmark', 'Ganze Seite', function () { whole(true); });
         button('bi-arrows', 'Seitenbreite', function () { start(true); });
+        const full = button('bi-arrows-fullscreen', 'Vollbild', function () { toggleFull(); });
+        full.classList.add('document-full-toggle');
         view.insertBefore(tools, viewport);
 
         // dragging and pinching
@@ -515,7 +529,9 @@
             let seen = false;
             new ResizeObserver(function () {
                 if (!size().w) return;
-                if (!seen) first(); else apply(false);
+                if (!seen) first();
+                else if (restart) { restart = false; start(false); }
+                else apply(false);
                 seen = true;
             }).observe(viewport);
         } else {
@@ -533,6 +549,47 @@
                 start(false);
             }
         }
+
+        // Full screen (a phone, or a small window): the result over the whole
+        // screen, the page on top, the list below; the back button, Escape
+        // or the button again close it.
+        const report = view.closest('.document-report');
+        let restart = false;
+        function toggleFull(on) {
+            const want = on === undefined ? !report.classList.contains('document-fullscreen') : on;
+            if (want === report.classList.contains('document-fullscreen')) return;
+            // out of the card while it covers the screen: the card's body is a
+            // size container, which keeps anything fixed inside it
+            if (want) {
+                report.documentHome = document.createComment('document-report');
+                report.parentNode.insertBefore(report.documentHome, report);
+                document.body.appendChild(report);
+            } else if (report.documentHome) {
+                report.documentHome.parentNode.insertBefore(report, report.documentHome);
+                report.documentHome.remove();
+                report.documentHome = null;
+            }
+            report.classList.toggle('document-fullscreen', want);
+            document.body.classList.toggle('document-full-open', want);
+            full.innerHTML = "<i class='bi " + (want ? 'bi-fullscreen-exit' : 'bi-arrows-fullscreen') + "' aria-hidden='true'></i>";
+            full.setAttribute('aria-label', want ? 'Vollbild verlassen' : 'Vollbild');
+            full.title = full.getAttribute('aria-label');
+            if (want) {
+                history.pushState({ documentFull: true }, '');
+                const back = function () { toggleFull(false); };
+                report.documentBack = back;
+                window.addEventListener('popstate', back, { once: true });
+            } else if (report.documentBack) {
+                window.removeEventListener('popstate', report.documentBack);
+                report.documentBack = null;
+                if (history.state && history.state.documentFull) history.back();
+            }
+            // the view again once the area has its new size (ResizeObserver)
+            restart = true;
+        }
+        report.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && report.classList.contains('document-fullscreen')) toggleFull(false);
+        });
 
         return {
             viewport: viewport,
@@ -702,7 +759,8 @@
         if (card.documentRecheck) {
             const again = el('button', 'btn btn-sm btn-success document-recheck');
             again.type = 'button';
-            again.innerHTML = "<i class='bi bi-arrow-repeat' aria-hidden='true'></i>Erneut prüfen";
+            again.innerHTML = "<i class='bi bi-arrow-repeat' aria-hidden='true'></i><span class='document-recheck-long'>Erneut </span><span class='document-recheck-word'>prüfen</span>";
+            again.setAttribute('aria-label', 'Erneut prüfen');
             again.addEventListener('click', function () { card.documentRecheck(); });
             const tools = view.querySelector('.document-tools');
             if (tools) tools.appendChild(again);
@@ -717,12 +775,47 @@
         fit(wrap);
     }
 
+    // The last version kept on the server (DocumentCheck, task_api.rb), to
+    // go on with at home or on another computer: its name and when, and a
+    // link that saves it (through the page in Chrome and Edge, which then
+    // keeps hold of it, as with the starting file).
+    function when(seconds) {
+        const t = new Date(seconds * 1000);
+        const now = new Date();
+        const time = t.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        if (t.toDateString() === now.toDateString()) return 'heute, ' + time + ' Uhr';
+        return t.toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' }) + ', ' + time + ' Uhr';
+    }
+
+    function showFile(card, stored) {
+        const box = card.querySelector('.document-task');
+        if (!box || !stored) return;
+        let line = box.querySelector('.document-latest');
+        if (!line) {
+            line = el('p', 'document-latest');
+            box.insertBefore(line, box.querySelector('.document-browser'));
+        }
+        line.textContent = '';
+        const icon = el('i', 'bi bi-clock-history');
+        icon.setAttribute('aria-hidden', 'true');
+        line.appendChild(icon);
+        line.appendChild(document.createTextNode('Deine letzte Fassung: '));
+        const link = el('a', null, stored.name);
+        link.href = stored.url;
+        link.setAttribute('download', stored.name);
+        link.dataset.name = stored.name;
+        line.appendChild(link);
+        line.appendChild(document.createTextNode(', ' + when(stored.at) + '. Zum Weiterarbeiten, auch zu Hause.'));
+        bindStarter(link);
+    }
+
     // the stored line (»01 Einladung.docx: 6 von 8, …«) under the button
-    function showStored(card, answer) {
+    function showStored(card, answer, stored) {
+        if (stored) showFile(card, stored);
         const line = card.querySelector('.document-name');
         if (!line || card.documentHandle || card.documentFile) return;
         line.textContent = answer ? 'Zuletzt geprüft: ' + answer : 'oder hierher ziehen';
     }
 
-    window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored };
+    window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored, showFile: showFile };
 })();

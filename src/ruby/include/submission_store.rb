@@ -161,6 +161,25 @@ module SubmissionStore
     end
 
     # [name, text] of the first file of a stored submission, or nil.
+    # The one file of an archive as written by write_text, as bytes (a
+    # document from Word, DocumentCheck): [name, bytes], or nil.
+    def self.read_file(target, max: 16 * 1024 * 1024)
+        File.open(target, 'rb') do |f|
+            Zlib::GzipReader.wrap(f) do |gz|
+                Gem::Package::TarReader.new(gz) do |tar|
+                    tar.each do |entry|
+                        next unless entry.file?
+
+                        return [entry.full_name.force_encoding('UTF-8').scrub, entry.read(max).to_s.b]
+                    end
+                end
+            end
+        end
+        nil
+    rescue Errno::ENOENT, Zlib::Error
+        nil
+    end
+
     def self.read_text(target, max: 64 * 1024)
         File.open(target, 'rb') do |f|
             Zlib::GzipReader.wrap(f) do |gz|

@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
@@ -83,6 +84,19 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await expect(report.locator('.document-stamp')).toHaveText('Alle 8 Punkte');
   if (shots) await page.waitForTimeout(2200);
   if (shots) await page.screenshot({ path: path.join(shots, 'document-correct.png') });
+  // the last version stays on the server, to go on with at home
+  const latest = card.locator('.document-latest');
+  await expect(latest).toContainText('Deine letzte Fassung: einladung.docx');
+  const href = await latest.locator('a').getAttribute('href');
+  const version = await page.request.get(href!);
+  expect(version.ok()).toBe(true);
+  expect((await version.body()).equals(fs.readFileSync(solution))).toBe(true);
+  expect(version.headers()['content-disposition']).toContain("filename*=UTF-8''einladung.docx");
+  const reloaded = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.reload();
+  await reloaded;
+  await expect(card.locator('.document-latest')).toContainText('einladung.docx');
+
   // the whole width of a desktop works as well
   await page.setViewportSize({ width: 1920, height: 1040 });
   await card.locator('.document-input').setInputFiles(starter);
@@ -97,5 +111,19 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await card.locator('.document-input').setInputFiles(starter);
   await expect(card).toHaveAttribute('data-status', 'wrong');
   await expect(report.locator('.document-mark').first()).toBeVisible();
+  // the tools in one row
+  const tools = await report.locator('.document-tools').boundingBox();
+  expect(tools!.height).toBeLessThan(60);
   if (shots) { await report.scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(shots, 'document-phone.png') }); }
+  // full screen, closed again with the back button
+  await report.getByRole('button', { name: 'Vollbild' }).click();
+  const fullReport = page.locator('.document-report.document-fullscreen');
+  await expect(fullReport).toBeVisible();
+  const covers = await fullReport.boundingBox();
+  expect(covers!.y).toBeLessThanOrEqual(1);
+  expect(covers!.height).toBeGreaterThan(790);
+  if (shots) await page.screenshot({ path: path.join(shots, 'document-phone-full.png') });
+  await page.goBack();
+  await expect(report).not.toHaveClass(/document-fullscreen/);
+  await expect(page).toHaveURL(/formatting-marks/);
 });

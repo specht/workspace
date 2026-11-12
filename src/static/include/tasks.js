@@ -261,7 +261,7 @@
         }
         if (card.dataset.type === 'document') {
             // the line for the class overview: which points were open
-            if (window.DocumentTask) DocumentTask.showStored(card, answer || null);
+            if (window.DocumentTask) DocumentTask.showStored(card, answer || null, state && state.stored);
             return;
         }
         if (card.dataset.type === 'submit') {
@@ -466,6 +466,7 @@
         showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
         // a document's checklist and its pages with the marks
         if (data.report && window.DocumentTask) DocumentTask.render(card, data.report);
+        if (data.stored && window.DocumentTask) DocumentTask.showFile(card, data.stored);
         if (data.state) {
             setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');
             card.querySelector('.task-delete').hidden = false;

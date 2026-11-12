@@ -17775,3 +17775,93 @@ html[data-bs-theme="dark"] .document-report {
         outline: 2px solid var(--document-mark);
     }
 }
+/* the last version kept on the server (document_task.js, showFile) */
+.document-latest {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1em 0.4em;
+    align-items: baseline;
+    margin: 0;
+    font-size: 0.92em;
+}
+.document-latest .bi {
+    color: var(--bs-secondary-color);
+}
+
+/* a narrow card (a phone): the tools in one row */
+@container (max-width: 30em) {
+    .document-tools {
+        flex-wrap: nowrap;
+        gap: 0.25em;
+        padding: 0.3em 0.4em;
+    }
+    .document-tools .btn {
+        padding: 0.15em 0.4em;
+    }
+    .document-zoom {
+        min-width: 3em;
+        font-size: 0.78em;
+    }
+    .document-recheck-long {
+        display: none;
+    }
+    .document-recheck-word {
+        text-transform: capitalize;
+    }
+    .document-side {
+        font-size: 0.92em;
+    }
+}
+/* full screen: the result over everything, page on top, list below */
+.document-report.document-fullscreen {
+    position: fixed;
+    inset: 0;
+    /* above the bar at the top of the page and everything else */
+    z-index: 3000;
+    height: auto !important;
+    margin: 0;
+    padding: max(0.5em, env(safe-area-inset-top, 0px)) max(0.5em, env(safe-area-inset-right, 0px)) max(0.5em, env(safe-area-inset-bottom, 0px)) max(0.5em, env(safe-area-inset-left, 0px));
+    gap: 0.5em;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.7fr) minmax(0, 1fr);
+    background: var(--bs-body-bg);
+}
+.document-report.document-fullscreen .document-view {
+    order: -1;
+}
+@media (min-width: 900px) {
+    .document-report.document-fullscreen {
+        grid-template-columns: minmax(16em, 24em) minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
+    }
+    .document-report.document-fullscreen .document-view {
+        order: 0;
+    }
+}
+body.document-full-open {
+    overflow: hidden;
+}
+/* full screen on a phone: outside the card, so by the window's width */
+@media (max-width: 30em) {
+    .document-fullscreen .document-tools {
+        flex-wrap: nowrap;
+        gap: 0.25em;
+        padding: 0.3em 0.4em;
+    }
+    .document-fullscreen .document-tools .btn {
+        padding: 0.15em 0.4em;
+    }
+    .document-fullscreen .document-zoom {
+        min-width: 3em;
+        font-size: 0.78em;
+    }
+    .document-fullscreen .document-recheck-long {
+        display: none;
+    }
+    .document-fullscreen .document-recheck-word {
+        text-transform: capitalize;
+    }
+    .document-fullscreen .document-side {
+        font-size: 0.92em;
+    }
+}

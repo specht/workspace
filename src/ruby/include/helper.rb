@@ -148,7 +148,10 @@ class Main < Sinatra::Base
                 response.body = @respond_content
                 response.headers["Content-Type"] = @respond_mimetype
                 if @respond_filename
-                    response.headers["Content-Disposition"] = "attachment; filename=\"#{@respond_filename}\""
+                    # an ASCII name for old clients, the real one (umlauts,
+                    # spaces) for the others (RFC 6266)
+                    plain = @respond_filename.to_s.unicode_normalize(:nfkd).encode('ASCII', :invalid => :replace, :undef => :replace, :replace => '').gsub(/["\\\r\n]/, '_')
+                    response.headers["Content-Disposition"] = "attachment; filename=\"#{plain}\"; filename*=UTF-8''#{ERB::Util.url_encode(@respond_filename.to_s)}"
                 end
             else
                 @respond_hash ||= {}

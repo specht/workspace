@@ -86,6 +86,17 @@ class Main < Sinatra::Base
             upload.close! rescue nil
         end
         result = TaskCheck.check(found[:task], model)
+        # the document itself, as the person's last version of this task:
+        # to go on with at home or elsewhere (»Deine letzte Fassung«), for
+        # their teacher to look at; replaced by the next one, gone with
+        # »Ergebnis löschen« and the account (submission_path)
+        stored = nil
+        if model.is_a?(Hash) && !model['error']
+            name = name.gsub(/[\x00-\x1f\/\\]/, '_').sub(/\A\.+/, '')[0, 90]
+            name = 'dokument.docx' if name.empty?
+            SubmissionStore.write_text(submission_path(found[:key]), name, bytes)
+            stored = document_stored(found[:key])
+        end
         state = nil
         if result.counts?
             state = store_task_result(found, result.status.to_s, DocumentCheck.summary(name, result.report[:items]))
@@ -101,7 +112,32 @@ class Main < Sinatra::Base
             :read => render_task_markdown(result.read),
             :report => report,
             :state => state,
+            :stored => stored,
         )
+    end
+    # The last version of a document task kept for a person: its name, when,
+    # and where to fetch it; nil without one.
+    def document_stored(task_key, email = @session_user[:email])
+        path = submission_path(task_key, email)
+        return nil unless File.file?(path)
+
+        name = SubmissionStore.read_file(path, :max => 0)&.first
+        activity, id = task_key.split('/', 2)
+        { :name => name, :at => File.mtime(path).to_i, :url => "/api/task/document_file/#{activity}/#{id}" }
+    end
+    # The kept document as it was uploaded: one's own, or (email=…) that of
+    # a student in a group the logged-in teacher looks after.
+    get '/api/task/document_file/:activity/:id' do
+        assert(user_logged_in?)
+        found = find_task("#{params[:activity]}/#{params[:id]}")
+        halt 404 if found.nil? || found[:task]['check']['type'] != 'document'
+        email = submission_owner_for(params)
+        file = SubmissionStore.read_file(submission_path(found[:key], email))
+        halt 404 if file.nil?
+        response.headers['Cache-Control'] = 'no-store'
+        types = { 'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                  'odt' => 'application/vnd.oasis.opendocument.text', 'doc' => 'application/msword', 'rtf' => 'application/rtf' }
+        respond_raw_with_mimetype_and_filename(file[1], types[File.extname(file[0]).delete('.').downcase] || 'application/octet-stream', file[0])
     end
     # Files a submit task with pick: offers from the student's Workspace.
     post '/api/task/options' do
@@ -329,6 +365,8 @@ class Main < Sinatra::Base
             task = entry[:tasks][:by_id][id]
             next if task.nil?
             states[id] = TaskStore.public_state(stored, TaskSpec.check_version(task))
+            # a document task: the last version kept (»Deine letzte Fassung«)
+            states[id][:stored] = document_stored(stored[:task].to_s) if task['check']['type'] == 'document'
             next unless Main::KATA_TYPES.include?(task['check']['type'])
 
             # a Kata handed in to be shown in class (KataHandIns)
