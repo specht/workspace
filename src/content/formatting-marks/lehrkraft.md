@@ -9,7 +9,19 @@ Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zen
 <li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, die zwei gleichen Ausdrucke.</li>
 <li><b>Für Schnelle:</b> ein eigenes Dokument (ein Brief, ein Aushang) mit Formatierungszeichen ansehen und genauso reparieren.</li>
 </ul></td></tr>
-<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Den Weg der Prüfung einmal ganz: Vorlage herunterladen und aus den Downloads öffnen, bearbeiten, speichern, auf der Seite <em>Prüfen</em> und die Datei einmal wählen, dann nur noch speichern (Chrome und Edge prüfen von selbst). Im Programm: Formatierungszeichen ein- und ausschalten (Word: Schaltfläche ¶ im Register <em>Start</em>; LibreOffice: <kbd>Strg</kbd>+<kbd>F10</kbd>), einen Absatz zentrieren, <em>Abstand nach</em> im Absatzdialog, <kbd>Enter</kbd> und <kbd>Shift</kbd>+<kbd>Enter</kbd> nebeneinander, Suchen und Ersetzen (<kbd>Strg</kbd>+<kbd>H</kbd>). Bei LibreOffice die Frage nach dem Dateiformat beim Speichern: Word-Format behalten.</td></tr>
+<tr><th>Vorführen</th><td>
+<p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
+<p>Den Weg der Prüfung einmal ganz: Vorlage herunterladen und aus den Downloads öffnen, bearbeiten, speichern, auf der Seite <em>Prüfen</em> und die Datei einmal wählen, dann nur noch speichern (Chrome und Edge prüfen von selbst).</p>
+<!-- language: word -->
+<p>Im Programm: die Formatierungszeichen ein- und ausschalten (der Knopf ¶ im Register <em>Start</em>), einen Absatz zentrieren (<kbd>Strg</kbd>+<kbd>E</kbd>), den Abstand im Register <em>Layout</em> im Feld <em>Abstand: Nach</em>, <kbd>Enter</kbd> und <kbd>Shift</kbd>+<kbd>Enter</kbd> nebeneinander, Suchen und Ersetzen (<kbd>Strg</kbd>+<kbd>H</kbd>).</p>
+<!-- /language -->
+<!-- language: libreoffice -->
+<p>Im Programm: die Formatierungszeichen ein- und ausschalten (<kbd>Strg</kbd>+<kbd>F10</kbd> oder <em>Ansicht</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Formatierungszeichen</em>), einen Absatz zentrieren (<kbd>Strg</kbd>+<kbd>E</kbd>), den Abstand unter <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Absatz…</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Einzüge und Abstände</em> im Feld <em>Unter dem Absatz</em>, <kbd>Enter</kbd> und <kbd>Shift</kbd>+<kbd>Enter</kbd> nebeneinander, Suchen und Ersetzen (<kbd>Strg</kbd>+<kbd>H</kbd>). Beim Speichern fragt LibreOffice nach dem Dateiformat: Word-Format behalten.</p>
+<!-- /language -->
+<!-- language: nextcloud -->
+<p>Im Programm: die Formatierungszeichen ein- und ausschalten (<em>Ansicht</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Formatierungszeichen</em>), einen Absatz zentrieren (der Knopf im Register <em>Start</em>), den Abstand unter <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Absatz</em> im Feld <em>Unter dem Absatz</em>, <kbd>Enter</kbd> und <kbd>Shift</kbd>+<kbd>Enter</kbd> nebeneinander, Suchen und Ersetzen.</p>
+<!-- /language -->
+</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>01 Einladung.docx</code> kommt von der Seite. In Chrome und Edge speichert die Seite sie selbst und prüft sie von selbst, sobald sie in Word gespeichert ist; in Firefox und Safari wird sie heruntergeladen und vor jedem Prüfen gewählt oder auf die Karte gezogen. Die Karte sagt das in jedem Browser. Zum Arbeiten: Word auf der einen Hälfte des Bildschirms, die Seite auf der anderen.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Die Datei geht an den Server, LibreOffice liest sie dort und zeichnet die Seiten. Gespeichert werden das Ergebnis, eine Zeile für die Klassenübersicht (welche Punkte offen sind) und die zuletzt geprüfte Fassung der Datei, zum Weiterarbeiten auch zu Hause; die nächste Prüfung ersetzt sie, »Ergebnis löschen« und das Löschen des Kontos löschen sie.</li>

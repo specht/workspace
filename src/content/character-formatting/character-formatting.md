@@ -74,7 +74,7 @@ In Word markierst du den Text und drückst <kbd>Strg</kbd>+<kbd>Leertaste</kbd>.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice markierst du den Text und drückst <kbd>Strg</kbd>+<kbd>M</kbd>
-(*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung entfernen*).
+(*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*).
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office markierst du den Text und drückst

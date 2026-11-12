@@ -9,7 +9,19 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 <li><b>10 Minuten:</b> prüfen, die Karte nach oben schieben und die Felder aktualisieren.</li>
 <li><b>Für Schnelle:</b> ein drittes Bild mit Beschriftung einfügen (ein Foto aus dem eigenen Ort mit freier Lizenz) und die Quelle in die Bildunterschrift schreiben.</li>
 </ul></td></tr>
-<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Ein Bild an einer Ecke statt an einer Seite ziehen, die Größe zurücksetzen, den Textumbruch (Word: <em>Quadrat</em>; LibreOffice: Verankerung <em>Am Absatz</em>, Umlauf <em>Parallel</em>), <em>Beschriftung einfügen</em>, den Alternativtext und Felder aktualisieren (<kbd>F9</kbd>).</td></tr>
+<tr><th>Vorführen</th><td>
+<p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
+<p>Ein Bild an einer Ecke statt an einer Seite ziehen, die Größe zurücksetzen, den Textumbruch, eine Beschriftung, den Alternativtext und die Felder aktualisieren.</p>
+<!-- language: word -->
+<p>Die Größe: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Größe und Position…</em>, <em>Seitenverhältnis sperren</em>, <em>Zurücksetzen</em>. Der Umbruch: der Knopf <em>Layoutoptionen</em> neben dem Bild, <em>Quadrat</em>. Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Beschriftung einfügen…</em>, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Alternativtext</em>. Felder aktualisieren: <kbd>Strg</kbd>+<kbd>A</kbd>, dann <kbd>F9</kbd>.</p>
+<!-- /language -->
+<!-- language: libreoffice -->
+<p>Die Größe: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Eigenschaften…</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Typ</em>, <em>Verhältnis beibehalten</em>, <em>Originalgröße</em>. Der Umbruch: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Verankerung</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Am Absatz</em>, dann <em>Umlauf</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Parallel</em>. Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Beschriftung einfügen…</em>, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Alternativer Text…</em>. Felder aktualisieren: <kbd>F9</kbd>.</p>
+<!-- /language -->
+<!-- language: nextcloud -->
+<p>Die Größe: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Eigenschaften…</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Typ</em>, <em>Verhältnis beibehalten</em>, <em>Originalgröße</em>. Der Umbruch: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Verankerung</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Am Absatz</em>, dann <em>Umlauf</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Parallel</em>. Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Beschriftung einfügen…</em>, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Alternativer Text…</em>.</p>
+<!-- /language -->
+</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>05 Kraniche.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause. Das Foto ist von Charles J. Sharp unter CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Common_crane_(Grus_grus)_Uckermark.jpg'>Wikimedia Commons</a>); die Angabe steht in seiner Bildunterschrift und gehört dort hin.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (auch in Rahmen und Textfeldern), kein Bild ist um mehr als 3 % verzerrt.</li>

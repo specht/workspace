@@ -859,7 +859,12 @@ class Main < Sinatra::Base
                 note_path = File.join(File.dirname(path), ContentParts::NOTE_FILE)
                 if !entry[:kenney] && File.file?(note_path)
                     note_markdown = ContentParts.fill_variables(File.read(note_path), Main.content_variables({}, :per_viewer => false))
+                    # parts for one program or language, shown like the page's
+                    # (the note is inside the page's container, data-code-language)
+                    note_warn = lambda { |message| STDERR.puts "#{note_path}: #{message}" }
+                    note_markdown = CodeLanguages.mark(note_markdown, :warn => note_warn)
                     note_root = render_content_markdown(note_markdown, note_path, redcarpet)
+                    CodeLanguages.wrap(note_root, :warn => note_warn)
                     # Inline code that is one short word (01-karte.c, plane_x)
                     # stays in one piece, in the note's tables and lists alike,
                     # as in the tables of a page (.teacher-note-body code.whole)

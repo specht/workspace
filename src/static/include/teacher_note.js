@@ -36,6 +36,17 @@
     note.insertBefore(head, note.firstChild);
     head.querySelector('button').addEventListener('click', () => { set(false); toggle.focus(); });
 
+    // Parts for one program or language (<!-- language: … --> in the note)
+    // follow the page's choice, data-code-language on its container. Beside
+    // the text the note is outside that container, so it carries the
+    // choice itself and follows the switch.
+    const chooser = toggle.closest('[data-code-language]');
+    if (chooser) {
+        const mirror = () => { note.dataset.codeLanguage = chooser.dataset.codeLanguage; };
+        mirror();
+        new MutationObserver(mirror).observe(chooser, { attributes: true, attributeFilter: ['data-code-language'] });
+    }
+
     // the side table of contents' layout, or one of its own around the page
     function ensureLayout() {
         layout = document.querySelector('.autotoc-secondary-layout');

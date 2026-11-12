@@ -21,3 +21,22 @@ test('the teacher note says where a class can go next', async ({ page }, testInf
   await expect(page.locator(".cg-node.cg-hit[data-slug='webserver']")).toHaveCount(1);
   if (process.env.HS_SHOTS) { await page.waitForTimeout(800); await page.screenshot({ path: `${process.env.HS_SHOTS}/lehrplan-zeige.png` }); }
 });
+
+// On a page of the section Office the note's demonstration is for the
+// program chosen at the top of the page (<!-- language: … --> in
+// lehrkraft.md), and changes with the switch.
+test('the teacher note shows the ways of the chosen office program', async ({ page }, testInfo) => {
+  await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
+  await page.goto('/formatting-marks');
+  const office = page.locator('.code-language-switch-office');
+  await office.locator("[data-set-language='word']").click();
+  await page.locator('.teacher-note-toggle').click();
+  const note = page.locator('.teacher-note-body');
+  await expect(note.getByText('der Knopf ¶ im Register')).toBeVisible();
+  await expect(note.getByText('Beim Speichern fragt LibreOffice')).toBeHidden();
+  await office.locator("[data-set-language='libreoffice']").click();
+  await expect(note.getByText('Beim Speichern fragt LibreOffice')).toBeVisible();
+  await expect(note.getByText('der Knopf ¶ im Register')).toBeHidden();
+  if (process.env.HS_SHOTS) await note.locator('tr:has(> th:text-is("Vorführen"))').screenshot({ path: `${process.env.HS_SHOTS}/teacher-note-office.png` });
+  await office.locator("[data-set-language='word']").click();
+});

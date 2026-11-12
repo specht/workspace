@@ -9,7 +9,19 @@ Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind
 <li><b>10 Minuten:</b> prüfen, ausprobieren, wie Vorlagen aufeinander aufbauen.</li>
 <li><b>Für Schnelle:</b> eine eigene Vorlage für die Zeile unter dem Titel anlegen.</li>
 </ul></td></tr>
-<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Eine Formatvorlage zuweisen (LibreOffice: <kbd>Strg</kbd>+<kbd>1</kbd>, <kbd>Strg</kbd>+<kbd>2</kbd>), Formatierung von Hand löschen, eine Formatvorlage ändern, und die Übersicht der Überschriften öffnen (Word: Navigationsbereich; LibreOffice: Navigator, <kbd>F5</kbd>).</td></tr>
+<tr><th>Vorführen</th><td>
+<p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
+<p>Eine Formatvorlage zuweisen, Formatierung von Hand löschen, eine Formatvorlage ändern und die Übersicht der Überschriften öffnen.</p>
+<!-- language: word -->
+<p>Löschen: <kbd>Strg</kbd>+<kbd>Leertaste</kbd>. Zuweisen: die Liste der Formatvorlagen im Register <em>Start</em>. Ändern: dort Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Ändern…</em>. Die Übersicht: <em>Ansicht</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Navigationsbereich</em>.</p>
+<!-- /language -->
+<!-- language: libreoffice -->
+<p>Löschen: <kbd>Strg</kbd>+<kbd>M</kbd>. Zuweisen: <kbd>Strg</kbd>+<kbd>1</kbd>, <kbd>Strg</kbd>+<kbd>2</kbd>. Ändern: die Seitenleiste mit den Vorlagen (<kbd>F11</kbd>), Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Vorlage bearbeiten…</em>. Die Übersicht: der Navigator (<kbd>F5</kbd>).</p>
+<!-- /language -->
+<!-- language: nextcloud -->
+<p>Löschen: <kbd>Strg</kbd>+<kbd>M</kbd>. Zuweisen: die Liste der Absatzvorlagen links oben. Ändern: die Seitenleiste mit den Vorlagen, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Vorlage bearbeiten…</em>. Die Übersicht: der Navigator.</p>
+<!-- /language -->
+</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>06 Reisetagebuch.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig; die fünf Tage haben die Ebene 1, Vormittag, Nachmittag, Schiff und Abend die Ebene 2 (über ihre Formatvorlagen).</li>

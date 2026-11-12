@@ -48,7 +48,7 @@ test('a document is checked and its problems are marked on its page', async ({ p
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/formatting-marks');
   await states;
-  const card = page.locator(".task-card[data-task='formatting-marks/einladung']");
+  const card = page.locator(".task-card[data-task='formatting-marks/einladung']:visible");
   await expect(card.locator('.document-starter')).toHaveAttribute('href', '/formatting-marks/01%20Einladung.docx');
 
   // the starting file: everything but the text is open
@@ -208,7 +208,7 @@ test('a flyer is checked for its fonts, sizes and emphasis', async ({ page, e2eE
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/character-formatting');
   await states;
-  const card = page.locator(".task-card[data-task='character-formatting/aushang']");
+  const card = page.locator(".task-card[data-task='character-formatting/aushang']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/character-formatting/02 Aushang.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
@@ -228,7 +228,7 @@ test('a packing list is checked for its list and tab stops', async ({ page, e2eE
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/lists-and-tabs');
   await states;
-  const card = page.locator(".task-card[data-task='lists-and-tabs/packliste']");
+  const card = page.locator(".task-card[data-task='lists-and-tabs/packliste']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/lists-and-tabs/03 Packliste.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
@@ -247,7 +247,7 @@ test('a programme is checked for its table', async ({ page, e2eEmail }, testInfo
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/word-tables');
   await states;
-  const card = page.locator(".task-card[data-task='word-tables/programm']");
+  const card = page.locator(".task-card[data-task='word-tables/programm']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/word-tables/04 Programm.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
@@ -264,7 +264,7 @@ test('an article is checked for its pictures', async ({ page, e2eEmail }, testIn
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/pictures-in-text');
   await states;
-  const card = page.locator(".task-card[data-task='pictures-in-text/artikel']");
+  const card = page.locator(".task-card[data-task='pictures-in-text/artikel']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/pictures-in-text/05 Kraniche.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
@@ -291,7 +291,7 @@ test('a diary is checked for its heading styles', async ({ page, e2eEmail }, tes
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/paragraph-styles');
   await states;
-  const card = page.locator(".task-card[data-task='paragraph-styles/tagebuch']");
+  const card = page.locator(".task-card[data-task='paragraph-styles/tagebuch']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/paragraph-styles/06 Reisetagebuch.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
@@ -312,7 +312,7 @@ test('a report of seven pages is checked for its breaks, page numbers and conten
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/pages-and-contents');
   await states;
-  const card = page.locator(".task-card[data-task='pages-and-contents/bericht']");
+  const card = page.locator(".task-card[data-task='pages-and-contents/bericht']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/pages-and-contents/07 Reisebericht.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
@@ -344,7 +344,7 @@ test('an article of ones own is checked on every point, and the hand-in shows it
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/trip-newspaper');
   await states;
-  const card = page.locator(".task-card[data-task='trip-newspaper/artikel']");
+  const card = page.locator(".task-card[data-task='trip-newspaper/artikel']:visible");
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel-eilig.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   await expect(card.locator('.document-report .document-checklist li.document-open')).toHaveCount(6);

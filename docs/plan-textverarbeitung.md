@@ -109,7 +109,9 @@ These hold for word processing and for the series still to come
   its own, as SVG, not only a sentence.
 - **The teacher note suggests a demonstration** of the sheet's most important
   functions before the class starts, at the projector, in the program the
-  class uses.
+  class uses; its ways and shortcuts are those of the program chosen at the
+  top of the page (`<!-- language: word -->` and so on in `lehrkraft.md`,
+  as on the page).
 - **Exporting as PDF belongs to the curriculum** (to come: in which sheet,
   and how the check sees the PDF).
 - **Grading:** the last checked version is the hand-in; the teacher sees it

@@ -9,7 +9,19 @@ Lernende bauen eine Packliste mit getippten Strichen zu einer echten Liste um un
 <li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, der Versuch mit einer anderen Schrift.</li>
 <li><b>Für Schnelle:</b> eine nummerierte Liste mit zwei Ebenen (Tagesplan der Fahrt: Tage, darunter Programmpunkte).</li>
 </ul></td></tr>
-<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Eine Aufzählung ein- und ausschalten, das Lineal einblenden, einen Tabstopp setzen und im Dialog der Tabstopps die Ausrichtung <em>rechts</em> und ein Füllzeichen wählen.</td></tr>
+<tr><th>Vorführen</th><td>
+<p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
+<p>Eine Aufzählung ein- und ausschalten, das Lineal einblenden, einen Tabstopp setzen und dabei die Ausrichtung <em>rechts</em> und ein Füllzeichen wählen.</p>
+<!-- language: word -->
+<p>Die Aufzählung: im Register <em>Start</em> <em>Aufzählungszeichen</em>. Der Tabstopp: <em>Start</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Absatz</em> (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Tabstopps</em>, Ausrichtung <em>Rechts</em>, Füllzeichen <em>2 .....</em>.</p>
+<!-- /language -->
+<!-- language: libreoffice -->
+<p>Die Aufzählung: <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Aufzählungszeichen und Nummerierung</em> oder der Knopf in der Leiste. Der Tabstopp: <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Absatz</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Tabulatoren</em>, Typ <em>Rechts</em>, Füllzeichen <em>.......</em>.</p>
+<!-- /language -->
+<!-- language: nextcloud -->
+<p>Die Aufzählung: im Register <em>Start</em> die Liste mit den Punkten. Der Tabstopp: <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Absatz</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Tabulatoren</em>, Typ <em>Rechts</em>, Füllzeichen <em>.......</em>.</p>
+<!-- /language -->
+</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>03 Packliste.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (getippte Striche zählen nicht als Wörter), die sechs Punkte der Packliste sind eine Liste ohne getippte Zeichen, keine Leerzeichen hintereinander, jede Zeile der Kosten hat genau einen Tab und einen rechtsbündigen oder dezimalen Tabstopp, alle an derselben Stelle.</li>
