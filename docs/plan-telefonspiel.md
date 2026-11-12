@@ -171,8 +171,16 @@ Why it was flaky:
   menu (»Ruf 030 … 123 an«). This needs a single number with an appended
   extension of three digits or a block of 1000 numbers; easybell's
   Business trunks have SIP-DDI, a 10-number block would only cover the
-  teacher's selection. Whether easybell routes a three-digit appended
-  extension: to ask easybell or test once the trunk runs. Open since
+  teacher's selection. **Tested on 12 November 2026** (the trunk is
+  booked; `src/phone/test/trunk-digits.sh` from the development machine):
+  easybell passes appended digits on. A call to the number with »123«
+  arrives with the whole number in the extension and the To header
+  (`493022908772123`); a call to the bare number arrives with the SIP
+  user name instead (`K4081069T1`), not the number. So the runner takes a
+  dialled number that begins with the trunk's number and is longer as a
+  Durchwahl (its remaining digits are the game), anything else as the
+  menu. Three calls were open at once and all arrived (as many phones as
+  were at hand; the trunk's limit is not reached yet). Open since
   numbers may have four digits: a three-digit extension cannot reach
   them; either four-digit extensions or the menu for those games.
 - **Durchwahl is a setting** (the maintainer): schools have different
@@ -404,9 +412,9 @@ loop.
 
 ## Steps
 
-1. The maintainer books a trunk (easybell Business 2 to start) and puts the
-   SIP credentials and the number into `credentials.rb`. Check when ordering that a Berlin number is
-   included or what it costs.
+1. Done (12 November 2026): the maintainer booked the trunk and put the
+   SIP credentials into `credentials.rb` (`PHONE_SIP_SERVER`,
+   `PHONE_SIP_USER`, `PHONE_SIP_PASSWORD`); the Berlin number came with it.
 2. Done in the test network: Asterisk with a test endpoint and an echo
    extension. Open: Asterisk as a service in `config.rb`, reachable in
    development only from the local network, the trunk from
@@ -426,8 +434,12 @@ loop.
 
 ## Open
 
-- Does easybell's Business 2 include a Berlin number, and which ports does
-  the trunk need on the server (SIP and the range for the audio)?
+- Which ports the trunk needs on the server (SIP and the range for the
+  audio). The Berlin number came with the booking (030 22908772).
+- One SIP account in development and production at once: a call would
+  ring at both registrations and land wherever it is answered first.
+  Production holds the account; development registers only for a test
+  while production is off the line, or gets a second SIP access.
 - The licence of the German Piper voice, for the page's credits.
 - What is stored: the speech service keeps every sentence a game said and
   every piece of music as files (named by hash, without who asked) until
