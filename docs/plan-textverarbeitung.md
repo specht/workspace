@@ -182,7 +182,7 @@ built by hand; each is a page of a series of its own, about one lesson.
    is from Wikimedia Commons (CC BY-SA 4.0, credited in its caption); the
    map is drawn (`bilder/karte.py`). The solution is built by LibreOffice
    through UNO (a frame with picture and caption, saved as a Word text box).
-6. **Formatvorlagen** (built, `paragraph-styles`, two lessons): the 7b's
+6. **Formatvorlagen** (built, `paragraph-styles`, 45 minutes): the 7b's
    trip diary with nine headings formatted by hand (bold, larger, blue,
    Wednesday a point smaller); the prediction: how many entries the
    program's list of headings shows (none); the days in »Überschrift 1«,

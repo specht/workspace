@@ -2,7 +2,7 @@
 image: teaser.webp
 image_alt: "Die Titelseite des Reiseberichts der 7b: Titel, Untertitel und ein getipptes Inhaltsverzeichnis mit Punkten und Seitenzahlen"
 kind: labor
-duration: 1 Doppelstunde
+duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Gestaltung von Medienproduktionen)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office

@@ -2,7 +2,7 @@
 image: teaser.webp
 image_alt: "Ein Artikel über Kraniche: unter dem ersten Absatz ein Foto, das so in die Breite gezogen ist, dass der Kranich dick aussieht"
 kind: labor
-duration: 1 Doppelstunde
+duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Gestaltung von Medienproduktionen, eigene und lizenzierte Gestaltungselemente)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office

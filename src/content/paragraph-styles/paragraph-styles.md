@@ -2,7 +2,7 @@
 image: teaser.webp
 image_alt: "Das Reisetagebuch der 7b: blaue, fette Überschriften für jeden Tag, darunter kleinere fette Zeilen für Vormittag und Nachmittag"
 kind: labor
-duration: 2 Doppelstunden
+duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Gestaltung von Medienproduktionen)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office

@@ -2,9 +2,11 @@ Lernende ersetzen leere Absätze durch Seitenumbrüche, ein getipptes »Seite 1�
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/paragraph-styles'>Formatvorlagen</a>: Das Inhaltsverzeichnis entsteht aus den Überschriften mit ihren Vorlagen.</td></tr>
-<tr><th>Ablauf</th><td><ul>
-<li><b>1. Stunde:</b> die Vermutung zum längeren Montag, die leeren Absätze zählen, Seitenumbrüche.</li>
-<li><b>2. Stunde:</b> die Seitenzahl als Feld, das Inhaltsverzeichnis, eine Überschrift umbenennen und das Verzeichnis aktualisieren, prüfen.</li>
+<tr><th>Ablauf (45 Minuten)</th><td><ul>
+<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>10 Minuten:</b> die Vermutung zum längeren Montag, die leeren Absätze zählen, Seitenumbrüche.</li>
+<li><b>20 Minuten:</b> die Seitenzahl als Feld, das Inhaltsverzeichnis, eine Überschrift umbenennen und das Verzeichnis aktualisieren.</li>
+<li><b>10 Minuten:</b> prüfen.</li>
 <li><b>Für Schnelle:</b> keine Seitenzahl auf der Titelseite (Word: <em>Erste Seite anders</em>).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Einen Seitenumbruch setzen (<kbd>Strg</kbd>+<kbd>Enter</kbd>), in die Fußzeile wechseln und die Seitenzahl als Feld einfügen, ein Inhaltsverzeichnis einfügen und nach einer Änderung aktualisieren.</td></tr>

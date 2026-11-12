@@ -2,7 +2,7 @@
 image: teaser.webp
 image_alt: "Ein Aushang für einen Kuchenverkauf der Klasse 7b, in vielen verschiedenen Schriftarten und fast überall fett"
 kind: labor
-duration: 1 Doppelstunde
+duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Gestaltung von Medienproduktionen)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office

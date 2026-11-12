@@ -2,7 +2,7 @@
 image: teaser.webp
 image_alt: "Der Anfang eines Artikels »Ein Tag im Kletterwald«: Titel, ein Absatz, eine Zwischenüberschrift und eine Liste mit Regeln"
 kind: projekt
-duration: 2 Doppelstunden
+duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Umgang mit Textverarbeitungssoftware); Medienbildung: Produzieren (Medienproduktion als planvoller Prozess, Herstellung von Medienprodukten)"
 topics: [standardsoftware]
 language: Word / LibreOffice / Nextcloud Office

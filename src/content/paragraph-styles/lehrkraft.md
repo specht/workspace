@@ -2,9 +2,11 @@ Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/pictures-in-text'>Bilder im Text</a>.</td></tr>
-<tr><th>Ablauf</th><td><ul>
-<li><b>1. Doppelstunde:</b> die Vermutung zur Übersicht der Überschriften, Formatvorlagen und Ebenen, die Tage und ihre Teile als Überschriften.</li>
-<li><b>2. Doppelstunde:</b> eine Vorlage ändern, Formatierung von Hand finden und löschen, prüfen, ausprobieren, wie Vorlagen aufeinander aufbauen.</li>
+<tr><th>Ablauf (45 Minuten)</th><td><ul>
+<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>15 Minuten:</b> die Vermutung zur Übersicht der Überschriften, Formatvorlagen und Ebenen, die Tage und ihre Teile als Überschriften.</li>
+<li><b>15 Minuten:</b> eine Vorlage ändern, Formatierung von Hand finden und löschen.</li>
+<li><b>10 Minuten:</b> prüfen, ausprobieren, wie Vorlagen aufeinander aufbauen.</li>
 <li><b>Für Schnelle:</b> eine eigene Vorlage für die Zeile unter dem Titel anlegen.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Eine Formatvorlage zuweisen (LibreOffice: <kbd>Strg</kbd>+<kbd>1</kbd>, <kbd>Strg</kbd>+<kbd>2</kbd>), Formatierung von Hand löschen, eine Formatvorlage ändern, und die Übersicht der Überschriften öffnen (Word: Navigationsbereich; LibreOffice: Navigator, <kbd>F5</kbd>).</td></tr>

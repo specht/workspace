@@ -2,9 +2,11 @@ Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größ
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/formatting-marks'>Was das Auge nicht sieht</a>: Formatierungszeichen, Ausrichtung und Abstand. Eine Textverarbeitung: Word, LibreOffice Writer oder Nextcloud Office.</td></tr>
-<tr><th>Ablauf</th><td><ul>
-<li><b>1. Stunde:</b> der Aushang, Schriften zählen, Serifen, Größe, die Vermutung zum Löschen der Formatierung, zwei Schriften.</li>
-<li><b>2. Stunde:</b> hervorheben, prüfen, bis alles erfüllt ist, der Versuch mit zwei Sekunden.</li>
+<tr><th>Ablauf (45 Minuten)</th><td><ul>
+<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>15 Minuten:</b> der Aushang, Schriften zählen, Serifen, Größe.</li>
+<li><b>15 Minuten:</b> die Vermutung zum Löschen der Formatierung, zwei Schriften, hervorheben.</li>
+<li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, der Versuch mit zwei Sekunden.</li>
 <li><b>Für Schnelle:</b> einen eigenen Aushang (eine AG, ein Fest) mit denselben Regeln.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Schriftart und Schriftgröße wählen, Fett ein- und ausschalten, Formatierung löschen (Word: <kbd>Strg</kbd>+<kbd>Leertaste</kbd>; LibreOffice: <kbd>Strg</kbd>+<kbd>M</kbd>) und die Formatierung übertragen (der Pinsel).</td></tr>

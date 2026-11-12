@@ -2,9 +2,11 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/word-tables'>Tabellen</a>.</td></tr>
-<tr><th>Ablauf</th><td><ul>
-<li><b>1. Stunde:</b> die Vermutung zu den Nummern, das Seitenverhältnis mit der Rechenaufgabe, der Textumbruch.</li>
-<li><b>2. Stunde:</b> Beschriftungen, der Alternativtext, prüfen, die Karte nach oben schieben und die Felder aktualisieren.</li>
+<tr><th>Ablauf (45 Minuten)</th><td><ul>
+<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>15 Minuten:</b> die Vermutung zu den Nummern, das Seitenverhältnis mit der Rechenaufgabe, der Textumbruch.</li>
+<li><b>15 Minuten:</b> Beschriftungen, der Alternativtext.</li>
+<li><b>10 Minuten:</b> prüfen, die Karte nach oben schieben und die Felder aktualisieren.</li>
 <li><b>Für Schnelle:</b> ein drittes Bild mit Beschriftung einfügen (ein Foto aus dem eigenen Ort mit freier Lizenz) und die Quelle in die Bildunterschrift schreiben.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Ein Bild an einer Ecke statt an einer Seite ziehen, die Größe zurücksetzen, den Textumbruch (Word: <em>Quadrat</em>; LibreOffice: Verankerung <em>Am Absatz</em>, Umlauf <em>Parallel</em>), <em>Beschriftung einfügen</em>, den Alternativtext und Felder aktualisieren (<kbd>F9</kbd>).</td></tr>

@@ -2,9 +2,11 @@ Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zen
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Eine Textverarbeitung: Word, LibreOffice Writer oder Nextcloud Office. Dateien speichern und wiederfinden.</td></tr>
-<tr><th>Ablauf</th><td><ul>
-<li><b>1. Stunde:</b> Vermutung zur größeren Schrift, die Vorlage holen, Formatierungszeichen, Absätze zählen.</li>
-<li><b>2. Stunde:</b> Ausrichtung, Abstand statt leerer Absätze, Zeilenumbrüche und doppelte Leerzeichen, prüfen, bis alles erfüllt ist.</li>
+<tr><th>Ablauf (45 Minuten)</th><td><ul>
+<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>10 Minuten:</b> Vermutung zur größeren Schrift, die Vorlage holen, Formatierungszeichen, Absätze zählen.</li>
+<li><b>20 Minuten:</b> Ausrichtung, Abstand statt leerer Absätze, Zeilenumbrüche und doppelte Leerzeichen.</li>
+<li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, die zwei gleichen Ausdrucke.</li>
 <li><b>Für Schnelle:</b> ein eigenes Dokument (ein Brief, ein Aushang) mit Formatierungszeichen ansehen und genauso reparieren.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Den Weg der Prüfung einmal ganz: Vorlage herunterladen und aus den Downloads öffnen, bearbeiten, speichern, auf der Seite <em>Prüfen</em> und die Datei einmal wählen, dann nur noch speichern (Chrome und Edge prüfen von selbst). Im Programm: Formatierungszeichen ein- und ausschalten (Word: Schaltfläche ¶ im Register <em>Start</em>; LibreOffice: <kbd>Strg</kbd>+<kbd>F10</kbd>), einen Absatz zentrieren, <em>Abstand nach</em> im Absatzdialog, <kbd>Enter</kbd> und <kbd>Shift</kbd>+<kbd>Enter</kbd> nebeneinander, Suchen und Ersetzen (<kbd>Strg</kbd>+<kbd>H</kbd>). Bei LibreOffice die Frage nach dem Dateiformat beim Speichern: Word-Format behalten.</td></tr>

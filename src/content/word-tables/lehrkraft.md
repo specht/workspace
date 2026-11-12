@@ -2,9 +2,11 @@ Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabel
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td><a href='/lists-and-tabs'>Listen und Tabstopps</a>.</td></tr>
-<tr><th>Ablauf</th><td><ul>
-<li><b>1. Stunde:</b> die Vermutung zum längeren Eintrag, Text in Tabelle umwandeln, die Zahl der Spalten.</li>
-<li><b>2. Stunde:</b> die Kopfzeile, prüfen, eine Zeile einfügen.</li>
+<tr><th>Ablauf (45 Minuten)</th><td><ul>
+<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>15 Minuten:</b> die Vermutung zum längeren Eintrag, Text in Tabelle umwandeln, die Zahl der Spalten.</li>
+<li><b>15 Minuten:</b> die Kopfzeile.</li>
+<li><b>10 Minuten:</b> prüfen, eine Zeile einfügen.</li>
 <li><b>Für Schnelle:</b> die Tabelle gestalten: Kopfzeile fett und hinterlegt, Linien nur unter der Kopfzeile, die Spalte Zeit rechtsbündig.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Text in eine Tabelle umwandeln (getrennt durch Tabs), eine Zeile einfügen und die erste Zeile als Überschrift wiederholen lassen.</td></tr>

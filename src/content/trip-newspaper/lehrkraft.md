@@ -2,9 +2,10 @@ Lernende schreiben einen eigenen Artikel und bauen ihn mit allem, was die Reihe 
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Die Blätter der Reihe, zuletzt <a href='/pages-and-contents'>Seiten und Verzeichnisse</a>.</td></tr>
-<tr><th>Ablauf</th><td><ul>
-<li><b>1. Doppelstunde:</b> Thema wählen, Text schreiben, Zwischenüberschriften.</li>
-<li><b>2. Doppelstunde:</b> Liste, Bild mit Unterschrift, Quelle und Alternativtext, Seitenzahl, prüfen, bis alles erfüllt ist.</li>
+<tr><th>Ablauf (45 Minuten)</th><td><ul>
+<li><b>5 Minuten:</b> Vorführen (die Zeile darunter).</li>
+<li><b>25 Minuten:</b> Thema wählen, Text schreiben, Zwischenüberschriften.</li>
+<li><b>15 Minuten:</b> Liste, Bild mit Unterschrift, Quelle und Alternativtext, Seitenzahl, prüfen, bis alles erfüllt ist.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Die Liste der Punkte auf der Seite, und dass jeder Punkt sein Blatt hat. Wo freie Fotos zu finden sind (Wikimedia Commons) und wie ihre Quelle in die Bildunterschrift kommt. Dass die zuletzt geprüfte Fassung die Abgabe ist.</td></tr>
 <tr><th>Abgabe</th><td>Die zuletzt geprüfte Fassung bleibt gespeichert. Auf der Klassenseite stehen unter der Aufgabe die Abgaben: je Person das Ergebnis der Prüfung (»Artikel.docx: 14 von 16, offen: …«), <em>Ansehen</em> zeigt die Seiten mit allen Markierungen so, wie die Person sie gesehen hat, <em>Herunterladen</em> die Datei selbst. Eine neue Prüfung ersetzt die Abgabe.</td></tr>
