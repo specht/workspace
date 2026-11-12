@@ -438,7 +438,7 @@ class Main < Sinatra::Base
 
                 # The public line of the Telefonbuch (src/phone/line): its
                 # phone page and each visitor's session, the visitor's address
-                # for »one call at a time«. Resolved on use, so nginx starts
+                # (no longer used for a limit). Resolved on use, so nginx starts
                 # also while the line is down; events stream unbuffered.
                 location /telefonbuch/telefon/ {
                     resolver 127.0.0.11 valid=30s ipv6=off;

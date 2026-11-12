@@ -828,7 +828,7 @@ document.addEventListener('keydown', e => {
 
 const ENDED = { caller: 'Aufgelegt.', hangup: 'Das Spiel hat aufgelegt.', ended: 'Das Spiel ist zu Ende.', time: 'Die Zeit ist um.',
     transfer: 'Das Spiel hat weitergeleitet.',
-    busy: 'Alle Leitungen sind belegt. Versuch es gleich noch einmal.', one: 'Von hier läuft schon ein Anruf.' };
+    busy: 'Alle Leitungen sind belegt. Versuch es gleich noch einmal.' };
 // the line's display speaks of the other end, not of a game
 if (LINE) Object.assign(ENDED, { hangup: 'Die Gegenseite hat aufgelegt.', ended: 'Der Anruf ist beendet.' });
 let events = null;

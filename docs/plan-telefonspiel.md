@@ -158,9 +158,10 @@ Why it was flaky:
   the same sandbox without network, the same limit of calls at once,
   shared with the line); the browser plays speech and music as in the
   emulator. Without published games the menu says so and the book is
-  empty. One call at a time
-  per visitor, at most 15 minutes, »Alle Leitungen sind belegt« when the
-  limit is reached; nothing about the visitor is stored. With a number the
+  empty. At most 15 minutes a call, »Alle Leitungen sind belegt« when the
+  line's limit of calls at once is reached; no limit per visitor's address
+  (the maintainer, 12 November 2026: a class at school shares one, and
+  such a limit would thwart lessons); nothing about the visitor is stored. With a number the
   page also says how to call it (»Ruf 030 … an und gib 123 ein«, or
   »… 123 an« with Durchwahl). Then the activity's note »Anrufen kann man
   dein Spiel bisher nur hier im Workspace« changes: published games can
@@ -330,8 +331,7 @@ its time. In the Workspace the emulator ends its own call (it does not
 know the published games), and its page goes on with the same call at the
 site's line, the number dialled (page.html `forward`): the site's address
 from the page's own (`<tag>-<port>.<site>`), the line answering exactly these
-origins (`line.py`, `workspace_origin`, the site from `PHONE_SITE_HOST`) and
-not holding them to one call per address (a class shares one at school).
+origins (`line.py`, `workspace_origin`, the site from `PHONE_SITE_HOST`).
 After that call the page is the Workspace's phone again. So a game can be
 tried with `transfer` before it is published, as smoothly as on the line;
 nothing ever dials a number outside the Telefonbuch. The Telefonbuch also

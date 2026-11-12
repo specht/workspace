@@ -8,7 +8,8 @@ The sandbox: the container has no secrets and a network of its own without
 the internet (only the speech service and nginx), the published games are
 mounted read-only; each call's process runs as the unprivileged user game
 with limits on processor time, memory and processes, at most 15 minutes.
-One call at a time per visitor (nginx's X-Real-IP), PHONE_LINES at once.
+PHONE_LINES calls at once on the whole line, any number of them from one
+address (a class at school shares one).
 Nothing about a visitor is kept.
 """
 import asyncio
@@ -281,13 +282,11 @@ class Router(emulator.Server):
             line = self.lines[session] = Line(ip)
         line.seen = time.monotonic()
         if method == 'POST' and path == '/call':
+            # the whole line's limit only: no limit per visitor's address,
+            # which a class at school shares (the maintainer, 12 November 2026)
             busy = sum(1 for other in self.lines.values() if other.calling() and other is not line)
-            # one call per visitor's address, but not for a Workspace's page
-            # (a forwarded call): a class shares one address at school
-            mine = emulator.ORIGIN.get() is None and \
-                any(other.calling() and other.ip == line.ip and other is not line for other in self.lines.values())
-            if mine or busy >= LINES:
-                line.send({'ended': 'one' if mine else 'busy'})
+            if busy >= LINES:
+                line.send({'ended': 'busy'})
                 self.respond(writer, 204)
                 return
             number = query.get('number', '')
