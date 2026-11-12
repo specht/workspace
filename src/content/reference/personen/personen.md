@@ -229,6 +229,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1860 -->
+<!-- part: hollerith -->
+### Herman Hollerith
+
+<div class='person'>
+<img src='hollerith.webp' alt='Herman Hollerith um 1888: Schwarz-Weiß-Porträt eines jungen Mannes mit kurzem Haar, großem Schnurrbart, Anzug und gemusterter Krawatte.'>
+<p><strong>Herman Hollerith</strong> (1860–1929), amerikanischer Ingenieur, Sohn deutscher Einwanderer, geboren an einem Schalttag, dem 29. Februar 1860. Für die Volkszählung der USA von 1890 baute er Maschinen, die Lochkarten zählten: Jede Karte stand für einen Menschen, ein Loch an einer festen Stelle für eine Angabe, und elektrische Kontakte, die durch die Löcher griffen, zählten mit. Mit einem Sortierkasten ließen sich die Karten nach einer Angabe in Fächer verteilen. Die Auswertung der Zählung von 1880 hatte acht Jahre gedauert, die von 1890 war nach sechs Jahren fertig, auch dank seiner Maschinen.</p>
+<p>1896 gründete Hollerith die Tabulating Machine Company. Sie ging 1911 in einer neuen Firma auf, die seit 1924 IBM heißt.</p>
+<p class='person-credit'>Foto: Charles Milton Bell, um 1888, gemeinfrei, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Hollerith.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1875 -->
 <!-- part: eccles-jordan -->
 ### William Eccles und F. W. Jordan

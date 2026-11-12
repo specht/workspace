@@ -507,3 +507,106 @@ test('a spreadsheet is checked for amounts typed as text and for its number form
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(6);
   if (shots) await page.screenshot({ path: path.join(shots, 'formats-correct.png') });
 });
+
+// »Feste Bezüge«: a formula filled down without $ divides by the wrong
+// cells and shows #DIV/0!; with $B$2 it calculates, also when the check
+// changes the number of children in its copy.
+test('a spreadsheet is checked for absolute references and errors', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/absolute-references');
+  await states;
+  const card = page.locator(".task-card[data-task='absolute-references/anteile']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/absolute-references/stufen/ohne-dollar.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report).toContainText('Fester Bezug auf B2');
+  await expect(report).toContainText('#DIV/0!');
+  await expect(report.locator('.document-mark-cell').first()).toBeAttached();
+  if (shots) await page.screenshot({ path: path.join(shots, 'absolute-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/absolute-references/stufen/anteile.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(9);
+});
+
+// »Auswerten«: functions over the answers, ranges that miss the last rows
+// count too few; WENN answers with a text, which the check compares as
+// shown, also after its probe.
+test('a spreadsheet is checked for functions and their ranges', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/spreadsheet-functions');
+  await states;
+  const card = page.locator(".task-card[data-task='spreadsheet-functions/umfrage']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-functions/stufen/zu-kurz.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report).toContainText('richtig wäre 26');
+  if (shots) await page.screenshot({ path: path.join(shots, 'functions-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-functions/stufen/umfrage.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
+});
+
+// »Sortieren, Filtern, Hervorheben«: a column of names sorted alone is
+// caught by comparing the rows with the starting file; the solution has a
+// filter and a conditional format, whose colour the drawn sheet shows.
+test('a spreadsheet is checked for sorting whole rows, a filter and a conditional format', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/sort-and-filter');
+  await states;
+  const card = page.locator(".task-card[data-task='sort-and-filter/zahlungen']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/sort-and-filter/stufen/nur-namen.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report).toContainText('eine Spalte allein');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/sort-and-filter/stufen/zahlungen.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
+  if (shots) await page.screenshot({ path: path.join(shots, 'sort-correct.png') });
+});
+
+// »Diagramme«: the check reads each chart's type, title, axis titles and
+// data; a pie of the stars without a title fails, the two charts pass.
+test('a spreadsheet is checked for its charts', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/spreadsheet-charts');
+  await states;
+  const card = page.locator(".task-card[data-task='spreadsheet-charts/diagramme']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-charts/stufen/falsch.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report).toContainText('keinen Titel');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-charts/stufen/diagramme.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(3);
+  if (shots) await page.screenshot({ path: path.join(shots, 'charts-correct.png') });
+});
+
+// »Die Abrechnung der Klassenfahrt«, the hand-in: the table with every
+// point of the series, then the PDF exported from it.
+test('the accounts of the trip are handed in as a table and a PDF', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/trip-accounts');
+  await states;
+  const card = page.locator(".task-card[data-task='trip-accounts/abrechnung']:visible");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-accounts/stufen/getippt.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  await expect(card.locator('.document-report')).toContainText('ABRUNDEN');
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-accounts/stufen/abrechnung.xlsx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(card.locator('.document-report .document-checklist li.document-ok')).toHaveCount(11);
+  if (shots) await page.screenshot({ path: path.join(shots, 'accounts-correct.png') });
+  const pdf = page.locator(".task-card[data-task='trip-accounts/pdf']:visible");
+  await expect(pdf.locator('.document-input')).toHaveAttribute('accept', '.pdf');
+  await pdf.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-accounts/stufen/abrechnung.pdf'));
+  await expect(pdf).toHaveAttribute('data-status', 'correct');
+});

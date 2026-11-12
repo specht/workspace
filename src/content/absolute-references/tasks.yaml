@@ -1,0 +1,111 @@
+# Aufgaben zu »Feste Bezüge«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/absolute-references/03 Anteile.xlsx), die fertige
+# Tabelle und die Stufen macht dokumente.py.
+format: 1
+activity: absolute-references
+tasks:
+  - id: vorher
+    title: Nach unten gezogen
+    prediction: true
+    prompt: |
+      In C6 steht `=B6/B2`: die Kosten für den Bus geteilt durch die Zahl der
+      Kinder. Du ziehst C6 am kleinen Quadrat nach unten bis C10. Was steht
+      danach in C7?
+    check:
+      type: choice
+      options:
+        - "`=B7/B2`"
+        - "`=B7/B3`"
+        - "`=B6/B2`"
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: So wäre es richtig. Aber beim Ausfüllen wandern alle Bezüge der Formel eine Zeile nach unten, nicht nur der erste.
+      - when: { picked: 2 }
+        say: Beim Ausfüllen passt das Programm die Formel an, wie im ersten Blatt. Nur welche Teile?
+    solution: |
+      `=B7/B3`: Die Formel merkt sich den Weg, »vier Zeilen über mir« für B2.
+      Eine Zeile tiefer führt dieser Weg zu B3, zur Ermäßigung.
+
+  - id: zeigt
+    title: Was C7 zeigt
+    prompt: |
+      Füll in der Vorlage die Formel aus C6 nach unten aus, bis C10. Welche
+      Zahl zeigt C7?
+    check:
+      type: number
+      expect: 79920
+      tolerance: 0.01
+    feedback:
+      - when: { between: [148, 148] }
+        say: So viel müsste ein Kind für die Jugendherberge zahlen. Sieh nach, was in C7 wirklich steht.
+      - when: { between: [3996, 3996] }
+        say: Das sind die Kosten in B7. Gefragt ist C7, die Spalte daneben.
+    hint: Ohne Tausenderpunkt und Euro-Zeichen eingeben, nur die Zahl.
+    solution: |
+      79.920: C7 rechnet `=B7/B3`, 3.996 geteilt durch 0,05. So viel bezahlt
+      kein Kind; die Formel teilt durch die Ermäßigung statt durch die Zahl
+      der Kinder.
+
+  - id: rechts
+    title: Nach rechts gezogen
+    prediction: true
+    prompt: |
+      In C6 steht `=B6/$B$2`. Du ziehst C6 nicht nach unten, sondern eine
+      Spalte nach rechts, nach D6. Was steht in D6?
+    check:
+      type: choice
+      options:
+        - "`=C6/$B$2`"
+        - "`=B6/$B$2`"
+        - "`=C6/$C$2`"
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: Vor B6 steht kein Dollarzeichen. Was passiert mit einem Bezug ohne $, wenn die Formel eine Spalte weiter rückt?
+      - when: { picked: 2 }
+        say: Das $ vor dem B hält die Spalte fest, auch nach rechts.
+    solution: |
+      `=C6/$B$2`: B6 hat kein $ und rückt eine Spalte weiter, zu C6. $B$2
+      bleibt, wo es ist, nach rechts wie nach unten.
+
+  - id: anteile
+    title: Was ein Kind bezahlt
+    prompt: |
+      Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
+      an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
+      prüfst.
+    check:
+      type: document
+      file: absolute-references/03 Anteile.xlsx
+      rules:
+        - { same_data: ['A1:B10'] }
+        - { formulas: ['C6:D10', 'C11:D11'] }
+        - { absolute: { cells: 'C6:C10', ref: 'B2' } }
+        - { absolute: { cells: 'D6:D10', ref: 'B3' } }
+        - { functions: { C11: SUM, D11: SUM } }
+        - { values: { C11: 232.2963, D11: 220.6815 } }
+        - { recalc: { set: { B2: 24, B3: 0.1 }, expect: { C11: 261.3333, D11: 235.2 } } }
+        - no_errors
+        - { number_format: { 'C6:D11': currency } }
+    hint:
+      - In C6 bekommt B2 zwei Dollarzeichen, `=B6/$B$2`. Dann füllst du die Formel bis C10 nach unten aus.
+      - In D6 kommt der Anteil aus C6 mal 1 minus die Ermäßigung, mit festem Bezug auf B3. Auch D6 füllst du bis D10 aus.
+      - Unter beide Spalten kommt eine SUMME, und C6 bis D11 bekommen das Format Währung.
+    libreoffice:
+      hint:
+        - "Klick in C6, dann in der *Eingabezeile* hinter B2 und drück <kbd>Umschalt</kbd>+<kbd>F4</kbd>: Aus B2 wird $B$2. Mit <kbd>Enter</kbd> bestätigen und am kleinen Quadrat bis C10 ziehen."
+        - "In D6 tippst du `=C6*(1-$B$3)` und ziehst bis D10."
+        - "In C11 `=SUMME(C6:C10)`, in D11 ebenso für D. Dann C6 bis D11 markieren und **Als Währung formatieren**."
+    word:
+      hint:
+        - "Klick in C6, dann in der *Bearbeitungsleiste* hinter B2 und drück <kbd>F4</kbd>: Aus B2 wird $B$2. Mit <kbd>Enter</kbd> bestätigen und am kleinen Quadrat bis C10 ziehen."
+        - "In D6 tippst du `=C6*(1-$B$3)` und ziehst bis D10."
+        - "In C11 `=SUMME(C6:C10)`, in D11 ebenso für D. Dann C6 bis D11 markieren und im Feld *Zahlenformat* *Währung* wählen."
+    nextcloud:
+      hint:
+        - "Klick in C6 und tipp die Formel neu, mit den Dollarzeichen: `=B6/$B$2`. Mit <kbd>Enter</kbd> bestätigen und am kleinen Quadrat bis C10 ziehen."
+        - "In D6 tippst du `=C6*(1-$B$3)` und ziehst bis D10."
+        - "In C11 `=SUMME(C6:C10)`, in D11 ebenso für D. Dann C6 bis D11 markieren, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Währung*."

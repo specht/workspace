@@ -87,7 +87,7 @@ class PersonBoxesTest < Minitest::Test
     CONTENT = File.expand_path('../../content', __dir__)
     # placed on the sheets on spreadsheets, still in development
     # (docs/plan-tabellenkalkulation.md); out of this list when they are published
-    WAITING = %w[bricklin-frankston kapor simonyi].freeze
+    WAITING = %w[bricklin-frankston kapor simonyi hollerith].freeze
 
     def test_every_person_is_placed_on_a_visible_page
         visible = []

@@ -1195,9 +1195,220 @@ def mit_dollar():
     _bezug(True)
 
 
+def leer_null():
+    """an empty cell is left out of MITTELWERT, a 0 counts"""
+    w, h = 560, 252
+    rows = [4, 5, 6, 7, 8, 9]
+    cw, ch = 70, 28
+    body = []
+    for k, (title, third, mean, count) in enumerate([('leer gelassen', None, '4', '4 Zahlen'), ('0 getippt', '0', '3,2', '5 Zahlen')]):
+        x = 20 + k * 280
+        cells = {('B', 4): ('5', 'right'), ('B', 5): ('4', 'right'), ('B', 7): ('3', 'right'), ('B', 8): ('4', 'right'),
+                 ('B', 9): (mean, 'right', '700')}
+        if third:
+            cells[('B', 6)] = (third, 'right')
+        fills = {('B', 6): PAMBER_BG}
+        g, (x0, y0) = grid(x, 42, ['B'], rows, cw, ch, cells, fills, size=14)
+        body.append(g)
+        body.append(text(x, 26, title, 15, TEXT, weight='600'))
+        lx = x0 + cw + 12
+        body.append(text(lx, y0 + ch * 5 + 13, '=MITTELWERT(B4:B8)', 13, BLUE, weight='700', family=MONO))
+        body.append(text(lx, y0 + ch * 5 + 31, f'zählt {count}', 13, GREY))
+        body.append(text(lx, y0 + ch * 2 + 18, 'nicht gezählt' if not third else 'zählt mit', 13, AMBER, weight='600'))
+    svg('leer-null', 'spreadsheet-functions', w, h, body, 'Links bleibt B6 leer, MITTELWERT zählt 4 Zahlen und zeigt 4; rechts steht 0 in B6, MITTELWERT zählt 5 Zahlen und zeigt 3,2')
+
+
+def wenn():
+    """the three parts of WENN: the condition, then, else"""
+    w, h = 400, 152
+    body = []
+    drop = {'die Bedingung': 0, 'wenn sie stimmt': 26, 'wenn nicht': 0}
+    parts = [('=WENN(', None), ('E33>=4', 'die Bedingung'), (';', None), ('"ja"', 'wenn sie stimmt'), (';', None),
+             ('"nein"', 'wenn nicht'), (')', None)]
+    x, y = 24, 60
+    size = 22
+    for part, label in parts:
+        width = measure(part, size, '700', 'mono') if 'mono' in str(_FONT_FILES) else len(part) * size * 0.6
+        colour = BLUE if label else INK
+        body.append(text(x, y, part, size, colour, weight='700', family=MONO))
+        if label:
+            mid = x + width / 2
+            body.append(line(x, y + 10, x + width, y + 10, BLUE, 1.6))
+            body.append(line(mid, y + 10, mid, y + 26 + drop[label], BLUE, 1.2))
+            body.append(text(mid, y + 44 + drop[label], label, 14, TEXT, 'middle'))
+        x += width
+    svg('wenn', 'spreadsheet-functions', w, h, body, 'Die Teile von WENN: die Bedingung E33>=4, »ja«, wenn sie stimmt, »nein«, wenn nicht')
+
+
+def sortieren():
+    """sorting whole rows keeps each family with its amount; sorting the
+    column of names alone puts names beside other families' amounts"""
+    w, h = 700, 236
+    rows = [4, 5, 6, 7]
+    cw, ch = 92, 28
+    before = [('Engel', '245,00 €'), ('Lehmann', '100,00 €'), ('Becker', '245,00 €'), ('Kaya', '')]
+    whole = sorted(before)
+    names = sorted(n for n, _ in before)
+    alone = [(n, before[i][1]) for i, n in enumerate(names)]
+    body = []
+    for k, (title, data, wrong) in enumerate([('vorher', before, False), ('ganze Zeilen sortiert', whole, False),
+                                              ('nur Spalte B sortiert', alone, True)]):
+        x = 20 + k * 232
+        cells = {}
+        fills = {}
+        for r, (n, paid) in zip(rows, data):
+            cells[('B', r)] = n
+            cells[('D', r)] = (paid, 'right')
+            if wrong and dict(before)[n] != paid:
+                fills[('B', r)] = PAMBER_BG
+                fills[('D', r)] = PAMBER_BG
+        g, (x0, y0) = grid(x, 46, ['B', 'D'], rows, cw, ch, cells, fills, size=13)
+        body.append(g)
+        body.append(text(x, 30, title, 14, AMBER if wrong else TEXT, weight='600'))
+    body.append(text(20, h - 16, 'Rechts hat Kaya bezahlt und Lehmann nichts: Die Namen stehen neben fremden Beträgen.', 13, GREY))
+    svg('sortieren', 'sort-and-filter', w, h, body, 'Vier Familien mit ihren Zahlungen: ganze Zeilen sortiert bleiben richtig, nur die Namen sortiert stehen neben fremden Beträgen')
+
+
+def _columns(x, y, w, h, values, lo, hi, ticks, colour=PBLUE, labels=None):
+    """a small column chart on paper: values from lo to hi, ticks on the axis"""
+    out = [rect(x, y, w, h, PAPER, EDGE, 1, 2)]
+    left, bottom, top = x + 34, y + h - 26, y + 12
+    for t in ticks:
+        ty = bottom - (t - lo) / (hi - lo) * (bottom - top)
+        out.append(line(left, ty, x + w - 10, ty, EDGE, 1))
+        out.append(text(left - 6, ty + 4, f'{t:g}'.replace('.', ','), 11, INK, 'end'))
+    slot = (x + w - 10 - left) / len(values)
+    for i, v in enumerate(values):
+        bh = (v - lo) / (hi - lo) * (bottom - top)
+        out.append(rect(left + slot * i + slot * 0.2, bottom - bh, slot * 0.6, bh, colour))
+        if labels:
+            out.append(text(left + slot * i + slot / 2, bottom + 16, labels[i], 11, INK, 'middle'))
+    out.append(line(left, bottom, x + w - 10, bottom, INK, 1.2))
+    return ''.join(out)
+
+
+def diagrammarten():
+    """which chart answers which question"""
+    import math
+    w, h = 660, 250
+    body = []
+    pw, ph, gap = 196, 160, 36
+    questions = [('Kreis', 'Welcher Teil des Ganzen', 'ist wie groß?'), ('Säulen', 'Was ist größer,', 'was kleiner?'),
+                 ('Linie', 'Wie ändert sich etwas', 'mit der Zeit?')]
+    for k, (name, q1, q2) in enumerate(questions):
+        x = 20 + k * (pw + gap - 10)
+        y = 20
+        if k == 0:
+            body.append(rect(x, y, pw, ph, PAPER, EDGE, 1, 2))
+            cx, cy, r = x + pw / 2, y + ph / 2, 60
+            shares = [46.3, 148, 24.5, 9, 4.5]
+            colours = [PBLUE, PAMBER, PGREEN, BAR, EDGE]
+            a = -math.pi / 2
+            total = sum(shares)
+            for v, c in zip(shares, colours):
+                b = a + v / total * 2 * math.pi
+                large = 1 if b - a > math.pi else 0
+                body.append(f"<path d='M {cx:.1f} {cy:.1f} L {cx + r * math.cos(a):.1f} {cy + r * math.sin(a):.1f} "
+                            f"A {r} {r} 0 {large} 1 {cx + r * math.cos(b):.1f} {cy + r * math.sin(b):.1f} Z' fill='{c}' stroke='{PAPER}' stroke-width='1.5'/>")
+                a = b
+        elif k == 1:
+            body.append(_columns(x, y, pw, ph, [4.4, 3.6, 2.6, 4.0], 0, 5, [0, 1, 2, 3, 4, 5]))
+        else:
+            body.append(rect(x, y, pw, ph, PAPER, EDGE, 1, 2))
+            left, bottom, top = x + 20, y + ph - 20, y + 16
+            pts = [0, 0.18, 0.4, 0.55, 0.62, 0.8, 0.86, 0.95, 1.0]
+            xs = [left + i * (pw - 40) / (len(pts) - 1) for i in range(len(pts))]
+            ys = [bottom - p * (bottom - top) for p in pts]
+            body.append(line(left, bottom, x + pw - 14, bottom, INK, 1.2) + line(left, bottom, left, top - 4, INK, 1.2))
+            body.append("<polyline points='" + ' '.join(f'{a:.1f},{b:.1f}' for a, b in zip(xs, ys)) + f"' fill='none' stroke='{PBLUE}' stroke-width='2.4'/>")
+        body.append(text(x + pw / 2, y + ph + 26, name, 15, TEXT, 'middle', '700'))
+        body.append(text(x + pw / 2, y + ph + 46, q1, 13, GREY, 'middle'))
+        body.append(text(x + pw / 2, y + ph + 63, q2, 13, GREY, 'middle'))
+    svg('diagrammarten', 'spreadsheet-charts', w, h, body, 'Drei Diagramme und ihre Fragen: Kreis, welcher Teil des Ganzen wie groß ist; Säulen, was größer und was kleiner ist; Linie, wie sich etwas mit der Zeit ändert')
+
+
+def achse():
+    """the same two means, the axis from 0 and from 2,5"""
+    w, h = 600, 244
+    body = []
+    names = ['Kletterwald', 'Moormuseum']
+    for k, (title, lo, ticks) in enumerate([('Achse ab 0', 0, [0, 1, 2, 3, 4, 5]), ('Achse ab 2,5', 2.5, [2.5, 3, 3.5, 4, 4.5])]):
+        x = 20 + k * 300
+        hi = 5 if lo == 0 else 4.5
+        body.append(text(x, 22, title, 15, AMBER if lo else TEXT, weight='600'))
+        body.append(_columns(x, 34, 260, 200, [4.4, 2.6], lo, hi, ticks, PAMBER if lo else PBLUE, names))
+    svg('achse', 'spreadsheet-charts', w, h, body, 'Dieselben Mittelwerte 4,4 und 2,6 zweimal als Säulen: mit der Achse ab 0 ist die eine knapp doppelt so hoch, mit der Achse ab 2,5 fast zwanzigmal')
+
+
+def karte_tabellen():
+    """the card of the series on spreadsheets: three sheets fanned out, a
+    grid with a formula and a check's numbered mark, a pie chart, a column
+    chart with a green tick"""
+    import math
+    w, h = 480, 270
+    body = [rect(0, 0, w, h, '#eef3fb')]
+    sw, sh = 150, 212
+
+    def sheet(cx, cy, angle, inner):
+        return (f"<g transform='translate({cx} {cy}) rotate({angle})'>" +
+                rect(-sw / 2 + 2, -sh / 2 + 3, sw, sh, '#0b0f19', r=3, extra=" fill-opacity='0.12'") +
+                rect(-sw / 2, -sh / 2, sw, sh, PAPER, EDGE, 1, 3) + inner + '</g>')
+
+    x0, y0 = -sw / 2 + 20, -sh / 2 + 20
+    # a grid: column letters, row numbers, a formula in the marked cell
+    cw, ch, hx = 34, 15, 14
+    g = [rect(x0, y0, hx + cw * 3, ch, HEAD_BG), rect(x0, y0, hx, ch * 10, HEAD_BG)]
+    for i, c in enumerate('BCD'):
+        g.append(text(x0 + hx + cw * i + cw / 2, y0 + 11, c, 8, INK, 'middle'))
+    values = [('29', '148,00', '4.292,00'), ('27', '24,50', '661,50'), ('29', '9,00', '261,00'), ('29', '4,50', '130,50')]
+    for j in range(9):
+        y = y0 + ch * (j + 1)
+        g.append(text(x0 + hx / 2, y + 11, str(j + 4), 7, INK, 'middle'))
+        if j < len(values):
+            for i, v in enumerate(values[j]):
+                g.append(text(x0 + hx + cw * i + cw - 3, y + 11, v, 7, INK, 'end'))
+    for i in range(4):
+        g.append(line(x0 + hx + cw * i, y0, x0 + hx + cw * i, y0 + ch * 10, EDGE, 0.8))
+    for j in range(11):
+        g.append(line(x0, y0 + ch * j, x0 + hx + cw * 3, y0 + ch * j, EDGE, 0.8))
+    mx, my = x0 + hx + cw * 2, y0 + ch * 2
+    g.append(rect(mx, my, cw, ch, PAMBER_BG) + rect(mx, my, cw, ch, 'none', PAMBER, 1.6))
+    g.append(text(mx + cw - 3, my + 11, '661,50', 7, INK, 'end'))
+    g.append(text(x0, y0 + ch * 10 + 22, '=B5*C5', 13, PBLUE, weight='700', family="'IBM Plex Mono', monospace"))
+    g.append(f"<circle cx='{x0 - 9}' cy='{my + ch / 2}' r='7' fill='{PAMBER}'/>" + text(x0 - 9, my + ch / 2 + 3.5, '1', 9, PAPER, 'middle', '700'))
+    body.append(sheet(120, 142, -9, ''.join(g)))
+    # a pie chart
+    pie = [text(0, y0 + 4, 'Wofür ein Kind', 10, INK, 'middle', '700'), text(0, y0 + 17, 'bezahlt', 10, INK, 'middle', '700')]
+    cx, cy, r = 0, 18, 52
+    a = -math.pi / 2
+    shares = [46.3, 148, 24.5, 9, 4.5]
+    for v, c in zip(shares, [PBLUE, PAMBER, PGREEN, BAR, EDGE]):
+        b = a + v / sum(shares) * 2 * math.pi
+        large = 1 if b - a > math.pi else 0
+        pie.append(f"<path d='M {cx} {cy} L {cx + r * math.cos(a):.1f} {cy + r * math.sin(a):.1f} A {r} {r} 0 {large} 1 "
+                   f"{cx + r * math.cos(b):.1f} {cy + r * math.sin(b):.1f} Z' fill='{c}' stroke='{PAPER}' stroke-width='1.2'/>")
+        a = b
+    body.append(sheet(240, 132, 3, ''.join(pie)))
+    # a column chart, in front, with the tick
+    col = [text(0, y0 + 4, 'Wie hat es gefallen?', 10, INK, 'middle', '700')]
+    left, bottom, top = -sw / 2 + 26, sh / 2 - 34, y0 + 26
+    for t in range(6):
+        ty = bottom - t / 5 * (bottom - top)
+        col.append(line(left, ty, sw / 2 - 12, ty, EDGE, 0.8) + text(left - 5, ty + 3, str(t), 7, INK, 'end'))
+    slot = (sw / 2 - 12 - left) / 4
+    for i, v in enumerate([4.4, 3.6, 2.6, 4.0]):
+        bh = v / 5 * (bottom - top)
+        col.append(rect(left + slot * i + slot * 0.2, bottom - bh, slot * 0.6, bh, PBLUE))
+    col.append(line(left, bottom, sw / 2 - 12, bottom, INK, 1))
+    col.append(f"<circle cx='{sw / 2 - 12}' cy='{-sh / 2 + 14}' r='13' fill='#2e7d32'/>"
+               f"<path d='M {sw / 2 - 18} {-sh / 2 + 14} l 4 5 l 9 -10' fill='none' stroke='{PAPER}' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/>")
+    body.append(sheet(358, 140, 7, ''.join(col)))
+    svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
+
+
 DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, ausfuellen,
-                                      zahltext, formate, tage, ohne_dollar, mit_dollar]}
+                                      zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:

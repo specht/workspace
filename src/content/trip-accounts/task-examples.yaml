@@ -1,0 +1,23 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die fertige Abrechnung und ihr PDF müssen die
+# Prüfung bestehen; die Vorlage, eine getippte und aufgerundete Rückzahlung
+# und ein PDF mit nichts als dem Titel scheitern. Alle macht dokumente.py.
+format: 1
+activity: trip-accounts
+examples:
+  abrechnung:
+    pass:
+      - document: stufen/abrechnung.xlsx
+    fail:
+      - document: ../../static/trip-accounts/07 Abrechnung.xlsx
+        say: keine Formel
+      - document: stufen/getippt.xlsx
+        say: ABRUNDEN
+      - document: stufen/getippt.xlsx
+        say: Ich habe H5 auf 1400
+  pdf:
+    pass:
+      - document: stufen/abrechnung.pdf
+    fail:
+      - document: stufen/nur-titel.pdf
+        say: Wörter

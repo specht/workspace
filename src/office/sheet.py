@@ -136,6 +136,50 @@ def conditional_formats(sheet):
     return out
 
 
+# com.sun.star.sheet.ConditionFormatOperator: how a cell's value is compared
+COMPARE = {0: lambda v, a, b: v == a, 1: lambda v, a, b: v < a, 2: lambda v, a, b: v > a,
+           3: lambda v, a, b: v <= a, 4: lambda v, a, b: v >= a, 5: lambda v, a, b: v != a,
+           6: lambda v, a, b: min(a, b) <= v <= max(a, b), 7: lambda v, a, b: not min(a, b) <= v <= max(a, b)}
+
+
+def apply_conditional(doc, cells, conditional):
+    """the colours a conditional format gives the cells (»Zellwert ist größer
+    als 0«), so that the drawn sheet shows them as the program does; only
+    conditions on the cell's value against numbers, the first that holds"""
+    try:
+        styles = doc.StyleFamilies.getByName('CellStyles')
+    except Exception:
+        return
+    by_name = {c['cell']: c for c in cells}
+    for f in conditional:
+        for rng in f['ranges']:
+            first, _, last = rng.replace('$', '').split('.')[-1].partition(':')
+            try:
+                c1, r1 = parse_address(first)
+                c2, r2 = parse_address(last or first)
+            except ValueError:
+                continue
+            for r in range(r1, r2 + 1):
+                for c in range(c1, c2 + 1):
+                    cell = by_name.get(address(c, r))
+                    value = cell.get('value') if cell else None
+                    if value is None or (cell.get('type') == 'formula' and cell.get('result') != 'value'):
+                        continue
+                    for e in f['entries']:
+                        try:
+                            a, b = float(e.get('formula1', '')), float(e.get('formula2') or 0)
+                        except ValueError:
+                            continue
+                        test = COMPARE.get(e.get('operator')) if e.get('type') == 0 else None
+                        if test and test(value, a, b) and styles.hasByName(e.get('stylename', '')):
+                            style = styles.getByName(e['stylename'])
+                            if style.CellBackColor != -1:
+                                cell['background'] = style.CellBackColor
+                            if style.CharColor != -1:
+                                cell['color'] = style.CharColor
+                            break
+
+
 def autofilter(doc, index):
     """whether the sheet has an autofilter, and how many of its fields filter"""
     found = {'on': False, 'fields': 0}
@@ -369,8 +413,10 @@ def analyze(office, doc, folder, probes=None):
                 item = read_cell(doc, sheet.getCellByPosition(c, r), c, r)
                 if item['type'] != 'empty':
                     cells.append(item)
+        conditional = conditional_formats(sheet)
+        apply_conditional(doc, cells, conditional)
         model = {'name': sheet.Name, 'cols': cols, 'rows': rows, 'cells': cells,
-                 'used': address(end_col, end_row), 'conditional': conditional_formats(sheet),
+                 'used': address(end_col, end_row), 'conditional': conditional,
                  'autofilter': autofilter(doc, index), 'charts': chart_list,
                  'header_w': HEADER_W, 'header_h': HEADER_H}
         svg, width, height = draw(model, chart_list)

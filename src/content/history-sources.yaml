@@ -243,3 +243,219 @@ drop:
         quote: "the youngest producer to ever have a song reach number one on the electronic music store Beatport"
   - text: Wann wird die Musik dünner, und wie wirkt der Drop danach
     none: eine Frage zum Anhören; der Link ist das offizielle Video auf dem Kanal STMPD RCRDS
+
+# ---- Office: word processing (docs/plan-textverarbeitung.md)
+
+schreibmaschine:
+  - text: Von der Schreibmaschine zur Textverarbeitung
+    none: 'die Überschrift des Kastens'
+  - text: An einer Schreibmaschine schob ein Hebel am Ende jeder Zeile die Walze
+    sources:
+      - url: https://en.wikipedia.org/wiki/Carriage_return
+        quote: "The term originally described a lever on mechanical typewriters … the lever returned the moving carriage … and usually advanced the paper (zusammengefasst)"
+  - text: Daher kommt das Zeichen ↵, und daher tippten viele zwei Leerzeichen nach dem Punkt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Carriage_return
+        quote: "The ↵ symbol was later adopted to represent the combined carriage return and line feed action (zusammengefasst)"
+      - url: https://en.wikipedia.org/wiki/Sentence_spacing
+        quote: '"the majority of mechanical typewriters, including all the widely distributed models, remained monospaced"; "it was created for monospaced fonts of the typewriter and is no longer needed with modern proportional fonts"'
+  - text: 1955 schlug Ulrich Steinhilper
+    sources:
+      - url: https://de.wikipedia.org/wiki/Ulrich_Steinhilper
+        quote: '"1953 kam er zu IBM-Deutschland und wurde dort Verkäufer für elektrische Schreibmaschinen."; "1955 hatte er die Idee zur elektronischen Textverarbeitung als Pendant zur damals schon gebräuchlichen Datenverarbeitung."; "1972 verlieh IBM Steinhilper den „World Achievement Award“"'
+  - text: Die Amerikanerin Evelyn Berezin baute 1968 die »Data Secretary«
+    sources:
+      - url: https://en.wikipedia.org/wiki/Evelyn_Berezin
+        quote: '"created the first computerized word processor and dubbed it the Data Secretary"; "Her device was similar size to that of a small refrigerator at the time."; "stored in document form on a tape drive"'
+
+libreoffice:
+  - text: Woher LibreOffice kommt
+    none: 'die Überschrift des Kastens'
+  - text: 1985 gründete Marco Börries mit 16 Jahren
+    sources:
+      - url: https://de.wikipedia.org/wiki/Star_Division
+        quote: "Die Hamburger Softwarefirma Star Division wurde im Jahr 1985 vom 16-jährigen Marco Börries in Lüneburg gegründet."
+      - url: https://de.wikipedia.org/wiki/Marco_B%C3%B6rries
+        quote: "Inspiriert von einem während seiner Schulzeit am Gymnasium Oedeme stattfindenden Schüleraustausch im Silicon Valley"
+  - text: Ihr Textprogramm StarWriter lief bald auch auf den Heimcomputern von Schneider
+    sources:
+      - url: https://en.wikipedia.org/wiki/StarOffice
+        quote: '"StarWriter 1.0 was written by Marco Börries in 1985 for the Zilog Z80."; "It was later ported to the Amstrad CPC (marketed by Schneider in Germany) under CP/M."'
+  - text: 1999 kaufte die Firma Sun StarOffice
+    sources:
+      - url: https://en.wikipedia.org/wiki/StarOffice
+        quote: "Sun Microsystems acquired the company, copyright and trademark of StarOffice in 1999 for US$73.5 million, which released the source code the following year as a free and open source office suite called OpenOffice.org"
+  - text: 2010 machten Entwicklerinnen und Entwickler daraus LibreOffice
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Document_Foundation
+        quote: '"Established in 2010 by members of the OpenOffice.org community"; "is incorporated as a Stiftung (foundation) under German law"; "the foundation was finally incorporated on 17 February 2012" (Sitz: Berlin)'
+  - text: LibreOffice ist freie Software
+    sources:
+      - url: https://en.wikipedia.org/wiki/The_Document_Foundation
+        quote: "a free and open-source office suite"
+
+bravo:
+  - text: Schrift auf dem Bildschirm, 1974
+    none: 'die Überschrift des Kastens'
+  - text: Lange zeigte ein Bildschirm nur eine Schrift in einer Größe
+    none: 'die Lage vor Bravo, die der nächste Satz belegt (»multi-font capability« war das Neue)'
+  - text: Bei Xerox PARC in Kalifornien schrieben Butler Lampson, Charles Simonyi
+    sources:
+      - url: https://en.wikipedia.org/wiki/Bravo_(editor)
+        quote: '"Bravo was the first WYSIWYG document preparation program."; "It was produced at Xerox PARC by Butler Lampson, Charles Simonyi and colleagues"; "became operational on September 14, 1974."; "It provided multi-font capability using the bitmap displays on the Xerox Alto personal computer."'
+  - text: Heute heißt das WYSIWYG
+    sources:
+      - url: https://en.wikipedia.org/wiki/WYSIWYG
+        quote: "WYSIWYG (\"what you see is what you get\")"
+
+trennmuster:
+  - text: Wie ein Programm Wörter trennt
+    none: 'die Überschrift des Kastens'
+  - text: Für jedes Wort im Wörterbuch nachzusehen
+    none: 'die Begründung für Muster, die der Kasten danach erklärt'
+  - text: Für das Satzprogramm TeX von Donald Knuth erfand sein Doktorand Frank Liang 1983
+    sources:
+      - url: https://www.tug.org/docs/liang/liang-thesis.pdf
+        quote: '"Word Hy-phen-a-tion by Com-put-er", Franklin Mark Liang, Report No. STAN-CS-83-977, August 1983: "an improved word hyphenation algorithm for the TeX82 typesetting system … based on the idea of hyphenating and inhibiting patterns"; "greatly indebted to my adviser, Donald Knuth"'
+      - url: https://searchworks.stanford.edu/view/1071255
+        quote: '"Knuth, Donald E. primary advisor"; "Thesis Ph.D. Stanford University 1983"'
+  - text: Aus ihnen rechnet das Programm die Trennstellen jedes Worts aus
+    sources:
+      - url: https://www.tug.org/docs/liang/liang-thesis.pdf
+        quote: '"these patterns find 89% of the hyphens in a pocket dictionary word list, with essentially no error" (die Muster gelten für Buchstabenfolgen, nicht für einzelne Wörter)'
+  - text: Die Silbentrennung von LibreOffice benutzt Muster
+    sources:
+      - url: https://github.com/hunspell/hyphen
+        quote: '"Hyphen - hyphenation library to use converted TeX hyphenation patterns"; "Used by LibreOffice, Scribus and OpenOffice.org"'
+
+pdf:
+  - text: Das PDF, 1993
+    none: 'die Überschrift des Kastens'
+  - text: Die Firma Adobe stellte das Portable Document Format 1993 vor
+    sources:
+      - url: https://en.wikipedia.org/wiki/PDF
+        quote: "developed by Adobe in 1993 to present documents, including text formatting and images, in a manner independent of application software, hardware, and operating systems"
+  - text: Seit 2008 ist es eine offene Norm, ISO 32000
+    sources:
+      - url: https://en.wikipedia.org/wiki/PDF
+        quote: '"PDF was standardized as ISO 32000 in 2008."; "released as an open standard on July 1, 2008"; Adobe issued a patent license "granting royalty-free rights for all patents owned by Adobe"'
+  - text: Darum kann LibreOffice es genauso wie Word
+    none: 'eine Folgerung aus dem Satz davor; beide Programme exportieren PDF (die Blätter erklären, wo)'
+
+# ---- Office: spreadsheets (docs/plan-tabellenkalkulation.md)
+
+visicalc:
+  - text: Die Tafel, die selbst rechnet, 1979
+    sources:
+      - url: https://en.wikipedia.org/wiki/VisiCalc
+        quote: "originally released for the Apple II by VisiCorp on October 17, 1979"
+  - text: Bevor es Tabellenkalkulationen gab
+    sources:
+      - url: https://en.wikipedia.org/wiki/VisiCalc
+        quote: "found an error or wanted to change a parameter, he had to erase and rewrite several sequential entries in the table"
+  - text: Dan Bricklin sah einem Professor zu
+    sources:
+      - url: https://en.wikipedia.org/wiki/VisiCalc
+        quote: '"Dan Bricklin conceived of VisiCalc while watching a presentation at Harvard Business School (HBS)."; "The pair formed the Software Arts company, and developed the VisiCalc program in two months during the winter of 1978–79."; "When you made a change in one place, all other things changed instantly and automatically." (Ted Nelson)'
+
+'1900':
+  - text: Der 29. Februar 1900, den es nie gab
+    none: 'die Überschrift des Kastens'
+  - text: 1983 kam Lotus 1-2-3 heraus
+    sources:
+      - url: https://en.wikipedia.org/wiki/Lotus_1-2-3
+        quote: '"Lotus 1-2-3 was released on 26 January 1983"; "It was the first killer application of the IBM PC"; "significantly contributed to the success of IBM PC-compatibles in the business market"'
+  - text: Lotus zählte die Tage als Zahlen wie heute Excel
+    sources:
+      - url: https://learn.microsoft.com/en-us/troubleshoot/microsoft-365-apps/excel/wrongly-assumes-1900-is-leap-year
+        quote: "When Lotus 1-2-3 was first released, the program assumed that the year 1900 was a leap year, even though it actually was not a leap year."
+  - text: Den gab es nicht
+    none: 'die Regel des gregorianischen Kalenders'
+  - text: Für Lotus war die Rechnung so einfacher
+    sources:
+      - url: https://learn.microsoft.com/en-us/troubleshoot/microsoft-365-apps/excel/wrongly-assumes-1900-is-leap-year
+        quote: "This made it easier for the program to handle leap years and caused no harm to almost all date calculations in Lotus 1-2-3."
+  - text: Microsoft übernahm den Fehler in Multiplan und Excel
+    sources:
+      - url: https://learn.microsoft.com/en-us/troubleshoot/microsoft-365-apps/excel/wrongly-assumes-1900-is-leap-year
+        quote: "When Microsoft Multiplan and Microsoft Excel were released, they also assumed that 1900 was a leap year. This assumption allowed Microsoft Multiplan and Microsoft Excel to use the same serial date system used by Lotus 1-2-3"
+  - text: Excel hat ihn bis heute
+    sources:
+      - url: https://learn.microsoft.com/en-us/troubleshoot/microsoft-365-apps/excel/wrongly-assumes-1900-is-leap-year
+        quote: "Almost all dates in current Microsoft Excel worksheets and other documents would be decreased by one day."
+  - text: LibreOffice zählt vom 30. Dezember 1899 an
+    sources:
+      - url: https://help.libreoffice.org/latest/en-US/text/shared/optionen/01060500.html
+        quote: "1899-12-30 (default): Sets 1899-12-30 as day zero."
+      - url: https://learn.microsoft.com/en-us/troubleshoot/microsoft-365-apps/excel/wrongly-assumes-1900-is-leap-year
+        quote: '"The WEEKDAY function returns incorrect values for dates before March 1, 1900." (ab dem 1. März stimmen beide überein; im Rechner nachgeprüft: 02.03.2027 ist in beiden 46448)'
+
+r1c1:
+  - text: Zeile 1, Spalte 1, 1982
+    sources:
+      - url: https://en.wikipedia.org/wiki/Multiplan
+        quote: "introduced in 1982 as a competitor to VisiCalc"
+  - text: Die Adressen A1, B2, C3 stammen von VisiCalc
+    sources:
+      - url: https://en.wikipedia.org/wiki/Multiplan
+        quote: "Microsoft's decision to use R1C1 addressing instead of the A1 addressing introduced by VisiCalc"
+  - text: Microsoft gab seiner ersten Tabellenkalkulation
+    sources:
+      - url: https://en.wikipedia.org/wiki/Multiplan
+        quote: "\"RC[-1]\" (meaning \"current row, previous column\") is expressed as \"A1\" in cell B1, then \"A2\" in cell B2"
+  - text: Den Weg, den sich eine Formel merkt
+    none: 'eine Folgerung aus dem Satz davor, mit dem Bild des ersten Blatts'
+  - text: Multiplan verkaufte sich über eine Million Mal
+    sources:
+      - url: https://en.wikipedia.org/wiki/Multiplan
+        quote: "Although over a million copies were sold, Multiplan was not able to mount an effective challenge to Lotus 1-2-3."
+  - text: Excel löste es ab
+    sources:
+      - url: https://en.wikipedia.org/wiki/Multiplan
+        quote: '"Multiplan was replaced by Microsoft Excel"; "which offers both addressing modes, although A1 is Excel''s default addressing mode"'
+
+reinhart-rogoff:
+  - text: Der Bereich, der zu kurz war, 2013
+    none: 'die Überschrift des Kastens'
+  - text: Drei Jahre zuvor hatten die Ökonomen Carmen Reinhart und Kenneth Rogoff
+    sources:
+      - url: https://en.wikipedia.org/wiki/Growth_in_a_Time_of_Debt
+        quote: 'growth "roughly cut in half" when debt exceeded 90% of GDP (Reinhart and Rogoff, 2010)'
+  - text: Politikerinnen und Politiker in Europa und den USA beriefen sich darauf
+    sources:
+      - url: https://en.wikipedia.org/wiki/Growth_in_a_Time_of_Debt
+        quote: 'cited in the U.S. Republican "Path to Prosperity" budget and by EU Commissioner Olli Rehn; "Serious empirical research has shown that at such high levels, public debt acts as a permanent drag on growth." (Rehn)'
+  - text: 2013 bekamen Thomas Herndon
+    sources:
+      - url: https://en.wikipedia.org/wiki/Growth_in_a_Time_of_Debt
+        quote: 'Thomas Herndon, Michael Ash and Robert Pollin of the University of Massachusetts Amherst, after obtaining the spreadsheet from the authors, reported errors (April 2013)'
+  - text: In einem Mittelwert fehlten mehrere Länder
+    sources:
+      - url: https://en.wikipedia.org/wiki/Growth_in_a_Time_of_Debt
+        quote: '"coding errors, selective exclusion of available data, and unconventional weighting of summary statistics"; Reinhart and Rogoff acknowledged a coding error that omitted some countries'
+  - text: Neu gerechnet wuchsen die Länder mit hohen Schulden
+    sources:
+      - url: https://en.wikipedia.org/wiki/Growth_in_a_Time_of_Debt
+        quote: 'average growth above 90% debt was 2.2%, not the published −0.1%'
+
+playfair:
+  - text: Die ersten Diagramme, 1786
+    none: 'die Überschrift des Kastens'
+  - text: Zahlen zur Wirtschaft standen lange nur in Tabellen
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Playfair
+        quote: 'regarded as a founder of statistical graphics; introduced the "line, area and bar chart" of economic data in 1786'
+  - text: Der schottische Ingenieur William Playfair zeichnete sie
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Playfair
+        quote: '"Scottish engineer and political economist"; introduced the "line, area and bar chart" in The Commercial and Political Atlas (1786)'
+      - url: https://commons.wikimedia.org/wiki/File:Playfair_TimeSeries.png
+        quote: '"Exports and Imports to and from Denmark & Norway from 1700 to 1780" (das Bild im Kasten)'
+  - text: Wo die rote Linie über der gelben liegt
+    none: 'aus dem Bild abgelesen, beschriftet »Balance in favour of England«'
+  - text: 1801 zeichnete Playfair in seinem Statistical Breviary
+    sources:
+      - url: https://en.wikipedia.org/wiki/William_Playfair
+        quote: "what were likely the first pie chart and circle graph"
+  - text: Die drei Diagramme dieses Blatts sind also über zweihundert Jahre alt
+    none: 'eine Folgerung aus 1786 und 1801'

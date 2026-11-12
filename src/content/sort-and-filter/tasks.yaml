@@ -1,0 +1,125 @@
+# Aufgaben zu »Sortieren, Filtern, Hervorheben«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/sort-and-filter/05 Zahlungen.xlsx), die fertige
+# Tabelle und die Stufen macht dokumente.py.
+format: 1
+activity: sort-and-filter
+tasks:
+  - id: leer
+    title: Noch nichts bezahlt
+    prediction: true
+    prompt: |
+      In E14 steht `=C14-D14`, Soll minus Gezahlt. Familie Kaya hat noch
+      nichts bezahlt: D14 ist leer. Was zeigt E14?
+    check:
+      type: choice
+      options:
+        - "245,00 €"
+        - "`#WERT!`"
+        - Nichts, die Zelle bleibt leer
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: "`#WERT!` kommt, wenn eine Formel mit einem Text rechnet. Ist eine leere Zelle ein Text?"
+      - when: { picked: 2 }
+        say: In E14 steht eine Formel, und eine Formel zeigt immer ihr Ergebnis. Mit welcher Zahl rechnet sie für D14?
+    solution: |
+      245,00 €: In einer Rechnung zählt eine leere Zelle als 0. (MITTELWERT
+      im letzten Blatt hat leere Zellen ausgelassen; eine Funktion über einen
+      Bereich ist etwas anderes als eine Rechnung mit einer Zelle.)
+
+  - id: spalte
+    title: Eine Spalte allein
+    prediction: true
+    prompt: |
+      Jemand markiert nur die Spalte B mit den Namen und sortiert nur sie,
+      die Spalten daneben nicht. Was passiert?
+    check:
+      type: choice
+      options:
+        - Die Namen stehen danach neben den Zahlungen anderer Familien.
+        - Jede Familie behält ihre Zahlung, die Zeilen wandern zusammen.
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: Woher sollte das Programm wissen, dass B und D zusammengehören, wenn nur B markiert ist?
+    solution: |
+      Die Namen werden sortiert, die Zahlungen bleiben, wo sie waren: Jede
+      Zeile mischt danach zwei Familien.
+
+  - id: offen
+    title: Wer noch zahlen muss
+    prompt: |
+      Wie viele Familien müssen noch etwas bezahlen? Setz einen Filter und
+      lass dir in Spalte E nur die Beträge zeigen, die größer als 0 sind.
+    check:
+      type: number
+      expect: 6
+      tolerance: 0.001
+    feedback:
+      - when: { between: [4, 4] }
+        say: Vier haben gar nichts bezahlt. Zwei weitere haben nur einen Teil bezahlt.
+      - when: { between: [27, 27] }
+        say: So viele Familien stehen in der Liste. Wie viele zeigt der Filter noch?
+    hint: Am kleinen Pfeil im Kopf der Spalte E wählst du, welche Werte zu sehen sind, oder einen Filter wie »größer als 0«.
+    solution: |
+      6: Kaya, Richter, Wagner und Zimmermann haben noch nichts bezahlt,
+      Lehmann und Petrov einen Teil.
+
+  - id: summe
+    title: Was die Summe zählt
+    prediction: true
+    prompt: |
+      Unter der Tabelle steht `=SUMME(E4:E30)` und zeigt 1.220,00 €. Jetzt
+      filterst du so, dass nur die Familien zu sehen sind, die alles bezahlt
+      haben; die sechs anderen Zeilen sind ausgeblendet. Was zeigt die SUMME?
+    check:
+      type: choice
+      options:
+        - 1.220,00 €, wie vorher
+        - 0,00 €, die sichtbaren Familien schulden nichts
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: Ein Filter blendet Zeilen aus, er löscht sie nicht. Steht in E14 noch etwas?
+    solution: |
+      1.220,00 €: SUMME zählt jede Zelle des Bereichs, auch die
+      ausgeblendeten. Der Filter ändert, was du siehst, nicht, womit die Tabelle
+      rechnet.
+
+  - id: zahlungen
+    title: Die Zahlungen in Ordnung
+    prompt: |
+      Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
+      an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
+      prüfst.
+    check:
+      type: document
+      file: sort-and-filter/05 Zahlungen.xlsx
+      rules:
+        - { sorted: { range: 'A4:E30', by: B, order: asc } }
+        - { formulas: ['E4:E30', 'E32'] }
+        - autofilter
+        - { conditional: 'E4:E30' }
+        - no_errors
+    hint:
+      - Sortiere die ganze Tabelle nach der Familie, von A bis Z. Klick dazu in die Tabelle, statt eine Spalte zu markieren.
+      - Setz einen Filter auf die Tabelle; die kleinen Pfeile erscheinen im Kopf jeder Spalte.
+      - Gib E4 bis E30 eine bedingte Formatierung, die Beträge größer als 0 rot hinterlegt.
+    libreoffice:
+      hint:
+        - "Klick in eine Zelle der Tabelle, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, *Sortierschlüssel 1*: Familie, *Aufsteigend*."
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *AutoFilter* (<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>L</kbd>)."
+        - "Markiere E4 bis E30, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*: *Zellwert* *ist größer als* `0`, *Vorlage zuweisen*: *Schlecht*."
+    word:
+      hint:
+        - "Klick in eine Zelle der Tabelle, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*, *Sortieren nach*: Familie, *A bis Z*."
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Filtern* (<kbd>Strg</kbd>+<kbd>Umschalt</kbd>+<kbd>L</kbd>)."
+        - "Markiere E4 bis E30, dann *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Regeln zum Hervorheben von Zellen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größer als…*: `0`."
+    nextcloud:
+      hint:
+        - "Klick in eine Zelle der Tabelle, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, nach Familie, aufsteigend."
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *AutoFilter*."
+        - "Markiere E4 bis E30, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*: *ist größer als* `0`, die Vorlage *Schlecht*."

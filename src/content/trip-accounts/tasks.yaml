@@ -1,0 +1,125 @@
+# Aufgaben zu »Die Abrechnung der Klassenfahrt«, der Abgabe der Reihe.
+# Format: docs/aufgaben.md. Die Vorlage (src/static/trip-accounts/07
+# Abrechnung.xlsx), die fertige Abrechnung und eine Stufe mit getippter
+# Rückzahlung macht dokumente.py.
+format: 1
+activity: trip-accounts
+tasks:
+  - id: rundung
+    title: Auf den Cent gerundet
+    prediction: true
+    prompt: |
+      Es bleiben 318,50 € übrig, für 27 Kinder: 11,7962… € pro Kind, auf
+      Cent gerundet 11,80 €. Die Kasse zahlt jedem Kind 11,80 € zurück.
+      Reicht das Geld?
+    check:
+      type: choice
+      options:
+        - Ja, und es bleibt etwas übrig.
+        - Ja, es geht genau auf.
+        - Nein, es fehlen ein paar Cent.
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: 11,80 ist mehr als 11,7962. Was passiert, wenn jedes Kind ein bisschen zu viel bekommt?
+      - when: { picked: 1 }
+        say: Rechne nach, 27 mal 11,80.
+    solution: |
+      Nein: 27 · 11,80 € = 318,60 €, 10 Cent mehr, als in der Kasse ist.
+      Aufgerundet bekommt jedes Kind ein bisschen zu viel. Abgerundet,
+      11,79 €, reicht es, und 17 Cent bleiben in der Kasse.
+
+  - id: formeln
+    title: Was im PDF steht
+    prediction: true
+    prompt: |
+      Du exportierst deine Abrechnung als PDF. In G15 steht die Formel
+      `=G13-G14`, die Zelle zeigt 318,50 €. Was steht im PDF an dieser
+      Stelle?
+    check:
+      type: choice
+      options:
+        - 318,50 €, was die Zelle zeigt
+        - Die Formel `=G13-G14`
+        - Beides, die Formel und ihr Ergebnis
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: Ein PDF zeigt eine Seite, wie sie gedruckt aussähe. Was steht auf dem Papier, wenn du eine Tabelle druckst?
+      - when: { picked: 2 }
+        say: Auf dem Ausdruck steht in jeder Zelle nur eines. Welches?
+    solution: |
+      318,50 €: Ein PDF ist die gedruckte Seite. Die Formeln bleiben in der
+      Tabelle; im PDF rechnet nichts mehr.
+
+  - id: abrechnung
+    title: Die Abrechnung der Klassenfahrt
+    prompt: |
+      Prüfe deine Abrechnung. Die Prüfung markiert auf deiner Seite jede
+      Zelle, an der noch etwas fehlt. Speichere in LibreOffice oder Excel,
+      bevor du prüfst.
+    check:
+      type: document
+      file: trip-accounts/07 Abrechnung.xlsx
+      rules:
+        - { sorted: { range: 'A5:C31', by: B, order: asc } }
+        - { same_data: ['F5:H9'] }
+        - { formulas: ['G13:G19', 'D5:D31'] }
+        - { functions: { G13: SUM, G14: SUM, G16: COUNT, G17: ROUNDDOWN, G19: IF } }
+        - { absolute: { cells: 'D5:D31', ref: 'G17' } }
+        - { values: { G13: 6590.5, G14: 6272, G15: 318.5, G16: 27, G17: 11.79, G18: 0.17, G19: Rückzahlung } }
+        - { number_format: { 'C5:D31': currency, 'H5:H9': currency, 'G13:G15': currency, 'G17:G18': currency, 'A5:A31': date, 'F5:F9': date } }
+        - { chart: { type: pie, title: true, range: 'H5:H9' } }
+        - { recalc: { set: { H5: 1400 }, expect: { G15: 168.5, G17: 6.24, G19: Rückzahlung } } }
+        - { recalc: { set: { H5: 1700 }, expect: { G15: -131.5, G19: Nachzahlung } } }
+        - no_errors
+    hint:
+      - Fang mit der Abrechnung in F12 bis G19 an, von oben nach unten. Jede Zelle rechnet mit den Zellen darüber oder mit den Listen links.
+      - Dann die Spalte »zurück« mit festem Bezug auf G17, die Formate, die sortierte Liste und zuletzt das Diagramm.
+      - Jeder Punkt hat ein Blatt der Reihe, auf dem er erklärt ist. Die Links stehen oben auf dieser Seite.
+    libreoffice:
+      hint:
+        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`."
+        - "In D5 `=$G$17` und bis D31 ausfüllen; sortieren über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, nachdem du in die Liste geklickt hast."
+        - "Das Diagramm: H5 bis H9 mit den Posten daneben markieren, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, *Kreisdiagramm*, unter *Diagrammelemente* der *Titel*."
+    word:
+      hint:
+        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`."
+        - "In D5 `=$G$17` (<kbd>F4</kbd>) und bis D31 ausfüllen; sortieren über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*, nachdem du in die Liste geklickt hast."
+        - "Das Diagramm: G4 bis H9 markieren, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kreis- oder Ringdiagramm einfügen*, dann den *Diagrammtitel* schreiben."
+    nextcloud:
+      hint:
+        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`."
+        - "In D5 `=$G$17` und bis D31 ausfüllen; sortieren über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, nachdem du in die Liste geklickt hast."
+        - "Das Diagramm: G4 bis H9 markieren, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, *Kreisdiagramm*, mit *Titel*."
+
+  - id: pdf
+    title: Die Abrechnung als PDF
+    prompt: |
+      Exportiere deine fertige Abrechnung als PDF und lade hier das PDF
+      hoch. Deine Tabelle bleibt, wie sie ist; das PDF ist eine Kopie für den
+      Elternabend.
+    check:
+      type: document
+      accept: pdf
+      rules:
+        - pdf
+        - pdf_fonts
+        - { pdf_words: 60 }
+    hint:
+      - Ein PDF speicherst du nicht, du exportierst es. Wo das geht, steht auf dieser Seite über der Aufgabe.
+      - Lade das PDF hoch, nicht die Tabelle. Es liegt dort, wo du es beim Exportieren gespeichert hast.
+    libreoffice:
+      hint:
+        - "Wähl *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*, dann *Exportieren*, und speichere das PDF neben deiner Tabelle."
+        - "Lade das PDF hoch, nicht die .xlsx oder .ods. Es liegt dort, wo du es beim Exportieren gespeichert hast."
+    word:
+      hint:
+        - "Wähl *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen* und speichere das PDF neben deiner Tabelle."
+        - "Lade das PDF hoch, nicht die .xlsx. Es liegt dort, wo du es beim Exportieren gespeichert hast."
+    nextcloud:
+      hint:
+        - "Wähl *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Herunterladen als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF-Dokument (.pdf)*. Das PDF landet in deinen Downloads."
+        - "Lade das PDF aus deinen Downloads hoch."

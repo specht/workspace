@@ -1,0 +1,105 @@
+# Aufgaben zu »Auswerten«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/spreadsheet-functions/04 Umfrage.xlsx), die
+# fertige Tabelle und die Stufen macht dokumente.py.
+format: 1
+activity: spreadsheet-functions
+tasks:
+  - id: leer
+    title: Eine leere Zelle
+    prediction: true
+    prompt: |
+      In B4 bis B8 stehen 5, 4, nichts, 3 und 4: B6 ist leer. Was zeigt
+      `=MITTELWERT(B4:B8)`?
+    check:
+      type: choice
+      options:
+        - "4"
+        - "3,2"
+        - Einen Fehler, weil B6 leer ist
+      correct: 0
+      shuffle: false
+    feedback:
+      - when: { picked: 1 }
+        say: 3,2 wäre es, wenn in B6 eine 0 stünde. Ist eine leere Zelle eine 0?
+      - when: { picked: 2 }
+        say: Leere Zellen in einem Bereich stören eine Funktion nicht. Was macht sie mit ihnen?
+    solution: |
+      4: MITTELWERT zählt nur die Zahlen zusammen und teilt durch ihre Anzahl,
+      (5 + 4 + 3 + 4) / 4. Die leere Zelle lässt die Funktion aus.
+
+  - id: anzahl
+    title: Wie viele geantwortet haben
+    prompt: |
+      Wie viele Kinder haben das Moormuseum bewertet? Lass die Tabelle
+      zählen: `=ANZAHL(D4:D30)`.
+    check:
+      type: number
+      expect: 24
+      tolerance: 0.001
+    feedback:
+      - when: { between: [27, 27] }
+        say: So viele Antworten gibt es. Manche haben die Frage zum Moormuseum aber ausgelassen.
+    hint: ANZAHL zählt die Zellen, in denen eine Zahl steht. Schreib die Formel in eine freie Zelle unter der Tabelle.
+    solution: |
+      24: Drei Kinder haben beim Moormuseum nichts eingetragen.
+
+  - id: wenn
+    title: Ja oder nein
+    prediction: true
+    prompt: |
+      Der Mittelwert der Jugendherberge in E33 ist auf eine Nachkommastelle
+      formatiert und zeigt 4,0. In E36 steht `=WENN(E33>=4;"ja";"nein")`.
+      Was zeigt E36?
+    check:
+      type: choice
+      options:
+        - ja
+        - nein
+        - Einen Fehler
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: E33 zeigt 4,0. Aber womit rechnet eine Formel, mit dem, was die Zelle zeigt, oder mit dem, was in ihr steht?
+      - when: { picked: 2 }
+        say: Die Formel ist richtig geschrieben. Was ergibt die Bedingung?
+    solution: |
+      nein: In E33 steht 3,96 (99 Sterne aus 25 Antworten); das Format zeigt
+      nur 4,0. WENN vergleicht 3,96 mit 4.
+
+  - id: umfrage
+    title: Die Umfrage ausgewertet
+    prompt: |
+      Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
+      an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
+      prüfst.
+    check:
+      type: document
+      file: spreadsheet-functions/04 Umfrage.xlsx
+      rules:
+        - { same_data: ['A1:E30'] }
+        - { formulas: ['B32:E36'] }
+        - { functions: { 'B32:E32': COUNT, 'B33:E33': AVERAGE, 'B34:E34': MAX, 'B35:E35': MIN, 'B36:E36': IF } }
+        - { values: { B32: 26, C32: 27, D32: 24, E32: 25, B33: 4.4231, C33: 3.5926, D33: 2.5833, E33: 3.96, D34: 4, C35: 1, B36: ja, E36: nein } }
+        - { number_format: { 'B33:E33': { decimals: 1 } } }
+        - { recalc: { set: { E15: 5, B4: 1 }, expect: { E32: 26, E33: 4, E36: ja, B33: 4.3077, B35: 1 } } }
+        - no_errors
+    hint:
+      - In Zeile 32 bis 35 kommt je eine Funktion über die Antworten der Spalte, B4 bis B30, in Zeile 36 WENN mit dem Mittelwert darüber. Fang mit Spalte B an.
+      - Markiere B32 bis B36 und zieh sie am kleinen Quadrat nach rechts bis Spalte E. Die Bezüge wandern mit, zu C, D und E.
+      - Die Mittelwerte in Zeile 33 bekommen ein Format mit einer Nachkommastelle.
+    libreoffice:
+      hint:
+        - "In B32 tippst du `=ANZAHL(B4:B30)`, darunter `=MITTELWERT(B4:B30)`, `=MAX(B4:B30)`, `=MIN(B4:B30)` und in B36 `=WENN(B33>=4;\"ja\";\"nein\")`."
+        - "Markiere B32 bis B36 und zieh das kleine Quadrat unten rechts bis Spalte E."
+        - "Markiere B33 bis E33, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Zahl*, *Nachkommastellen* 1."
+    word:
+      hint:
+        - "In B32 tippst du `=ANZAHL(B4:B30)`, darunter `=MITTELWERT(B4:B30)`, `=MAX(B4:B30)`, `=MIN(B4:B30)` und in B36 `=WENN(B33>=4;\"ja\";\"nein\")`."
+        - "Markiere B32 bis B36 und zieh das kleine Quadrat unten rechts bis Spalte E."
+        - "Markiere B33 bis E33, <kbd>Strg</kbd>+<kbd>1</kbd> <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Zahl*, *Dezimalstellen* 1."
+    nextcloud:
+      hint:
+        - "In B32 tippst du `=ANZAHL(B4:B30)`, darunter `=MITTELWERT(B4:B30)`, `=MAX(B4:B30)`, `=MIN(B4:B30)` und in B36 `=WENN(B33>=4;\"ja\";\"nein\")`."
+        - "Markiere B32 bis B36 und zieh das kleine Quadrat unten rechts bis Spalte E."
+        - "Markiere B33 bis E33, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Zahl*, *Nachkommastellen* 1."

@@ -1,0 +1,21 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die fertige Tabelle muss die Prüfung bestehen, auch
+# mit B$2 und B$3 (nur die Zeile fest, für das Ausfüllen nach unten genug);
+# die Vorlage, die Formel ohne $ ausgefüllt und die Zahl der Kinder in die
+# Formeln getippt scheitern. Alle macht dokumente.py.
+format: 1
+activity: absolute-references
+examples:
+  anteile:
+    pass:
+      - document: stufen/anteile.xlsx
+      - document: stufen/zeile-fest.xlsx
+    fail:
+      - document: ../../static/absolute-references/03 Anteile.xlsx
+        say: keine Formel
+      - document: stufen/ohne-dollar.xlsx
+        say: $B$2
+      - document: stufen/ohne-dollar.xlsx
+        say: '#DIV/0!'
+      - document: stufen/getippt.xlsx
+        say: Ich habe B2 auf 24

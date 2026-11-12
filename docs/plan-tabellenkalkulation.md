@@ -39,17 +39,51 @@ goes back to the families after the trip (sheet 7).
    look and not the number (prediction: 232,75 shown as 233), a date is a
    number of days. History: the 29 February 1900 of Lotus 1-2-3 that Excel
    keeps; person box Mitch Kapor.
-3. **Feste Bezüge** (`absolute-references`): each family's share and a
-   discount from one cell; copying a formula down without $ breaks it.
+3. **Feste Bezüge** (`absolute-references`): what one child pays: the
+   children's costs divided by the number of children in B2, less the
+   discount in B3. The parent's =B6/B2 filled down divides by the discount
+   (79.920 € for the hostel, no error shown) and by an empty cell
+   (#DIV/0!); $B$2 holds it (B$2 passes too). Predictions: what C7 holds
+   after filling down, what =B6/$B$2 becomes one column to the right.
+   History: R1C1 in Multiplan, a relative reference written as the path
+   (RC[-1]); person box Charles Simonyi (Bravo, then Multiplan, Word and
+   Excel).
 4. **Auswerten** (`spreadsheet-functions`): the class's survey after the
-   trip: MITTELWERT, MIN, MAX, ANZAHL, and WENN.
-5. **Sortieren, Filtern, Hervorheben** (`sort-and-filter`): the list of
-   payments sorted by one column alone (the names no longer fit the
-   amounts), a filter, conditional formatting for what is still open.
+   trip, 27 numbered answers (no names) with one to five stars, some
+   questions left out: ANZAHL, MITTELWERT, MIN, MAX filled to the right, WENN
+   from a mean of 4. Predictions: an empty cell is not a 0 (MITTELWERT of
+   5, 4, empty, 3, 4 is 4); the hostel's mean shows 4,0 but is 3,96, so WENN
+   says »nein«. History: the Reinhart-Rogoff spreadsheet (2013), a mean
+   that missed rows; the stage `zu-kurz.xlsx` ends its ranges early.
+5. **Sortieren, Filtern, Hervorheben** (`sort-and-filter`): all 27
+   families' payments in the order entered, what each still owes (=C-D).
+   Sorted by family with whole rows (the check compares every row with the
+   starting file, so a column sorted alone fails), an autofilter, a
+   conditional format for what is open; the drawn sheet shows its colour
+   (`sheet.py` evaluates conditions on a cell's value against numbers).
+   Predictions: an empty cell in a subtraction counts as 0 (unlike
+   MITTELWERT); a column sorted alone; SUMME counts rows a filter hides
+   (tested in Calc: 1.220 € with all open rows hidden; TEILERGEBNIS for
+   the visible ones). Person box Herman Hollerith (punched cards, the 1890
+   census, born on 29 February). Names sort as the programs do: Ç with C.
 6. **Diagramme** (`spreadsheet-charts`): which chart answers which
-   question; titles, axis titles, the right range.
-7. **Die Abrechnung der Klassenfahrt** (`trip-accounts`): the hand-in: a
-   table of one's own with every point of the series, exported as PDF.
+   question (a task: the account growing over the weeks wants a line); a
+   pie of what a child pays, a column chart of the stars, titles and axis
+   titles; the share of the hostel in percent; a prediction on an axis
+   starting at 2,5 (the column looks twenty times as high). History:
+   William Playfair's charts of 1786 (his Denmark and Norway chart as the
+   picture) and the pie of 1801.
+7. **Die Abrechnung der Klassenfahrt** (`trip-accounts`): the hand-in:
+   nothing calculates in the starting file. Income and expenses with
+   SUMME, the rest, the children with ANZAHL, the refund per child with
+   ABRUNDEN (318,50 € for 27: rounded, 11,80 € would be 10 cents too much),
+   a column with $G$17, WENN for refund or extra payment, formats, the
+   payments sorted by family, a pie of the expenses; two probes (the bus
+   at 1.400 € and at 1.700 €, then »Nachzahlung«). The PDF, landscape on
+   one page: a prediction that it shows results, not formulas.
+
+The series has one card (`card_title: Tabellenkalkulation Schritt für
+Schritt` on sheet 1, the drawing `karte_tabellen` in office-drawings.py).
 
 ## How the check reads a spreadsheet
 
@@ -93,11 +127,18 @@ Rules (docs/aufgaben.md, »document«): `formulas`, `values`, `recalc`,
 - **The year of the data.** The payments are dated March 2027; a date
   needs a year to be a number of days. The page names no year, the
   drawing of the days shows the numbers of that March.
-- **Persons on draft sheets** (Bricklin and Frankston, Kapor, Simonyi) are named in
+- **Persons on draft sheets** (Bricklin and Frankston, Kapor, Simonyi, Hollerith) are named in
   `person_boxes_test.rb` (`WAITING`) until the sheets are published.
 
 ## Open
 
+- Publishing: the seven sheets are drafts in »Texte & Präsentationen«; the
+  section Office (commented out in sections.yaml) comes back with both
+  series once the maintainer decides.
+- The drawn sheet shows a conditional format's colour only for conditions
+  on the cell's value against numbers; formulas as conditions, colour
+  scales and data bars are not drawn.
+- Autofilter arrows are not drawn on the sheet.
 - Try a file saved by Excel (number formats, charts) once a class uses it.
 - Nextcloud Office: its menus as far as the pages name them are LibreOffice's;
   to check in the program.

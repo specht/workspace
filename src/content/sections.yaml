@@ -134,7 +134,7 @@
 #   series:
 #     - [formatting-marks, character-formatting, lists-and-tabs, word-tables, pictures-in-text, paragraph-styles, pages-and-contents, headers-and-footnotes, newspaper-page, trip-newspaper]
     # the sheets on spreadsheets (docs/plan-tabellenkalkulation.md), in development
-    - [spreadsheet-cells, number-formats]
+    - [spreadsheet-cells, number-formats, absolute-references, spreadsheet-functions, sort-and-filter, spreadsheet-charts, trip-accounts]
 
 - key: writing
   compact: true
@@ -162,6 +162,11 @@
     - trip-newspaper
     - .spreadsheet-cells
     - .number-formats
+    - .absolute-references
+    - .spreadsheet-functions
+    - .sort-and-filter
+    - .spreadsheet-charts
+    - .trip-accounts
   # the sheets on word processing (docs/plan-textverarbeitung.md), one card;
   # here until the section Office has a second series. Each is pinned on its
   # own, the class page shows them as a whole too

@@ -17,7 +17,8 @@ module DocumentCheck
     # show them so; the file stores the English ones)
     FUNCTION_NAMES = { 'SUM' => 'SUMME', 'AVERAGE' => 'MITTELWERT', 'MAX' => 'MAX', 'MIN' => 'MIN', 'COUNT' => 'ANZAHL',
                        'COUNTA' => 'ANZAHL2', 'IF' => 'WENN', 'COUNTIF' => 'ZÄHLENWENN', 'SUMIF' => 'SUMMEWENN',
-                       'ROUND' => 'RUNDEN', 'TODAY' => 'HEUTE' }.freeze
+                       'ROUND' => 'RUNDEN', 'ROUNDDOWN' => 'ABRUNDEN', 'ROUNDUP' => 'AUFRUNDEN', 'SUBTOTAL' => 'TEILERGEBNIS',
+                       'TODAY' => 'HEUTE' }.freeze
     CHART_NAMES = { 'column' => 'Säulendiagramm', 'bar' => 'Balkendiagramm', 'line' => 'Liniendiagramm',
                     'pie' => 'Kreisdiagramm', 'scatter' => 'Punktdiagramm', 'area' => 'Flächendiagramm' }.freeze
     # com.sun.star.util.NumberFormat
@@ -103,6 +104,21 @@ module DocumentCheck
         !a.nil? && !b.nil? && (a.to_f - b.to_f).abs <= [0.005, b.to_f.abs * 1e-9].max
     end
 
+    # a cell as a rule wants it: a number close enough, or a text (»wieder«,
+    # a result of WENN) as the cell shows it
+    def self.matches?(value, shown, want)
+        want.is_a?(String) ? shown.to_s.strip == want : close?(value, want)
+    end
+
+    # text as the programs sort it in German: Ç with C, ą with a, ß as ss
+    def self.sort_key(text)
+        text.to_s.unicode_normalize(:nfkd).gsub(/\p{Mn}/, '').gsub('ß', 'ss').downcase
+    end
+
+    def self.wanted(want)
+        want.is_a?(String) ? q(want) : number(want)
+    end
+
     def self.german_formula(formula)
         formula.to_s.gsub(/\b([A-Z]+)\(/) { "#{FUNCTION_NAMES[Regexp.last_match(1)] || Regexp.last_match(1)}(" }.tr(',', ';')
     end
@@ -137,14 +153,14 @@ module DocumentCheck
         sheet = sheet_of(model, rule)
         label = wants.size == 1 ? "Das Ergebnis in #{wants.keys.first} stimmt" : "Die Ergebnisse in #{cells_label(wants.keys)} stimmen"
         item = Item.new(:rule => 'values', :label => label, :ok => true, :marks => [])
-        wrong = wants.reject { |n, v| close?((cell(sheet, n) || {})['value'], v) }
+        wrong = wants.reject { |n, v| c = cell(sheet, n) || {}; matches?(c['value'], shown(c), v) }
         return item if wrong.empty?
 
         item.ok = false
         item.marks = wrong.keys.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'falsches Ergebnis') }
         n, v = wrong.first
         have = cell(sheet, n)
-        item.message = "In #{n} steht #{have ? q(shown(have)) : 'nichts'}, richtig wäre #{number(v)}." +
+        item.message = "In #{n} steht #{have ? q(shown(have)) : 'nichts'}, richtig wäre #{wanted(v)}." +
             (have && have['formula'] ? " Die Formel dort: #{q(german_formula(have['formula']))}." : '')
         item
     end
@@ -156,14 +172,14 @@ module DocumentCheck
         probe = (model['probes'] || [])[rule['_probe'].to_i] || {}
         changes = names(set.map { |n, v| "#{n} auf #{v.is_a?(Numeric) ? number(v) : v}" })
         item = Item.new(:rule => 'recalc', :label => 'Rechnet mit, wenn sich eine Zahl ändert', :ok => true, :marks => [])
-        wrong = expect.reject { |n, v| close?((probe['values'] || {})[n], v) }
+        wrong = expect.reject { |n, v| matches?((probe['values'] || {})[n], (probe['shown'] || {})[n], v) }
         return item if wrong.empty? && probe['error'].nil?
 
         item.ok = false
         item.marks = wrong.keys.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'rechnet nicht mit') }
         n, v = wrong.first || expect.first
         got = (probe['shown'] || {})[n]
-        item.message = "Ich habe #{changes} geändert. Dann müsste in #{n} #{number(v)} stehen, " \
+        item.message = "Ich habe #{changes} geändert. Dann müsste in #{n} #{wanted(v)} stehen, " \
             "es steht aber #{got.to_s.empty? ? 'nichts' : q(got)} da. Rechnet die Zelle mit einer getippten Zahl statt mit der Zelle?"
         item
     end
@@ -174,7 +190,9 @@ module DocumentCheck
         sheet = sheet_of(model, rule)
         label = names(wants.map { |n, f| "#{n} mit #{FUNCTION_NAMES[f.to_s.upcase] || f}" })
         item = Item.new(:rule => 'functions', :label => label, :ok => true, :marks => [])
-        wrong = wants.reject { |n, f| (cell(sheet, n) || {})['formula'].to_s.upcase.include?("#{f.to_s.upcase}(") }
+        # a key may be a range (»B33:E33«): each of its cells
+        wrong = wants.flat_map { |n, f| cells_of(n).map { |c| [c, f] } }
+                     .reject { |n, f| (cell(sheet, n) || {})['formula'].to_s.upcase.match?(/(?<![A-Z])#{f.to_s.upcase}\(/) }.to_h
         return item if wrong.empty?
 
         item.ok = false
@@ -311,11 +329,18 @@ module DocumentCheck
         by = cell_index("#{spec['by']}1").first
         desc = spec['order'] == 'desc'
         item = Item.new(:rule => 'sorted', :label => "Sortiert nach Spalte #{spec['by']}, #{desc ? 'absteigend' : 'aufsteigend'}", :ok => true, :marks => [])
-        key = ->(s, r) { c = cell(s, cell_name(by, r)); c.nil? ? nil : (c['type'] == 'text' ? c['text'].to_s.downcase : c['value'].to_f) }
+        key = ->(s, r) { c = cell(s, cell_name(by, r)); c.nil? ? nil : (c['type'] == 'text' ? sort_key(c['text']) : c['value'].to_f) }
         rows = (r1..r2).to_a
         values = rows.map { |r| key.(sheet, r) }
         bad = values.each_cons(2).each_with_index.find { |(a, b), _| !a.nil? && !b.nil? && a.class == b.class && (desc ? a < b : a > b) }
-        row_text = ->(s, r) { (c1..c2).map { |c| shown(cell(s, cell_name(c, r))) } }
+        # a row by its contents: numbers by value (a date formatted since is
+        # the same row), texts as they are
+        row_text = lambda do |s, r|
+            (c1..c2).map do |c|
+                x = cell(s, cell_name(c, r))
+                x.nil? || x['type'] == 'empty' ? '' : x['type'] == 'text' ? x['text'].to_s : format('%.4f', x['value'].to_f)
+            end
+        end
         same = !sheet?(starter) || rows.map { |r| row_text.(sheet, r) }.sort == rows.map { |r| row_text.(sheet_of(starter, rule), r) }.sort
         return item if bad.nil? && same
 

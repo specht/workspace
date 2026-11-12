@@ -1,0 +1,18 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die fertige Tabelle muss die Prüfung bestehen; die
+# Vorlage, getippte Mittelwerte (mit den leeren Zellen als 0 gerechnet) und
+# Bereiche, die vor der letzten Antwort enden, scheitern. Alle macht
+# dokumente.py.
+format: 1
+activity: spreadsheet-functions
+examples:
+  umfrage:
+    pass:
+      - document: stufen/umfrage.xlsx
+    fail:
+      - document: ../../static/spreadsheet-functions/04 Umfrage.xlsx
+        say: keine Formel
+      - document: stufen/getippt.xlsx
+        say: MITTELWERT
+      - document: stufen/zu-kurz.xlsx
+        say: richtig wäre 26

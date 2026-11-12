@@ -1,0 +1,17 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die fertige Tabelle muss die Prüfung bestehen; die
+# Vorlage, die Tabelle mit allein sortierten Namen und die sortierte ohne
+# Filter und Farbe scheitern. Alle macht dokumente.py.
+format: 1
+activity: sort-and-filter
+examples:
+  zahlungen:
+    pass:
+      - document: stufen/zahlungen.xlsx
+    fail:
+      - document: ../../static/sort-and-filter/05 Zahlungen.xlsx
+        say: aufsteigend sortiert
+      - document: stufen/nur-namen.xlsx
+        say: eine Spalte allein
+      - document: stufen/nur-sortiert.xlsx
+        say: noch keinen Filter

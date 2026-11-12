@@ -2025,6 +2025,9 @@ check:
 `recalc` schickt die Änderung mit dem Upload an den Dienst: Er ändert die
 Zellen in seiner Kopie, rechnet neu, liest die anderen und setzt alles
 zurück. Eine Tabelle mit getippten Ergebnissen zeigt dann die alten Zahlen.
+`values` und `expect` von `recalc` nehmen auch Text (`{ B36: ja }`, das
+Ergebnis von WENN), verglichen mit dem, was die Zelle zeigt. Ein Schlüssel von
+`functions` darf ein Bereich sein (`{ 'B33:E33': AVERAGE }`): jede Zelle darin.
 `number_format: currency` nimmt jedes Format mit €, EUR oder einem
 Währungskürzel: Excel speichert sein Euro-Zeichen als Text im Format, auch
 bei *Buchhaltung*, und Calc liest das als gewöhnliches Zahlenformat.

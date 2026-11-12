@@ -1,0 +1,106 @@
+# Aufgaben zu »Diagramme«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/spreadsheet-charts/06 Diagramme.xlsx), die fertige
+# Tabelle und eine Stufe mit falschen Diagrammen macht dokumente.py.
+format: 1
+activity: spreadsheet-charts
+tasks:
+  - id: welches
+    title: Das passende Diagramm
+    prompt: |
+      Das Elternteil, das die Kasse führt, will auf dem Elternabend zeigen,
+      wie das Geld über die drei Wochen der Einzahlungen auf dem Konto
+      zusammenkam, Tag für Tag. Welches Diagramm passt?
+    check:
+      type: choice
+      options:
+        - Ein Kreisdiagramm
+        - Ein Säulendiagramm mit einer Säule je Familie
+        - Ein Liniendiagramm
+      correct: 2
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Ein Kreis zeigt, wie sich ein Ganzes aufteilt. Hier geht es darum, wie etwas wächst.
+      - when: { picked: 1 }
+        say: Säulen vergleichen Familien miteinander. Gefragt ist, wie sich der Kontostand mit der Zeit ändert.
+    solution: |
+      Ein Liniendiagramm: Es zeigt, wie sich etwas mit der Zeit ändert, hier
+      der Kontostand Tag für Tag.
+
+  - id: anteil
+    title: Der größte Teil
+    prompt: |
+      Wie viel Prozent dessen, was ein Kind bezahlt, macht die
+      Jugendherberge aus? Lass die Tabelle rechnen und runde auf ganze
+      Prozent.
+    check:
+      type: number
+      expect: 64
+      tolerance: 0.6
+    feedback:
+      - when: { between: [148, 148] }
+        say: So viel Euro kostet die Jugendherberge ein Kind. Gefragt ist ihr Anteil am Ganzen, an B9.
+      - when: { between: [0.6, 0.65] }
+        say: Das ist der Anteil als Kommazahl. Wie viel Prozent sind das?
+    hint: Teil durch Ganzes, `=B5/B9`, und das Ergebnis mit dem Format Prozent.
+    solution: |
+      64 %: 148,00 € von 232,30 €, `=B5/B9` ergibt 0,637. Fast zwei Drittel
+      dessen, was ein Kind bezahlt, gehen an die Jugendherberge.
+
+  - id: achse
+    title: Eine kurze Achse
+    prediction: true
+    prompt: |
+      Ein Säulendiagramm zeigt die Sterne des Kletterwalds (4,4) und des
+      Moormuseums (2,6). Seine Achse fängt aber nicht bei 0 an, sondern bei
+      2,5. Wie viel höher sieht die Säule des Kletterwalds aus?
+    check:
+      type: choice
+      options:
+        - Knapp doppelt so hoch
+        - Fast zwanzigmal so hoch
+        - Genauso hoch
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Doppelt so hoch ist sie mit einer Achse ab 0. Wie hoch ist jede Säule über der 2,5?
+      - when: { picked: 2 }
+        say: Die Säulen haben verschiedene Werte. Wie viel ragt jede über die 2,5 hinaus?
+    solution: |
+      Fast zwanzigmal: Über der 2,5 stehen beim Kletterwald 1,9, beim
+      Moormuseum 0,1. Die kurze Achse macht aus einem Unterschied von knapp
+      zwei Sternen einen riesigen.
+
+  - id: diagramme
+    title: Zwei Diagramme
+    prompt: |
+      Prüfe deine Tabelle. Die Prüfung sieht nach, welche Diagramme darin
+      stehen, mit welchen Daten und welchen Titeln. Speichere in LibreOffice
+      oder Excel, bevor du prüfst.
+    check:
+      type: document
+      file: spreadsheet-charts/06 Diagramme.xlsx
+      rules:
+        - { same_data: ['A3:B8', 'A14:B18'] }
+        - { chart: { type: pie, title: true, range: 'B4:B8' } }
+        - { chart: { type: column, title: true, axis_titles: true, range: 'B15:B18' } }
+    hint:
+      - Für die Kosten passt ein Kreisdiagramm, für die Sterne ein Säulendiagramm. Markiere jeweils die Tabelle mit ihren Überschriften, ohne die Zeile »Zusammen«.
+      - Jedes Diagramm bekommt einen Titel, der sagt, was es zeigt.
+      - Das Säulendiagramm bekommt Titel an beiden Achsen, etwa »Programmpunkt« und »Sterne im Mittel«.
+    libreoffice:
+      hint:
+        - "Markiere A3 bis B8, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*; im *Diagramm-Assistenten* unter *Diagrammtyp* das *Kreisdiagramm*."
+        - "Im Schritt *Diagrammelemente* trägst du den *Titel* ein."
+        - "Für A14 bis B18 wählst du das *Säulendiagramm* und trägst unter *Diagrammelemente* auch die Titel der *X-Achse* und der *Y-Achse* ein."
+    word:
+      hint:
+        - "Markiere A3 bis B8, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kreis- oder Ringdiagramm einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kreis*."
+        - "Klick auf den *Diagrammtitel* und schreib deinen Titel hinein."
+        - "Für A14 bis B18 wählst du *Säulen- oder Balkendiagramm einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Gruppierte Säulen*; die Achsentitel fügt das Plus neben dem Diagramm hinzu, *Diagrammelemente* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Achsentitel*."
+    nextcloud:
+      hint:
+        - "Markiere A3 bis B8, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, unter *Diagrammtyp* das *Kreisdiagramm*."
+        - "Im Schritt *Diagrammelemente* trägst du den *Titel* ein."
+        - "Für A14 bis B18 wählst du das *Säulendiagramm* und trägst auch die Titel der beiden Achsen ein."

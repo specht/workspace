@@ -1,6 +1,7 @@
 <div class='meta'>
-image: teaser.webp
-image_alt: "Die Kosten der Klassenfahrt als Tabelle: Posten, Anzahl, Preis und Summe, darunter der Gesamtbetrag"
+image: karte.webp
+image_alt: "Drei Blätter, aufgefächert: eine Tabelle mit einer orange markierten Zelle, einer 1 daneben und der Formel =B5*C5 darunter, ein Kreisdiagramm »Wofür ein Kind bezahlt« und ein Säulendiagramm »Wie hat es gefallen?« mit einem grünen Haken"
+card_title: "Tabellenkalkulation Schritt für Schritt"
 kind: labor
 duration: 1 Stunde (45 Minuten)
 curriculum: "Sek I: Standardsoftware (Tabellenkalkulation)"

@@ -1,0 +1,15 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Die Tabelle mit beiden Diagrammen muss die Prüfung
+# bestehen; die Vorlage (kein Diagramm) und eine mit den Sternen als Kreis
+# ohne Titel scheitern. Alle macht dokumente.py.
+format: 1
+activity: spreadsheet-charts
+examples:
+  diagramme:
+    pass:
+      - document: stufen/diagramme.xlsx
+    fail:
+      - document: ../../static/spreadsheet-charts/06 Diagramme.xlsx
+        say: noch kein Diagramm
+      - document: stufen/falsch.xlsx
+        say: keinen Titel

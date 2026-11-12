@@ -98,6 +98,10 @@ _task(absaetze)
 
 _task(zeilenende)
 
+<div class='history' id='history-schreibmaschine'>
+<p><strong>Von der Schreibmaschine zur Textverarbeitung.</strong> An einer Schreibmaschine schob ein Hebel am Ende jeder Zeile die Walze mit dem Papier zurück an den Anfang und eine Zeile weiter, der Wagenrücklauf. Daher kommt das Zeichen ↵, und daher tippten viele zwei Leerzeichen nach dem Punkt: Auf der Schreibmaschine war jeder Buchstabe gleich breit, und ein Leerzeichen allein fiel kaum auf. 1955 schlug Ulrich Steinhilper, Verkäufer von Schreibmaschinen bei IBM in Deutschland, vor, Texte so mit Maschinen zu bearbeiten wie Zahlen, eine <em>Textverarbeitung</em> neben der Datenverarbeitung; IBM ehrte ihn 1972 für das Wort. Die Amerikanerin Evelyn Berezin baute 1968 die »Data Secretary«, ein Gerät so groß wie ein kleiner Kühlschrank, das getippten Text auf einem Band speicherte: Wer sich vertippt hatte, musste nicht mehr die ganze Seite neu schreiben.</p>
+</div>
+
 ## Mitte und Rand
 
 Ob ein Absatz links, in der Mitte oder rechts steht, ist seine
@@ -199,11 +203,7 @@ So sieht die gebaute Einladung mit größerer Schrift aus:
 _task(ausdruck)
 <!-- /after -->
 
-<div class='history' id='history-schreibmaschine'>
-<p><strong>Von der Schreibmaschine zur Textverarbeitung.</strong> An einer Schreibmaschine schob ein Hebel am Ende jeder Zeile die Walze mit dem Papier zurück an den Anfang und eine Zeile weiter, der Wagenrücklauf. Daher kommt das Zeichen ↵, und daher tippten viele zwei Leerzeichen nach dem Punkt: Auf der Schreibmaschine war jeder Buchstabe gleich breit, und ein Leerzeichen allein fiel kaum auf. 1955 schlug Ulrich Steinhilper, Verkäufer von Schreibmaschinen bei IBM in Deutschland, vor, Texte so mit Maschinen zu bearbeiten wie Zahlen, eine <em>Textverarbeitung</em> neben der Datenverarbeitung; IBM ehrte ihn 1972 für das Wort. Die Amerikanerin Evelyn Berezin baute 1968 die »Data Secretary«, ein Gerät so groß wie ein kleiner Kühlschrank, das getippten Text auf einem Band speicherte: Wer sich vertippt hatte, musste nicht mehr die ganze Seite neu schreiben.</p>
-</div>
-
 <div class='history' id='history-libreoffice'>
-<p><strong>Woher LibreOffice kommt.</strong> 1984 gründete Marco Börries mit 16 Jahren, noch als Schüler, in Lüneburg die Firma Star Division. 1985 erschien ihr Textprogramm StarWriter, für die Heimcomputer von Schneider; daraus wurde das Paket StarOffice. 1999 kaufte die Firma Sun StarOffice und gab seinen Quelltext frei, als OpenOffice.org. 2010 machten Entwicklerinnen und Entwickler daraus LibreOffice, mit der Stiftung The Document Foundation, die seit 2012 ihren Sitz in Berlin hat. LibreOffice ist freie Software: Jede und jeder darf es benutzen, weitergeben und verändern, kostenlos.</p>
+<p><strong>Woher LibreOffice kommt.</strong> 1985 gründete Marco Börries mit 16 Jahren, noch als Schüler, in Lüneburg die Firma Star Division. Ihr Textprogramm StarWriter lief bald auch auf den Heimcomputern von Schneider; daraus wurde das Paket StarOffice. 1999 kaufte die Firma Sun StarOffice und gab seinen Quelltext frei, als OpenOffice.org. 2010 machten Entwicklerinnen und Entwickler daraus LibreOffice, mit der Stiftung The Document Foundation, die seit 2012 ihren Sitz in Berlin hat. LibreOffice ist freie Software: Jede und jeder darf es benutzen, weitergeben und verändern, kostenlos.</p>
 </div>
 

@@ -20,6 +20,7 @@ import time
 
 import uno
 from com.sun.star.beans import PropertyValue
+from com.sun.star.awt import Rectangle
 from com.sun.star.lang import Locale
 
 PIPE = 'calc_build'
@@ -142,3 +143,33 @@ def widths(doc, cm, sheet=0):
     cols = sheet_of(doc, sheet).Columns
     for i, w in enumerate(cm):
         cols.getByIndex(i).Width = int(w * 1000)
+
+
+def address(sheet, text):
+    return sheet.getCellRangeByName(text).RangeAddress
+
+
+def chart(doc, name, source, kind, title, x_title=None, y_title=None, where=(0, 0, 12000, 7500)):
+    """a chart on the first sheet: kind 'pie' or 'column'; where in 1/100 mm"""
+    sh = sheet_of(doc)
+    rect = Rectangle()
+    rect.X, rect.Y, rect.Width, rect.Height = where
+    sh.Charts.addNewByName(name, rect, (address(sh, source),), True, True)
+    emb = sh.Charts.getByName(name).EmbeddedObject
+    if kind == 'pie':
+        emb.setDiagram(emb.createInstance('com.sun.star.chart.PieDiagram'))
+    else:
+        emb.setDiagram(emb.createInstance('com.sun.star.chart.BarDiagram'))
+        emb.Diagram.Vertical = False
+    emb.HasMainTitle = bool(title)
+    if title:
+        emb.Title.String = title
+    emb.HasLegend = kind == 'pie'
+    if kind != 'pie':
+        dia = emb.Diagram
+        dia.HasXAxisTitle = bool(x_title)
+        dia.HasYAxisTitle = bool(y_title)
+        if x_title:
+            dia.XAxisTitle.String = x_title
+        if y_title:
+            dia.YAxisTitle.String = y_title
