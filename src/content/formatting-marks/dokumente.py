@@ -190,7 +190,7 @@ if __name__ == '__main__':
         picture(os.path.join(work, 'groesser.docx'), os.path.join(HERE, 'bilder', 'einladung-groesser.svg'), height_cm=14.6)
         # the top with the formatting marks on
         marks_top(os.path.join(work, 'zeichen.docx'))
-        picture(os.path.join(work, 'zeichen.docx'), os.path.join(HERE, 'bilder', 'zeichen.svg'), top_cm=2.0, height_cm=4.4)
+        picture(os.path.join(work, 'zeichen.docx'), os.path.join(HERE, 'bilder', 'zeichen.svg'), top_cm=2.0, height_cm=4.4, left_cm=2.1, width_cm=16.9)
         # and the solution after the same step
         bigger = os.path.join(work, 'fertig-groesser.docx')
         doc = Document(os.path.join(HERE, 'stufen', 'einladung.docx'))
