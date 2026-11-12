@@ -133,20 +133,26 @@ built by hand; each is a page of a series of its own, about one lesson.
    style turned green and a heading blue by hand was dropped: whether
    applying a style keeps formatting by hand may differ between Word and
    LibreOffice.
-7. **Seiten und Verzeichnisse:** page number as a field in the footer, page
-   breaks, an automatic table of contents that is up to date.
+7. **Seiten und Verzeichnisse** (built, `pages-and-contents`): the travel
+   report, six pages: each day pushed onto its page with empty paragraphs
+   (the generator presses Enter until the heading jumps, through the
+   service's layout), a table of contents typed with dots, »Seite 1« typed
+   in the footer. Page breaks, the page number as a field, a table of
+   contents from the headings. The service reports indexes (updated in
+   memory after the pages are drawn, to tell whether the student's was up
+   to date), headers and footers with their fields and where the footer is
+   on each page; the viewer shows the page in view and goes from page to
+   page. Found on the way: a page break in the style »Überschrift 1« also
+   moves Word's heading of the table of contents, which is based on it; the
+   solution sets the break on each day.
 8. **The hand-in:** an article of one's own for the trip newspaper, every
    earlier point checked at once, the file handed in for the teacher to grade
    (stored like a `submit`, viewed with its marked pages on the class page).
 
 ## Open
 
-- **For worksheets 7 and 8:**
-  - **Several pages in the viewer:** a page display, jumping between pages,
-    the page of each place in the list.
-  - **Reading more of the document:** headers and footers (with their
-    fields), the table of contents through UNO (`DocumentIndexes`, compared
-    with the headings).
+- **For worksheet 8:** the page of each place in the list (the viewer
+  shows the page in view and goes to a place's page already).
 - **Keeping hold of the file needs https:** Chrome and Edge offer the File
   System Access API only in a secure context (https or localhost). On the
   development site (`http://workspace.test:8030`) Chrome chooses the file

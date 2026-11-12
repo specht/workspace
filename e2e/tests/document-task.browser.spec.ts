@@ -294,3 +294,35 @@ test('a diary is checked for its heading styles', async ({ page, e2eEmail }, tes
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(6);
 });
+
+test('a report of seven pages is checked for its breaks, page numbers and contents', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 960, height: 1040 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.goto('/pages-and-contents');
+  await states;
+  const card = page.locator(".task-card[data-task='pages-and-contents/bericht']");
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/pages-and-contents/07 Reisebericht.docx'));
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  const report = card.locator('.document-report');
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(4);
+  // every page drawn, the page in view shown, the next one a click away
+  await expect(report.locator('.document-sheet')).toHaveCount(6);
+  const where = report.locator('.document-page');
+  await expect(where).toHaveText('1 / 6');
+  await report.getByRole('button', { name: 'Nächste Seite' }).click();
+  await expect(where).toHaveText('2 / 6');
+  await report.getByRole('button', { name: 'Ganze Seite' }).click();
+  await report.getByRole('button', { name: 'Nächste Seite' }).click();
+  await expect(where).toHaveText('3 / 6');
+  // the typed »Seite 1« is marked in the footer of every page
+  await expect(report.locator(".document-mark[data-n='3']")).toHaveCount(6);
+  // the toolbar stays one row at half a Full HD screen
+  const tools = (await report.locator('.document-tools').boundingBox())!;
+  expect(tools.height).toBeLessThan(50);
+  if (shots) await page.screenshot({ path: path.join(shots, 'pages-wrong.png') });
+  await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/pages-and-contents/stufen/reisebericht.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(report.locator('.document-sheet')).toHaveCount(6);
+  if (shots) await page.screenshot({ path: path.join(shots, 'pages-correct.png') });
+});

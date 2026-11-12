@@ -1972,6 +1972,9 @@ check:
     - levels              # keine Ebene der Überschriften übersprungen
     - no_direct           # keine Überschrift und kein Titel von Hand formatiert (fett, Größe, Farbe, Schrift)
     - { style_changed: 'Heading 1' }   # die Formatvorlage selbst sieht anders aus als in der Vorlage
+    - { page_breaks: ['Montag:', 'Dienstag:'] }   # diese Absätze beginnen mit einem Seitenumbruch eine neue Seite
+    - page_numbers        # die Seitenzahl in Kopf- oder Fußzeile ist ein Feld, keine getippt
+    - toc                 # ein Inhaltsverzeichnis des Programms, aktuell, keines getippt
 ```
 
 Ein Dokument aus Word, LibreOffice oder Nextcloud Office (`.docx`, `.odt`,
@@ -2004,6 +2007,16 @@ Kursiv, Unterstreichen oder Großbuchstaben von Hand gesetzt sind;
 `style_changed` vergleicht Schrift, Größe, Fett, Kursiv und Farbe der
 Formatvorlage mit derselben Vorlage in der Vorlagedatei (der Dienst meldet
 die benutzten Formatvorlagen und immer »Titel« und »Überschrift 1« bis 3).
+
+`page_breaks` nimmt einen Umbruch vor dem Absatz (auch aus seiner
+Formatvorlage) oder nach dem davor; `empty_paragraphs` zählt den leeren
+Absatz nicht, den Word mit <kbd>Strg</kbd>+<kbd>Enter</kbd> vor einem Umbruch
+anlegt. `page_numbers` liest die Kopf- und Fußzeilen der benutzten
+Seitenvorlagen und markiert die Fußzeile auf jeder Seite. `toc` vergleicht die
+Einträge des Verzeichnisses mit denen, die es nach dem Aktualisieren hätte,
+ohne die Seitenzahlen (Word und LibreOffice können verschieden umbrechen);
+Zeilen mit Punkten oder Tab und einer Zahl am Ende gelten als getipptes
+Verzeichnis und zählen für `text` nicht.
 
 Die Karte zeigt die Liste neben der Seite, beides in einem Fenster (auch im
 halben Bildschirm neben Word); jeder offene Punkt hat eine Nummer, die neben

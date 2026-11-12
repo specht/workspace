@@ -1,0 +1,20 @@
+# Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
+# für die Prüfungen«): Der fertige Bericht (stufen/reisebericht.docx, von
+# LibreOffice gebaut) muss die Prüfung bestehen; die Vorlage, ein Bericht
+# mit veraltetem Inhaltsverzeichnis und einer ohne Seitenumbrüche scheitern.
+# Alle macht dokumente.py.
+format: 1
+activity: pages-and-contents
+examples:
+  bericht:
+    pass:
+      - document: stufen/reisebericht.docx
+    fail:
+      - document: ../../static/pages-and-contents/07 Reisebericht.docx
+        say: Inhaltsverzeichnis, das jemand getippt hat
+      - document: ../../static/pages-and-contents/07 Reisebericht.docx
+        say: »Seite 1«, getippt
+      - document: stufen/verzeichnis-veraltet.docx
+        say: nicht mehr aktuell
+      - document: stufen/ohne-umbrueche.docx
+        say: kein Seitenumbruch

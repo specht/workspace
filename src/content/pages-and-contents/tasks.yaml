@@ -1,0 +1,69 @@
+# Aufgaben zu »Seiten und Verzeichnisse«. Format: docs/aufgaben.md.
+# Die Vorlage (src/static/pages-and-contents/07 Reisebericht.docx), den
+# fertigen Bericht und die Stufen für die Beispiele (stufen/) macht
+# dokumente.py.
+format: 1
+activity: pages-and-contents
+tasks:
+  - id: dienstag
+    title: Ein längerer Montag
+    prediction: true
+    prompt: |
+      Jeder Tag fängt auf einer neuen Seite an, weil jemand so oft Enter
+      gedrückt hat, bis die Überschrift auf die nächste Seite gesprungen ist.
+      Jetzt kommen zum Montag noch sechs Sätze dazu. Wo steht danach die
+      Überschrift »Dienstag: Kletterwald«?
+    check:
+      type: choice
+      options:
+        - Oben auf ihrer Seite, wie vorher.
+        - Ein Stück weiter unten auf ihrer Seite.
+        - Auf derselben Seite wie der Montag.
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Die leeren Absätze nach dem Montag sind noch da. Wohin rutschen sie, wenn der Montag länger wird?
+      - when: { picked: 2 }
+        say: Der Montag wird länger, nicht kürzer. Schiebt er den Dienstag nach oben?
+    solution: |
+      Ein Stück weiter unten: Der längere Montag schiebt die leeren Absätze
+      nach unten, und die letzten rutschen auf die nächste Seite, vor den
+      Dienstag.
+
+  - id: leere
+    title: Leere Absätze zählen
+    prompt: |
+      Schalte die Formatierungszeichen ein. Wie viele leere Absätze stehen
+      zwischen dem letzten Satz des Montags und »Dienstag: Kletterwald«?
+    check:
+      type: number
+      expect: 23
+      tolerance: 0
+    feedback:
+      - when: { between: [20, 26] }
+        say: Fast. Zähl die ¶ allein in einer Zeile, auch die oben auf der nächsten Seite.
+    hint: Ein leerer Absatz ist ein ¶ allein in einer Zeile.
+    solution: |
+      23. So oft hat jemand Enter gedrückt, bis der Dienstag auf der neuen
+      Seite stand.
+
+  - id: bericht
+    title: Der Bericht mit Seiten und Verzeichnis
+    prompt: |
+      Prüfe deinen Bericht. Die Prüfung markiert auf deiner Seite jede Stelle,
+      an der noch etwas fehlt. Speichere in Word oder LibreOffice, bevor du
+      prüfst.
+    check:
+      type: document
+      file: pages-and-contents/07 Reisebericht.docx
+      rules:
+        - text
+        - empty_paragraphs
+        - { page_breaks: ['Montag:', 'Dienstag:', 'Mittwoch:', 'Donnerstag:', 'Freitag:'], label: 'Jeder Tag beginnt mit einem Seitenumbruch' }
+        - page_numbers
+        - toc
+    hint:
+      - Lösch zuerst die leeren Absätze, dann setz vor jeden Tag einen Seitenumbruch.
+      - Das getippte Inhaltsverzeichnis löschst du ganz und fügst an seiner Stelle ein echtes ein.
+      - Die Seitenzahl kommt als Feld in die Fußzeile; das getippte »Seite 1« löschst du.

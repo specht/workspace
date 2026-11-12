@@ -17502,7 +17502,11 @@ html[data-bs-theme="dark"] .document-report {
 .document-tools .btn .bi {
     margin: 0;
 }
-/* the zoom between minus and plus: part of the group, not a button */
+/* the zoom between minus and plus, the page between up and down: part
+   of the group, not a button */
+.document-tool-group .document-page {
+    min-width: 4.6em;
+}
 .document-tool-group .document-zoom {
     min-width: 4.2em;
     justify-content: center;

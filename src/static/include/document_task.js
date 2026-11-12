@@ -406,6 +406,12 @@
             // a line of the page (13 pt), down to 12 px
             viewport.style.setProperty('--inv', String(Math.max(12, Math.min(18, 13 * z)) / 18 / z));
             zoomLabel.textContent = Math.round(z * 100) + ' %';
+            if (pageLabel) {
+                const now = current() + 1;
+                pageLabel.textContent = now + ' / ' + pages.length;
+                pageLabel.title = 'Seite ' + now + ' von ' + pages.length;
+                pageLabel.setAttribute('aria-label', pageLabel.title);
+            }
             // anything but the eased zoom itself ends it (a drag, a button)
             if (!easing) goal = null;
             if (!fitting) fit = null;
@@ -435,44 +441,64 @@
         // margin (GUTTER, on the screen), its first line near the top.
         // room for as many numbers as the fullest line has, two at least
         const GUTTER = 14 + 22 * Math.max(2, most);
-        function text(animate) {
+        // the page in view: the one under the middle of the view
+        function current() {
             const v = size();
-            const page = pages[0];
+            const y = (v.h / 2 - ty) / z;
+            let i = 0;
+            tops.forEach(function (top, k) { if (y >= top - GAP / 2) i = k; });
+            return i;
+        }
+        function text(animate, i) {
+            i = i === undefined ? current() : i;
+            const v = size();
+            const page = pages[i];
             const c = page.crop || { x: 0, y: 0, w: page.width, h: page.height };
             const left = c.left !== undefined ? c.left : c.x;
             const right = c.left !== undefined ? c.x + c.w - 30 : c.x + c.w;
             z = Math.max(MIN, Math.min(MAX, (v.w - GUTTER - edge()) / (right - left)));
-            tx = GUTTER - (offset(0) + left) * z;
-            ty = edge() - c.y * z;
+            tx = GUTTER - (offset(i) + left) * z;
+            ty = edge() - (tops[i] + c.y) * z;
             apply(animate);
         }
-        // »Seitenbreite«: the whole sheet from edge to edge, as large as the
-        // numbers in its left margin allow, from its top edge
-        function sheetWidth(animate) {
+        // »Seitenbreite«: the whole sheet in view from edge to edge, as large
+        // as the numbers in its left margin allow, from its top edge
+        function sheetWidth(animate, i) {
+            i = i === undefined ? current() : i;
             fitting = true;
             fit = 'width';
             const v = size();
-            const page = pages[0];
+            const page = pages[i];
             const c = page.crop || { x: 0, y: 0, w: page.width, h: page.height };
             const left = c.left !== undefined ? c.left : c.x;
             z = Math.max(MIN, Math.min(MAX, (v.w - 2 * edge()) / page.width, (v.w - GUTTER - edge()) / (page.width - left)));
-            tx = v.w - edge() - (offset(0) + page.width) * z;
-            ty = edge();
+            tx = v.w - edge() - (offset(i) + page.width) * z;
+            ty = edge() - tops[i] * z;
             apply(animate);
             fitting = false;
         }
-        // the first view: the sheet's width where there is room, the text's
-        // on a phone
+        // the first view: the first sheet's width where there is room, its
+        // text on a phone
         function start(animate) {
-            if (size().w < 560) text(animate);
-            else sheetWidth(animate);
+            if (size().w < 560) text(animate, 0);
+            else sheetWidth(animate, 0);
         }
-        // »Ganze Seite«: the whole first sheet, as large as fits
-        function whole(animate) {
+        // »Ganze Seite«: the whole sheet in view, as large as fits
+        function whole(animate, i) {
+            i = i === undefined ? current() : i;
             fitting = true;
             fit = 'whole';
-            show({ x: offset(0), y: 0, w: pages[0].width, h: pages[0].height }, null, animate, edge());
+            show({ x: offset(i), y: tops[i], w: pages[i].width, h: pages[i].height }, null, animate, edge());
             fitting = false;
+        }
+        // another page: its top at the top of the view, as large as now
+        // (or whole, if the whole page was in view)
+        function go(i) {
+            i = Math.max(0, Math.min(pages.length - 1, i));
+            if (fit === 'whole') return whole(true, i);
+            if (fit === 'width') return sheetWidth(true, i);
+            ty = edge() - tops[i] * z;
+            apply(true);
         }
 
         // the tools above the page: the zoom as one group, the two fits as
@@ -505,6 +531,19 @@
         tools.appendChild(fits);
         const fitWhole = button('bi-file-earmark', 'Ganze Seite', function () { whole(true); }, fits, 'Ganze Seite');
         const fitWidth = button('bi-arrows', 'Seitenbreite', function () { sheetWidth(true); }, fits, 'Seitenbreite');
+        // with more than one page: which one is in view, and the one before
+        // and after
+        let pageLabel = null;
+        if (pages.length > 1) {
+            const nav = el('div', 'btn-group document-tool-group');
+            nav.setAttribute('role', 'group');
+            nav.setAttribute('aria-label', 'Seiten');
+            tools.appendChild(nav);
+            button('bi-chevron-up', 'Vorige Seite', function () { go(current() - 1); }, nav);
+            pageLabel = el('span', 'btn btn-sm btn-outline-secondary document-zoom document-page');
+            nav.appendChild(pageLabel);
+            button('bi-chevron-down', 'Nächste Seite', function () { go(current() + 1); }, nav);
+        }
         // apart from the fits, at the right beside »prüfen«
         const full = button('bi-arrows-fullscreen', 'Vollbild', function () { toggleFull(); });
         full.classList.add('document-full-toggle');
@@ -637,6 +676,7 @@
             const keys = {
                 '+': function () { zoomAt(m[0], m[1], 1.4, true); }, '=': function () { zoomAt(m[0], m[1], 1.4, true); },
                 '-': function () { zoomAt(m[0], m[1], 1 / 1.4, true); }, '0': function () { sheetWidth(true); },
+                PageUp: function () { go(current() - 1); }, PageDown: function () { go(current() + 1); },
                 ArrowUp: function () { ty += step; apply(true); }, ArrowDown: function () { ty -= step; apply(true); },
                 ArrowLeft: function () { tx += step; apply(true); }, ArrowRight: function () { tx -= step; apply(true); },
             };
@@ -730,7 +770,7 @@
                 }, reduced() ? 0 : 650);
             },
             overview: function () { start(true); },
-            whole: function () { whole(false); },
+            whole: function () { whole(false, 0); },
         };
     }
 

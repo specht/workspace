@@ -206,6 +206,104 @@ def iter_enum(container):
 
 
 TABLES = []
+# the names of the document's indexes (tables of contents), to know their
+# paragraphs: those are in a text section of the index's name or below it
+INDEX_NAMES = set()
+
+
+def index_of(paragraph):
+    try:
+        section = paragraph.TextSection
+    except Exception:
+        return None
+    for _ in range(5):
+        if section is None:
+            return None
+        if section.Name in INDEX_NAMES:
+            return section.Name
+        try:
+            section = section.ParentSection
+        except Exception:
+            return None
+    return None
+
+
+def read_indexes(doc):
+    """The indexes: kind and the text the document has for them (as last
+    updated by Word or LibreOffice)."""
+    out = []
+    try:
+        indexes = doc.DocumentIndexes
+        for i in range(indexes.getCount()):
+            x = indexes.getByIndex(i)
+            out.append({'name': x.Name, 'kind': 'content' if x.supportsService('com.sun.star.text.ContentIndex') else 'other',
+                        'text': x.getAnchor().getString(), '_object': x})
+    except Exception:
+        traceback.print_exc()
+    return out
+
+
+def update_indexes(indexes):
+    """After the pages are drawn: each index updated in memory, to tell
+    whether the student's was up to date (its entries, without the page
+    numbers, which Word may count otherwise)."""
+    entries = lambda text: [re.sub(r'[\s.…·_-]*\d+\s*$', '', line).strip() for line in text.split('\n')[1:] if line.strip()]
+    for x in indexes:
+        obj = x.pop('_object', None)
+        if obj is None:
+            continue
+        try:
+            obj.update()
+            x['updated'] = obj.getAnchor().getString()
+            x['entries'] = entries(x['text'])
+            x['current'] = entries(x['updated'])
+            x['up_to_date'] = x['entries'] == x['current']
+        except Exception:
+            traceback.print_exc()
+
+
+def read_page_parts(doc, styles):
+    """Headers and footers of the page styles in use: their text and the
+    fields in them (a page number counted by the program)."""
+    out = []
+    try:
+        family = doc.StyleFamilies.getByName('PageStyles')
+        for name in family.getElementNames():
+            st = family.getByName(name)
+            if not st.isInUse():
+                continue
+            item = {'style': name}
+            for part in ('Header', 'Footer'):
+                if not getattr(st, part + 'IsOn'):
+                    continue
+                text = getattr(st, part + 'Text')
+                portions = []
+                for para in iter_enum(text):
+                    if para.supportsService('com.sun.star.text.Paragraph'):
+                        portions += [q for q in (read_portion(x) for x in iter_enum(para)) if q]
+                item[part.lower()] = {'text': text.getString(), 'portions': portions}
+            out.append(item)
+    except Exception:
+        traceback.print_exc()
+    return out
+
+
+def place_page_parts(parts, pages):
+    """Where the footer's words are on each page: the PDF's words in the
+    bottom eighth of a page that are words of a footer."""
+    tokens = set()
+    for part in parts:
+        tokens.update((part.get('footer') or {}).get('text', '').split())
+    boxes = []
+    if not tokens:
+        return boxes
+    for i, page in enumerate(pages):
+        mine = [w for w in page['words'] if w[1] > page['height'] * 0.87 and w[4] in tokens]
+        if mine:
+            x0, y0 = min(w[0] for w in mine), min(w[1] for w in mine)
+            boxes.append({'page': i + 1, 'x': round(x0, 1), 'y': round(y0, 1),
+                          'w': round(max(w[2] for w in mine) - x0, 1), 'h': round(max(w[3] for w in mine) - y0, 1)})
+    return boxes
 
 
 def collect(text, styles, where, out, starts):
@@ -213,7 +311,11 @@ def collect(text, styles, where, out, starts):
     tables met on the way go to TABLES (rows, columns, header row)."""
     for element in iter_enum(text):
         if element.supportsService('com.sun.star.text.Paragraph'):
-            out.append(read_paragraph(element, styles, where))
+            here = where
+            index = index_of(element)
+            if index:
+                here = dict(where, index=index)
+            out.append(read_paragraph(element, styles, here))
             starts.append((element.getText(), element.getStart(), element.getEnd()))
         elif element.supportsService('com.sun.star.text.TextTable'):
             name = element.getName()
@@ -503,6 +605,9 @@ def analyze(data, filename):
             styles = doc.StyleFamilies.getByName('ParagraphStyles')
             paragraphs, starts = [], []
             del TABLES[:]
+            indexes = read_indexes(doc)
+            INDEX_NAMES.clear()
+            INDEX_NAMES.update(x['name'] for x in indexes)
             collect(doc.Text, styles, {}, paragraphs, starts)
             boxes = text_boxes(doc)
             collect_frames(boxes, styles, paragraphs, starts)
@@ -512,6 +617,7 @@ def analyze(data, filename):
             # starting file even where it does not use them yet
             styles_used = read_styles(doc, [p['style'] for p in paragraphs] +
                                       ['Title'] + [f'Heading {n}' for n in range(1, 4)])
+            page_parts = read_page_parts(doc, styles)
             margins = page_margins(doc)
             for i, (text, start, end) in enumerate(starts):
                 for name, at in ((f'p{i}', start), (f'e{i}', end)):
@@ -524,12 +630,14 @@ def analyze(data, filename):
                 prop('ExportBookmarks', False)]))
             doc.storeToURL(uno.systemPathToFileUrl(pdf), (
                 prop('FilterName', 'writer_pdf_Export'), prop('FilterData', filter_data)))
+            update_indexes(indexes)
         finally:
             doc.close(True)
         dests = destinations(pdf)
         pages = words(pdf, folder)
         place(paragraphs, dests, pages, margins)
         place_pictures(pictures, pdf, folder)
+        footer_boxes = place_page_parts(page_parts, pages)
         # each page as SVG: vector, sharp at any zoom on the card; the
         # letters become paths, so the fonts need not be on the viewer's
         # machine (shown as <img>, nothing in it runs)
@@ -543,7 +651,8 @@ def analyze(data, filename):
             with open(target, 'rb') as f:
                 svg = base64.b64encode(f.read()).decode('ascii')
             out_pages.append({'width': pages[i]['width'], 'height': pages[i]['height'], 'svg': svg})
-        return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
+        return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used,
+                'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'pages': out_pages, 'page_count': len(pages), 'margins': margins}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
 

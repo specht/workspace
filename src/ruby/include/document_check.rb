@@ -36,6 +36,9 @@ require_relative 'office_client'
 #       - levels               # no level of heading skipped
 #       - no_direct            # no heading or title formatted by hand (bold, size, colour, font)
 #       - { style_changed: 'Heading 1' }   # the style itself looks other than in the starting file
+#       - { page_breaks: ['Montag:', …] }   # these paragraphs begin a new page by a page break
+#       - page_numbers         # the page number in a header or footer is a field, none typed
+#       - toc                  # a table of contents the program made, up to date, none typed
 #
 # The rules about pictures may carry names: (how the messages call the
 # pictures, in the order of the starting file: ['das Foto', 'die Karte']).
@@ -45,9 +48,10 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed].freeze
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc].freeze
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
+    TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
     EDGE_PUNCT = /\A[[:punct:]»«„“”‚‘’–•·]+|[[:punct:]»«„“”‚‘’–•·]+\z/
     # a caption typed by hand or written by the program
     CAPTION_TEXT = /\A\s*(?:Abbildung|Abb\.|Bild|Grafik|Foto|Figure|Fig\.|Illustration)\s*(\d+)/i
@@ -102,7 +106,7 @@ module DocumentCheck
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
             errors << 'fonts must be a number' if name == 'fonts' && !rule['fonts'].is_a?(Integer)
             errors << 'size must be [min, max] in pt' if name == 'size' && !(rule['size'].is_a?(Array) && rule['size'].size == 2 && rule['size'].all? { |v| v.is_a?(Numeric) })
-            %w[bold sparing list tabs table].each do |k|
+            %w[bold sparing list tabs table page_breaks].each do |k|
                 errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].all? { |b| b.is_a?(String) })
             end
             errors << 'wrap must be the number of a picture of the starting file (1, 2, …)' if name == 'wrap' && !(rule['wrap'].is_a?(Integer) && rule['wrap'].positive?)
@@ -240,7 +244,10 @@ module DocumentCheck
         words = ->(ps) { ps.flat_map { |p| p['text'].to_s.split(/\s+/) }.map { |w| w.gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
         # the whole document, the cells of tables too
         have = words.(all || body).tally
-        missing = words.(starter['paragraphs']).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
+        # lines of a table of contents typed in the starting file (dots or a
+        # tab, then a page number) are replaced by a real one
+        theirs = starter['paragraphs'].reject { |p| p['text'].to_s.match?(TYPED_TOC_LINE) }
+        missing = words.(theirs).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
         return item if missing.empty?
 
         item.ok = false
@@ -275,9 +282,12 @@ module DocumentCheck
 
     def self.rule_empty_paragraphs(_rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'empty_paragraphs', :label => 'Keine leeren Absätze', :ok => true, :marks => [])
-        # empty paragraphs at the very end change nothing on the page
+        # empty paragraphs at the very end change nothing on the page; the
+        # one right before a page break is what Word leaves of Ctrl+Enter
         last = body.rindex { |p| !empty?(p) } || -1
+        holds_break = body.each_index.select { |i| empty?(body[i]) && body[i + 1] && page_break?(body[i + 1]) && (i.zero? || !empty?(body[i - 1])) }.map { |i| body[i] }
         groups = body[0..last].slice_when { |a, b| empty?(a) != empty?(b) }.select { |g| empty?(g.first) }
+            .map { |g| g - holds_break }.reject(&:empty?)
         return item if groups.empty?
 
         item.ok = false
@@ -847,7 +857,7 @@ module DocumentCheck
         other = []
         missing = []
         Array(rule['headings']).each do |piece|
-            found = body.select { |p| p['plain'].start_with?(piece.to_s) }
+            found = body.select { |p| p['plain'].start_with?(piece.to_s) && !p['text'].to_s.match?(TYPED_TOC_LINE) }
             missing << piece if found.empty?
             found.each do |p|
                 next if level(p) == want
@@ -919,6 +929,90 @@ module DocumentCheck
         item.ok = false
         item.message = "Die Formatvorlage »#{style_label(name)}« sieht noch aus wie am Anfang. Ändere sie einmal, zum Beispiel ihre Farbe: " \
             'Alle Überschriften mit dieser Vorlage ändern sich mit, auf einmal.'
+        item
+    end
+
+    # ---- pages and the table of contents
+
+    def self.page_break?(p)
+        %w[PAGE_BEFORE PAGE_BOTH].include?(p['break'].to_s)
+    end
+
+    def self.rule_page_breaks(rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'page_breaks', :label => 'Neue Seiten mit Seitenumbruch', :ok => true, :marks => [])
+        missing = []
+        without = []
+        Array(rule['page_breaks']).each do |piece|
+            # the paragraph itself, not its line in a typed table of contents
+            i = body.index { |p| p['plain'].start_with?(piece.to_s) && !p['text'].to_s.match?(TYPED_TOC_LINE) }
+            if i.nil?
+                missing << piece
+                next
+            end
+            p = body[i]
+            before = i.positive? ? body[i - 1] : nil
+            next if page_break?(p) || (before && %w[PAGE_AFTER PAGE_BOTH].include?(before['break'].to_s))
+
+            without << p
+            item.marks << para_mark(p).merge(:title => 'kein Seitenumbruch')
+        end
+        return item if missing.empty? && without.empty?
+
+        item.ok = false
+        said = []
+        said << "#{q(names(missing.map { |m| "»#{m}«" }))} finde ich nicht mehr." unless missing.empty?
+        unless without.empty?
+            said << (without.size == 1 ? "Vor »#{short(without.first)}« steht kein Seitenumbruch." :
+                "Vor #{without.size} Überschriften steht kein Seitenumbruch, zum Beispiel vor »#{short(without.first)}«.")
+        end
+        item.message = "#{said.join(' ')} Ein Seitenumbruch (Strg+Enter) beginnt eine neue Seite, egal wie viel Text davor steht; " \
+            'leere Absätze schieben nur so lange, bis sich davor etwas ändert.'
+        item
+    end
+
+    def self.rule_page_numbers(_rule, _body, _starter, _all = nil, model = nil)
+        item = Item.new(:rule => 'page_numbers', :label => 'Seitenzahlen, die das Programm zählt', :ok => true, :marks => [])
+        parts = ((model || {})['page_parts'] || []).flat_map { |x| [x['header'], x['footer']].compact }
+        field = parts.any? { |part| (part['portions'] || []).any? { |q| %w[PageNumber].include?(q['field']) } }
+        typed = parts.select do |part|
+            (part['portions'] || []).any? { |q| q['type'] == 'Text' && q['text'].to_s.match?(/\d/) && q['text'].to_s.match?(/Seite|^\s*\d+\s*$/) }
+        end
+        return item if field && typed.empty?
+
+        item.ok = false
+        item.marks = ((model || {})['footer_boxes'] || []).map { |b| b.transform_keys(&:to_sym).merge(:kind => 'box', :title => field ? 'Zahl getippt' : 'keine Seitenzahl') }
+        item.message = if !typed.empty?
+            "In der Fußzeile steht »#{q(squish(typed.first['portions'].map { |x| x['text'] }.join))}«, getippt: Die Fußzeile ist auf jeder Seite dieselbe, also steht dort überall dieselbe Zahl. " \
+                'Füge die Seitenzahl als Feld ein; dann zählt das Programm auf jeder Seite selbst.'
+        else
+            'Keine Seite hat eine Seitenzahl. Füge sie als Feld in die Fußzeile ein; dann zählt das Programm auf jeder Seite selbst.'
+        end
+        item
+    end
+
+    def self.rule_toc(_rule, body, _starter, all = nil, model = nil)
+        all ||= body
+        item = Item.new(:rule => 'toc', :label => 'Ein Inhaltsverzeichnis, das das Programm führt', :ok => true, :marks => [])
+        index = ((model || {})['indexes'] || []).find { |x| x['kind'] == 'content' }
+        typed = body.select { |p| p['text'].to_s.match?(TYPED_TOC_LINE) }
+        problems = []
+        unless typed.empty?
+            problems << (typed.size == 1 ? "»#{short(typed.first, 3)}« ist eine Zeile eines Inhaltsverzeichnisses, die jemand getippt hat." :
+                "#{typed.size} Zeilen sind ein Inhaltsverzeichnis, das jemand getippt hat, zum Beispiel »#{short(typed.first, 3)}«.")
+            item.marks.concat(typed.map { |p| para_mark(p).merge(:title => 'getippt') })
+        end
+        if index.nil?
+            problems << 'Ein Inhaltsverzeichnis, das das Programm aus den Überschriften macht, fehlt noch.'
+        elsif index['up_to_date'] == false
+            gone = Array(index['entries']) - Array(index['current'])
+            problems << "Das Inhaltsverzeichnis ist nicht mehr aktuell#{gone.empty? ? '' : ": Es nennt noch »#{q(gone.first)}«"}. Aktualisiere es (Rechtsklick hinein)."
+            item.marks.concat(all.select { |p| (p['where'] || {})['index'] == index['name'] }.first(1).map { |p| para_mark(p).merge(:title => 'nicht aktuell') })
+        end
+        return item if problems.empty?
+
+        item.ok = false
+        item.message = "#{problems.join(' ')} Ein Inhaltsverzeichnis, das das Programm einfügt, kennt die Überschriften und ihre Seiten; " \
+            'nach dem Aktualisieren stimmt es wieder, auch wenn sich Seiten verschoben haben.'
         item
     end
 
