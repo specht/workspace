@@ -1,6 +1,6 @@
 <div class='meta'>
 image: karte.webp
-image_alt: "Drei Blätter, aufgefächert: eine Tabelle mit einer orange markierten Zelle, einer 1 daneben und der Formel =B5*C5 darunter, ein Kreisdiagramm »Wofür ein Kind bezahlt« und ein Säulendiagramm »Wie hat es gefallen?« mit einem grünen Haken"
+image_alt: "Drei Blätter, aufgefächert, auf Weiß: eine Tabelle mit einer orange markierten Zelle und der grünen Formel =B5*C5 darunter, ein Kreisdiagramm »Wofür ein Kind bezahlt« und ein Säulendiagramm »Wie hat es gefallen?« mit grünen Säulen"
 card_title: "Tabellenkalkulation Schritt für Schritt"
 kind: labor
 duration: 1 Stunde (45 Minuten)

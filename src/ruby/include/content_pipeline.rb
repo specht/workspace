@@ -186,9 +186,29 @@ class Main < Sinatra::Base
     def self.refresh_content_catalog
         return unless DEVELOPMENT
         signature = content_catalog_signature
-        return if defined?(@@content_catalog_signature) &&
-            @@content_catalog_signature == signature
-        parse_content
+        unless defined?(@@content_catalog_signature) && @@content_catalog_signature == signature
+            parse_content
+            return
+        end
+        refresh_card_pictures
+    end
+    # The time and size of a card's picture and of its dark variant
+    # (x-dark.webp, x-dark-anaglyph.webp beside x-anaglyph.webp).
+    def self.image_stamp(path)
+        extension = File.extname(path)
+        base = path.delete_suffix(extension)
+        dark = base.end_with?('-anaglyph') ? "#{base.delete_suffix('-anaglyph')}-dark-anaglyph#{extension}" : "#{base}-dark#{extension}"
+        [path, dark].map { |f| File.file?(f) ? [File.mtime(f).to_f, File.size(f)] : nil }
+    end
+    # In development: a card's picture drawn anew shows on the catalog
+    # without opening its page first; only the pages whose picture changed
+    # are read again (a stat per page and request).
+    def self.refresh_card_pictures
+        return unless defined?(@@content) && @@content
+        changed = @@content.select do |_slug, page|
+            page.is_a?(Hash) && page[:image_source] && image_stamp(page[:image_source]) != page[:image_stamp]
+        end.keys
+        changed.each { |slug| parse_content(slug) }
     end
     def self.refresh_tutorial(slug)
         return unless DEVELOPMENT
@@ -893,6 +913,10 @@ class Main < Sinatra::Base
                             if File.file?(image_path)
                                 sha1 = convert.call(image_path)
                                 parsed_content[slug][:image] = "/cache/#{sha1}.webp"
+                                # what the card's picture was made from, for
+                                # refresh_content_catalog to see it change
+                                parsed_content[slug][:image_source] = image_path
+                                parsed_content[slug][:image_stamp] = image_stamp(image_path)
 
                                 # The dark file as the screenshot tool names it:
                                 # box-anaglyph.webp → box-dark-anaglyph.webp.

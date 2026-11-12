@@ -1,6 +1,6 @@
 <div class='meta'>
 image: karte.webp
-image_alt: "Drei Blätter, aufgefächert: eine Einladung mit blauen Punkten vor der Überschrift und einer orangen 1 daneben, ein Reisebericht mit Inhaltsverzeichnis und eine Zeitungsseite »Kraniche« in zwei Spalten mit einem Foto und einem grünen Haken"
+image_alt: "Drei Blätter, aufgefächert, auf Weiß: eine Einladung mit blauen Punkten vor der Überschrift, ein Reisebericht mit blauer Überschrift und Inhaltsverzeichnis und eine Zeitungsseite »Kraniche« mit blauer Überschrift, zwei Spalten und einem Bild"
 card_title: "Textverarbeitung Schritt für Schritt"
 kind: labor
 duration: 1 Stunde (45 Minuten)
