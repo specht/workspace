@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import type { Locator } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
@@ -13,6 +14,29 @@ const repo = path.resolve(__dirname, '..', '..');
 const starter = path.join(repo, 'src/static/formatting-marks/01 Einladung.docx');
 const solution = path.join(repo, 'src/content/formatting-marks/stufen/einladung.docx');
 const shots = process.env.DOCUMENT_TASK_SHOTS;
+
+// »Seitenbreite« fits the text with its numbers in the margin, »Ganze Seite«
+// the whole sheet, each without much room left over
+async function checkFits(report: Locator, slack: number) {
+  const viewport = report.locator('.document-viewport');
+  await report.getByRole('button', { name: 'Seitenbreite' }).click();
+  await expect.poll(async () => {
+    const view = (await viewport.boundingBox())!;
+    const badges = await report.locator('.document-badge').evaluateAll((all) => all.map((b) => b.getBoundingClientRect().left));
+    const boxes = await report.locator('.document-mark-box').evaluateAll((all) => all.map((b) => b.getBoundingClientRect().right));
+    const right = Math.max(...boxes);
+    return Math.min(...badges) >= view.x - 1 && right <= view.x + view.width + 1 && right >= view.x + view.width - slack;
+  }, { timeout: 3000 }).toBe(true);
+  await report.getByRole('button', { name: 'Ganze Seite' }).click();
+  await expect.poll(async () => {
+    const view = (await viewport.boundingBox())!;
+    const sheet = (await report.locator('.document-sheet').first().boundingBox())!;
+    const inside = sheet.x >= view.x - 1 && sheet.y >= view.y - 1 &&
+      sheet.x + sheet.width <= view.x + view.width + 1 && sheet.y + sheet.height <= view.y + view.height + 1;
+    const fills = sheet.width >= view.width - 2 * slack || sheet.height >= view.height - 2 * slack;
+    return inside && fills;
+  }, { timeout: 3000 }).toBe(true);
+}
 
 test('a document is checked and its problems are marked on its page', async ({ page, e2eEmail }, testInfo) => {
   // half of a desktop beside Word is the size this is made for
@@ -50,6 +74,7 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await page.mouse.move(0, 0);
   await expect(card.locator('.document-name')).toContainText('01 Einladung.docx');
   if (shots) await page.screenshot({ path: path.join(shots, 'document-wrong.png') });
+  await checkFits(report, 20);
   // a point's number moves the view to its place and zooms in
   const zoom = report.locator('.document-zoom');
   const before = await zoom.textContent();
@@ -111,6 +136,9 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await card.locator('.document-input').setInputFiles(starter);
   await expect(card).toHaveAttribute('data-status', 'wrong');
   await expect(report.locator('.document-mark').first()).toBeVisible();
+  await checkFits(report, 12);
+  if (shots) { await page.screenshot({ path: path.join(shots, 'document-phone-whole.png') }); }
+  await report.getByRole('button', { name: 'Seitenbreite' }).click();
   // the tools in one row
   const tools = await report.locator('.document-tools').boundingBox();
   expect(tools!.height).toBeLessThan(60);

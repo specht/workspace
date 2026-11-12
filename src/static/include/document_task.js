@@ -400,31 +400,35 @@
             apply(animate);
         }
         // a rectangle of the stage (points) as large as fits, with room around
-        function show(r, most, animate) {
+        // a narrow view (a phone) wastes no room around the page
+        const edge = function () { return size().w < 560 ? 6 : 16; };
+        function show(r, most, animate, pad) {
             const v = size();
-            const pad = 24;
+            pad = pad === undefined ? 24 : pad;
             z = Math.max(MIN, Math.min(most || MAX, (v.w - 2 * pad) / r.w, (v.h - 2 * pad) / r.h));
             tx = (v.w - r.w * z) / 2 - r.x * z;
             ty = (v.h - r.h * z) / 2 - r.y * z;
             apply(animate);
         }
+        // »Seitenbreite«, and the first view: the text of page 1 as wide as
+        // the view, with room on the left for two numbers in the margin
+        // (GUTTER, on the screen) and a little on the right, its first line
+        // near the top
+        const GUTTER = 58;
         function start(animate) {
             const v = size();
-            const c = pages[0].crop || { x: 0, y: 0, w: pages[0].width, h: pages[0].height };
-            z = Math.max(MIN, Math.min(MAX, (v.w - 16) / c.w));
-            tx = (v.w - c.w * z) / 2 - (offset(0) + c.x) * z;
-            // a phone: the text at a size to read, from the margin numbers
-            // on; the rest of the line is a drag away
-            if (z < 1) {
-                z = 1;
-                // room for two numbers in the margin before the text
-                tx = 52 - (offset(0) + (c.left || c.x)) * z;
-            }
-            ty = 8 - c.y * z;
+            const page = pages[0];
+            const c = page.crop || { x: 0, y: 0, w: page.width, h: page.height };
+            const left = c.left !== undefined ? c.left : c.x;
+            const right = c.left !== undefined ? c.x + c.w - 30 : c.x + c.w;
+            z = Math.max(MIN, Math.min(MAX, (v.w - GUTTER - edge()) / (right - left)));
+            tx = GUTTER - (offset(0) + left) * z;
+            ty = edge() - c.y * z;
             apply(animate);
         }
+        // »Ganze Seite«: the whole first sheet, as large as fits
         function whole(animate) {
-            show({ x: offset(0), y: 0, w: pages[0].width, h: pages[0].height }, null, animate);
+            show({ x: offset(0), y: 0, w: pages[0].width, h: pages[0].height }, null, animate, edge());
         }
 
         // the tools above the page
