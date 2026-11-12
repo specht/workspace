@@ -7,7 +7,8 @@
 // numbers count down, and the titles do not say how many tips there are
 // (»Tipp«, then »Nächster Tipp«). After the last tip there is no ring.
 //
-// What has been opened is kept in this browser only (localStorage), so a
+// What has been opened is kept in this browser only (localStorage), with
+// the tips' text in the key (changed tips start again at the first), so a
 // reload does not start the waiting again. Nothing is sent to the server: no
 // teacher sees who needed which tip. The state is kept per account
 // (data-hint-owner on body, a hash): on a shared school computer the next
@@ -52,7 +53,11 @@
         if (steps.length < 2) return;
         const delay = (parseInt(box.dataset.delay, 10) || 60) * 1000;
         const owner = document.body.dataset.hintOwner || 'gast';
-        const key = PREFIX + owner + ':' + window.location.pathname + '#' + (card ? card.dataset.task : 'box-' + index);
+        // the tips' text is part of the key: tips that changed start again
+        // at the first, instead of showing as many as were opened before
+        let sum = 0;
+        for (const ch of steps.map((step) => step.textContent).join('\u0000')) sum = (sum * 31 + ch.codePointAt(0)) >>> 0;
+        const key = PREFIX + owner + ':' + window.location.pathname + '#' + (card ? card.dataset.task : 'box-' + index) + '@' + sum.toString(36);
         // opened: how many steps have been opened, always the first ones;
         // at: when the last of them was opened
         const saved = load(key);
