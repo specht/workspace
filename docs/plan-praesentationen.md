@@ -2,7 +2,9 @@
 
 **Shelved** (the maintainer, 12 November 2026), after sheet 1: word processing
 and spreadsheets are the start. Sheet 1 (`good-slides`) is finished and
-listed only on the development site (`.good-slides` in sections.yaml); the
+in the repository, listed nowhere (taken off the development site's front
+page too); to show it on the development site again, add `.good-slides` to
+the Office section in sections.yaml. The
 office service, the check's rules for slides and the card's handling of
 .pptx and .odp are in place for the sheets to come.
 
