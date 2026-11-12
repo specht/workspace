@@ -118,8 +118,13 @@
         if (starter) bindStarter(starter);
         // how short the loop is in this browser, and why another one helps
         const note = el('p', 'document-browser');
+        // Chrome and Edge keep hold of a file only on https (or localhost)
+        const chromium = /Chrome\/|Edg\//.test(navigator.userAgent);
         note.innerHTML = CAN_KEEP
             ? "<i class='bi bi-lightning-charge' aria-hidden='true'></i>Hier genügt es, in Word oder LibreOffice zu speichern: Die Seite merkt es und prüft von selbst."
+            : chromium && !window.isSecureContext
+            ? "<i class='bi bi-info-circle' aria-hidden='true'></i>Diese Seite läuft ohne https, und dann darf auch Chrome eine Datei nicht im Blick behalten. " +
+              'Wähle sie vor jedem Prüfen neu oder zieh sie auf die Karte.'
             : "<i class='bi bi-info-circle' aria-hidden='true'></i>In Chrome und Edge genügt es, in Word oder LibreOffice zu speichern, und die Seite prüft von selbst. " +
               'Dieser Browser kann eine Datei nicht im Blick behalten: Wähle sie vor jedem Prüfen neu oder zieh sie auf die Karte.';
         box.appendChild(note);
@@ -150,6 +155,7 @@
             input.value = '';
             if (!file) return;
             card.documentFile = file;
+            card.documentFresh = true;
             card.documentHandle = null;
             chosen(card, file.name);
             check();
@@ -179,6 +185,7 @@
                 card.documentFile = null;
             } else {
                 card.documentFile = file;
+                card.documentFresh = true;
                 card.documentHandle = null;
             }
             if (!file && !handle) return;
@@ -219,6 +226,15 @@
     // sends it. busy() when it goes; done(data) with the server's answer.
     async function check(card, busy, done) {
         let file = card.documentFile;
+        // A file chosen without a handle is what it was when it was chosen:
+        // once Word saved it again, the browser cannot read it any more. So
+        // it is chosen again before each check, here while still inside the
+        // click (nothing awaited yet), which the file dialog needs.
+        if (!card.documentHandle && file && !card.documentFresh) {
+            card.querySelector('.document-input').click();
+            return;
+        }
+        card.documentFresh = false;
         if (card.documentHandle) {
             try {
                 if (card.documentHandle.queryPermission && await card.documentHandle.queryPermission({ mode: 'read' }) !== 'granted') {
@@ -238,6 +254,16 @@
         if (file.size > MAX_BYTES) {
             done(invalid('Die Datei ist größer als 10 MB. Sind große Bilder darin?'));
             return;
+        }
+        // changed since it was chosen (saved again in between): unreadable
+        if (!card.documentHandle) {
+            try {
+                await file.slice(0, 1).arrayBuffer();
+            } catch (err) {
+                card.documentFile = null;
+                done(invalid('Die Datei hat sich geändert, seit du sie gewählt hast. Wähle sie noch einmal.'));
+                return;
+            }
         }
         busy();
         card.documentBusy = true;
@@ -769,8 +795,15 @@
         if (card.documentRecheck) {
             const again = el('button', 'btn btn-sm btn-success document-recheck');
             again.type = 'button';
-            again.innerHTML = "<i class='bi bi-arrow-repeat' aria-hidden='true'></i><span class='document-recheck-long'>Erneut </span><span class='document-recheck-word'>prüfen</span>";
-            again.setAttribute('aria-label', 'Erneut prüfen');
+            // without a handle the file has to be chosen again (check)
+            if (card.documentHandle) {
+                again.innerHTML = "<i class='bi bi-arrow-repeat' aria-hidden='true'></i><span class='document-recheck-long'>Erneut </span><span class='document-recheck-word'>prüfen</span>";
+                again.setAttribute('aria-label', 'Erneut prüfen');
+            } else {
+                again.innerHTML = "<i class='bi bi-folder2-open' aria-hidden='true'></i><span class='document-recheck-long'>Neu wählen und </span><span class='document-recheck-word'>prüfen</span>";
+                again.setAttribute('aria-label', 'Datei neu wählen und prüfen');
+                again.title = 'Dieser Browser sieht nicht, wenn du die Datei speicherst: Wähle sie nach dem Speichern neu.';
+            }
             again.addEventListener('click', function () { card.documentRecheck(); });
             const tools = view.querySelector('.document-tools');
             if (tools) tools.appendChild(again);
