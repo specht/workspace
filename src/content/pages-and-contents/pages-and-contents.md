@@ -23,12 +23,12 @@ Aus dem Tagebuch ist der Reisebericht der 7b geworden: eine Titelseite mit
 dem Inhalt, dann jeder Tag auf einer eigenen Seite, sechs Seiten. Die
 Titelseite sieht so aus:
 
-<img class='full' src='bilder/titelseite.svg' alt='Die Titelseite: »Reisebericht der 7b«, darunter »Inhalt« und fünf Zeilen wie »Montag: Anreise ..... 2«, die Punkte verschieden lang'>
+<img class='paper' src='bilder/titelseite.svg' alt='Die Titelseite: »Reisebericht der 7b«, darunter »Inhalt« und fünf Zeilen wie »Montag: Anreise ..... 2«, die Punkte verschieden lang'>
 
 _task(dienstag)
 
 <!-- after: dienstag -->
-<img class='full' src='bilder/dienstag-weiter-unten.svg' alt='Seite 3 mit dem längeren Montag: »Dienstag: Kletterwald« steht nicht mehr oben auf der Seite, sondern ein gutes Stück darunter'>
+<img class='paper' src='bilder/dienstag-weiter-unten.svg' alt='Seite 3 mit dem längeren Montag: »Dienstag: Kletterwald« steht nicht mehr oben auf der Seite, sondern ein gutes Stück darunter'>
 
 Nach dem Montag stehen 23 leere Absätze. Wird der Montag länger, rutschen die
 letzten von ihnen auf die nächste Seite, vor den Dienstag. Jede Änderung
@@ -69,6 +69,8 @@ ist auf jeder Seite dieselbe; wer dort eine Zahl tippt, bekommt sie auf jede
 Seite. Die Seitenzahl ist darum ein **Feld**, wie die Nummer einer
 Bildunterschrift: Das Programm setzt auf jeder Seite ihre eigene Zahl ein.
 
+<img class='drawing' style='width: 35em' src='fusszeile.svg' alt='Zwei Reihen mit je drei Seiten, unten auf jeder die Fußzeile. Oben »getippt«: auf jeder Seite »Seite 1«. Unten »ein Feld«: »Seite 1«, »Seite 2«, »Seite 3«, die Zahl grau hinterlegt wie ein Feld'>
+
 <!-- language: word -->
 In Word klickst du doppelt in die Fußzeile, löschst die getippte 1 und wählst
 im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenzahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Aktuelle Position* eine einfache Zahl.
@@ -90,6 +92,8 @@ andere Seite, stimmt es nicht mehr. Ein **Inhaltsverzeichnis**, das das
 Programm einfügt, entsteht aus den Überschriften mit ihren Formatvorlagen
 (das letzte Blatt) und kennt ihre Seiten. Nach einer Änderung aktualisierst
 du es, dann stimmt es wieder.
+
+<img class='drawing' style='width: 35em' src='verzeichnis.svg' alt='Links die Titelseite »Reisebericht der 7b« mit »Inhalt«: »Montag: Anreise« bis Seite 2, »Dienstag: Kletterwald« 3, »Mittwoch: Wanderung« 4, mit Punkten bis zur Zahl. Rechts drei Seiten mit diesen Überschriften oben und ihrer Seitenzahl unten, ein Pfeil von jeder Überschrift zu ihrer Zeile im Inhalt'>
 
 <!-- language: word -->
 In Word löschst du das getippte Verzeichnis, stellst den Cursor an seine
@@ -118,7 +122,7 @@ Verzeichnis.
 _task(bericht)
 
 <!-- after: bericht -->
-<img class='full' src='bilder/titelseite-fertig.svg' alt='Die fertige Titelseite: unter dem Titel ein Inhaltsverzeichnis mit allen Tagen und ihren Teilen, die Seitenzahlen rechtsbündig am Rand, mit Punkten dorthin'>
+<img class='paper' src='bilder/titelseite-fertig.svg' alt='Die fertige Titelseite: unter dem Titel ein Inhaltsverzeichnis mit allen Tagen und ihren Teilen, die Seitenzahlen rechtsbündig am Rand, mit Punkten dorthin'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schreib in den Dienstag so viel dazu, dass er über zwei Seiten geht, und aktualisiere das Verzeichnis. Achte auf die Seitenzahlen im Verzeichnis und unten auf den Seiten.

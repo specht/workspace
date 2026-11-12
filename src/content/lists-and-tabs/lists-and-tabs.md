@@ -22,7 +22,7 @@ reference: []
 Für die Klassenfahrt gibt es ein Blatt für zu Hause: was mitkommt und was die
 Fahrt kostet. Die Preise stehen schön untereinander:
 
-<img class='full' src='bilder/kosten.svg' alt='Die Kosten der Klassenfahrt: links fünf Posten, rechts die Preise, ungefähr untereinander, zuletzt »Zusammen 236,00 €« fett'>
+<img class='paper' src='bilder/kosten.svg' alt='Die Kosten der Klassenfahrt: links fünf Posten, rechts die Preise, ungefähr untereinander, zuletzt »Zusammen 236,00 €« fett'>
 
 Gebaut sind sie mit Leerzeichen, so vielen, bis es passte.
 
@@ -31,7 +31,7 @@ _task(andere-schrift)
 <!-- after: andere-schrift -->
 So sieht es in einer anderen Schrift aus:
 
-<img class='full' src='bilder/kosten-andere-schrift.svg' alt='Dieselben Kosten in einer anderen Schrift: Jeder Preis ist in eine eigene Zeile gerutscht, ganz an den linken Rand'>
+<img class='paper' src='bilder/kosten-andere-schrift.svg' alt='Dieselben Kosten in einer anderen Schrift: Jeder Preis ist in eine eigene Zeile gerutscht, ganz an den linken Rand'>
 
 Jede Schrift hat ihre eigene Breite für ein Leerzeichen. Die Leerzeichen waren
 genau für Calibri in 12 pt gezählt; in Georgia sind sie breiter, und die
@@ -48,6 +48,8 @@ Vor jedem Punkt der Packliste steht ein Strich und ein Leerzeichen, getippt.
 Eine **Liste**, die das Programm führt, setzt das Zeichen selbst davor, rückt
 jeden Punkt gleich ein, auch wenn er über zwei Zeilen geht, und zählt bei einer
 nummerierten Liste von selbst weiter.
+
+<img class='drawing' style='width: 35em' src='liste.svg' alt='Zwei Blätter mit derselben Packliste: Schlafsack, »Regenjacke, falls es am Mittwoch regnet« über zwei Zeilen, Taschenlampe. Links getippt, mit Strichen: Die zweite Zeile der Regenjacke beginnt am Rand, unter dem Strich. Rechts eine Liste mit Punkten: Jede Zeile beginnt an derselben Linie, auch die zweite'>
 
 <!-- language: word -->
 In Word markierst du die Zeilen und klickst im Register *Start* auf
@@ -67,8 +69,7 @@ Zeilen eine Liste mit Aufzählungszeichen.
 
 ## Tabstopps
 
-Ein **Tab** (die Taste <kbd>Tab</kbd>, als Formatierungszeichen →) springt
-zum nächsten **Tabstopp**. Ohne eigene Tabstopps gibt es einen alle 1,25 cm.
+Ein **Tab** (die Taste <kbd>Tab</kbd>) springt zum nächsten **Tabstopp**. Ohne eigene Tabstopps gibt es einen alle 1,25 cm.
 Einen eigenen setzt du am Lineal oben, mit einem Klick; er kann links-, rechts-
 oder dezimal ausgerichtet sein. Ein **rechtsbündiger** Tabstopp am rechten
 Rand stellt das Ende jedes Preises genau dorthin, in jeder Schrift; ein
@@ -89,6 +90,10 @@ Position 16 cm, Typ *Rechts*, Füllzeichen *.......*.
 
 _task(tab-zeichen)
 
+<!-- after: tab-zeichen -->
+<img class='drawing' style='width: 35em' src='tabstopp.svg' alt='Oben das Lineal von 0 bis 16 cm, bei 16 cm das Zeichen eines rechtsbündigen Tabstopps. Darunter zwei Zeilen, »Busfahrt hin und zurück« in einer serifenlosen Schrift und »Jugendherberge« in einer mit Serifen: hinter dem Text je ein blauer Pfeil, dann Punkte bis zum Preis, und beide Preise enden genau unter dem Tabstopp'>
+<!-- /after -->
+
 **Jetzt bist du dran:** Ersetz in jeder Zeile der Kosten die Leerzeichen
 zwischen Posten und Preis durch einen einzigen Tab. Markier dann alle fünf
 Zeilen und setz einen rechtsbündigen Tabstopp bei 16 cm, mit Punkten als
@@ -99,7 +104,7 @@ Füllzeichen.
 _task(packliste)
 
 <!-- after: packliste -->
-<img class='full' src='bilder/kosten-tabstopp.svg' alt='Die Kosten mit einem Tabstopp, in derselben anderen Schrift wie oben: Jeder Preis endet genau am rechten Rand, Punkte führen von jedem Posten zu seinem Preis'>
+<img class='paper' src='bilder/kosten-tabstopp.svg' alt='Die Kosten mit einem Tabstopp, in derselben anderen Schrift wie oben: Jeder Preis endet genau am rechten Rand, Punkte führen von jedem Posten zu seinem Preis'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Stell die Kosten in eine andere Schrift und eine andere Größe. Achte darauf, wo die Preise enden.

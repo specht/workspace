@@ -58,3 +58,18 @@ tasks:
     hint:
       - Markier die Kopfzeile und die sechs Zeilen darunter, dann Text in Tabelle umwandeln, getrennt durch Tabstopps.
       - Die Kopfzeile wiederholt sich, wenn der Haken bei »Überschriften wiederholen« gesetzt ist, mit dem Cursor in der ersten Zeile.
+    word:
+      hint:
+        - "Markier die Kopfzeile und die sechs Zeilen darunter und wähl im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle umwandeln*, getrennt durch *Tabstopps*."
+        - "Stell den Cursor in die erste Zeile der Tabelle und klick im Register *Tabellenlayout* auf *Überschriften wiederholen*."
+        - "Schalte die Formatierungszeichen ein: In den Zellen darf kein Tab (→) mehr stehen."
+    libreoffice:
+      hint:
+        - "Markier die Kopfzeile und die sechs Zeilen darunter und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Umwandeln* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle*, Text trennen bei *Tabulatoren*."
+        - "Stell den Cursor in die Tabelle und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Textfluss*, Haken bei *Überschrift wiederholen*."
+        - "Schalte die Formatierungszeichen ein: In den Zellen darf kein Tab (→) mehr stehen."
+    nextcloud:
+      hint:
+        - "Markier die Kopfzeile und die sechs Zeilen darunter und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Umwandeln* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle*, Text trennen bei *Tabulatoren*."
+        - "Stell den Cursor in die Tabelle und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Textfluss*, Haken bei *Überschrift wiederholen*."
+        - "Schalte die Formatierungszeichen ein: In den Zellen darf kein Tab (→) mehr stehen."

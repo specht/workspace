@@ -12,13 +12,16 @@
 # Enter) like on a typewriter, two spaces after each full stop.
 
 import os
+import re
 import sys
 import shutil
 import subprocess
 import tempfile
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt, Cm
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Pt, Cm, RGBColor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
@@ -91,6 +94,55 @@ def starter(path, bigger=0):
     doc.save(path)
 
 
+# The top of the starting file as Word or LibreOffice shows it with the
+# formatting marks on: each space a blue »·«, each paragraph's end a blue
+# »¶«. A »·« is a little wider than a space; each one is condensed by the
+# difference (Carlito, the font LibreOffice uses for Calibri), so that the
+# lines stay as long as in the file.
+MARK_BLUE = RGBColor(0x24, 0x57, 0xA6)
+
+
+def condense(run, twips):
+    props = run._r.get_or_add_rPr()
+    spacing = OxmlElement('w:spacing')
+    spacing.set(qn('w:val'), str(twips))
+    props.append(spacing)
+
+
+def dot_correction(size, bold):
+    from PIL import ImageFont
+    path = subprocess.run(['fc-match', '-f', '%{file}', 'Carlito:bold' if bold else 'Carlito'],
+                          capture_output=True, text=True, check=True).stdout
+    font = ImageFont.truetype(path, 1000)
+    # in twentieths of a point
+    return round((font.getlength(' ') - font.getlength('·')) / 1000 * size * 20)
+
+
+def marked(paragraph, text, bold=False, size=12):
+    for piece in re.split(r'( +)', text):
+        if not piece:
+            continue
+        if piece.startswith(' '):
+            r = run(paragraph, '·' * len(piece), bold, size)
+            r.font.color.rgb = MARK_BLUE
+            condense(r, dot_correction(size, bold))
+        else:
+            run(paragraph, piece, bold, size)
+    r = run(paragraph, '¶', bold, size)
+    r.font.color.rgb = MARK_BLUE
+
+
+def marks_top(path):
+    doc = base()
+    marked(doc.add_paragraph(), ' ' * 38 + TITLE, bold=True, size=16)
+    marked(doc.add_paragraph(), ' ' * 49 + SUBTITLE)
+    marked(doc.add_paragraph(), '')
+    marked(doc.add_paragraph(), ' ' * 148 + DATE)
+    marked(doc.add_paragraph(), '')
+    marked(doc.add_paragraph(), 'Liebe Eltern,')
+    doc.save(path)
+
+
 def solution(path):
     doc = base()
     title = doc.add_paragraph()
@@ -136,6 +188,9 @@ if __name__ == '__main__':
         picture(os.path.join(STATIC, '01 Einladung.docx'), os.path.join(HERE, 'teaser.webp'), top_cm=1.2, height_cm=9.9, left_cm=1.7, width_cm=17.6)
         starter(os.path.join(work, 'groesser.docx'), bigger=2)
         picture(os.path.join(work, 'groesser.docx'), os.path.join(HERE, 'bilder', 'einladung-groesser.svg'), height_cm=14.6)
+        # the top with the formatting marks on
+        marks_top(os.path.join(work, 'zeichen.docx'))
+        picture(os.path.join(work, 'zeichen.docx'), os.path.join(HERE, 'bilder', 'zeichen.svg'), top_cm=2.0, height_cm=4.4)
         # and the solution after the same step
         bigger = os.path.join(work, 'fertig-groesser.docx')
         doc = Document(os.path.join(HERE, 'stufen', 'einladung.docx'))

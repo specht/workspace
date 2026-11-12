@@ -22,7 +22,7 @@ reference: []
 Für die Zeitung der Klassenfahrt hat jemand einen Artikel über die Kraniche
 am Kranichsee geschrieben, mit einem Foto und einer Karte. So fängt er an:
 
-<img class='full' src='bilder/artikel.svg' alt='Der Anfang des Artikels: Überschrift, ein Absatz, darunter über die ganze Breite ein Foto, auf dem der Kranich breit und dick aussieht, darunter »Abbildung 1: Ein Kranich in einer Wiese in der Uckermark« mit der Angabe des Fotografen'>
+<img class='paper' src='bilder/artikel.svg' alt='Der Anfang des Artikels: Überschrift, ein Absatz, darunter über die ganze Breite ein Foto, auf dem der Kranich breit und dick aussieht, darunter »Abbildung 1: Ein Kranich in einer Wiese in der Uckermark« mit der Angabe des Fotografen'>
 
 Unter jedem Bild steht eine **Bildunterschrift** mit einer Nummer:
 »Abbildung 1« unter dem Kranich, weiter unten »Abbildung 2« unter der Karte.
@@ -30,7 +30,7 @@ Unter jedem Bild steht eine **Bildunterschrift** mit einer Nummer:
 _task(nummern)
 
 <!-- after: nummern -->
-<img class='full' src='bilder/karte-oben.svg' alt='Der Artikel mit der Karte ganz oben: Unter der Karte steht »Abbildung 2«, unter dem Kranich darunter »Abbildung 1«'>
+<img class='paper' src='bilder/karte-oben.svg' alt='Der Artikel mit der Karte ganz oben: Unter der Karte steht »Abbildung 2«, unter dem Kranich darunter »Abbildung 1«'>
 
 Die Nummern hat jemand getippt. Das Programm weiß nicht, dass sie die Bilder
 zählen sollen, und lässt sie stehen, wie sie sind. In einem Artikel mit zwei
@@ -50,6 +50,8 @@ eines Bildes, wird es nur breiter, nicht höher: Das Seitenverhältnis stimmt
 nicht mehr, und alles darauf wird verzerrt. Genau das ist dem Kranich
 passiert. Zieht man dagegen an einer Ecke, wächst das Bild in beide
 Richtungen gleich.
+
+<img class='drawing' style='width: 35em' src='seitenverhaeltnis.svg' alt='Drei Fassungen desselben Bilds, eine Landschaft mit runder Sonne, mit acht Anfassern am Rahmen. Links das Bild im Verhältnis 3 zu 2. In der Mitte am Anfasser der rechten Seite gezogen: nur breiter, die Sonne ist ein liegendes Oval. Rechts an der Ecke oben rechts gezogen: größer, dieselbe Form, die Sonne bleibt rund'>
 
 <!-- language: word -->
 In Word klickst du mit der rechten Maustaste auf das Foto und wählst *Größe
@@ -85,6 +87,8 @@ Buchstabe. Daneben kann kein Text stehen, und ein kleines Foto lässt rechts
 und links viel Platz frei. Damit der Text neben dem Bild weiterläuft, braucht
 das Bild einen anderen **Textumbruch**: Dann fließt der Text um das Bild herum,
 und du kannst das Bild an den Rand schieben.
+
+<img class='drawing' style='width: 35em' src='umbruch.svg' alt='Zwei Blätter. Links »in der Zeile«: Das Bild steht in einer Zeile wie ein großer Buchstabe, daneben nur ein kurzes Wort auf der Höhe seiner Unterkante, rechts davon eine leere Fläche. Rechts »Text fließt herum«: Das Bild steht am rechten Rand, die Zeilen daneben sind kürzer und gehen darunter wieder über die ganze Breite'>
 
 <!-- language: word -->
 In Word klickst du auf das Foto und dann auf den Knopf *Layoutoptionen*, der
@@ -174,7 +178,7 @@ Alternativtext. Für die Karte reicht ein Satz, der sagt, was wo liegt.
 _task(artikel)
 
 <!-- after: artikel -->
-<img class='full' src='bilder/artikel-fertig.svg' alt='Der fertige Artikel: das Foto in seiner richtigen Form rechts neben den ersten beiden Absätzen, darunter seine Beschriftung, weiter unten die Karte mit ihrer Beschriftung'>
+<img class='paper' src='bilder/artikel-fertig.svg' alt='Der fertige Artikel: das Foto in seiner richtigen Form rechts neben den ersten beiden Absätzen, darunter seine Beschriftung, weiter unten die Karte mit ihrer Beschriftung'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schneide die Karte mit ihrer Beschriftung aus, füge sie über dem ersten Absatz ein und aktualisiere die Felder. Achte auf die Nummern unter beiden Bildern.

@@ -22,7 +22,7 @@ Die Klassenleitung der 7b hat eine Einladung zum Elternabend getippt, in Eile,
 kurz vor der Pause. Ausgedruckt sieht sie ordentlich aus: die Überschrift in
 der Mitte, das Datum rechts, darunter ein kurzer Brief.
 
-<img class='full' src='bilder/einladung.svg' alt='Die Einladung, wie sie ausgedruckt aussieht: »Einladung zum Elternabend« fett in der Mitte, darunter »Klassenfahrt der 7b an den Kranichsee«, rechts »2. März«, dann »Liebe Eltern,« und ein Brief aus drei Zeilen, zwei Sätze zu Ort und Zeit, Gruß und Unterschrift'>
+<img class='paper' src='bilder/einladung.svg' alt='Die Einladung, wie sie ausgedruckt aussieht: »Einladung zum Elternabend« fett in der Mitte, darunter »Klassenfahrt der 7b an den Kranichsee«, rechts »2. März«, dann »Liebe Eltern,« und ein Brief aus drei Zeilen, zwei Sätze zu Ort und Zeit, Gruß und Unterschrift'>
 
 Wie ein Dokument gebaut ist, sieht man auf dem Papier nicht. Man merkt es erst,
 wenn sich etwas ändert.
@@ -32,7 +32,7 @@ _task(groesser)
 <!-- after: groesser -->
 So sieht die Einladung aus, wenn die Schrift überall eine Stufe größer wird:
 
-<img class='full' src='bilder/einladung-groesser.svg' alt='Dieselbe Einladung mit größerer Schrift: Die Überschrift steht rechts von der Mitte, das Datum am Anfang einer eigenen Zeile links, und im Brief folgt auf jede lange Zeile eine kurze mit ein, zwei Wörtern'>
+<img class='paper' src='bilder/einladung-groesser.svg' alt='Dieselbe Einladung mit größerer Schrift: Die Überschrift steht rechts von der Mitte, das Datum am Anfang einer eigenen Zeile links, und im Brief folgt auf jede lange Zeile eine kurze mit ein, zwei Wörtern'>
 
 Die Überschrift stand nie in der Mitte. Vor ihr stehen 38 Leerzeichen, so
 viele, bis sie bei 16 pt ungefähr in der Mitte aussah. Werden die Leerzeichen
@@ -73,6 +73,10 @@ Dann siehst du drei Zeichen, die vorher nicht da waren:
 <tr><td><strong>¶</strong></td><td>das Ende eines Absatzes</td><td><kbd>Enter</kbd></td></tr>
 <tr><td><strong>↵</strong></td><td>ein Zeilenumbruch von Hand: neue Zeile, aber derselbe Absatz</td><td><kbd>Shift</kbd>+<kbd>Enter</kbd></td></tr>
 </table>
+
+So sieht der Anfang der Einladung mit Formatierungszeichen aus:
+
+<img class='paper' src='bilder/zeichen.svg' alt='Der Anfang der Einladung mit Formatierungszeichen: vor der Überschrift und vor der Zeile darunter eine lange Reihe blauer Punkte, eine noch längere vor »2. März«, zwischen den Wörtern je ein Punkt, am Ende jedes Absatzes ein blaues ¶, dazwischen zwei Zeilen, in denen nur ein ¶ steht'>
 
 Ein **Absatz** ist alles bis zum nächsten ¶, auch wenn er über mehrere Zeilen
 geht. Innerhalb eines Absatzes bricht das Programm die Zeilen selbst um, dort,
@@ -124,6 +128,8 @@ ihr. Abstand zwischen zwei Absätzen gibst du besser dem Absatz selbst: Jeder
 Absatz hat einen **Abstand davor** und einen **Abstand danach**, in Punkt (pt).
 12 pt sind ungefähr eine Zeile.
 
+<img class='drawing' style='width: 35em' src='abstand.svg' alt='Zwei Blätter nebeneinander. Links »mit einem leeren Absatz«: unter »Liebe Eltern,¶« eine Zeile, in der nur ein ¶ steht, markiert als »leerer Absatz«, dann der Brief. Rechts »mit Abstand danach«: »Liebe Eltern,¶« in einem blauen Feld, das unter der Zeile weitergeht, mit einer Klammer »12 pt« daneben, dann der Brief, gleich weit entfernt wie links'>
+
 <!-- language: word -->
 In Word stellst du den Abstand im Register *Layout* ein, im Feld *Abstand:
 Nach*.
@@ -174,7 +180,7 @@ _task(einladung)
 
 So sieht die gebaute Einladung mit größerer Schrift aus:
 
-<img class='full' src='bilder/fertig-groesser.svg' alt='Die reparierte Einladung mit größerer Schrift: Überschrift und Zeile darunter genau in der Mitte, das Datum am rechten Rand, der Brief bricht gleichmäßig um, die Abstände zwischen den Absätzen sind gleich geblieben'>
+<img class='paper' src='bilder/fertig-groesser.svg' alt='Die reparierte Einladung mit größerer Schrift: Überschrift und Zeile darunter genau in der Mitte, das Datum am rechten Rand, der Brief bricht gleichmäßig um, die Abstände zwischen den Absätzen sind gleich geblieben'>
 
 _task(ausdruck)
 <!-- /after -->

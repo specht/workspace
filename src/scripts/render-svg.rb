@@ -53,6 +53,17 @@ DARK = {
     '#0d60ae' => '#118cfc', # I-frames (»Video komprimieren«): the strongest of the three kinds
     '#12959f' => '#14bbc2', # B-frames: between I and P
     '#c98500' => '#f4a938', # P-frames
+    # on a sheet of paper (#fdfdfd, white in both modes; the Office
+    # drawings, src/scripts/office-drawings.py): the same in both modes
+    '#1b1f24' => '#1b1f24', # ink
+    '#2457a6' => '#2457a6', # blue: formatting marks, a heading
+    '#2e6b3a' => '#2e6b3a', # green: the 7b's headings
+    '#9aa3ae' => '#9aa3ae', # grey bars that stand for lines of text
+    '#c9ced6' => '#c9ced6', # the edge of the sheet, the lines of a table
+    '#b45309' => '#b45309', # amber: what a drawing points at on the sheet
+    '#fdecc8' => '#fdecc8', # pale amber behind it
+    '#e3ecfa' => '#e3ecfa', # pale blue behind a part of the sheet
+    '#e6e8eb' => '#e6e8eb', # the grey of a field (a page number)
 }.freeze
 
 # in docker/drawings, the same fonts and tools on every machine: started

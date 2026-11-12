@@ -93,3 +93,18 @@ tasks:
     hint:
       - Fang mit Formatierung löschen an, dann ist der Text wieder einheitlich.
       - Danach setzt du nur noch drei Stellen fett.
+    word:
+      hint:
+        - "Markier den ganzen Aushang (<kbd>Strg</kbd>+<kbd>A</kbd>) und lösch die Formatierung mit <kbd>Strg</kbd>+<kbd>Leertaste</kbd>. Dann ist der Text wieder einheitlich."
+        - "Die Schriftart wählst du im Register *Start* im Feld ganz links, die Größe daneben: eine Schrift für die Überschrift und die Zeile darunter, eine für den Rest, in 12 pt."
+        - "Zuletzt markierst du nur das Datum, die Zeit und den Ort und machst sie fett, mit dem Knopf im Register *Start*."
+    libreoffice:
+      hint:
+        - "Markier den ganzen Aushang (<kbd>Strg</kbd>+<kbd>A</kbd>) und lösch die Formatierung mit <kbd>Strg</kbd>+<kbd>M</kbd> (*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*). Dann ist der Text wieder einheitlich."
+        - "Die Schriftart wählst du in der Leiste oben im Feld ganz links, die Größe daneben: eine Schrift für die Überschrift und die Zeile darunter, eine für den Rest, in 12 pt."
+        - "Zuletzt markierst du nur das Datum, die Zeit und den Ort und machst sie fett, mit dem Knopf in der Leiste oben."
+    nextcloud:
+      hint:
+        - "Markier den ganzen Aushang (<kbd>Strg</kbd>+<kbd>A</kbd>) und lösch die Formatierung mit <kbd>Strg</kbd>+<kbd>M</kbd>. Dann ist der Text wieder einheitlich."
+        - "Die Schriftart wählst du im Register *Start* im Feld ganz links, die Größe daneben: eine Schrift für die Überschrift und die Zeile darunter, eine für den Rest, in 12 pt."
+        - "Zuletzt markierst du nur das Datum, die Zeit und den Ort und machst sie fett, mit dem Knopf im Register *Start*."

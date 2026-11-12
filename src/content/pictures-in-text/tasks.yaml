@@ -94,3 +94,18 @@ tasks:
       - Fang beim Foto an. Setz es zurück auf seine Originalgröße und mach es dann 7,5 cm breit, mit gesperrtem Seitenverhältnis.
       - Damit Text neben dem Foto stehen kann, braucht es einen anderen Textumbruch (Word) oder Umlauf (LibreOffice). Schieb es danach an den rechten Rand neben den ersten Absatz.
       - Lösch die getippten Unterschriften erst, wenn die eingefügten darunter stehen. Den Text hinter der Nummer schreibst du wieder dazu.
+    word:
+      hint:
+        - "Fang beim Foto an: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größe und Position…*, Haken bei *Seitenverhältnis sperren*, *Zurücksetzen*, dann die Breite 7,5 cm."
+        - "Klick auf das Foto und dann auf den Knopf *Layoutoptionen* daneben, *Quadrat*. Schieb das Foto an den rechten Rand neben den ersten Absatz."
+        - "Rechtsklick auf jedes Bild <i class='bi bi-chevron-right' aria-hidden='true'></i> *Beschriftung einfügen…*, Bezeichnung *Abbildung*, und lösch danach die getippte Unterschrift. Den Alternativtext schreibst du über Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Alternativtext*."
+    libreoffice:
+      hint:
+        - "Fang beim Foto an: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Typ*, *Verhältnis beibehalten*, *Originalgröße*, dann die Breite 7,5 cm."
+        - "Rechtsklick auf das Foto <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verankerung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Am Absatz*, dann *Umlauf* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Parallel*. Schieb das Foto an den rechten Rand neben den ersten Absatz."
+        - "Rechtsklick auf jedes Bild <i class='bi bi-chevron-right' aria-hidden='true'></i> *Beschriftung einfügen…*, Kategorie *Abbildung*, und lösch danach die getippte Unterschrift. Den Alternativtext schreibst du über Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Alternativer Text…* in das Feld *Beschreibung*."
+    nextcloud:
+      hint:
+        - "Fang beim Foto an: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Typ*, *Verhältnis beibehalten*, *Originalgröße*, dann die Breite 7,5 cm."
+        - "Rechtsklick auf das Foto <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verankerung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Am Absatz*, dann *Umlauf* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Parallel*. Schieb das Foto an den rechten Rand neben den ersten Absatz."
+        - "Rechtsklick auf jedes Bild <i class='bi bi-chevron-right' aria-hidden='true'></i> *Beschriftung einfügen…*, Kategorie *Abbildung*, und lösch danach die getippte Unterschrift. Den Alternativtext schreibst du über Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Alternativer Text…* in das Feld *Beschreibung*."

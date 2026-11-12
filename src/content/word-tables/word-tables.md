@@ -22,12 +22,12 @@ reference: []
 Das Programm der Klassenfahrt steht in drei Spalten: Tag, Zeit, Programm.
 Gebaut ist es mit zwei Tabstopps, so wie im letzten Blatt die Preise:
 
-<img class='full' src='bilder/programm.svg' alt='Das Programm: eine Kopfzeile Tag, Zeit, Programm, darunter sechs Zeilen von Montag bis Freitag, ordentlich in drei Spalten'>
+<img class='paper' src='bilder/programm.svg' alt='Das Programm: eine Kopfzeile Tag, Zeit, Programm, darunter sechs Zeilen von Montag bis Freitag, ordentlich in drei Spalten'>
 
 _task(laenger)
 
 <!-- after: laenger -->
-<img class='full' src='bilder/programm-laenger.svg' alt='Dasselbe Programm, der Mittwoch mit einem längeren Eintrag: Sein Rest steht in der nächsten Zeile ganz links, unter »Mittwoch«, und schiebt den Donnerstag nach unten'>
+<img class='paper' src='bilder/programm-laenger.svg' alt='Dasselbe Programm, der Mittwoch mit einem längeren Eintrag: Sein Rest steht in der nächsten Zeile ganz links, unter »Mittwoch«, und schiebt den Donnerstag nach unten'>
 
 Ein Tab springt nur in der Zeile zum nächsten Tabstopp. Bricht der Text um,
 fängt die neue Zeile wieder am linken Rand an: Die Spalten gelten nur für die
@@ -41,7 +41,10 @@ Hol dir das Programm:
 <p><a class='document-starter btn btn-primary' href='/word-tables/04%20Programm.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>04 Programm.docx</span></a></p>
 
 In einer **Tabelle** hat jede Angabe ihre eigene **Zelle**. Wird ein Eintrag
-länger, wächst seine Zeile nach unten, und alles bleibt in seiner Spalte. Aus
+länger, wächst seine Zeile nach unten, und alles bleibt in seiner Spalte.
+
+<img class='drawing' style='width: 35em' src='zelle.svg' alt='Eine Tabelle mit den Spalten Tag, Zeit und Programm. Die Zelle mit »Wanderung um den See, mit Picknick am Aussichtsturm« ist eingerahmt: Der Eintrag geht über zwei Zeilen, und die ganze Zeile ist höher. Die Zeile des Donnerstags ist blau hinterlegt, »eine Zeile«; die Spalte Zeit gelb, »eine Spalte«'>
+ Aus
 Text mit Tabs macht das Programm eine Tabelle auf einmal: Jeder Tab wird eine
 neue Spalte, jeder Absatz eine Zeile.
 
@@ -69,6 +72,8 @@ nach, was mit dem Donnerstag passiert.
 Die erste Zeile mit Tag, Zeit und Programm ist die **Kopfzeile** der Tabelle.
 Wird eine Tabelle länger als eine Seite, soll sie auf jeder Seite oben stehen.
 
+<img class='drawing' style='width: 35em' src='kopfzeile.svg' alt='Zwei Seiten nebeneinander. Auf der ersten beginnt unten eine Tabelle mit der Kopfzeile »Tag, Programm«, dann Montag bis Mittwoch. Die zweite Seite beginnt oben wieder mit der Kopfzeile, eingerahmt, dann Donnerstag und Freitag'>
+
 <!-- language: word -->
 In Word stellst du den Cursor in die erste Zeile und klickst im Register
 *Tabellenlayout* auf *Überschriften wiederholen*.
@@ -87,7 +92,7 @@ In Nextcloud Office stellst du den Cursor in die Tabelle und wählst *Tabelle*
 _task(programm)
 
 <!-- after: programm -->
-<img class='full' src='bilder/programm-tabelle.svg' alt='Das Programm als Tabelle mit Linien: Der lange Mittwoch geht in seiner Zelle über zwei Zeilen, der Donnerstag bleibt in seiner Zeile darunter'>
+<img class='paper' src='bilder/programm-tabelle.svg' alt='Das Programm als Tabelle mit Linien: Der lange Mittwoch geht in seiner Zelle über zwei Zeilen, der Donnerstag bleibt in seiner Zeile darunter'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Füge unter dem Dienstag eine Zeile ein (Rechtsklick in die Zeile, <em>Einfügen</em>) und trag einen Abend am Lagerfeuer ein. Achte darauf, was mit den Zeilen darunter passiert.

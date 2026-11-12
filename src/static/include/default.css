@@ -1144,6 +1144,21 @@ img.fit-width {
     min-width: unset;
 }
 
+/* A picture of a document (a part of its page, the Office sheets'
+   dokumente.py): a sheet of paper at its own size, so that its 12 pt are
+   about as large as the page's text; narrower on a smaller screen, never
+   wider than the text, never scrolling sideways. */
+img.paper {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin: 1em auto 1.5em;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
 /* No picture on a desktop is taller than three quarters of the window (the
    maintainer, November 2026): one that would be, a portrait or a tall
    program picture at the width of the text, shrinks to that height and
@@ -1153,6 +1168,7 @@ img.fit-width {
     img.full,
     img.fit-width,
     img.drawing,
+    img.paper,
     .scroll-x > img {
         max-height: 75vh;
         object-fit: contain;

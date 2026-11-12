@@ -23,7 +23,7 @@ Nach der Klassenfahrt haben alle Tischgruppen ein Stück für das
 Reisetagebuch der 7b geschrieben. Jemand hat die Stücke zusammengesetzt und
 jede Überschrift fett, größer und blau gemacht:
 
-<img class='full' src='bilder/tagebuch.svg' alt='Das Reisetagebuch: ein großer Titel, darunter für jeden Tag eine blaue, fette Überschrift wie »Montag: Anreise«, beim Mittwoch zwei kleinere fette Zeilen »Am Vormittag« und »Am Nachmittag«'>
+<img class='paper' src='bilder/tagebuch.svg' alt='Das Reisetagebuch: ein großer Titel, darunter für jeden Tag eine blaue, fette Überschrift wie »Montag: Anreise«, beim Mittwoch zwei kleinere fette Zeilen »Am Vormittag« und »Am Nachmittag«'>
 
 _task(uebersicht)
 
@@ -85,6 +85,8 @@ Die Klassenleitung möchte die Überschriften der Tage grün, in der Farbe der
 Formatvorlage änderst du nur die Vorlage, und jeder Absatz mit dieser Vorlage
 ändert sich mit.
 
+<img class='drawing' style='width: 35em' src='vorlage.svg' alt='Links ein Kasten »Formatvorlage Überschrift 1: grün, 16 pt, fett«, Pfeile von ihm zu drei Überschriften auf einem Blatt. »Montag: Anreise« und »Dienstag: Kletterwald« sind grün; »Mittwoch: Wanderung« ist blau, daneben »blau von Hand«, und sein Pfeil ist gestrichelt'>
+
 <!-- language: word -->
 In Word klickst du mit der rechten Maustaste in der Liste der Formatvorlagen
 auf *Überschrift 1* und wählst *Ändern…*. Dort stellst du die Farbe ein.
@@ -108,7 +110,7 @@ bleibt, hat sie noch Formatierung von Hand.
 _task(tagebuch)
 
 <!-- after: tagebuch -->
-<img class='full' src='bilder/tagebuch-fertig.svg' alt='Das fertige Tagebuch: der Titel groß in Grün, die Tage als grüne Überschriften, Vormittag und Nachmittag als kleinere Überschriften darunter'>
+<img class='paper' src='bilder/tagebuch-fertig.svg' alt='Das fertige Tagebuch: der Titel groß in Grün, die Tage als grüne Überschriften, Vormittag und Nachmittag als kleinere Überschriften darunter'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere die Schriftart von »Überschrift 1« und dann die von »Standard«. Achte darauf, welche Absätze sich jeweils mitändern.

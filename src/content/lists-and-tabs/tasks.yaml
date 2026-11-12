@@ -31,7 +31,8 @@ tasks:
   - id: tab-zeichen
     title: Ein Tab im Text
     prompt: |
-      Mit welchem Zeichen zeigen die Formatierungszeichen einen Tab?
+      Stell im Blatt den Cursor hinter »Busfahrt hin und zurück« und drück <kbd>Tab</kbd>.
+      Mit welchem Zeichen zeigen die Formatierungszeichen den Tab?
     check:
       type: choice
       options:
@@ -67,3 +68,18 @@ tasks:
       - Die getippten Striche zuerst löschen, dann die sechs Zeilen markieren und die Liste einschalten.
       - Mit Suchen und Ersetzen (Strg+H) findest du zwei Leerzeichen hintereinander. In jeder Zeile der Kosten bleibt nur ein Tab.
       - Den Tabstopp setzt du für alle fünf Zeilen auf einmal, wenn sie markiert sind.
+    word:
+      hint:
+        - "Lösch die getippten Striche, markier die sechs Zeilen der Packliste und klick im Register *Start* auf *Aufzählungszeichen*."
+        - "Lösch in jeder Zeile der Kosten alle Leerzeichen zwischen Posten und Preis und drück einmal <kbd>Tab</kbd>. Mit <kbd>Strg</kbd>+<kbd>H</kbd> siehst du danach nach, ob noch irgendwo zwei Leerzeichen stehen."
+        - "Markier die fünf Zeilen der Kosten und öffne *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabstopps*: Position 16 cm, Ausrichtung *Rechts*, Füllzeichen *2 .....*."
+    libreoffice:
+      hint:
+        - "Lösch die getippten Striche, markier die sechs Zeilen der Packliste und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Aufzählungszeichen und Nummerierung* oder klick in der Leiste auf die Liste mit den Punkten."
+        - "Lösch in jeder Zeile der Kosten alle Leerzeichen zwischen Posten und Preis und drück einmal <kbd>Tab</kbd>. Mit <kbd>Strg</kbd>+<kbd>H</kbd> siehst du danach nach, ob noch irgendwo zwei Leerzeichen stehen."
+        - "Markier die fünf Zeilen der Kosten und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 16 cm, Typ *Rechts*, Füllzeichen *.......*."
+    nextcloud:
+      hint:
+        - "Lösch die getippten Striche, markier die sechs Zeilen der Packliste und klick im Register *Start* auf die Liste mit den Punkten."
+        - "Lösch in jeder Zeile der Kosten alle Leerzeichen zwischen Posten und Preis und drück einmal <kbd>Tab</kbd>. Mit *Suchen und Ersetzen* siehst du danach nach, ob noch irgendwo zwei Leerzeichen stehen."
+        - "Markier die fünf Zeilen der Kosten und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 16 cm, Typ *Rechts*, Füllzeichen *.......*."

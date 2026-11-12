@@ -66,5 +66,5 @@ _task(artikel)
 <!-- after: artikel -->
 So kann ein fertiger Artikel aussehen:
 
-<img class='full' src='bilder/artikel.svg' alt='Ein fertiger Artikel »Ein Tag im Kletterwald«: Titel, Einleitung, zwei grüne Zwischenüberschriften, eine Liste mit drei Regeln, ein Foto eines Kranichs mit Bildunterschrift und Quelle, ein letzter Absatz'>
+<img class='paper' src='bilder/artikel.svg' alt='Ein fertiger Artikel »Ein Tag im Kletterwald«: Titel, Einleitung, zwei grüne Zwischenüberschriften, eine Liste mit drei Regeln, ein Foto eines Kranichs mit Bildunterschrift und Quelle, ein letzter Absatz'>
 <!-- /after -->

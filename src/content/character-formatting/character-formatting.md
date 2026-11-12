@@ -22,7 +22,7 @@ reference: []
 Die 7b verkauft in der großen Pause Kuchen, für ihre Klassenfahrt. Jemand hat
 den Aushang dafür gemacht, mit viel Begeisterung:
 
-<img class='full' src='bilder/aushang.svg' alt='Der Aushang: »Kuchenverkauf!« in einer schmalen, sehr fetten Schrift, darunter eine Zeile in einer Schreibschrift, unterstrichen und kursiv, dann vier Absätze in vier verschiedenen Schriften und Größen, fast alle fett, einer ganz in Großbuchstaben und unterstrichen, zuletzt »Danke!« groß und kursiv'>
+<img class='paper' src='bilder/aushang.svg' alt='Der Aushang: »Kuchenverkauf!« in einer schmalen, sehr fetten Schrift, darunter eine Zeile in einer Schreibschrift, unterstrichen und kursiv, dann vier Absätze in vier verschiedenen Schriften und Größen, fast alle fett, einer ganz in Großbuchstaben und unterstrichen, zuletzt »Danke!« groß und kursiv'>
 
 Wer im Flur vorbeigeht, schaut höchstens zwei Sekunden hin. In der Zeit muss er
 lesen können, wann und wo es Kuchen gibt. Auf diesem Aushang springt ihm alles
@@ -52,7 +52,11 @@ _task(schriften)
 
 Schriften gibt es mit **Serifen**, den kleinen Füßchen an den Enden der
 Buchstaben (Times New Roman, Georgia), und **ohne Serifen** (Arial, Verdana,
-Calibri). Für ein Blatt reichen zwei: eine für die Überschrift, eine für den
+Calibri).
+
+<img class='drawing' style='width: 35em' src='serifen.svg' alt='Das Wort »Hand« zweimal, groß. Links mit Serifen: blaue Ringe um die kleinen Querstriche an den Enden der Striche, unten an jedem Fuß und oben am H und am d. Rechts dasselbe Wort ohne Serifen, die Striche enden glatt'>
+
+Für ein Blatt reichen zwei: eine für die Überschrift, eine für den
 Text. Mehr Schriften machen ein Blatt nicht lebendiger, sondern unruhig, und
 jede neue Schrift fragt den Blick: Ist das etwas anderes?
 
@@ -94,6 +98,8 @@ ein Link und macht die Unterlängen schwer lesbar (g, p, y). **Großbuchstaben**
 liest man langsamer: Wörter erkennen wir an ihrer Form, und in Großbuchstaben
 haben alle Wörter dieselbe Form, ein Rechteck.
 
+<img class='drawing' style='width: 35em' src='hervorheben.svg' alt='Oben »Gruppe gegen Typen« unterstrichen; rote Ringe zeigen, wo die Linie durch g, p und y geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
+
 _task(hervorheben)
 
 **Jetzt bist du dran:** Nimm das Unterstrichene und die Großbuchstaben weg,
@@ -109,7 +115,7 @@ _task(aushang)
 <!-- after: aushang -->
 So kann der Aushang aussehen:
 
-<img class='full' src='bilder/aushang-fertig.svg' alt='Der Aushang mit zwei Schriften: Überschrift und Unterzeile in einer serifenlosen Schrift, der Text in einer Schrift mit Serifen in einer Größe, fett nur »14. März«, »großen Pause« und »vor der Mensa«'>
+<img class='paper' src='bilder/aushang-fertig.svg' alt='Der Aushang mit zwei Schriften: Überschrift und Unterzeile in einer serifenlosen Schrift, der Text in einer Schrift mit Serifen in einer Größe, fett nur »14. März«, »großen Pause« und »vor der Mensa«'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Zeig deinen Aushang jemandem zwei Sekunden lang und dreh ihn dann um. Frag, wann und wo der Kuchenverkauf ist. Probier dasselbe mit der Vorlage.
