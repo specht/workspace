@@ -100,6 +100,16 @@ notes (`facts`, in any words), and no slide has more than 30 words of notes
 (`notes_words`); the sentences moved whole into the notes fail as a text to
 read out.
 
+## A good slide has a picture (the maintainer, 12 November 2026)
+
+The model of a good slide in this series is a picture with minimal text;
+keywords alone are a step on the way (sheet 1 takes the text off, sheet 4
+adds the pictures). The card pictures of the sheets show such a slide: the
+card of sheet 1 waits for a slide of sheet 4 with its picture, thrown onto a
+wall in perspective by a beamer outside the picture, its light a frustum
+with four faces (`good-slides/bilder/teaser.py` renders the scene through a
+camera; its camera and lens are set by EYE, TARGET, FOCAL and LENS).
+
 ## Accessibility (the maintainer, 12 November 2026)
 
 Everywhere it fits: information never by colour alone (about one boy in

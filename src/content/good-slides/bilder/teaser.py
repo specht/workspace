@@ -1,9 +1,11 @@
-# The card's picture of »Eine Folie, ein Gedanke«: the good slide thrown
-# onto a wall seen at an angle (in perspective: its near edge tall, its far
-# edge shorter), by a beamer outside the picture at the bottom left whose
-# light widens to the image's four corners (a frustum, as in a cinema), on
-# the orange ground of the presentations (office-drawings.py, card_ground).
-# Run in the drawings image from the activity's folder:
+# The card's picture of »Eine Folie, ein Gedanke«: a small scene in space,
+# seen through a camera. The good slide is thrown onto a wall (a 16:9
+# rectangle on the plane z = 0) by a beamer in front of it, outside the
+# picture; its light is a pyramid with the lens as apex and four faces to
+# the slide's four edges (a frustum, as in a cinema), each face a little
+# brighter or darker, on the orange ground of the presentations
+# (office-drawings.py, card_ground). Run in the drawings image from the
+# activity's folder:
 #
 #     src/scripts/drawings sh -c 'cd src/content/good-slides && python3 bilder/teaser.py'
 import io
@@ -15,9 +17,32 @@ from PIL import Image, ImageDraw, ImageFilter
 W, H = 1600, 900
 GROUND = ((246, 214, 193), (238, 189, 159))       # light to deep, top left to bottom right
 LIGHT = (255, 250, 243)
-LENS = (-260, 1060)                                # the beamer, outside the picture
-# the slide on the wall: top left, top right, bottom right, bottom left
-QUAD = [(560, 120), (1480, 230), (1480, 690), (560, 800)]
+
+# the scene, in metres: x to the right along the wall, y up, z out of the wall
+SLIDE = [(-1.6, 2.4, 0), (1.6, 2.4, 0), (1.6, 0.6, 0), (-1.6, 0.6, 0)]   # top left, top right, bottom right, bottom left
+LENS = tuple(float(v) for v in __import__('os').environ.get('LENS', '0.4,1.1,4.2').split(','))   # the beamer, in front of the wall
+EYE = tuple(float(v) for v in __import__('os').environ.get('EYE', '-4.5,3.0,4.5').split(','))     # the camera, to the left and above
+TARGET = tuple(float(v) for v in __import__('os').environ.get('TARGET', '0.6,1.4,1.4').split(','))
+FOCAL = float(__import__('os').environ.get('FOCAL', '1500'))   # pixels
+
+
+def camera(eye, target):
+    eye, target = np.array(eye, float), np.array(target, float)
+    forward = target - eye
+    forward /= np.linalg.norm(forward)
+    right = np.cross(forward, (0, 1, 0))
+    right /= np.linalg.norm(right)
+    up = np.cross(right, forward)
+    return eye, right, up, forward
+
+
+EYE_, RIGHT, UP, FORWARD = camera(EYE, TARGET)
+
+
+def project(point):
+    d = np.array(point, float) - EYE_
+    x, y, z = d @ RIGHT, d @ UP, d @ FORWARD
+    return (W / 2 + FOCAL * x / z, H / 2 - FOCAL * y / z)
 
 
 def coefficients(quad, size):
@@ -33,40 +58,38 @@ def coefficients(quad, size):
     return np.linalg.solve(np.array(rows, float), np.array(rhs, float)).tolist()
 
 
+quad = [project(p) for p in SLIDE]
+lens = project(LENS)
+
 # the ground: a gradient from the top left to the bottom right
 yy, xx = np.mgrid[0:H, 0:W]
 t = ((xx / W + yy / H) / 2)[..., None]
 ground = (np.array(GROUND[0]) * (1 - t) + np.array(GROUND[1]) * t).astype(np.uint8)
 picture = Image.fromarray(ground, 'RGB').convert('RGBA')
 
-# the beam: from the lens to the four corners, brightest at the lens
-beam = Image.new('L', (W, H), 0)
-ImageDraw.Draw(beam).polygon([LENS] + QUAD, fill=255)
-cx, cy = sum(p[0] for p in QUAD) / 4, sum(p[1] for p in QUAD) / 4
-d = np.hypot(xx - LENS[0], yy - LENS[1]) / np.hypot(cx - LENS[0], cy - LENS[1])
-strength = np.clip(1.0 - 0.55 * d, 0.35, 1.0)
-alpha = (np.array(beam, float) / 255 * strength * 210).astype(np.uint8)
-light = Image.new('RGBA', (W, H), LIGHT + (0,))
-light.putalpha(Image.fromarray(alpha, 'L').filter(ImageFilter.GaussianBlur(2)))
-picture = Image.alpha_composite(picture, light)
+# the four faces of the light, each its own brightness (top, right, bottom, left)
+for (a, b), strength in zip([(0, 1), (1, 2), (2, 3), (3, 0)], [0.30, 0.22, 0.16, 0.38]):
+    face = Image.new('L', (W, H), 0)
+    ImageDraw.Draw(face).polygon([lens, quad[a], quad[b]], fill=int(255 * strength))
+    light = Image.new('RGBA', (W, H), LIGHT + (0,))
+    light.putalpha(face.filter(ImageFilter.GaussianBlur(1.5)))
+    picture = Image.alpha_composite(picture, light)
 edges = Image.new('RGBA', (W, H), (0, 0, 0, 0))
 draw = ImageDraw.Draw(edges)
-for corner in QUAD:
-    draw.line([LENS, corner], fill=LIGHT + (200,), width=2)
+for corner in quad:
+    draw.line([lens, corner], fill=LIGHT + (190,), width=2)
 picture = Image.alpha_composite(picture, edges)
 
-# the slide, warped onto the wall, with a soft shadow
+# the slide, the beamer's image on the wall
 png = subprocess.run(['rsvg-convert', '-b', 'white', '-w', '1600', 'bilder/zug.svg'], capture_output=True, check=True).stdout
 slide = Image.open(io.BytesIO(png)).convert('RGBA')
-warped = slide.transform((W, H), Image.PERSPECTIVE, coefficients(QUAD, slide.size), Image.BICUBIC)
+warped = slide.transform((W, H), Image.PERSPECTIVE, coefficients(quad, slide.size), Image.BICUBIC)
 mask = Image.new('L', (W, H), 0)
-ImageDraw.Draw(mask).polygon(QUAD, fill=255)
-shadow = Image.new('RGBA', (W, H), (40, 20, 10, 0))
-shadow.putalpha(mask.filter(ImageFilter.GaussianBlur(14)).point(lambda v: v * 0.25))
-picture = Image.alpha_composite(picture, shadow.transform((W, H), Image.AFFINE, (1, 0, -6, 0, 1, -10)))
+ImageDraw.Draw(mask).polygon(quad, fill=255)
 warped.putalpha(mask)
 picture = Image.alpha_composite(picture, warped)
-ImageDraw.Draw(picture).line(QUAD + [QUAD[0]], fill=(214, 186, 164, 255), width=2)
+ImageDraw.Draw(picture).line(quad + [quad[0]], fill=(214, 186, 164, 255), width=2)
 
 picture.convert('RGB').save('/tmp/teaser.png')
-subprocess.run(['cwebp', '-quiet', '-q', '90', '/tmp/teaser.png', '-o', 'teaser.webp'], check=True)
+subprocess.run(['cwebp', '-quiet', '-q', '90', '/tmp/teaser.png', '-o', __import__('os').environ.get('OUT', 'teaser.webp')], check=True)
+print('slide', [tuple(round(v) for v in p) for p in quad], 'lens', tuple(round(v) for v in lens))

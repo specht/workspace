@@ -628,7 +628,7 @@ test('a presentation is checked for titles, words, sizes and notes', async ({ pa
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/static/good-slides/01 Kraniche.pptx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
-  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(4);
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
   await expect(report.locator('.document-checklist')).toContainText('Jeder Titel sagt, worum es auf der Folie geht');
   await expect(report.locator('.document-mark').first()).toBeAttached();
   if (shots) await page.screenshot({ path: path.join(shots, 'slides-wrong.png') });
@@ -637,6 +637,6 @@ test('a presentation is checked for titles, words, sizes and notes', async ({ pa
   await expect(card).toContainText('Das ist eine Tabelle. Hier gehört deine Präsentation hin');
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/good-slides/stufen/folien.odp'));
   await expect(card).toHaveAttribute('data-status', 'correct');
-  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(6);
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
   if (shots) await page.screenshot({ path: path.join(shots, 'slides-correct.png') });
 });
