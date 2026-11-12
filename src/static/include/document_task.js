@@ -57,6 +57,20 @@
             line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in Word oder LibreOffice, dann prüft die Seite von selbst.'));
         }
         card.querySelector('.document-pick').lastChild.textContent = 'Anderes Dokument';
+        mirror(card);
+    }
+
+    // the line about the document also at the top of the result, where it
+    // is seen in full screen too
+    function mirror(card) {
+        const line = card.querySelector('.document-name');
+        const status = card.querySelector('.document-status');
+        if (line && status) {
+            status.innerHTML = line.innerHTML;
+            if (card.documentCheckedAt) {
+                status.appendChild(el('span', 'document-checked-at', ' Geprüft um ' + new Date(card.documentCheckedAt).toLocaleTimeString('de-DE') + '.'));
+            }
+        }
     }
 
     function invalid(text) {
@@ -184,10 +198,12 @@
         chosen(card, file.name, file.lastModified);
         const line = card.querySelector('.document-name');
         const note = el('span', 'document-unchanged');
-        note.innerHTML = '<br>Seit der letzten Prüfung hat sich diese Datei nicht geändert. Hast du gespeichert? ' +
+        note.innerHTML = '<br>Seit der letzten Prüfung hat sich diese Datei nicht geändert: Zuletzt gespeichert wurde sie um ' +
+            new Date(file.lastModified).toLocaleTimeString('de-DE') + '. Hast du danach gespeichert, ging es in eine andere Datei. ' +
             'LibreOffice fragt beim Speichern nach dem Dateiformat: Mit <em>Word…-Format verwenden</em> bleibt es dieselbe Datei, <em>ODF-Format verwenden</em> legt daneben eine neue .odt-Datei an. ' +
             'Bearbeitest du eine andere Datei (etwa eine zweite aus den Downloads), wähle sie mit <em>Anderes Dokument</em>.';
         line.appendChild(note);
+        mirror(card);
     }
 
     // Reads the document (again, if the browser keeps hold of it) and
@@ -243,6 +259,13 @@
         }
         busy();
         card.documentBusy = true;
+        // in the result too (full screen covers the card's button)
+        const shown = card.documentReportEl && card.documentReportEl.isConnected ? card.documentReportEl : null;
+        if (shown) {
+            shown.classList.add('document-checking');
+            const status = shown.querySelector('.document-status');
+            if (status) status.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span> Prüft " + file.name + ' …';
+        }
         card.documentSeen = { time: file.lastModified, size: file.size };
         if (card.documentHandle && card.documentRecheck) watch(card, card.documentRecheck);
         const form = new FormData();
@@ -254,11 +277,17 @@
             const data = await response.json();
             data.success = true;
             card.documentSeen.checked = true;
+            card.documentCheckedAt = Date.now();
             done(data);
         } catch (err) {
             done({ success: false });
         } finally {
             card.documentBusy = false;
+            // a check that brought no new result: the old one as it was
+            if (shown && shown.isConnected) {
+                shown.classList.remove('document-checking');
+                mirror(card);
+            }
         }
     }
 
@@ -267,11 +296,22 @@
     // left below it, so that the verdict, the list and the page still fit;
     // with the window's next change of size it goes back to the height in
     // default.css.
-    function fit(wrap) {
-        const top = Math.max(wrap.getBoundingClientRect().top, 0);
-        const room = window.innerHeight - top - 12;
+    function fit(wrap, box) {
+        const room = function () { return window.innerHeight - Math.max(wrap.getBoundingClientRect().top, 0) - 12; };
         const css = wrap.getBoundingClientRect().height;
-        if (room < css) wrap.style.height = Math.max(280, room) + 'px';
+        // first more room below the page, so that it can scroll the verdict
+        // to the top and the panel keeps its height
+        if (room() < css && box) {
+            const add = css - room() + 24;
+            const now = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+            if (!document.body.dataset.documentRoom || +document.body.dataset.documentRoom < add) {
+                document.body.style.paddingBottom = (now - (+document.body.dataset.documentRoom || 0) + add) + 'px';
+                document.body.dataset.documentRoom = String(add);
+            }
+            box.scrollIntoView({ block: 'start' });
+        }
+        // a window too low even so: the panel takes what is left
+        if (room() < css) wrap.style.height = Math.max(280, room()) + 'px';
         window.addEventListener('resize', function () { wrap.style.height = ''; }, { once: true });
     }
 
@@ -712,7 +752,9 @@
         // or the button again close it.
         const report = view.closest('.document-report');
         let restart = false;
-        function toggleFull(on) {
+        // adopt: the result of a new check takes over the full screen the
+        // last one had: no new step in the history, the view kept
+        function toggleFull(on, adopt) {
             const want = on === undefined ? !report.classList.contains('document-fullscreen') : on;
             if (want === report.classList.contains('document-fullscreen')) return;
             // out of the card while it covers the screen: the card's body is a
@@ -732,7 +774,7 @@
             full.setAttribute('aria-label', want ? 'Vollbild verlassen' : 'Vollbild');
             full.title = full.getAttribute('aria-label');
             if (want) {
-                history.pushState({ documentFull: true }, '');
+                if (!adopt) history.pushState({ documentFull: true }, '');
                 const back = function () { toggleFull(false); };
                 report.documentBack = back;
                 window.addEventListener('popstate', back, { once: true });
@@ -742,7 +784,7 @@
                 if (history.state && history.state.documentFull) history.back();
             }
             // the view again once the area has its new size (ResizeObserver)
-            restart = true;
+            if (!adopt) restart = true;
         }
         report.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && report.classList.contains('document-fullscreen')) toggleFull(false);
@@ -770,6 +812,7 @@
                 }, reduced() ? 0 : 650);
             },
             overview: function () { start(true); },
+            adoptFull: function () { toggleFull(true, true); },
             whole: function () { whole(false, 0); },
         };
     }
@@ -844,10 +887,19 @@
     function render(card, report) {
         const body = card.querySelector('.task-feedback .task-feedback-body');
         if (!body || !report) return;
-        const old = card.querySelector('.document-report');
-        if (old) old.remove();
+        // the last result, in the card or (full screen) in the body
+        const old = card.documentReportEl && card.documentReportEl.isConnected ? card.documentReportEl : card.querySelector('.document-report');
+        const wasFull = !!(old && old.classList.contains('document-fullscreen'));
+        if (old) {
+            if (old.documentBack) window.removeEventListener('popstate', old.documentBack);
+            if (old.documentHome) old.documentHome.remove();
+            old.remove();
+        }
         const wrap = el('div', 'document-report');
         const side = el('div', 'document-side');
+        const status = el('p', 'document-status');
+        status.setAttribute('aria-live', 'polite');
+        side.appendChild(status);
         // what was met at the last check, for »neu erfüllt«
         const before = card.documentMet || null;
         const met = report.items.filter(function (i) { return i.ok; }).map(function (i) { return i.label; });
@@ -906,6 +958,7 @@
         const view = el('div', 'document-view');
         wrap.appendChild(view);
         body.appendChild(wrap);
+        card.documentReportEl = wrap;
         const marks = [].concat.apply([], report.items.map(function (i) { return i.marks || []; }));
         // the view stays where it was between checks (not after the last
         // one, which shows the whole clean page)
@@ -930,13 +983,16 @@
             if (tools) tools.appendChild(again);
         }
         connect(wrap, control, report.items);
+        mirror(card);
+        if (wasFull && control.adoptFull) control.adoptFull();
         if (all) celebrate(wrap, side, control, report);
+        if (wasFull) return;
         // the verdict and the page together in view (the panel is as high
         // as the window allows below the verdict, default.css)
         const box = card.querySelector('.task-feedback');
         const r = wrap.getBoundingClientRect();
         if (box && (r.bottom > window.innerHeight || r.top < 0)) box.scrollIntoView({ block: 'start' });
-        fit(wrap);
+        fit(wrap, box);
     }
 
     // The last version kept on the server (DocumentCheck, task_api.rb), to

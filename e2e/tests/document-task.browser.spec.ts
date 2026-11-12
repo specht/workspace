@@ -75,7 +75,8 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await expect(report.locator(".document-mark[data-n='1']").first()).toHaveClass(/document-active/);
   await expect(report).toHaveAttribute('data-active', '1');
   await page.mouse.move(0, 0);
-  await expect(card.locator('.document-name')).toContainText('01 Einladung.docx');
+  // which document: at the top of the result, where full screen shows it too
+  await expect(report.locator('.document-status')).toContainText('01 Einladung.docx');
   if (shots) await page.screenshot({ path: path.join(shots, 'document-wrong.png') });
   await checkFits(report, 20);
   // a point's number moves the view to its place and zooms in
@@ -184,6 +185,12 @@ test('a document is checked and its problems are marked on its page', async ({ p
   expect(covers!.y).toBeLessThanOrEqual(1);
   expect(covers!.height).toBeGreaterThan(790);
   if (shots) await page.screenshot({ path: path.join(shots, 'document-phone-full.png') });
+  // a new check while full screen is open: its result takes over the full
+  // screen, which says when it was checked
+  await card.locator('.document-input').setInputFiles(solution);
+  await expect(page.locator('.document-report.document-fullscreen .document-checklist li.document-ok')).toHaveCount(8);
+  await expect(page.locator('.document-report')).toHaveCount(1);
+  await expect(page.locator('.document-report.document-fullscreen .document-status')).toContainText('Geprüft um');
   await page.goBack();
   await expect(report).not.toHaveClass(/document-fullscreen/);
   await expect(page).toHaveURL(/formatting-marks/);

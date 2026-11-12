@@ -17315,6 +17315,36 @@ body.mail-app-open {
 .document-starter {
     align-self: flex-start;
 }
+/* a check running: the page a little paler until the new result comes */
+.document-checking .document-viewport {
+    opacity: 0.55;
+    transition: opacity 0.2s;
+}
+.document-status .spinner-border {
+    width: 0.9em;
+    height: 0.9em;
+    border-width: 0.15em;
+    vertical-align: -0.1em;
+}
+.document-checked-at {
+    white-space: nowrap;
+}
+/* with a result shown, its own copy of the line is enough */
+.task-card:has(.document-report) .document-drop .document-name {
+    display: none;
+}
+/* the document's line at the top of the result (also in full screen) */
+.document-status {
+    margin: 0 0 0.6em;
+    font-size: 0.88em;
+    color: var(--bs-secondary-color);
+}
+.document-status:empty {
+    display: none;
+}
+.document-status .bi-eye {
+    color: var(--bs-secondary-color);
+}
 .document-name .bi-eye {
     color: var(--bs-secondary-color);
 }
@@ -17926,10 +17956,22 @@ html[data-bs-theme="dark"] .document-report {
 .document-report.document-fullscreen .document-view {
     order: -1;
 }
+/* full screen: a line between the list and the page */
+.document-report.document-fullscreen .document-side {
+    border-top: 1px solid var(--widget-line, #ced4da);
+    padding-top: 0.6em;
+}
 @media (min-width: 900px) {
     .document-report.document-fullscreen {
         grid-template-columns: minmax(16em, 24em) minmax(0, 1fr);
         grid-template-rows: minmax(0, 1fr);
+        column-gap: 1.2em;
+    }
+    .document-report.document-fullscreen .document-side {
+        border-top: none;
+        padding-top: 0;
+        border-right: 1px solid var(--widget-line, #ced4da);
+        padding-right: 1em;
     }
     .document-report.document-fullscreen .document-view {
         order: 0;
