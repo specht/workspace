@@ -53,8 +53,8 @@
         .phone-book-label { position: absolute; grid-area: auto; left: calc(-290px - 1.5rem); top: 430px; margin: 0; transform: rotate(-4deg); }
     }
     @media (max-width: 900px) {
-        /* first, above the phone: on a phone one can call it from there */
-        .phone-book-label { grid-column: auto; grid-row: auto; order: -1; justify-self: center; margin: 0 0 .4rem; transform: rotate(-1.5deg); }
+        /* at the bottom, under the book (the maintainer) */
+        .phone-book-label { grid-column: auto; grid-row: auto; order: 1; justify-self: center; margin: .4rem 0 1rem; transform: rotate(-1.5deg); }
     }
     .pb-label-how { font-size: .9rem; font-style: italic; color: var(--pb-quiet); hyphens: none; }
     .phone-book-layout {
