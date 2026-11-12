@@ -14,6 +14,7 @@ import asyncio
 import json
 import os
 import pwd
+import re
 import resource
 import socket
 import sys
@@ -30,6 +31,10 @@ ARI = os.environ.get('PHONE_ARI', 'http://asterisk:8088/ari')
 ARI_USER = os.environ.get('PHONE_ARI_USER', 'runner')
 ARI_PASSWORD = os.environ.get('PHONE_ARI_PASSWORD', 'runner')
 APP = 'telefonspiel'
+# Nothing a caller says is recorded or kept (the maintainer, 12 November
+# 2026; docs/plan-telefonspiel.md): ARI's recordings and snooping (listening
+# in on a channel) are never asked for
+ARI_FORBIDDEN = re.compile(r'/(record|recordings|snoop)\b', re.I)
 GAMES = os.environ.get('PHONE_GAMES', '/games')
 RTP_PORTS = range(20000, 20100)
 GAME_SECONDS = int(os.environ.get('PHONE_GAME_SECONDS', '900'))   # a call at most 15 minutes
@@ -78,6 +83,10 @@ class Call(game.Phone):
 
     async def setup(self):
         await self.ari('POST', f'/channels/{self.channel}/answer')
+        # nothing the caller says leaves Asterisk: their voice becomes
+        # silence before the bridge; the keys are events of their own and
+        # still arrive (ChannelDtmfReceived)
+        await self.ari('POST', f'/channels/{self.channel}/mute', direction='in')
         self.port = self.runner.take_port()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('0.0.0.0', self.port))
@@ -100,7 +109,7 @@ class Call(game.Phone):
     def _receive(self):
         try:
             while True:
-                self.sock.recv(2048)        # the caller's audio: not used (yet)
+                self.sock.recv(2048)        # silence (the caller is muted): read and dropped, never kept
         except (BlockingIOError, OSError):
             pass
 
@@ -251,6 +260,8 @@ class Runner:
         self.free_ports.append(port)
 
     async def ari(self, method, path, **params):
+        if ARI_FORBIDDEN.search(path):
+            raise RuntimeError(f'{method} {path}: the runner never records or listens in')
         async with self.session.request(method, ARI + path, params=params,
                                         auth=aiohttp.BasicAuth(ARI_USER, ARI_PASSWORD)) as response:
             if response.status >= 400:

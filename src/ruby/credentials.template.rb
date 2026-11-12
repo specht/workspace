@@ -139,6 +139,8 @@ end
 # PHONE_SIP_SERVER = 'voip.easybell.de'
 # PHONE_SIP_USER = 'K1234567T1'
 # PHONE_SIP_PASSWORD = '…'
+# Der Name des Anbieters für die Datenschutzerklärung (»Telefonanbieter«):
+# PHONE_PROVIDER = 'easybell GmbH'
 
 # Musik von YouTube für das Telefonspiel: Manche Server bittet YouTube, sich
 # anzumelden (»Sign in to confirm you're not a bot«). Dann hilft eine Datei

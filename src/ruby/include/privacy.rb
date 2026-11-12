@@ -25,7 +25,7 @@ module Privacy
     # The settings the pages use, each optional (credentials.template.rb).
     STRING_SETTINGS = %w[
         OPERATOR_NAME OPERATOR_ROLE OPERATOR_SCHOOL OPERATOR_ADDRESS CONTACT_EMAIL
-        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER DNS_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY BACKUP COST_NOTE
+        DATA_PROTECTION_OFFICER HOSTING MAIL_PROVIDER DNS_PROVIDER PHONE_PROVIDER SCHOOL_LAW SUPERVISORY_AUTHORITY BACKUP COST_NOTE
     ].freeze
 
     # The settings as a Hash with symbol keys: strings stripped, an empty or
@@ -427,6 +427,12 @@ module Privacy
                 :kind => :server,
                 :html => 'Spielt ein Telefonspiel Musik von einem YouTube-Link, holt der Server sie einmal von YouTube und spielt sie danach aus seinem Zwischenspeicher. YouTube sieht die Adresse des Servers, keine Daten über Personen.',
             },
+            # the line of the Telefonspiel, where a provider is named
+            (s[:phone_provider] ? {
+                :name => 'Telefonanbieter',
+                :kind => :own,
+                :html => "Wer die Nummer des Telefonspiels anruft, telefoniert über die eigene Telefongesellschaft und den Telefonanbieter des Workspace (#{h(s[:phone_provider])}). Wie bei jedem Anruf sehen beide, von welcher Nummer wann angerufen wird; was sie davon speichern, steht in ihren eigenen Datenschutzerklärungen. Der Workspace speichert die Nummer nicht.",
+            } : nil),
             {
                 :name => 'Open VSX',
                 :kind => :own,
@@ -442,7 +448,7 @@ module Privacy
                 :kind => :own,
                 :html => 'Was eigene Programme und Webseiten abrufen (eine Wetter-API, ein Bild aus Wikipedia, eine Schrift von Google Fonts), bestimmt die Person, die sie schreibt. Öffnet sie eine solche Seite im Browser, sieht der fremde Dienst die Adresse ihres Internetanschlusses, wie bei jeder anderen Webseite.',
             },
-        ]
+        ].compact
     end
 
     # Technical and organisational measures in place (TOM, Art. 32 DSGVO).
@@ -472,6 +478,7 @@ module Privacy
                 'Die Zugriffsprotokolle enthalten keine IP-Adressen und keine Namen; geheime Teile von Adressen (Links zum Teilen, Anmeldelinks) werden unkenntlich gemacht. Sie werden nach 7 Tagen gelöscht.',
                 'Von Aufgaben wird nur die letzte Antwort gespeichert (bei einer Programmieraufgabe in der Karte auch der letzte Code, der die Prüfung bestanden hat; bei einem eigenen Bild der Turtle-Grafik jedes Bild, das die Person selbst angelegt hat, bis sie es löscht); Versuche werden ohne Text gezählt.',
                 'Code, der in einer Kata geschrieben wird, läuft in einem eigenen kurzlebigen Container ohne Netz, der danach gelöscht wird; was er ausgibt, wird nicht gespeichert. Programme der Turtle-Grafik laufen im Browser der Person selbst; an den Server gehen nur ihr Code und die Befehle, die sie gezeichnet haben.',
+                'Anrufe beim Telefonspiel werden nicht aufgezeichnet. Was jemand ins Telefon sagt, schaltet die Telefonanlage des Servers stumm, bevor es das Spiel erreicht; das Spiel bekommt nur die gedrückten Tasten (die Töne der Tasten, DTMF). Die Nummer, von der jemand anruft, wird weder gespeichert noch protokolliert.',
                 'Von einer Sitzung werden nur die Tage der Anmeldung und der letzten Nutzung und eine grobe Angabe des Geräts (Browser und Betriebssystem) gespeichert, nicht die vollständige Kennung des Browsers und keine IP-Adresse.',
             ],
             'Verschlüsselung' => [
