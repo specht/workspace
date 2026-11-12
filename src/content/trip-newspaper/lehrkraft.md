@@ -6,6 +6,7 @@ Lernende schreiben einen eigenen Artikel und bauen ihn mit allem, was die Reihe 
 <li><b>1. Doppelstunde:</b> Thema wählen, Text schreiben, Zwischenüberschriften.</li>
 <li><b>2. Doppelstunde:</b> Liste, Bild mit Unterschrift, Quelle und Alternativtext, Seitenzahl, prüfen, bis alles erfüllt ist.</li>
 </ul></td></tr>
+<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Die Liste der Punkte auf der Seite, und dass jeder Punkt sein Blatt hat. Wo freie Fotos zu finden sind (Wikimedia Commons) und wie ihre Quelle in die Bildunterschrift kommt. Dass die zuletzt geprüfte Fassung die Abgabe ist.</td></tr>
 <tr><th>Abgabe</th><td>Die zuletzt geprüfte Fassung bleibt gespeichert. Auf der Klassenseite stehen unter der Aufgabe die Abgaben: je Person das Ergebnis der Prüfung (»Artikel.docx: 14 von 16, offen: …«), <em>Ansehen</em> zeigt die Seiten mit allen Markierungen so, wie die Person sie gesehen hat, <em>Herunterladen</em> die Datei selbst. Eine neue Prüfung ersetzt die Abgabe.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Mindestens 200 Wörter; keine doppelten Leerzeichen, leeren Absätze oder Zeilenumbrüche von Hand; höchstens zwei Schriftarten, nichts unterstrichen, keine Großbuchstaben als Format; keine getippten Listenzeichen.</li>

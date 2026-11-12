@@ -7,6 +7,7 @@ Lernende ersetzen leere Absätze durch Seitenumbrüche, ein getipptes »Seite 1�
 <li><b>2. Stunde:</b> die Seitenzahl als Feld, das Inhaltsverzeichnis, eine Überschrift umbenennen und das Verzeichnis aktualisieren, prüfen.</li>
 <li><b>Für Schnelle:</b> keine Seitenzahl auf der Titelseite (Word: <em>Erste Seite anders</em>).</li>
 </ul></td></tr>
+<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Einen Seitenumbruch setzen (<kbd>Strg</kbd>+<kbd>Enter</kbd>), in die Fußzeile wechseln und die Seitenzahl als Feld einfügen, ein Inhaltsverzeichnis einfügen und nach einer Änderung aktualisieren.</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>07 Reisebericht.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (die getippten Zeilen des Verzeichnisses zählen nicht), keine leeren Absätze; ein leerer Absatz direkt vor einem Seitenumbruch zählt nicht, so legt Word ihn mit <kbd>Strg</kbd>+<kbd>Enter</kbd> an.</li>

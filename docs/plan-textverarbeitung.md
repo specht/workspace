@@ -216,8 +216,13 @@ built by hand; each is a page of a series of its own, about one lesson.
 - **The curriculum graph:** a series (the eight sheets, the Backrooms levels)
   as one node (the maintainer, 12 November 2026); until then the stored
   layout lacks sheet 8 (production orders quickly, the graph test is red).
-- **Every sheet to 45 minutes**, »Formatvorlagen« first; the hints with the
-  way through the menus per program; the demonstration in the teacher notes.
+- **Every sheet to 45 minutes**, »Formatvorlagen« first.
+- **Hints per program on every task** (the maintainer, 12 November 2026):
+  sheet 1's document task has them (`word:`, `libreoffice:`, `nextcloud:`
+  under the task, each with its own `hint:` list, from »what« to »where
+  exactly«); every other task of sheets 1 to 8 still has only the hints for
+  all programs. Menu names from the programs' German translations (for
+  LibreOffice the `.po` files of its translations), not from memory.
 
 - **For worksheet 8:** the page of each place in the list (the viewer
   shows the page in view and goes to a place's page already).

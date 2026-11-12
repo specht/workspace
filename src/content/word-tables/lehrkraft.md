@@ -7,6 +7,7 @@ Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabel
 <li><b>2. Stunde:</b> die Kopfzeile, prüfen, eine Zeile einfügen.</li>
 <li><b>Für Schnelle:</b> die Tabelle gestalten: Kopfzeile fett und hinterlegt, Linien nur unter der Kopfzeile, die Spalte Zeit rechtsbündig.</li>
 </ul></td></tr>
+<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Text in eine Tabelle umwandeln (getrennt durch Tabs), eine Zeile einfügen und die erste Zeile als Überschrift wiederholen lassen.</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>04 Programm.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (auch in den Zellen), Montag bis Freitag stehen in einer Tabelle mit drei Spalten, »Programm« in der ersten Zeile, die sich wiederholt, kein Tab mehr im Dokument.</li>

@@ -7,6 +7,7 @@ Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind
 <li><b>2. Doppelstunde:</b> eine Vorlage ändern, Formatierung von Hand finden und löschen, prüfen, ausprobieren, wie Vorlagen aufeinander aufbauen.</li>
 <li><b>Für Schnelle:</b> eine eigene Vorlage für die Zeile unter dem Titel anlegen.</li>
 </ul></td></tr>
+<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Eine Formatvorlage zuweisen (LibreOffice: <kbd>Strg</kbd>+<kbd>1</kbd>, <kbd>Strg</kbd>+<kbd>2</kbd>), Formatierung von Hand löschen, eine Formatvorlage ändern, und die Übersicht der Überschriften öffnen (Word: Navigationsbereich; LibreOffice: Navigator, <kbd>F5</kbd>).</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>06 Reisetagebuch.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig; die fünf Tage haben die Ebene 1, Vormittag, Nachmittag, Schiff und Abend die Ebene 2 (über ihre Formatvorlagen).</li>

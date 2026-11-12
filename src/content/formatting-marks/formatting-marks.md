@@ -130,11 +130,11 @@ Nach*.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice stellst du den Abstand unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Einzüge und Abstände* ein, im Feld *Unter Absatz*.
+*Einzüge und Abstände* ein, im Feld *Unter dem Absatz*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office stellst du den Abstand unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* ein,
-im Feld *Unter Absatz*.
+im Feld *Unter dem Absatz*.
 <!-- /language -->
 
 **Jetzt bist du dran:** Lösch die leeren Absätze. Gib dann jedem Absatz, nach

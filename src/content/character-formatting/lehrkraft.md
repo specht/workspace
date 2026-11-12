@@ -7,6 +7,7 @@ Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größ
 <li><b>2. Stunde:</b> hervorheben, prüfen, bis alles erfüllt ist, der Versuch mit zwei Sekunden.</li>
 <li><b>Für Schnelle:</b> einen eigenen Aushang (eine AG, ein Fest) mit denselben Regeln.</li>
 </ul></td></tr>
+<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Schriftart und Schriftgröße wählen, Fett ein- und ausschalten, Formatierung löschen (Word: <kbd>Strg</kbd>+<kbd>Leertaste</kbd>; LibreOffice: <kbd>Strg</kbd>+<kbd>M</kbd>) und die Formatierung übertragen (der Pinsel).</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>02 Aushang.docx</code> kommt von der Seite. In Chrome und Edge prüft die Seite nach jedem Speichern von selbst; in Firefox und Safari wird die Datei vor jedem Prüfen gewählt oder auf die Karte gezogen. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig, höchstens zwei Schriftarten, der Text der vier Absätze in 11 bis 12 pt, keiner davon ganz fett, »14. März«, »großen Pause« und »vor der Mensa« fett, nichts unterstrichen, keine Großbuchstaben als Format.</li>

@@ -7,6 +7,7 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 <li><b>2. Stunde:</b> Beschriftungen, der Alternativtext, prüfen, die Karte nach oben schieben und die Felder aktualisieren.</li>
 <li><b>Für Schnelle:</b> ein drittes Bild mit Beschriftung einfügen (ein Foto aus dem eigenen Ort mit freier Lizenz) und die Quelle in die Bildunterschrift schreiben.</li>
 </ul></td></tr>
+<tr><th>Vorführen</th><td>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet (die Wege für jedes Programm stehen auf der Seite): Ein Bild an einer Ecke statt an einer Seite ziehen, die Größe zurücksetzen, den Textumbruch (Word: <em>Quadrat</em>; LibreOffice: Verankerung <em>Am Absatz</em>, Umlauf <em>Parallel</em>), <em>Beschriftung einfügen</em>, den Alternativtext und Felder aktualisieren (<kbd>F9</kbd>).</td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>05 Kraniche.docx</code> kommt von der Seite. Die zuletzt geprüfte Fassung bleibt gespeichert, zum Weiterarbeiten auch zu Hause. Das Foto ist von Charles J. Sharp unter CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Common_crane_(Grus_grus)_Uckermark.jpg'>Wikimedia Commons</a>); die Angabe steht in seiner Bildunterschrift und gehört dort hin.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Der Text ist vollständig (auch in Rahmen und Textfeldern), kein Bild ist um mehr als 3 % verzerrt.</li>
