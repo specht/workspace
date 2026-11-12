@@ -105,15 +105,18 @@ haben. Entschieden ist:
   dem Kasten den eigenen Code (`data-check`), bringt das Lösen ihn sofort:
   Wer es selbst geschafft hat, darf vergleichen. Zuerst ließ sich dieser
   Code jederzeit aufklappen; das hat das eigene Schreiben übersprungen.
-- **Eine Pause zwischen den Stufen, ohne Uhr.** Die nächste Stufe erscheint
+- **Eine Pause zwischen den Stufen, ohne Zahlen.** Die nächste Stufe erscheint
   erst eine Minute, nachdem die vorige aufgeklappt wurde
   (`HintSteps::DELAY_SECONDS`), damit man mit jedem Tipp arbeitet, statt bis
-  zum letzten durchzuklicken. Bis dahin ist sie nicht zu sehen, und keine Uhr
-  zählt herunter: Wer eine Uhr sieht, schaut auf die Uhr statt auf den Tipp
-  und den eigenen Code. Ist die Stufe da, steht ihr Titel fett, ohne
-  Bewegung und ohne Ton.
+  zum letzten durchzuklicken. Bis dahin steht ihr Titel blass da, mit einem
+  kleinen Ring, der in dieser Minute leer wird: Wer feststeckt, sieht, dass
+  noch etwas kommt (der Maintainer, November 2026; vorher war die Stufe bis
+  dahin gar nicht zu sehen, und Lernende wussten nicht, ob noch etwas
+  kommt). Keine Sekunden zählen herunter: Wer Zahlen sieht, schaut auf die
+  Zahlen statt auf den Tipp. Ist die Stufe da, steht ihr Titel fett, ohne Ton.
 - **Nicht verraten, wie viele Tipps es gibt.** Der erste heißt »Tipp«, jeder
-  weitere »Nächster Tipp«, ohne Nummer und ohne »von 2«. Wer weiß, dass der
+  weitere »Nächster Tipp«, ohne Nummer und ohne »von 2«. Nur nach dem
+  letzten kommt kein Ring mehr. Wer weiß, dass der
   letzte Tipp oder die Lösung gleich kommt, wartet darauf, statt mit dem Tipp
   zu arbeiten, den er hat.
 - **Eine Einladung, kein Schloss.** Wer die Lösung unbedingt sucht, findet

@@ -1381,6 +1381,46 @@ details.solution.hint-step-new > summary {
     font-weight: 600;
 }
 
+/* The next tip while it waits (hint_steps.js): its title, muted, and a ring
+   in the chevron's place that empties until the tip comes. */
+.hint-step-wait {
+    margin: 0.2em 0;
+    color: #6c757d;
+    cursor: default;
+}
+
+/* as wide as the chevron of a tip's title (80 %, the same gap), so the
+   titles start at the same place (0.35em of 80 %); centred on the small
+   letters */
+.hint-step-wait svg {
+    width: 0.8em;
+    height: 0.8em;
+    margin-right: 0.28em;
+    vertical-align: middle;
+    position: relative;
+    top: -0.07em;
+}
+
+.hint-step-wait circle {
+    fill: none;
+    stroke-width: 2.2;
+}
+
+.hint-step-wait-track {
+    stroke: rgba(11, 79, 179, 0.15);
+}
+
+.hint-step-wait-arc {
+    stroke: #0b4fb3;
+    transition: stroke-dashoffset 1s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hint-step-wait-arc {
+        transition: none;
+    }
+}
+
 .hint.handshake::before {
     background-image: url(/images/handshake.png);
 }

@@ -17,7 +17,8 @@ require 'cgi'
 # »Nächster Tipp«, in a <div class='hint-steps'>. The titles do not say how
 # many there are: knowing that the last one is near invites waiting for it. hint_steps.js shows only the first; the
 # next appears DELAY_SECONDS after the one before was opened, so there is
-# time to think about each tip. What has been opened is kept in the
+# time to think about each tip; until then its title waits, muted, with a
+# ring that empties. What has been opened is kept in the
 # browser only (localStorage), so a reload does not start the waiting again;
 # nothing goes to the server, and no teacher sees who needed which tip.
 # Without JavaScript all steps are there at once.

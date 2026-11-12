@@ -346,7 +346,7 @@ kennt `output_matches`, `scene` kennt `found`, `missing`,
 
 Statt eines Tipps kann `hint` eine Liste sein. Die Karte zeigt dann »Tipp«, danach
 »Nächster Tipp«, ohne zu sagen, wie viele es gibt; die nächste Stufe erscheint erst eine Minute, nachdem die vorige
-aufgeklappt wurde (`HintSteps::DELAY_SECONDS`), ohne Uhr bis dahin.
+aufgeklappt wurde (`HintSteps::DELAY_SECONDS`); bis dahin steht ihr Titel blass da, mit einem Ring, der leer wird.
 
 ````yaml
 hint:

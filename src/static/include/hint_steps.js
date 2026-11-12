@@ -1,9 +1,11 @@
 // Tips in steps (HintSteps in src/ruby/include/hint_steps.rb,
 // docs/didaktik.md). At the start only the first tip is there. The next one
 // appears data-delay seconds after the one before was opened, so there is
-// time to work with each tip instead of clicking through to the last. There
-// is no countdown, and the titles do not say how many tips there are
-// (»Tipp«, then »Nächster Tipp«): both draw the eye away from the tip.
+// time to work with each tip instead of clicking through to the last. While
+// it waits, its title is there, muted, with a small ring that empties over
+// the time (the maintainer: students should see that more is coming); no
+// numbers count down, and the titles do not say how many tips there are
+// (»Tipp«, then »Nächster Tipp«). After the last tip there is no ring.
 //
 // What has been opened is kept in this browser only (localStorage), so a
 // reload does not start the waiting again. Nothing is sent to the server: no
@@ -56,19 +58,55 @@
         const saved = load(key);
         const state = { opened: Math.min(Math.max(saved ? saved.opened : 0, 0), steps.length), at: saved ? saved.at || 0 : 0 };
         let timer = null;
+        let ticker = null;
+        let wait = null;
 
-        // The opened steps are there, and the next one once its time has come.
+        // The line in the next step's place while it waits: its title,
+        // muted, and a ring that empties until it comes.
+        const RING = 2 * Math.PI * 6;
+        function waitLine(step) {
+            if (!wait) {
+                wait = document.createElement('div');
+                wait.className = 'hint-step-wait';
+                wait.innerHTML = "<svg viewBox='0 0 16 16' aria-hidden='true'>" +
+                    "<circle class='hint-step-wait-track' cx='8' cy='8' r='6'/>" +
+                    "<circle class='hint-step-wait-arc' cx='8' cy='8' r='6' transform='rotate(-90 8 8)'" +
+                    " stroke-dasharray='" + RING.toFixed(2) + "'/></svg><span></span>";
+            }
+            const summary = step.querySelector('summary');
+            wait.querySelector('span').textContent = summary ? summary.textContent : 'Nächster Tipp';
+            wait.title = 'Kommt gleich';
+            step.before(wait);
+            return wait;
+        }
+
+        function drain(left) {
+            const arc = wait.querySelector('.hint-step-wait-arc');
+            arc.style.strokeDashoffset = (RING * (1 - Math.max(0, Math.min(1, left / delay)))).toFixed(2);
+        }
+
+        // The opened steps are there, and the next one once its time has
+        // come; until then its line with the ring.
         function render() {
             window.clearTimeout(timer);
+            window.clearInterval(ticker);
             timer = null;
+            ticker = null;
             const left = state.at + delay - Date.now();
             const next = state.opened === 0 || left <= 0 ? state.opened : state.opened - 1;
             steps.forEach((step, i) => { step.hidden = i > next; });
             if (next < state.opened && state.opened < steps.length) {
+                waitLine(steps[state.opened]);
+                // the full ring first, then the time already gone (a reload)
+                drain(delay);
+                window.requestAnimationFrame(() => drain(state.at + delay - Date.now()));
+                ticker = window.setInterval(() => drain(state.at + delay - Date.now()), 1000);
                 timer = window.setTimeout(() => {
                     render();
                     steps[state.opened].classList.add('hint-step-new');
                 }, left);
+            } else if (wait) {
+                wait.remove();
             }
         }
 

@@ -467,6 +467,15 @@ html[data-bs-theme="dark"] {
     .hint-steps > details.hint-step > summary {
         color: #8db8f5;
     }
+    .hint-step-wait {
+        color: #9aa4ad;
+    }
+    .hint-step-wait-track {
+        stroke: rgba(141, 184, 245, 0.2);
+    }
+    .hint-step-wait-arc {
+        stroke: #8db8f5;
+    }
     .class-board th,
     .class-board td {
         border-bottom-color: #33332f;
