@@ -107,23 +107,23 @@
 # on each other become a series.
 - key: office
   label: Office
-  short: Textverarbeitung, Tabellen und Präsentationen, mit Rückmeldung auf deiner eigenen Seite.
+  short: Textverarbeitung mit Rückmeldung auf deiner eigenen Seite.
   icon: /images/memo.png
   description: |
-    Texte gestalten, mit Tabellen rechnen, Präsentationen bauen: in Word,
-    LibreOffice oder Nextcloud Office. Du lädst dein Dokument hoch, und die
-    Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
+    Dokumente sauber bauen, von der Einladung bis zur Zeitungsseite: in
+    LibreOffice, Word oder Nextcloud Office. Du lädst dein Dokument hoch, und
+    die Prüfung zeigt dir auf deiner eigenen Seite, was noch fehlt.
   entries:
-    - .formatting-marks
-    - .character-formatting
-    - .lists-and-tabs
-    - .word-tables
-    - .pictures-in-text
-    - .paragraph-styles
-    - .pages-and-contents
-    - .headers-and-footnotes
-    - .newspaper-page
-    - .trip-newspaper
+    - formatting-marks
+    - character-formatting
+    - lists-and-tabs
+    - word-tables
+    - pictures-in-text
+    - paragraph-styles
+    - pages-and-contents
+    - headers-and-footnotes
+    - newspaper-page
+    - trip-newspaper
   # the worksheets on word processing, one after the other: each pinned on
   # its own, the class page shows them as a whole too
   series:
