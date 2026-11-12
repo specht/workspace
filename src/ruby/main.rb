@@ -4171,11 +4171,15 @@ class Main < Sinatra::Base
     # On a page with a class repository (ClassRepos), the variant for this
     # person and the address of their group.
     # The series of activities slug belongs to (sections.yaml series:, a
-    # list of slugs in order), with only the members a viewer may see.
+    # list of slugs in order), with only the members a viewer may see. A
+    # page only in development (».slug«), reached by its address, shows its
+    # series with its siblings of that kind too: they stay out of every list
+    # and only link to each other.
     def series_of(slug)
+        among_drafts = @@content[slug] && @@content[slug][:dev_only]
         @@sections.each_value do |section|
             Array(section[:series]).each do |list|
-                members = list.map(&:to_s).select { |member| @@content[member] && (DEVELOPMENT || !@@content[member][:dev_only]) }
+                members = list.map(&:to_s).select { |member| @@content[member] && (DEVELOPMENT || among_drafts || !@@content[member][:dev_only]) }
                 return members if members.size > 1 && members.include?(slug)
             end
         end

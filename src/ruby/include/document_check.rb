@@ -217,7 +217,8 @@ module DocumentCheck
     end
 
     def self.short(p, words = 4)
-        w = p['plain'].split(' ')
+        # a line of a typed table of contents without its dots and page
+        w = p['plain'].sub(/\s*(?:\.{4,}|…{2,})\s*\d*\s*\z/, '').split(' ')
         q(w.size > words ? "#{w.first(words).join(' ')} …" : w.join(' '))
     end
 

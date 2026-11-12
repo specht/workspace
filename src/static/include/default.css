@@ -17474,6 +17474,21 @@ html[data-bs-theme="dark"] .document-report {
     overflow: auto;
     padding-right: 0.25em;
     scrollbar-width: thin;
+    /* ragged right: quotes from the document leave holes when justified */
+    text-align: left;
+}
+.document-side p,
+.document-side .document-message {
+    text-align: left;
+}
+/* the verdict, only in full screen (the card's own line is above it otherwise) */
+.document-verdict {
+    display: none;
+    margin: 0 0 0.3em;
+    font-weight: 600;
+}
+.document-fullscreen .document-verdict {
+    display: block;
 }
 /* no frame: the tools stand on the feedback, the page lies on a soft desk */
 .document-view {
@@ -17521,7 +17536,17 @@ html[data-bs-theme="dark"] .document-report {
 .document-full-toggle {
     margin-left: auto;
 }
-@container (max-width: 34em) {
+/* a view of medium width (full screen on half a Full HD screen): »Prüfen«
+   for the long label, so that the tools keep one row */
+@container (max-width: 44em) {
+    .document-recheck-long {
+        display: none;
+    }
+    .document-recheck-word {
+        text-transform: capitalize;
+    }
+}
+@container (max-width: 30em) {
     .document-tool-label {
         display: none;
     }
@@ -17966,7 +17991,9 @@ html[data-bs-theme="dark"] .document-report {
 }
 @media (min-width: 900px) {
     .document-report.document-fullscreen {
-        grid-template-columns: minmax(16em, 24em) minmax(0, 1fr);
+        /* the list narrower on a smaller screen, so that the tools above
+           the page keep one row (half a Full HD screen: 17em) */
+        grid-template-columns: min(22em, max(17em, 24vw)) minmax(0, 1fr);
         grid-template-rows: minmax(0, 1fr);
         column-gap: 1.2em;
     }

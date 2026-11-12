@@ -836,7 +836,9 @@
             // the point pulse once
             place: function (m) {
                 const page = m.page - 1;
-                const r = { x: offset(page) + m.x - 40, y: tops[page] + m.y - 40, w: m.w + 80, h: m.h + 80 };
+                // a tall place (many empty paragraphs): its beginning, with
+                // what comes before it, not the whole of it filling the view
+                const r = { x: offset(page) + m.x - 40, y: tops[page] + m.y - 60, w: m.w + 80, h: Math.min(m.h, 140) + 100 };
                 const v = size();
                 stage.classList.add('document-travel');
                 show(r, Math.min(2.2, v.w / Math.max(r.w, 260)), true);
@@ -935,6 +937,11 @@
         }
         const wrap = el('div', 'document-report');
         const side = el('div', 'document-side');
+        // the verdict, for full screen, which does not take the card's
+        // line along
+        const done = report.items.filter(function (i) { return i.ok; }).length;
+        side.appendChild(el('p', 'document-verdict', done === report.items.length
+            ? 'Alle ' + done + ' Punkte erfüllt.' : done + ' von ' + report.items.length + ' Punkten erfüllt.'));
         const status = el('p', 'document-status');
         status.setAttribute('aria-live', 'polite');
         side.appendChild(status);
