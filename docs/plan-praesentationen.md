@@ -104,11 +104,12 @@ read out.
 
 The model of a good slide in this series is a picture with minimal text;
 keywords alone are a step on the way (sheet 1 takes the text off, sheet 4
-adds the pictures). The card pictures of the sheets show such a slide: the
-card of sheet 1 waits for a slide of sheet 4 with its picture, thrown onto a
-wall in perspective by a beamer outside the picture, its light a frustum
-with four faces (`good-slides/bilder/teaser.py` renders the scene through a
-camera; its camera and lens are set by EYE, TARGET, FOCAL and LENS).
+adds the pictures). The card pictures of the sheets show such a slide,
+front and centre with a slight perspective, thrown onto a wall by a beamer
+hanging from the ceiling outside the picture, its light a frustum with four
+faces (`good-slides/bilder/teaser.py` renders the scene through a camera;
+camera and lens set by EYE, TARGET, FOCAL and LENS). Sheet 1's slide is
+drawn there (cranes in a wedge over the lake at dusk), free of licences.
 
 ## Accessibility (the maintainer, 12 November 2026)
 

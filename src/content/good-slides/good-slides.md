@@ -110,7 +110,7 @@ Text von der Folie herunter.
 _task(titel)
 
 <div class='history' id='history-takahashi'>
-<p><strong>Ein Wort pro Folie.</strong> Der japanische Programmierer Masayoshi Takahashi bereitete einen kurzen Vortrag für die RubyConf vor, eine Konferenz über die Programmiersprache Ruby. Auf seine Folien schrieb er nur ein oder zwei kurze Wörter, in riesiger Schrift, ohne Bilder und ohne Diagramme. So eine Folie ist in einem Augenblick gelesen, und danach hört das Publikum wieder zu. Auf Konferenzen von Entwicklerinnen und Entwicklern halten seitdem viele ihre Vorträge so; man nennt es die Takahashi-Methode. Für dein Referat ist ein Wort pro Folie zu wenig, aber die Methode zeigt, wie wenig auf einer Folie stehen muss.</p>
+<p><strong>Ein Wort pro Folie</strong>, 2001. Der japanische Programmierer Masayoshi Takahashi bereitete einen kurzen Vortrag für die RubyConf vor, eine Konferenz über die Programmiersprache Ruby. Ein Präsentationsprogramm hatte er nicht zur Hand; er baute seine Folien als Webseite in HTML. Auf jede schrieb er nur ein oder zwei kurze Wörter, in riesiger Schrift, ohne Bilder und ohne Diagramme. So eine Folie ist in einem Augenblick gelesen, und danach hört das Publikum wieder zu. Auf Konferenzen von Entwicklerinnen und Entwicklern halten seitdem viele ihre Vorträge so; man nennt es die Takahashi-Methode. Für dein Referat ist ein Wort pro Folie zu wenig, aber die Methode zeigt, wie wenig auf einer Folie stehen muss.</p>
 </div>
 
 

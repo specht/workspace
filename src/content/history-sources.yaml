@@ -461,13 +461,19 @@ playfair:
     none: 'eine Folgerung aus 1786 und 1801'
 
 takahashi:
-  - text: Ein Wort pro Folie
-    none: 'die Überschrift des Kastens'
+  - text: Ein Wort pro Folie, 2001
+    sources:
+      - url: https://ja.wikipedia.org/wiki/高橋メソッド
+        quote: '2001年に高橋が講演するにあたり、あいにくプレゼンテーションツールを持ち合わせていなかったことから (2001, als Takahashi einen Vortrag hielt und kein Präsentationsprogramm zur Hand hatte)'
   - text: Der japanische Programmierer Masayoshi Takahashi bereitete einen kurzen Vortrag für die RubyConf vor, eine Konferenz über die Programmiersprache Ruby
     sources:
       - url: https://en.wikipedia.org/wiki/Takahashi_method
         quote: 'Takahashi, a programmer, developed the method after preparing a short presentation for RubyConf.'
-  - text: Auf seine Folien schrieb er nur ein oder zwei kurze Wörter, in riesiger Schrift, ohne Bilder und ohne Diagramme
+  - text: Ein Präsentationsprogramm hatte er nicht zur Hand; er baute seine Folien als Webseite in HTML
+    sources:
+      - url: https://ja.wikipedia.org/wiki/高橋メソッド
+        quote: 'あいにくプレゼンテーションツールを持ち合わせていなかったことから、巨大な文字だけで構成されたHTMLで発表した (kein Präsentationsprogramm zur Hand, darum ein HTML aus riesigen Buchstaben)'
+  - text: Auf jede schrieb er nur ein oder zwei kurze Wörter, in riesiger Schrift, ohne Bilder und ohne Diagramme
     sources:
       - url: https://en.wikipedia.org/wiki/Takahashi_method
         quote: 'Only a few words are printed on each slide—often only one or two short words, using very large characters. … no pictures and no charts are used'
