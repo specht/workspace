@@ -42,7 +42,7 @@ Zeile wird zu lang.
 
 Hol dir das Blatt und schalte die Formatierungszeichen ein:
 
-<p><a class='document-starter btn btn-primary' href='/lists-and-tabs/03%20Packliste.docx' download><i class='bi bi-download' aria-hidden='true'></i>Vorlage herunterladen<span class='document-starter-name'>03 Packliste.docx</span></a></p>
+<p><a class='document-starter btn btn-primary' href='/lists-and-tabs/03%20Packliste.docx' download><i class='bi bi-file-earmark-word' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>03 Packliste.docx</span><i class='bi bi-download document-starter-get' aria-hidden='true'></i></a></p>
 
 Vor jedem Punkt der Packliste steht ein Strich und ein Leerzeichen, getippt.
 Eine **Liste**, die das Programm führt, setzt das Zeichen selbst davor, rückt

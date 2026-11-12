@@ -17320,6 +17320,11 @@ body.mail-app-open {
     font-weight: 400;
     opacity: 0.85;
 }
+/* the download icon after the name */
+.btn .bi.document-starter-get {
+    margin-right: 0;
+    margin-left: 0.55em;
+}
 .document-drop {
     display: flex;
     flex-wrap: wrap;
