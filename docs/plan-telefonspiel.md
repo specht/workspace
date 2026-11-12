@@ -441,8 +441,12 @@ loop.
    default language of new activities, Python and JavaScript through the
    libraries).
 5. Publishing, codes, the teacher page, limits per call.
-6. Connect the trunk on the server, open the ports it needs, test calls
-   from outside, several at once.
+6. Done (12 November 2026): the trunk on the server (`phone_asterisk`,
+   `phone_runner` in `config.rb`, UDP 5060 and 10000-10099 published,
+   past firewalld; no change at Hetzner was needed). The first call from
+   outside dialled a game directly (Ali die Ameise) and played. Open: several
+   calls at once on the server (two channels are booked, three got through
+   in the test from home).
 7. Live; then ask for sponsoring.
 
 ## Open
