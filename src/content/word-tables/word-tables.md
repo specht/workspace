@@ -22,12 +22,12 @@ reference: []
 Das Programm der Klassenfahrt steht in drei Spalten: Tag, Zeit, Programm.
 Gebaut ist es mit zwei Tabstopps, so wie im letzten Blatt die Preise:
 
-<img class='full' src='bilder/programm.webp' alt='Das Programm: eine Kopfzeile Tag, Zeit, Programm, darunter sechs Zeilen von Montag bis Freitag, ordentlich in drei Spalten'>
+<img class='full' src='bilder/programm.svg' alt='Das Programm: eine Kopfzeile Tag, Zeit, Programm, darunter sechs Zeilen von Montag bis Freitag, ordentlich in drei Spalten'>
 
 _task(laenger)
 
 <!-- after: laenger -->
-<img class='full' src='bilder/programm-laenger.webp' alt='Dasselbe Programm, der Mittwoch mit einem längeren Eintrag: Sein Rest steht in der nächsten Zeile ganz links, unter »Mittwoch«, und schiebt den Donnerstag nach unten'>
+<img class='full' src='bilder/programm-laenger.svg' alt='Dasselbe Programm, der Mittwoch mit einem längeren Eintrag: Sein Rest steht in der nächsten Zeile ganz links, unter »Mittwoch«, und schiebt den Donnerstag nach unten'>
 
 Ein Tab springt nur in der Zeile zum nächsten Tabstopp. Bricht der Text um,
 fängt die neue Zeile wieder am linken Rand an: Die Spalten gelten nur für die
@@ -87,7 +87,7 @@ In Nextcloud Office stellst du den Cursor in die Tabelle und wählst *Tabelle*
 _task(programm)
 
 <!-- after: programm -->
-<img class='full' src='bilder/programm-tabelle.webp' alt='Das Programm als Tabelle mit Linien: Der lange Mittwoch geht in seiner Zelle über zwei Zeilen, der Donnerstag bleibt in seiner Zeile darunter'>
+<img class='full' src='bilder/programm-tabelle.svg' alt='Das Programm als Tabelle mit Linien: Der lange Mittwoch geht in seiner Zelle über zwei Zeilen, der Donnerstag bleibt in seiner Zeile darunter'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Füge unter dem Dienstag eine Zeile ein (Rechtsklick in die Zeile, <em>Einfügen</em>) und trag einen Abend am Lagerfeuer ein. Achte darauf, was mit den Zeilen darunter passiert.

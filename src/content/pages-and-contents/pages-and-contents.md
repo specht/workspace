@@ -23,12 +23,12 @@ Aus dem Tagebuch ist der Reisebericht der 7b geworden: eine Titelseite mit
 dem Inhalt, dann jeder Tag auf einer eigenen Seite, sechs Seiten. Die
 Titelseite sieht so aus:
 
-<img class='full' src='bilder/titelseite.webp' alt='Die Titelseite: »Reisebericht der 7b«, darunter »Inhalt« und fünf Zeilen wie »Montag: Anreise ..... 2«, die Punkte verschieden lang'>
+<img class='full' src='bilder/titelseite.svg' alt='Die Titelseite: »Reisebericht der 7b«, darunter »Inhalt« und fünf Zeilen wie »Montag: Anreise ..... 2«, die Punkte verschieden lang'>
 
 _task(dienstag)
 
 <!-- after: dienstag -->
-<img class='full' src='bilder/dienstag-weiter-unten.webp' alt='Seite 3 mit dem längeren Montag: »Dienstag: Kletterwald« steht nicht mehr oben auf der Seite, sondern ein gutes Stück darunter'>
+<img class='full' src='bilder/dienstag-weiter-unten.svg' alt='Seite 3 mit dem längeren Montag: »Dienstag: Kletterwald« steht nicht mehr oben auf der Seite, sondern ein gutes Stück darunter'>
 
 Nach dem Montag stehen 23 leere Absätze. Wird der Montag länger, rutschen die
 letzten von ihnen auf die nächste Seite, vor den Dienstag. Jede Änderung
@@ -118,7 +118,7 @@ Verzeichnis.
 _task(bericht)
 
 <!-- after: bericht -->
-<img class='full' src='bilder/titelseite-fertig.webp' alt='Die fertige Titelseite: unter dem Titel ein Inhaltsverzeichnis mit allen Tagen und ihren Teilen, die Seitenzahlen rechtsbündig am Rand, mit Punkten dorthin'>
+<img class='full' src='bilder/titelseite-fertig.svg' alt='Die fertige Titelseite: unter dem Titel ein Inhaltsverzeichnis mit allen Tagen und ihren Teilen, die Seitenzahlen rechtsbündig am Rand, mit Punkten dorthin'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schreib in den Dienstag so viel dazu, dass er über zwei Seiten geht, und aktualisiere das Verzeichnis. Achte auf die Seitenzahlen im Verzeichnis und unten auf den Seiten.

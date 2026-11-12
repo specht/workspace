@@ -10,6 +10,7 @@
 # underlined in capitals.
 
 import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -18,6 +19,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt, Cm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
+from page_picture import page_picture as draw_page  # noqa: E402
 STATIC = os.path.join(HERE, '..', '..', 'static', 'character-formatting')
 STARTER = '02 Aushang.docx'
 
@@ -115,15 +118,7 @@ def solution(path):
 def picture(docx, target, top_cm=1.6, height_cm=10.4, left_cm=0, width_cm=21):
     work = tempfile.mkdtemp()
     try:
-        subprocess.run(['soffice', '--headless', f'-env:UserInstallation=file://{work}/profile',
-                        '--convert-to', 'pdf', '--outdir', work, docx], check=True, capture_output=True)
-        pdf = os.path.join(work, os.path.splitext(os.path.basename(docx))[0] + '.pdf')
-        dpi = 150
-        px = lambda cm: int(round(cm / 2.54 * dpi))
-        subprocess.run(['pdftoppm', '-r', str(dpi), '-png', '-f', '1', '-l', '1', '-singlefile',
-                        '-x', str(px(left_cm)), '-y', str(px(top_cm)), '-W', str(px(width_cm)), '-H', str(px(height_cm)),
-                        pdf, os.path.join(work, 'page')], check=True)
-        subprocess.run(['cwebp', '-quiet', '-lossless', os.path.join(work, 'page.png'), '-o', target], check=True)
+        draw_page(docx, target, page=1, top_cm=top_cm, height_cm=height_cm, left_cm=left_cm, width_cm=width_cm)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -134,8 +129,8 @@ if __name__ == '__main__':
     os.makedirs(os.path.join(HERE, 'bilder'), exist_ok=True)
     starter(os.path.join(STATIC, STARTER))
     solution(os.path.join(HERE, 'stufen', 'aushang.docx'))
-    picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'aushang.webp'), top_cm=1.8, height_cm=11.6)
-    picture(os.path.join(HERE, 'stufen', 'aushang.docx'), os.path.join(HERE, 'bilder', 'aushang-fertig.webp'), top_cm=1.8, height_cm=11.6)
+    picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'aushang.svg'), top_cm=1.8, height_cm=11.6)
+    picture(os.path.join(HERE, 'stufen', 'aushang.docx'), os.path.join(HERE, 'bilder', 'aushang-fertig.svg'), top_cm=1.8, height_cm=11.6)
     # the card in the catalog: 16:9
     picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'teaser.webp'), top_cm=1.6, height_cm=9.9, left_cm=1.7, width_cm=17.6)
     print('written: static/character-formatting/02 Aushang.docx, stufen/aushang.docx, bilder/*.webp, teaser.webp')

@@ -12,6 +12,7 @@
 # Enter) like on a typewriter, two spaces after each full stop.
 
 import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -20,6 +21,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt, Cm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
+from page_picture import page_picture as draw_page  # noqa: E402
 STATIC = os.path.join(HERE, '..', '..', 'static', 'formatting-marks')
 
 TITLE = 'Einladung zum Elternabend'
@@ -114,15 +117,7 @@ def solution(path):
 def picture(docx, target, top_cm=1.6, height_cm=10.4, left_cm=0, width_cm=21):
     work = tempfile.mkdtemp()
     try:
-        subprocess.run(['soffice', '--headless', f'-env:UserInstallation=file://{work}/profile',
-                        '--convert-to', 'pdf', '--outdir', work, docx], check=True, capture_output=True)
-        pdf = os.path.join(work, os.path.splitext(os.path.basename(docx))[0] + '.pdf')
-        dpi = 150
-        px = lambda cm: int(round(cm / 2.54 * dpi))
-        subprocess.run(['pdftoppm', '-r', str(dpi), '-png', '-f', '1', '-l', '1', '-singlefile',
-                        '-x', str(px(left_cm)), '-y', str(px(top_cm)), '-W', str(px(width_cm)), '-H', str(px(height_cm)),
-                        pdf, os.path.join(work, 'page')], check=True)
-        subprocess.run(['cwebp', '-quiet', '-lossless', os.path.join(work, 'page.png'), '-o', target], check=True)
+        draw_page(docx, target, page=1, top_cm=top_cm, height_cm=height_cm, left_cm=left_cm, width_cm=width_cm)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -136,11 +131,11 @@ if __name__ == '__main__':
     work = tempfile.mkdtemp()
     try:
         # the invitation as printed, and after »one size larger« (prediction)
-        picture(os.path.join(STATIC, '01 Einladung.docx'), os.path.join(HERE, 'bilder', 'einladung.webp'), height_cm=10.9)
+        picture(os.path.join(STATIC, '01 Einladung.docx'), os.path.join(HERE, 'bilder', 'einladung.svg'), height_cm=10.9)
         # the card in the catalog: 16:9, the text area of the invitation
         picture(os.path.join(STATIC, '01 Einladung.docx'), os.path.join(HERE, 'teaser.webp'), top_cm=1.2, height_cm=9.9, left_cm=1.7, width_cm=17.6)
         starter(os.path.join(work, 'groesser.docx'), bigger=2)
-        picture(os.path.join(work, 'groesser.docx'), os.path.join(HERE, 'bilder', 'einladung-groesser.webp'), height_cm=14.6)
+        picture(os.path.join(work, 'groesser.docx'), os.path.join(HERE, 'bilder', 'einladung-groesser.svg'), height_cm=14.6)
         # and the solution after the same step
         bigger = os.path.join(work, 'fertig-groesser.docx')
         doc = Document(os.path.join(HERE, 'stufen', 'einladung.docx'))
@@ -150,7 +145,7 @@ if __name__ == '__main__':
                 if r.font.size:
                     r.font.size = Pt(r.font.size.pt + 2)
         doc.save(bigger)
-        picture(bigger, os.path.join(HERE, 'bilder', 'fertig-groesser.webp'), height_cm=12.4)
+        picture(bigger, os.path.join(HERE, 'bilder', 'fertig-groesser.svg'), height_cm=12.4)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     print('written: static/formatting-marks/01 Einladung.docx, stufen/einladung.docx, bilder/*.webp, teaser.webp')

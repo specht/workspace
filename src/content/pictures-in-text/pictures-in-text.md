@@ -22,7 +22,7 @@ reference: []
 Für die Zeitung der Klassenfahrt hat jemand einen Artikel über die Kraniche
 am Kranichsee geschrieben, mit einem Foto und einer Karte. So fängt er an:
 
-<img class='full' src='bilder/artikel.webp' alt='Der Anfang des Artikels: Überschrift, ein Absatz, darunter über die ganze Breite ein Foto, auf dem der Kranich breit und dick aussieht, darunter »Abbildung 1: Ein Kranich in einer Wiese in der Uckermark« mit der Angabe des Fotografen'>
+<img class='full' src='bilder/artikel.svg' alt='Der Anfang des Artikels: Überschrift, ein Absatz, darunter über die ganze Breite ein Foto, auf dem der Kranich breit und dick aussieht, darunter »Abbildung 1: Ein Kranich in einer Wiese in der Uckermark« mit der Angabe des Fotografen'>
 
 Unter jedem Bild steht eine **Bildunterschrift** mit einer Nummer:
 »Abbildung 1« unter dem Kranich, weiter unten »Abbildung 2« unter der Karte.
@@ -30,7 +30,7 @@ Unter jedem Bild steht eine **Bildunterschrift** mit einer Nummer:
 _task(nummern)
 
 <!-- after: nummern -->
-<img class='full' src='bilder/karte-oben.webp' alt='Der Artikel mit der Karte ganz oben: Unter der Karte steht »Abbildung 2«, unter dem Kranich darunter »Abbildung 1«'>
+<img class='full' src='bilder/karte-oben.svg' alt='Der Artikel mit der Karte ganz oben: Unter der Karte steht »Abbildung 2«, unter dem Kranich darunter »Abbildung 1«'>
 
 Die Nummern hat jemand getippt. Das Programm weiß nicht, dass sie die Bilder
 zählen sollen, und lässt sie stehen, wie sie sind. In einem Artikel mit zwei
@@ -174,7 +174,7 @@ Alternativtext. Für die Karte reicht ein Satz, der sagt, was wo liegt.
 _task(artikel)
 
 <!-- after: artikel -->
-<img class='full' src='bilder/artikel-fertig.webp' alt='Der fertige Artikel: das Foto in seiner richtigen Form rechts neben den ersten beiden Absätzen, darunter seine Beschriftung, weiter unten die Karte mit ihrer Beschriftung'>
+<img class='full' src='bilder/artikel-fertig.svg' alt='Der fertige Artikel: das Foto in seiner richtigen Form rechts neben den ersten beiden Absätzen, darunter seine Beschriftung, weiter unten die Karte mit ihrer Beschriftung'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Schneide die Karte mit ihrer Beschriftung aus, füge sie über dem ersten Absatz ein und aktualisiere die Felder. Achte auf die Nummern unter beiden Bildern.

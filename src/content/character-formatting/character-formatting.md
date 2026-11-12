@@ -22,7 +22,7 @@ reference: []
 Die 7b verkauft in der großen Pause Kuchen, für ihre Klassenfahrt. Jemand hat
 den Aushang dafür gemacht, mit viel Begeisterung:
 
-<img class='full' src='bilder/aushang.webp' alt='Der Aushang: »Kuchenverkauf!« in einer schmalen, sehr fetten Schrift, darunter eine Zeile in einer Schreibschrift, unterstrichen und kursiv, dann vier Absätze in vier verschiedenen Schriften und Größen, fast alle fett, einer ganz in Großbuchstaben und unterstrichen, zuletzt »Danke!« groß und kursiv'>
+<img class='full' src='bilder/aushang.svg' alt='Der Aushang: »Kuchenverkauf!« in einer schmalen, sehr fetten Schrift, darunter eine Zeile in einer Schreibschrift, unterstrichen und kursiv, dann vier Absätze in vier verschiedenen Schriften und Größen, fast alle fett, einer ganz in Großbuchstaben und unterstrichen, zuletzt »Danke!« groß und kursiv'>
 
 Wer im Flur vorbeigeht, schaut höchstens zwei Sekunden hin. In der Zeit muss er
 lesen können, wann und wo es Kuchen gibt. Auf diesem Aushang springt ihm alles
@@ -109,7 +109,7 @@ _task(aushang)
 <!-- after: aushang -->
 So kann der Aushang aussehen:
 
-<img class='full' src='bilder/aushang-fertig.webp' alt='Der Aushang mit zwei Schriften: Überschrift und Unterzeile in einer serifenlosen Schrift, der Text in einer Schrift mit Serifen in einer Größe, fett nur »14. März«, »großen Pause« und »vor der Mensa«'>
+<img class='full' src='bilder/aushang-fertig.svg' alt='Der Aushang mit zwei Schriften: Überschrift und Unterzeile in einer serifenlosen Schrift, der Text in einer Schrift mit Serifen in einer Größe, fett nur »14. März«, »großen Pause« und »vor der Mensa«'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Zeig deinen Aushang jemandem zwei Sekunden lang und dreh ihn dann um. Frag, wann und wo der Kuchenverkauf ist. Probier dasselbe mit der Vorlage.

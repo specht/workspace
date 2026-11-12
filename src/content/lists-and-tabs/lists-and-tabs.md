@@ -22,7 +22,7 @@ reference: []
 Für die Klassenfahrt gibt es ein Blatt für zu Hause: was mitkommt und was die
 Fahrt kostet. Die Preise stehen schön untereinander:
 
-<img class='full' src='bilder/kosten.webp' alt='Die Kosten der Klassenfahrt: links fünf Posten, rechts die Preise, ungefähr untereinander, zuletzt »Zusammen 236,00 €« fett'>
+<img class='full' src='bilder/kosten.svg' alt='Die Kosten der Klassenfahrt: links fünf Posten, rechts die Preise, ungefähr untereinander, zuletzt »Zusammen 236,00 €« fett'>
 
 Gebaut sind sie mit Leerzeichen, so vielen, bis es passte.
 
@@ -31,7 +31,7 @@ _task(andere-schrift)
 <!-- after: andere-schrift -->
 So sieht es in einer anderen Schrift aus:
 
-<img class='full' src='bilder/kosten-andere-schrift.webp' alt='Dieselben Kosten in einer anderen Schrift: Jeder Preis ist in eine eigene Zeile gerutscht, ganz an den linken Rand'>
+<img class='full' src='bilder/kosten-andere-schrift.svg' alt='Dieselben Kosten in einer anderen Schrift: Jeder Preis ist in eine eigene Zeile gerutscht, ganz an den linken Rand'>
 
 Jede Schrift hat ihre eigene Breite für ein Leerzeichen. Die Leerzeichen waren
 genau für Calibri in 12 pt gezählt; in Georgia sind sie breiter, und die
@@ -99,7 +99,7 @@ Füllzeichen.
 _task(packliste)
 
 <!-- after: packliste -->
-<img class='full' src='bilder/kosten-tabstopp.webp' alt='Die Kosten mit einem Tabstopp, in derselben anderen Schrift wie oben: Jeder Preis endet genau am rechten Rand, Punkte führen von jedem Posten zu seinem Preis'>
+<img class='full' src='bilder/kosten-tabstopp.svg' alt='Die Kosten mit einem Tabstopp, in derselben anderen Schrift wie oben: Jeder Preis endet genau am rechten Rand, Punkte führen von jedem Posten zu seinem Preis'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Stell die Kosten in eine andere Schrift und eine andere Größe. Achte darauf, wo die Preise enden.

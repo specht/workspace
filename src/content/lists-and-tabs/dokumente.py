@@ -10,6 +10,7 @@
 # has Calibri's widths). In any other font they no longer are.
 
 import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -19,6 +20,8 @@ from docx.shared import Pt, Cm
 from PIL import ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
+from page_picture import page_picture as draw_page  # noqa: E402
 STATIC = os.path.join(HERE, '..', '..', 'static', 'lists-and-tabs')
 STARTER = '03 Packliste.docx'
 CARLITO = '/usr/share/fonts/truetype/crosextra/Carlito-Regular.ttf'
@@ -123,15 +126,7 @@ def picture(docx, target, top_cm=1.6, height_cm=10.4, left_cm=0, width_cm=21, fo
                     r.font.name = font
             docx = os.path.join(work, 'other.docx')
             doc.save(docx)
-        subprocess.run(['soffice', '--headless', f'-env:UserInstallation=file://{work}/profile',
-                        '--convert-to', 'pdf', '--outdir', work, docx], check=True, capture_output=True)
-        pdf = os.path.join(work, os.path.splitext(os.path.basename(docx))[0] + '.pdf')
-        dpi = 150
-        px = lambda cm: int(round(cm / 2.54 * dpi))
-        subprocess.run(['pdftoppm', '-r', str(dpi), '-png', '-f', '1', '-l', '1', '-singlefile',
-                        '-x', str(px(left_cm)), '-y', str(px(top_cm)), '-W', str(px(width_cm)), '-H', str(px(height_cm)),
-                        pdf, os.path.join(work, 'page')], check=True)
-        subprocess.run(['cwebp', '-quiet', '-lossless', os.path.join(work, 'page.png'), '-o', target], check=True)
+        draw_page(docx, target, page=1, top_cm=top_cm, height_cm=height_cm, left_cm=left_cm, width_cm=width_cm)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -144,8 +139,8 @@ if __name__ == '__main__':
     solution(os.path.join(HERE, 'stufen', 'packliste.docx'))
     # the costs: as typed, in another font, and built with a tab stop
     costs = dict(top_cm=8.25, height_cm=6.3, left_cm=2.0, width_cm=17.0)
-    picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'kosten.webp'), **costs)
-    picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'kosten-andere-schrift.webp'), font='Georgia', **costs)
-    picture(os.path.join(HERE, 'stufen', 'packliste.docx'), os.path.join(HERE, 'bilder', 'kosten-tabstopp.webp'), font='Georgia', **costs)
+    picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'kosten.svg'), **costs)
+    picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'kosten-andere-schrift.svg'), font='Georgia', **costs)
+    picture(os.path.join(HERE, 'stufen', 'packliste.docx'), os.path.join(HERE, 'bilder', 'kosten-tabstopp.svg'), font='Georgia', **costs)
     picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'teaser.webp'), top_cm=1.6, height_cm=9.9, left_cm=1.7, width_cm=17.6)
     print('written: static/lists-and-tabs/03 Packliste.docx, stufen/packliste.docx, bilder/*.webp, teaser.webp')

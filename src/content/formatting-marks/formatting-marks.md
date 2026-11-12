@@ -22,7 +22,7 @@ Die Klassenleitung der 7b hat eine Einladung zum Elternabend getippt, in Eile,
 kurz vor der Pause. Ausgedruckt sieht sie ordentlich aus: die Überschrift in
 der Mitte, das Datum rechts, darunter ein kurzer Brief.
 
-<img class='full' src='bilder/einladung.webp' alt='Die Einladung, wie sie ausgedruckt aussieht: »Einladung zum Elternabend« fett in der Mitte, darunter »Klassenfahrt der 7b an den Kranichsee«, rechts »2. März«, dann »Liebe Eltern,« und ein Brief aus drei Zeilen, zwei Sätze zu Ort und Zeit, Gruß und Unterschrift'>
+<img class='full' src='bilder/einladung.svg' alt='Die Einladung, wie sie ausgedruckt aussieht: »Einladung zum Elternabend« fett in der Mitte, darunter »Klassenfahrt der 7b an den Kranichsee«, rechts »2. März«, dann »Liebe Eltern,« und ein Brief aus drei Zeilen, zwei Sätze zu Ort und Zeit, Gruß und Unterschrift'>
 
 Wie ein Dokument gebaut ist, sieht man auf dem Papier nicht. Man merkt es erst,
 wenn sich etwas ändert.
@@ -32,7 +32,7 @@ _task(groesser)
 <!-- after: groesser -->
 So sieht die Einladung aus, wenn die Schrift überall eine Stufe größer wird:
 
-<img class='full' src='bilder/einladung-groesser.webp' alt='Dieselbe Einladung mit größerer Schrift: Die Überschrift steht rechts von der Mitte, das Datum am Anfang einer eigenen Zeile links, und im Brief folgt auf jede lange Zeile eine kurze mit ein, zwei Wörtern'>
+<img class='full' src='bilder/einladung-groesser.svg' alt='Dieselbe Einladung mit größerer Schrift: Die Überschrift steht rechts von der Mitte, das Datum am Anfang einer eigenen Zeile links, und im Brief folgt auf jede lange Zeile eine kurze mit ein, zwei Wörtern'>
 
 Die Überschrift stand nie in der Mitte. Vor ihr stehen 38 Leerzeichen, so
 viele, bis sie bei 16 pt ungefähr in der Mitte aussah. Werden die Leerzeichen
@@ -174,7 +174,7 @@ _task(einladung)
 
 So sieht die gebaute Einladung mit größerer Schrift aus:
 
-<img class='full' src='bilder/fertig-groesser.webp' alt='Die reparierte Einladung mit größerer Schrift: Überschrift und Zeile darunter genau in der Mitte, das Datum am rechten Rand, der Brief bricht gleichmäßig um, die Abstände zwischen den Absätzen sind gleich geblieben'>
+<img class='full' src='bilder/fertig-groesser.svg' alt='Die reparierte Einladung mit größerer Schrift: Überschrift und Zeile darunter genau in der Mitte, das Datum am rechten Rand, der Brief bricht gleichmäßig um, die Abstände zwischen den Absätzen sind gleich geblieben'>
 
 _task(ausdruck)
 <!-- /after -->

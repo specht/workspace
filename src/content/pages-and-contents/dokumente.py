@@ -26,6 +26,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt, Cm, RGBColor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
+from page_picture import page_picture as draw_page  # noqa: E402
 STATIC = os.path.join(HERE, '..', '..', 'static', 'pages-and-contents')
 STARTER = '07 Reisebericht.docx'
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
@@ -222,15 +224,7 @@ def solution(path, stale=False, breaks=True):
 def picture(docx, target, page=1, top_cm=1.6, height_cm=12, left_cm=1.8, width_cm=17.4):
     work = tempfile.mkdtemp()
     try:
-        subprocess.run(['soffice', '--headless', f'-env:UserInstallation=file://{work}/profile',
-                        '--convert-to', 'pdf', '--outdir', work, docx], check=True, capture_output=True)
-        pdf = os.path.join(work, os.path.splitext(os.path.basename(docx))[0] + '.pdf')
-        dpi = 150
-        px = lambda cm: int(round(cm / 2.54 * dpi))
-        subprocess.run(['pdftoppm', '-r', str(dpi), '-png', '-f', str(page), '-l', str(page), '-singlefile',
-                        '-x', str(px(left_cm)), '-y', str(px(top_cm)), '-W', str(px(width_cm)), '-H', str(px(height_cm)),
-                        pdf, os.path.join(work, 'page')], check=True)
-        subprocess.run(['cwebp', '-quiet', '-q', '88', os.path.join(work, 'page.png'), '-o', target], check=True)
+        draw_page(docx, target, page=page, top_cm=top_cm, height_cm=height_cm, left_cm=left_cm, width_cm=width_cm)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -254,10 +248,10 @@ if __name__ == '__main__':
     try:
         longer = os.path.join(work, 'laenger.docx')
         starter(longer, empties, longer=True)
-        picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'titelseite.webp'), height_cm=10)
-        picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'dienstag.webp'), page=3, top_cm=0, height_cm=9)
-        picture(longer, os.path.join(HERE, 'bilder', 'dienstag-weiter-unten.webp'), page=3, top_cm=0, height_cm=9)
-        picture(os.path.join(HERE, 'stufen', 'reisebericht.docx'), os.path.join(HERE, 'bilder', 'titelseite-fertig.webp'), height_cm=10)
+        picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'titelseite.svg'), height_cm=10)
+        picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'dienstag.svg'), page=3, top_cm=0, height_cm=9)
+        picture(longer, os.path.join(HERE, 'bilder', 'dienstag-weiter-unten.svg'), page=3, top_cm=0, height_cm=9)
+        picture(os.path.join(HERE, 'stufen', 'reisebericht.docx'), os.path.join(HERE, 'bilder', 'titelseite-fertig.svg'), height_cm=10)
         picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'teaser.webp'), top_cm=1.6, height_cm=9.8)
     finally:
         shutil.rmtree(work, ignore_errors=True)

@@ -23,7 +23,7 @@ Nach der Klassenfahrt haben alle Tischgruppen ein Stück für das
 Reisetagebuch der 7b geschrieben. Jemand hat die Stücke zusammengesetzt und
 jede Überschrift fett, größer und blau gemacht:
 
-<img class='full' src='bilder/tagebuch.webp' alt='Das Reisetagebuch: ein großer Titel, darunter für jeden Tag eine blaue, fette Überschrift wie »Montag: Anreise«, beim Mittwoch zwei kleinere fette Zeilen »Am Vormittag« und »Am Nachmittag«'>
+<img class='full' src='bilder/tagebuch.svg' alt='Das Reisetagebuch: ein großer Titel, darunter für jeden Tag eine blaue, fette Überschrift wie »Montag: Anreise«, beim Mittwoch zwei kleinere fette Zeilen »Am Vormittag« und »Am Nachmittag«'>
 
 _task(uebersicht)
 
@@ -108,7 +108,7 @@ bleibt, hat sie noch Formatierung von Hand.
 _task(tagebuch)
 
 <!-- after: tagebuch -->
-<img class='full' src='bilder/tagebuch-fertig.webp' alt='Das fertige Tagebuch: der Titel groß in Grün, die Tage als grüne Überschriften, Vormittag und Nachmittag als kleinere Überschriften darunter'>
+<img class='full' src='bilder/tagebuch-fertig.svg' alt='Das fertige Tagebuch: der Titel groß in Grün, die Tage als grüne Überschriften, Vormittag und Nachmittag als kleinere Überschriften darunter'>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ändere die Schriftart von »Überschrift 1« und dann die von »Standard«. Achte darauf, welche Absätze sich jeweils mitändern.

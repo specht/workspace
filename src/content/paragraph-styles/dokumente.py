@@ -15,6 +15,7 @@
 # changed once (green, the 7b's colour).
 
 import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -23,6 +24,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt, Cm, RGBColor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
+from page_picture import page_picture as draw_page  # noqa: E402
 STATIC = os.path.join(HERE, '..', '..', 'static', 'paragraph-styles')
 STARTER = '06 Reisetagebuch.docx'
 
@@ -149,15 +152,7 @@ def solution(path, by_hand=False, part_style='Heading 2', changed=True):
 def picture(docx, target, top_cm=1.6, height_cm=12, left_cm=1.8, width_cm=17.4):
     work = tempfile.mkdtemp()
     try:
-        subprocess.run(['soffice', '--headless', f'-env:UserInstallation=file://{work}/profile',
-                        '--convert-to', 'pdf', '--outdir', work, docx], check=True, capture_output=True)
-        pdf = os.path.join(work, os.path.splitext(os.path.basename(docx))[0] + '.pdf')
-        dpi = 150
-        px = lambda cm: int(round(cm / 2.54 * dpi))
-        subprocess.run(['pdftoppm', '-r', str(dpi), '-png', '-f', '1', '-l', '1', '-singlefile',
-                        '-x', str(px(left_cm)), '-y', str(px(top_cm)), '-W', str(px(width_cm)), '-H', str(px(height_cm)),
-                        pdf, os.path.join(work, 'page')], check=True)
-        subprocess.run(['cwebp', '-quiet', '-lossless', os.path.join(work, 'page.png'), '-o', target], check=True)
+        draw_page(docx, target, page=1, top_cm=top_cm, height_cm=height_cm, left_cm=left_cm, width_cm=width_cm)
     finally:
         shutil.rmtree(work, ignore_errors=True)
 
@@ -173,8 +168,8 @@ if __name__ == '__main__':
     solution(os.path.join(HERE, 'stufen', 'vorlage-wie-vorher.docx'), changed=False)
     work = tempfile.mkdtemp()
     try:
-        picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'tagebuch.webp'), height_cm=14.5)
-        picture(os.path.join(HERE, 'stufen', 'reisetagebuch.docx'), os.path.join(HERE, 'bilder', 'tagebuch-fertig.webp'), height_cm=14.5)
+        picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'bilder', 'tagebuch.svg'), height_cm=14.5)
+        picture(os.path.join(HERE, 'stufen', 'reisetagebuch.docx'), os.path.join(HERE, 'bilder', 'tagebuch-fertig.svg'), height_cm=14.5)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     picture(os.path.join(STATIC, STARTER), os.path.join(HERE, 'teaser.webp'), top_cm=1.6, height_cm=9.8)
