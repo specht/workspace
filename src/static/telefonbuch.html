@@ -20,43 +20,6 @@
         --pb-dim: brightness(.78) contrast(1.05);
         --pb-shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 18px 40px -16px rgba(0, 0, 0, .8);
     }
-    /* the real number on a label under the phone, like the paper label on
-       an old desk phone (phone_games_api.rb, phone_book_label) */
-    .phone-book-label {
-        grid-column: 2;
-        grid-row: 2;
-        justify-self: start;
-        width: 290px;
-        max-width: 100%;
-        /* right under the book, lying on the desk */
-        align-self: start;
-        margin: .6rem 0 0 2rem;
-        transform: rotate(-2.5deg);
-        padding: .55rem .9rem .6rem;
-        background: url('/include/phone-book-paper.webp') var(--pb-paper);
-        background-size: 384px 384px;
-        color: var(--pb-ink);
-        border: 1px solid var(--pb-rule);
-        border-radius: 4px;
-        box-shadow: inset 0 0 0 3px var(--pb-paper), inset 0 0 0 4px var(--pb-rule), 0 2px 6px rgba(40, 30, 10, .18);
-        font-family: 'XCharter', 'Charter', 'Bitstream Charter', Georgia, serif;
-        text-align: center;
-        filter: var(--pb-dim);
-    }
-    .pb-label-head { font-variant: small-caps; letter-spacing: .08em; font-size: .9rem; color: var(--pb-quiet); }
-    .pb-label-number { font-size: 1.5rem; font-weight: 700; line-height: 1.25; white-space: nowrap; font-variant-numeric: lining-nums; }
-    .pb-label-example { font-weight: 400; opacity: .45; }
-    /* where the screen leaves room beside the page (Bootstrap's container
-       is 1320px wide from 1400px on): in that margin, left of the phone */
-    @media (min-width: 1940px) {
-        .phone-book-layout { position: relative; }
-        .phone-book-label { position: absolute; grid-area: auto; left: calc(-290px - 1.5rem); top: 430px; margin: 0; transform: rotate(-4deg); }
-    }
-    @media (max-width: 900px) {
-        /* at the bottom, under the book (the maintainer) */
-        .phone-book-label { grid-column: auto; grid-row: auto; order: 1; justify-self: center; margin: .4rem 0 1rem; transform: rotate(-1.5deg); }
-    }
-    .pb-label-how { font-size: .9rem; font-style: italic; color: var(--pb-quiet); hyphens: none; }
     .phone-book-layout {
         display: grid;
         grid-template-columns: 340px minmax(0, 1fr);
@@ -64,24 +27,8 @@
         align-items: start;
         margin-top: 1.5rem;
     }
-    /* the phone left over two rows; the book right, and below it the label
-       with the real number, lying on the desk a little turned. One column
-       on a narrow screen: phone, label, book */
-    .phone-book-phone { grid-column: 1; grid-row: 1 / span 2; }
-    .phone-book-pages { grid-column: 2; grid-row: 1; }
-    /* the book no taller than the phone, and on a low window short enough
-       that the label below it is in view: two pages of A paper on 10px of
-       cover are 1.414 times as wide as the room for them is high (the page
-       begins 228px down, the label and the bar at the bottom of the
-       window take 162px, the cover 20px) */
-    @media (min-width: 901px) and (max-width: 1939px) {
-        /* the phone's height beyond the book goes to the label's row */
-        .phone-book-layout { row-gap: 0; grid-template-rows: auto 1fr; }
-        .phone-book { max-width: max(420px, min(772px, calc((100vh - 410px) * 1.414 + 20px))); }
-    }
     @media (max-width: 900px) {
         .phone-book-layout { grid-template-columns: minmax(0, 1fr); }
-        .phone-book-phone, .phone-book-pages { grid-column: auto; grid-row: auto; }
     }
     /* the phone: the line itself (src/phone/line), in a frame */
     .phone-book-line { display: block; width: 340px; height: 740px; max-width: 100%; border: 0; margin: -12px auto 0; background: transparent; }
@@ -180,7 +127,6 @@
         <div class='phone-book-phone'>
             <iframe class='phone-book-line' src='/telefonbuch/telefon/?line' title='Telefon' allow='autoplay; screen-wake-lock'></iframe>
         </div>
-        #{phone_book_label}
         <div class='phone-book-pages'>
             <div class='phone-book' id='phone-book'></div>
         </div>

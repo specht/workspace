@@ -429,20 +429,6 @@ class Main < Sinatra::Base
             "<script src='/include/phone_review.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
     end
 
-    # /telefonbuch: the real number on a label, which phone_book.js sticks
-    # on the closed book's cover (the maintainer); without JavaScript it
-    # stays beside the book. The phone on the page itself takes a game's
-    # number only, never a real one
-    def phone_book_label
-        number = Main.phone_number
-        return '' unless number
-
-        # the number alone (the maintainer); how to dial a game directly the
-        # book's remark at the end says
-        "<div class='phone-book-label'><div class='pb-label-head'>Von jedem Telefon</div>" \
-            "<div class='pb-label-number'>#{CGI.escapeHTML(number)}</div></div>"
-    end
-
     # /telefonbuch: the published games, sorted by title, as the pages of a
     # book; the phone number or that one is being worked on (public)
     def phone_book_page
@@ -455,8 +441,8 @@ class Main < Sinatra::Base
             { :number => g[:number], :word => g[:word], :title => g[:title], :description => g[:description] }
         end
         # the remark at the end of the book: the real number and how to dial
-        # a game directly (its label on the cover shows the number alone);
-        # without one, that one is being worked on
+        # a game directly (the maintainer: enough there, no label beside the
+        # book); without one, that one is being worked on
         line = if number
             direct = defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL
             game = games.first ? games.first[:number] : '123'
