@@ -167,7 +167,7 @@
     const WATCH_MS = 2000;
     function watch(card, run) {
         if (card.documentWatch) return;
-        card.documentWatch = setInterval(async function () {
+        const poll = async function () {
             const handle = card.documentHandle;
             if (!handle || document.hidden || card.documentBusy || !card.documentSeen) return;
             let file;
@@ -183,13 +183,53 @@
                 chosen(card, file.name, file.lastModified);
             }
             if (file.lastModified === seen.time && file.size === seen.size) return;
-            // a save in progress: wait until the size holds still
+            // a save in progress: wait until the size holds still, looking
+            // again in half a second; the result says so at once
             if (seen.pending !== file.lastModified + ':' + file.size) {
                 seen.pending = file.lastModified + ':' + file.size;
+                indicate(card, 'Gespeichert, wird gleich geprüft …');
+                setTimeout(poll, 500);
                 return;
             }
             run();
-        }, WATCH_MS);
+        };
+        card.documentWatch = setInterval(poll, WATCH_MS);
+    }
+
+    // a check coming or running, from the first moment: the »prüfen«
+    // button beside the page turns into »Prüft …« with a spinner (full
+    // screen covers the card's own button), the page a little paler;
+    // text: what screen readers hear
+    function indicate(card, text) {
+        const shown = card.documentReportEl && card.documentReportEl.isConnected ? card.documentReportEl : null;
+        if (!shown) return;
+        shown.classList.add('document-checking');
+        const again = shown.querySelector('.document-recheck');
+        if (again && !again.dataset.idle) {
+            again.dataset.idle = again.innerHTML;
+            again.disabled = true;
+            again.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span><span>Prüft …</span>";
+        }
+        const status = shown.querySelector('.document-status');
+        if (status) status.setAttribute('aria-busy', 'true');
+        if (again) again.setAttribute('aria-label', text);
+    }
+
+    function unindicate(card) {
+        const shown = card.documentReportEl;
+        if (shown && shown.isConnected) {
+            shown.classList.remove('document-checking');
+            const again = shown.querySelector('.document-recheck');
+            if (again && again.dataset.idle) {
+                again.innerHTML = again.dataset.idle;
+                delete again.dataset.idle;
+                again.disabled = false;
+                again.setAttribute('aria-label', card.documentHandle ? 'Erneut prüfen' : 'Datei neu wählen und prüfen');
+            }
+            const status = shown.querySelector('.document-status');
+            if (status) status.removeAttribute('aria-busy');
+        }
+        mirror(card);
     }
 
     // »Erneut prüfen« on a kept file that has not changed since its last
@@ -222,6 +262,8 @@
         }
         card.documentFresh = false;
         if (card.documentHandle) {
+            // before reading the file, which takes a while on a network drive
+            indicate(card, 'Prüft …');
             try {
                 if (card.documentHandle.queryPermission && await card.documentHandle.queryPermission({ mode: 'read' }) !== 'granted') {
                     await card.documentHandle.requestPermission({ mode: 'read' });
@@ -229,12 +271,14 @@
                 file = await card.documentHandle.getFile();
                 const seen = card.documentSeen;
                 if (seen && seen.checked && file.lastModified === seen.time && file.size === seen.size) {
+                    unindicate(card);
                     unchanged(card, file);
                     return;
                 }
                 chosen(card, file.name, file.lastModified);
             } catch (err) {
                 card.documentHandle = null;
+                unindicate(card);
                 done(invalid('Die Datei kann ich nicht mehr lesen. Wurde sie verschoben, umbenannt oder gelöscht? Wähle sie noch einmal.'));
                 return;
             }
@@ -244,6 +288,7 @@
             return;
         }
         if (file.size > MAX_BYTES) {
+            unindicate(card);
             done(invalid('Die Datei ist größer als 10 MB. Sind große Bilder darin?'));
             return;
         }
@@ -261,11 +306,7 @@
         card.documentBusy = true;
         // in the result too (full screen covers the card's button)
         const shown = card.documentReportEl && card.documentReportEl.isConnected ? card.documentReportEl : null;
-        if (shown) {
-            shown.classList.add('document-checking');
-            const status = shown.querySelector('.document-status');
-            if (status) status.innerHTML = "<span class='spinner-border spinner-border-sm' aria-hidden='true'></span> Prüft " + file.name + ' …';
-        }
+        indicate(card, 'Prüft ' + file.name + ' …');
         card.documentSeen = { time: file.lastModified, size: file.size };
         if (card.documentHandle && card.documentRecheck) watch(card, card.documentRecheck);
         const form = new FormData();
@@ -284,10 +325,7 @@
         } finally {
             card.documentBusy = false;
             // a check that brought no new result: the old one as it was
-            if (shown && shown.isConnected) {
-                shown.classList.remove('document-checking');
-                mirror(card);
-            }
+            if (shown && shown.isConnected) unindicate(card);
         }
     }
 

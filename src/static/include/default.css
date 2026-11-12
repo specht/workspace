@@ -17320,11 +17320,14 @@ body.mail-app-open {
     opacity: 0.55;
     transition: opacity 0.2s;
 }
-.document-status .spinner-border {
+.document-recheck .spinner-border {
     width: 0.9em;
     height: 0.9em;
     border-width: 0.15em;
-    vertical-align: -0.1em;
+    margin-right: 0.4em;
+}
+.document-recheck:disabled {
+    opacity: 1;
 }
 .document-checked-at {
     white-space: nowrap;

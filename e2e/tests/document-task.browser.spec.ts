@@ -187,7 +187,11 @@ test('a document is checked and its problems are marked on its page', async ({ p
   if (shots) await page.screenshot({ path: path.join(shots, 'document-phone-full.png') });
   // a new check while full screen is open: its result takes over the full
   // screen, which says when it was checked
+  // the »prüfen« button beside the page shows the check running
+  const sent = page.waitForRequest((r) => r.url().includes('/api/task/document') && r.method() === 'POST');
   await card.locator('.document-input').setInputFiles(solution);
+  await sent;
+  await expect(page.locator('.document-report.document-fullscreen .document-recheck')).toContainText('Prüft');
   await expect(page.locator('.document-report.document-fullscreen .document-checklist li.document-ok')).toHaveCount(8);
   await expect(page.locator('.document-report')).toHaveCount(1);
   await expect(page.locator('.document-report.document-fullscreen .document-status')).toContainText('Geprüft um');
