@@ -127,14 +127,11 @@ Rules (docs/aufgaben.md, »document«): `formulas`, `values`, `recalc`,
 - **The year of the data.** The payments are dated March 2027; a date
   needs a year to be a number of days. The page names no year, the
   drawing of the days shows the numbers of that March.
-- **Persons on draft sheets** (Bricklin and Frankston, Kapor, Simonyi, Hollerith) are named in
-  `person_boxes_test.rb` (`WAITING`) until the sheets are published.
 
 ## Open
 
-- Publishing: the seven sheets are drafts in »Texte & Präsentationen«; the
-  section Office (commented out in sections.yaml) comes back with both
-  series once the maintainer decides.
+- Published on 12 November 2026, with the section Office restored for both
+  series.
 - The drawn sheet shows a conditional format's colour only for conditions
   on the cell's value against numbers; formulas as conditions, colour
   scales and data bars are not drawn.
