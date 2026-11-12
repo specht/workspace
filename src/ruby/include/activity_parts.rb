@@ -94,11 +94,15 @@ module ActivityParts
     # titles carry their own numbers (»Level 1: Die Tiefe«), so the row has
     # none.
     def self.nav_html(slug, titles, current, hrefs: nil)
+        # a series is numbered too (the sheets of Office), unless its titles
+        # carry numbers of their own (the Backrooms' »Level 1«, which starts
+        # at 0)
+        numbered = hrefs.nil? || titles.none? { |title| title.match?(/\d/) }
         items = titles.each_with_index.map do |title, index|
             number = index + 1
             label = CGI.escapeHTML(hrefs ? title : title.sub(/\A\d+\.\s*/, ''))
-            inner = hrefs ? "<span class='activity-part-title'>#{label}</span>" :
-                "<span class='activity-part-number'>#{number}</span><span class='activity-part-title'>#{label}</span>"
+            inner = numbered ? "<span class='activity-part-number'>#{number}</span><span class='activity-part-title'>#{label}</span>" :
+                "<span class='activity-part-title'>#{label}</span>"
             if number == current
                 "<li><span class='activity-part current' aria-current='page'>#{inner}</span></li>"
             else
