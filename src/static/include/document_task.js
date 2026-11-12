@@ -41,10 +41,22 @@
         },
     }];
     const wantsSheet = (card) => !!card.querySelector(".document-task[data-accept='sheet']");
+    // a presentation (data-accept='slides')
+    const SLIDES_TYPES = [{
+        description: 'Präsentationen',
+        accept: {
+            'application/vnd.oasis.opendocument.presentation': ['.odp'],
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+            'application/vnd.ms-powerpoint': ['.ppt'],
+        },
+    }];
+    const wantsSlides = (card) => !!card.querySelector(".document-task[data-accept='slides']");
     // the programs a card names: Excel for a table, Word for a text; a PDF
     // card on a page of tables (office: sheet) names Excel too
     const sheetPage = () => !!document.querySelector(".code-language-switch-office[data-office-kind='sheet']");
-    const programs = (card) => wantsSheet(card) || (wantsPdf(card) && sheetPage()) ? 'LibreOffice oder Excel' : 'LibreOffice oder Word';
+    const slidesPage = () => !!document.querySelector(".code-language-switch-office[data-office-kind='slides']");
+    const programs = (card) => wantsSheet(card) || (wantsPdf(card) && sheetPage()) ? 'LibreOffice oder Excel'
+        : wantsSlides(card) || (wantsPdf(card) && slidesPage()) ? 'LibreOffice oder PowerPoint' : 'LibreOffice oder Word';
 
     function el(tag, className, text) {
         const node = document.createElement(tag);
@@ -73,7 +85,7 @@
         if (card.documentHandle && saved) {
             line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in ' + programs(card) + ', dann prüft die Seite von selbst.'));
         }
-        card.querySelector('.document-pick').lastChild.textContent = wantsPdf(card) ? 'Anderes PDF' : wantsSheet(card) ? 'Andere Tabelle' : 'Anderes Dokument';
+        card.querySelector('.document-pick').lastChild.textContent = wantsPdf(card) ? 'Anderes PDF' : wantsSheet(card) ? 'Andere Tabelle' : wantsSlides(card) ? 'Andere Präsentation' : 'Anderes Dokument';
         mirror(card);
     }
 
@@ -122,7 +134,7 @@
             }
             let handle;
             try {
-                [handle] = await window.showOpenFilePicker({ types: wantsPdf(card) ? PDF_TYPES : wantsSheet(card) ? SHEET_TYPES : TYPES, multiple: false, id: wantsPdf(card) ? 'workspace-pdf' : wantsSheet(card) ? 'workspace-sheet' : 'workspace-document', startIn: 'downloads' });
+                [handle] = await window.showOpenFilePicker({ types: wantsPdf(card) ? PDF_TYPES : wantsSheet(card) ? SHEET_TYPES : wantsSlides(card) ? SLIDES_TYPES : TYPES, multiple: false, id: wantsPdf(card) ? 'workspace-pdf' : wantsSheet(card) ? 'workspace-sheet' : wantsSlides(card) ? 'workspace-slides' : 'workspace-document', startIn: 'downloads' });
             } catch (err) {
                 if (err && err.name === 'AbortError') return;
                 input.click();

@@ -63,8 +63,9 @@ module CodeLanguages
     ICONS = { 'word' => 'bi-file-earmark-word', 'libreoffice' => 'bi-file-earmark-richtext', 'nextcloud' => 'bi-cloud' }.freeze
     # on a page of spreadsheets (office: sheet) the same choice names
     # Microsoft's program Excel: the choice is the suite, not one program
-    KIND_NAMES = { 'sheet' => { 'word' => 'Excel' } }.freeze
-    KIND_ICONS = { 'sheet' => { 'word' => 'bi-file-earmark-excel', 'libreoffice' => 'bi-file-earmark-spreadsheet' } }.freeze
+    KIND_NAMES = { 'sheet' => { 'word' => 'Excel' }, 'slides' => { 'word' => 'PowerPoint' } }.freeze
+    KIND_ICONS = { 'sheet' => { 'word' => 'bi-file-earmark-excel', 'libreoffice' => 'bi-file-earmark-spreadsheet' },
+                   'slides' => { 'word' => 'bi-file-earmark-ppt', 'libreoffice' => 'bi-file-earmark-slides' } }.freeze
     # What a teacher can rank for a class
     GROUP_LANGUAGES = PROGRAMMING
     # What a person's own switch stores as their choice for every page

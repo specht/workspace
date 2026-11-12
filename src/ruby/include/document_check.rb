@@ -1,5 +1,6 @@
 require_relative 'document_dates'
 require_relative 'document_check_sheet'
+require_relative 'document_check_slides'
 require 'cgi'
 require_relative 'office_client'
 
@@ -54,7 +55,7 @@ require_relative 'office_client'
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES
+    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -109,6 +110,7 @@ module DocumentCheck
             next unless rule.is_a?(Hash)
             known = %w[label say] + case name
                 when *SHEET_RULES then [name, 'sheet']
+                when *SLIDE_RULES then [name]
                 when 'text' then %w[text except]
                 when 'styled' then %w[styled]
                 when 'align' then %w[align paragraph]
@@ -128,6 +130,9 @@ module DocumentCheck
             errors << 'gaps must look like 6pt' if name == 'gaps' && pt(rule['gaps']) <= 0
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
             errors << 'fonts must be a number' if name == 'fonts' && !rule['fonts'].is_a?(Integer)
+            errors << "#{name} must be a number" if %w[min_size max_words].include?(name) && !rule[name].is_a?(Numeric)
+            errors << 'notes needs a list of pieces of text' if name == 'notes' && !(rule['notes'].is_a?(Array) && rule['notes'].all? { |b| b.is_a?(String) })
+            errors << 'slide_count must be [min, max]' if name == 'slide_count' && !(rule['slide_count'].is_a?(Array) && rule['slide_count'].size == 2)
             errors << 'size must be [min, max] in pt' if name == 'size' && !(rule['size'].is_a?(Array) && rule['size'].size == 2 && rule['size'].all? { |v| v.is_a?(Numeric) })
             %w[bold sparing list tabs table page_breaks].each do |k|
                 errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].all? { |b| b.is_a?(String) })
@@ -206,6 +211,8 @@ module DocumentCheck
             :pdf => model['pdf'] ? true : nil,
             # a spreadsheet: its sheets drawn from their cells
             :sheet => sheet?(model) ? true : nil,
+            # a presentation: its slides as LibreOffice draws them
+            :slides => slides?(model) ? true : nil,
         }.compact
     end
 
@@ -214,6 +221,9 @@ module DocumentCheck
     # margins and room for the numbers beside them (points). left: where
     # the text begins, so that a mark there gets its number in the margin.
     def self.crop(model, marks, page, pg)
+        # a slide is shown whole
+        return { :x => 0, :y => 0, :w => pg['width'], :h => pg['height'], :left => 0 } if slides?(model)
+
         boxes = (model['paragraphs'] || []).map { |p| p['box'] }.compact.select { |b| b['page'] == page }
         ys = boxes.flat_map { |b| [b['top'], b['bottom']] } + marks.select { |m| m[:page] == page }.flat_map { |m| [m[:y], m[:y] + m[:h]] }
         margins = model['margins'] || {}
@@ -227,6 +237,23 @@ module DocumentCheck
     # The paragraphs as the check read them, for »Was der Workspace gelesen
     # hat«: spaces as ·, line breaks as ↵, tabs as →, the end as ¶.
     def self.xray(model)
+        if slides?(model)
+            lines = slides_of(model).flat_map do |slide|
+                head = ["Folie #{slide['index'] + 1}#{slide['hidden'] ? ' (ausgeblendet)' : ''}"]
+                shapes = (slide['shapes'] || []).map do |sh|
+                    kind = { 'title' => 'Titel', 'subtitle' => 'Untertitel', 'body' => 'Inhalt', 'text' => 'Textfeld', 'shape' => 'Textfeld',
+                             'picture' => 'Bild', 'chart' => 'Diagramm', 'table' => 'Tabelle' }[sh['kind']]
+                    next unless kind
+
+                    kind = "#{kind} (von Hand)" if %w[title subtitle body].include?(sh['kind']) && !sh['placeholder']
+                    text = sh['text'].to_s.strip.gsub(/\s*\n\s*/, ' / ')[0, 120]
+                    "  #{kind}#{text.empty? ? '' : ": #{text}"}"
+                end.compact
+                notes = slide['notes'].to_s.strip.empty? ? [] : ["  Notizen: #{slide['notes'].to_s.strip.gsub(/\s+/, ' ')[0, 160]}"]
+                head + shapes + notes
+            end
+            return "So hat LibreOffice deine Folien gelesen:\n\n<pre class='document-xray'><code>#{CGI.escapeHTML(lines.first(200).join("\n"))}</code></pre>"
+        end
         if sheet?(model)
             lines = (model['sheets'] || []).each_with_index.flat_map do |s, i|
                 (s['cells'] || []).select { |c| c['type'] == 'formula' }.first(60).map do |c|

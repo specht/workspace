@@ -12,10 +12,10 @@ module OfficeClient
     MAX_BYTES = 10 * 1024 * 1024
     # pdf: a document exported as PDF (a check with accept: pdf), read by
     # poppler, not LibreOffice
-    FORMATS = %w[docx odt doc rtf pdf xlsx ods xls].freeze
+    FORMATS = %w[docx odt doc rtf pdf xlsx ods xls pptx odp ppt].freeze
     # what the service answers when it cannot read a document, for the card
     ERRORS = {
-        'format' => 'Diese Datei kann ich nicht lesen. Speichere ein Textdokument als .odt oder .docx, eine Tabelle als .ods oder .xlsx.',
+        'format' => 'Diese Datei kann ich nicht lesen. Speichere ein Textdokument als .odt oder .docx, eine Tabelle als .ods oder .xlsx, eine Präsentation als .odp oder .pptx.',
         'not_text' => 'Das ist kein Textdokument. Speichere es als .odt (LibreOffice) oder .docx (Word).',
         'timeout' => 'Das Lesen hat zu lange gedauert. Ist die Datei sehr groß? Versuch es noch einmal.',
         'failed' => 'Diese Datei konnte ich nicht lesen. Öffne sie noch einmal, speichere sie als .docx und lade sie neu hoch.',

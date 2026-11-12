@@ -247,16 +247,25 @@ module TaskCard
                 file = check['file']
                 pdf = check['accept'] == 'pdf'
                 sheet = DocumentCheck.sheet_check?(check)
-                io << "<div class='document-task'#{pdf ? " data-accept='pdf'" : sheet ? " data-accept='sheet'" : ''}>"
+                slides = DocumentCheck.slides_check?(check)
+                io << "<div class='document-task'#{pdf ? " data-accept='pdf'" : sheet ? " data-accept='sheet'" : slides ? " data-accept='slides'" : ''}>"
+                # a presentation's starting file in the program's format: .pptx
+                # for PowerPoint, the .odp beside it for LibreOffice and
+                # Nextcloud Office, whose slides would not follow the master of
+                # a .pptx (docs/plan-praesentationen.md)
+                if file && slides && language && language.to_s != 'word'
+                    odp = file.sub(/\.pptx\z/i, '.odp')
+                    file = odp if odp != file && File.exist?(File.join(File.expand_path('../../static', __dir__), odp))
+                end
                 if file
                     # the address with each part encoded (»01 Einladung.docx«);
                     # with its dates filled in on download (DocumentDates)
                     href = check['dates'] ? "/api/task/document_starter/#{key}" : '/' + file.split('/').map { |part| ERB::Util.url_encode(part) }.join('/')
-                    icon = sheet ? 'bi-file-earmark-spreadsheet' : 'bi-file-earmark-word'
+                    icon = sheet ? 'bi-file-earmark-spreadsheet' : slides ? (language.to_s == 'word' ? 'bi-file-earmark-ppt' : 'bi-file-earmark-slides') : 'bi-file-earmark-word'
                     io << "<a class='document-starter btn btn-primary' href='#{h.(href)}' download><i class='bi #{icon}' aria-hidden='true'></i>Vorlage herunterladen:<span class='document-starter-name'>#{h.(File.basename(file))}</span></a>"
                 end
                 io << "<div class='document-drop'>"
-                io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>#{pdf ? 'PDF wählen' : sheet ? 'Tabelle wählen' : 'Dokument wählen'}</button>"
+                io << "<button type='button' class='btn btn-outline-secondary btn-sm document-pick'><i class='bi bi-folder2-open' aria-hidden='true'></i>#{pdf ? 'PDF wählen' : sheet ? 'Tabelle wählen' : slides ? 'Präsentation wählen' : 'Dokument wählen'}</button>"
                 io << "<span class='document-name' aria-live='polite'>oder hierher ziehen</span>"
                 io << "<input type='file' class='document-input' accept='#{pdf ? '.pdf' : sheet ? '.ods,.xlsx,.xls' : '.docx,.odt,.doc,.rtf'}' hidden aria-hidden='true' tabindex='-1'>"
                 io << '</div></div>'

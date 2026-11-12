@@ -312,13 +312,20 @@ module TaskCheck
             return Result.new(:status => :invalid, :problem => answer['error'],
                 :message => OfficeClient::ERRORS[answer['error']] || OfficeClient::ERRORS['failed'])
         end
-        # a spreadsheet where a text is checked, or the other way round
-        if DocumentCheck.sheet_check?(check) && !DocumentCheck.sheet?(answer) && !answer['pdf']
-            return Result.new(:status => :invalid, :problem => 'not_sheet',
-                :message => 'Das ist ein Textdokument. Hier gehört deine Tabelle hin, gespeichert als .ods (LibreOffice) oder .xlsx (Excel).')
-        elsif !DocumentCheck.sheet_check?(check) && DocumentCheck.sheet?(answer)
-            return Result.new(:status => :invalid, :problem => 'sheet',
-                :message => 'Das ist eine Tabelle. Hier gehört dein Textdokument hin, gespeichert als .odt (LibreOffice) oder .docx (Word).')
+        # a spreadsheet or presentation where a text is checked, or any other
+        # mix: what kind the task wants and what kind came
+        unless answer['pdf']
+            wanted = DocumentCheck.slides_check?(check) ? :slides : DocumentCheck.sheet_check?(check) ? :sheet : :text
+            given = DocumentCheck.slides?(answer) ? :slides : DocumentCheck.sheet?(answer) ? :sheet : :text
+            if wanted != given
+                names = { :text => 'ein Textdokument', :sheet => 'eine Tabelle', :slides => 'eine Präsentation' }
+                save = { :text => 'dein Textdokument hin, gespeichert als .odt (LibreOffice) oder .docx (Word)',
+                         :sheet => 'deine Tabelle hin, gespeichert als .ods (LibreOffice) oder .xlsx (Excel)',
+                         :slides => 'deine Präsentation hin, gespeichert als .odp (LibreOffice) oder .pptx (PowerPoint)' }
+                problem = { :text => 'not_text', :sheet => 'not_sheet', :slides => 'not_slides' }[wanted]
+                return Result.new(:status => :invalid, :problem => given == :sheet && wanted == :text ? 'sheet' : problem,
+                    :message => "Das ist #{names[given]}. Hier gehört #{save[wanted]}.")
+            end
         end
         # a PDF where the document itself is checked, or the other way round
         wants_pdf = check['accept'] == 'pdf'
