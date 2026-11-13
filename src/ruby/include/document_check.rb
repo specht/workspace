@@ -32,6 +32,8 @@ require_relative 'office_client'
 #       - { list: ['Sucht die', …], level: 2 }   # … one level down (Tab at the start of a point)
 #       - { crop: 1, aspect: 1, keep: [0.36, 0.17, 0.64, 0.75], subject: 'der Kranich' }   # picture 1 of the starting file cropped, square, the region kept (fractions of the original)
 #       - { table_sorted: 'Punkte', order: down }
+#       - title_page           # page 1 without header and footer, the others with them
+#       - { page_numbers: true, total: true }   # the page number as a field, and the number of pages (»Seite 2 von 4«)
 #       - { landscape: ['Zeit'], portrait: ['Projektwoche', …] }   # the pages with these pieces in landscape, those with the others upright
 #       - { order: ['Sägen', 'Säg das', 'Zusammenbauen', …] }   # the paragraphs beginning (or else holding) these pieces in this order: chapters moved with their text
 #       - { own_style: ['Tipp: Miss', …], example: 'Tipp' }   # these paragraphs share a style the user made, that looks unlike »Standard«, nothing on them by hand   # the rows below the header cell »Punkte« sorted by its column's numbers (down: most first), the header on top
@@ -76,7 +78,7 @@ require_relative 'office_client'
 # its hints one by one; once it holds, its label shows, ticked. Rules
 # without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape title_page text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -148,6 +150,7 @@ module DocumentCheck
                 when 'crop' then %w[crop aspect keep subject names]
                 when 'own_style' then %w[own_style example]
                 when 'landscape' then %w[landscape portrait]
+                when 'page_numbers' then %w[page_numbers total]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
                 when 'headings' then %w[headings level]
@@ -230,8 +233,20 @@ module DocumentCheck
                 [squish(DocumentDates.normalize(p['text'].to_s)), p['style'], p['align'], looks, p['text'].to_s.count("\t")]
             end
         end
+        # what the paragraphs do not show: header and footer with their
+        # fields and the pages they stand on, the pages' sizes (one turned),
+        # footnotes, pictures' sizes, margins (a task about a title page or
+        # a landscape page changes only these)
+        layout = lambda do |m|
+            parts = Array(m['page_parts']).map do |x|
+                %w[header footer].map { |k| [x.dig(k, 'text').to_s, Array(x.dig(k, 'portions')).map { |q| q['field'] }.compact] }
+            end
+            [parts.sort_by(&:to_s), Array(m['header_boxes']).map { |b| b['page'] }, Array(m['footer_boxes']).map { |b| b['page'] },
+             Array(m['pages']).map { |p| [p['width'].to_f.round, p['height'].to_f.round] }, Array(m['footnotes']).size,
+             Array(m['pictures']).map { |p| [p['width'].to_f.round(1), p['height'].to_f.round(1)] }, m['margins'], m['columns']]
+        end
         theirs = print.(starter)
-        !theirs.empty? && print.(model) == theirs
+        !theirs.empty? && print.(model) == theirs && layout.(model) == layout.(starter)
     end
 
     # align: is a rule and a key of tabs: the other rule wins
@@ -452,7 +467,8 @@ module DocumentCheck
         skip = Array(rule.is_a?(Hash) ? rule['except'] : nil).map { |x| squish(x) }
         theirs = starter['paragraphs'].reject { |p| p['text'].to_s.match?(TYPED_TOC_LINE) || skip.include?(squish(p['text'])) }
         missing = words.(theirs).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
-        merged, split = paragraphs_changed(theirs, Array(all || body), words)
+        # (a line of except: still there is no paragraph split off a sentence)
+        merged, split = paragraphs_changed(theirs, Array(all || body), words, skip.map { |x| words.([{ 'text' => x }]).first(3) })
         return item if missing.empty? && merged.empty? && split.empty?
 
         # Words run together are a space gone, not words gone: »Satz.Der«
@@ -534,12 +550,12 @@ module DocumentCheck
     # of the starting file's, and the one before ends without a full stop.
     # Cells of tables, frames and a table of contents are left out: there
     # paragraphs are made on purpose.
-    def self.paragraphs_changed(theirs, mine, words)
+    def self.paragraphs_changed(theirs, mine, words, more_starts = [])
         aside = ->(p) { w = p['where'] || {}; w['table'] || w['frame'] || w['index'] }
         free = mine.reject { |p| empty?(p) || aside.(p) }
         lead = ->(p) { words.([p]).first(3) }
         own = theirs.reject { |p| p['text'].to_s.strip.empty? || aside.(p) || words.([p]).empty? }
-        starts = theirs.reject { |p| p['text'].to_s.strip.empty? }.map { |p| lead.(p) }.reject(&:empty?)
+        starts = theirs.reject { |p| p['text'].to_s.strip.empty? }.map { |p| lead.(p) }.reject(&:empty?) + more_starts
         # merged: the end of one paragraph of the starting file and the start
         # of the next one side by side inside one paragraph now
         mine_words = free.map { |p| [p, words.([p])] }
@@ -1213,6 +1229,31 @@ module DocumentCheck
         item
     end
 
+    # A title page: no header and no footer on page 1, both (where the
+    # document has them) on the pages after it. Read from where the PDF has
+    # their words (header_boxes, footer_boxes).
+    def self.rule_title_page(_rule, _body, _starter, _all = nil, model = nil)
+        item = Item.new(:rule => 'title_page', :label => 'Die Titelseite ohne Kopf- und Fußzeile', :ok => true, :marks => [])
+        boxes = ((model || {})['header_boxes'] || []) + ((model || {})['footer_boxes'] || [])
+        pages = boxes.map { |b| b['page'].to_i }.uniq
+        count = (model || {})['page_count'].to_i
+        problems = []
+        if pages.include?(1)
+            problems << 'Auf der Titelseite stehen noch Kopf- oder Fußzeile.'
+            item.marks.concat(boxes.select { |b| b['page'].to_i == 1 }.map { |b| b.transform_keys(&:to_sym).merge(:kind => 'box', :title => 'auf der Titelseite') })
+        end
+        missing = (2..[count, 2].max).reject { |n| pages.include?(n) }
+        if count >= 2 && !missing.empty?
+            problems << "Auf Seite #{missing.first} fehlen jetzt Kopf- und Fußzeile; sie sollen nur auf der Titelseite fehlen."
+        end
+        return item if problems.empty?
+
+        item.ok = false
+        item.message = "#{problems.join(' ')} Eine Titelseite ohne Kopf- und Fußzeile stellst du ein, ohne sie zu löschen: " \
+            'Word »Erste Seite anders«, LibreOffice »Format« › »Titelseite…«.'
+        item
+    end
+
     def self.rule_tabs(rule, body, _starter, _all = nil, _model = nil)
         kinds = Array(rule['align'] || %w[right decimal]).map(&:to_s)
         left = kinds == ['left']
@@ -1770,12 +1811,22 @@ module DocumentCheck
         item
     end
 
-    def self.rule_page_numbers(_rule, _body, _starter, _all = nil, model = nil)
-        item = Item.new(:rule => 'page_numbers', :label => 'Seitenzahlen, die das Programm zählt', :ok => true, :marks => [])
+    def self.rule_page_numbers(rule, _body, _starter, _all = nil, model = nil)
+        total_wanted = rule.is_a?(Hash) && rule['total']
+        item = Item.new(:rule => 'page_numbers', :label => total_wanted ? 'Seitenzahl und Seitenanzahl, die das Programm zählt' : 'Seitenzahlen, die das Programm zählt',
+                        :ok => true, :marks => [])
         parts = ((model || {})['page_parts'] || []).flat_map { |x| [x['header'], x['footer']].compact }
         field = parts.any? { |part| (part['portions'] || []).any? { |q| %w[PageNumber].include?(q['field']) } }
+        total = parts.any? { |part| (part['portions'] || []).any? { |q| %w[PageCount].include?(q['field']) } }
         typed = parts.select do |part|
-            (part['portions'] || []).any? { |q| q['type'] == 'Text' && q['text'].to_s.match?(/\d/) && q['text'].to_s.match?(/Seite|^\s*\d+\s*$/) }
+            (part['portions'] || []).any? { |q| q['type'] == 'Text' && q['text'].to_s.match?(/\d/) && q['text'].to_s.match?(/Seite|^\s*\d+\s*$|von\s*\d/) }
+        end
+        if field && typed.empty? && total_wanted && !total
+            item.ok = false
+            item.marks = ((model || {})['footer_boxes'] || []).map { |b| b.transform_keys(&:to_sym).merge(:kind => 'box', :title => 'ohne Seitenanzahl') }
+            item.message = 'Die Seitenzahl zählt schon, aber wie viele Seiten es sind, steht noch nicht da. Füge hinter »von« die Seitenanzahl als Feld ein; ' \
+                'kommt eine Seite dazu, zählt sie mit.'
+            return item
         end
         return item if field && typed.empty?
 

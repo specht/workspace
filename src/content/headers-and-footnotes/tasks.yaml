@@ -91,6 +91,10 @@ tasks:
 
   - id: bericht
     title: Der Bericht mit Kopf, Fuß und Fußnoten
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deinen Bericht. Die Prüfung markiert auf deiner Seite jede Stelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -123,3 +127,169 @@ tasks:
         - "Schalte unter *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopf-/Fußzeile* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopfzeile* die Kopfzeile ein, schreib »Reisebericht der 7b« hinein und lösch die getippten Zeilen oben auf den Seiten. Rutscht ein Tag hoch, setz wieder einen Seitenumbruch (*Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenumbruch*)."
         - "In der Kopfzeile: »Stand:«, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Feldbefehle…*, *Dokument*, Typ *Datum*, *Datum* (nicht *Datum (fix)*). In der Fußzeile: die 1 löschen, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*."
         - "Für jede Anmerkung: die getippte Zahl und den getippten Satz löschen, den Cursor hinter das Wort, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Fuß-/Endnote* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Fußnote*, den Satz unten hineinschreiben."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Der Bericht über den Schulgarten ist gebaut wie der Reisebericht: der
+      Name von Hand über jedem Kapitel, die Seitenzahl getippt, zwei
+      Anmerkungen von Hand nummeriert. Bau ihn richtig: Kopfzeile mit dem
+      Namen und dem Datum als Feld, die Seitenzahl als Feld, zwei Fußnoten.
+    check:
+      type: document
+      file: headers-and-footnotes/08 Schulgarten.docx
+      rules:
+        - { text: true, except: ['Unser Schulgarten'] }
+        - { header_text: 'Unser Schulgarten' }
+        - header_date
+        - page_numbers
+        - { footnotes: 2 }
+    hint:
+      - Fang oben an. Der Name kommt in die Kopfzeile, die getippten Zeilen über den Kapiteln gehen.
+      - Hinter den Namen kommen »Stand:« und das Datum als Feld, in die Fußzeile die Seitenzahl als Feld.
+      - Zuletzt die Anmerkungen. Lösch die getippte Zahl und den getippten Satz und füg an derselben Stelle eine Fußnote ein.
+
+  - id: titel
+    title: Eine Titelseite für sich
+    extra: true
+    prompt: |
+      In der Projektmappe stehen Kopf- und Fußzeile auch auf der Titelseite.
+      Nimm sie dort weg, ohne sie von den anderen Seiten zu löschen, und lass
+      die Fußzeile sagen, wie viele Seiten es sind: »Seite 2 von 4«.
+    check:
+      type: document
+      file: headers-and-footnotes/08 Projektmappe.docx
+      rules:
+        - text
+        - title_page
+        - { page_numbers: true, total: true }
+    hint:
+      - Die Kopfzeile auf der Titelseite zu löschen, löscht sie überall. Die erste Seite braucht eine Einstellung für sich.
+      - Die Zahl der Seiten ist ein Feld wie die Seitenzahl. Getippt bliebe sie stehen, wenn eine Seite dazukommt.
+    word:
+      hint:
+        - "Klick doppelt in die Kopfzeile und setz unter *Kopf- und Fußzeile* den Haken bei *Erste Seite anders*. Kopf- und Fußzeile der Titelseite sind dann leer, die der anderen Seiten bleiben."
+        - "In der Fußzeile einer anderen Seite: hinter die Seitenzahl » von « schreiben, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Schnellbausteine* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feld…* und den Feldnamen *NumPages* wählen."
+    libreoffice:
+      hint:
+        - "Stell den Cursor auf die Titelseite und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Titelseite…*: *Vorhandene Seiten in Titelseiten umwandeln*, eine Titelseite, Seitenvorlage *Erste Seite*. Diese Vorlage hat keine Kopf- und keine Fußzeile."
+        - "In der Fußzeile einer anderen Seite: hinter die Seitenzahl » von « schreiben, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenanzahl*."
+    nextcloud:
+      hint:
+        - "Stell den Cursor auf die Titelseite und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Titelseite…*: *Vorhandene Seiten in Titelseiten umwandeln*, eine Titelseite, Seitenvorlage *Erste Seite*. Diese Vorlage hat keine Kopf- und keine Fußzeile."
+        - "In der Fußzeile einer anderen Seite: hinter die Seitenzahl » von « schreiben, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenanzahl*."
+
+  - id: fallen
+    title: Dreizehn Fallen
+    extra: true
+    prompt: |
+      Der Elternbrief zum Tag der offenen Tür sieht fertig aus, mit der Liste
+      fürs Kuchenbuffet auf der zweiten Seite. Dreizehn Stellen sind trotzdem
+      falsch gebaut: sechs von der Art wie auf dem ersten Blatt, je eine vom
+      zweiten bis siebten und eine von diesem. Die Prüfung sagt dir nur, wie
+      viele du gefunden hast; zu jeder Falle gibt es Tipps, einen nach dem
+      anderen.
+    check:
+      type: document
+      file: headers-and-footnotes/08 Elternbrief.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Tag der offenen Tür'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '20. Januar'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['am Samstag, dem 6. Februar']
+          label: Nach »Türen.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »Türen.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Auf der zweiten Seite']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den kurzen Absatz über die zweite Seite an.
+            - Vor »Auf der zweiten Seite« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['Wo was ist']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand vor »Wo was ist« an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn; die Überschrift bringt ihren Abstand selbst mit.
+        - line_breaks: true
+          in: ['Was das Kuchenbuffet einnimmt']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über das Geld an.
+            - Hinter »Holz und« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über die Fragen ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+        - list: ['Kuchenteller', 'Servietten', 'eine Kasse mit Wechselgeld', 'eine große Thermoskanne']
+          label: Ein Punkt der Liste war von Hand getippt.
+          hints:
+            - Diese Falle ist vom dritten Blatt. Sieh dir die Liste genau an.
+            - Versuch bei jedem Punkt der Liste, das Zeichen davor mit der Maus zu markieren. Ein echtes Aufzählungszeichen lässt sich nicht markieren wie ein Buchstabe.
+            - Vor »eine große Thermoskanne« sind der Punkt und ein Tab getippt. Lösch beide und mach die Zeile zu einem Punkt der Liste wie die anderen.
+        - table: ['Raum 104', 'Raum 112', 'Aula', 'Mensa']
+          columns: 2
+          label: »Mensa« stand nicht in der Tabelle.
+          hints:
+            - Diese Falle ist vom vierten Blatt. Sieh dir die Räume genau an.
+            - Die Tabelle hat keine Linien. Schalte die Formatierungszeichen ein und sieh dir jede Zeile an. In einer Zelle steht kein →.
+            - Hinter »Mensa« steht ein Tab; die Zeile steht unter der Tabelle, nicht in ihr. Füg mit <kbd>Tab</kbd> in der letzten Zelle eine Zeile an, trag sie dort ein und lösch die getippte Zeile.
+        - ratio: true
+          names: ['das Bild']
+          label: Das Bild war in die Breite gezogen.
+          hints:
+            - Diese Falle ist vom fünften Blatt. Sieh dir das Bild genau an.
+            - Wirkt das Vogelhaus etwas zu breit? Vergleich das Einflugloch mit einem Kreis.
+            - Das Bild ist in die Breite gezogen. Setz es auf die Originalgröße zurück und mach es dann an einer Ecke kleiner, etwa 5 cm breit.
+        - headings: ['Wo was ist', 'Was wir noch brauchen', 'Wohin das Geld geht']
+          level: 1
+          label: »Was wir noch brauchen« sah nur aus wie eine Überschrift.
+          hints:
+            - Diese Falle ist vom sechsten Blatt. Sieh dir die Überschriften an.
+            - Öffne die Übersicht der Überschriften (Word Navigationsbereich, LibreOffice Navigator). Wie viele Einträge zeigt sie, und wie viele Überschriften siehst du?
+            - »Was wir noch brauchen« hat die Vorlage »Standard« und ist von Hand fett, groß und grün gemacht. Lösch die Formatierung und gib dem Absatz die Vorlage »Überschrift 1«.
+        - page_breaks: ['Kuchen für das Buffet']
+          label: Die Liste fürs Kuchenbuffet stand nur mit leeren Absätzen auf der zweiten Seite.
+          hints:
+            - Diese Falle ist vom siebten Blatt. Wie kommt die Liste fürs Kuchenbuffet auf die zweite Seite?
+            - Sieh dir das Ende der ersten Seite mit den Formatierungszeichen an.
+            - Unter dem Gruß stehen leere Absätze, bis die Liste auf die nächste Seite rutscht. Lösch sie und setz vor »Kuchen für das Buffet« einen Seitenumbruch.
+        - footnotes: 1
+          label: Die Anmerkung zum Förderverein war von Hand getippt.
+          hints:
+            - Diese Falle ist von diesem Blatt. Steht unten auf der ersten Seite wirklich eine Fußnote?
+            - Sieh dir die kleine ¹ hinter »Förderverein« an. Kannst du sie markieren wie einen Buchstaben?
+            - Die ¹ und der Satz darunter sind getippt. Lösch beide, stell den Cursor hinter »Förderverein« und füg eine Fußnote mit dem Satz ein.
+    solution: |
+      Die dreizehn Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »Türen.«, ein Einzug
+      aus Leerzeichen, ein leerer Absatz statt Abstand vor »Wo was ist«, ein ↵
+      hinter »Holz und«, wo die Zeile sowieso umgebrochen wäre, der Satz über
+      die Fragen in Arial, »eine große Thermoskanne« mit getipptem Punkt und
+      Tab, »Mensa« unter der Tabelle, das Bild um 12 % in die Breite gezogen,
+      »Was wir noch brauchen«, das nur aussah wie eine Überschrift, die Liste
+      fürs Kuchenbuffet, die nur leere Absätze auf die zweite Seite schoben,
+      und die getippte Anmerkung zum Förderverein statt einer Fußnote.

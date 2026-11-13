@@ -1989,6 +1989,8 @@ check:
     - { style_changed: 'Heading 1' }   # die Formatvorlage selbst sieht anders aus als in der Vorlage
     - { page_breaks: ['Montag:', 'Dienstag:'] }   # diese Absätze beginnen mit einem Seitenumbruch eine neue Seite
     - page_numbers        # die Seitenzahl in Kopf- oder Fußzeile ist ein Feld, keine getippt
+    - { page_numbers: true, total: true }   # dazu die Seitenanzahl als Feld (»Seite 2 von 4«)
+    - title_page          # Seite 1 ohne Kopf- und Fußzeile, die Seiten danach mit ihnen
     - toc                 # ein Inhaltsverzeichnis des Programms, aktuell, keines getippt
     - { text: true, except: ['Reisebericht der 7b'] }   # text, ohne Absätze der Vorlage, die in die Kopfzeile wandern
     - { header_text: 'Reisebericht der 7b' }   # in der Kopfzeile, nirgends mehr oben auf einer Seite getippt
@@ -2153,7 +2155,12 @@ die benutzten Formatvorlagen und immer »Titel« und »Überschrift 1« bis 3).
 Formatvorlage) oder nach dem davor; `empty_paragraphs` zählt den leeren
 Absatz nicht, den Word mit <kbd>Strg</kbd>+<kbd>Enter</kbd> vor einem Umbruch
 anlegt. `page_numbers` liest die Kopf- und Fußzeilen der benutzten
-Seitenvorlagen und markiert die Fußzeile auf jeder Seite. `toc` vergleicht die
+Seitenvorlagen und markiert die Fußzeile auf jeder Seite; mit `total` braucht
+es auch ein Feld für die Seitenanzahl. `title_page` sieht im PDF nach, auf
+welchen Seiten Wörter der Kopf- und Fußzeile im oberen und unteren Achtel
+stehen (`header_boxes`, `footer_boxes` des Dienstes `office`): auf Seite 1
+keine, auf jeder Seite danach welche. Wie die Titelseite gebaut ist (Word
+»Erste Seite anders«, LibreOffice eine eigene Seitenvorlage), ist gleich. `toc` vergleicht die
 Einträge des Verzeichnisses mit denen, die es nach dem Aktualisieren hätte,
 ohne die Seitenzahlen (Word und LibreOffice können verschieden umbrechen);
 Zeilen mit Punkten oder Tab und einer Zahl am Ende gelten als getipptes

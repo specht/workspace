@@ -62,7 +62,8 @@ module OfficeClient
         key = [path, File.mtime(path).to_i, File.size(path)]
         @cache_lock.synchronize { return @cache[key] if @cache.key?(key) }
         result = analyze(File.binread(path), File.basename(path))
-        result = result.reject { |k, _| k == 'pages' }
+        # the pages without their drawings: only their sizes (a page turned)
+        result = result.merge('pages' => Array(result['pages']).map { |p| p.is_a?(Hash) ? p.slice('width', 'height') : p })
         @cache_lock.synchronize { @cache[key] = result }
         result
     end

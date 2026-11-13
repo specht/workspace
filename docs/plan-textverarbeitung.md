@@ -287,7 +287,15 @@ built by hand; each is a page of a series of its own, about one lesson.
    Found on the way: LibreOffice's *Einfügen › Feldbefehl › Datum* inserts a
    fixed date; one that updates is under *Weitere Feldbefehle…*. The typed
    head is the line with the page break: deleting it loses the break (the
-   page says to set it again).
+   page says to set it again). Extras (13 November 2026, as on sheets 1 to
+   7): »Noch eine Runde« (the garden report of sheet 7 built the same way),
+   »Eine Titelseite für sich« (a project folder: the title page without
+   header and footer, »Seite 2 von 4« with the page count as a field; rules
+   `title_page`, read from where the header's and footer's words are in the
+   PDF, so Word's *Erste Seite anders* and LibreOffice's page style *Erste
+   Seite* both pass, and `page_numbers` with `total`), »Dreizehn Fallen« (a
+   letter for the open day: the twelve kinds of traps of sheet 7 and a
+   footnote typed by hand). The service reports `header_boxes`.
 9. **Die Zeitungsseite** (built, `newspaper-page`; the maintainer: every
    basic in the story, the final product polished, 12 November 2026): an
    article about the cranes set as a newspaper sets it: two columns, 1,5 cm

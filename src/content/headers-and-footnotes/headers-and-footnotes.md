@@ -170,3 +170,57 @@ _task(bericht)
 <strong>Ausprobieren:</strong> Füg im Montag hinter »Jugendherberge« noch eine Fußnote ein: »Eine Jugendherberge ist ein günstiges Haus zum Übernachten für Gruppen.« Achte auf die Nummern beim Karabiner und beim Moorpfad.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit einem neuen
+Handgriff und eins zum Suchen.
+
+### Noch eine Runde
+
+Der Bericht der 7b über den Schulgarten hat dieselben Stellen wie der
+Reisebericht: den Namen von Hand über jedem Kapitel, eine getippte Seitenzahl
+und zwei Anmerkungen, die jemand von Hand nummeriert hat. Bau ihn richtig,
+diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Eine Titelseite für sich
+
+Auf einer Titelseite stehen meist weder Kopf- noch Fußzeile: Sie ist der
+Umschlag, keine Seite zum Nachschlagen. Löschst du die Kopfzeile dort, ist sie
+aber auf allen Seiten weg, denn sie ist auf jeder Seite dieselbe. Die erste
+Seite braucht deshalb eine Einstellung für sich.
+
+<!-- language: word -->
+In Word klickst du doppelt in die Kopfzeile und setzt unter *Kopf- und
+Fußzeile* den Haken bei *Erste Seite anders*. Die erste Seite hat dann eine
+eigene Kopf- und Fußzeile, die leer bleiben darf.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice bekommt die erste Seite eine eigene Seitenvorlage: *Format*
+<i class='bi bi-chevron-right' aria-hidden='true'></i> *Titelseite…*, eine Titelseite mit der Seitenvorlage *Erste Seite*. Diese
+Vorlage hat keine Kopf- und keine Fußzeile; die Seiten danach behalten ihre.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office bekommt die erste Seite eine eigene Seitenvorlage: *Format*
+<i class='bi bi-chevron-right' aria-hidden='true'></i> *Titelseite…*, eine Titelseite mit der Seitenvorlage *Erste Seite*. Diese
+Vorlage hat keine Kopf- und keine Fußzeile; die Seiten danach behalten ihre.
+<!-- /language -->
+
+Unten soll außerdem stehen, wie viele Seiten es sind: »Seite 2 von 4«. Die 4
+ist ein Feld wie die Seitenzahl, die **Seitenanzahl**. Kommt eine Seite dazu,
+zählt sie mit.
+
+_task(titel)
+
+### Dreizehn Fallen
+
+Der Elternbrief zum Tag der offenen Tür hat auf der zweiten Seite eine Liste
+fürs Kuchenbuffet. Er sieht fertig aus. Sechs Fallen sind von der Art wie auf
+dem ersten Blatt, je eine vom zweiten bis siebten, und eine ist von diesem. Wie
+bei den anderen Fallen zählt die Prüfung nur, und jede Falle hat ihre eigenen
+Tipps.
+
+_task(fallen)

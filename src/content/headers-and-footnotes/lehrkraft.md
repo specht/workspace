@@ -8,7 +8,7 @@ Lernende bringen, was im Reisebericht von Hand oben und unten auf den Seiten ste
 <li><b>15 Minuten:</b> die Seitenzahl als Feld, die Vermutung zum Datum, »Stand:« mit dem Datum als Feld.</li>
 <li><b>10 Minuten:</b> die Vermutung zur Fußnote, zwei Fußnoten.</li>
 <li><b>5 Minuten:</b> prüfen.</li>
-<li><b>Für Schnelle:</b> der Versuch unten auf der Seite, eine dritte Fußnote weiter vorn.</li>
+<li><b>Für Schnelle und zum Üben:</b> der Versuch unten auf der Seite (eine dritte Fußnote weiter vorn) und die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -32,4 +32,12 @@ Lernende bringen, was im Reisebericht von Hand oben und unten auf den Seiten ste
 <li>Mindestens zwei Fußnoten des Programms, keine Zahl mehr von Hand im Text.</li>
 </ul></td></tr>
 <tr><th>Gelöscht, und die Seitenumbrüche?</th><td>Der getippte Kopf ist die Zeile, vor der der Seitenumbruch steht. Wer sie samt Absatz löscht, verliert den Umbruch, und der Tag rutscht hoch. Die Seite sagt, was dann zu tun ist: wieder <kbd>Strg</kbd>+<kbd>Enter</kbd>, wie im letzten Blatt. Die Prüfung dieses Blatts sieht nicht nach den Umbrüchen.</td></tr>
+<tr><th>Extras</th><td>
+<p>Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer den Bericht besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr Prüfungen »Noch eine Runde«, nach einer oder zwei die »Dreizehn Fallen«.</p>
+<ul>
+<li><b>Noch eine Runde:</b> der Bericht über den Schulgarten aus dem letzten Blatt, mit dem Namen von Hand über jedem Kapitel, »Seite 1« getippt in der Fußzeile und zwei Anmerkungen von Hand; dieselben Punkte wie beim Reisebericht.</li>
+<li><b>Eine Titelseite für sich:</b> eine Projektmappe mit Titelseite und drei Seiten, Kopf- und Fußzeile auf jeder Seite. Die Titelseite soll ohne sie sein (Word <em>Erste Seite anders</em>, LibreOffice die Seitenvorlage <em>Erste Seite</em>), die Fußzeile »Seite 2 von 4« mit der Seitenanzahl als Feld. Die Prüfung sieht im gedruckten Bild nach, auf welchen Seiten Kopf- und Fußzeile stehen: Wer sie ganz löscht, besteht nicht.</li>
+<li><b>Dreizehn Fallen:</b> ein Elternbrief zum Tag der offenen Tür mit einer Liste fürs Kuchenbuffet auf der zweiten Seite, mit den Fallen der sieben Blätter davor und einer von diesem: Die Anmerkung zum Förderverein ist mit ¹ und einem kleinen Absatz getippt statt eine Fußnote. Die Prüfung zählt nur und zeigt jede Falle erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.</li>
+</ul>
+</td></tr>
 </table>

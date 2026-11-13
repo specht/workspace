@@ -19,3 +19,30 @@ examples:
         say: von Hand
       - document: stufen/datum-fest.docx
         say: fest
+  runde:
+    pass:
+      - document: stufen/schulgarten.docx
+    fail:
+      - document: ../../static/headers-and-footnotes/08 Schulgarten.docx
+        say: In der Kopfzeile steht »Unser Schulgarten« noch nicht
+      - document: ../../static/headers-and-footnotes/08 Schulgarten.docx
+        say: noch keine Fußnote
+  titel:
+    pass:
+      - document: stufen/projektmappe.docx
+      - document: stufen/projektmappe-libreoffice.docx
+    fail:
+      - document: ../../static/headers-and-footnotes/08 Projektmappe.docx
+        say: Auf der Titelseite stehen noch
+      - document: stufen/projektmappe-ohne-anzahl.docx
+        say: wie viele Seiten es sind
+      - document: stufen/projektmappe-ohne-kopf.docx
+        say: fehlen jetzt
+  fallen:
+    pass:
+      - document: stufen/elternbrief.docx
+    fail:
+      - document: ../../static/headers-and-footnotes/08 Elternbrief.docx
+        say: 0 von 13 Fallen gefunden
+      - document: stufen/elternbrief-zwoelf.docx
+        say: 12 von 13 Fallen gefunden

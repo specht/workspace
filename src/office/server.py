@@ -332,17 +332,19 @@ def read_page_parts(doc, styles):
     return out
 
 
-def place_page_parts(parts, pages):
-    """Where the footer's words are on each page: the PDF's words in the
-    bottom eighth of a page that are words of a footer."""
+def place_page_parts(parts, pages, part='footer'):
+    """Where the footer's (or header's) words are on each page: the PDF's
+    words in the bottom (top) eighth of a page that are words of a footer
+    (header). A page without them has none (a title page)."""
     tokens = set()
-    for part in parts:
-        tokens.update((part.get('footer') or {}).get('text', '').split())
+    for item in parts:
+        tokens.update((item.get(part) or {}).get('text', '').split())
     boxes = []
     if not tokens:
         return boxes
     for i, page in enumerate(pages):
-        mine = [w for w in page['words'] if w[1] > page['height'] * 0.87 and w[4] in tokens]
+        inside = (lambda y: y > page['height'] * 0.87) if part == 'footer' else (lambda y: y < page['height'] * 0.13)
+        mine = [w for w in page['words'] if inside(w[1]) and w[4] in tokens]
         if mine:
             x0, y0 = min(w[0] for w in mine), min(w[1] for w in mine)
             boxes.append({'page': i + 1, 'x': round(x0, 1), 'y': round(y0, 1),
@@ -831,12 +833,13 @@ def analyze(data, filename, probes=None):
         place(paragraphs, dests, pages, margins)
         place_pictures(pictures, pdf, folder)
         footer_boxes = place_page_parts(page_parts, pages)
+        header_boxes = place_page_parts(page_parts, pages, 'header')
         # each page as SVG: vector, sharp at any zoom on the card; the
         # letters become paths, so the fonts need not be on the viewer's
         # machine (shown as <img>, nothing in it runs)
         out_pages = pdf_pages(pdf, folder, pages)
         return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used,
-                'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'footnotes': footnotes,
+                'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'header_boxes': header_boxes, 'footnotes': footnotes,
                 'pages': out_pages, 'page_count': len(pages), 'margins': margins, 'columns': columns}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
