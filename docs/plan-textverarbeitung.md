@@ -185,7 +185,12 @@ Runde: an article about the bird houses, two new drawings in
 bilder/vogelhaus.py; Zuschneiden: the crane cut to a square without losing
 it, the rule `crop`; Zehn Fallen: an invitation to the school fest, the bird
 house stretched by 12 %, its round hole an oval). The class view has its
-lines. Next: sheets 6 to 10 as the class reaches them.
+lines. Sheet 6 too (Noch eine Runde: the animals at the lake; Zwei
+Handgriffe: a building guide, its steps moved in the navigation pane, the
+rule `order`, and a style of one's own »Tipp«, the rule `own_style`, for
+which the office service says which styles the user made; Elf Fallen: an
+information sheet with headings, one of them made by hand). Next: sheets 7
+to 10 as the class reaches them.
 
 ## Findings of the word processing series
 

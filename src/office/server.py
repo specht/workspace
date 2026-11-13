@@ -505,10 +505,61 @@ def place_pictures(pictures, pdf, folder):
             p['box'] = {k: round(v, 1) if isinstance(v, float) else v for k, v in best[1].items()}
 
 
-def read_styles(doc, names):
+def custom_docx_styles(source):
+    """The names of the paragraph styles a .docx marks as made by the user
+    (w:customStyle="1" in word/styles.xml, written by Word and by
+    LibreOffice): LibreOffice does not keep that mark when it imports them.
+    Only a styles.xml of up to 5 MB is read."""
+    import zipfile
+    import xml.etree.ElementTree as ET
+    w = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
+    try:
+        with zipfile.ZipFile(source) as z:
+            info = z.getinfo('word/styles.xml')
+            if info.file_size > 5 * 1024 * 1024:
+                return set()
+            root = ET.fromstring(z.read(info))
+    except Exception:
+        return set()
+    out = set()
+    for st in root.iter(f'{w}style'):
+        if st.get(f'{w}type') == 'paragraph' and st.get(f'{w}customStyle') in ('1', 'true'):
+            name = st.find(f'{w}name')
+            if name is not None and name.get(f'{w}val'):
+                out.add(name.get(f'{w}val'))
+    return out
+
+
+# the paragraph styles Word and LibreOffice bring (their names in a file,
+# English whatever the language of the program)
+BUILTIN_STYLES = re.compile(
+    r'^(Normal|Standard|Default Paragraph Style|No Spacing|Title|Subtitle|Quote|Intense Quote|Quotations|'
+    r'List Paragraph|List|List Contents|List Heading|List (Bullet|Number|Continue)( \d)?|Caption|Heading|Heading \d|'
+    r'TOC \d|TOC Heading|Contents \d+|Contents Heading|Index( \d)?|Index Heading|Bibliography|Body Text( \d| Indent| First Indent)?( \d)?|'
+    r'Text Body|Text Body Indent|First Line Indent|Hanging Indent|Preformatted Text|Signature|Salutation|Marginalia|'
+    r'Header|Footer|Header and Footer|Footnote|Footnote Text|Endnote|Endnote Text|Table Contents|Table Heading|'
+    r'Frame Contents|Illustration|Figure|Drawing|Table|Text|Addressee|Sender|Block Text|Plain Text|Macro Text|'
+    r'Envelope Address|Envelope Return|Comment Text|Balloon Text|Document Map|Normal \(Web\)|HTML Preformatted)$')
+
+
+def user_defined(style, name, custom):
+    """made in the document, not one the program brings: a .docx marks its
+    own (custom), but LibreOffice's export does not, and LibreOffice counts
+    Word's styles it has no match for (Quote) as made by the user; so
+    besides the mark, any name that is none of the programs' own. An .odt
+    says it itself (XStyle.isUserDefined)."""
+    if custom is None:
+        try:
+            return bool(style.isUserDefined())
+        except Exception:
+            return False
+    return name in custom or style.DisplayName in custom or not (BUILTIN_STYLES.match(name) or BUILTIN_STYLES.match(style.DisplayName or ''))
+
+
+def read_styles(doc, names, custom=None):
     """The paragraph styles the document uses, as they are defined (what a
     paragraph of that style shows without formatting of its own): font,
-    size, bold, italic, colour, outline level."""
+    size, bold, italic, colour, outline level, made by the user or not."""
     out = {}
     try:
         family = doc.StyleFamilies.getByName('ParagraphStyles')
@@ -521,7 +572,9 @@ def read_styles(doc, names):
                          'font': st.CharFontName, 'size': round(st.CharHeight, 1),
                          'bold': st.CharWeight >= 150,
                          'italic': enum_value(st.CharPosture) not in ('NONE', None),
-                         'color': st.CharColor, 'outline': getattr(st, 'OutlineLevel', 0)}
+                         'color': st.CharColor, 'outline': getattr(st, 'OutlineLevel', 0),
+                         # made in this document, not one of the program's own
+                         'user': user_defined(st, name, custom)}
         except Exception:
             pass
     return out
@@ -753,7 +806,8 @@ def analyze(data, filename, probes=None):
             # the headings' and the title's always, to compare with the
             # starting file even where it does not use them yet
             styles_used = read_styles(doc, [p['style'] for p in paragraphs] +
-                                      ['Title'] + [f'Heading {n}' for n in range(1, 4)])
+                                      ['Title'] + [f'Heading {n}' for n in range(1, 4)],
+                                      custom_docx_styles(source) if ext == 'docx' else None)
             page_parts = read_page_parts(doc, styles)
             footnotes = read_footnotes(doc)
             margins = page_margins(doc)

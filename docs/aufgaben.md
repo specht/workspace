@@ -1971,7 +1971,9 @@ check:
     - { tabs: ['Ziel', 'Treffpunkt'], align: [left] }   # eine Spalte an einem eigenen linksbündigen Tabstopp (nicht den Standard-Tabstopps)
     - { table: ['Montag', 'Freitag'], columns: 3, header: 'Programm' }   # in den Zellen einer Tabelle, die Kopfzeile wiederholt sich
     - { crop: 1, aspect: 1, keep: [0.37, 0.18, 0.63, 0.74], subject: 'der Kranich' }   # das 1. Bild der Vorlage zugeschnitten, als Quadrat, dieser Teil (Anteile des Originals: links, oben, rechts, unten) noch zu sehen
-    - { table_sorted: 'Punkte', order: down }   # die Zeilen unter dieser Kopfzelle nach ihren Zahlen sortiert (down: die größte oben), die Kopfzeile oben
+    - { table_sorted: 'Punkte', order: down }
+    - { order: ['Sägen', 'Säg das', 'Zusammenbauen', 'Leim und'] }   # die Absätze, die so anfangen (oder sie enthalten), in dieser Reihenfolge: Kapitel samt Text verschoben
+    - { own_style: ['Tipp: Miss', 'Tipp: Lass'], example: 'Tipp' }   # diese Absätze mit einer eigenen Vorlage (keiner des Programms), die anders aussieht als »Standard«, ohne Formatierung von Hand   # die Zeilen unter dieser Kopfzelle nach ihren Zahlen sortiert (down: die größte oben), die Kopfzeile oben
     - no_tabs             # kein Tab mehr im Dokument
     - { ratio: true, names: ['das Foto', 'die Karte'] }   # kein Bild verzerrt
     - { wrap: 1, side: right, names: […] }   # das erste Bild der Vorlage mit Text daneben, rechts

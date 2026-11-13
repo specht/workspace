@@ -31,7 +31,9 @@ require_relative 'office_client'
 #       - { list: ['Jede Gruppe', …], numbered: true }   # … with numbers (or letters), not bullets
 #       - { list: ['Sucht die', …], level: 2 }   # … one level down (Tab at the start of a point)
 #       - { crop: 1, aspect: 1, keep: [0.36, 0.17, 0.64, 0.75], subject: 'der Kranich' }   # picture 1 of the starting file cropped, square, the region kept (fractions of the original)
-#       - { table_sorted: 'Punkte', order: down }   # the rows below the header cell »Punkte« sorted by its column's numbers (down: most first), the header on top
+#       - { table_sorted: 'Punkte', order: down }
+#       - { order: ['Sägen', 'Säg das', 'Zusammenbauen', …] }   # the paragraphs beginning (or else holding) these pieces in this order: chapters moved with their text
+#       - { own_style: ['Tipp: Miss', …], example: 'Tipp' }   # these paragraphs share a style the user made, that looks unlike »Standard«, nothing on them by hand   # the rows below the header cell »Punkte« sorted by its column's numbers (down: most first), the header on top
 #       - { tabs: ['Busfahrt', …], align: [right, decimal] }   # one tab each, at one tab stop of this kind
 #                              # (align: [left]: a column of text at an own stop, not the default ones)
 #       - { table: ['Montag', 'Dienstag', …], columns: 3, header: 'Tag' }   # these in the cells of one table
@@ -73,7 +75,7 @@ require_relative 'office_client'
 # its hints one by one; once it holds, its label shows, ticked. Rules
 # without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[contains same_as scripts table_sorted crop text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts table_sorted crop order own_style text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -143,6 +145,7 @@ module DocumentCheck
                 when 'list' then %w[list numbered level]
                 when 'table_sorted' then %w[table_sorted order]
                 when 'crop' then %w[crop aspect keep subject names]
+                when 'own_style' then %w[own_style example]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
                 when 'headings' then %w[headings level]
@@ -155,6 +158,9 @@ module DocumentCheck
             errors << 'align needs paragraph: (a piece of its text)' if name == 'align' && !(rule['paragraph'].is_a?(String) && !rule['paragraph'].empty?)
             errors << 'gaps must look like 6pt' if name == 'gaps' && pt(rule['gaps']) <= 0
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
+            %w[order own_style].each do |k|
+                errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].size > (k == 'order' ? 1 : 0) && rule[k].all? { |b| b.is_a?(String) })
+            end
             if name == 'crop'
                 errors << 'crop must be the number of a picture of the starting file (1, 2, …)' unless rule['crop'].is_a?(Integer) && rule['crop'].positive?
                 errors << 'aspect must be width : height as a number (1 for a square)' if rule.key?('aspect') && !(rule['aspect'].is_a?(Numeric) && rule['aspect'].positive?)
@@ -961,6 +967,72 @@ module DocumentCheck
         mark = picture_mark(pic, 'zuschneiden')
         item.marks << mark if mark
         item.message = "#{problems.join(' ')} Zuschneiden schneidet vom Rand weg, ohne das Bild zu verzerren; zieh dafür an den Griffen des Zuschneidewerkzeugs, nicht an denen des Bildes."
+        item
+    end
+
+    # The paragraphs that begin with these pieces (or else hold them), in
+    # this order: chapters moved with their text, in the navigation pane.
+    def self.rule_order(rule, body, _starter, _all = nil, _model = nil)
+        pieces = Array(rule['order'])
+        item = Item.new(:rule => 'order', :label => 'In der richtigen Reihenfolge', :ok => true, :marks => [])
+        at = pieces.map { |piece| body.index { |p| p['plain'].start_with?(piece) } || body.index { |p| p['plain'].include?(piece) } }
+        missing = pieces.zip(at).select { |_, i| i.nil? }.map(&:first)
+        unless missing.empty?
+            item.ok = false
+            item.message = "#{q(names(missing.map { |m| "»#{m}«" }))} finde ich nicht mehr."
+            return item
+        end
+        # the first piece that stands too high, and the first of those it
+        # should follow but stands before
+        j = (1...pieces.size).find { |x| (0...x).any? { |y| at[y] > at[x] } }
+        return item if j.nil?
+
+        y = (0...j).find { |z| at[z] > at[j] }
+        item.ok = false
+        item.marks << para_mark(body[at[j]]).merge(:title => 'zu weit oben')
+        item.message = "»#{short(body[at[j]])}« steht noch vor »#{short(body[at[y]])}«. In der Übersicht der Überschriften " \
+            '(Word: Navigationsbereich, LibreOffice: Navigator) ziehst du ein Kapitel an seinen Platz, und sein Text geht mit.'
+        item
+    end
+
+    # These paragraphs share one paragraph style the user made (not one the
+    # program brings), which looks unlike »Standard«, with nothing set on
+    # them by hand: a style of one's own (example: a name to propose).
+    def self.rule_own_style(rule, body, _starter, _all = nil, model = nil)
+        example = rule['example'] || 'Tipp'
+        item = Item.new(:rule => 'own_style', :label => 'Eine eigene Formatvorlage', :ok => true, :marks => [])
+        styles = (model || {})['styles'] || {}
+        found = Array(rule['own_style']).map { |piece| [piece, body.find { |p| p['plain'].start_with?(piece) } || body.find { |p| p['plain'].include?(piece) }] }
+        missing = found.select { |_, p| p.nil? }.map(&:first)
+        problems = []
+        problems << "#{q(names(missing.map { |m| "»#{m}«" }))} finde ich nicht mehr." unless missing.empty?
+        ps = found.filter_map { |_, p| p }
+        names_used = ps.map { |p| p['style'] }.uniq
+        standard = ps.select { |p| %w[Standard Normal].include?(p['style']) || style_name(p) == 'Standard' }
+        if !standard.empty?
+            problems << (standard.size == ps.size ? "Die Absätze haben noch die Vorlage »Standard«." : "#{standard.size == 1 ? "»#{short(standard.first)}« hat" : "#{standard.size} davon haben"} noch die Vorlage »Standard«.")
+            standard.each { |p| item.marks << para_mark(p).merge(:title => 'Standard') }
+        elsif names_used.size > 1
+            problems << "Die Absätze haben verschiedene Vorlagen (#{names(ps.map { |p| "»#{style_name(p)}«" }.uniq)}); sie sollen alle dieselbe haben."
+        else
+            name = names_used.first
+            info = styles[name] || {}
+            if info.key?('user') && !info['user']
+                problems << "»#{style_name(ps.first)}« ist eine Vorlage, die das Programm mitbringt. Leg eine eigene an, mit einem eigenen Namen, zum Beispiel »#{example}«."
+            elsif (base = styles['Standard'] || styles['Normal']) && STYLE_LOOK.all? { |k| info[k] == base[k] }
+                problems << "Die Vorlage »#{style_name(ps.first)}« sieht noch aus wie »Standard«. Gib ihr ein eigenes Aussehen, zum Beispiel kursiv und in einer Farbe."
+            end
+        end
+        by_hand = ps.select { |p| !((p['portions'] || []).select { |q| visible?(q) }.flat_map { |q| q['direct'] || [] } & DIRECT.keys).empty? }
+        if problems.empty? && !by_hand.empty?
+            problems << "#{by_hand.size == 1 ? "»#{short(by_hand.first)}« ist" : "#{by_hand.size} davon sind"} noch von Hand formatiert. " \
+                'Lösch dort die Formatierung (LibreOffice: Strg+M, Word: Strg+Leertaste); das Aussehen kommt dann aus der Vorlage.'
+            by_hand.each { |p| item.marks << para_mark(p).merge(:title => 'von Hand') }
+        end
+        return item if problems.empty?
+
+        item.ok = false
+        item.message = "#{problems.join(' ')} Mit einer eigenen Vorlage sehen alle diese Absätze gleich aus, und eine Änderung an der Vorlage ändert alle auf einmal."
         item
     end
 

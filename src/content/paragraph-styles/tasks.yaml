@@ -71,6 +71,10 @@ tasks:
 
   - id: tagebuch
     title: Das Tagebuch mit Formatvorlagen
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe dein Tagebuch. Die Prüfung markiert auf deiner Seite jede Stelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -107,3 +111,164 @@ tasks:
         - "Markier eine Überschrift, lösch ihre Formatierung mit <kbd>Strg</kbd>+<kbd>M</kbd> und wähl links oben in der Liste der Absatzvorlagen *Überschrift 1*. Dann der nächste Tag."
         - "Vormittag und Nachmittag bekommen *Überschrift 2*, Titel und Zeile darunter *Titel* und *Untertitel*. Im Text des Dienstags und des Donnerstags nur die Formatierung löschen."
         - "Seitenleiste mit den Vorlagen: Rechtsklick auf *Überschrift 1* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schriftfarbe*; Rechtsklick auf *Standard* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Vorlage bearbeiten…*, *Schrift*: Georgia, 11 pt."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Die Tiere am Kranichsee sind gebaut wie das Tagebuch: Jede Überschrift
+      ist von Hand gemacht. Bau den Text mit Formatvorlagen: Titel und
+      Untertitel, die Gruppen »Überschrift 1«, die Tiere »Überschrift 2«,
+      der Text ohne Formatierung von Hand. Ändere dann »Überschrift 1« und
+      »Standard« je einmal.
+    check:
+      type: document
+      file: paragraph-styles/06 Tiere am See.docx
+      rules:
+        - text
+        - { styled: { 'Tiere am Kranichsee': Title, 'Was wir auf der Klassenfahrt': Subtitle } }
+        - { headings: ['Vögel', 'Im Wasser', 'Im Moor'], level: 1, label: 'Die Gruppen sind Überschrift 1' }
+        - { headings: ['Der Kranich', 'Der Graureiher', 'Der Hecht', 'Der Moorfrosch', 'Die Libelle'], level: 2, label: 'Die Tiere sind Überschrift 2' }
+        - levels
+        - no_direct
+        - plain_text
+        - { style_changed: 'Heading 1' }
+        - { style_changed: 'Standard' }
+    hint:
+      - Fang mit den Gruppen an. Lösch bei jeder die Formatierung und gib ihr »Überschrift 1«.
+      - Die Tiere gehören zu ihrer Gruppe, eine Stufe darunter. Ein Text ist von woanders hineinkopiert und hat seine Schrift behalten.
+      - Ändere zum Schluss die Vorlagen »Überschrift 1« und »Standard« je einmal, nicht die Absätze.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      In der Bauanleitung stehen die Schritte durcheinander: Gestrichen wird
+      vor dem Sägen. Bring sie in der Übersicht der Überschriften in die
+      richtige Reihenfolge. Gib danach den drei Tipps eine eigene
+      Formatvorlage »Tipp«.
+    check:
+      type: document
+      file: paragraph-styles/06 Bauanleitung.docx
+      rules:
+        - text
+        - { order: ['Sägen', 'Säg das Brett', 'Tipp: Miss', 'Zusammenbauen', 'Leim und schraub', 'Streichen', 'Streich das Haus', 'Tipp: Lass'], label: 'Die Schritte in der richtigen Reihenfolge' }
+        - { own_style: ['Tipp: Unbehandeltes', 'Tipp: Miss', 'Tipp: Lass'], example: 'Tipp', label: 'Die Tipps mit einer eigenen Vorlage »Tipp«' }
+    hint:
+      - "Zieh in der Übersicht der Überschriften »Streichen« unter »Zusammenbauen«. Der Text und der Tipp darunter gehen mit."
+      - Stell den Cursor in einen Tipp und leg dort eine neue Formatvorlage an, mit dem Namen »Tipp«. Sie übernimmt das Aussehen des Absatzes.
+      - Gib den beiden anderen Tipps dieselbe Vorlage und lösch bei allen dreien die Formatierung von Hand.
+    word:
+      hint:
+        - "Öffne den Navigationsbereich: Register *Ansicht*, Haken bei *Navigationsbereich*, dort *Überschriften*. Zieh »Streichen« unter »Zusammenbauen«; der Text und der Tipp darunter gehen mit."
+        - "Stell den Cursor in den ersten Tipp. Im Register *Start* öffnest du die Liste der Formatvorlagen (der kleine Pfeil) und wählst *Formatvorlage erstellen*, Name »Tipp«."
+        - "Klick in die beiden anderen Tipps und dann in der Liste auf *Tipp*. Steht ein Tipp danach noch anders da, lösch dort die Formatierung mit <kbd>Strg</kbd>+<kbd>Leertaste</kbd>."
+    libreoffice:
+      hint:
+        - "Öffne den Navigator mit <kbd>F5</kbd>, dort die *Überschriften*. Markier »Streichen« und schieb es mit den Pfeilen *Kapitel nach unten* hinter »Zusammenbauen«; der Text und der Tipp darunter gehen mit."
+        - "Stell den Cursor in den ersten Tipp und öffne die Seitenleiste mit den Vorlagen (<kbd>F11</kbd>). Oben rechts im Menü der Seitenleiste: *Neue Vorlage aus Markierung*, Name »Tipp«."
+        - "Gib den beiden anderen Tipps mit einem Doppelklick in der Seitenleiste die Vorlage *Tipp* und lösch bei allen dreien die Formatierung mit <kbd>Strg</kbd>+<kbd>M</kbd>."
+    nextcloud:
+      hint:
+        - "Öffne den Navigator (Menü *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Navigator*), dort die *Überschriften*. Markier »Streichen« und schieb es mit *Kapitel nach unten* hinter »Zusammenbauen«; der Text und der Tipp darunter gehen mit."
+        - "Stell den Cursor in den ersten Tipp und öffne die Seitenleiste mit den Vorlagen. Dort legst du mit *Neue Vorlage aus Markierung* die Vorlage »Tipp« an."
+        - "Gib den beiden anderen Tipps die Vorlage *Tipp* und lösch bei allen dreien die Formatierung von Hand."
+
+  - id: fallen
+    title: Elf Fallen
+    extra: true
+    prompt: |
+      Das Infoblatt zur Klassenfahrt an die Ostsee sieht fertig aus. Elf
+      Stellen sind trotzdem falsch gebaut: sechs von der Art wie auf dem
+      ersten Blatt, je eine vom zweiten bis fünften und eine von diesem. Die
+      Prüfung sagt dir nur, wie viele du gefunden hast; zu jeder Falle gibt es
+      Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: paragraph-styles/06 Ostsee.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Klassenfahrt an die Ostsee'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '10. September'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['im Mai fährt die 7b']
+          label: Nach »Dünenhagen.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »Dünenhagen.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Am Elternabend']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den kurzen Absatz über den Elternabend an.
+            - Vor »Am Elternabend« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['Wann und wohin']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand vor »Wann und wohin« an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn; die Überschrift bringt ihren Abstand selbst mit.
+        - line_breaks: true
+          in: ['Das Geld überweisen']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über das Geld an.
+            - Hinter »braucht,« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über die Fragen ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+        - list: ['Schlafsack', 'feste Schuhe', 'Regenjacke', 'Badesachen']
+          label: Ein Punkt der Liste war von Hand getippt.
+          hints:
+            - Diese Falle ist vom dritten Blatt. Sieh dir die Liste genau an.
+            - Versuch bei jedem Punkt der Liste, das Zeichen davor mit der Maus zu markieren. Ein echtes Aufzählungszeichen lässt sich nicht markieren wie ein Buchstabe.
+            - Vor »Badesachen« sind der Punkt und ein Tab getippt. Lösch beide und mach die Zeile zu einem Punkt der Liste wie die anderen.
+        - table: ['Bahnfahrt', 'Jugendherberge', 'Ausflüge', 'Zusammen']
+          columns: 2
+          label: »Zusammen« stand nicht in der Tabelle.
+          hints:
+            - Diese Falle ist vom vierten Blatt. Sieh dir die Kosten genau an.
+            - Die Tabelle hat keine Linien. Schalte die Formatierungszeichen ein und sieh dir jede Zeile an. In einer Zelle steht kein →.
+            - Hinter »Zusammen« steht ein Tab; die Zeile steht unter der Tabelle, nicht in ihr. Füg mit <kbd>Tab</kbd> in der letzten Zelle eine Zeile an, trag sie dort ein und lösch die getippte Zeile.
+        - ratio: true
+          names: ['das Foto']
+          label: Das Foto war in die Breite gezogen.
+          hints:
+            - Diese Falle ist vom fünften Blatt. Sieh dir das Foto genau an.
+            - Wirkt der Kranich etwas zu dick? Vergleich das Foto mit dem auf dem fünften Blatt.
+            - Das Foto ist in die Breite gezogen. Setz es auf die Originalgröße zurück und mach es dann an einer Ecke kleiner, etwa 6 cm breit.
+        - headings: ['Wann und wohin', 'Was es kostet', 'Was mitkommt']
+          level: 1
+          label: »Was es kostet« sah nur aus wie eine Überschrift.
+          hints:
+            - Diese Falle ist von diesem Blatt. Sieh dir die Überschriften an.
+            - Öffne die Übersicht der Überschriften (Word Navigationsbereich, LibreOffice Navigator). Wie viele Einträge zeigt sie, und wie viele Überschriften siehst du?
+            - »Was es kostet« hat die Vorlage »Standard« und ist von Hand fett, groß und blau gemacht. Lösch die Formatierung und gib dem Absatz die Vorlage »Überschrift 1«.
+    solution: |
+      Die elf Fallen: die Überschrift mit Leerzeichen in der Mitte, das Datum
+      mit Leerzeichen rechts, zwei Leerzeichen nach »Dünenhagen.«, ein Einzug
+      aus Leerzeichen, ein leerer Absatz statt Abstand, ein ↵ am Ende einer
+      Zeile, die sowieso dort umgebrochen wäre, der Satz über die Fragen in
+      Arial, »Badesachen« mit getipptem Punkt und Tab, »Zusammen« mit einem
+      Tab unter der Tabelle, das Foto um 12 % in die Breite gezogen und »Was
+      es kostet«, das nur aussah wie eine Überschrift.

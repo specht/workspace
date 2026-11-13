@@ -8,7 +8,7 @@ Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind
 <li><b>10 Minuten:</b> Titel und Untertitel, die Vermutung zu »Standard«, der kopierte Text, »Standard« in Georgia.</li>
 <li><b>10 Minuten:</b> »Überschrift 1« grün, Formatierung von Hand finden und löschen.</li>
 <li><b>10 Minuten:</b> prüfen, ausprobieren, was sich mit »Standard« ändert.</li>
-<li><b>Für Schnelle:</b> eine eigene Vorlage anlegen, etwa für die Zeile, mit der eine Tischgruppe ihr Stück unterschreibt.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -41,3 +41,27 @@ Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind
 #### Die Aufgaben
 
 - Die Vermutung zur Übersicht zeigt den Unterschied zwischen Aussehen und Bedeutung: Das Programm erkennt Überschriften an ihrer Vorlage, nicht daran, wie sie aussehen. Das bereitet das Inhaltsverzeichnis im nächsten Blatt vor.
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer das
+Tagebuch besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Elf Fallen«.
+
+- **Noch eine Runde:** »Tiere am Kranichsee«, gebaut wie das Tagebuch
+  (Überschriften von Hand, ein Text mit der Schrift, aus der er kopiert
+  wurde); dieselben Punkte wie beim Tagebuch.
+- **Zwei Handgriffe:** eine Bauanleitung für ein Vogelhaus. Die Schritte
+  stehen durcheinander und werden in der Übersicht der Überschriften
+  (Navigationsbereich, Navigator) verschoben; die Prüfung verlangt die
+  Reihenfolge der Überschriften und ihrer Texte, wer nur die Überschriften
+  umstellt, besteht nicht. Dann eine eigene Formatvorlage »Tipp« für die drei
+  Tipps: dieselbe für alle, keine, die das Programm mitbringt (»Zitat« zählt
+  nicht), mit einem anderen Aussehen als »Standard« und ohne Formatierung
+  von Hand an den Tipps.
+- **Elf Fallen:** ein Infoblatt zur Klassenfahrt an die Ostsee mit den Fallen
+  der fünf Blätter davor und einer von diesem: »Was es kostet« sieht aus wie
+  die anderen Überschriften, ist aber ein Absatz mit »Standard«, von Hand
+  fett, groß und blau. Die Übersicht der Überschriften verrät es: Sie zeigt
+  zwei Einträge statt drei. Die Prüfung zählt nur und zeigt jede Falle erst,
+  wenn sie behoben ist; Tipps gibt es für jede einzeln.

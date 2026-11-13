@@ -166,3 +166,72 @@ _task(tagebuch)
 <strong>Ausprobieren:</strong> Stell in »Standard« den Abstand nach jedem Absatz auf 12 pt. Achte darauf, ob sich auch der Abstand nach den Überschriften ändert.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit zwei neuen
+Handgriffen und eins zum Suchen.
+
+### Noch eine Runde
+
+Für die Klassenzeitung hat die 7b die Tiere am Kranichsee beschrieben, gebaut wie
+das Tagebuch: Jede Überschrift ist von Hand gemacht. Bau den Text mit
+Formatvorlagen, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+In der Bauanleitung für ein Vogelhaus haben die Überschriften schon ihre
+Vorlagen. Dafür stehen die Schritte durcheinander. Die **Übersicht der
+Überschriften** zeigt nicht nur, was im Text steht: Ziehst du dort eine
+Überschrift an einen anderen Platz, geht alles mit, was unter ihr steht, bis
+zur nächsten Überschrift derselben Ebene.
+
+<!-- language: word -->
+In Word öffnest du sie im Register *Ansicht* mit dem Haken bei
+*Navigationsbereich*, dort unter *Überschriften*. Zieh eine Überschrift mit der
+Maus an ihren neuen Platz.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice öffnest du den Navigator mit <kbd>F5</kbd>, dort die
+*Überschriften*. Markier eine und schieb sie mit *Kapitel nach oben* oder
+*Kapitel nach unten*, oder zieh sie mit der Maus.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office öffnest du den Navigator im Menü *Ansicht*, dort die
+*Überschriften*. Markier eine und schieb sie mit *Kapitel nach oben* oder
+*Kapitel nach unten*.
+<!-- /language -->
+
+Der zweite Handgriff: Die drei Tipps der Anleitung sind von Hand kursiv und grün.
+Für Absätze, die immer gleich aussehen sollen, legst du eine **eigene
+Formatvorlage** an, mit einem eigenen Namen. Am einfachsten aus einem Absatz,
+der schon so aussieht: Die neue Vorlage übernimmt sein Aussehen.
+
+<!-- language: word -->
+In Word stellst du den Cursor in den Absatz, öffnest im Register *Start* die
+Liste der Formatvorlagen (der kleine Pfeil unten rechts) und wählst
+*Formatvorlage erstellen*.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice stellst du den Cursor in den Absatz, öffnest die Seitenleiste mit
+den Vorlagen (<kbd>F11</kbd>) und wählst oben rechts in ihrem Menü *Neue Vorlage
+aus Markierung*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office stellst du den Cursor in den Absatz, öffnest die Seitenleiste
+mit den Vorlagen und wählst *Neue Vorlage aus Markierung*.
+<!-- /language -->
+
+_task(handgriffe)
+
+### Elf Fallen
+
+Das Infoblatt zur Klassenfahrt an die Ostsee sieht fertig aus. Sechs Fallen sind
+von der Art wie auf dem ersten Blatt, je eine vom zweiten bis fünften, und eine
+ist von diesem. Wie bei den anderen Fallen zählt die Prüfung nur, und jede
+Falle hat ihre eigenen Tipps.
+
+_task(fallen)

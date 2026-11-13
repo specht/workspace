@@ -23,3 +23,31 @@ examples:
         say: von Hand. Markier sie
       - document: stufen/text-von-hand.docx
         say: Ändere sie einmal, zum Beispiel ihre Schrift
+  runde:
+    pass:
+      - document: stufen/tiere-am-see.docx
+    fail:
+      - document: ../../static/paragraph-styles/06 Tiere am See.docx
+        say: nur wie Überschriften aussehen
+  handgriffe:
+    pass:
+      - document: stufen/bauanleitung.docx
+      - document: stufen/bauanleitung-libreoffice.docx
+      - document: stufen/bauanleitung-libreoffice.odt
+    fail:
+      - document: ../../static/paragraph-styles/06 Bauanleitung.docx
+        say: »Streichen« steht noch vor »Sägen«
+      - document: ../../static/paragraph-styles/06 Bauanleitung.docx
+        say: noch die Vorlage »Standard«
+      - document: stufen/bauanleitung-zitat.docx
+        say: die das Programm mitbringt
+      - document: stufen/bauanleitung-reihenfolge.docx
+        say: Navigator
+  fallen:
+    pass:
+      - document: stufen/ostsee.docx
+    fail:
+      - document: ../../static/paragraph-styles/06 Ostsee.docx
+        say: 0 von 11 Fallen gefunden
+      - document: stufen/ostsee-zehn.docx
+        say: 10 von 11 Fallen gefunden
