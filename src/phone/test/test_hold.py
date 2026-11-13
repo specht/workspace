@@ -21,9 +21,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(HERE), 'core'))
 import game  # noqa: E402
 
 # FACT's goodbyes, one of them at random
-GOODBYES = {'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-            'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
-            'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.'}
+GOODBYES = {'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+            'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+            'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.'}
 
 
 class TestPhone(game.Phone):
@@ -114,9 +114,9 @@ class Hold(unittest.TestCase):
                 if not innen:
                     say(f'Die Fakultät von {n} ist {ergebnis}.')
                     say(random.choice([
-                        'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-                        'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
-                        'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+                        'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+                        'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+                        'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
                     ]))
                 back(str(ergebnis))
                 """),

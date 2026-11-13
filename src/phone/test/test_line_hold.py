@@ -21,9 +21,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
 # FACT's goodbyes, one of them at random
-GOODBYES = {'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-            'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
-            'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.'}
+GOODBYES = {'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+            'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+            'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.'}
 
 
 def published(root, games):
@@ -81,9 +81,9 @@ class LineHold(unittest.TestCase):
                 if not innen:
                     say(f'Die Fakultät von {n} ist {ergebnis}.')
                     say(random.choice([
-                        'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-                        'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
-                        'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+                        'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+                        'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+                        'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
                     ]))
                 back(str(ergebnis))
                 """),

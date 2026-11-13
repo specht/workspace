@@ -1893,9 +1893,9 @@ end
 unless innen
   say "Die Fakultät von #{n} ist #{ergebnis}."
   say [
-    'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-    'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
-    'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.'
+    'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+    'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+    'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.'
   ].sample
 end
 back ergebnis.to_s
@@ -1945,9 +1945,9 @@ else:
 if not innen:
     say(f'Die Fakultät von {n} ist {ergebnis}.')
     say(random.choice([
-        'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-        'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
-        'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+        'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+        'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+        'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
     ]))
 back(str(ergebnis))
 ```
@@ -2001,9 +2001,9 @@ if (n > 1) {
 if (!innen) {
   say(`Die Fakultät von ${n} ist ${ergebnis}.`);
   say(einer([
-    'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-    'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
-    'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+    'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+    'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+    'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
   ]));
 }
 back(String(ergebnis));
