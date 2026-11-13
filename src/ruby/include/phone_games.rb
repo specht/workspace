@@ -180,7 +180,10 @@ module PhoneGames
     # The list the line reads (src/phone/line/menu.py): every published game
     # with its folder there (games/<id>, the copy)
     def self.manifest(published)
-        games = published.map { |g| { :number => g[:number], :title => g[:title], :folder => "games/#{g[:id]}", :file => g[:file] } }
+        # by title, as the book; hidden: not read out in the menu, reached by its number
+        games = phone_book(published).map do |g|
+            { :number => g[:number], :title => g[:title], :folder => "games/#{g[:id]}", :file => g[:file] }.merge(g[:hidden] ? { :hidden => true } : {})
+        end
         JSON.pretty_generate(:games => games)
     end
 

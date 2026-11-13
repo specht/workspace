@@ -25,6 +25,8 @@ class Main < Sinatra::Base
             :submitted => node[:submitted], :decided => node[:decided], :email => email,
             # the newest error of a call (PhoneCalls), for its author
             :error => node[:last_error], :error_at => node[:last_error_at], :errors => node[:errors].to_i,
+            # not in the book nor the phone's menu, reached by its number (a part of another game)
+            :hidden => node[:hidden] == true,
         }
     end
 
@@ -333,6 +335,20 @@ class Main < Sinatra::Base
     # and subtitle (pending or published). The Telefonbuch and the line's
     # menu read them from here; the game's own title '…' in its code was
     # only read when it was submitted
+    # Shown in the Telefonbuch and the phone's menu or not: a game that is
+    # part of another one stays reachable by its number and by transfer
+    post '/api/phone/hide' do
+        admins_only!
+        data = parse_request_data(:required_keys => [:id, :hidden])
+        game = phone_game(data[:id])
+        halt 404 unless game && %w[published broken pending].include?(game[:state])
+        hidden = data[:hidden].to_s == 'true'
+        neo4j_query('MATCH (g:PhoneGame {id: $id}) SET g.hidden = $hidden;', :id => game[:id], :hidden => hidden)
+        phone_games_publish_list
+        log_event "Telefonspiel #{hidden ? 'aus dem Telefonbuch ausgeblendet' : 'im Telefonbuch eingeblendet'} von #{@session_user[:email]}: #{PhoneGames.label(game)} #{game[:title]}"
+        respond(:hidden => hidden)
+    end
+
     post '/api/phone/rename' do
         admins_only!
         data = parse_request_data(:required_keys => [:id, :title, :description],
@@ -379,22 +395,52 @@ class Main < Sinatra::Base
     # first, each linked to its page (the same the mail links to)
     def phone_games_list_html
         h = ->(t) { PhoneGames.h(t) }
-        order = { 'pending' => 0, 'published' => 1, 'broken' => 2, 'rejected' => 3 }
-        games = phone_games_all.sort_by { |g| [order[g[:state]] || 3, -(g[:submitted] || 0).to_i] }
-        head = "<h1 class='mt-4'>Telefonspiele</h1>"
-        return "#{head}<p>Noch hat niemand ein Telefonspiel eingereicht.</p>" if games.empty?
-
-        badge = { 'pending' => 'text-bg-warning', 'published' => 'text-bg-success', 'rejected' => 'text-bg-secondary' }
-        rows = games.map do |g|
-            "<a class='list-group-item list-group-item-action' href='/telefon-freigabe?id=#{h.(g[:id])}'>" \
-                "<div class='d-flex flex-wrap gap-2 align-items-baseline'><b>#{h.(PhoneGames.label(g))}</b> <b>#{h.(g[:title])}</b>" \
-                "<span class='badge #{badge[g[:state]]}'>#{h.(PhoneGames::STATE_TEXT[g[:state]])}</span>" \
-                "<span class='text-muted small'>#{h.(g[:email])}, #{h.(g[:file])}</span></div>" \
-                "<div class='text-muted small'>#{h.(g[:description])}</div></a>"
+        all = phone_games_all
+        head = "<h1 class='mt-4'>Telefonbuch</h1>"
+        # waiting for approval: each linked to its page (the same the mail links to)
+        pending = all.select { |g| g[:state] == 'pending' }.sort_by { |g| -(g[:submitted] || 0).to_i }
+        io = +head
+        io << "<h2 class='h4 mt-4'>Warten auf Freigabe</h2>"
+        if pending.empty?
+            io << "<p class='text-muted'>Kein Spiel wartet auf Freigabe.</p>"
+        else
+            io << "<div class='list-group'>"
+            pending.each do |g|
+                io << "<a class='list-group-item list-group-item-action' href='/telefon-freigabe?id=#{h.(g[:id])}'>" \
+                      "<div class='d-flex flex-wrap gap-2 align-items-baseline'><b>#{h.(PhoneGames.label(g))}</b> <b>#{h.(g[:title])}</b>" \
+                      "<span class='text-muted small'>#{h.(g[:email])}, #{h.(g[:file])}</span></div>" \
+                      "<div class='text-muted small'>#{h.(g[:description])}</div></a>"
+            end
+            io << '</div>'
         end
-        waiting = games.count { |g| g[:state] == 'pending' }
-        "#{head}<p>#{waiting.zero? ? 'Kein Spiel wartet auf Freigabe.' : (waiting == 1 ? 'Ein Spiel wartet auf Freigabe.' : "#{waiting} Spiele warten auf Freigabe.")}</p>" \
-            "<div class='list-group'>#{rows.join}</div>"
+        # in the Telefonbuch: sorted by title as the book is; title and
+        # subtitle to edit, shown in the book and the phone's menu or not (a
+        # part of another game, reached by its number and by transfer)
+        listed = PhoneGames.phone_book(all.select { |g| %w[published broken].include?(g[:state]) })
+        io << "<h2 class='h4 mt-4'>Im Telefonbuch</h2>" \
+              "<p class='text-muted'>Ausgeblendete Spiele stehen nicht im Telefonbuch und werden am Telefon nicht vorgelesen; über ihre Nummer und mit <code>transfer</code> sind sie weiter erreichbar, etwa als Teil eines anderen Spiels.</p>"
+        if listed.empty?
+            io << "<p class='text-muted'>Noch ist kein Spiel veröffentlicht.</p>"
+        else
+            io << "<div class='phone-manage' data-games='#{h.(listed.map { |g| { :id => g[:id], :hidden => g[:hidden] == true } }.to_json)}'>"
+            listed.each do |g|
+                broken = g[:state] == 'broken' ? "<span class='badge text-bg-danger'>#{h.(PhoneGames::STATE_TEXT['broken'])}</span>" : ''
+                io << "<form class='phone-manage-row#{g[:hidden] ? ' phone-manage-hidden' : ''}' data-id='#{h.(g[:id])}'>" \
+                      "<div class='phone-manage-number'><b>#{h.(PhoneGames.label(g))}</b>#{broken}</div>" \
+                      "<div class='phone-manage-fields'>" \
+                      "<input class='form-control form-control-sm phone-manage-title' name='title' maxlength='#{PhoneGames::MAX_TITLE}' value='#{h.(g[:title])}' aria-label='Titel von #{h.(PhoneGames.label(g))}'>" \
+                      "<input class='form-control form-control-sm phone-manage-description' name='description' maxlength='#{PhoneGames::MAX_DESCRIPTION}' value='#{h.(g[:description])}' aria-label='Untertitel von #{h.(PhoneGames.label(g))}'>" \
+                      "</div><div class='phone-manage-actions'>" \
+                      "<div class='form-check form-switch'><input class='form-check-input phone-manage-shown' type='checkbox' role='switch' id='shown-#{h.(g[:id])}'#{g[:hidden] ? '' : ' checked'}>" \
+                      "<label class='form-check-label' for='shown-#{h.(g[:id])}'>im Telefonbuch</label></div>" \
+                      "<button type='submit' class='btn btn-sm btn-outline-primary phone-manage-save' disabled>Speichern</button>" \
+                      "<a class='small' href='/telefon-freigabe?id=#{h.(g[:id])}'>Details</a>" \
+                      "<span class='phone-manage-state small' aria-live='polite'></span></div></form>"
+            end
+            io << '</div>'
+            io << "<script src='/include/phone_manage.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
+        end
+        io
     end
 
     # the game's program, highlighted as code blocks on the pages are
@@ -494,7 +540,7 @@ class Main < Sinatra::Base
     # book; the phone number or that one is being worked on (public)
     def phone_book_page
         phone_games_publish_list
-        games = phone_games_all.select { |g| g[:state] == 'published' }
+        games = phone_games_all.select { |g| g[:state] == 'published' && !g[:hidden] }
         games += PhoneGames.sample_entries if DEVELOPMENT && params.key?('muster')     # to try the pages
         games = PhoneGames.phone_book(games)
         number = Main.phone_number

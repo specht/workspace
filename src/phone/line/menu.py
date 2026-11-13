@@ -98,8 +98,10 @@ def main():
     games = load()
     if DIALED:
         connect(DIALED, games)
+    # read out: not the hidden ones (parts of other games); dialled: all
+    listed = [g for g in games if not g.get('hidden')]
     say('Hier ist das Telefonbuch des Hackschule Workspace.', interrupt=True)
-    if not games:
+    if not listed:
         say('Noch steht kein Spiel im Telefonbuch.')
         return
     say('Gib die Nummer eines Spiels ein.', interrupt=True)
@@ -113,7 +115,7 @@ def main():
             hangup()
             return
         pressed = False
-        order = random.sample(games, len(games))
+        order = random.sample(listed, len(listed))
         for i in range(0, len(order), BATCH):
             for game in order[i:i + BATCH]:
                 say(f'{game["title"]}: {spoken(game["number"])}.', interrupt=True)

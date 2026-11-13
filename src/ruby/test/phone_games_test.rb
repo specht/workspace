@@ -64,4 +64,15 @@ class PhoneGamesTest < Minitest::Test
         assert_includes html, 'https://example.org/telefonspiel'
         assert_equal 'aus dem Telefonbuch genommen', PhoneGames::STATE_TEXT['broken']
     end
+
+    # the line's list: by title as the book, a hidden game (a part of
+    # another one) marked, still in it to be dialled and forwarded to
+    def test_the_list_for_the_line_by_title_with_hidden_ones_marked
+        games = [{ :id => 'a', :number => '741', :title => 'Der Klammer-Doktor', :file => 'start.rb' },
+                 { :id => 'b', :number => '007', :title => '(', :file => '(.rb', :hidden => true },
+                 { :id => 'c', :number => '254', :title => 'Ali die Ameise', :file => 'ali.rb' }]
+        list = JSON.parse(PhoneGames.manifest(games))['games']
+        assert_equal %w[007 254 741], list.map { |g| g['number'] }
+        assert_equal [true, nil, nil], list.map { |g| g['hidden'] }
+    end
 end

@@ -443,6 +443,14 @@ loop.
   and its author gets a mail with the error, once; a new version under the
   same number replaces it and goes through approval. Several games: one folder each under `telefon` (one level),
   submitted with that folder only (`PhoneGames.candidates`, `plan`);
+- the Telefonbuch managed (the maintainer, 13 November 2026):
+  `/telefon-freigabe` lists the games waiting for approval and those in the
+  book, sorted by title, each with its title and subtitle to edit and a
+  switch »im Telefonbuch«; rejected ones are not listed. A hidden game
+  (`PhoneGame.hidden`, a part of another game: the bracket rooms 001, 004
+  and 007 of 741) is not in the book nor read out in the phone's menu, but
+  stays in `published.json` (`hidden: true`) to be dialled and forwarded to;
+  `phone_manage.js`, `/api/phone/hide`;
 - calls for `/statistik` (the maintainer, 13 November 2026: which number
   or game was called, not who): the line and the runner write one line per
   call into `internal/phone-calls` (`record_call` in `core/game.py`: the
