@@ -155,6 +155,38 @@ class ClassBoardTest < Minitest::Test
         assert_includes ClassBoard.html(timed_board(now), :activity => 'dns', :now => now + 3600), "<p class='cb-quiet-line' hidden>"
     end
 
+    # Who may need help (stuck in this lesson), where many are stuck, who is
+    # done and how many extras are left: from the checks only.
+    def test_help_lines
+        now = 1_800_000_000
+        tasks = TASKS[0, 2] + [{ :id => 'mehr', :title => 'Mehr', :type => 'answer', :version => 'v1', :extra => true }]
+        at = ->(status, ago, attempts = 1) { state(status, attempts: attempts).merge(:updated => now - ago) }
+        b = ClassBoard.build(MEMBERS, tasks, {
+            'ada@x' => { 'adresse' => at.('correct', 600), 'ttl-drei' => at.('correct', 500) },
+            'ben@x' => { 'adresse' => at.('wrong', 120, 4) },
+            'tom@x' => { 'adresse' => at.('wrong', 60, 3), 'ttl-drei' => at.('wrong', 30, 1) },
+            # stuck, but yesterday: not now
+            'eve@x' => { 'adresse' => at.('wrong', 86_400, 5) },
+        })
+        assert_equal [{ :email => 'ben@x', :tasks => [0] }, { :email => 'tom@x', :tasks => [0] }], ClassBoard.needs_help(b[:rows], now)
+        # three at work, two of them stuck on card 1: less than MIN_FOR_PATTERN
+        assert_empty ClassBoard.crowded(b[:rows], b[:tasks], now)
+        assert_equal [{ :email => 'ada@x', :open_extras => 1 }], ClassBoard.ready(b[:rows], b[:tasks])
+        html = ClassBoard.help_html(b, now)
+        assert_includes html, 'Braucht vielleicht Hilfe, mehrmals geprüft und noch nicht gelöst: Ben (Aufgabe 1), Tom (Aufgabe 1)'
+        assert_includes html, 'Alle Aufgaben gelöst: Ada (1 von 1 Extras offen).'
+        refute_includes html, 'hängen'
+        # a third stuck as well: a card for everyone
+        b = ClassBoard.build(MEMBERS, tasks, {
+            'ada@x' => { 'adresse' => at.('wrong', 600, 3) }, 'ben@x' => { 'adresse' => at.('wrong', 120, 4) },
+            'tom@x' => { 'adresse' => at.('wrong', 60, 3) }, 'eve@x' => { 'adresse' => at.('correct', 60) },
+        })
+        assert_equal [[0, 3]], ClassBoard.crowded(b[:rows], b[:tasks], now)
+        assert_includes ClassBoard.help_html(b, now), 'Bei Aufgabe 1 »Deine Adresse« hängen 3 gleichzeitig'
+        # and on the board, below the quiet line
+        assert_includes ClassBoard.html(b, :activity => 'dns', :now => now), 'cb-crowded-line'
+    end
+
     def test_overview_counts_without_extras_and_old_versions
         activities = [
             { :key => 'dns', :title => 'DNS', :tasks => TASKS + [{ :id => 'mehr', :title => 'Mehr', :type => 'answer', :version => 'v1', :extra => true }] },

@@ -548,6 +548,18 @@ weiterlaufen und fragt jede Minute `/api/class/last_active` (nur für die
 eigenen Gruppen). Wer für den Treffpunkt »fehlt heute« ist, steht nicht in
 der Zeile.
 
+Darunter stehen, aus denselben Prüfungen, bis zu drei Zeilen über Hilfe
+(`ClassBoard.help_html`, mit der Zeile der Stillen jede Minute neu):
+»Braucht vielleicht Hilfe« nennt, wer eine Aufgabe nach drei oder mehr
+Prüfungen noch nicht gelöst hat, die letzte in den letzten 90 Minuten, mit
+der Nummer der Aufgabe; »Bei Aufgabe 4 hängen 5 gleichzeitig« erscheint, wenn
+ein Drittel derer, die in der Stunde arbeiten (mindestens drei), an derselben
+Aufgabe hängen, als Thema für alle; »Alle Aufgaben gelöst« nennt, wer jede
+Aufgabe außer den Extras gelöst hat, und wie viele Extras noch offen sind:
+Sie können weitermachen oder anderen helfen. Welche Tipps jemand aufgeklappt
+hat, zählt nicht mit; das sieht niemand (docs/didaktik.md, »Tipps in
+Stufen«).
+
 Der Reiter »Überblick« zeigt jede Person mit allen Aktivitäten der Gruppe:
 angeheftete zuerst, dann jede, an der jemand der Gruppe gearbeitet hat, in
 der Reihenfolge des Katalogs; je Zelle gelöst von allen (ohne Extras, wie

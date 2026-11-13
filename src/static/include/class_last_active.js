@@ -3,7 +3,7 @@
 // (tab »Überblick«). The times move on every half minute; every minute the
 // board asks the server again (/api/class/last_active, ClassBoard.quiet)
 // who is quiet: nothing checked for over ten minutes while the class is at
-// work. Whoever the teacher marked »fehlt heute« for the meeting point
+// work, and the lines about help (ClassBoard.help_html). Whoever the teacher marked »fehlt heute« for the meeting point
 // (meeting_status.js) is left out of that line.
 window.ClassLastActive = (function () {
     // ClassBoard.ago, the same words
@@ -50,6 +50,10 @@ window.ClassLastActive = (function () {
             line.querySelector('.cb-quiet-names').textContent = names.join(', ');
             line.hidden = names.length === 0;
         }
+        // who may need help, where many are stuck, who is done
+        // (ClassBoard.help_html, escaped there)
+        const help = document.querySelector('.cb-help');
+        if (help && typeof data.help === 'string') help.innerHTML = data.help;
         tick();
     }
 

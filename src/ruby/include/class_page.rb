@@ -97,6 +97,6 @@ class Main < Sinatra::Base
         board = ClassBoard.build(members, tasks, class_board_states(members.map { |m| m[:email] }, data[:activity]))
         now = Time.now.to_i
         respond(:now => now, :last => board[:rows].to_h { |r| [r[:email], ClassBoard.last_active(r)] },
-            :quiet => ClassBoard.quiet(board[:rows], tasks, now))
+            :quiet => ClassBoard.quiet(board[:rows], tasks, now), :help => ClassBoard.help_html(board, now))
     end
 end

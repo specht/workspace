@@ -96,6 +96,66 @@ module ClassBoard
             .map { |r| r[:email] }
     end
 
+    # Who may need help now: a card still wrong after STUCK_ATTEMPTS checks
+    # or more, the last one within the lesson (LESSON_SPAN). Only from the
+    # checks: which tips someone opened stays in their browser
+    # (docs/didaktik.md). [{ email:, tasks: [index, …] }] by name.
+    def self.needs_help(rows, now)
+        rows.filter_map do |r|
+            stuck = r[:cells].each_index.select { |i| r[:cells][i].stuck && now - r[:cells][i].updated.to_i <= LESSON_SPAN }
+            stuck.empty? ? nil : { :email => r[:email], :tasks => stuck }
+        end
+    end
+
+    # Where many are stuck at once: cards on which at least a third of the
+    # students at work in this lesson (and at least MIN_FOR_PATTERN) are
+    # stuck. [[index, count], …]
+    def self.crowded(rows, tasks, now)
+        at_work = rows.count { |r| (t = last_active(r)) && now - t <= LESSON_SPAN }
+        return [] if at_work < MIN_FOR_PATTERN
+
+        tasks.each_index.filter_map do |i|
+            n = rows.count { |r| r[:cells][i].stuck && now - r[:cells][i].updated.to_i <= LESSON_SPAN }
+            n >= MIN_FOR_PATTERN && n >= at_work * OFTEN_WRONG_SHARE ? [i, n] : nil
+        end
+    end
+
+    # Who has passed every card but the extras: [{ email:, open_extras: n }].
+    def self.ready(rows, tasks)
+        extras = tasks.each_index.select { |i| tasks[i][:extra] }
+        rows.select { |r| done?(r, tasks) && tasks.any? { |t| !t[:extra] } }.map do |r|
+            { :email => r[:email], :open_extras => extras.count { |i| !%w[correct sent].include?(r[:cells][i].status) } }
+        end
+    end
+
+    # The lines about help above the board (empty: none): who may need it,
+    # where many are stuck, who is done and could go on or help. Asked
+    # again every minute with the quiet line (class_last_active.js).
+    def self.help_html(board, now)
+        rows = board[:rows]
+        tasks = board[:tasks]
+        name = ->(email) { h(rows.find { |r| r[:email] == email }[:name]) }
+        io = +''
+        help = needs_help(rows, now)
+        unless help.empty?
+            list = help.map { |x| "#{name.(x[:email])} (#{x[:tasks].map { |i| "Aufgabe #{i + 1}" }.join(', ')})" }
+            io << "<p class='cb-help-line'><i class='bi bi-life-preserver' aria-hidden='true'></i>" \
+                "Braucht vielleicht Hilfe, mehrmals geprüft und noch nicht gelöst: #{list.join(', ')}</p>"
+        end
+        crowded(rows, tasks, now).each do |i, n|
+            io << "<p class='cb-help-line cb-crowded-line'><i class='bi bi-people' aria-hidden='true'></i>" \
+                "Bei Aufgabe #{i + 1} »#{h(tasks[i][:title])}« hängen #{n} gleichzeitig: vielleicht ein Thema für alle.</p>"
+        end
+        done = ready(rows, tasks)
+        unless done.empty?
+            extras = tasks.count { |t| t[:extra] }
+            list = done.map { |x| extras.positive? && x[:open_extras].positive? ? "#{name.(x[:email])} (#{x[:open_extras]} von #{extras} Extras offen)" : name.(x[:email]) }
+            io << "<p class='cb-help-line cb-ready-line'><i class='bi bi-flag' aria-hidden='true'></i>" \
+                "Alle Aufgaben gelöst: #{list.join(', ')}. #{extras.positive? ? 'Sie können mit den Extras weitermachen oder anderen helfen.' : 'Sie können anderen helfen.'}</p>"
+        end
+        io
+    end
+
     # »vor 12 min« (class_last_active.js says it the same way while the page
     # stays open).
     def self.ago(t, now)
@@ -222,6 +282,7 @@ module ClassBoard
         meeting = tasks.index { |t| t[:id] == meeting } if meeting
         still = quiet(board[:rows], tasks, now)
         io = quiet_html(board[:rows], still)
+        io << "<div class='cb-help'>#{help_html(board, now)}</div>"
         io << "<div class='class-board-scroll'><table class='class-board'>"
         io << '<thead><tr><th class="cb-name">Name</th>'
         tasks.each_with_index do |t, i|
