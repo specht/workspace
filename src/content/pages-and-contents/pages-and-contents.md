@@ -107,3 +107,59 @@ _task(bericht)
 <strong>Ausprobieren:</strong> Schreib in den Dienstag so viel dazu, dass er über zwei Seiten geht, und aktualisiere das Verzeichnis. Achte auf die Seitenzahlen im Verzeichnis.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit einem neuen
+Handgriff und eins zum Suchen.
+
+### Noch eine Runde
+
+Für die Schülerzeitung hat die 7b über den Schulgarten geschrieben, gebaut wie
+der Reisebericht. Bau den Bericht richtig, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Eine Seite quer
+
+Der Plan der Projektwoche hat sechs Spalten und ist breiter als eine Seite
+hochkant: Er ragt rechts über den Rand hinaus. Quer hätte er Platz. Aber nur
+diese eine Seite soll quer stehen, nicht die Titelseite davor und nicht die
+Seite danach.
+
+Ein Programm dreht immer einen ganzen Teil des Dokuments. Damit eine Seite für
+sich quer stehen kann, braucht sie einen eigenen Teil: in Word einen
+**Abschnitt**, in LibreOffice eine eigene **Seitenvorlage**.
+
+<!-- language: word -->
+In Word markierst du den Plan mit seiner Überschrift und öffnest *Layout*
+<i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenränder* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Benutzerdefinierte Seitenränder…*. Dort wählst du *Querformat* und unten bei
+*Übernehmen für* *Markierten Text*: Word setzt davor und danach selbst einen
+Abschnittsumbruch.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice beginnt die quere Seite mit einem Seitenumbruch, der die
+Seitenvorlage wechselt: *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Umbrüche* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Manueller Umbruch…*, Typ *Seitenumbruch*, Seitenvorlage *Querformat*. Am Anfang
+der nächsten Seite wechselst du genauso zurück zu *Standard*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office beginnt die quere Seite mit einem Seitenumbruch, der die
+Seitenvorlage wechselt: *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Umbrüche* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Manueller Umbruch…*, Typ *Seitenumbruch*, Seitenvorlage *Querformat*. Am Anfang
+der nächsten Seite wechselst du genauso zurück zu *Standard*.
+<!-- /language -->
+
+_task(quer)
+
+### Zwölf Fallen
+
+Das Infoblatt zur Klassenfahrt in den Harz hat auf der zweiten Seite eine
+Anmeldung zum Abtrennen. Es sieht fertig aus. Sechs Fallen sind von der Art wie
+auf dem ersten Blatt, je eine vom zweiten bis sechsten, und eine ist von diesem.
+Wie bei den anderen Fallen zählt die Prüfung nur, und jede Falle hat ihre eigenen
+Tipps.
+
+_task(fallen)

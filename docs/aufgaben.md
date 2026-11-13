@@ -1974,6 +1974,7 @@ check:
     - { table_sorted: 'Punkte', order: down }
     - { order: ['Sägen', 'Säg das', 'Zusammenbauen', 'Leim und'] }   # die Absätze, die so anfangen (oder sie enthalten), in dieser Reihenfolge: Kapitel samt Text verschoben
     - { own_style: ['Tipp: Miss', 'Tipp: Lass'], example: 'Tipp' }   # diese Absätze mit einer eigenen Vorlage (keiner des Programms), die anders aussieht als »Standard«, ohne Formatierung von Hand   # die Zeilen unter dieser Kopfzelle nach ihren Zahlen sortiert (down: die größte oben), die Kopfzeile oben
+    - { landscape: ['Der Plan'], portrait: ['Projektwoche', 'Was wir brauchen'] }   # die Seiten mit diesen Stücken quer (breiter als hoch), die mit den anderen hochkant
     - no_tabs             # kein Tab mehr im Dokument
     - { ratio: true, names: ['das Foto', 'die Karte'] }   # kein Bild verzerrt
     - { wrap: 1, side: right, names: […] }   # das erste Bild der Vorlage mit Text daneben, rechts

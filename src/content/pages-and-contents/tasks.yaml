@@ -50,6 +50,10 @@ tasks:
 
   - id: bericht
     title: Der Bericht mit Seiten und Verzeichnis
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deinen Bericht. Die Prüfung markiert auf deiner Seite jede Stelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -81,3 +85,162 @@ tasks:
         - "Lösch die leeren Absätze vor jedem Tag und setz dort einen Seitenumbruch (*Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenumbruch*)."
         - "Lösch das getippte Verzeichnis, stell den Cursor an seine Stelle und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Inhaltsverzeichnis…*."
         - "Aktualisieren: Rechtsklick ins Verzeichnis <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis aktualisieren*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Der Bericht über den Schulgarten ist gebaut wie der Reisebericht: ein
+      getipptes Inhaltsverzeichnis, die Kapitel mit leeren Absätzen auf neue
+      Seiten geschoben. Bau ihn richtig: Seitenumbrüche statt leerer Absätze
+      und ein Inhaltsverzeichnis, das das Programm führt.
+    check:
+      type: document
+      file: pages-and-contents/07 Schulgarten.docx
+      rules:
+        - text
+        - empty_paragraphs
+        - { page_breaks: ['Die Hochbeete', 'Der Teich', 'Die Bäume', 'Die Vogelhäuser'], label: 'Jedes Kapitel beginnt mit einem Seitenumbruch' }
+        - toc
+    hint:
+      - Lösch zuerst die leeren Absätze, dann setz vor jedes Kapitel einen Seitenumbruch.
+      - Das getippte Inhaltsverzeichnis löschst du ganz und fügst an seiner Stelle ein echtes ein.
+      - Nach einer Änderung aktualisierst du das Verzeichnis.
+
+  - id: quer
+    title: Eine Seite quer
+    extra: true
+    prompt: |
+      Der Plan der Projektwoche ist breiter als die Seite und ragt rechts
+      hinaus. Dreh nur die Seite mit dem Plan ins Querformat; die erste und
+      die letzte Seite bleiben hochkant.
+    check:
+      type: document
+      file: pages-and-contents/07 Projektwoche.docx
+      rules:
+        - text
+        - { landscape: ['Der Plan', 'Zeit'], portrait: ['Projektwoche der 7b', 'Was wir brauchen'], label: 'Nur die Seite mit dem Plan quer' }
+    hint:
+      - Eine Seite für sich drehen geht nur, wenn sie vom Rest getrennt ist, durch einen Abschnitt (Word) oder eine eigene Seitenvorlage (LibreOffice).
+      - Die Seite nach dem Plan muss wieder hochkant werden; dafür braucht es dort noch einmal einen Wechsel.
+    word:
+      hint:
+        - "Markier den Plan samt seiner Überschrift und öffne *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenränder* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Benutzerdefinierte Seitenränder…*."
+        - "Wähl dort *Querformat* und unten bei *Übernehmen für* *Markierten Text*. Word setzt die Abschnittsumbrüche davor und danach selbst."
+        - "Steht die letzte Seite danach auch quer, stell den Cursor auf sie und stell ihr Format unter *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Ausrichtung* wieder auf *Hochformat*."
+    libreoffice:
+      hint:
+        - "Lösch den Seitenumbruch vor »Der Plan« nicht, sondern ersetz ihn: Stell den Cursor an den Anfang von »Der Plan« und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Umbrüche* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Manueller Umbruch…*."
+        - "Wähl dort den Typ *Seitenumbruch* und die Seitenvorlage *Querformat*. Ab hier sind die Seiten quer."
+        - "Mach dasselbe am Anfang von »Was wir brauchen«, mit der Seitenvorlage *Standard*: Dann ist die letzte Seite wieder hochkant."
+    nextcloud:
+      hint:
+        - "Stell den Cursor an den Anfang von »Der Plan« und wähl *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Umbrüche* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Manueller Umbruch…*."
+        - "Wähl dort den Typ *Seitenumbruch* und die Seitenvorlage *Querformat*. Ab hier sind die Seiten quer."
+        - "Mach dasselbe am Anfang von »Was wir brauchen«, mit der Seitenvorlage *Standard*: Dann ist die letzte Seite wieder hochkant."
+
+  - id: fallen
+    title: Zwölf Fallen
+    extra: true
+    prompt: |
+      Das Infoblatt zur Klassenfahrt in den Harz sieht fertig aus, mit der
+      Anmeldung auf der zweiten Seite. Zwölf Stellen sind trotzdem falsch
+      gebaut: sechs von der Art wie auf dem ersten Blatt, je eine vom zweiten
+      bis sechsten und eine von diesem. Die Prüfung sagt dir nur, wie viele du
+      gefunden hast; zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: pages-and-contents/07 Harz.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Klassenfahrt in den Harz'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '15. Januar'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['im April fährt die 7b']
+          label: Nach »Brockenweg.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »Brockenweg.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Die Anmeldung finden']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den kurzen Absatz über die Anmeldung an.
+            - Vor »Die Anmeldung« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['Wann und wohin']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand vor »Wann und wohin« an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn; die Überschrift bringt ihren Abstand selbst mit.
+        - line_breaks: true
+          in: ['Das Geld überweisen']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über das Geld an.
+            - Hinter »braucht,« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über die Fragen ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+        - list: ['Wanderschuhe', 'eine warme Jacke', 'Regenkleidung', 'eine Taschenlampe']
+          label: Ein Punkt der Liste war von Hand getippt.
+          hints:
+            - Diese Falle ist vom dritten Blatt. Sieh dir die Liste genau an.
+            - Versuch bei jedem Punkt der Liste, das Zeichen davor mit der Maus zu markieren. Ein echtes Aufzählungszeichen lässt sich nicht markieren wie ein Buchstabe.
+            - Vor »eine Taschenlampe« sind der Punkt und ein Tab getippt. Lösch beide und mach die Zeile zu einem Punkt der Liste wie die anderen.
+        - table: ['Busfahrt', 'Jugendherberge', 'Bergwerk', 'Zusammen']
+          columns: 2
+          label: »Zusammen« stand nicht in der Tabelle.
+          hints:
+            - Diese Falle ist vom vierten Blatt. Sieh dir die Kosten genau an.
+            - Die Tabelle hat keine Linien. Schalte die Formatierungszeichen ein und sieh dir jede Zeile an. In einer Zelle steht kein →.
+            - Hinter »Zusammen« steht ein Tab; die Zeile steht unter der Tabelle, nicht in ihr. Füg mit <kbd>Tab</kbd> in der letzten Zelle eine Zeile an, trag sie dort ein und lösch die getippte Zeile.
+        - ratio: true
+          names: ['das Foto']
+          label: Das Foto war in die Breite gezogen.
+          hints:
+            - Diese Falle ist vom fünften Blatt. Sieh dir das Foto genau an.
+            - Wirkt der Kranich etwas zu dick? Vergleich das Foto mit dem auf dem fünften Blatt.
+            - Das Foto ist in die Breite gezogen. Setz es auf die Originalgröße zurück und mach es dann an einer Ecke kleiner, etwa 5 cm breit.
+        - headings: ['Wann und wohin', 'Was es kostet', 'Was mitkommt']
+          level: 1
+          label: »Was mitkommt« sah nur aus wie eine Überschrift.
+          hints:
+            - Diese Falle ist vom sechsten Blatt. Sieh dir die Überschriften an.
+            - Öffne die Übersicht der Überschriften (Word Navigationsbereich, LibreOffice Navigator). Wie viele Einträge zeigt sie, und wie viele Überschriften siehst du?
+            - »Was mitkommt« hat die Vorlage »Standard« und ist von Hand fett, groß und grün gemacht. Lösch die Formatierung und gib dem Absatz die Vorlage »Überschrift 1«.
+        - page_breaks: ['Anmeldung zur Klassenfahrt']
+          label: Die Anmeldung stand nur mit leeren Absätzen auf der zweiten Seite.
+          hints:
+            - Diese Falle ist von diesem Blatt. Wie kommt die Anmeldung auf die zweite Seite?
+            - Sieh dir das Ende der ersten Seite mit den Formatierungszeichen an.
+            - Unter dem Gruß stehen leere Absätze, bis die Anmeldung auf die nächste Seite rutscht. Lösch sie und setz vor die Anmeldung einen Seitenumbruch.
+    solution: |
+      Die zwölf Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »Brockenweg.«, ein
+      Einzug aus Leerzeichen, ein leerer Absatz statt Abstand, ein ↵ am Ende
+      einer Zeile, die sowieso dort umgebrochen wäre, der Satz über die Fragen
+      in Arial, »eine Taschenlampe« mit getipptem Punkt und Tab, »Zusammen«
+      unter der Tabelle, das Foto um 12 % in die Breite gezogen, »Was
+      mitkommt«, das nur aussah wie eine Überschrift, und die Anmeldung, die
+      nur leere Absätze auf die zweite Seite schoben.

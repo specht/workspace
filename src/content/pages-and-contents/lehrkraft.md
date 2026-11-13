@@ -7,7 +7,7 @@ Lernende ersetzen leere Absätze durch Seitenumbrüche und ein getipptes Inhalts
 <li><b>10 Minuten:</b> die Vermutung zum längeren Montag, die leeren Absätze zählen, Seitenumbrüche.</li>
 <li><b>20 Minuten:</b> das Inhaltsverzeichnis, eine Überschrift umbenennen und das Verzeichnis aktualisieren.</li>
 <li><b>10 Minuten:</b> prüfen.</li>
-<li><b>Für Schnelle:</b> der Versuch unten auf der Seite: ein Tag über zwei Seiten, danach das Verzeichnis aktualisieren.</li>
+<li><b>Für Schnelle und zum Üben:</b> der Versuch unten auf der Seite (ein Tag über zwei Seiten, danach das Verzeichnis aktualisieren) und die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -35,3 +35,25 @@ Lernende ersetzen leere Absätze durch Seitenumbrüche und ein getipptes Inhalts
 - **Das Inhaltsverzeichnis steht auf einer eigenen Seite:** Der Seitenumbruch steht in der Formatvorlage »Überschrift 1«, und Word baut die Überschrift des Verzeichnisses auf »Überschrift 1« auf. Den Umbruch besser vor jeden Tag setzen.
 - **Das Verzeichnis ist leer:** Die Überschriften haben keine Formatvorlage (das letzte Blatt).
 - **Das Verzeichnis nennt den alten Namen:** Es wurde nach dem Umbenennen nicht aktualisiert.
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer den
+Bericht besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Zwölf Fallen«.
+
+- **Noch eine Runde:** ein Bericht über den Schulgarten, gebaut wie der
+  Reisebericht (getipptes Verzeichnis, Kapitel mit leeren Absätzen auf neue
+  Seiten geschoben); dieselben Punkte wie beim Bericht.
+- **Eine Seite quer:** der Plan der Projektwoche, eine Tabelle mit sechs
+  Spalten, ragt hochkant über den Rand. Nur seine Seite kommt ins
+  Querformat: in Word mit *Übernehmen für: Markierten Text* (Word setzt die
+  Abschnittsumbrüche selbst), in LibreOffice mit einem Umbruch, der die
+  Seitenvorlage auf *Querformat* und danach zurück auf *Standard* wechselt.
+  Die Prüfung sieht nach, welche Seiten breiter als hoch sind; ein ganz
+  quer gestelltes Dokument besteht nicht.
+- **Zwölf Fallen:** ein Infoblatt zur Klassenfahrt in den Harz mit einer
+  Anmeldung auf der zweiten Seite, mit den Fallen der sechs Blätter davor und
+  einer von diesem: Die Anmeldung steht nur durch leere Absätze auf der
+  zweiten Seite. Die Prüfung zählt nur und zeigt jede Falle erst, wenn sie
+  behoben ist; Tipps gibt es für jede einzeln.

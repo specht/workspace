@@ -189,8 +189,11 @@ lines. Sheet 6 too (Noch eine Runde: the animals at the lake; Zwei
 Handgriffe: a building guide, its steps moved in the navigation pane, the
 rule `order`, and a style of one's own »Tipp«, the rule `own_style`, for
 which the office service says which styles the user made; Elf Fallen: an
-information sheet with headings, one of them made by hand). Next: sheets 7
-to 10 as the class reaches them.
+information sheet with headings, one of them made by hand), and sheet 7
+(Noch eine Runde: the report on the school garden; Eine Seite quer: the
+project week's plan turned on a page of its own, the rule `landscape`;
+Zwölf Fallen: an information sheet with a reply slip pushed onto page 2 by
+empty paragraphs). Next: sheets 8 to 10 as the class reaches them.
 
 ## Findings of the word processing series
 

@@ -16,3 +16,26 @@ examples:
         say: nicht mehr aktuell
       - document: stufen/ohne-umbrueche.docx
         say: kein Seitenumbruch
+  runde:
+    pass:
+      - document: stufen/schulgarten.docx
+    fail:
+      - document: ../../static/pages-and-contents/07 Schulgarten.docx
+        say: Inhaltsverzeichnis, das jemand getippt hat
+  quer:
+    pass:
+      - document: stufen/projektwoche.docx
+      - document: stufen/projektwoche-libreoffice.docx
+    fail:
+      - document: ../../static/pages-and-contents/07 Projektwoche.docx
+        say: steht noch hochkant
+      - document: stufen/projektwoche-alles-quer.docx
+        say: sie soll hochkant bleiben
+  fallen:
+    pass:
+      - document: stufen/harz.docx
+    fail:
+      - document: ../../static/pages-and-contents/07 Harz.docx
+        say: 0 von 12 Fallen gefunden
+      - document: stufen/harz-elf.docx
+        say: 11 von 12 Fallen gefunden
