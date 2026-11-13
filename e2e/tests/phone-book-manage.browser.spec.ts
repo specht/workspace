@@ -27,12 +27,12 @@ test('the Telefonbuch is managed: titles edited, games hidden and shown', async 
   await expect(page.locator('h1')).toHaveText('Telefonbuch');
   const row = page.locator('.phone-manage-row').first();
   test.skip(await row.count() === 0, 'no published game on this site');
-  const number = (await row.locator('.phone-manage-number b').textContent())!.trim();
+  const number = (await row.locator('.phone-manage-number span').last().textContent())!.trim();
   const title = row.locator('.phone-manage-title');
   const original = await title.inputValue();
 
   // a new title, saved
-  await expect(row.locator('.phone-manage-save')).toBeDisabled();
+  await expect(row.locator('.phone-manage-save')).toBeHidden();
   await title.fill(original + ' (neu)');
   await row.locator('.phone-manage-save').click();
   await expect(row.locator('.phone-manage-state')).toHaveText('Gespeichert.');
@@ -42,6 +42,8 @@ test('the Telefonbuch is managed: titles edited, games hidden and shown', async 
   await page.goto('/telefon-freigabe');
   await row.locator('.phone-manage-shown').uncheck();
   await expect(row.locator('.phone-manage-state')).toContainText('Ausgeblendet');
+  await expect(row.locator('.phone-manage-note')).toContainText('nur über die Nummer');
+  if (process.env.PHONE_MANAGE_SHOTS) await page.screenshot({ path: process.env.PHONE_MANAGE_SHOTS + '/manage.png', fullPage: true });
   expect((await book(page)).some((e: string) => e.startsWith(`${number} `))).toBe(false);
 
   // back as it was
@@ -49,7 +51,7 @@ test('the Telefonbuch is managed: titles edited, games hidden and shown', async 
   await row.locator('.phone-manage-shown').check();
   await expect(row.locator('.phone-manage-state')).toHaveText('Steht im Telefonbuch.');
   await title.fill(original);
-  await row.locator('.phone-manage-save').click();
+  await title.press('Enter');
   await expect(row.locator('.phone-manage-state')).toHaveText('Gespeichert.');
   expect(await book(page)).toContain(`${number} ${original}`);
 });

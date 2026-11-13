@@ -11,7 +11,7 @@ require 'date'
 # in the rows with a number per person instead of an address.
 module UsageStats
     # the lines of the Telefonspiel (PhoneCalls), as the page names them
-    PHONE_LINES = { 'telefon' => 'am Telefon', 'browser' => 'im Telefonbuch' }.freeze
+    PHONE_LINES = { 'telefon' => 'am Telefon', 'browser' => 'im Browser' }.freeze
     MIN_PEOPLE = 5
     WINDOWS = [7, 30, 90, 365].freeze
     DEFAULT_WINDOW = 30
@@ -82,8 +82,18 @@ module UsageStats
         end.sort_by { |g| [g[:game].empty? ? 1 : 0, -g[:calls], g[:game]] }
     end
 
+    # How a game stands now, for the table: in the book, hidden (a part of
+    # another game), taken out after an error, or not published any more
+    PHONE_STATES = {
+        'shown' => ['text-bg-success', 'im Telefonbuch'],
+        'hidden' => ['text-bg-secondary', 'ausgeblendet'],
+        'broken' => ['text-bg-danger', 'Fehler, herausgenommen'],
+        'gone' => ['text-bg-light', 'nicht veröffentlicht'],
+    }.freeze
+
     # The table of the Telefonspiel's games: which numbers were called how
-    # often, on which line.
+    # often, on which line, and how each stands now. titles: number => a
+    # title, or { :title, :state, :href, :errors, :error } (usage_stats_page.rb).
     def self.phone_html(summary, titles)
         games = summary[:phone_games]
         total = summary[:phone].sum { |p| p[:people] }
@@ -91,7 +101,7 @@ module UsageStats
         io = +"<h2 class='mt-4'>Telefonspiel</h2>"
         if summary[:phone_since].nil?
             return io << "<p class='text-muted'>Noch keine Anrufe gezählt. Der Workspace zählt je Stunde, wie viele Anrufe welches Spiel " \
-                         'erreicht haben, am Telefon und im Telefonbuch, nicht wer anruft.</p>'
+                         'erreicht haben, am Telefon und mit dem Telefon im Browser (/telefonbuch), nicht wer anruft.</p>'
         end
         minutes = total.zero? ? 0 : (seconds / 60.0 / total)
         io << "<p>#{total} #{total == 1 ? 'Anruf' : 'Anrufe'} im Zeitraum, im Mittel #{decimal(minutes.round(1))} Minuten lang. " \
@@ -99,12 +109,22 @@ module UsageStats
         if games.empty?
             return io << "<p class='text-muted'>Im Zeitraum kein Anruf.</p>"
         end
-        io << "<div class='table-responsive'><table class='table table-sm usage-table'><thead><tr><th>Nummer</th><th>Spiel</th>"
+        io << "<div class='table-responsive'><table class='table table-sm usage-table'><thead><tr><th>Nummer</th><th>Spiel</th><th>jetzt</th>"
         PHONE_LINES.each_value { |label| io << "<th class='text-end'>#{h(label)}</th>" }
         io << "<th class='text-end'>zusammen</th></tr></thead><tbody>"
         games.each do |g|
-            number, title = g[:game].empty? ? ['–', 'kein Spiel gewählt (nur das Telefonbuch)'] : [g[:game], titles[g[:game]] || 'nicht mehr veröffentlicht']
-            io << "<tr><td>#{h(number)}</td><td>#{h(title)}</td>"
+            if g[:game].empty?
+                io << "<tr><td>–</td><td colspan='2'>kein Spiel gewählt (nur das Menü)</td>"
+            else
+                t = titles[g[:game]]
+                t = { :title => t, :state => 'shown' } if t.is_a?(String)
+                t ||= { :title => 'nicht mehr veröffentlicht', :state => 'gone' }
+                css, label = PHONE_STATES[t[:state]] || PHONE_STATES['gone']
+                title = t[:href] ? "<a href='#{h(t[:href])}'>#{h(t[:title])}</a>" : h(t[:title])
+                errors = t[:errors].to_i.positive? ? " <span class='small text-danger' title='#{h(t[:error].to_s.lines.last.to_s.strip)}'>" \
+                                                     "#{t[:errors]} Fehler</span>" : ''
+                io << "<tr><td>#{h(g[:game])}</td><td>#{title}</td><td><span class='badge #{css}'>#{label}</span>#{errors}</td>"
+            end
             PHONE_LINES.each_key { |line| io << "<td class='text-end'>#{g[:lines][line]}</td>" }
             io << "<td class='text-end'>#{g[:calls]}</td></tr>"
         end
@@ -459,7 +479,7 @@ module UsageStats
                      end]
         end
         unless summary[:phone_since].nil?
-            rows << ['Anrufe beim Telefonspiel', "am Telefon und im Telefonbuch, je #{unit}",
+            rows << ['Anrufe beim Telefonspiel', "am Telefon und im Browser, je #{unit}",
                      lambda do |axis|
                          bars(summary[:phone], 1, :axis => axis, :few => 'Anrufe', :none => 'kein Anruf',
                               :tip => ->(p, n) { "#{n} #{n == 1 ? 'Anruf' : 'Anrufe'}: " + PHONE_LINES.map { |line, label| "#{p[:lines][line]} #{label}" }.join(', ') })

@@ -344,6 +344,10 @@ class Main < Sinatra::Base
         halt 404 unless game && %w[published broken pending].include?(game[:state])
         hidden = data[:hidden].to_s == 'true'
         neo4j_query('MATCH (g:PhoneGame {id: $id}) SET g.hidden = $hidden;', :id => game[:id], :hidden => hidden)
+        # a game taken out after an error, switched on: back in the book
+        if !hidden && game[:state] == 'broken'
+            neo4j_query("MATCH (g:PhoneGame {id: $id}) SET g.state = 'published';", :id => game[:id])
+        end
         phone_games_publish_list
         log_event "Telefonspiel #{hidden ? 'aus dem Telefonbuch ausgeblendet' : 'im Telefonbuch eingeblendet'} von #{@session_user[:email]}: #{PhoneGames.label(game)} #{game[:title]}"
         respond(:hidden => hidden)
@@ -400,7 +404,7 @@ class Main < Sinatra::Base
         # waiting for approval: each linked to its page (the same the mail links to)
         pending = all.select { |g| g[:state] == 'pending' }.sort_by { |g| -(g[:submitted] || 0).to_i }
         io = +head
-        io << "<h2 class='h4 mt-4'>Warten auf Freigabe</h2>"
+        io << "<h2 class='h4 mt-4'>Warten auf Freigabe#{pending.empty? ? '' : " <span class='text-muted fw-normal'>#{pending.size}</span>"}</h2>"
         if pending.empty?
             io << "<p class='text-muted'>Kein Spiel wartet auf Freigabe.</p>"
         else
@@ -414,27 +418,40 @@ class Main < Sinatra::Base
             io << '</div>'
         end
         # in the Telefonbuch: sorted by title as the book is; title and
-        # subtitle to edit, shown in the book and the phone's menu or not (a
-        # part of another game, reached by its number and by transfer)
+        # subtitle to edit in place, in the book or not: a hidden game (a part
+        # of another one) is reached by its number and by transfer, a game
+        # taken out after an error is back when switched on
         listed = PhoneGames.phone_book(all.select { |g| %w[published broken].include?(g[:state]) })
-        io << "<h2 class='h4 mt-4'>Im Telefonbuch</h2>" \
-              "<p class='text-muted'>Ausgeblendete Spiele stehen nicht im Telefonbuch und werden am Telefon nicht vorgelesen; über ihre Nummer und mit <code>transfer</code> sind sie weiter erreichbar, etwa als Teil eines anderen Spiels.</p>"
+        shown = listed.count { |g| g[:state] == 'published' && !g[:hidden] }
+        io << "<h2 class='h4 mt-4'>Veröffentlicht <span class='text-muted fw-normal phone-manage-count'>#{listed.size}, davon #{shown} im Telefonbuch</span></h2>" \
+              "<p class='text-muted'>Titel und Untertitel änderst du direkt in der Zeile. Ausgeblendete Spiele stehen nicht im Telefonbuch und werden am Telefon nicht vorgelesen; " \
+              "über ihre Nummer und mit <code>transfer</code> sind sie weiter erreichbar, etwa als Teil eines anderen Spiels.</p>"
         if listed.empty?
             io << "<p class='text-muted'>Noch ist kein Spiel veröffentlicht.</p>"
         else
-            io << "<div class='phone-manage' data-games='#{h.(listed.map { |g| { :id => g[:id], :hidden => g[:hidden] == true } }.to_json)}'>"
+            io << "<div class='phone-manage'>"
             listed.each do |g|
-                broken = g[:state] == 'broken' ? "<span class='badge text-bg-danger'>#{h.(PhoneGames::STATE_TEXT['broken'])}</span>" : ''
-                io << "<form class='phone-manage-row#{g[:hidden] ? ' phone-manage-hidden' : ''}' data-id='#{h.(g[:id])}'>" \
-                      "<div class='phone-manage-number'><b>#{h.(PhoneGames.label(g))}</b>#{broken}</div>" \
+                broken = g[:state] == 'broken'
+                inside = !broken && !g[:hidden]
+                note = if broken
+                    "<i class='bi bi-exclamation-triangle-fill' aria-hidden='true'></i>Bei einem Anruf mit einem Fehler abgebrochen, aus dem Telefonbuch genommen. " \
+                        "<a href='/telefon-freigabe?id=#{h.(g[:id])}'>Fehler ansehen</a>"
+                elsif g[:hidden]
+                    "<i class='bi bi-eye-slash' aria-hidden='true'></i>Ausgeblendet: nur über die Nummer erreichbar"
+                else
+                    ''
+                end
+                io << "<form class='phone-manage-row#{inside ? '' : ' phone-manage-out'}#{broken ? ' phone-manage-broken' : ''}' data-id='#{h.(g[:id])}' data-broken='#{broken}'>" \
+                      "<div class='phone-manage-number'>#{g[:word] ? "<span class='phone-manage-word'>#{h.(g[:word])}</span>" : ''}<span>#{h.(g[:number])}</span></div>" \
                       "<div class='phone-manage-fields'>" \
-                      "<input class='form-control form-control-sm phone-manage-title' name='title' maxlength='#{PhoneGames::MAX_TITLE}' value='#{h.(g[:title])}' aria-label='Titel von #{h.(PhoneGames.label(g))}'>" \
-                      "<input class='form-control form-control-sm phone-manage-description' name='description' maxlength='#{PhoneGames::MAX_DESCRIPTION}' value='#{h.(g[:description])}' aria-label='Untertitel von #{h.(PhoneGames.label(g))}'>" \
+                      "<input class='phone-manage-title' name='title' maxlength='#{PhoneGames::MAX_TITLE}' value='#{h.(g[:title])}' aria-label='Titel von #{h.(PhoneGames.label(g))}' spellcheck='false'>" \
+                      "<input class='phone-manage-description' name='description' maxlength='#{PhoneGames::MAX_DESCRIPTION}' value='#{h.(g[:description])}' aria-label='Untertitel von #{h.(PhoneGames.label(g))}'>" \
+                      "<div class='phone-manage-note'>#{note}</div>" \
                       "</div><div class='phone-manage-actions'>" \
-                      "<div class='form-check form-switch'><input class='form-check-input phone-manage-shown' type='checkbox' role='switch' id='shown-#{h.(g[:id])}'#{g[:hidden] ? '' : ' checked'}>" \
-                      "<label class='form-check-label' for='shown-#{h.(g[:id])}'>im Telefonbuch</label></div>" \
-                      "<button type='submit' class='btn btn-sm btn-outline-primary phone-manage-save' disabled>Speichern</button>" \
-                      "<a class='small' href='/telefon-freigabe?id=#{h.(g[:id])}'>Details</a>" \
+                      "<button type='submit' class='btn btn-sm btn-primary phone-manage-save' hidden>Speichern</button>" \
+                      "<div class='form-check form-switch'><input class='form-check-input phone-manage-shown' type='checkbox' role='switch' id='shown-#{h.(g[:id])}'#{inside ? ' checked' : ''}>" \
+                      "<label class='form-check-label' for='shown-#{h.(g[:id])}'>Im Telefonbuch</label></div>" \
+                      "<a class='phone-manage-details' href='/telefon-freigabe?id=#{h.(g[:id])}' title='Details: Code, Probelauf, Abschrift' aria-label='Details zu #{h.(PhoneGames.label(g))}'><i class='bi bi-three-dots' aria-hidden='true'></i></a>" \
                       "<span class='phone-manage-state small' aria-live='polite'></span></div></form>"
             end
             io << '</div>'
@@ -552,7 +569,7 @@ class Main < Sinatra::Base
         # book); without one, that one is being worked on
         line = if number
             direct = defined?(PHONE_DIRECT_DIAL) && PHONE_DIRECT_DIAL
-            game = games.first ? games.first[:number] : '123'
+            game = '555'     # the example the maintainer chose, whatever the book holds
             direct ? "Von jedem Telefon: #{number}. Wer die Nummer eines Spiels gleich dahinter wählt, kommt sofort zum Spiel, zum Beispiel #{number}-#{game}." :
                 "Von jedem Telefon: #{number}, dann die Nummer des Spiels eingeben."
         else

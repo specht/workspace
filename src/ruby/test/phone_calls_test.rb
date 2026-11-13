@@ -94,5 +94,11 @@ class PhoneCallsTest < Minitest::Test
         assert_includes html, 'kein Spiel gewählt'
         assert_includes html, '4 Anrufe'
         assert_includes UsageStats.course_html(summary, nil), 'Anrufe beim Telefonspiel'
+        # how each game stands now: in the book, hidden, taken out after an error
+        html = UsageStats.phone_html(summary, { '123' => { :title => 'Die Schatzsuche', :state => 'broken', :errors => 2, :error => "x\nNameError" } })
+        assert_includes html, 'Fehler, herausgenommen'
+        assert_includes html, '2 Fehler'
+        assert_includes UsageStats.phone_html(summary, { '123' => { :title => 'Die Schatzsuche', :state => 'hidden' } }), 'ausgeblendet'
+        assert_includes UsageStats.phone_html(summary, {}), 'nicht veröffentlicht'
     end
 end

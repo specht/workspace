@@ -1,7 +1,9 @@
 // The Telefonbuch's management (/telefon-freigabe, phone_games_list_html):
-// title and subtitle of each published game, saved with »Speichern« once
-// changed; »im Telefonbuch« shows a game in the book and the phone's menu
-// or hides it (a part of another game, still reached by its number).
+// title and subtitle of each published game, edited in place: »Speichern«
+// appears once one is changed (Enter saves too, Escape puts it back);
+// »Im Telefonbuch« shows a game in the book and the phone's menu or hides it
+// (a part of another game, still reached by its number); switched on, a game
+// taken out after an error is back in the book.
 (function () {
     const rows = document.querySelectorAll('.phone-manage-row');
 
@@ -9,6 +11,12 @@
         const box = row.querySelector('.phone-manage-state');
         box.textContent = text;
         box.className = 'phone-manage-state small ' + (ok ? 'text-success' : 'text-danger');
+        clearTimeout(box.timer);
+        if (ok && text) box.timer = setTimeout(function () { box.textContent = ''; }, 4000);
+    }
+
+    function note(row, html) {
+        row.querySelector('.phone-manage-note').innerHTML = html;
     }
 
     rows.forEach(function (row) {
@@ -20,28 +28,40 @@
         let saved = [title.value, description.value];
 
         const changed = function () {
-            save.disabled = title.value === saved[0] && description.value === saved[1];
-            if (!save.disabled) state(row, '', true);
+            const dirty = title.value !== saved[0] || description.value !== saved[1];
+            save.hidden = !dirty;
+            row.classList.toggle('phone-manage-dirty', dirty);
+            if (dirty) state(row, '', true);
         };
-        title.addEventListener('input', changed);
-        description.addEventListener('input', changed);
+        [title, description].forEach(function (input) {
+            input.addEventListener('input', changed);
+            input.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                title.value = saved[0];
+                description.value = saved[1];
+                changed();
+                input.blur();
+            });
+        });
 
         row.addEventListener('submit', function (e) {
             e.preventDefault();
+            if (save.hidden) return;
             if (!title.value.trim() || !description.value.trim()) {
                 state(row, 'Titel und Untertitel dürfen nicht leer sein.', false);
                 return;
             }
             save.disabled = true;
             api_call('/api/phone/rename', { id: id, title: title.value, description: description.value }, function (data) {
+                save.disabled = false;
                 if (!data.success) {
-                    save.disabled = false;
                     state(row, 'Nicht gespeichert. Versuch es noch einmal.', false);
                     return;
                 }
                 title.value = data.title;
                 description.value = data.description;
                 saved = [data.title, data.description];
+                changed();
                 state(row, 'Gespeichert.', true);
             }, { no_please_wait: true });
         });
@@ -56,9 +76,21 @@
                     state(row, 'Nicht geändert. Versuch es noch einmal.', false);
                     return;
                 }
-                row.classList.toggle('phone-manage-hidden', data.hidden);
-                state(row, data.hidden ? 'Ausgeblendet: nur über die Nummer erreichbar.' : 'Steht im Telefonbuch.', true);
+                row.classList.toggle('phone-manage-out', data.hidden);
+                row.classList.remove('phone-manage-broken');
+                note(row, data.hidden ? "<i class='bi bi-eye-slash' aria-hidden='true'></i>Ausgeblendet: nur über die Nummer erreichbar" : '');
+                state(row, data.hidden ? 'Ausgeblendet.' : 'Steht im Telefonbuch.', true);
+                updateCount();
             }, { no_please_wait: true });
         });
     });
+
+    // the count in the heading
+    function updateCount() {
+        const count = document.querySelector('.phone-manage-count');
+        if (!count) return;
+        const all = rows.length;
+        const inside = Array.from(rows).filter(function (r) { return !r.classList.contains('phone-manage-out'); }).length;
+        count.textContent = all + ', davon ' + inside + ' im Telefonbuch';
+    }
 })();

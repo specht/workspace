@@ -83,10 +83,22 @@ class Main < Sinatra::Base
             'stehen hier nicht; Lehrkräfte, die Administration und die Testgruppen zählen nicht mit.</p>' +
             UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours,
                                           :phone => phone[:hours], :phone_games => phone[:games]),
-                        :titles => titles, :tasks => tasks, :schools => school_names, :phone_titles => PhoneCalls.titles,
+                        :titles => titles, :tasks => tasks, :schools => school_names, :phone_titles => phone_titles_now,
                         :server => { :periods => server_periods, :rhythm => ServerLoad.rhythm(server), :since => first_server, :today => today },
                         :pins => pins) +
             ServerLoad.html(server_periods, :since => first_server, :today => today)
+    end
+
+    # The games of the call table as they stand now (UsageStats.phone_html):
+    # by number the published copy (in the book, hidden or taken out after an
+    # error), its details page and the errors of its calls
+    def phone_titles_now
+        phone_games_all.select { |g| %w[published broken].include?(g[:state]) }.to_h do |g|
+            state = g[:state] == 'broken' ? 'broken' : (g[:hidden] ? 'hidden' : 'shown')
+            [g[:number].to_s, { :title => g[:title], :state => state, :href => "/telefon-freigabe?id=#{g[:id]}", :errors => g[:errors], :error => g[:error] }]
+        end
+    rescue StandardError
+        PhoneCalls.titles
     end
 
     # /statistik?server=2026-11-09: one day of the server in five-minute steps
