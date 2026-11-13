@@ -12,6 +12,6 @@ examples:
       - document: ../../static/spreadsheet-cells/01 Kosten.xlsx
         say: keine Formel
       - document: ../../static/spreadsheet-cells/01 Kosten.xlsx
-        say: Ich habe C5 auf 152 geändert
+        say: "rechnet nicht mit: Nachdem ich C5 auf 152 geändert habe"
       - document: stufen/gesamt-getippt.xlsx
-        say: D9 soll mit SUMME rechnen
+        say: D9 rechnet noch nicht mit SUMME

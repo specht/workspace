@@ -69,9 +69,11 @@ Prüfungen »Noch eine Runde«, nach einer oder zwei die »Sechs Fallen«.
   zwei Leerzeichen nach »Lehrkräfte.«, ein Einzug aus Leerzeichen, ein leerer
   Absatz (mit 9 pt, so hoch wie 12 pt Abstand) und ein ↵ genau dort, wo die
   Zeile sowieso endet.
-- **Eine Geheimbotschaft:** a und e, i und o sind vertauscht. Die Vermutung
-  zeigt, warum zweimal Ersetzen nicht reicht; entschlüsselt wird mit einem
-  Zwischenlager (§), sechsmal *Alle ersetzen*. Das Losungswort ist
+- **Eine Geheimbotschaft:** a und e, i und o, n und r sind vertauscht, auch
+  in der Überschrift; mit nur zwei Paaren konnte eine Klasse die Botschaft
+  ohne Ersetzen lesen. Die Vermutung zeigt, warum zweimal Ersetzen nicht
+  reicht; entschlüsselt wird mit einem Zwischenlager (§), neunmal *Alle
+  ersetzen*. Wer in die Falle getappt ist, macht es mit Strg+Z rückgängig. Das Losungswort ist
   »Kranichfeder«; der Tausch mit Zwischenlager kommt beim Programmieren als
   Tausch zweier Variablen wieder.
 

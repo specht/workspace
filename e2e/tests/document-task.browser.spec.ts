@@ -77,7 +77,9 @@ test('a document is checked and its problems are marked on its page', async ({ p
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(1);
   // its other dates are its text all the same; its date is found
   await expect(report.locator('.document-checklist li.document-ok')).toContainText('Der Text ist noch vollständig');
-  await expect(report.locator('.document-checklist li.document-open', { hasText: 'Das Datum ist rechtsbündig' })).toHaveCount(1);
+  // an open point says what is wrong now, not what should be true
+  await expect(report.locator('.document-checklist li.document-open', { hasText: 'nur mit Leerzeichen rechts' })).toHaveCount(1);
+  await expect(report.locator('.document-checklist li.document-open', { hasText: 'Das Datum ist rechtsbündig' })).toHaveCount(0);
   await expect(report.locator('.document-sheet img')).toHaveCount(1);
   await expect(report.locator('.document-sheet img')).toHaveAttribute('src', /^\/api\/document_page\/[0-9a-f]{40}\.svg$/);
   const marks = report.locator('.document-mark');
@@ -317,7 +319,7 @@ test('a diary is checked for its heading styles', async ({ page, e2eEmail }, tes
   if (shots) await page.screenshot({ path: path.join(shots, 'styles-wrong.png') });
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/paragraph-styles/stufen/noch-von-hand.docx'));
   await expect(report.locator('.document-checklist li.document-open')).toHaveCount(1);
-  await expect(report.locator('.document-checklist li.document-open')).toContainText('nicht von Hand formatiert');
+  await expect(report.locator('.document-checklist li.document-open')).toContainText('von Hand');
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/paragraph-styles/stufen/reisetagebuch.docx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(9);
@@ -429,7 +431,7 @@ test('a report is checked for its header, date, page number and footnotes', asyn
   if (shots) await page.screenshot({ path: path.join(shots, 'headers-wrong.png') });
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/headers-and-footnotes/stufen/datum-fest.docx'));
   await expect(report.locator('.document-checklist li.document-open')).toHaveCount(1);
-  await expect(report.locator('.document-checklist li.document-open')).toContainText('Das Datum als Feld in der Kopfzeile');
+  await expect(report.locator('.document-checklist li.document-open')).toContainText('Das Datum in der Kopfzeile ist fest');
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/headers-and-footnotes/stufen/reisebericht.docx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
@@ -474,7 +476,7 @@ test('a spreadsheet is checked for its formulas and whether it calculates', asyn
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
   await expect(report.locator('.document-checklist li.document-open')).toHaveCount(3);
-  await expect(report.locator('.document-checklist')).toContainText('Rechnet mit, wenn sich eine Zahl ändert');
+  await expect(report.locator('.document-checklist')).toContainText('rechnet nicht mit');
   await expect(report.locator('.document-mark').first()).toBeAttached();
   if (shots) await page.screenshot({ path: path.join(shots, 'sheet-wrong.png') });
   // a text document where a table belongs
@@ -525,7 +527,7 @@ test('a spreadsheet is checked for absolute references and errors', async ({ pag
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/absolute-references/stufen/ohne-dollar.xlsx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   const report = card.locator('.document-report');
-  await expect(report).toContainText('Fester Bezug auf B2');
+  await expect(report).toContainText('rechnet nicht fest mit B2');
   await expect(report).toContainText('#DIV/0!');
   await expect(report.locator('.document-mark-cell').first()).toBeAttached();
   if (shots) await page.screenshot({ path: path.join(shots, 'absolute-wrong.png') });

@@ -18,4 +18,4 @@ examples:
       - document: stufen/ohne-dollar.xlsx
         say: '#DIV/0!'
       - document: stufen/getippt.xlsx
-        say: Ich habe B2 auf 24
+        say: "rechnet nicht mit: Nachdem ich B2 auf 24"

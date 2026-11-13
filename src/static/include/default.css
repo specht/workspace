@@ -17623,6 +17623,20 @@ body.mail-app-open {
 }
 .document-label {
     font-weight: 600;
+    /* the number beside the text, a long text wrapping beside it */
+    display: flex;
+    align-items: baseline;
+    gap: 0.1em;
+}
+/* an open point: what is wrong now, the reason and the way below it
+   (document_task.js, firstSentence) */
+.document-problem {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.document-open .document-message {
+    margin-top: 0.25em;
+    color: var(--bs-secondary-color);
 }
 .document-ok .document-label {
     font-weight: 400;

@@ -1244,8 +1244,19 @@
                 chip.setAttribute('aria-label', 'Punkt ' + item.n + ': ' + chip.title);
                 head.appendChild(chip);
             }
-            head.appendChild(el('span', 'visually-hidden', item.ok ? 'Erfüllt: ' : 'Offen: '));
-            head.appendChild(document.createTextNode(item.label));
+            // a point met: what is right now (the label, »Keine leeren
+            // Absätze«); a point open: what is wrong now, the first sentence
+            // of its message (»5 leere Absätze machen Abstand, …«), the
+            // reason and the way below it
+            const parts = !item.ok && item.message ? firstSentence(item.message) : null;
+            head.appendChild(el('span', 'visually-hidden', item.ok ? 'Erfüllt: ' : 'Noch nicht: '));
+            if (parts) {
+                const problem = el('span', 'document-problem');
+                problem.innerHTML = parts[0];
+                head.appendChild(problem);
+            } else {
+                head.appendChild(document.createTextNode(item.label));
+            }
             if (li.classList.contains('document-fresh')) head.appendChild(el('span', 'document-new', 'neu erfüllt'));
             text.appendChild(head);
             if (item.n && item.marks && item.marks.length > 1) {
@@ -1253,9 +1264,9 @@
                 where.dataset.for = item.n;
                 text.appendChild(where);
             }
-            if (!item.ok && item.message) {
+            if (parts && parts[1]) {
                 const message = el('div', 'document-message');
-                message.innerHTML = item.message;
+                message.innerHTML = parts[1];
                 text.appendChild(message);
             }
             li.appendChild(text);
@@ -1353,6 +1364,26 @@
         const line = card.querySelector('.document-name');
         if (!line || card.documentHandle || card.documentFile) return;
         line.textContent = answer ? 'Zuletzt geprüft: ' + answer : 'oder hierher ziehen';
+    }
+
+    // A message split after its first sentence: [what is wrong, the rest].
+    // A full stop ends it only outside »…« and „…“, followed by a space and
+    // a capital (or »), and not after a day of a date (»9. März«).
+    const MONTHS = /^(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\b/;
+    function firstSentence(message) {
+        let depth = 0;
+        for (let i = 0; i < message.length - 2; i++) {
+            const c = message[i];
+            if (c === '»' || c === '„') depth += 1;
+            else if ((c === '«' || c === '“') && depth > 0) depth -= 1;
+            else if (depth === 0 && '.!?'.indexOf(c) >= 0 && message[i + 1] === ' ') {
+                const rest = message.slice(i + 2);
+                if (!/^[A-ZÄÖÜ»„<]/.test(rest)) continue;
+                if (/\d$/.test(message.slice(0, i)) && MONTHS.test(rest)) continue;
+                return [message.slice(0, i + 1), rest];
+            }
+        }
+        return [message, ''];
     }
 
     // The starting file once. A second download is a second file (»01

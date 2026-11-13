@@ -14,7 +14,7 @@ examples:
       - document: stufen/getippt.xlsx
         say: ABRUNDEN
       - document: stufen/getippt.xlsx
-        say: Ich habe H5 auf 1400
+        say: "rechnet nicht mit: Nachdem ich H5 auf 1400"
   pdf:
     pass:
       - document: stufen/abrechnung.pdf

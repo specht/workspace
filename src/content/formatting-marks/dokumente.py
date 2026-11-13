@@ -295,26 +295,29 @@ def letter_solution(path):
     doc.save(path)
 
 
-# A secret message from the class trip: a and e swapped, i and o too. No
-# word begins with a capital A, E, I or O, so that replacing with or without
-# »Groß-/Kleinschreibung beachten« gives the same.
+# A secret message from the class trip: a and e swapped, i and o, n and r
+# (three pairs: with two, the class read it without decoding). The heading
+# is swapped too, so that decoding leaves nothing scrambled. No word begins
+# with a capital A, E, I, O, N or R, so that replacing with or without
+# »Groß-/Kleinschreibung beachten« gives the same (Word adapts a capital,
+# LibreOffice does not).
 SECRET = [
-    'Treffpunkt für die Nachtwanderung: um neun Uhr am Steg hinter der Jugendherberge.',
-    'Bringt eine Taschenlampe mit, aber verratet niemandem etwas.',
+    'Wir treffen uns um neun Uhr hinter der Jugendherberge, beim Bootssteg.',
+    'Bringt eine Lampe mit und verratet keinem etwas.',
     'Das Losungswort heißt Kranichfeder.',
 ]
 SECRET_TITLE = 'Streng geheim'
 
 
 def swapped(text):
-    return text.translate(str.maketrans('aeio', 'eaoi'))
+    return text.translate(str.maketrans('aeionr', 'eaoirn'))
 
 
 def secret(path, decoded=False):
     doc = base()
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(12)
-    run(p, SECRET_TITLE, bold=True, size=16)
+    run(p, SECRET_TITLE if decoded else swapped(SECRET_TITLE), bold=True, size=16)
     for line in SECRET:
         q = doc.add_paragraph()
         q.paragraph_format.space_after = Pt(6)

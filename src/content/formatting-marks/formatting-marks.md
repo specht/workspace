@@ -239,9 +239,9 @@ _task(fallen)
 ### Eine Geheimbotschaft
 
 Für die Nachtwanderung am Kranichsee gibt es eine Geheimbotschaft. Wer sie
-verschlüsselt hat, hat zwei Paare von Buchstaben die Plätze tauschen lassen:
-Jedes a ist ein e geworden und jedes e ein a, und genauso i und o. Aus
-»Steg« wurde so »Stag«.
+verschlüsselt hat, hat drei Paare von Buchstaben die Plätze tauschen lassen:
+Jedes a ist ein e geworden und jedes e ein a, genauso i und o und n und r.
+Aus »Steg« wurde so »Stag«, aus »neun« »raur«.
 
 Mit der Hand wäre das viel Arbeit. **Suchen und Ersetzen**
 (<kbd>Strg</kbd>+<kbd>H</kbd>) ersetzt ein Zeichen überall auf einmal: Oben
@@ -256,7 +256,7 @@ Zeichen, das sonst nirgends im Text vorkommt, zum Beispiel §. Erst werden alle
 a zu §, dann alle e zu a, zuletzt alle § zu e. So geht kein Buchstabe verloren.
 
 <div class='hint'>
-<strong>Tipp:</strong> In der Botschaft beginnt kein Wort mit einem großen A, E, I oder O. Ob <em>Groß-/Kleinschreibung beachten</em> an ist, macht hier also keinen Unterschied.
+<strong>Tipp:</strong> In der Botschaft beginnt kein Wort mit einem großen A, E, I, O, N oder R. Ob <em>Groß-/Kleinschreibung beachten</em> an ist, macht hier also keinen Unterschied. Ist beim Ersetzen etwas schiefgegangen, macht <kbd>Strg</kbd>+<kbd>Z</kbd> jedes <em>Alle ersetzen</em> einzeln rückgängig.
 </div>
 
 Beim Programmieren begegnet dir dasselbe wieder: Wer die Werte von zwei

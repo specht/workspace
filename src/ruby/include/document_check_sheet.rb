@@ -179,7 +179,7 @@ module DocumentCheck
         item.marks = wrong.keys.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'rechnet nicht mit') }
         n, v = wrong.first || expect.first
         got = (probe['shown'] || {})[n]
-        item.message = "Ich habe #{changes} geändert. Dann müsste in #{n} #{wanted(v)} stehen, " \
+        item.message = "#{n} rechnet nicht mit: Nachdem ich #{changes} geändert habe, müsste dort #{wanted(v)} stehen, " \
             "es steht aber #{got.to_s.empty? ? 'nichts' : q(got)} da. Rechnet die Zelle mit einer getippten Zahl statt mit der Zelle?"
         item
     end
@@ -200,7 +200,7 @@ module DocumentCheck
         n, f = wrong.first
         have = cell(sheet, n)
         name = FUNCTION_NAMES[f.to_s.upcase] || f
-        item.message = "#{n} soll mit #{name} rechnen#{have && have['formula'] ? ", dort steht #{q(german_formula(have['formula']))}" : ''}. " \
+        item.message = "#{n} rechnet noch nicht mit #{name}#{have && have['formula'] ? ", dort steht #{q(german_formula(have['formula']))}" : ''}. " \
             "Eine Funktion wie =#{name}(B2:B9) rechnet einen ganzen Bereich auf einmal und bleibt richtig, wenn eine Zeile dazukommt."
         item
     end
@@ -220,7 +220,7 @@ module DocumentCheck
         item.ok = false
         item.marks = loose.map { |n| cell_mark(model, rule['sheet'].to_i, n, "ohne $#{col}$#{row}") }
         have = cell(sheet, loose.first)
-        item.message = "#{loose.first} soll mit #{ref} rechnen, fest, auch nach dem Kopieren#{have && have['formula'] ? "; dort steht #{q(german_formula(have['formula']))}" : ''}. " \
+        item.message = "#{loose.first} rechnet nicht fest mit #{ref}#{have && have['formula'] ? ", dort steht #{q(german_formula(have['formula']))}" : ''}: Beim Kopieren rutscht der Bezug mit. " \
             "Schreib $#{col}$#{row}: Das $ hält Spalte und Zeile fest, wenn du die Formel nach unten ziehst."
         item
     end

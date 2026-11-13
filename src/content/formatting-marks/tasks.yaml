@@ -269,14 +269,14 @@ tasks:
       type: document
       file: formatting-marks/01 Geheimbotschaft.docx
       rules:
-        - contains: ['Treffpunkt für die Nachtwanderung', 'hinter der Jugendherberge', 'Taschenlampe', 'verratet niemandem', 'Losungswort heißt Kranichfeder']
+        - contains: ['Wir treffen uns um neun Uhr', 'hinter der Jugendherberge', 'beim Bootssteg', 'verratet keinem etwas', 'Losungswort heißt Kranichfeder']
           label: Die Botschaft ist entschlüsselt
           say: Ein Teil der Botschaft ist noch verschlüsselt.
     hint:
-      - Ersetze nicht erst a durch e und gleich danach e durch a; was dann passiert, steht in deiner Vermutung.
+      - Ersetze nicht erst a durch e und gleich danach e durch a; was dann passiert, steht in deiner Vermutung. Ist es schon passiert, macht <kbd>Strg</kbd>+<kbd>Z</kbd> jedes Ersetzen einzeln rückgängig.
       - "Nimm ein Zeichen als Zwischenlager, das im Text nicht vorkommt, zum Beispiel §: erst alle a durch §, dann alle e durch a, dann alle § durch e."
-      - "Mit i und o genauso: erst alle i durch §, dann alle o durch i, dann alle § durch o. Das sind sechs Mal *Alle ersetzen*."
+      - "Mit i und o und mit n und r genauso: erst alle i durch §, dann alle o durch i, dann alle § durch o; dann n, r und §. Das sind neun Mal *Alle ersetzen*."
     solution: |
-      »Treffpunkt für die Nachtwanderung: um neun Uhr am Steg hinter der
-      Jugendherberge. Bringt eine Taschenlampe mit, aber verratet niemandem
-      etwas. Das Losungswort heißt Kranichfeder.«
+      »Streng geheim. Wir treffen uns um neun Uhr hinter der Jugendherberge,
+      beim Bootssteg. Bringt eine Lampe mit und verratet keinem etwas. Das
+      Losungswort heißt Kranichfeder.«
