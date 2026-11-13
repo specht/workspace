@@ -1587,7 +1587,8 @@ Ist dein Spiel fertig, kommt es ins [Telefonbuch](/telefonbuch): Dort steht
 es mit seinem Titel und einer Nummer, unter der man es anruft. Such dir die
 Nummer aus, mit drei oder vier Ziffern, oder ein Wort aus drei oder vier
 Buchstaben wie DINO: Man wählt es mit den Tasten, auf denen die Buchstaben
-stehen, hier 3466. Bevor es im Telefonbuch steht,
+stehen, hier 3466. Keine Nummer darf der Anfang einer anderen sein: Gibt es
+schon 120, geht 1205 nicht, denn wer 1205 wählt, wäre nach 120 schon dort. Bevor es im Telefonbuch steht,
 sieht es sich jemand an, und du bekommst eine E-Mail, ob es veröffentlicht
 ist. Im Telefonbuch steht nicht, wer es geschrieben hat, nur der Titel, der
 Satz dazu und die Nummer.
@@ -1708,6 +1709,226 @@ Woher kennt man die Zahl? Vielleicht sagt sie eine andere Szene nebenbei:
 <code>keys(3)</code> nach zehn Sekunden zurück? Und was, wenn du nach zwei
 Ziffern die Raute drückst?
 </div>
+
+<!-- extra -->
+## Ein Spiel ruft ein anderes
+
+Mit `transfer` gibt ein Spiel den Anruf ab und ist fertig. Manchmal will es
+aber nur etwas wissen und dann weitermachen, so wie jemand am Telefon sagt:
+»Einen Moment, ich frage nach.« Der Anruf wartet, und danach geht es weiter.
+Das kann `call`: Es ruft ein anderes Spiel an und wartet, bis es antwortet.
+
+Hin und zurück geht dabei nur, was über eine Telefonleitung geht: Tastentöne.
+Was hinter der Nummer gewählt wird, ist die **Durchwahl**; das gerufene Spiel
+liest sie mit `keys` wie jede andere Taste. Es antwortet mit `back` und ein
+paar Ziffern, die als Töne zurückkommen.
+
+### Die Würfelbude
+
+Die Würfelbude hat die Nummer DICE, auf den Tasten 3423. Wer sie anruft,
+wählt dahinter, wie viele Seiten der Würfel haben soll: DICE und 6 ist ein
+gewöhnlicher Würfel, DICE und 20 einer mit zwanzig Seiten.
+
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+~ require 'telefon'
+~
+title 'Würfelbude'
+subtitle 'Wähl nach der Nummer, wie viele Seiten dein Würfel hat.'
+
+seiten = keys(3, timeout: 3).to_i
+if seiten >= 2
+  wurf = rand(1..seiten)
+  say "Würfelbude: #{wurf}."
+  back wurf.to_s
+else
+  say 'Würfelbude. Wähl nach der Nummer, wie viele Seiten dein Würfel hat.'
+end
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+import random
+from telefon import back, keys, say, subtitle, title
+
+title('Würfelbude')
+subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat.')
+
+seiten = int(keys(3, timeout=3) or 0)
+if seiten >= 2:
+    wurf = random.randint(1, seiten)
+    say(f'Würfelbude: {wurf}.')
+    back(str(wurf))
+else:
+    say('Würfelbude. Wähl nach der Nummer, wie viele Seiten dein Würfel hat.')
+```
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+const { back, keys, say, subtitle, title } = require('telefon');
+
+title('Würfelbude');
+subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat.');
+
+const seiten = Number(keys(3, 3));
+if (seiten >= 2) {
+  const wurf = 1 + Math.floor(Math.random() * seiten);
+  say(`Würfelbude: ${wurf}.`);
+  back(String(wurf));
+} else {
+  say('Würfelbude. Wähl nach der Nummer, wie viele Seiten dein Würfel hat.');
+}
+```
+<!-- /language -->
+
+Ein anderes Spiel würfelt dann mit einer Zeile:
+
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+wurf = call('DICE', '6')
+say "Du hast eine #{wurf} gewürfelt."
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+wurf = call('DICE', '6')
+say(f'Du hast eine {wurf} gewürfelt.')
+```
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+const wurf = call('DICE', '6');
+say(`Du hast eine ${wurf} gewürfelt.`);
+```
+<!-- /language -->
+
+`call` wählt 3423 und dann die 6. Wer anruft, hört das Wählen und dann die
+Würfelbude, und `back` schickt die Augenzahl als Töne zurück, mit einer Raute
+am Ende. Danach ist man wieder im ersten Spiel, und `call` gibt die Ziffern
+zurück, zum Beispiel `'4'`.
+
+Die Würfelbude weiß nicht, wer sie anruft. Wählt ein Mensch DICE und 6,
+hört er seinen Wurf, und mit `back` ist der Anruf zu Ende.
+
+### Tasten, die warten
+
+Die Würfelbude sagt erst etwas und fragt dann nach der Zahl der Seiten. Die 6
+wurde aber schon vorher gewählt. Sie geht nicht verloren, weil das Telefon
+Tasten aufhebt, bis das Spiel sie mit `keys` holt, auch während es spricht.
+Echte Telefonanlagen machen das genauso: Was man während einer Ansage drückt,
+zählt, sobald gefragt wird.
+
+Jede Verbindung beginnt dabei leer. Das gerufene Spiel bekommt nur, was nach
+seiner Nummer gewählt wurde, nicht die Tasten, die für das erste Spiel gedacht
+waren. Wie viele Tasten warten und was `clear_keys` damit macht, steht im
+Handbuch unter [Tasten im Voraus](/reference/telefonspiel#puffer).
+
+### Ein Spiel ruft sich selbst
+
+Ein Spiel darf auch sich selbst anrufen. Die Fakultät von 5 ist 5 · 4 · 3 · 2
+· 1 = 120. Das Spiel FACT, auf den Tasten 3228, rechnet sie aus, indem es nach
+der Fakultät von 4 fragt und das Ergebnis mit 5 multipliziert. Die Fakultät
+von 4 fragt nach der von 3, und so weiter bis zur 1, die das Spiel ohne zu
+fragen weiß.
+
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+~ require 'telefon'
+~
+title 'Fakultät'
+subtitle 'Wähl nach der Nummer eine Zahl von 1 bis 9.'
+
+say 'Fakultät.'
+n = keys(1).to_i
+if n <= 1
+  say '1 Fakultät ist 1.'
+  back '1'
+end
+vorher = call('FACT', (n - 1).to_s).to_i
+say "#{n} mal #{vorher} ist #{n * vorher}."
+back((n * vorher).to_s)
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+from telefon import back, call, keys, say, subtitle, title
+
+title('Fakultät')
+subtitle('Wähl nach der Nummer eine Zahl von 1 bis 9.')
+
+say('Fakultät.')
+n = int(keys(1) or 0)
+if n <= 1:
+    say('1 Fakultät ist 1.')
+    back('1')
+vorher = int(call('FACT', str(n - 1)))
+say(f'{n} mal {vorher} ist {n * vorher}.')
+back(str(n * vorher))
+```
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+const { back, call, keys, say, subtitle, title } = require('telefon');
+
+title('Fakultät');
+subtitle('Wähl nach der Nummer eine Zahl von 1 bis 9.');
+
+say('Fakultät.');
+const n = Number(keys(1));
+if (n <= 1) {
+  say('1 Fakultät ist 1.');
+  back('1');
+}
+const vorher = Number(call('FACT', String(n - 1)));
+say(`${n} mal ${vorher} ist ${n * vorher}.`);
+back(String(n * vorher));
+```
+<!-- /language -->
+
+Wählst du FACT und 5, wartet das Spiel mit der 5, während das mit der 4
+fragt, und so weiter. Bei der 1 warten vier Spiele übereinander. Dann kommen
+die Antworten zurück, eine nach der anderen, jede als Töne: 1, 2, 6, 24 und
+zuletzt 120. Höchstens acht Spiele dürfen so übereinander warten. Beim
+neunten sind alle Leitungen überlastet, und der Anruf endet.
+
+Im Workspace kennt `telefon` nur das Spiel, das du startest. Damit es eine
+Nummer erreicht, nennst du sie beim Start: `telefon fakultaet.rb --nummer
+FACT` gibt dem Spiel selbst die Nummer FACT, `--nummer DICE=wuerfel/dice.rb`
+ein anderes deiner Spiele.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ruf FACT mit 3 an und zähl, wie oft du »Fakultät.«
+hörst. Dann mit 9 und mit einer Zahl darüber: Achte darauf, bei welcher Zahl
+die Leitung überlastet ist.
+</div>
+
+### Spiele gegeneinander
+
+Mit `call` können auch Spiele gegeneinander spielen. Zwei Spiele sind die
+Spieler, ein drittes ist der Schiedsrichter: Es ruft abwechselnd die Spieler
+an, gibt ihnen den Stand als Ziffern und bekommt ihren Zug als Ziffern zurück.
+Wer anruft, hört das Spiel als Töne hin und her gehen, und der Schiedsrichter
+sagt an, was passiert.
+
+Gut eignet sich Nim: Auf dem Tisch liegen drei Haufen Hölzer, zum Beispiel 3,
+4 und 5. Wer dran ist, nimmt von einem Haufen so viele, wie er will, und wer
+das letzte Holz nimmt, gewinnt. Der Stand passt in drei Ziffern (`345`), ein
+Zug in zwei (`23`: vom zweiten Haufen drei Hölzer). Ein Spieler, der zufällig
+nimmt, ist schnell geschrieben. Ein besserer verliert seltener, und für Nim
+gibt es sogar einen, der nie verliert, wenn er gewinnen kann.
+
+Abmachen müsst ihr vorher nur, wie der Stand und der Zug als Ziffern aussehen.
+Dann kann jede und jeder einen Spieler schreiben und ins Telefonbuch stellen,
+und der Schiedsrichter lässt sie gegeneinander antreten.
 
 ## Wie geht es weiter?
 

@@ -75,4 +75,25 @@ class PhoneGamesTest < Minitest::Test
         assert_equal %w[007 254 741], list.map { |g| g['number'] }
         assert_equal [true, nil, nil], list.map { |g| g['hidden'] }
     end
+
+    # numbers are prefix-free, as in a real network: no number is the
+    # beginning of another; the reason says which game is in the way and why
+    def test_no_number_is_the_beginning_of_another
+        games = [{ :id => 'a', :number => '120', :state => 'published', :title => 'Bude' },
+                 { :id => 'b', :number => '3423', :word => 'DICE', :state => 'pending', :title => 'Würfel' },
+                 { :id => 'c', :number => '777', :state => 'rejected', :title => 'Weg' }]
+        assert_nil PhoneGames.prefix_clash('121', games)
+        assert_nil PhoneGames.prefix_clash('120', games)               # the number itself: a new version
+        assert_nil PhoneGames.prefix_clash('7771', games)              # a rejected game holds nothing
+        assert_equal 'a', PhoneGames.prefix_clash('1205', games)[:id]
+        assert_equal 'b', PhoneGames.prefix_clash('342', games)[:id]
+        assert_nil PhoneGames.prefix_clash('1205', games, :except_id => 'a')   # its own new number
+        longer = PhoneGames.prefix_message('1205', nil, games[0])
+        assert_includes longer, 'schon bei diesem Spiel, und der Rest wäre seine Durchwahl'
+        shorter = PhoneGames.prefix_message('342', nil, games[1])
+        assert_includes shorter, 'DICE (3423)'
+        assert_includes shorter, 'Wer 3423 wählt, wäre nach 342 schon bei deinem Spiel'
+        pairs = PhoneGames.prefix_pairs(games + [{ :id => 'd', :number => '1204', :state => 'published' }])
+        assert_equal [%w[a d]], pairs.map { |x, y| [x[:id], y[:id]] }
+    end
 end

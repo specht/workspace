@@ -1,4 +1,4 @@
-// The Telefonspiel in JavaScript (Node): say, play, keys, music, sleep, hangup, transfer.
+// The Telefonspiel in JavaScript (Node): say, play, keys, music, sleep, hangup, transfer, call, back.
 //
 // Every function writes one command as a line of JSON and waits for the
 // answer, so a game is an ordinary program that runs from top to bottom.
@@ -66,8 +66,22 @@ function sleep(seconds) { command({ sleep: Math.round(seconds * 1000) }); }
 // end the call
 function hangup() { command({ hangup: true }); process.exit(0); }
 
-// forward the call to the published game with this number: the call goes
-// on there as if the caller had dialled it, and this game ends
-function transfer(number) { command({ transfer: String(number) }); process.exit(0); }
+// forget the keys pressed so far (also digits dialled after this game's
+// number that keys() has not read yet)
+function clearKeys() { command({ clear_keys: true }); }
 
-module.exports = { title, subtitle, say, play, keys, music, sleep, hangup, transfer };
+// forward the call to the published game with this number (letters as on
+// the keys: 'DICE'), extension: digits dialled after it; the call goes on
+// there as if the caller had dialled it, and this game ends
+function transfer(number, extension = '') { command({ transfer: String(number), extension: String(extension) }); process.exit(0); }
+
+// call the game with this number and wait on hold: the caller hears it
+// dialled (with the extension after it) and is with that game until it
+// answers with back(); returns its digits, '' when it ended without
+function call(number, extension = '') { return command({ call: String(number), extension: String(extension) }).keys || ''; }
+
+// answer the game that called this one: the digits as key tones, then #,
+// and this game ends (dialled by a person, the call ends)
+function back(digits = '') { command({ back: String(digits) }); process.exit(0); }
+
+module.exports = { title, subtitle, say, play, keys, music, sleep, hangup, transfer, clearKeys, call, back };

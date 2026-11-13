@@ -635,6 +635,21 @@ function tone(key) {
     }
 }
 
+// key tones on the line itself (a game dialling with call, answering with
+// back): heard as a caller hears them, written as a note, then the game
+// goes on
+async function lineTones(digits, id) {
+    const mine = call;
+    note('Töne auf der Leitung: ' + digits.split('').join(' '));
+    for (const key of digits) {
+        if (mine !== call) return;
+        if (TONES[key]) tone(key);
+        await new Promise(resolve => setTimeout(resolve, 180));
+    }
+    if (mine !== call) return;
+    post('/heard?id=' + id);
+}
+
 // the end of a call: the busy tone of German phones, 425 Hz, three times
 // 240 ms with pauses as long
 function hangupTone() {
@@ -876,6 +891,8 @@ function onEvent(message) {
         enableKeys();
     } else if (e.title) {
         $('title').textContent = e.title;
+    } else if (e.tones) {
+        lineTones(e.tones, e.id);
     } else if (e.play) {
         playRecording(e.play, e.name, e.id, e.interrupt);
     } else if (e.say) {

@@ -72,7 +72,7 @@ prüfen auch die Aufgaben dein Spiel.
 ## Alle Befehle
 
 <!-- part: befehle -->
-<!-- short: `say`, `play`, `keys`, `music`, `sleep`, `hangup`, `transfer`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
+<!-- short: `say`, `play`, `keys`, `clear_keys`, `music`, `sleep`, `hangup`, `transfer`, `call`, `back`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
 ### Auf einen Blick
 
 <div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
@@ -91,7 +91,11 @@ prüfen auch die Aufgaben dein Spiel.
 <tr><th>Musik aus</th><td><code>music nil</code></td><td><code>music(None)</code></td><td><code>music(null);</code></td></tr>
 <tr><th>Warten</th><td><code>sleep 3</code></td><td><code>sleep(3)</code></td><td><code>sleep(3);</code></td></tr>
 <tr><th>Auflegen</th><td><code>hangup</code></td><td><code>hangup()</code></td><td><code>hangup();</code></td></tr>
+<tr><th>Gedrückte Tasten vergessen</th><td><code>clear_keys</code></td><td><code>clear_keys()</code></td><td><code>clearKeys();</code></td></tr>
 <tr><th>An ein anderes Spiel weiterleiten</th><td><code>transfer '123'</code></td><td><code>transfer('123')</code></td><td><code>transfer('123');</code></td></tr>
+<tr><th>… mit Ziffern dahinter</th><td><code>transfer 'DICE', '6'</code></td><td><code>transfer('DICE', '6')</code></td><td><code>transfer('DICE', '6');</code></td></tr>
+<tr><th>Ein Spiel anrufen und auf seine Antwort warten</th><td><code>wurf = call('DICE', '6')</code></td><td><code>wurf = call('DICE', '6')</code></td><td><code>const wurf = call('DICE', '6');</code></td></tr>
+<tr><th>Dem Spiel antworten, das angerufen hat</th><td><code>back '4'</code></td><td><code>back('4')</code></td><td><code>back('4');</code></td></tr>
 <tr><th>Der Name des Spiels</th><td><code>title 'Die Höhle'</code></td><td><code>title('Die Höhle')</code></td><td><code>title('Die Höhle');</code></td></tr>
 <tr><th>Ein Satz fürs Telefonbuch</th><td><code>subtitle '…'</code></td><td><code>subtitle('…')</code></td><td><code>subtitle('…');</code></td></tr>
 </tbody>
@@ -135,7 +139,57 @@ zurück, `''`.
 - Die Raute `#` beendet eine Eingabe früher und steht nie im Ergebnis. Der
   Stern kommt als `'*'` zurück.
 - Tasten, die vor `keys` gedrückt wurden, während das Spiel noch sprach,
-  zählen mit.
+  zählen mit (siehe [Tasten im Voraus](#puffer)).
+<!-- /part -->
+
+<!-- part: puffer -->
+<!-- short: Gedrückte Tasten warten, bis das Spiel sie mit `keys` holt, höchstens 20; jede neue Verbindung beginnt nur mit den Ziffern nach ihrer Nummer; `clear_keys` vergisst sie. -->
+### Tasten im Voraus
+
+Eine Taste ist auf der Leitung nur ein kurzer Ton, und die Leitung selbst
+merkt sich nichts. Was sich Tasten merkt, ist das Gerät am anderen Ende, das
+sie hört. Ein einfacher Baustein, der Tastentöne erkennt, hält genau eine
+Ziffer fest; die nächste überschreibt sie ([Datenblatt des MT8870](https://www.da.isy.liu.se/vanheden/pdf/mt8870.pdf)).
+Telefonanlagen mit Ansagen sammeln dagegen, was jemand schon während der Ansage
+drückt, und geben es weiter, sobald gefragt wird. Wie viel sie sammeln, legt
+jede Anlage selbst fest. Die Norm für Sprachmenüs, VoiceXML, schreibt keine
+Größe vor; sie sagt nur, wann Tasten gesammelt und wann sie gelöscht werden
+([W3C, VoiceXML 2.0, 4.1.5 und 4.1.8](https://www.w3.org/TR/voicexml20/)).
+Schon die Vermittlungsstellen der 1920er Jahre hatten ein **Register**, das die
+gewählten Ziffern festhielt, bis die Verbindung stand
+([Sender](https://en.wikipedia.org/wiki/Sender_(telephony))).
+
+Das Telefonspiel macht es so:
+
+- Jede gedrückte Taste wartet, bis das Spiel sie mit `keys` holt, auch
+  während `say`, `play` oder `sleep`. Höchstens 20 Tasten warten; was danach
+  kommt, geht verloren.
+- Jede neue Verbindung beginnt leer: Wird ein Anruf weitergeleitet
+  (`transfer`) oder ruft ein Spiel ein anderes an (`call`), bekommt das neue
+  Spiel keine Tasten, die für das vorige gedacht waren. Es bekommt nur, was
+  nach seiner Nummer gewählt wurde.
+- `clear_keys` vergisst alle wartenden Tasten. Das passt vor eine wichtige
+  Frage, damit eine Taste von vorhin nicht als Antwort zählt. Es vergisst
+  aber auch Ziffern, die nach der Nummer des Spiels gewählt wurden: Lies sie
+  deshalb zuerst und ruf `clear_keys` erst danach auf.
+<!-- /part -->
+
+<!-- part: nummern -->
+<!-- short: Keine Nummer ist der Anfang einer anderen: Die Leitung verbindet, sobald eine Nummer passt, und was danach gewählt wird, bekommt das Spiel als Tasten. -->
+### Nummern und Durchwahl
+
+Eine Nummer hat drei oder vier Ziffern, oder Buchstaben, die man mit den
+Tasten wählt, auf denen sie stehen: DICE ist 3423. Keine Nummer ist der Anfang
+einer anderen. Gibt es 120, gibt es kein 1205, und umgekehrt. Sonst wüsste die
+Leitung nach 120 nicht, ob noch eine Ziffer kommt, und müsste warten. So
+weiß sie, dass eine Nummer fertig ist, sobald ein Spiel zu ihr passt. Ein
+Netz, in dem keine Nummer der Anfang einer anderen ist, heißt
+**präfixfrei**.
+
+Was danach gewählt wird, ist eine **Durchwahl**: Wer 34236 wählt, ist bei
+DICE, und das Spiel bekommt die 6 als erste Taste, ohne dass jemand sie noch
+einmal drückt. Von einem echten Telefon aus geht das genauso, mit den Ziffern
+direkt hinter der Nummer des Telefonbuchs.
 <!-- /part -->
 
 <!-- part: music -->
@@ -193,8 +247,9 @@ transfer '123'
 
 Der Anruf geht im Spiel mit dieser Nummer weiter, als hätte man sie gewählt,
 und das eigene Spiel endet an dieser Stelle. Die Nummer hat drei oder vier
-Ziffern. Gibt es kein veröffentlichtes Spiel mit dieser Nummer, bricht das
-Spiel mit einem Fehler in dieser Zeile ab. Ein Anruf kann höchstens fünfmal
+Ziffern oder Buchstaben; was als zweites dahintersteht, wird danach gewählt,
+als Durchwahl (`transfer 'DICE', '6'`). Gibt es kein veröffentlichtes Spiel
+mit dieser Nummer, bricht das Spiel mit einem Fehler in dieser Zeile ab. Ein Anruf kann höchstens fünfmal
 weitergeleitet werden, und alle Spiele eines Anrufs teilen sich seine Zeit.
 
 Mit `telefon` im Workspace geht der Anruf genauso weiter: Das Telefon auf
@@ -202,6 +257,47 @@ der Seite verbindet sich mit dem Telefonbuch, und das andere Spiel spricht im
 selben Anruf weiter. So lässt sich ein Spiel mit `transfer` ausprobieren,
 bevor es veröffentlicht ist. Nach dem Auflegen ruft der grüne Knopf wieder
 das eigene Spiel an.
+<!-- /part -->
+
+<!-- part: call -->
+<!-- short: `call` ruft ein Spiel an und wartet, bis es mit `back` antwortet; die Antwort sind Ziffern, als Töne auf der Leitung zu hören. -->
+### call und back
+
+`call` ruft ein anderes Spiel an, und das eigene wartet so lange, wie eine
+Telefonanlage einen Anruf hält, während man bei jemandem nachfragt. Wer
+anruft, hört die Nummer wählen und ist dann beim anderen Spiel. Antwortet das
+mit `back`, ist er wieder beim ersten Spiel, und `call` gibt die Antwort
+zurück:
+
+```ruby
+wurf = call('DICE', '6')       # wählt 3423 und dann 6
+say "Du hast eine #{wurf} gewürfelt."
+```
+
+Das gerufene Spiel liest, was nach seiner Nummer gewählt wurde, mit `keys`,
+wie jede andere Taste, und antwortet mit `back`:
+
+```ruby
+seiten = keys(3).to_i
+back rand(1..seiten).to_s
+```
+
+- Hin und zurück geht es nur über Tasten: Was nach der Nummer gewählt wird,
+  und was `back` zurückgibt, sind Ziffern (und `*`), höchstens 20. Beides ist
+  als Tastentöne auf der Leitung zu hören; das Ende einer Antwort ist die
+  Raute.
+- `back` beendet das Spiel. Hat ein Mensch es gewählt, ist der Anruf damit zu
+  Ende.
+- Endet das gerufene Spiel ohne `back`, legt es auf oder bricht es mit einem
+  Fehler ab, gibt `call` einen leeren Text zurück. Gibt es die Nummer nicht,
+  hört man »Kein Anschluss unter dieser Nummer«, und die Antwort ist auch
+  leer.
+- Ein Spiel darf sich selbst anrufen. Höchstens acht Anrufe warten
+  übereinander; beim neunten sind alle Leitungen überlastet, und der Anruf
+  endet.
+- Im Workspace erreicht `call` die Spiele, die du beim Start nennst:
+  `telefon spiel.rb --nummer FACT` gibt dem Spiel selbst die Nummer FACT,
+  `--nummer DICE=wuerfel/dice.rb` ein anderes deiner Spiele.
 <!-- /part -->
 
 <!-- part: name -->

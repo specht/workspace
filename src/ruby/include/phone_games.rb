@@ -431,6 +431,42 @@ module PhoneGames
         end
     end
 
+    # Numbers are prefix-free, as in a real network: no number is the
+    # beginning of another, so the line knows a number is complete as soon
+    # as a game fits it; what is dialled after it is that game's extension
+    # (call('DICE', '6')). The first game (not rejected, not except_id)
+    # whose number is the beginning of this one or begins with it, or nil.
+    def self.prefix_clash(number, games, except_id: nil)
+        games.find do |g|
+            other = g[:number].to_s
+            next false if g[:state] == 'rejected' || g[:id] == except_id || other.empty? || other == number
+
+            other.start_with?(number) || number.start_with?(other)
+        end
+    end
+
+    # Why a number cannot be taken because of that game, for the student
+    def self.prefix_message(number, word, game)
+        mine = word || number
+        if game[:number].to_s.start_with?(number)
+            "Die Nummer #{mine} geht nicht, weil es schon #{label(game)} gibt: Wer #{game[:number]} wählt, wäre nach #{number} " \
+                'schon bei deinem Spiel, denn eine Nummer ist fertig, sobald ein Spiel zu ihr passt. Keine Nummer darf der Anfang ' \
+                'einer anderen sein. Nimm eine, mit der keine andere anfängt.'
+        else
+            "Die Nummer #{mine} geht nicht, weil es schon #{label(game)} gibt: Wer #{number} wählt, ist nach #{game[:number]} " \
+                "schon bei diesem Spiel, und der Rest wäre seine Durchwahl. Keine Nummer darf der Anfang einer anderen sein. " \
+                "Nimm eine, die nicht mit #{game[:number]} anfängt."
+        end
+    end
+
+    # Numbers that are the beginning of another (given before numbers were
+    # prefix-free), for the administration to settle: [[shorter, longer], …]
+    def self.prefix_pairs(games)
+        live = games.reject { |g| g[:state] == 'rejected' }
+        live.flat_map { |a| live.select { |b| b[:number].to_s != a[:number].to_s && b[:number].to_s.start_with?(a[:number].to_s) }.map { |b| [a, b] } }
+            .uniq { |a, b| [a[:number], b[:number]] }
+    end
+
     # The numbers someone else holds, with a pending or published game
     def self.taken_numbers(games, email)
         games.reject { |g| g[:email] == email || g[:state] == 'rejected' }.map { |g| g[:number] }.uniq.sort

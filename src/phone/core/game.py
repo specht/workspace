@@ -46,6 +46,69 @@ def published_number(games_root, folder):
 # What a caller hears when a published game stops with an error (a syntax
 # error, an exception): instead of the call ending, the Telefonbuch again
 CRASHED = 'Dieses Spiel hat gerade einen Fehler. Du kommst zurück ins Telefonbuch.'
+# the same in a game another one called (call): the line drops, and the
+# calling game is back with no answer
+CRASHED_CALLED = 'Dieses Spiel hat gerade einen Fehler.'
+
+# The keys a connection keeps until the game asks for them (a real phone
+# system's type-ahead): at most MAX_KEYS, more are lost. Each connection
+# starts with only the digits dialled after its number (the extension).
+MAX_KEYS = 20
+# calls on hold at most (call inside call); one more and the line is
+# overloaded: the caller hears it and the call ends
+MAX_DEPTH = 8
+OVERLOADED = 'Alle Leitungen sind überlastet. Bitte ruf später noch einmal an.'
+# a number with its extension: at most this many digits
+MAX_DIALED = 20
+# the letters of a phone's keys (DICE is 3423)
+KEYPAD = {**{c: '2' for c in 'ABC'}, **{c: '3' for c in 'DEF'}, **{c: '4' for c in 'GHI'}, **{c: '5' for c in 'JKL'},
+          **{c: '6' for c in 'MNO'}, **{c: '7' for c in 'PQRS'}, **{c: '8' for c in 'TUV'}, **{c: '9' for c in 'WXYZ'}}
+
+
+def dial_digits(text):
+    """what a number dials: its digits, letters as on the keys (FACT is
+    3228); None for anything else"""
+    out = ''
+    for c in str(text).strip().upper():
+        if c.isdigit():
+            out += c
+        elif c in KEYPAD:
+            out += KEYPAD[c]
+        elif c in ' -/':
+            continue
+        else:
+            return None
+    return out
+
+
+def match_number(dialed, numbers):
+    """the game a dialled number reaches and what was dialled after it (the
+    extension): (number, extension), or (None, '') for none. Numbers are
+    prefix-free, as in a real network: none is the beginning of another, so
+    the first that fits is the only one (the longest, should two fit)"""
+    fitting = [n for n in numbers if n and str(dialed).startswith(n)]
+    if not fitting:
+        return None, ''
+    number = max(fitting, key=len)
+    return number, str(dialed)[len(number):]
+
+
+def tones(digits, rate=16000):
+    """the key tones (DTMF) of these digits as float samples: each key its two
+    frequencies for 100 ms, 80 ms between the keys"""
+    import math
+    rows = {'1': 697, '2': 697, '3': 697, '4': 770, '5': 770, '6': 770, '7': 852, '8': 852, '9': 852, '*': 941, '0': 941, '#': 941}
+    cols = {'1': 1209, '2': 1336, '3': 1477, '4': 1209, '5': 1336, '6': 1477, '7': 1209, '8': 1336, '9': 1477, '*': 1209, '0': 1336, '#': 1477}
+    out = []
+    on, off, fade = int(rate * 0.1), int(rate * 0.08), int(rate * 0.005)
+    for key in digits:
+        if key not in rows:
+            continue
+        for i in range(on):
+            ramp = min(1.0, i / fade, (on - i) / fade)
+            out.append(0.2 * ramp * (math.sin(2 * math.pi * rows[key] * i / rate) + math.sin(2 * math.pi * cols[key] * i / rate)))
+        out.extend([0.0] * off)
+    return out
 
 
 def record_call(line, games, seconds, errors=()):
@@ -270,12 +333,46 @@ class Phone:
         self.ended = asyncio.Event()
         # the number a game forwarded the call to (transfer)
         self.transfer_to = None
+        # the digits a called game answered with (back), None before
+        self.returned = None
+        # calls on hold below this one (call)
+        self.depth = 0
 
     def log(self, *parts):
         pass
 
     def press(self, key):
+        """a key reaches the connection: kept until the game asks for it, at
+        most MAX_KEYS (more are lost, as on a full buffer)"""
+        if self.keys.qsize() >= MAX_KEYS:
+            self.log('key lost, the buffer is full:', key)
+            return
         self.keys.put_nowait(key)
+
+    def fresh_keys(self, first=''):
+        """a new connection: nothing kept from before, only these digits (the
+        extension dialled after the number)"""
+        self.keys = asyncio.Queue()
+        for key in str(first)[:MAX_KEYS]:
+            self.keys.put_nowait(key)
+
+    def first_keys(self, digits):
+        """these digits before the ones kept (the extension, which was dialled
+        before anything the caller pressed after it)"""
+        kept = []
+        while not self.keys.empty():
+            kept.append(self.keys.get_nowait())
+        self.fresh_keys((str(digits) + ''.join(kept))[:MAX_KEYS])
+
+    async def dtmf(self, digits):
+        """the key tones of these digits on the line, heard by the caller
+        (dialling with call, answering with back)"""
+
+    async def call_game(self, dialed):
+        """call: the game of this number (with its extension) while this one
+        waits on hold; returns the digits it answered with (back), '' when it
+        ended without (hung up, crashed, no such number)"""
+        return ''
 
     def titled(self, title, subtitle):
         """the game named itself (title '…', subtitle '…'); nothing to do here"""
@@ -354,18 +451,52 @@ class Phone:
         if 'keys' in command:
             digits = await self.read_keys(max(1, int(command['keys'])), float(command.get('timeout', 10000)))
             return {'keys': digits}
+        if command.get('clear_keys'):
+            # what was pressed so far is forgotten (a phone system does this
+            # before an important question); an extension not read yet too
+            self.fresh_keys()
+            return {'ok': True}
         if command.get('hangup'):
             return None
-        if 'transfer' in command:
-            # the call goes on in the published game of this number, as if
-            # the caller had dialled it; this game ends here
-            number = str(command['transfer']).strip()
-            if not re.fullmatch(r'\d{3,4}', number):
-                return {'error': f'transfer: Eine Spielnummer hat drei oder vier Ziffern, nicht »{number}«.'}
-            problem = self.transfer_problem(number)
-            if problem:
-                return {'error': problem}
-            self.transfer_to = number
+        if 'transfer' in command or 'call' in command:
+            kind = 'transfer' if 'transfer' in command else 'call'
+            number = dial_digits(command[kind])
+            extension = dial_digits(command.get('extension', '') or '')
+            if not number or not re.fullmatch(r'\d{3,4}\d*', number):
+                return {'error': f'{kind}: Eine Spielnummer hat drei oder vier Ziffern oder Buchstaben, nicht »{command[kind]}«.'}
+            if extension is None or not re.fullmatch(r'[\d*]*', extension):
+                return {'error': f'{kind}: Nach der Nummer kommen nur Ziffern, nicht »{command.get("extension")}«.'}
+            dialed = number + extension
+            if len(dialed) > MAX_DIALED:
+                return {'error': f'{kind}: Höchstens {MAX_DIALED} Ziffern mit allem, was nach der Nummer kommt.'}
+            if kind == 'transfer':
+                problem = self.transfer_problem(dialed)
+                if problem:
+                    return {'error': problem}
+                # the call goes on in the game of this number, as if the
+                # caller had dialled it; this game ends here
+                self.transfer_to = dialed
+                return None
+            # call: this game waits on hold, the caller hears the number
+            # dialled and is with the other game; what it answers comes back.
+            # A number without a game: »Kein Anschluss«, as on a real line,
+            # and no answer
+            if self.depth >= MAX_DEPTH:
+                await self.say(OVERLOADED)
+                self.log('overloaded at depth', self.depth)
+                self.ended.set()
+                return None
+            await self.dtmf(dialed)
+            answer = await self.call_game(dialed)
+            return {'keys': answer}
+        if 'back' in command:
+            # answer the game that called: the digits as key tones, then #,
+            # and this game ends; dialled by a person, the call ends
+            digits = dial_digits(command['back'])
+            if digits is None or not re.fullmatch(r'[\d*]*', digits) or len(digits) > MAX_DIALED:
+                return {'error': f'back: Zurück gehen nur Ziffern, höchstens {MAX_DIALED}, nicht »{command["back"]}«.'}
+            await self.dtmf(digits + '#')
+            self.returned = digits
             return None
         return {'error': 'unknown command'}
 
@@ -374,7 +505,7 @@ async def run_game(phone, command, cwd, env, output, preexec_fn=None, seconds=90
     """run the game until it ends, hangs up, the caller hangs up or the time
     is over; output(kind, line) gets its ordinary lines ('out', 'err').
     Returns why it ended: 'ended', 'hangup', 'transfer' (phone.transfer_to
-    says where), 'caller', 'time'."""
+    says where), 'back' (phone.returned: its answer), 'caller', 'time'."""
     process = await asyncio.create_subprocess_exec(
         *command, cwd=cwd, env=env, preexec_fn=preexec_fn, start_new_session=preexec_fn is None,
         stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
@@ -402,7 +533,7 @@ async def run_game(phone, command, cwd, env, output, preexec_fn=None, seconds=90
             if phone.ended.is_set():
                 return 'caller'
             if answer is None:
-                return 'transfer' if phone.transfer_to else 'hangup'
+                return 'transfer' if phone.transfer_to else ('back' if phone.returned is not None else 'hangup')
             try:
                 process.stdin.write((json.dumps(answer, ensure_ascii=False) + '\n').encode('utf-8'))
                 await process.stdin.drain()

@@ -1,4 +1,4 @@
-"""The Telefonspiel in Python: say, play, keys, music, sleep, hangup, transfer.
+"""The Telefonspiel in Python: say, play, keys, music, sleep, hangup, transfer, call, back.
 
 Every function writes one command as a line of JSON and waits for the
 answer, so a game is an ordinary program that runs from top to bottom.
@@ -77,8 +77,29 @@ def hangup():
     raise SystemExit(0)
 
 
-def transfer(number):
-    """forward the call to the published game with this number: the call
-    goes on there as if the caller had dialled it, and this game ends"""
-    _command({'transfer': str(number)})
+def clear_keys():
+    """forget the keys pressed so far (also digits dialled after this game's
+    number that keys() has not read yet)"""
+    _command({'clear_keys': True})
+
+
+def transfer(number, extension=''):
+    """forward the call to the published game with this number (letters as
+    on the keys: 'DICE'), extension: digits dialled after it; the call goes
+    on there as if the caller had dialled it, and this game ends"""
+    _command({'transfer': str(number), 'extension': str(extension)})
+    raise SystemExit(0)
+
+
+def call(number, extension=''):
+    """call the game with this number and wait on hold: the caller hears it
+    dialled (with the extension after it) and is with that game until it
+    answers with back(); returns its digits, '' when it ended without"""
+    return _command({'call': str(number), 'extension': str(extension)}).get('keys', '')
+
+
+def back(digits=''):
+    """answer the game that called this one: the digits as key tones, then
+    #, and this game ends (dialled by a person, the call ends)"""
+    _command({'back': str(digits)})
     raise SystemExit(0)

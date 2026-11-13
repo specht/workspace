@@ -55,6 +55,9 @@ class Main < Sinatra::Base
         {
             :games => all.select { |g| g[:email] == email }.sort_by { |g| -g[:submitted].to_i }.map { |g| PhoneGames.public_view(g) },
             :taken => PhoneGames.taken_numbers(all, email),
+            # every number held (no number may be the beginning of another):
+            # [digits, as written]
+            :numbers => all.reject { |g| g[:state] == 'rejected' }.map { |g| [g[:number], PhoneGames.label(g)] }.uniq,
             :files => PhoneGames.games(ws),
             :folder => PhoneGames::FOLDER,
             :workspace => !ws.nil?,                     # false: no Workspace yet, so no files either
@@ -128,6 +131,9 @@ class Main < Sinatra::Base
             if PhoneGames.taken_numbers(all, email).include?(number)
                 halt 409, { :error => 'taken', :message => "Die Nummer #{word || number} hat schon ein anderes Spiel." }.to_json
             end
+            if (clash = PhoneGames.prefix_clash(number, all))
+                halt 409, { :error => 'prefix', :message => PhoneGames.prefix_message(number, word, clash) }.to_json
+            end
             PhoneGames.copy(ws, files, id, path)
             phone_game_transcribe_later(id)
             # a pending version of the same number is replaced by this one; a
@@ -184,6 +190,9 @@ class Main < Sinatra::Base
             if PhoneGames.taken_numbers(all, game[:email]).include?(number) ||
                     all.any? { |g| g[:email] == game[:email] && g[:id] != game[:id] && g[:number] == number && g[:state] != 'rejected' }
                 halt 409, { :error => 'taken', :message => "Die Nummer #{word || number} ist schon vergeben." }.to_json
+            end
+            if (clash = PhoneGames.prefix_clash(number, all, :except_id => game[:id]))
+                halt 409, { :error => 'prefix', :message => PhoneGames.prefix_message(number, word, clash) }.to_json
             end
             neo4j_query('MATCH (g:PhoneGame {id: $id}) SET g.number = $number, g.word = $word;', :id => game[:id], :number => number, :word => word)
         end
@@ -421,6 +430,19 @@ class Main < Sinatra::Base
         # in it (hidden as a part of another game, or taken out after an
         # error), each sorted by title as the book is; title and subtitle to
         # edit in place; a game taken out after an error is back when switched on
+        # numbers given before they were prefix-free that are the beginning
+        # of another: the shorter one takes every call to the longer one
+        pairs = PhoneGames.prefix_pairs(all)
+        unless pairs.empty?
+            io << "<div class='alert alert-warning mt-4'><p class='mb-2'><i class='bi bi-exclamation-triangle' aria-hidden='true'></i> " \
+                  'Diese Nummern sind der Anfang einer anderen. Wer die längere wählt, landet schon nach der kürzeren bei deren Spiel, ' \
+                  'und der Rest ist dessen Durchwahl. Eine der beiden braucht eine neue Nummer; ihre Person kann sie auf der Karte ändern.</p><ul class=\'mb-0\'>'
+            pairs.each do |a, b|
+                io << "<li><a href='/telefon-freigabe?id=#{h.(a[:id])}'>#{h.(PhoneGames.label(a))} #{h.(a[:title])}</a> ist der Anfang von " \
+                      "<a href='/telefon-freigabe?id=#{h.(b[:id])}'>#{h.(PhoneGames.label(b))} #{h.(b[:title])}</a></li>"
+            end
+            io << '</ul></div>'
+        end
         listed = PhoneGames.phone_book(all.select { |g| %w[published broken].include?(g[:state]) })
         inside, outside = listed.partition { |g| g[:state] == 'published' && !g[:hidden] }
         io << "<h2 class='h4 mt-4'>Veröffentlicht</h2>" \

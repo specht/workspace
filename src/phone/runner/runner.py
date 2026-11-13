@@ -23,6 +23,7 @@ import sys
 import time
 
 import aiohttp
+import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'core'))
 import ari_guard  # noqa: E402
@@ -83,7 +84,7 @@ def direct_digits(exten):
     # whole number, never a game's alone. Digits of any length go to the
     # menu, which says »Kein Anschluss« for a number without a game
     number, line = game.international(exten), game.international(LINE_NUMBER)
-    return number[len(line):][:8] if number.startswith(line) else ''
+    return number[len(line):][:game.MAX_DIALED] if number.startswith(line) else ''
 
 
 def published():
@@ -238,8 +239,9 @@ class Call(game.Phone):
     # the menu and the games ---------------------------------------------
 
     def transfer_problem(self, number):
-        """a forwarded call goes only to a published game"""
-        if number not in published()[1]:
+        """a forwarded call goes only to a published game (its number, and
+        what is dialled after it)"""
+        if game.match_number(number, published()[1])[0] is None:
             return f'transfer: Ein Spiel mit der Nummer {number} gibt es nicht.'
         return None
 
@@ -253,57 +255,92 @@ class Call(game.Phone):
             self.switched = True
             self.folder = os.path.join(GAMES, os.path.basename(folder))
             self.log('game', os.path.basename(folder))
+            # what was dialled after the number: the first keys the game gets
+            self.first_keys(str(command.get('extension', ''))[:game.MAX_DIALED])
             number = game.published_number(GAMES, folder)
             if number:
                 self.reached.append(number)
             return {'ok': True}
         return await super().execute(command)
 
+    def output(self, kind, line):
+        log(f'[{self.channel} {kind}]', line)
+        if kind == 'err':
+            self.errors.append(line)
+            del self.errors[:-12]
+
+    async def connect(self, dialed):
+        """one connection: the menu as if this number had been dialled, which
+        becomes its game, and the games it forwards to (transfer, five times
+        at most); all within the call's time. Returns why the last ended.
+        A game that crashes: the caller hears so and is back in the menu, or
+        (called by another game) back with that one"""
+        reason = 'time'
+        for _ in range(1 + MAX_TRANSFERS):
+            left = int(self.deadline - time.monotonic())
+            if self.ended.is_set() or left <= 0:
+                break
+            self.folder, self.switched, self.transfer_to, self.returned = MENU_FOLDER, False, None, None
+            self.fresh_keys()
+            self.mixer.set_music(None)
+            env = game.environment({'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/tmp',
+                                    'PHONE_GAMES': GAMES, 'PHONE_DIALED': dialed, 'PHONE_DEPTH': str(self.depth)})
+            self.errors = []
+            reason, status = await game.run_game(
+                self, MENU, MENU_FOLDER, env, self.output, preexec_fn=game_limits, seconds=left)
+            self.log('game ended:', reason, status, 'depth', self.depth)
+            if reason == 'time' and self.depth == 0:
+                await self.say('Die Zeit ist um. Tschüss!')
+            # a game that stopped with an error (not the menu itself
+            # crashing, and twice at most)
+            if reason == 'ended' and status and self.switched and not self.ended.is_set() and len(self.crashed) < 2:
+                self.crashed.append({'game': self.reached[-1] if self.reached else '', 'text': '\n'.join(self.errors)})
+                self.mixer.set_music(None)
+                if self.depth:
+                    await self.say(game.CRASHED_CALLED)
+                    return 'crashed'
+                await self.say(game.CRASHED)
+                dialed = ''
+                continue
+            if reason != 'transfer':
+                return reason
+            dialed = self.transfer_to
+        return reason
+
+    async def dtmf(self, digits):
+        self.log('tones', digits)
+        heard = self.mixer.say(np.array(game.tones(digits), dtype=np.float32))
+        await heard
+
+    async def call_game(self, dialed):
+        """this game on hold (its folder, its music, its keys), the called one
+        on the line; afterwards this one again, with only the answer"""
+        held = (self.folder, self.switched, self.mixer.music, self.mixer.music_volume)
+        self.depth += 1
+        try:
+            reason = await self.connect(dialed)
+            answer = self.returned if reason == 'back' and self.returned is not None else ''
+        finally:
+            self.depth -= 1
+            self.folder, self.switched = held[0], held[1]
+            self.transfer_to, self.returned = None, None
+            self.fresh_keys()
+            if held[2] is not None:
+                self.mixer.set_music(held[2], held[3])
+            else:
+                self.mixer.set_music(None)
+        self.log('call answered', repr(answer))
+        return answer
+
     async def run(self):
         began = None
-        crashed = []
+        self.crashed = []
+        self.errors = []
         try:
             await self.setup()
             began = time.monotonic()
-            dialed = self.dialed
-            # a game may forward the call to another game's number
-            # (transfer): the menu starts again as if that number had been
-            # dialled, five times at most, all within the call's time
-            deadline = time.monotonic() + GAME_SECONDS
-            # the last lines a game wrote to stderr: its error, if it crashes
-            errors = []
-
-            def output(kind, line):
-                log(f'[{self.channel} {kind}]', line)
-                if kind == 'err':
-                    errors.append(line)
-                    del errors[:-12]
-
-            for _ in range(1 + MAX_TRANSFERS):
-                left = int(deadline - time.monotonic())
-                if self.ended.is_set() or left <= 0:
-                    break
-                self.folder, self.switched, self.transfer_to = MENU_FOLDER, False, None
-                self.mixer.set_music(None)
-                env = game.environment({'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/tmp',
-                                        'PHONE_GAMES': GAMES, 'PHONE_DIALED': dialed})
-                errors.clear()
-                reason, status = await game.run_game(
-                    self, MENU, MENU_FOLDER, env, output, preexec_fn=game_limits, seconds=left)
-                self.log('game ended:', reason, status)
-                if reason == 'time':
-                    await self.say('Die Zeit ist um. Tschüss!')
-                # a game that stopped with an error: say so, back to the menu
-                # (not the menu itself crashing, and twice at most)
-                if reason == 'ended' and status and self.switched and not self.ended.is_set() and len(crashed) < 2:
-                    crashed.append({'game': self.reached[-1] if self.reached else '', 'text': '\n'.join(errors)})
-                    self.mixer.set_music(None)
-                    await self.say(game.CRASHED)
-                    dialed = ''
-                    continue
-                if reason != 'transfer':
-                    break
-                dialed = self.transfer_to
+            self.deadline = time.monotonic() + GAME_SECONDS
+            await self.connect(self.dialed)
             if not self.ended.is_set():
                 self.mixer.say(silence(600))
                 await asyncio.sleep(0.6)
@@ -312,7 +349,7 @@ class Call(game.Phone):
         finally:
             await self.teardown()
             if began is not None:
-                game.record_call('telefon', self.reached, time.monotonic() - began, crashed)
+                game.record_call('telefon', self.reached, time.monotonic() - began, self.crashed)
 
 
 class Runner:

@@ -22,6 +22,9 @@ BATCH = 5
 # a forgotten call should not hold one of the line's few channels)
 QUIET_ROUNDS = 2
 DIALED = os.environ.get('PHONE_DIALED', '')
+# called by another game (call): calls on hold below this one; a number
+# without a game ends here, the calling game gets no answer
+DEPTH = int(os.environ.get('PHONE_DEPTH', '0') or 0)
 # a game tried from /telefon-freigabe before it is published (line.py checks the ticket)
 TRIAL = json.loads(os.environ.get('PHONE_TRIAL') or 'null')   # the number dialled before the call (line.py), or ''
 
@@ -45,8 +48,10 @@ def spoken(number):
     return ' '.join(number)
 
 
-def start(game):
-    _command({'game': game['folder']})          # the line serves its music files from now on
+def start(game, extension=''):
+    # the line serves its music files from now on; what was dialled after
+    # the number is the first the game gets with keys()
+    _command({'game': game['folder'], 'extension': extension})
     os.chdir(folder_of(game))
     command = LANGUAGES[os.path.splitext(game['file'])[1]]
     os.execvp(command[0], command + [game['file']])
@@ -79,17 +84,23 @@ def dial(first, games):
     return False
 
 
-def connect(number, games):
-    """a number dialled before the call: its game; else what a real line
-    says (the three tones, »Kein Anschluss unter dieser Nummer«), and then
-    the menu, so that a typo does not cost a new call"""
-    for game in games:
-        if game['number'] == number:
-            start(game)
+def connect(dialed, games):
+    """a number dialled before the call (or by a game: transfer, call): the
+    game whose number it begins with, the rest is the extension (numbers are
+    prefix-free, as on a real network); else what a real line says (the
+    three tones, »Kein Anschluss unter dieser Nummer«), and then the menu,
+    so that a typo does not cost a new call. Called by another game, there
+    is no menu: the line drops, and that game is back"""
+    fitting = [g for g in games if dialed.startswith(g['number'])]
+    if fitting:
+        game = max(fitting, key=lambda g: len(g['number']))
+        start(game, dialed[len(game['number']):])
     title('Kein Anschluss')
     play('kein-anschluss.wav')
     say('Kein Anschluss unter dieser Nummer.')
     title('')
+    if DEPTH:
+        raise SystemExit(0)
 
 
 def main():

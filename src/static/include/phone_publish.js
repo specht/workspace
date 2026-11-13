@@ -23,12 +23,18 @@
     const digitsOf = (text) => [...text].map((c) => /\d/.test(c) ? c : (Object.entries(KEYPAD).find(([l]) => l.includes(c)) || [])[1] || '').join('');
     const label = (g) => g.word ? `${g.word} (${g.number})` : g.number;
 
+    // numbers are prefix-free, as in a real network: none is the beginning
+    // of another (the line connects as soon as a game fits, the rest is its
+    // extension); the number held that clashes with n, or undefined
+    const held = () => state.numbers || state.taken.map((t) => [t, t]);
+    const prefixClash = (n) => held().find(([other]) => other !== n && (other.startsWith(n) || n.startsWith(other)));
+
     function freeNumber() {
         const taken = new Set([...state.taken, ...ownNumbers()]);
         const free = [];
         for (let n = 0; n <= 999; n++) {
             const s = String(n).padStart(3, '0');
-            if (!taken.has(s)) free.push(s);
+            if (!taken.has(s) && !prefixClash(s)) free.push(s);
         }
         return free.length ? free[Math.floor(Math.random() * free.length)] : '';
     }
@@ -40,6 +46,14 @@
         const n = digitsOf(typed);
         const dialled = /[A-Z]/.test(typed) ? ` Man wählt ${n}.` : '';
         if (state.taken.includes(n)) return { ok: false, text: `Vergeben, nimm eine andere.${dialled}`, kind: 'danger' };
+        const clash = prefixClash(n);
+        if (clash) {
+            const [other, written] = clash;
+            const why = other.startsWith(n)
+                ? `Wer ${other} wählt, wäre nach ${n} schon bei deinem Spiel, denn eine Nummer ist fertig, sobald ein Spiel zu ihr passt.`
+                : `Wer ${n} wählt, ist nach ${other} schon bei diesem Spiel, und der Rest wäre seine Durchwahl.`;
+            return { ok: false, text: `Geht nicht, weil es schon ${written} gibt: ${why} Keine Nummer darf der Anfang einer anderen sein.${dialled}`, kind: 'danger' };
+        }
         // one's own number: the new version replaces the old one once it is approved
         const own = state.games.find((g) => g.state !== 'rejected' && g.number === n);
         if (own) return { ok: true, text: `Ersetzt »${own.title}«, sobald es freigegeben ist.${dialled}`, kind: 'info' };

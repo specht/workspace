@@ -339,10 +339,36 @@ object, so any language can play:
 → {"keys": 1}                    ask for up to 1 key
 ← {"keys": "4"}                  the caller pressed 4 ("" after a timeout)
 → {"hangup": true}
-→ {"transfer": "123"}            the call goes on in the published game 123,
-                                 as if dialled; this game ends ({"error": …}
-                                 for a number without a game)
+→ {"transfer": "123", "extension": "6"}   the call goes on in the published
+                                 game 123, as if 1236 were dialled; this game
+                                 ends ({"error": …} for a number without a game)
+→ {"call": "DICE", "extension": "6"}   this game waits on hold; the caller hears
+                                 3423 and 6 dialled and is with that game
+← {"keys": "4"}                  what it answered with back ("" without, or for
+                                 a number without a game: »Kein Anschluss«)
+→ {"back": "4"}                  answer the calling game: 4 and # as tones;
+                                 this game ends (dialled by a person: the call ends)
+→ {"clear_keys": true}           forget the keys kept so far
 ```
+
+Calling and holding (the maintainer, 13 November 2026: in the semantics of
+a telephone line, parameters and answers as key tones one hears). Numbers
+are prefix-free (no number is the beginning of another; the website refuses
+one that would be, with the reason, and lists old clashes on
+/telefon-freigabe), so a dialled number reaches the game it begins with,
+and the rest is the extension: the first keys the game reads. Each
+connection (a call, a transfer, a call on hold, the return) starts with only
+its extension; at most 20 keys wait, more are lost, as on a full buffer (a
+real phone system's type-ahead: the MT8870 decoder holds one digit,
+VoiceXML collects keys without fixing a size). `call` keeps the calling
+game's process waiting on its answer line while the runner (`connect`)
+or the line (`call_from`, a phone per connection) runs the next connection;
+8 calls deep at most, the ninth is »Alle Leitungen sind überlastet« and the
+call ends. A crash of a called game: »Dieses Spiel hat gerade einen
+Fehler«, and the calling game gets "". The tones are generated (DTMF
+pairs, 100 ms, `game.tones`) on the phone and played by the page in the
+browser. In the Workspace `telefon spiel.rb --nummer FACT --nummer
+DICE=wuerfel/dice.rb` names the numbers `call` reaches there.
 
 `transfer` (the maintainer, 12 November 2026: »wir leiten Sie jetzt an die
 Hotline weiter«) goes to another game of the Telefonbuch only, never to a

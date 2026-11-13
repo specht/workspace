@@ -141,16 +141,21 @@ class LinePhone(emulator.Emulator):
         self.switched = False
 
     def transfer_problem(self, number):
-        """a forwarded call goes only to a published game"""
+        """a forwarded call goes only to a published game (its number, and
+        what is dialled after it)"""
         import json
         try:
             with open(os.path.join(GAMES, 'published.json')) as f:
                 numbers = {str(g.get('number')) for g in json.load(f).get('games', []) if isinstance(g, dict)}
         except (OSError, ValueError):
             numbers = set()
-        if number not in numbers:
+        if game.match_number(number, numbers)[0] is None:
             return f'transfer: Ein Spiel mit der Nummer {number} gibt es nicht.'
         return None
+
+    def titled(self, title, subtitle):
+        self.shown = title
+        super().titled(title, subtitle)
 
     async def execute(self, command):
         if isinstance(command, dict) and 'game' in command:
@@ -160,6 +165,8 @@ class LinePhone(emulator.Emulator):
                 return {'error': 'no game'}
             self.switched = True
             self.server.folder = folder_path(folder)
+            # what was dialled after the number: the first keys the game gets
+            self.first_keys(str(command.get('extension', ''))[:game.MAX_DIALED])
             number = None if trial else game.published_number(GAMES, folder)
             if number:
                 self.server.reached.append(number)
@@ -181,59 +188,86 @@ class Line(emulator.Server):
     def title(self):
         return ''                                       # the display says nothing until a game names itself
 
-    async def run_call(self):
-        dialed, trial = self.dialed, self.trial
-        was_trial = bool(trial)
-        deadline = time.monotonic() + SECONDS
-        began, self.reached = time.monotonic(), []
-        # the last lines a game wrote to stderr: its error, if it crashes
-        errors, crashed = [], []
+    def output(self, kind, line):
+        if kind == 'err':
+            print('game', kind, line, file=sys.stderr, flush=True)
+            self.errors.append(line)
+            del self.errors[:-12]
 
-        def output(kind, line):
-            if kind == 'err':
-                print('game', kind, line, file=sys.stderr, flush=True)
-                errors.append(line)
-                del errors[:-12]
-
-        # a game may forward the call to another game's number (transfer):
-        # the menu starts again as if that number had been dialled, five
-        # times at most, all within the call's time
+    async def connect(self, dialed, trial, depth):
+        """one connection: the menu as if this number had been dialled, which
+        becomes its game, and the games it forwards to (transfer, five times
+        at most), each on a phone of its own (a new connection keeps no keys
+        from before); all within the call's time. Returns why the last ended
+        and its phone. A game that crashes: the caller hears so and is back
+        in the menu, or (called by another game) back with that one"""
+        reason, phone = 'time', None
         for _ in range(1 + MAX_TRANSFERS):
             # the menu's folder (its tones) until it becomes a game
             self.folder = HERE
             self.phone = phone = LinePhone(self)
+            phone.depth = depth
             env = game.environment()
             env['PHONE_DIALED'] = dialed
+            env['PHONE_DEPTH'] = str(depth)
             if trial:
                 import json
                 env['PHONE_TRIAL'] = json.dumps(trial)
-            left = int(deadline - time.monotonic())
+            left = int(self.deadline - time.monotonic())
             if left <= 0:
-                reason = 'time'
-                break
-            errors.clear()
+                return 'time', phone
+            self.errors = []
             status = None
             try:
-                reason, status = await game.run_game(phone, self.command, HERE, env, output, preexec_fn=limits, seconds=left)
+                reason, status = await game.run_game(phone, self.command, HERE, env, self.output, preexec_fn=limits, seconds=left)
             except OSError:
                 reason = 'ended'
-            # a game that stopped with an error: say so, back to the menu
-            # (not the menu itself crashing, and twice at most)
-            if reason == 'ended' and status and phone.switched and self.phone is phone and len(crashed) < 2:
-                crashed.append({'game': self.reached[-1] if self.reached else '', 'text': '\n'.join(errors)})
+            if reason == 'ended' and status and phone.switched and self.phone is phone and len(self.crashed) < 2:
+                self.crashed.append({'game': self.reached[-1] if self.reached else '', 'text': '\n'.join(self.errors)})
+                if depth:
+                    await phone.say(game.CRASHED_CALLED)
+                    return 'crashed', phone
                 await phone.say(game.CRASHED)
                 dialed, trial = '', None
                 continue
             if reason != 'transfer' or self.phone is not phone:
-                break
+                return reason, phone
             dialed, trial = phone.transfer_to, None
+        return reason, phone
+
+    async def call_from(self, holding, dialed):
+        """the game on the phone holding calls this number: the next
+        connection runs while it waits; afterwards it is on the line again
+        (its folder, its display), and the answer is what it gets"""
+        folder = self.folder
+        reason, phone = await self.connect(dialed, None, holding.depth + 1)
+        answer = phone.returned if reason == 'back' and phone is not None and phone.returned is not None else ''
+        # the caller hung up meanwhile: the holding game ends with the call
+        if phone is not None and phone.ended.is_set():
+            holding.ended.set()
+        if self.phone is phone or self.phone is None:
+            self.phone = holding
+        self.folder = folder
+        holding.fresh_keys()
+        if getattr(holding, 'shown', ''):
+            self.send({'title': holding.shown})
+        return answer
+
+    async def run_call(self):
+        dialed, trial = self.dialed, self.trial
+        was_trial = bool(trial)
+        self.deadline = time.monotonic() + SECONDS
+        began, self.reached = time.monotonic(), []
+        # the last lines a game wrote to stderr: its error, if it crashes
+        self.errors, self.crashed = [], []
+        reason, phone = await self.connect(dialed, trial, 0)
         if self.phone is phone:
             self.phone = None
             self.send({'ended': reason})
         # for /statistik (record_call); a game tried before it is published
         # is its author's, not a call
         if not was_trial:
-            game.record_call('browser', self.reached, time.monotonic() - began, crashed)
+            game.record_call('browser', self.reached, time.monotonic() - began, self.crashed)
 
     def calling(self):
         return self.call is not None and not self.call.done()
@@ -318,7 +352,7 @@ class Router(emulator.Server):
                 self.respond(writer, 204)
                 return
             number = query.get('number', '')
-            line.dialed = number if number.isdigit() and len(number) <= 4 else ''
+            line.dialed = number if number.isdigit() and len(number) <= game.MAX_DIALED else ''
             line.trial = trial_of(query.get('try', ''))
         await line.route(method, path, query, body, reader, writer)
 

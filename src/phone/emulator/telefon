@@ -3,6 +3,8 @@
 
     telefon spiel.rb          (or spiel.py, spiel.js, or a whole command)
     telefon                   (the command from game.json in this folder)
+    telefon spiel.rb --nummer FACT --nummer DICE=wuerfel/dice.rb
+                              (the numbers call reaches: this game, another one)
 
 Runs the game exactly as the runner does on the real phone (the same code,
 src/phone/core/game.py) and serves a page with a telephone: the browser
@@ -155,6 +157,14 @@ class Emulator(game.Phone):
         # as on the phone, the game goes on when the music plays (or failed)
         await self.until_heard(event)
 
+    async def dtmf(self, digits):
+        """the page plays the key tones; the game goes on when they are heard"""
+        show(f'Töne auf der Leitung: {" ".join(digits)}', '2')
+        await self.until_heard({'tones': digits})
+
+    async def call_game(self, dialed):
+        return await self.server.call_from(self, dialed)
+
     async def read_keys(self, count, timeout_ms):
         self.server.send({'keys': count, 'timeout': timeout_ms})
         digits = await super().read_keys(count, timeout_ms)
@@ -164,9 +174,12 @@ class Emulator(game.Phone):
 
 
 class Server:
-    def __init__(self, command, folder):
+    def __init__(self, command, folder, numbers=None):
         self.command = command
         self.folder = folder
+        # the numbers a game here may call (telefon spiel.rb --nummer FACT,
+        # --nummer DICE=wuerfel/dice.rb): digits → (command, folder)
+        self.numbers = numbers or {}
         self.events = None             # the page's event stream (one page at a time)
         self.phone = None
         self.call = None
@@ -339,6 +352,9 @@ class Server:
             show('Aufgelegt.', '1')
         elif reason == 'hangup':
             show('Das Spiel hat aufgelegt.', '1')
+        elif reason == 'back':
+            show(f'Das Spiel hat mit back geantwortet: {json.dumps(phone.returned)}. '
+                 'Von einem Menschen gewählt, ist der Anruf damit zu Ende.', '1')
         elif reason == 'transfer':
             # the published games are on the server, not here
             show(f'Weitergeleitet an {phone.transfer_to}: Auf dem echten Telefon geht der Anruf im Spiel mit dieser Nummer weiter.', '1')
@@ -352,6 +368,43 @@ class Server:
             if reason == 'transfer':
                 ended['number'] = phone.transfer_to       # the page offers it in the Telefonbuch
             self.send(ended)
+
+    async def call_from(self, holding, dialed):
+        """call in the Workspace: the games given with --nummer, the one
+        running here among them; the holding game waits, then is on the line
+        again with only the answer. Any other number: »Kein Anschluss«"""
+        number, extension = game.match_number(dialed, self.numbers)
+        if number is None:
+            show(f'Rückfrage bei {dialed}: Kein Anschluss. Im Workspace erreicht call nur Spiele, die du beim Start nennst, '
+                 'zum Beispiel: telefon spiel.rb --nummer FACT (dieses Spiel) oder --nummer DICE=wuerfel/dice.rb.', '33')
+            await holding.say('Kein Anschluss unter dieser Nummer.')
+            return ''
+        command, folder = self.numbers[number]
+        show(f'Rückfrage bei {number}{f" mit {extension}" if extension else ""}: {" ".join(command)} (das Spiel davor wartet)', '1')
+        callee = Emulator(self)
+        callee.depth = holding.depth + 1
+        callee.fresh_keys(extension)
+        held_folder, self.folder, self.phone = self.folder, folder, callee
+        try:
+            reason, status = await game.run_game(
+                callee, command, folder, game.environment(),
+                lambda kind, line: print(paint('31', line) if kind == 'err' else line, flush=True))
+        except OSError as error:
+            show(f'Das Spiel ließ sich nicht starten: {error}', '31')
+            reason, status = 'ended', None
+        finally:
+            self.folder = held_folder
+            if self.phone is callee:
+                self.phone = holding
+        if callee.ended.is_set():
+            holding.ended.set()
+        if reason == 'ended' and status:
+            show(f'Das gerufene Spiel ist mit einem Fehler beendet (Exit-Code {status}); das Spiel davor bekommt keine Antwort.', '1;31')
+            await holding.say(game.CRASHED_CALLED)
+        answer = callee.returned if reason == 'back' and callee.returned is not None else ''
+        show(f'Zurück im Spiel davor, die Antwort: {json.dumps(answer)}', '1')
+        holding.fresh_keys()
+        return answer
 
     async def start_call(self):
         if self.call and not self.call.done():
@@ -507,6 +560,13 @@ class TestPhone(game.Phone):
         except (TypeError, ValueError):
             print('Pause', flush=True)
 
+    async def dtmf(self, digits):
+        print(f'Töne: {digits}', flush=True)
+
+    async def call_game(self, dialed):
+        print(f'Rückfrage: {dialed} (in der Prüfung geht niemand ran, die Antwort ist leer)', flush=True)
+        return ''
+
     async def read_keys(self, count, timeout_ms):
         if not self.answers and self.keys.empty():
             print(f'Ende: Das Spiel wartet auf {"eine Taste" if count == 1 else f"bis zu {count} Tasten"}, '
@@ -540,6 +600,8 @@ async def test(command, folder, answers, seconds):
         return
     if reason == 'hangup':
         print('Ende: Das Spiel hat aufgelegt.', flush=True)
+    elif reason == 'back':
+        print(f'Ende: Antwort {phone.returned or "(leer)"}.', flush=True)
     elif reason == 'transfer':
         print(f'Ende: Weitergeleitet an {phone.transfer_to}.', flush=True)
     elif reason == 'time':
@@ -568,8 +630,8 @@ def find_game(args):
     return list(args), os.getcwd()
 
 
-async def serve(command, folder, port):
-    server = Server(command, folder)
+async def serve(command, folder, port, numbers=None):
+    server = Server(command, folder, numbers)
     for candidate in range(port, port + 20):
         try:
             listener = await asyncio.start_server(server.handle, '0.0.0.0', candidate)
@@ -621,12 +683,36 @@ def main():
     parser.add_argument('--seconds', type=int, default=10, help='mit --test: so lange darf das Spiel laufen')
     parser.add_argument('command', nargs=argparse.REMAINDER, help='spiel.rb, spiel.py, spiel.js oder ein Befehl')
     options = parser.parse_args()
-    command, folder = find_game(options.command)
+    # --nummer anywhere (after the game's file, too): the numbers call reaches here
+    rest, given = [], []
+    args = list(options.command)
+    while args:
+        word = args.pop(0)
+        if word == '--nummer' and args:
+            given.append(args.pop(0))
+        elif word.startswith('--nummer='):
+            given.append(word.split('=', 1)[1])
+        else:
+            rest.append(word)
+    command, folder = find_game(rest)
+    numbers = {}
+    for item in given:
+        number, _, file = item.partition('=')
+        digits = game.dial_digits(number)
+        if not digits or not re.fullmatch(r'\d{3,4}', digits):
+            sys.exit(f'--nummer {item}: Eine Spielnummer hat drei oder vier Ziffern oder Buchstaben.')
+        if file:
+            if not os.path.isfile(file):
+                sys.exit(f'--nummer {item}: Die Datei {file} gibt es nicht.')
+            other_folder, name = os.path.split(os.path.abspath(file))
+            numbers[digits] = (game.command_for([name]), other_folder)
+        else:
+            numbers[digits] = (command, folder)
     if options.test:
         answers = [a.strip() for a in options.keys.split(',')] if options.keys.strip() else []
         asyncio.run(test(command, folder, answers, options.seconds))
     else:
-        asyncio.run(serve(command, folder, options.port))
+        asyncio.run(serve(command, folder, options.port, numbers))
 
 
 if __name__ == '__main__':
