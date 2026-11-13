@@ -2841,38 +2841,67 @@ class Main < Sinatra::Base
     end
 
     # A whole series at once (»Reihe: …«): a row per student, a column per
-    # activity, each cell how many of its tasks are solved, linking to its
-    # board; the open points of a document task in its title.
+    # activity, each cell how many of its tasks are solved, without the
+    # extras (they count apart, »+2«), linking to its board; the open points
+    # of a document task in its title. A sheet is finished with its tasks
+    # alone: the extras are for the quick and for practice.
     def class_series_html(group, series)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         _, _, sheets = series
         members = class_members(group)
         emails = members.map { |m| m[:email] }
         states = sheets.to_h { |key, _, _, _| [key, class_board_states(emails, key)] }
-        io = +"<div class='class-series'><table class='table class-series-table'><thead><tr><th scope='col'>Name</th>"
+        now = Time.now.to_i
+        finished_per_sheet = Array.new(sheets.size, 0)
+        io = +"<div class='class-series'><table class='class-series-table'><thead><tr><th scope='col' class='class-series-name'>Name</th>" \
+              "<th scope='col' class='class-series-last'>zuletzt</th>"
         sheets.each_with_index do |(key, title, tasks, _), i|
-            io << "<th scope='col'><a href='/klasse?group=#{CGI.escape(group)}&amp;tab=fortschritt&amp;activity=#{CGI.escape(key)}' title='#{h.(title)}: alle Aufgaben'>" \
-                "<span class='class-series-number'>#{i + 1}</span>#{h.(title)}</a><span class='class-series-count'>#{tasks.size} Aufgaben</span></th>"
+            core = tasks.count { |t| !t[:extra] }
+            extras = tasks.count { |t| t[:extra] }
+            io << "<th scope='col' class='class-series-sheet'><a href='/klasse?group=#{CGI.escape(group)}&amp;tab=fortschritt&amp;activity=#{CGI.escape(key)}' title='#{h.(title)}: alle Aufgaben einzeln'>" \
+                "<span class='class-series-number'>#{i + 1}</span><span class='class-series-title'>#{h.(title)}</span></a>" \
+                "<span class='class-series-count'>#{core} #{core == 1 ? 'Aufgabe' : 'Aufgaben'}#{extras.positive? ? ", #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}</span></th>"
         end
-        io << "<th scope='col'>Fertig</th></tr></thead><tbody>"
+        io << "<th scope='col' class='class-series-total'>fertig</th></tr></thead><tbody>"
         members.each do |m|
-            io << "<tr><th scope='row'>#{h.(m[:name])}</th>"
             finished = 0
-            sheets.each do |key, title, tasks, _|
+            last = sheets.flat_map { |key, _, _, _| (states[key][m[:email]] || {}).values.map { |s| s[:updated].to_i } }.max
+            cells = +''
+            sheets.each_with_index do |(key, title, tasks, _), i|
                 mine = states[key][m[:email]] || {}
-                done = tasks.count { |t| StudentHome::DONE.include?((mine[t[:id]] || {})[:status].to_s) }
-                finished += 1 if done == tasks.size
-                level = done == tasks.size ? 'done' : (mine.empty? ? 'none' : 'part')
+                solved = ->(t) { StudentHome::DONE.include?((mine[t[:id]] || {})[:status].to_s) }
+                core = tasks.reject { |t| t[:extra] }
+                done = core.count(&solved)
+                extras = tasks.select { |t| t[:extra] }.count(&solved)
+                complete = core.any? && done == core.size
+                if complete
+                    finished += 1
+                    finished_per_sheet[i] += 1
+                end
                 # what a document check left open (»01 Einladung.docx: 6 von 8, …«)
                 notes = tasks.select { |t| t[:type] == 'document' }.filter_map { |t| (mine[t[:id]] || {})[:last_answer] }
-                tip = ["#{title}: #{done} von #{tasks.size} Aufgaben gelöst", *notes].join("\n")
-                io << "<td class='class-series-cell class-series-#{level}' title='#{h.(tip)}'>" \
-                    "#{level == 'done' ? "<i class='bi bi-check-lg' aria-hidden='true'></i>" : ''}#{done}/#{tasks.size}</td>"
+                tip = ["#{title}: #{done} von #{core.size} Aufgaben gelöst#{extras.positive? ? ", dazu #{extras} #{extras == 1 ? 'Extra' : 'Extras'}" : ''}", *notes].join("\n")
+                extra = extras.positive? ? "<span class='class-series-extra'><i class='bi bi-stars' aria-hidden='true'></i>+#{extras}</span>" : ''
+                if mine.empty?
+                    cells << "<td class='class-series-cell class-series-none' title='#{h.(title)}: noch nichts bearbeitet'><span class='visually-hidden'>noch nichts</span><span aria-hidden='true'>–</span></td>"
+                elsif complete
+                    cells << "<td class='class-series-cell class-series-done' title='#{h.(tip)}'><span class='class-series-figure'>" \
+                             "<i class='bi bi-check-lg' aria-hidden='true'></i>#{done}/#{core.size}#{extra}</span></td>"
+                else
+                    share = core.empty? ? 0 : (100.0 * done / core.size).round
+                    cells << "<td class='class-series-cell class-series-part' title='#{h.(tip)}'><span class='class-series-figure'>#{done}/#{core.size}#{extra}</span>" \
+                             "<span class='class-series-bar' aria-hidden='true'><span style='width: #{share}%'></span></span></td>"
+                end
             end
-            io << "<td class='class-series-total'>#{finished} von #{sheets.size}</td></tr>"
+            io << "<tr><th scope='row' class='class-series-name'>#{h.(m[:name])}</th>" \
+                  "<td class='class-series-last'>#{h.(ClassBoard.ago(last, now))}</td>#{cells}" \
+                  "<td class='class-series-total'>#{finished} von #{sheets.size}</td></tr>"
         end
-        io << '</tbody></table></div>'
-        io << "<p class='class-setting-hint'>Ein Klick auf ein Blatt zeigt seine Aufgaben einzeln; über einer Zelle steht, was bei einem Dokument noch offen ist.</p>"
+        io << "</tbody><tfoot><tr><th scope='row' class='class-series-name'>fertig</th><td class='class-series-last'></td>"
+        finished_per_sheet.each { |n| io << "<td class='class-series-cell class-series-sum'>#{n} von #{members.size}</td>" }
+        io << '<td></td></tr></tfoot></table></div>'
+        io << "<p class='class-setting-hint'>Gezählt sind die Aufgaben eines Blatts ohne die Extras; gelöste Extras stehen dahinter (<i class='bi bi-stars' aria-hidden='true'></i>+2). " \
+              'Ein Klick auf ein Blatt zeigt seine Aufgaben einzeln; über einer Zelle steht, was bei einem Dokument noch offen ist.</p>'
         io
     end
 
