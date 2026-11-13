@@ -18018,21 +18018,6 @@ html[data-bs-theme="dark"] .document-report {
 .document-chip {
     margin: 0 0.4em 0 0;
 }
-.document-new {
-    display: inline-block;
-    /* in the point's line (a flex row): on one line, never squeezed */
-    flex: none;
-    align-self: center;
-    white-space: nowrap;
-    margin-left: 0.5em;
-    padding: 0.05em 0.5em;
-    border-radius: 999px;
-    background: var(--bs-success-bg-subtle);
-    color: var(--bs-success-text-emphasis);
-    font-size: 0.75em;
-    font-weight: 600;
-    vertical-align: 0.1em;
-}
 .document-gain {
     display: flex;
     gap: 0.4em;

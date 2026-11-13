@@ -1204,7 +1204,7 @@
         const status = el('p', 'document-status');
         status.setAttribute('aria-live', 'polite');
         side.appendChild(status);
-        // what was met at the last check, for »neu erfüllt«
+        // what was met at the last check: the points met since pop their tick
         const before = card.documentMet || null;
         const met = report.items.filter(function (i) { return i.ok; }).map(function (i) { return i.label; });
         card.documentMet = met;
@@ -1257,7 +1257,6 @@
             } else {
                 head.appendChild(document.createTextNode(item.label));
             }
-            if (li.classList.contains('document-fresh')) head.appendChild(el('span', 'document-new', 'neu erfüllt'));
             text.appendChild(head);
             if (item.n && item.marks && item.marks.length > 1) {
                 const where = el('div', 'document-where', item.marks.length + ' Stellen');
