@@ -344,6 +344,13 @@ module TaskCheck
             end
         end
         status, items, message = DocumentCheck.evaluate(check, answer, starter)
+        # still the starting file: most likely a second download was edited
+        if status != :correct && !answer['pdf'] && check['file'] && DocumentCheck.untouched?(answer, starter)
+            name = File.basename(check['file'])
+            copy = name.sub(/(\.[^.]+)\z/, ' (1)\\1')
+            message = "In dieser Datei hat sich noch nichts geändert: Sie ist genau die Vorlage. Hast du die Vorlage zweimal heruntergeladen? " \
+                "Dann bearbeitest du vielleicht eine andere Datei, etwa »#{copy}«. Wähl die Datei, die du offen hast, mit »Anderes Dokument«. #{message}"
+        end
         # traps: what the check read would show where they hide
         Result.new(:status => status, :message => message, :read => check['traps'] ? nil : DocumentCheck.xray(answer),
             :solution => status == :correct ? task['solution'] : nil,

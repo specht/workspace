@@ -51,7 +51,11 @@ test('a document is checked and its problems are marked on its page', async ({ p
   const card = page.locator(".task-card[data-task='formatting-marks/einladung']:visible");
   // the starting file with today's date and the Elternabend a Tuesday
   // after it (DocumentDates), as a student downloads it
-  await expect(card.locator('.document-starter')).toHaveAttribute('href', '/api/task/document_starter/formatting-marks/einladung');
+  // the page's own button has it; the card points up to it instead of a
+  // second button (a second download is a second file)
+  await expect(page.locator('a.document-starter').first()).toHaveAttribute('href', '/api/task/document_starter/formatting-marks/einladung');
+  await expect(card.locator('a.document-starter')).toHaveCount(0);
+  await expect(card.locator('.document-starter-above')).toContainText('01 Einladung.docx');
   const download = await page.request.get('/api/task/document_starter/formatting-marks/einladung');
   expect(download.headers()['content-disposition']).toContain('01%20Einladung.docx');
   const dated = testInfo.outputPath('01 Einladung.docx');
@@ -641,4 +645,40 @@ test.skip('a presentation is checked for titles, words, sizes and notes', async 
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
   if (shots) await page.screenshot({ path: path.join(shots, 'slides-correct.png') });
+});
+
+// The starting file once: a second click on its button says that a second
+// copy would be another file, and downloads only on »Trotzdem
+// herunterladen«; the card points up to the page's button.
+test('a second download of the starting file asks first', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/formatting-marks');
+  await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('document-starter:')).forEach((k) => localStorage.removeItem(k)));
+  await page.reload();
+  const button = page.locator('a.document-starter').first();
+  const first = page.waitForEvent('download');
+  await button.click();
+  expect((await first).suggestedFilename()).toBe('01 Einladung.docx');
+  await expect(page.locator('.document-starter-again')).toHaveCount(0);
+
+  // again: no download, the note instead
+  let downloaded = false;
+  page.on('download', () => { downloaded = true; });
+  await button.click();
+  const note = page.locator('.document-starter-again');
+  await expect(note).toBeVisible();
+  await expect(note).toContainText('01 Einladung (1).docx');
+  await page.waitForTimeout(500);
+  expect(downloaded).toBe(false);
+
+  // on purpose: it downloads, and the note goes
+  const second = page.waitForEvent('download');
+  await note.getByRole('button', { name: 'Trotzdem herunterladen' }).click();
+  await second;
+  await expect(note).toHaveCount(0);
+
+  // the card's way up
+  const card = page.locator(".task-card[data-task='formatting-marks/einladung']:visible");
+  await card.locator('.document-starter-above a').click();
+  await expect(button).toBeInViewport();
 });

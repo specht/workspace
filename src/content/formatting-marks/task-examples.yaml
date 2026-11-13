@@ -11,6 +11,12 @@ examples:
     fail:
       - document: ../../static/formatting-marks/01 Einladung.docx
         say: Leerzeichen
+      # the starting file itself: most likely a second download was edited
+      - document: ../../static/formatting-marks/01 Einladung.docx
+        say: In dieser Datei hat sich noch nichts geändert
+      # a space gone between two sentences: named as such, not as two missing words
+      - document: stufen/einladung-zusammen.docx
+        say: Hier fehlt ein Leerzeichen
   runde:
     pass:
       - document: stufen/abfahrt.docx

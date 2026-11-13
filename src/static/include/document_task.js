@@ -1355,5 +1355,109 @@
         line.textContent = answer ? 'Zuletzt geprüft: ' + answer : 'oder hierher ziehen';
     }
 
+    // The starting file once. A second download is a second file (»01
+    // Einladung (1).docx«): a class downloaded it at the page's button and
+    // again at the card's, worked in one and had the other checked. So a
+    // card whose page has a button for the same file points up to it
+    // instead of offering its own, and a second click on any button for a
+    // file says so first and downloads only on »Trotzdem herunterladen«
+    // (remembered in this browser only).
+    function starterPath(link) {
+        try {
+            return new URL(link.getAttribute('href'), location.href).pathname;
+        } catch (e) {
+            return link.getAttribute('href');
+        }
+    }
+
+    function downloadedAt(path, value) {
+        try {
+            if (value === undefined) return localStorage.getItem('document-starter:' + path);
+            localStorage.setItem('document-starter:' + path, value);
+        } catch (e) {
+            return null;
+        }
+        return null;
+    }
+
+    function starterName(link) {
+        const name = link.querySelector('.document-starter-name');
+        return name ? name.textContent.trim() : '';
+    }
+
+    // »01 Einladung.docx« → »01 Einladung (1).docx«, as browsers name a second copy
+    function secondCopy(name) {
+        const dot = name.lastIndexOf('.');
+        return dot > 0 ? name.slice(0, dot) + ' (1)' + name.slice(dot) : name + ' (1)';
+    }
+
+    function guardStarter(link) {
+        link.addEventListener('click', function (e) {
+            const path = starterPath(link);
+            const at = downloadedAt(path);
+            if (link.dataset.again || !at) {
+                delete link.dataset.again;
+                downloadedAt(path, String(Math.floor(Date.now() / 1000)));
+                const shown = link.parentNode && link.parentNode.querySelector('.document-starter-again');
+                if (shown) shown.remove();
+                return;
+            }
+            e.preventDefault();
+            if (link.parentNode.querySelector('.document-starter-again')) return;
+            const name = starterName(link);
+            const note = el('div', 'document-starter-again');
+            note.setAttribute('role', 'status');
+            const text = el('p');
+            text.innerHTML = '<i class=\'bi bi-exclamation-triangle\' aria-hidden=\'true\'></i>' +
+                'Diese Vorlage hast du schon heruntergeladen (' + when(Number(at)) + '). Arbeite in der Datei weiter, die du schon hast. ' +
+                'Eine zweite Kopie wäre eine andere Datei' + (name ? ', etwa <em>' + secondCopy(name).replace(/[<>&]/g, '') + '</em>' : '') +
+                ', und geprüft wird nur die, die du hier wählst.';
+            note.appendChild(text);
+            const again = el('button', 'btn btn-outline-secondary btn-sm');
+            again.type = 'button';
+            again.innerHTML = '<i class=\'bi bi-download\' aria-hidden=\'true\'></i>Trotzdem herunterladen';
+            again.addEventListener('click', function () {
+                link.dataset.again = '1';
+                link.click();
+            });
+            note.appendChild(again);
+            link.insertAdjacentElement('afterend', note);
+        });
+    }
+
+    function guardStarters() {
+        const links = Array.from(document.querySelectorAll('a.document-starter'));
+        links.forEach(function (link) {
+            if (link.closest('.task-card')) {
+                const above = links.find(function (other) {
+                    return other !== link && !other.closest('.task-card') && starterPath(other) === starterPath(link);
+                });
+                if (above) {
+                    const note = el('p', 'document-starter-above');
+                    note.innerHTML = '<i class=\'bi bi-arrow-up\' aria-hidden=\'true\'></i>Die Vorlage' +
+                        (starterName(link) ? ' <em>' + starterName(link).replace(/[<>&]/g, '') + '</em>' : '') +
+                        ' lädst du weiter oben herunter. Hast du sie schon, wähl hier die Datei, die du bearbeitet hast. ';
+                    const up = el('a', null, 'Zur Vorlage');
+                    up.href = '#';
+                    up.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        above.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        above.focus({ preventScroll: true });
+                    });
+                    note.appendChild(up);
+                    link.replaceWith(note);
+                    return;
+                }
+            }
+            guardStarter(link);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', guardStarters);
+    } else {
+        guardStarters();
+    }
+
     window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored, showFile: showFile, nextcloud: nextcloud, offer: offer };
 })();

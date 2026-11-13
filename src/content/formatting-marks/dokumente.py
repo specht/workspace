@@ -322,9 +322,27 @@ def secret(path, decoded=False):
     doc.save(path)
 
 
+def joined(path):
+    """the solution with the space after the first sentence's full stop
+    gone, as when two spaces are replaced by nothing instead of one (an
+    example: the check names the missing space, not two missing words)"""
+    solution(path)
+    doc = Document(path)
+    import re
+    end = re.compile(r'([a-zäöüß])\. ([A-ZÄÖÜ])')
+    for p in doc.paragraphs:
+        for r in p.runs:
+            if end.search(r.text):
+                r.text = end.sub(r'\1.\2', r.text, count=1)
+                doc.save(path)
+                return
+    raise RuntimeError('no sentence to join')
+
+
 def extras():
     notice(os.path.join(STATIC, '01 Abfahrt.docx'))
     notice_solution(os.path.join(HERE, 'stufen', 'abfahrt.docx'))
+    joined(os.path.join(HERE, 'stufen', 'einladung-zusammen.docx'))
     letter(os.path.join(STATIC, '01 Brief an die Jugendherberge.docx'))
     letter_solution(os.path.join(HERE, 'stufen', 'brief.docx'))
     secret(os.path.join(STATIC, '01 Geheimbotschaft.docx'))

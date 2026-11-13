@@ -215,6 +215,25 @@ module DocumentCheck
         errors
     end
 
+    # Whether an uploaded document is still the starting file as it was:
+    # the same text (its dates as filled in on download set aside), the
+    # same styles, alignment and look of every paragraph. Then the student
+    # worked in another file, mostly a second download (»01 Einladung
+    # (1).docx«), and had this one checked.
+    def self.untouched?(model, starter)
+        return false unless model.is_a?(Hash) && starter.is_a?(Hash) && starter['paragraphs'].is_a?(Array)
+
+        print = lambda do |m|
+            Array(m['paragraphs']).map do |p|
+                looks = (p['portions'] || []).select { |q| visible?(q) }
+                    .map { |q| q.slice('font', 'size', 'bold', 'italic', 'underline', 'color') }.uniq
+                [squish(DocumentDates.normalize(p['text'].to_s)), p['style'], p['align'], looks, p['text'].to_s.count("\t")]
+            end
+        end
+        theirs = print.(starter)
+        !theirs.empty? && print.(model) == theirs
+    end
+
     # align: is a rule and a key of tabs: the other rule wins
     def self.rule_name(rule)
         return rule if rule.is_a?(String)
@@ -435,9 +454,41 @@ module DocumentCheck
         missing = words.(theirs).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
         return item if missing.empty?
 
+        # Words run together are a space gone, not words gone: »Satz.Der«
+        # where the starting file has »Satz.« and »Der« (two spaces replaced
+        # by nothing instead of one). Each such word takes its parts off the
+        # missing ones.
+        tokens = ->(ps) { ps.flat_map { |p| DocumentDates.normalize(p['text']).sub(TYPED_MARKER, '').split(/\s+/) }.reject(&:empty?) }
+        clean = ->(w) { w.gsub(SUPERSCRIPT_DIGITS, '').gsub(EDGE_PUNCT, '') }
+        theirs_tokens = tokens.(theirs)
+        counted = theirs_tokens.tally
+        added = tokens.(Array(all || body) + extra).tally.flat_map { |w, n| [w] * [n - counted[w].to_i, 0].max }
+        joined = []
+        added.each do |w|
+            parts = (2..4).lazy.map { |k| theirs_tokens.each_cons(k).find { |c| c.join == w } }.find(&:itself)
+            next unless parts && parts.all? { |part| clean.(part).empty? || missing.include?(clean.(part)) }
+
+            joined << parts
+            parts.each { |part| (i = missing.index(clean.(part))) && missing.delete_at(i) }
+        end
+        return item if missing.empty? && joined.empty?
+
         item.ok = false
-        item.message = "Aus der Vorlage fehlen #{missing.size == 1 ? 'ein Wort' : "#{missing.size} Wörter"}: " \
-            "»#{q(missing.first(6).join(' '))}«#{missing.size > 6 ? ' …' : ''}. Hier änderst du nur, wie der Text gebaut ist, nicht den Text selbst."
+        said = []
+        unless joined.empty?
+            joined.first(3).each do |parts|
+                p = Array(all || body).find { |x| x['plain'].include?(parts.join) }
+                item.marks << para_mark(p).merge(:title => 'Leerzeichen fehlt') if p
+            end
+            places = joined.first(3).map { |parts| parts.each_cons(2).map { |a, b| "zwischen »#{q(a)}« und »#{q(b)}«" }.join(' und ') }
+            said << "Hier fehlt ein Leerzeichen: #{names(places)}#{joined.size > 3 ? ' und an weiteren Stellen' : ''}. " \
+                'Ersetzt du zwei Leerzeichen, gehört in das Feld »Ersetzen durch« ein Leerzeichen, nicht nichts.'
+        end
+        unless missing.empty?
+            said << "Aus der Vorlage fehlen #{missing.size == 1 ? 'ein Wort' : "#{missing.size} Wörter"}: " \
+                "»#{q(missing.first(6).join(' '))}«#{missing.size > 6 ? ' …' : ''}. Hier änderst du nur, wie der Text gebaut ist, nicht den Text selbst."
+        end
+        item.message = said.join(' ')
         item
     end
 

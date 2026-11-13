@@ -17511,6 +17511,35 @@ body.mail-app-open {
     margin-top: 0.3em;
     color: var(--bs-warning-text-emphasis, #664d03);
 }
+/* the card of a page with its own button for the starting file: a line
+   pointing up instead of a second button; a second click on a button: why
+   not, and »Trotzdem herunterladen« (document_task.js, guardStarters) */
+.document-starter-above {
+    margin: 0 0 0.75em;
+    font-size: 0.92em;
+    color: var(--bs-secondary-color);
+}
+.document-starter-above .bi {
+    margin-right: 0.35em;
+}
+.document-starter-again {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4em;
+    margin: 0.5em 0 0.75em;
+    padding: 0.6em 0.8em;
+    border-left: 3px solid var(--bs-warning, #ffc107);
+    background: var(--bs-warning-bg-subtle, #fff3cd);
+    color: var(--bs-warning-text-emphasis, #664d03);
+    border-radius: 0.25em;
+}
+.document-starter-again p {
+    margin: 0;
+}
+.document-starter-again .bi {
+    margin-right: 0.35em;
+}
 .document-starter-name {
     display: inline-block;
     white-space: nowrap;
