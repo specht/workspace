@@ -18536,18 +18536,29 @@ figure.slide-with-notes figcaption { margin-top: 0.5em; font-size: 0.9em; color:
    place (borderless until hovered or focused), the switch on the right; a
    game not in the book is quieter, one taken out after an error has a red
    edge and a line saying so */
+.phone-manage-head {
+    margin: 1.5em 0 0.6em;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+.phone-manage-head span {
+    margin-left: 0.3em;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
 .phone-manage {
     border: 1px solid var(--bs-border-color-translucent);
     border-radius: 0.5em;
     overflow: hidden;
 }
-.phone-manage-row {
+/* form.: over the frameless form.plain, which zeroes the padding */
+form.phone-manage-row {
     display: grid;
-    grid-template-columns: 4.5em minmax(0, 1fr) auto;
-    gap: 0.25em 1em;
+    grid-template-columns: 5em minmax(0, 1fr) auto;
+    gap: 0.25em 1.25em;
     align-items: start;
     margin: 0;
-    padding: 0.55em 0.9em;
+    padding: 1em 1.25em 1em calc(1.25em - 3px);
     border-left: 3px solid transparent;
     background: var(--bs-body-bg);
 }
@@ -18570,6 +18581,7 @@ figure.slide-with-notes figcaption { margin-top: 0.5em; font-size: 0.9em; color:
 .phone-manage-fields {
     display: flex;
     flex-direction: column;
+    gap: 0.2em;
     min-width: 0;
 }
 .phone-manage-fields input {
@@ -18591,6 +18603,7 @@ figure.slide-with-notes figcaption { margin-top: 0.5em; font-size: 0.9em; color:
     box-shadow: 0 0 0 0.15em rgba(var(--bs-primary-rgb), 0.2);
 }
 .phone-manage-title {
+    font-size: 1.05em;
     font-weight: 600;
 }
 .phone-manage-description {
@@ -18605,7 +18618,7 @@ figure.slide-with-notes figcaption { margin-top: 0.5em; font-size: 0.9em; color:
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.4em;
-    padding-top: 0.2em;
+    padding-top: 0.35em;
     font-size: 0.85em;
     color: var(--bs-secondary-color);
 }
@@ -18637,24 +18650,24 @@ figure.slide-with-notes figcaption { margin-top: 0.5em; font-size: 0.9em; color:
     display: none;
 }
 /* not in the book: quieter, still editable */
-.phone-manage-out {
+form.phone-manage-out {
     background: var(--bs-tertiary-bg);
 }
 .phone-manage-out .phone-manage-number,
 .phone-manage-out .phone-manage-title {
     color: var(--bs-secondary-color);
 }
-.phone-manage-broken {
+form.phone-manage-broken {
     border-left-color: var(--bs-danger);
 }
 .phone-manage-broken .phone-manage-note {
     color: var(--bs-danger-text-emphasis);
 }
-.phone-manage-dirty {
+form.phone-manage-dirty {
     border-left-color: var(--bs-primary);
 }
 @media (max-width: 768px) {
-    .phone-manage-row {
+    form.phone-manage-row {
         grid-template-columns: 3.5em minmax(0, 1fr);
     }
     .phone-manage-actions {

@@ -417,22 +417,21 @@ class Main < Sinatra::Base
             end
             io << '</div>'
         end
-        # in the Telefonbuch: sorted by title as the book is; title and
-        # subtitle to edit in place, in the book or not: a hidden game (a part
-        # of another one) is reached by its number and by transfer, a game
-        # taken out after an error is back when switched on
+        # the published games: those in the Telefonbuch first, then those not
+        # in it (hidden as a part of another game, or taken out after an
+        # error), each sorted by title as the book is; title and subtitle to
+        # edit in place; a game taken out after an error is back when switched on
         listed = PhoneGames.phone_book(all.select { |g| %w[published broken].include?(g[:state]) })
-        shown = listed.count { |g| g[:state] == 'published' && !g[:hidden] }
-        io << "<h2 class='h4 mt-4'>Veröffentlicht <span class='text-muted fw-normal phone-manage-count'>#{listed.size}, davon #{shown} im Telefonbuch</span></h2>" \
+        inside, outside = listed.partition { |g| g[:state] == 'published' && !g[:hidden] }
+        io << "<h2 class='h4 mt-4'>Veröffentlicht</h2>" \
               "<p class='text-muted'>Titel und Untertitel änderst du direkt in der Zeile. Ausgeblendete Spiele stehen nicht im Telefonbuch und werden am Telefon nicht vorgelesen; " \
               "über ihre Nummer und mit <code>transfer</code> sind sie weiter erreichbar, etwa als Teil eines anderen Spiels.</p>"
         if listed.empty?
             io << "<p class='text-muted'>Noch ist kein Spiel veröffentlicht.</p>"
         else
-            io << "<div class='phone-manage'>"
-            listed.each do |g|
+            row = lambda do |g|
                 broken = g[:state] == 'broken'
-                inside = !broken && !g[:hidden]
+                shown = !broken && !g[:hidden]
                 note = if broken
                     "<i class='bi bi-exclamation-triangle-fill' aria-hidden='true'></i>Bei einem Anruf mit einem Fehler abgebrochen, aus dem Telefonbuch genommen. " \
                         "<a href='/telefon-freigabe?id=#{h.(g[:id])}'>Fehler ansehen</a>"
@@ -441,20 +440,26 @@ class Main < Sinatra::Base
                 else
                     ''
                 end
-                io << "<form class='phone-manage-row#{inside ? '' : ' phone-manage-out'}#{broken ? ' phone-manage-broken' : ''}' data-id='#{h.(g[:id])}' data-broken='#{broken}'>" \
-                      "<div class='phone-manage-number'>#{g[:word] ? "<span class='phone-manage-word'>#{h.(g[:word])}</span>" : ''}<span>#{h.(g[:number])}</span></div>" \
-                      "<div class='phone-manage-fields'>" \
-                      "<input class='phone-manage-title' name='title' maxlength='#{PhoneGames::MAX_TITLE}' value='#{h.(g[:title])}' aria-label='Titel von #{h.(PhoneGames.label(g))}' spellcheck='false'>" \
-                      "<input class='phone-manage-description' name='description' maxlength='#{PhoneGames::MAX_DESCRIPTION}' value='#{h.(g[:description])}' aria-label='Untertitel von #{h.(PhoneGames.label(g))}'>" \
-                      "<div class='phone-manage-note'>#{note}</div>" \
-                      "</div><div class='phone-manage-actions'>" \
-                      "<button type='submit' class='btn btn-sm btn-primary phone-manage-save' hidden>Speichern</button>" \
-                      "<div class='form-check form-switch'><input class='form-check-input phone-manage-shown' type='checkbox' role='switch' id='shown-#{h.(g[:id])}'#{inside ? ' checked' : ''}>" \
-                      "<label class='form-check-label' for='shown-#{h.(g[:id])}'>Im Telefonbuch</label></div>" \
-                      "<a class='phone-manage-details' href='/telefon-freigabe?id=#{h.(g[:id])}' title='Details: Code, Probelauf, Abschrift' aria-label='Details zu #{h.(PhoneGames.label(g))}'><i class='bi bi-three-dots' aria-hidden='true'></i></a>" \
-                      "<span class='phone-manage-state small' aria-live='polite'></span></div></form>"
+                "<form class='plain phone-manage-row#{shown ? '' : ' phone-manage-out'}#{broken ? ' phone-manage-broken' : ''}' data-id='#{h.(g[:id])}'>" \
+                    "<div class='phone-manage-number'>#{g[:word] ? "<span class='phone-manage-word'>#{h.(g[:word])}</span>" : ''}<span>#{h.(g[:number])}</span></div>" \
+                    "<div class='phone-manage-fields'>" \
+                    "<input class='phone-manage-title' name='title' maxlength='#{PhoneGames::MAX_TITLE}' value='#{h.(g[:title])}' aria-label='Titel von #{h.(PhoneGames.label(g))}' spellcheck='false'>" \
+                    "<input class='phone-manage-description' name='description' maxlength='#{PhoneGames::MAX_DESCRIPTION}' value='#{h.(g[:description])}' aria-label='Untertitel von #{h.(PhoneGames.label(g))}'>" \
+                    "<div class='phone-manage-note'>#{note}</div>" \
+                    "</div><div class='phone-manage-actions'>" \
+                    "<button type='submit' class='btn btn-sm btn-primary phone-manage-save' hidden>Speichern</button>" \
+                    "<div class='form-check form-switch'><input class='form-check-input phone-manage-shown' type='checkbox' role='switch' id='shown-#{h.(g[:id])}'#{shown ? ' checked' : ''}>" \
+                    "<label class='form-check-label' for='shown-#{h.(g[:id])}'>Im Telefonbuch</label></div>" \
+                    "<a class='phone-manage-details' href='/telefon-freigabe?id=#{h.(g[:id])}' title='Details: Code, Probelauf, Abschrift' aria-label='Details zu #{h.(PhoneGames.label(g))}'><i class='bi bi-three-dots' aria-hidden='true'></i></a>" \
+                    "<span class='phone-manage-state small' aria-live='polite'></span></div></form>"
             end
-            io << '</div>'
+            [['Im Telefonbuch', inside, 'Kein Spiel steht im Telefonbuch.'],
+             ['Nicht im Telefonbuch', outside, nil]].each do |head, games, none|
+                next if games.empty? && none.nil?
+
+                io << "<h3 class='phone-manage-head'>#{head} <span>#{games.size}</span></h3>"
+                io << (games.empty? ? "<p class='text-muted'>#{none}</p>" : "<div class='phone-manage'>#{games.map(&row).join}</div>")
+            end
             io << "<script src='/include/phone_manage.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         end
         io

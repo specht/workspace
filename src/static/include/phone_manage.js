@@ -3,7 +3,8 @@
 // appears once one is changed (Enter saves too, Escape puts it back);
 // »Im Telefonbuch« shows a game in the book and the phone's menu or hides it
 // (a part of another game, still reached by its number); switched on, a game
-// taken out after an error is back in the book.
+// taken out after an error is back in the book. A row keeps its place
+// until the page is loaded again (the lists: in the book, not in it).
 (function () {
     const rows = document.querySelectorAll('.phone-manage-row');
 
@@ -80,17 +81,8 @@
                 row.classList.remove('phone-manage-broken');
                 note(row, data.hidden ? "<i class='bi bi-eye-slash' aria-hidden='true'></i>Ausgeblendet: nur über die Nummer erreichbar" : '');
                 state(row, data.hidden ? 'Ausgeblendet.' : 'Steht im Telefonbuch.', true);
-                updateCount();
             }, { no_please_wait: true });
         });
     });
 
-    // the count in the heading
-    function updateCount() {
-        const count = document.querySelector('.phone-manage-count');
-        if (!count) return;
-        const all = rows.length;
-        const inside = Array.from(rows).filter(function (r) { return !r.classList.contains('phone-manage-out'); }).length;
-        count.textContent = all + ', davon ' + inside + ' im Telefonbuch';
-    }
 })();

@@ -234,7 +234,8 @@
         var spin = still ? '.' : FRAMES[frame++ % FRAMES.length];
         var say = asking ? 'frage nach, ob der Server antwortet'
             : 'nächster Versuch in ' + Math.max(1, Math.ceil((nextAt - Date.now()) / 1000)) + ' s';
-        status.innerHTML = '[ <span class="spin">' + spin + '</span> ] ' + say;
+        // eight characters wide, as [  OK  ] and [ WARN ] in the log
+        status.innerHTML = '[  <span class="spin">' + spin + '</span>   ] ' + say;
     }
     setInterval(showStatus, still ? 1000 : 120);
     showStatus();
@@ -255,7 +256,7 @@
             nextAt = Date.now() + 2000;
             if (r.ok) {
                 ended = true;
-                status.innerHTML = '[ <span class="good">OK</span> ] gleich geht es weiter';
+                status.innerHTML = '[  <span class="good">OK</span>  ] gleich geht es weiter';
                 line([['dim', 'GET '], ['path', '/api/ping'], ['good', '  200 OK']], 0);
                 line([['good', '[  OK  ] '], ['', 'Der Workspace ist wieder da, lade neu']], 0).then(function () {
                     setTimeout(function () { location.reload(); }, still ? 0 : 500);
