@@ -1970,6 +1970,7 @@ check:
     - { tabs: ['Busfahrt', 'Zusammen'], align: [right, decimal] }   # je ein Tab, ein Tabstopp dieser Art, alle an einer Stelle
     - { tabs: ['Ziel', 'Treffpunkt'], align: [left] }   # eine Spalte an einem eigenen linksbündigen Tabstopp (nicht den Standard-Tabstopps)
     - { table: ['Montag', 'Freitag'], columns: 3, header: 'Programm' }   # in den Zellen einer Tabelle, die Kopfzeile wiederholt sich
+    - { table_sorted: 'Punkte', order: down }   # die Zeilen unter dieser Kopfzelle nach ihren Zahlen sortiert (down: die größte oben), die Kopfzeile oben
     - no_tabs             # kein Tab mehr im Dokument
     - { ratio: true, names: ['das Foto', 'die Karte'] }   # kein Bild verzerrt
     - { wrap: 1, side: right, names: […] }   # das erste Bild der Vorlage mit Text daneben, rechts

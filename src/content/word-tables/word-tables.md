@@ -45,8 +45,8 @@ länger, wächst seine Zeile nach unten, und alles bleibt in seiner Spalte.
 
 <img class='drawing d-none d-lg-block' style='width: 35em' src='zelle-wide.svg' alt='Eine Tabelle mit den Spalten Tag, Zeit und Programm. Die Zelle mit »Wanderung um den See, mit Picknick am Aussichtsturm« ist eingerahmt: Der Eintrag geht über zwei Zeilen, und die ganze Zeile ist höher. Die Zeile des Donnerstags ist blau hinterlegt, »eine Zeile«; die Spalte Zeit gelb, »eine Spalte«'>
 <img class='drawing d-lg-none' style='width: 22.5em' src='zelle.svg' alt='Eine Tabelle mit den Spalten Tag, Zeit und Programm. Die Zelle mit »Wanderung um den See, mit Picknick am Aussichtsturm« ist eingerahmt: Der Eintrag geht über zwei Zeilen, und die ganze Zeile ist höher. Die Zeile des Donnerstags ist blau hinterlegt, »eine Zeile«; die Spalte Zeit gelb, »eine Spalte«'>
- Aus
-Text mit Tabs macht das Programm eine Tabelle auf einmal: Jeder Tab wird eine
+
+Aus Text mit Tabs macht das Programm eine Tabelle auf einmal: Jeder Tab wird eine
 neue Spalte, jeder Absatz eine Zeile.
 
 <!-- language: word -->
@@ -100,3 +100,56 @@ _task(programm)
 <strong>Ausprobieren:</strong> Füge unter dem Dienstag eine Zeile ein (Rechtsklick in die Zeile, <em>Einfügen</em>) und trag einen Abend am Lagerfeuer ein. Achte darauf, was mit den Zeilen darunter passiert.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit zwei neuen
+Handgriffen und eins zum Suchen.
+
+### Noch eine Runde
+
+Die Ergebnisse vom Sportfest stehen mit Tabs in vier Spalten, gebaut wie das
+Programm. Mach eine Tabelle daraus, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Im Punktestand der siebten Klassen fehlt eine Zeile: Die 7d hat 11 Medaillen und
+104 Punkte. Eine neue Zeile am Ende bekommt eine Tabelle mit einem Tab:
+<kbd>Tab</kbd> springt von Zelle zu Zelle, und in der letzten Zelle hängt er
+unten eine Zeile an.
+
+Danach soll die Klasse mit den meisten Punkten oben stehen. **Sortieren**
+stellt ganze Zeilen um, nach einer Spalte, die du wählst: aufsteigend (die
+kleinste Zahl oben) oder absteigend (die größte oben). Die Kopfzeile muss
+dabei oben bleiben, sonst wird sie mitsortiert.
+
+<!-- language: word -->
+In Word stellst du den Cursor in die Tabelle und klickst im Register
+*Tabellenlayout* auf *Sortieren*. Unten bei *Liste enthält* wählst du
+*Überschrift*; dann bleibt die Kopfzeile oben.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice markierst du die Zeilen unter der Kopfzeile und wählst
+*Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office markierst du die Zeilen unter der Kopfzeile und wählst
+*Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*.
+<!-- /language -->
+
+Beim Sortieren fragt das Programm auch nach dem **Typ** der Spalte. Achte
+darauf, was dort steht, bevor du auf OK klickst.
+
+_task(handgriffe)
+
+### Neun Fallen
+
+Die 7b schreibt den Eltern einen Brief zur Projektwoche. Er sieht fertig aus.
+Sechs Fallen sind von der Art wie auf dem ersten Blatt, je eine vom zweiten und
+dritten, und eine ist von diesem. Wie bei den anderen Fallen zählt die Prüfung
+nur, und jede Falle hat ihre eigenen Tipps.
+
+_task(fallen)

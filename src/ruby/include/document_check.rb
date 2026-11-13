@@ -30,6 +30,7 @@ require_relative 'office_client'
 #       - { list: ['Schlafsack', …] }   # these paragraphs a real list, no »- « typed
 #       - { list: ['Jede Gruppe', …], numbered: true }   # … with numbers (or letters), not bullets
 #       - { list: ['Sucht die', …], level: 2 }   # … one level down (Tab at the start of a point)
+#       - { table_sorted: 'Punkte', order: down }   # the rows below the header cell »Punkte« sorted by its column's numbers (down: most first), the header on top
 #       - { tabs: ['Busfahrt', …], align: [right, decimal] }   # one tab each, at one tab stop of this kind
 #                              # (align: [left]: a column of text at an own stop, not the default ones)
 #       - { table: ['Montag', 'Dienstag', …], columns: 3, header: 'Tag' }   # these in the cells of one table
@@ -71,7 +72,7 @@ require_relative 'office_client'
 # its hints one by one; once it holds, its label shows, ticked. Rules
 # without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[contains same_as scripts text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts table_sorted text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -139,6 +140,7 @@ module DocumentCheck
                 when 'size' then %w[size paragraphs]
                 when 'tabs' then %w[tabs align]
                 when 'list' then %w[list numbered level]
+                when 'table_sorted' then %w[table_sorted order]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
                 when 'headings' then %w[headings level]
@@ -151,6 +153,7 @@ module DocumentCheck
             errors << 'align needs paragraph: (a piece of its text)' if name == 'align' && !(rule['paragraph'].is_a?(String) && !rule['paragraph'].empty?)
             errors << 'gaps must look like 6pt' if name == 'gaps' && pt(rule['gaps']) <= 0
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
+            errors << 'table_sorted needs the text of a header cell and order: down or up' if name == 'table_sorted' && !(rule['table_sorted'].is_a?(String) && %w[down up].include?(rule['order']))
             errors << 'numbered must be true' if name == 'list' && rule.key?('numbered') && rule['numbered'] != true
             errors << 'level must be 2 or deeper (1 is the top of the list)' if name == 'list' && rule.key?('level') && !(rule['level'].is_a?(Integer) && rule['level'] > 1)
             errors << 'fonts must be a number' if name == 'fonts' && !rule['fonts'].is_a?(Integer)
@@ -856,6 +859,56 @@ module DocumentCheck
         item
     end
 
+    # The rows of the table with the header cell rule['table_sorted'], below it,
+    # in the order of that column's numbers (order: down, the most first;
+    # up, the least first). Sorting moves whole rows; the header stays on
+    # top. A column sorted like words (»98« before »125«) is told apart.
+    def self.rule_table_sorted(rule, _body, _starter, all = nil, _model = nil)
+        down = rule['order'] == 'down'
+        name = rule['table_sorted'].to_s
+        item = Item.new(:rule => 'table_sorted', :label => "Nach »#{name}« sortiert, #{down ? 'die meisten oben' : 'die wenigsten oben'}", :ok => true, :marks => [])
+        cell_at = ->(p) { ((p['where'] || {})['cell'].to_s.match(/\A([A-Z]+)(\d+)\z/) || [])[1..2] }
+        header = Array(all).find { |p| (p['where'] || {})['table'] && squish(p['plain']) == squish(name) && cell_at.(p) }
+        if header.nil?
+            item.ok = false
+            item.message = "»#{name}« finde ich in keiner Tabelle als Überschrift einer Spalte."
+            return item
+        end
+        table = header['where']['table']
+        column, head_row = cell_at.(header)
+        cells = Array(all).select { |p| (p['where'] || {})['table'] == table && cell_at.(p) }
+        if cells.any? { |p| cell_at.(p)[1].to_i < head_row.to_i && cell_at.(p)[0] == column && !p['plain'].strip.empty? }
+            item.ok = false
+            item.marks << para_mark(header).merge(:title => 'nicht mehr oben')
+            item.message = "»#{name}« steht nicht mehr in der ersten Zeile: Die Kopfzeile ist mitsortiert worden. Sortier nur die Zeilen darunter, oder sag beim Sortieren, dass die Tabelle eine Überschrift hat."
+            return item
+        end
+        number = ->(text) { (m = text.to_s.match(/-?\d+(?:[.,]\d+)?/)) ? m[0].tr(',', '.').to_f : nil }
+        rows = cells.select { |p| cell_at.(p)[0] == column && cell_at.(p)[1].to_i > head_row.to_i }
+                    .group_by { |p| cell_at.(p)[1].to_i }.sort.map { |row, ps| [row, ps.first] }
+                    .select { |_, p| number.(p['plain']) }
+        label_of = lambda do |row|
+            first = cells.select { |p| cell_at.(p)[1].to_i == row }.min_by { |p| [cell_at.(p)[0].size, cell_at.(p)[0]] }
+            first ? short(first, 3) : row.to_s
+        end
+        out_of_order = ->(a, b) { down ? number.(a) < number.(b) : number.(a) > number.(b) }
+        wrong = rows.each_cons(2).find { |(_, a), (_, b)| out_of_order.(a['plain'], b['plain']) }
+        return item if wrong.nil?
+
+        (upper_row, upper), (lower_row, lower) = wrong
+        item.ok = false
+        item.marks << para_mark(upper).merge(:title => 'falsche Reihenfolge')
+        item.marks << para_mark(lower).merge(:title => 'falsche Reihenfolge')
+        message = "»#{label_of.(upper_row)}« (#{upper['plain'].strip}) steht über »#{label_of.(lower_row)}« (#{lower['plain'].strip})."
+        # sorted like words: by the first digit, then the next
+        as_words = rows.map { |_, p| p['plain'].strip }
+        if as_words.size > 1 && as_words == as_words.sort.then { |x| down ? x.reverse : x }
+            message += ' Sortiert ist wie bei Wörtern, Ziffer für Ziffer, nicht nach der Größe der Zahlen: Wähl beim Sortieren als Typ »Zahl« (in LibreOffice »Numerisch«).'
+        end
+        item.message = "#{message} Sortieren stellt ganze Zeilen um, #{down ? 'die größte Zahl' : 'die kleinste Zahl'} nach oben; die Kopfzeile bleibt dabei oben."
+        item
+    end
+
     def self.rule_tabs(rule, body, _starter, _all = nil, _model = nil)
         kinds = Array(rule['align'] || %w[right decimal]).map(&:to_s)
         left = kinds == ['left']
@@ -907,17 +960,23 @@ module DocumentCheck
 
     # ---- tables
 
-    def self.rule_table(rule, body, _starter, all = nil, model = nil)
+    def self.rule_table(rule, body, starter, all = nil, model = nil)
         all ||= body
         pieces = Array(rule['table'])
         item = Item.new(:rule => 'table', :label => 'Eine Tabelle', :ok => true, :marks => [])
-        found = pieces.map { |piece| [piece, all.find { |p| p['plain'].include?(piece) }] }
-        outside = found.select { |_, p| p && (p['where'] || {})['table'].nil? }
+        # a piece in a cell first: the same word may stand in the text too
+        in_table = ->(p) { (p['where'] || {})['table'] }
+        found = pieces.map { |piece| [piece, all.find { |p| in_table.(p) && p['plain'].include?(piece) } || all.find { |p| p['plain'].include?(piece) }] }
+        outside = found.select { |_, p| p && in_table.(p).nil? }
         missing = found.select { |_, p| p.nil? }.map(&:first)
-        held = found.filter_map { |_, p| p && (p['where'] || {})['table'] }.uniq
+        held = found.filter_map { |_, p| p && in_table.(p) }.uniq
         table = held.size == 1 ? ((model || {})['tables'] || []).find { |t| t['name'] == held.first } : nil
         problems = []
-        problems << "#{q(names(missing.map { |m| "»#{m}«" }))} finde ich nicht mehr." unless missing.empty?
+        # what the starting file had is gone; what it lacked is still to add
+        had = ->(piece) { Array((starter || {})['paragraphs']).any? { |p| squish(p['text'].to_s).include?(piece) } }
+        gone, lacking = missing.partition { |m| starter.nil? || had.(m) }
+        problems << "#{q(names(gone.map { |m| "»#{m}«" }))} finde ich nicht mehr." unless gone.empty?
+        problems << "#{q(names(lacking.map { |m| "»#{m}«" }))} finde ich noch nicht in der Tabelle." unless lacking.empty?
         unless outside.empty?
             first = short(outside.first[1], 3)
             problems << (outside.size == pieces.size ? "Die Zeilen stehen noch nicht in einer Tabelle, zum Beispiel »#{first}«." :
@@ -927,7 +986,7 @@ module DocumentCheck
         problems << 'Die Zeilen stehen in mehreren Tabellen; eine reicht.' if held.size > 1
         if problems.empty? && table
             if rule['columns'] && table['cols'] && table['cols'] != rule['columns'].to_i
-                problems << "Die Tabelle hat #{table['cols']} Spalten; Tag, Zeit und Programm brauchen #{rule['columns']}."
+                problems << "Die Tabelle hat #{table['cols']} Spalten, gebraucht werden #{rule['columns']}."
             end
             # the header among the cells of this table, the same text first
             cells = all.select { |p| (p['where'] || {})['table'] == held.first }

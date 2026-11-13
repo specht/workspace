@@ -7,7 +7,7 @@ Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabel
 <li><b>15 Minuten:</b> die Vermutung zum längeren Eintrag, Text in Tabelle umwandeln, die Zahl der Spalten.</li>
 <li><b>15 Minuten:</b> die Kopfzeile.</li>
 <li><b>10 Minuten:</b> prüfen, eine Zeile einfügen.</li>
-<li><b>Für Schnelle:</b> die Tabelle gestalten: Kopfzeile fett und hinterlegt, Linien nur unter der Kopfzeile, die Spalte Zeit rechtsbündig.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten); wer danach noch Zeit hat, gestaltet die Tabelle: Kopfzeile fett und hinterlegt, Linien nur unter der Kopfzeile, die Spalte Zeit rechtsbündig.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -36,3 +36,25 @@ Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabel
 #### Die Aufgaben
 
 - Die Vermutung zum längeren Eintrag schließt an die Tabstopps an: Sie gelten nur für die erste Zeile eines Absatzes.
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer das
+Programm besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Neun Fallen«.
+
+- **Noch eine Runde:** die Ergebnisse vom Sportfest, mit Tabs in vier
+  Spalten; dieselben Punkte wie beim Programm (eine Tabelle, vier Spalten,
+  die Kopfzeile wiederholt sich, kein Tab mehr).
+- **Zwei Handgriffe:** der Punktestand der siebten Klassen, schon eine
+  Tabelle. Die Zeile der 7d kommt mit <kbd>Tab</kbd> in der letzten Zelle
+  dazu; dann wird nach den Punkten sortiert, die meisten oben, die Kopfzeile
+  bleibt oben. Die Punkte haben zwei und drei Ziffern: Als Text sortiert
+  stünde 98 oben. Die Prüfung erkennt das und sagt, dass der Typ »Zahl« sein
+  muss (in LibreOffice »Numerisch«).
+- **Neun Fallen:** ein Brief zur Projektwoche mit den Fallen der drei Blätter
+  davor und einer von diesem: Der Plan der Woche ist eine Tabelle ohne
+  Linien, aber der Freitag steht darunter, mit einem Tab an der Stelle der
+  zweiten Spalte. Die Formatierungszeichen verraten ihn (ein → in der
+  Zeile). Die Prüfung zählt nur und zeigt jede Falle erst, wenn sie behoben
+  ist; Tipps gibt es für jede einzeln.

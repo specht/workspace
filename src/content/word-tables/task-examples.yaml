@@ -11,3 +11,25 @@ examples:
     fail:
       - document: ../../static/word-tables/04 Programm.docx
         say: Tabelle
+  runde:
+    pass:
+      - document: stufen/sportfest.docx
+    fail:
+      - document: ../../static/word-tables/04 Sportfest.docx
+        say: Tabelle
+  handgriffe:
+    pass:
+      - document: stufen/punktestand.docx
+    fail:
+      - document: ../../static/word-tables/04 Punktestand.docx
+        say: »7d« finde ich noch nicht in der Tabelle
+      - document: stufen/punktestand-wie-woerter.docx
+        say: Typ »Zahl«
+  fallen:
+    pass:
+      - document: stufen/projektwoche.docx
+    fail:
+      - document: ../../static/word-tables/04 Projektwoche.docx
+        say: 0 von 9 Fallen gefunden
+      - document: stufen/projektwoche-acht.docx
+        say: 8 von 9 Fallen gefunden

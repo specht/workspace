@@ -44,6 +44,10 @@ tasks:
 
   - id: programm
     title: Das Programm als Tabelle
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe dein Programm. Die Prüfung markiert auf deiner Seite jede Stelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -73,3 +77,141 @@ tasks:
         - "Markier die Kopfzeile und die sechs Zeilen darunter und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Umwandeln* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle*, Text trennen bei *Tabulatoren*."
         - "Stell den Cursor in die Tabelle und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Textfluss*, Haken bei *Überschrift wiederholen*."
         - "Schalte die Formatierungszeichen ein: In den Zellen darf kein Tab (→) mehr stehen."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Die Ergebnisse vom Sportfest stehen mit Tabs in Spalten, wie das
+      Programm. Mach eine Tabelle daraus, mit vier Spalten und einer
+      Kopfzeile, die sich auf jeder Seite wiederholt.
+    check:
+      type: document
+      file: word-tables/04 Sportfest.docx
+      rules:
+        - text
+        - { table: ['Sprint', 'Weitsprung', 'Ballwurf', '800-m-Lauf', 'Staffel'], columns: 4, header: 'Disziplin' }
+        - no_tabs
+    hint:
+      - Markier die Kopfzeile und die fünf Zeilen darunter und wandle den Text in eine Tabelle um, getrennt durch Tabstopps.
+      - Die Tabelle hat vier Spalten, eine für die Disziplin und eine für jede Klasse.
+      - Stell den Cursor in die erste Zeile und schalte ein, dass sie sich als Überschrift wiederholt.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Im Punktestand fehlt die 7d: 11 Medaillen, 104 Punkte. Füg ihre Zeile
+      unten an und sortier dann die Tabelle nach den Punkten, die meisten
+      oben. Die Kopfzeile bleibt oben.
+    check:
+      type: document
+      file: word-tables/04 Punktestand.docx
+      rules:
+        - text
+        - { table: ['7a', '7b', '7c', '7d'], columns: 3 }
+        - { table_sorted: 'Punkte', order: down }
+    hint:
+      - "Stell den Cursor in die letzte Zelle der Tabelle, hinter »125«, und drück <kbd>Tab</kbd>: Unten kommt eine neue Zeile dazu."
+      - Sortieren stellt ganze Zeilen um. Markier dafür nur die Zeilen unter der Kopfzeile, oder sag beim Sortieren, dass die Tabelle eine Überschrift hat.
+      - Sortiert wird nach der Spalte »Punkte«, absteigend, als Zahl. Als Text stünde 98 oben, weil 9 größer ist als 1.
+    word:
+      hint:
+        - "Stell den Cursor in die letzte Zelle der Tabelle, hinter »125«, und drück <kbd>Tab</kbd>: Unten kommt eine neue Zeile dazu."
+        - "Stell den Cursor in die Tabelle und klick im Register *Tabellenlayout* auf *Sortieren*. Wähl unten *Überschrift* bei *Liste enthält*, dann bleibt die Kopfzeile oben."
+        - "Sortieren nach *Punkte*, Typ *Zahl*, *Absteigend*. Mit dem Typ *Text* stünde 98 oben, weil 9 größer ist als 1."
+    libreoffice:
+      hint:
+        - "Stell den Cursor in die letzte Zelle der Tabelle, hinter »125«, und drück <kbd>Tab</kbd>: Unten kommt eine neue Zeile dazu."
+        - "Markier die Zeilen unter der Kopfzeile, nicht die Kopfzeile selbst, und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*."
+        - "Schlüssel 1: Spalte 3, Typ *Numerisch*, Reihenfolge *Absteigend*. Mit *Alphanumerisch* stünde 98 oben, weil 9 größer ist als 1."
+    nextcloud:
+      hint:
+        - "Stell den Cursor in die letzte Zelle der Tabelle, hinter »125«, und drück <kbd>Tab</kbd>: Unten kommt eine neue Zeile dazu."
+        - "Markier die Zeilen unter der Kopfzeile, nicht die Kopfzeile selbst, und wähl *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*."
+        - "Schlüssel 1: Spalte 3, Typ *Numerisch*, Reihenfolge *Absteigend*. Mit *Alphanumerisch* stünde 98 oben, weil 9 größer ist als 1."
+
+  - id: fallen
+    title: Neun Fallen
+    extra: true
+    prompt: |
+      Der Brief zur Projektwoche sieht fertig aus. Neun Stellen sind trotzdem
+      falsch gebaut: sechs von der Art wie auf dem ersten Blatt, je eine vom
+      zweiten und dritten und eine von diesem. Die Prüfung sagt dir nur, wie
+      viele du gefunden hast; zu jeder Falle gibt es Tipps, einen nach dem
+      anderen.
+    check:
+      type: document
+      file: word-tables/04 Projektwoche.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Projektwoche der 7b'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '15. Juni'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['vom 22. bis 26. Juni']
+          label: Nach »Schulgarten.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »Schulgarten.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Es geht jeden Tag']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den Absatz über die Uhrzeiten an.
+            - Vor »Es geht« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['So sieht die Woche']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand vor »So sieht die Woche aus« an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn und gib dem Absatz davor 12 pt Abstand nach, wie den anderen.
+        - line_breaks: true
+          in: ['Wer zu Hause']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über die Spenden an.
+            - Hinter »Wir« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über den Beginn des Schulfests ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+        - list: ['Kleidung, die', 'eine Schürze', 'ein Pausenbrot', 'etwas zu trinken']
+          label: Ein Punkt der Liste war von Hand getippt.
+          hints:
+            - Diese Falle ist vom dritten Blatt. Sieh dir die Liste genau an.
+            - Versuch bei jedem Punkt der Liste, das Zeichen davor mit der Maus zu markieren. Ein echtes Aufzählungszeichen lässt sich nicht markieren wie ein Buchstabe.
+            - Vor »etwas zu trinken« sind der Punkt und ein Tab getippt. Lösch beide und mach die Zeile zu einem Punkt der Liste wie die anderen.
+        - table: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag']
+          columns: 2
+          label: Der Freitag stand nicht in der Tabelle.
+          hints:
+            - Diese Falle ist von diesem Blatt. Sieh dir den Plan der Woche genau an.
+            - Die Tabelle hat keine Linien. Schalte die Formatierungszeichen ein und sieh dir jede Zeile an. In einer Zelle steht kein →.
+            - Hinter »Freitag« steht ein Tab; die Zeile steht unter der Tabelle, nicht in ihr. Füg mit <kbd>Tab</kbd> in der letzten Zelle eine Zeile an, trag den Freitag dort ein und lösch die getippte Zeile.
+    solution: |
+      Die neun Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »Schulgarten.«,
+      ein Einzug aus Leerzeichen, ein leerer Absatz statt Abstand, ein ↵ am
+      Ende einer Zeile, die sowieso dort umgebrochen wäre, der Satz über das
+      Schulfest in Arial statt in Calibri, »etwas zu trinken«, vor dem der
+      Punkt und ein Tab getippt waren, und der Freitag, der mit einem Tab
+      unter der Tabelle stand statt in ihr.
