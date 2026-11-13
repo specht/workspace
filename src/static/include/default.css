@@ -1949,8 +1949,8 @@ h2 > .squircle {
     :is(.autotoc-up, .autotoc-toc) {
         width: 2em;
         height: 2em;
-        margin-top: 0.8em;
-        font-size: 0.95em;
+        margin-top: 0.85em;
+        font-size: 1em;
         pointer-events: auto;
     }
 
@@ -2086,12 +2086,15 @@ h2 > .squircle {
 }
 
 @media (max-width: 768px) {
+    /* on a phone the bar is one title: as large as the text below it
+       nearly, with room for a finger above and below */
     .autotoc {
         pointer-events: none;
+        font-size: 95%;
     }
 
     .autotoc > .items {
-        padding: 1em 0 0.6em;
+        padding: 1.1em 0 0.85em;
     }
 
     .autotoc > .items > button {
