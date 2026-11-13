@@ -67,7 +67,8 @@ class PhoneCallsTest < Minitest::Test
             File.write(File.join(dir, 'telefon.jsonl'),
                        JSON.generate('hour' => HOUR, 'line' => 'telefon', 'seconds' => 3, 'games' => ['741'], 'errors' => [crash, { 'game' => 'x' }]) + "\n")
             neo4j = FakeNeo4j.new
-            PhoneCalls.collect(neo4j, :dir => dir, :now => HOUR + 600)
+            crashed = PhoneCalls.collect(neo4j, :dir => dir, :now => HOUR + 600)
+            assert_equal [{ :game => '741', :text => crash['text'], :at => HOUR }], crashed
             query, params = neo4j.queries.find { |q, _| q.include?('last_error') }
             assert_includes query, "state: 'published'"
             assert_equal ['741', crash['text'], HOUR, 1], params.values_at(:number, :text, :at, :count)

@@ -882,7 +882,9 @@ class Main < Sinatra::Base
                 end
                 # the calls of the Telefonspiel, numbers per hour (include/phone_calls.rb)
                 begin
-                    PhoneCalls.collect($neo4j)
+                    crashed = PhoneCalls.collect($neo4j)
+                    # a game that crashed leaves the Telefonbuch, its author is told
+                    Main.new!.phone_games_take_out(crashed) unless crashed.empty?
                 rescue => e
                     STDERR.puts "Collecting the calls failed: #{e.class}: #{e.message}"
                 end

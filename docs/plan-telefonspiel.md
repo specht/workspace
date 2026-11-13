@@ -438,7 +438,10 @@ loop.
   error says so (`game.CRASHED`) and the menu starts again, twice a call at
   most; its last error lines go with the call's line (`record_call`) to the
   game's node (`last_error`), for its author on the card and in the
-  profile. Several games: one folder each under `telefon` (one level),
+  profile. Such a game leaves the Telefonbuch at once (the maintainer: state
+  `broken`, its copy kept, its number its author's; `phone_games_take_out`)
+  and its author gets a mail with the error, once; a new version under the
+  same number replaces it and goes through approval. Several games: one folder each under `telefon` (one level),
   submitted with that folder only (`PhoneGames.candidates`, `plan`);
 - calls for `/statistik` (the maintainer, 13 November 2026: which number
   or game was called, not who): the line and the runner write one line per

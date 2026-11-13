@@ -364,12 +364,27 @@ module PhoneGames
         [subject, html]
     end
 
+    # A published game stopped with an error during a call: it is out of
+    # the Telefonbuch; what its language reported, and how to get it back
+    def self.mail_broken(game, error, link)
+        subject = "Dein Telefonspiel hat einen Fehler: #{game[:title]}"
+        html = "<p>Bei einem Anruf ist dein Telefonspiel <b>#{h(game[:title])}</b> (#{h(label(game))}) mit einem Fehler abgebrochen. " \
+            'Wer anrief, kam zurück ins Telefonbuch. Bis der Fehler behoben ist, steht dein Spiel nicht mehr im Telefonbuch; seine Nummer bleibt deine.</p>' \
+            "<p>Das hat die Programmiersprache gemeldet:</p><pre style='white-space: pre-wrap'>#{h(error)}</pre>" \
+            "<p>Korrigier den Fehler, probier das Spiel im Workspace mit <code>telefon</code> aus und reich es unter derselben Nummer noch einmal ein: " \
+            "<a href='#{h(link)}'>zu deinem Spiel</a>. Sobald es freigegeben ist, steht es wieder im Telefonbuch.</p>"
+        [subject, html]
+    end
+
     # --- what the student sees -------------------------------------------
 
     STATE_TEXT = {
         'pending' => 'wartet auf Freigabe',
         'published' => 'veröffentlicht',
         'rejected' => 'nicht veröffentlicht',
+        # crashed during a call (PhoneCalls): out of the Telefonbuch until a
+        # new version is approved; its number stays its author's
+        'broken' => 'aus dem Telefonbuch genommen',
     }.freeze
 
     # A game as the student's card shows it (no files, no email)
@@ -380,7 +395,7 @@ module PhoneGames
             :stateText => STATE_TEXT[game[:state]], :reason => game[:state] == 'rejected' ? game[:reason] : nil,
             :submitted => game[:submitted], :decided => game[:decided],
             # the newest error of a call, and when (the hour), for its author
-            :error => game[:state] == 'published' ? game[:error] : nil, :errorAt => game[:error_at], :errors => game[:errors].to_i,
+            :error => %w[published broken].include?(game[:state]) ? game[:error] : nil, :errorAt => game[:error_at], :errors => game[:errors].to_i,
         }
     end
 

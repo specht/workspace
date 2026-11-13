@@ -1638,8 +1638,11 @@ eigener Ordner eingereicht, mit seinen MP3s.
 Bevor dein Spiel eingereicht wird, sieht der Workspace nach, ob es überhaupt
 startet. Hat es einen Fehler in der Schreibweise, steht unten, was die Sprache
 meldet, mit der Zeile. Bricht ein veröffentlichtes Spiel bei einem Anruf mit
-einem Fehler ab, hört der Anrufer das und kommt zurück ins Telefonbuch; was die
-Sprache gemeldet hat, steht dann hier bei deinem Spiel.
+einem Fehler ab, hört der Anrufer das und kommt zurück ins Telefonbuch. Dein
+Spiel wird dann aus dem Telefonbuch genommen, bis du den Fehler behoben hast,
+und du bekommst eine E-Mail mit dem, was die Sprache gemeldet hat; es steht
+auch hier bei deinem Spiel. Seine Nummer bleibt deine: Reich es unter derselben
+Nummer noch einmal ein.
 
 <div class='phone-publish card card-body' id='veroeffentlichen'>
 <p class='mb-0 text-muted'>Deine Spiele werden geladen …</p>

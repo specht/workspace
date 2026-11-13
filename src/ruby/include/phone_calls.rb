@@ -52,11 +52,12 @@ module PhoneCalls
          games.map { |(hour, line, game), n| { 'hour' => hour, 'line' => line, 'game' => game, 'calls' => n } }]
     end
 
-    # The files into the database, then away. A file is renamed first, so
+    # The files into the database, then away. Returns the games that
+    # crashed: [{ game:, text:, at: }], the newest error of each. A file is renamed first, so
     # that the line writes the next calls into a new one; one left renamed
     # by an interrupted run is taken the next time.
     def self.collect(neo4j, dir: DIR, now: Time.now.to_i)
-        return unless File.directory?(dir)
+        return [] unless File.directory?(dir)
 
         Dir[File.join(dir, '*.jsonl')].each { |f| File.rename(f, "#{f}.#{now}.collecting") }
         files = Dir[File.join(dir, '*.collecting')]
@@ -76,8 +77,10 @@ module PhoneCalls
         end
         # the newest error of each published game, for its author (the card
         # and the profile): the text and the hour of the call
+        crashed = []
         entries.flat_map { |e| e['errors'].map { |x| x.merge('hour' => e['hour']) } }.group_by { |x| x['game'] }.each do |game, list|
             last = list.max_by { |x| x['hour'] }
+            crashed << { :game => game, :text => last['text'], :at => last['hour'] }
             neo4j.neo4j_query(<<~END_OF_QUERY, :number => game, :text => last['text'], :at => last['hour'], :count => list.size)
                 MATCH (g:PhoneGame {number: $number, state: 'published'})
                 SET g.last_error = $text, g.last_error_at = $at, g.errors = coalesce(g.errors, 0) + $count;
@@ -87,6 +90,7 @@ module PhoneCalls
         before = now - KEEP_DAYS * 86_400
         neo4j.neo4j_query('MATCH (h:PhoneHour) WHERE h.hour < $before DELETE h;', :before => before)
         neo4j.neo4j_query('MATCH (h:PhoneGameHour) WHERE h.hour < $before DELETE h;', :before => before)
+        crashed
     end
 
     # The titles of the published games by number (published.json of the line)

@@ -74,13 +74,14 @@
     }
 
     function gameHtml(g) {
-        const badge = { pending: 'text-bg-warning', published: 'text-bg-success', rejected: 'text-bg-secondary' }[g.state] || 'text-bg-light';
+        const badge = { pending: 'text-bg-warning', published: 'text-bg-success', rejected: 'text-bg-secondary', broken: 'text-bg-danger' }[g.state] || 'text-bg-light';
         const reason = g.reason ? `<div class='pp-reason mt-1'><i class='bi bi-chat-left-text'></i> ${esc(g.reason)}</div>` : '';
         // a call where the game stopped with an error: what its language said
         const crashed = g.error ? `<div class='pp-crashed mt-2 text-danger small'><i class='bi bi-exclamation-triangle'></i> ` +
             `Bei einem Anruf ${g.errorAt ? 'am ' + new Date(g.errorAt * 1000).toLocaleDateString('de-DE') + ' ' : ''}ist dein Spiel mit einem Fehler abgebrochen` +
-            `${g.errors > 1 ? ' (' + g.errors + ' Mal)' : ''}; wer anrief, kam zurück ins Telefonbuch. Das hat die Sprache gemeldet:` +
-            `<pre class='pp-syntax mb-0 mt-1'><code>${esc(g.error)}</code></pre>Korrigier es und reich das Spiel noch einmal ein.</div>` : '';
+            `${g.errors > 1 ? ' (' + g.errors + ' Mal)' : ''}; wer anrief, kam zurück ins Telefonbuch.` +
+            `${g.state === 'broken' ? ' Bis der Fehler behoben ist, steht es nicht im Telefonbuch; seine Nummer bleibt deine.' : ''} Das hat die Sprache gemeldet:` +
+            `<pre class='pp-syntax mb-0 mt-1'><code>${esc(g.error)}</code></pre>Korrigier es und reich das Spiel unter derselben Nummer noch einmal ein.</div>` : '';
         const renumber = g.state !== 'rejected'
             ? `<button class='btn btn-sm btn-outline-secondary pp-renumber' data-id='${esc(g.id)}'><i class='bi bi-123'></i> Nummer ändern</button>` : '';
         return `<li class='list-group-item'>` +

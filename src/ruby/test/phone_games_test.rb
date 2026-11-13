@@ -51,4 +51,17 @@ class PhoneGamesTest < Minitest::Test
             end
         end
     end
+
+    # a game that crashed: out of the Telefonbuch, its author told what the
+    # language said and how to get it back, its number still theirs
+    def test_the_mail_about_a_crashed_game
+        game = { :title => 'Der Klammer-Doktor', :number => '741', :word => nil }
+        subject, html = PhoneGames.mail_broken(game, "start.rb:8: syntax error, unexpected `or' <b>", 'https://example.org/telefonspiel')
+        assert_includes subject, 'Der Klammer-Doktor'
+        assert_includes html, 'start.rb:8: syntax error'
+        assert_includes html, '&lt;b&gt;'
+        assert_includes html, 'seine Nummer bleibt deine'
+        assert_includes html, 'https://example.org/telefonspiel'
+        assert_equal 'aus dem Telefonbuch genommen', PhoneGames::STATE_TEXT['broken']
+    end
 end

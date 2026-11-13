@@ -295,6 +295,40 @@ class Main < Sinatra::Base
         respond(:state => data[:decision] == 'publish' ? 'published' : 'rejected')
     end
 
+    # Games that stopped with an error during a call (PhoneCalls.collect):
+    # each published one leaves the Telefonbuch (state broken, its copy
+    # kept, its number its author's) and its author gets a mail with the
+    # error, once; the line's list is written anew.
+    def phone_games_take_out(crashed)
+        taken = []
+        @@phone_games_mutex.synchronize do
+            crashed.each do |c|
+                game = phone_games_all.find { |g| g[:number] == c[:game] && g[:state] == 'published' }
+                next unless game
+
+                neo4j_query("MATCH (g:PhoneGame {id: $id}) SET g.state = 'broken', g.decided = $now;", :id => game[:id], :now => Time.now.to_i)
+                taken << [game, c[:text]]
+            end
+        end
+        return if taken.empty?
+
+        phone_games_publish_list
+        taken.each do |game, error|
+            mail_subject, html = PhoneGames.mail_broken(game, error, phone_games_link)
+            begin
+                deliver_mail do
+                    to game[:email]
+                    from SMTP_FROM
+                    subject mail_subject
+                    html
+                end
+            rescue StandardError => e
+                STDERR.puts "Telefonspiel #{game[:id]}: mail about its error failed: #{e.message}"
+            end
+            log_event "Telefonspiel aus dem Telefonbuch genommen (Fehler bei einem Anruf): #{PhoneGames.label(game)} #{game[:title]}"
+        end
+    end
+
     # The maintainer changes how a game stands in the Telefonbuch: its title
     # and subtitle (pending or published). The Telefonbuch and the line's
     # menu read them from here; the game's own title '…' in its code was
@@ -326,13 +360,13 @@ class Main < Sinatra::Base
         games = phone_games_all.select { |g| g[:email] == @session_user[:email] }.sort_by { |g| g[:number] }
         return '' if games.empty?
 
-        badge = { 'pending' => 'text-bg-warning', 'published' => 'text-bg-success', 'rejected' => 'text-bg-secondary' }
+        badge = { 'pending' => 'text-bg-warning', 'published' => 'text-bg-success', 'rejected' => 'text-bg-secondary', 'broken' => 'text-bg-danger' }
         items = games.map do |g|
             "<a class='list-group-item list-group-item-action d-flex justify-content-between align-items-center' href='/telefonspiel#veroeffentlichen'>" \
                 "<span><span class='font-monospace me-2'>#{PhoneGames.h(PhoneGames.label(g))}</span><strong>#{PhoneGames.h(g[:title])}</strong></span>" \
                 "<span class='badge #{badge[g[:state]]}'>#{PhoneGames::STATE_TEXT[g[:state]]}</span></a>" +
                 (g[:error] ? "<div class='list-group-item text-danger small'><i class='bi bi-exclamation-triangle' aria-hidden='true'></i> " \
-                    "#{PhoneGames.h(PhoneGames.label(g))} ist bei einem Anruf mit einem Fehler abgebrochen; was die Sprache gemeldet hat, steht in der Aktivität.</div>" : '')
+                    "#{PhoneGames.h(PhoneGames.label(g))} ist bei einem Anruf mit einem Fehler abgebrochen und steht nicht mehr im Telefonbuch; was die Sprache gemeldet hat, steht in der Aktivität.</div>" : '')
         end.join
         "<section id='telefonspiele' class='my-4'><h3>Deine Telefonspiele</h3>" \
             "<p>Veröffentlichte Spiele stehen im <a href='/telefonbuch'>Telefonbuch</a>. Ändern, eine andere Nummer wählen oder zurückziehen kannst du sie in der Aktivität.</p>" \
@@ -345,7 +379,7 @@ class Main < Sinatra::Base
     # first, each linked to its page (the same the mail links to)
     def phone_games_list_html
         h = ->(t) { PhoneGames.h(t) }
-        order = { 'pending' => 0, 'published' => 1, 'rejected' => 2 }
+        order = { 'pending' => 0, 'published' => 1, 'broken' => 2, 'rejected' => 3 }
         games = phone_games_all.sort_by { |g| [order[g[:state]] || 3, -(g[:submitted] || 0).to_i] }
         head = "<h1 class='mt-4'>Telefonspiele</h1>"
         return "#{head}<p>Noch hat niemand ein Telefonspiel eingereicht.</p>" if games.empty?
