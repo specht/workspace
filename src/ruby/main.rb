@@ -943,7 +943,9 @@ class Main < Sinatra::Base
                 begin
                     STDERR.puts ">>> DB init worker: starting #{key}"
                     Main.init_mysql(job[:email], job[:db_login])
-                    Main.init_neo4j(job[:email], job[:db_login])
+                    # Neo4j only for whom it is switched on (and in exams):
+                    # one database each, and few ever use it
+                    Main.init_neo4j(job[:email], job[:db_login]) if job[:neo4j]
                     STDERR.puts ">>> DB init worker: finished #{key}"
                 rescue => e
                     STDERR.puts ">>> DB init worker failed for #{key}: #{e.class}: #{e.message}"
@@ -1066,7 +1068,14 @@ class Main < Sinatra::Base
         end
     end
 
-    def self.enqueue_database_init(email:, db_login:)
+    # Whether a person has switched Neo4j on in the profile: only then do
+    # they get a Neo4j database (switching it on creates it).
+    def self.neo4j_wanted?(email)
+        row = $neo4j.neo4j_query('MATCH (u:User {email: $email}) RETURN u.show_neo4j AS shown;', :email => email).first
+        row && row['shown'] == true
+    end
+
+    def self.enqueue_database_init(email:, db_login:, neo4j: false)
         DatabaseIdentity.validate!(db_login)
         key = "#{email}:#{db_login}"
 
@@ -1079,6 +1088,7 @@ class Main < Sinatra::Base
                 key: key,
                 email: email,
                 db_login: db_login,
+                neo4j: neo4j,
             }
 
             STDERR.puts ">>> DB init queued: #{key}"
@@ -1177,6 +1187,8 @@ class Main < Sinatra::Base
         Main.init_neo4j(email, db_login_for_email(email))
     end
 
+    # The person's Neo4j database empty again: dropped, and made anew if they
+    # have Neo4j switched on (a test account without it keeps none).
     def reset_neo4j(email)
         db_login = db_login_for_email(email)
         role = DatabaseProvisioning.neo4j_role_name(db_login)
@@ -1190,7 +1202,7 @@ class Main < Sinatra::Base
             status = wait_thr.value
             raise "Neo4j reset failed for #{db_login}" unless status.success?
         end
-        Main.init_neo4j(email, db_login)
+        Main.init_neo4j(email, db_login) if Main.neo4j_wanted?(email)
     end
 
     def reset_test_demo_databases(email, demo_tag)
@@ -3648,6 +3660,9 @@ class Main < Sinatra::Base
         new_flag = !flag
 
         email = @session_user[:email]
+        # Neo4j switched on: the person's own database is made now (it was
+        # made for everyone once; few need it). Switched off, it stays.
+        init_neo4j(email) if key == :neo4j && new_flag
         neo4j_query_expect_one(<<~END_OF_STRING, {:email => @session_user[:email], :value => new_flag})
             MATCH (u:User {email: $email})
             SET u.show_#{key} = $value

@@ -44,6 +44,13 @@ test('student profile groups controls and protects credentials', async ({
     page.locator('.autotoc-secondary a[href="#for-teachers"]'),
   ).toHaveCount(0);
 
+  // Neo4j's login data show once it is switched on (that makes the database)
+  const neo4jToggle = page.locator("#neo4j-database .bu-toggle-module[data-module='neo4j']");
+  if (!(await neo4jToggle.getAttribute('class'))?.includes('btn-success')) {
+    await neo4jToggle.click();
+    await expect(neo4jToggle).toHaveClass(/btn-success/);
+  }
+
   for (const database of ['mysql', 'neo4j'] as const) {
     const databaseName = database === 'mysql' ? 'MySQL' : 'Neo4j';
     const credentials = page.locator(

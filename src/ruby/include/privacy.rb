@@ -304,7 +304,7 @@ module Privacy
                 :how_long => ACCOUNT_END,
             },
             {
-                :data => 'Eigene Datenbanken (MySQL, Neo4j) mit ihrem Inhalt',
+                :data => 'Eigene Datenbanken mit ihrem Inhalt: MySQL; Neo4j, wenn die Person es im Profil einschaltet',
                 :categories => [:content],
                 :purpose => 'Unterricht zu Datenbanken',
                 :who => 'die Person selbst; Administration',

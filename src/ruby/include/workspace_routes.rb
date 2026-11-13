@@ -286,6 +286,8 @@ class Main < Sinatra::Base
             Main.enqueue_database_init(
                 :email => database_email,
                 :db_login => database_login,
+                # an exam's Workspace has its own Neo4j database always
+                :neo4j => test_tag ? true : Main.neo4j_wanted?(email),
             )
 
             if test_tag

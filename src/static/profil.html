@@ -502,7 +502,9 @@
                         <h3>Neo4j</h3>
                         <div class="btn-module-control">#{print_module_button(:neo4j)}</div>
                     </div>
-                    <p>Du hast eine Neo4j-Datenbank, die du im Workspace verwenden kannst.</p>
+                    <p id="neo4j-off"#{@session_user[:show_neo4j] ? " hidden" : ''}>Neo4j brauchst du nur für wenige Aktivitäten, etwa die Filmdatenbank als Graph. Schaltest du es ein, bekommst du eine eigene, leere Neo4j-Datenbank und oben im Menü den Knopf »Neo4j«.</p>
+                    <div id="neo4j-on"#{@session_user[:show_neo4j] ? '' : " hidden"}>
+                    <p>Du hast eine Neo4j-Datenbank, die du im Workspace verwenden kannst. Schaltest du Neo4j aus, verschwindet nur der Knopf im Menü; die Datenbank bleibt.</p>
                     <div class="profile-credentials">
                         <h4>Neo4j-Zugangsdaten</h4>
                         <div class="profile-credential-grid">
@@ -544,6 +546,7 @@
                         <h4>Neo4j-Datenbank zurücksetzen</h4>
                         <p>Hier kannst du deine Neo4j-Datenbank zurücksetzen.</p>
                         <button id='bu_reset_neo4j' class="btn btn-danger"><i class='bi bi-trash-fill'></i>Neo4j-Datenbank zurücksetzen</button>
+                    </div>
                     </div>
                 </div>
             </section>
@@ -1232,6 +1235,11 @@ vscode_config: {}</pre>
                     .append($('<i>').addClass('bi').addClass(data.shown ? 'bi-check-lg' : 'bi-x-lg'))
                     .append(document.createTextNode(`${data.label} im Menü ${data.shown ? '' : 'nicht'} anzeigen`));
                 $(`[data-menu-module='${data.module}']`).css('display', data.shown ? '' : 'none');
+                // Neo4j switched on made the database: its login data appear
+                if (data.module === 'neo4j') {
+                    $('#neo4j-on').prop('hidden', !data.shown);
+                    $('#neo4j-off').prop('hidden', data.shown);
+                }
             }, {no_please_wait: true});
         });
         $('#bu_restart_workspace').on('click', function() {
