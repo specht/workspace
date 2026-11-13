@@ -1158,7 +1158,7 @@
         const old = side.querySelector('.document-offer');
         if (old) old.remove();
         const box = el('p', 'document-offer');
-        const icon = el('i', 'bi ' + (next.text.indexOf('Runde') >= 0 ? 'bi-arrow-repeat' : 'bi-stars'));
+        const icon = el('i', 'bi ' + ({ open: 'bi-arrow-down-circle', practice: 'bi-arrow-repeat' }[next.kind] || 'bi-stars'));
         icon.setAttribute('aria-hidden', 'true');
         const link = el('a', null, next.title);
         link.href = '#aufgabe-' + next.id;

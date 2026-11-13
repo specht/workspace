@@ -16,6 +16,10 @@ test('a document with traps hides them until they are found, with tips for each'
   await page.setViewportSize({ width: 1280, height: 1000 });
   await loginAsE2eUser(page, e2eEmail, testInfo);
   for (const task of ['einladung', 'fallen']) await page.request.post('/api/task/delete', { data: { task: `formatting-marks/${task}` } });
+  // the sheet's questions answered: the extras come once nothing that counts is open
+  for (const [task, answer] of Object.entries({ groesser: '2', absaetze: '16', zeilenende: '1', ausdruck: '0' })) {
+    await page.request.post('/api/task/check', { data: { task: `formatting-marks/${task}`, answer } });
+  }
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/formatting-marks');
   await states;
@@ -74,20 +78,31 @@ test('a document with traps hides them until they are found, with tips for each'
 
 test('a card passed after many checks offers another round', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
-  await page.request.post('/api/task/delete', { data: { task: 'formatting-marks/einladung' } });
+  const others = { groesser: '2', absaetze: '16', zeilenende: '1', ausdruck: '0' };
+  for (const task of ['einladung', ...Object.keys(others)]) await page.request.post('/api/task/delete', { data: { task: `formatting-marks/${task}` } });
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
   await page.goto('/formatting-marks');
   await states;
   const card = page.locator(".task-card[data-task='formatting-marks/einladung']:visible");
-  for (const file of [path.join(statics, '01 Einladung.docx'), path.join(statics, '01 Einladung.docx'), path.join(content, 'einladung.docx')]) {
+  const check = async (file: string) => {
     const checked = page.waitForResponse((r) => r.url().endsWith('/api/task/document'));
     await card.locator('.document-input').setInputFiles(file);
     await checked;
-  }
+  };
+  // passed with the sheet's other questions still open: those first (the
+  // extras pulled a class past the sheet's last question)
+  await check(path.join(content, 'einladung.docx'));
+  await expect(card).toHaveAttribute('data-status', 'correct');
+  await expect(card.locator('.document-offer')).toContainText('fehlt dir noch eine Aufgabe');
+  await expect(card.locator('.document-offer a')).toHaveAttribute('href', '#aufgabe-groesser');
+  // every question answered: now the extra
+  for (const [task, answer] of Object.entries(others)) await page.request.post('/api/task/check', { data: { task: `formatting-marks/${task}`, answer } });
+  await page.request.post('/api/task/delete', { data: { task: 'formatting-marks/einladung' } });
+  for (const file of [path.join(statics, '01 Einladung.docx'), path.join(statics, '01 Einladung.docx'), path.join(content, 'einladung.docx')]) await check(file);
   await expect(card).toHaveAttribute('data-status', 'correct');
   await expect(card.locator('.document-offer')).toContainText('ein paar Versuche');
   await expect(card.locator('.document-offer').getByRole('link', { name: 'Noch eine Runde' })).toHaveAttribute('href', '#aufgabe-runde');
-  await page.request.post('/api/task/delete', { data: { task: 'formatting-marks/einladung' } });
+  for (const task of ['einladung', ...Object.keys(others)]) await page.request.post('/api/task/delete', { data: { task: `formatting-marks/${task}` } });
 });
 
 test('sheet 2: seven traps, and the two handles checked for Format übertragen and raised digits', async ({ page, e2eEmail }, testInfo) => {

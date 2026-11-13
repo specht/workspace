@@ -145,6 +145,22 @@ class Main < Sinatra::Base
         offer = found[:task]['next']
         return nil unless offer.is_a?(Hash)
 
+        activity = found[:key].split('/', 2).first
+        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
+        return nil unless entry
+
+        # a task of the page that counts and is still open comes first: the
+        # extras pulled a class past the sheet's last question
+        open = entry[:tasks][:by_id].find do |id, t|
+            next false if t['extra'] || "#{activity}/#{id}" == found[:key]
+
+            !StudentHome::DONE.include?((my_task_states["#{activity}/#{id}"] || {})[:status].to_s)
+        end
+        if open
+            return { :id => open[0], :title => open[1]['title'], :kind => 'open',
+                     :text => 'Geschafft. Auf diesem Blatt fehlt dir noch eine Aufgabe:' }
+        end
+
         kind, text = if attempts >= 3 && offer['practice']
             ['practice', 'Das hat ein paar Versuche gebraucht. Eine Runde mehr, dann sitzt es:']
         elsif attempts <= 2 && offer['challenge']
@@ -152,12 +168,10 @@ class Main < Sinatra::Base
         end
         return nil unless kind
 
-        activity = found[:key].split('/', 2).first
-        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
-        task = entry && entry[:tasks][:by_id][offer[kind]]
+        task = entry[:tasks][:by_id][offer[kind]]
         return nil unless task
 
-        { :id => offer[kind], :title => task['title'], :text => text }
+        { :id => offer[kind], :title => task['title'], :text => text, :kind => kind }
     end
     # The last version of a document task kept for a person: its name, when,
     # and where to fetch it; nil without one.
