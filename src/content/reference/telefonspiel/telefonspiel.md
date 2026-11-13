@@ -72,7 +72,7 @@ prüfen auch die Aufgaben dein Spiel.
 ## Alle Befehle
 
 <!-- part: befehle -->
-<!-- short: `say`, `play`, `keys`, `clear_keys`, `music`, `sleep`, `hangup`, `transfer`, `call`, `back`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
+<!-- short: `say`, `play`, `keys`, `clear_keys`, `music`, `sleep`, `hangup`, `transfer`, `call`, `answer`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
 ### Auf einen Blick
 
 <div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
@@ -95,7 +95,7 @@ prüfen auch die Aufgaben dein Spiel.
 <tr><th>An ein anderes Spiel weiterleiten</th><td><code>transfer '123'</code></td><td><code>transfer('123')</code></td><td><code>transfer('123');</code></td></tr>
 <tr><th>… mit Ziffern dahinter</th><td><code>transfer 'DICE', '6'</code></td><td><code>transfer('DICE', '6')</code></td><td><code>transfer('DICE', '6');</code></td></tr>
 <tr><th>Ein Spiel anrufen und auf seine Antwort warten</th><td><code>wurf = call('DICE', '6')</code></td><td><code>wurf = call('DICE', '6')</code></td><td><code>const wurf = call('DICE', '6');</code></td></tr>
-<tr><th>Dem Spiel antworten, das angerufen hat</th><td><code>back '4'</code></td><td><code>back('4')</code></td><td><code>back('4');</code></td></tr>
+<tr><th>Dem Spiel antworten, das angerufen hat</th><td><code>answer '4'</code></td><td><code>answer('4')</code></td><td><code>answer('4');</code></td></tr>
 <tr><th>Der Name des Spiels</th><td><code>title 'Die Höhle'</code></td><td><code>title('Die Höhle')</code></td><td><code>title('Die Höhle');</code></td></tr>
 <tr><th>Ein Satz fürs Telefonbuch</th><td><code>subtitle '…'</code></td><td><code>subtitle('…')</code></td><td><code>subtitle('…');</code></td></tr>
 </tbody>
@@ -260,13 +260,13 @@ das eigene Spiel an.
 <!-- /part -->
 
 <!-- part: call -->
-<!-- short: `call` ruft ein Spiel an und wartet, bis es mit `back` antwortet; die Antwort sind Ziffern, als Töne auf der Leitung zu hören. -->
-### call und back
+<!-- short: `call` ruft ein Spiel an und wartet, bis es mit `answer` antwortet; die Antwort sind Ziffern, als Töne auf der Leitung zu hören. -->
+### call und answer
 
 `call` ruft ein anderes Spiel an, und das eigene wartet so lange, wie eine
 Telefonanlage einen Anruf hält, während man bei jemandem nachfragt. Wer
 anruft, hört die Nummer wählen und ist dann beim anderen Spiel. Antwortet das
-mit `back`, ist er wieder beim ersten Spiel, und `call` gibt die Antwort
+mit `answer`, ist er wieder beim ersten Spiel, und `call` gibt die Antwort
 zurück:
 
 ```ruby
@@ -275,27 +275,27 @@ say "Du hast eine #{wurf} gewürfelt."
 ```
 
 Das gerufene Spiel liest, was nach seiner Nummer gewählt wurde, mit `keys`,
-wie jede andere Taste, und antwortet mit `back`:
+wie jede andere Taste, und antwortet mit `answer`:
 
 ```ruby
 seiten = keys(3).to_i
-back rand(1..seiten).to_s
+answer rand(1..seiten).to_s
 ```
 
 - Hin und zurück geht es nur über Tasten: Was nach der Nummer gewählt wird,
-  und was `back` zurückgibt, sind Ziffern, höchstens 20. Beides ist als
+  und was `answer` zurückgibt, sind Ziffern, höchstens 20. Beides ist als
   Tastentöne auf der Leitung zu hören; das Ende einer Antwort ist die Raute.
   Nach der Nummer darf auch selbst eine Raute stehen (`call('FACT', '012#')`):
   Dann weiß `keys` im gerufenen Spiel, dass nichts mehr kommt.
-- Jedes Spiel klingelt, bis es etwas sagt (`say`, `play`, `back` …), ob ein
+- Jedes Spiel klingelt, bis es etwas sagt (`say`, `play`, `answer` …), ob ein
   Mensch es wählt, ein Anruf weitergeleitet wird oder ein Spiel es mit `call`
   anruft: mal kurz, mal länger, dann hört man, wie es abnimmt. Das macht das
   Telefon selbst. Die Ziffern nach seiner Nummer kann das Spiel schon vorher
   mit `keys` lesen. Legt ein gerufenes Spiel auf, bevor es etwas gesagt hat,
   hört man das Besetztzeichen, und `call` gibt einen leeren Text zurück.
-- `back` beendet das Spiel. Hat ein Mensch es gewählt, ist der Anruf damit zu
+- `answer` beendet das Spiel. Hat ein Mensch es gewählt, ist der Anruf damit zu
   Ende.
-- Endet das gerufene Spiel ohne `back`, legt es auf oder bricht es mit einem
+- Endet das gerufene Spiel ohne `answer`, legt es auf oder bricht es mit einem
   Fehler ab, gibt `call` einen leeren Text zurück. Gibt es die Nummer nicht,
   hört man »Kein Anschluss unter dieser Nummer«, und die Antwort ist auch
   leer.

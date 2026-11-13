@@ -377,7 +377,7 @@ class Phone:
         self.ended = asyncio.Event()
         # the number a game forwarded the call to (transfer)
         self.transfer_to = None
-        # the digits a called game answered with (back), None before
+        # the digits a called game answered with (answer), None before
         self.returned = None
         # calls on hold below this one (call)
         self.depth = 0
@@ -414,7 +414,7 @@ class Phone:
 
     async def dtmf(self, digits):
         """the key tones of these digits on the line, heard by the caller
-        (dialling with call, answering with back)"""
+        (dialling with call, answering with answer)"""
 
     async def line_signal(self, kind, seconds=0.0):
         """the line's own sounds, heard by the caller (signal): 'ring' and
@@ -422,7 +422,7 @@ class Phone:
 
     async def call_game(self, dialed):
         """call: the game of this number (with its extension) while this one
-        waits on hold; returns the digits it answered with (back), '' when it
+        waits on hold; returns the digits it answered with (answer), '' when it
         ended without (hung up, crashed, no such number)"""
         return ''
 
@@ -553,12 +553,12 @@ class Phone:
             await self.dtmf(dialed)
             answer = await self.call_game(dialed)
             return {'keys': answer}
-        if 'back' in command:
+        if 'answer' in command:
             # answer the game that called: the digits as key tones, then #,
             # and this game ends; dialled by a person, the call ends
-            digits = dial_digits(command['back'])
+            digits = dial_digits(command['answer'])
             if digits is None or not re.fullmatch(r'[\d*]*', digits) or len(digits) > MAX_DIALED:
-                return {'error': f'back: Zurück gehen nur Ziffern, höchstens {MAX_DIALED}, nicht »{command["back"]}«.'}
+                return {'error': f'answer: Zurück gehen nur Ziffern, höchstens {MAX_DIALED}, nicht »{command["answer"]}«.'}
             await self.dtmf(digits + '#')
             self.returned = digits
             return None
@@ -569,7 +569,7 @@ async def run_game(phone, command, cwd, env, output, preexec_fn=None, seconds=90
     """run the game until it ends, hangs up, the caller hangs up or the time
     is over; output(kind, line) gets its ordinary lines ('out', 'err').
     Returns why it ended: 'ended', 'hangup', 'transfer' (phone.transfer_to
-    says where), 'back' (phone.returned: its answer), 'caller', 'time'."""
+    says where), 'answer' (phone.returned: its digits), 'caller', 'time'."""
     process = await asyncio.create_subprocess_exec(
         *command, cwd=cwd, env=env, preexec_fn=preexec_fn, start_new_session=preexec_fn is None,
         stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
@@ -597,7 +597,7 @@ async def run_game(phone, command, cwd, env, output, preexec_fn=None, seconds=90
             if phone.ended.is_set():
                 return 'caller'
             if answer is None:
-                return 'transfer' if phone.transfer_to else ('back' if phone.returned is not None else 'hangup')
+                return 'transfer' if phone.transfer_to else ('answer' if phone.returned is not None else 'hangup')
             try:
                 process.stdin.write((json.dumps(answer, ensure_ascii=False) + '\n').encode('utf-8'))
                 await process.stdin.drain()

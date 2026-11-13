@@ -76,20 +76,20 @@ class LineHold(unittest.TestCase):
                         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
                         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
                     ]))
-                    answer = call('FACT', f'0{n - 1}#')
+                    response = call('FACT', f'0{n - 1}#')
                     tries = 1
-                    while not answer and tries < 5:
+                    while not response and tries < 5:
                         say(random.choice([
                             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
                             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
                             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
                         ]))
-                        answer = call('FACT', f'0{n - 1}#')
+                        response = call('FACT', f'0{n - 1}#')
                         tries += 1
-                    if not answer:
+                    if not response:
                         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
                         hangup()
-                    previous = int(answer)
+                    previous = int(response)
                     result = n * previous
                     say(random.choice([
                         f'{n} mal {previous} ist {result}.',
@@ -105,12 +105,12 @@ class LineHold(unittest.TestCase):
                         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
                         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
                     ]))
-                back(str(result))
+                answer(str(result))
                 """),
             '3423': ('Würfelbude', """
                 sides = int(keys(3, timeout=0.3) or 0)
                 say(f'Würfelbude: {sides}.')
-                back(str(sides))
+                answer(str(sides))
                 """),
             '123': ('Frager', """
                 say('[' + call('999') + ']')
@@ -160,7 +160,7 @@ class LineHold(unittest.TestCase):
         self.assertEqual(['ring'] * 5, [e['signal'] for e in events if 'signal' in e])
         tones = [e['tones'] for e in events if 'tones' in e]
         self.assertEqual(['322804#', '322803#', '322802#', '322801#', '1#', '2#', '6#', '24#', '120#'], tones)
-        self.assertEqual({'ended': 'back'}, events[-1])
+        self.assertEqual({'ended': 'answer'}, events[-1])
 
     def test_no_game_no_answer_and_a_service(self):
         events = self.call('123')

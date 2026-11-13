@@ -366,8 +366,8 @@ class Server:
             show('Aufgelegt.', '1')
         elif reason == 'hangup':
             show('Das Spiel hat aufgelegt.', '1')
-        elif reason == 'back':
-            show(f'Das Spiel hat mit back geantwortet: {json.dumps(phone.returned)}. '
+        elif reason == 'answer':
+            show(f'Das Spiel hat mit answer geantwortet: {json.dumps(phone.returned)}. '
                  'Von einem Menschen gewählt, ist der Anruf damit zu Ende.', '1')
         elif reason == 'transfer':
             # the published games are on the server, not here
@@ -416,7 +416,7 @@ class Server:
         if reason == 'ended' and status:
             show(f'Das gerufene Spiel ist mit einem Fehler beendet (Exit-Code {status}); das Spiel davor bekommt keine Antwort.', '1;31')
             await holding.say(game.CRASHED_CALLED)
-        answer = callee.returned if reason == 'back' and callee.returned is not None else ''
+        answer = callee.returned if reason == 'answer' and callee.returned is not None else ''
         # ended without a sound: nobody answered, the line is busy
         if callee.unanswered is not None and not callee.ended.is_set():
             callee.unanswered = None
@@ -622,7 +622,7 @@ async def test(command, folder, answers, seconds):
         return
     if reason == 'hangup':
         print('Ende: Das Spiel hat aufgelegt.', flush=True)
-    elif reason == 'back':
+    elif reason == 'answer':
         print(f'Ende: Antwort {phone.returned or "(leer)"}.', flush=True)
     elif reason == 'transfer':
         print(f'Ende: Weitergeleitet an {phone.transfer_to}.', flush=True)

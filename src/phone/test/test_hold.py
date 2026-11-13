@@ -1,11 +1,11 @@
-"""Calling another game and holding the line (core/game.py: call, back,
+"""Calling another game and holding the line (core/game.py: call, answer,
 the keys a connection keeps): real games in Python through the library,
 on a test phone that connects numbers as the lines do, each connection on
 a phone of its own (line.py). What it checks: a number reaches its game
 with the rest as the first keys (the extension); keys wait during speech
 and are lost beyond MAX_KEYS; nothing is kept from one connection to the
-next; call waits and returns what back answered, also calls inside calls
-(the factorial of 5); a called game that ends without back or crashes
+next; call waits and returns what answer sent, also calls inside calls
+(the factorial of 5); a called game that ends without answer or crashes
 gives ''; one call too deep overloads the line and ends the call; the
 tones are heard; clear_keys forgets.
     python3 src/phone/test/test_hold.py"""
@@ -61,7 +61,7 @@ class TestPhone(game.Phone):
             self.ended.set()
         if callee.unanswered is not None and not callee.ended.is_set():
             await self.line_signal('busy')                 # ended without a sound
-        return callee.returned if reason == 'back' else ''
+        return callee.returned if reason == 'answer' else ''
 
 
 async def run(phone, file, folder):
@@ -115,20 +115,20 @@ class Hold(unittest.TestCase):
                         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
                         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
                     ]))
-                    answer = call('FACT', f'0{n - 1}#')
+                    response = call('FACT', f'0{n - 1}#')
                     tries = 1
-                    while not answer and tries < 5:
+                    while not response and tries < 5:
                         say(random.choice([
                             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
                             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
                             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
                         ]))
-                        answer = call('FACT', f'0{n - 1}#')
+                        response = call('FACT', f'0{n - 1}#')
                         tries += 1
-                    if not answer:
+                    if not response:
                         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
                         hangup()
-                    previous = int(answer)
+                    previous = int(response)
                     result = n * previous
                     say(random.choice([
                         f'{n} mal {previous} ist {result}.',
@@ -144,13 +144,13 @@ class Hold(unittest.TestCase):
                         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
                         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
                     ]))
-                back(str(result))
+                answer(str(result))
                 """),
             # DICE: the number of sides as the extension, here always the highest
             '3423': write(self.folder, 'dice.py', """
                 sides = int(keys(3, timeout=0.3) or 0)
                 say(f'Würfelbude: {sides}.')
-                back(str(sides))
+                answer(str(sides))
                 """),
             '555': write(self.folder, 'quiet.py', "say('Ich sage nichts zurück.')\n"),
             '444': write(self.folder, 'busy.py', "hangup()\n"),
@@ -192,20 +192,20 @@ class Hold(unittest.TestCase):
                         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
                         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
                     ]))
-                    answer = call('3229', f'0{n - 1}#')
+                    response = call('3229', f'0{n - 1}#')
                     tries = 1
-                    while not answer and tries < 5:
+                    while not response and tries < 5:
                         say(random.choice([
                             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
                             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
                             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
                         ]))
-                        answer = call('3229', f'0{n - 1}#')
+                        response = call('3229', f'0{n - 1}#')
                         tries += 1
-                    if not answer:
+                    if not response:
                         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
                         hangup()
-                    previous = int(answer)
+                    previous = int(response)
                     result = n * previous
                     say(random.choice([
                         f'{n} mal {previous} ist {result}.',
@@ -221,7 +221,7 @@ class Hold(unittest.TestCase):
                         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
                         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
                     ]))
-                back(str(result))
+                answer(str(result))
                 """),
             '666': write(self.folder, 'broken.py', "say('Gleich.')\nraise RuntimeError('kaputt')\n"),
             '777': write(self.folder, 'deep.py', "call('777')\n"),
@@ -319,7 +319,7 @@ class Hold(unittest.TestCase):
         self.assertIn(('say', '[]'), heard)
 
     def test_wrong_answers_are_errors(self):
-        _, status, _, _ = self.call("back('zwölf!')\n")
+        _, status, _, _ = self.call("answer('zwölf!')\n")
         self.assertNotEqual(0, status)
 
 

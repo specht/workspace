@@ -344,9 +344,9 @@ object, so any language can play:
                                  ends ({"error": …} for a number without a game)
 → {"call": "DICE", "extension": "6"}   this game waits on hold; the caller hears
                                  3423 and 6 dialled and is with that game
-← {"keys": "4"}                  what it answered with back ("" without, or for
+← {"keys": "4"}                  what it answered with answer ("" without, or for
                                  a number without a game: »Kein Anschluss«)
-→ {"back": "4"}                  answer the calling game: 4 and # as tones;
+→ {"answer": "4"}                  answer the calling game: 4 and # as tones;
                                  this game ends (dialled by a person: the call ends)
 → {"clear_keys": true}           forget the keys kept so far
 ```

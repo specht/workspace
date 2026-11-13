@@ -244,7 +244,7 @@ class Line(emulator.Server):
         (its folder, its display), and the answer is what it gets"""
         folder = self.folder
         reason, phone = await self.connect(dialed, None, holding.depth + 1)
-        answer = phone.returned if reason == 'back' and phone is not None and phone.returned is not None else ''
+        answer = phone.returned if reason == 'answer' and phone is not None and phone.returned is not None else ''
         # the caller hung up meanwhile: the holding game ends with the call
         if phone is not None and phone.ended.is_set():
             holding.ended.set()

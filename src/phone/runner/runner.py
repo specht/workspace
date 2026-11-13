@@ -326,7 +326,7 @@ class Call(game.Phone):
         self.depth += 1
         try:
             reason = await self.connect(dialed)
-            answer = self.returned if reason == 'back' and self.returned is not None else ''
+            answer = self.returned if reason == 'answer' and self.returned is not None else ''
             # ended without a sound: nobody answered, the line is busy
             if self.unanswered is not None and not self.ended.is_set():
                 self.unanswered = None

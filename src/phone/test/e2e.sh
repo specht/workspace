@@ -24,11 +24,11 @@ cp "$HERE/games/1/main.py" "$OUT/games/1/"
 # a game with a syntax error (124): the caller hears so and gets the menu
 mkdir -p "$OUT/games/2"
 printf "require 'telefon'\nkey = keys(1)\ncase key\nwhen '1' or '2':\n  say 'eins'\nend\n" > "$OUT/games/2/start.rb"
-# FACT (3228): n! by calling itself on hold (call, back)
+# FACT (3228): n! by calling itself on hold (call, answer)
 mkdir -p "$OUT/games/3"
 cat > "$OUT/games/3/main.py" <<'EOF'
 import random
-from telefon import back, call, hangup, keys, say, subtitle, title
+from telefon import answer, call, hangup, keys, say, subtitle, title
 
 title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
@@ -63,20 +63,20 @@ else:
         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
     ]))
-    answer = call('FACT', f'0{n - 1}#')
+    response = call('FACT', f'0{n - 1}#')
     tries = 1
-    while not answer and tries < 5:
+    while not response and tries < 5:
         say(random.choice([
             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
         ]))
-        answer = call('FACT', f'0{n - 1}#')
+        response = call('FACT', f'0{n - 1}#')
         tries += 1
-    if not answer:
+    if not response:
         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
         hangup()
-    previous = int(answer)
+    previous = int(response)
     result = n * previous
     say(random.choice([
         f'{n} mal {previous} ist {result}.',
@@ -92,7 +92,7 @@ if not inner:
         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
     ]))
-back(str(result))
+answer(str(result))
 EOF
 echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}, {"number": "124", "title": "Kaputt", "folder": "games/2", "file": "start.rb"}, {"number": "3228", "title": "Fakultät", "folder": "games/3", "file": "main.py"}]}' > "$OUT/games/published.json"
 chmod -R a+rX "$OUT/games"
@@ -161,7 +161,7 @@ call 10032283 90
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-hold.log"
 check "$OUT/runner-hold.log" "game 3" "say 'Willkommen zur rekursiven Fakultätsberatung." "Fakultät von 2" "tones 322802#" "signal ring" "tones 322801#" \
     "tones 1#" "call answered '1'" "2 mal 1 " "call answered '2'" "3 mal 2 " "say 'Die Fakultät von 1? Das ist einfach 1." "say 'Die Fakultät von 3 ist also 6." \
-    "tones 6#" "game ended: back"
+    "tones 6#" "game ended: answer"
 # each call one line for /statistik: the first two reached game 123, the
 # next two none, then 124, then FACT three times (one connection each);
 # only hour, line, seconds and games (and the error of the game that

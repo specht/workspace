@@ -1789,14 +1789,14 @@ sides = keys(3, timeout: 0.5).to_i
 sides = 6 if sides < 2
 roll = rand(1..sides)
 say "Würfelbude: #{roll}."
-back roll.to_s
+answer roll.to_s
 ```
 <!-- /language -->
 <!-- language: python -->
 <!-- page-code: own -->
 ```python
 import random
-from telefon import back, keys, say, subtitle, title
+from telefon import answer, keys, say, subtitle, title
 
 title('Würfelbude')
 subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat, sonst sind es sechs.')
@@ -1807,13 +1807,13 @@ if sides < 2:
     sides = 6
 roll = random.randint(1, sides)
 say(f'Würfelbude: {roll}.')
-back(str(roll))
+answer(str(roll))
 ```
 <!-- /language -->
 <!-- language: javascript -->
 <!-- page-code: own -->
 ```javascript
-const { back, keys, say, subtitle, title } = require('telefon');
+const { answer, keys, say, subtitle, title } = require('telefon');
 
 title('Würfelbude');
 subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat, sonst sind es sechs.');
@@ -1823,11 +1823,11 @@ let sides = Number(keys(3, 0.5));
 if (sides < 2) sides = 6;
 const roll = 1 + Math.floor(Math.random() * sides);
 say(`Würfelbude: ${roll}.`);
-back(String(roll));
+answer(String(roll));
 ```
 <!-- /language -->
 
-Neu ist `back`: Es schickt die Augenzahl als Tastentöne zurück, mit einer Raute
+Neu ist `answer`: Es schickt die Augenzahl als Tastentöne zurück, mit einer Raute
 am Ende, und beendet die Würfelbude. Hat ein Mensch sie angerufen, ist damit
 der Anruf vorbei. Hat ein Spiel sie mit `call` angerufen, geht es danach in
 diesem Spiel weiter:
@@ -1894,19 +1894,19 @@ subtitle 'Wähl nach der Nummer eine Zahl und dann die Raute.'
 n = keys(3).to_i
 if n <= 1
   say "Die Fakultät von #{n}? Das ist einfach 1."
-  back '1'
+  answer '1'
 end
 say "Ich frage nach der Fakultät von #{n - 1}."
 previous = call('FACT', "#{n - 1}#").to_i
 result = n * previous
 say "#{n} mal #{previous} ist #{result}."
-back result.to_s
+answer result.to_s
 ```
 <!-- /language -->
 <!-- language: python -->
 <!-- page-code: own -->
 ```python
-from telefon import back, call, keys, say, subtitle, title
+from telefon import answer, call, keys, say, subtitle, title
 
 title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl und dann die Raute.')
@@ -1914,18 +1914,18 @@ subtitle('Wähl nach der Nummer eine Zahl und dann die Raute.')
 n = int(keys(3) or 0)
 if n <= 1:
     say(f'Die Fakultät von {n}? Das ist einfach 1.')
-    back('1')
+    answer('1')
 say(f'Ich frage nach der Fakultät von {n - 1}.')
 previous = int(call('FACT', f'{n - 1}#'))
 result = n * previous
 say(f'{n} mal {previous} ist {result}.')
-back(str(result))
+answer(str(result))
 ```
 <!-- /language -->
 <!-- language: javascript -->
 <!-- page-code: own -->
 ```javascript
-const { back, call, keys, say, subtitle, title } = require('telefon');
+const { answer, call, keys, say, subtitle, title } = require('telefon');
 
 title('Fakultät');
 subtitle('Wähl nach der Nummer eine Zahl und dann die Raute.');
@@ -1933,13 +1933,13 @@ subtitle('Wähl nach der Nummer eine Zahl und dann die Raute.');
 const n = Number(keys(3));
 if (n <= 1) {
   say(`Die Fakultät von ${n}? Das ist einfach 1.`);
-  back('1');
+  answer('1');
 }
 say(`Ich frage nach der Fakultät von ${n - 1}.`);
 const previous = Number(call('FACT', `${n - 1}#`));
 const result = n * previous;
 say(`${n} mal ${previous} ist ${result}.`);
-back(String(result));
+answer(String(result));
 ```
 <!-- /language -->
 
@@ -2017,22 +2017,22 @@ else
     "Die Fakultät von #{n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von #{n - 1}.",
     "Die Fakultät von #{n}? Da muss ich kurz bei der Fakultät von #{n - 1} nachfragen."
   ].sample
-  answer = call('FACT', "0#{n - 1}#")
+  response = call('FACT', "0#{n - 1}#")
   tries = 1
-  while answer.empty? && tries < 5
+  while response.empty? && tries < 5
     say [
       'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
       'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
       'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.'
     ].sample
-    answer = call('FACT', "0#{n - 1}#")
+    response = call('FACT', "0#{n - 1}#")
     tries += 1
   end
-  if answer.empty?
+  if response.empty?
     say "Die Fakultät von #{n - 1} ist heute nicht zu erreichen. Auf Wiederhören."
     hangup
   end
-  previous = answer.to_i
+  previous = response.to_i
   result = n * previous
   say [
     "#{n} mal #{previous} ist #{result}.",
@@ -2050,14 +2050,14 @@ unless inner
     'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.'
   ].sample
 end
-back result.to_s
+answer result.to_s
 ```
 <!-- /language -->
 <!-- language: python -->
 <!-- page-code: own -->
 ```python
 import random
-from telefon import back, call, hangup, keys, say, subtitle, title
+from telefon import answer, call, hangup, keys, say, subtitle, title
 
 title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
@@ -2092,20 +2092,20 @@ else:
         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
     ]))
-    answer = call('FACT', f'0{n - 1}#')
+    response = call('FACT', f'0{n - 1}#')
     tries = 1
-    while not answer and tries < 5:
+    while not response and tries < 5:
         say(random.choice([
             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
         ]))
-        answer = call('FACT', f'0{n - 1}#')
+        response = call('FACT', f'0{n - 1}#')
         tries += 1
-    if not answer:
+    if not response:
         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
         hangup()
-    previous = int(answer)
+    previous = int(response)
     result = n * previous
     say(random.choice([
         f'{n} mal {previous} ist {result}.',
@@ -2121,13 +2121,13 @@ if not inner:
         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
     ]))
-back(str(result))
+answer(str(result))
 ```
 <!-- /language -->
 <!-- language: javascript -->
 <!-- page-code: own -->
 ```javascript
-const { back, call, hangup, keys, say, subtitle, title } = require('telefon');
+const { answer, call, hangup, keys, say, subtitle, title } = require('telefon');
 
 // einer der Sätze, zufällig
 const pick = (sentences) => sentences[Math.floor(Math.random() * sentences.length)];
@@ -2166,22 +2166,22 @@ if (n <= 1) {
     `Die Fakultät von ${n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von ${n - 1}.`,
     `Die Fakultät von ${n}? Da muss ich kurz bei der Fakultät von ${n - 1} nachfragen.`,
   ]));
-  let answer = call('FACT', `0${n - 1}#`);
+  let response = call('FACT', `0${n - 1}#`);
   let tries = 1;
-  while (answer === '' && tries < 5) {
+  while (response === '' && tries < 5) {
     say(pick([
       'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
       'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
       'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
     ]));
-    answer = call('FACT', `0${n - 1}#`);
+    response = call('FACT', `0${n - 1}#`);
     tries += 1;
   }
-  if (answer === '') {
+  if (response === '') {
     say(`Die Fakultät von ${n - 1} ist heute nicht zu erreichen. Auf Wiederhören.`);
     hangup();
   }
-  const previous = BigInt(answer);
+  const previous = BigInt(response);
   result = BigInt(n) * previous;
   say(pick([
     `${n} mal ${previous} ist ${result}.`,
@@ -2199,7 +2199,7 @@ if (!inner) {
     'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
   ]));
 }
-back(String(result));
+answer(String(result));
 ```
 <!-- /language -->
 
