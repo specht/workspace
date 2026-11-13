@@ -99,18 +99,21 @@
     }
 
     // a dog-ear at the outer corner of a page that can be turned: at the
-    // right for the next page, at the left for the one before (on a narrow
-    // screen both on the one page)
+    // right for the next page, at the left for the one before; on a narrow
+    // screen, an open notebook leafed through, only at the bottom right
     function ears(side, index) {
-        let out = '';
-        if (side === 'right' && index + 1 < pages.length) out += "<span class='pb-ear next' aria-hidden='true'></span>";
-        if ((side === 'left' || narrow()) && index > 0) out += "<span class='pb-ear prev' aria-hidden='true'></span>";
-        return out;
+        const next = side === 'right' && index + 1 < pages.length;
+        const prev = side === 'left' && index > 0 && !narrow();
+        return { next, prev };
     }
 
     function leaf(side, index) {
         const empty = !pages[index];
-        return `<div class='phone-book-leaf ${side}${empty ? ' empty' : ''}' data-side='${side}'>${empty ? '' : pageHtml(index) + ears(side, index)}</div>`;
+        const ear = empty ? {} : ears(side, index);
+        const classes = `phone-book-leaf ${side}${empty ? ' empty' : ''}${ear.next ? ' ear-r' : ''}${ear.prev ? ' ear-l' : ''}`;
+        const flaps = (ear.next ? "<span class='pb-ear next' aria-hidden='true'></span>" : '') +
+            (ear.prev ? "<span class='pb-ear prev' aria-hidden='true'></span>" : '');
+        return `<div class='${classes}' data-side='${side}'>${empty ? '' : pageHtml(index) + flaps}</div>`;
     }
 
     function render() {
@@ -119,48 +122,73 @@
     }
 
     // a page turns around the spine: its front is the page it was, its back
-    // the page it becomes
+    // the page it becomes. It turns in two halves, the outer one hinged to
+    // the inner one, so that the paper bends: the outer half leads as the
+    // page is lifted and settles flat at the end. Each half shows its half of
+    // the front and, mirrored, the other half of the back. A shadow runs
+    // over the turning paper, and the page beneath lies in its shade at first.
+    const TURN_MS = 850;
+
+    function sheetHtml(front, back) {
+        const face = (html, side, half) => `<div class='pb-face ${side} half-${half}'>${html}<div class='pb-shade'></div></div>`;
+        return `<div class='pb-part l'>${face(front, 'front', 'l')}${face(back, 'back', 'r')}</div>` +
+            `<div class='pb-part r'>${face(front, 'front', 'r')}${face(back, 'back', 'l')}</div>`;
+    }
+
     function turn(direction) {
         const target = at + direction * step();
         if (turning || target < 0 || target >= pages.length) return;
         book.classList.add('turned');        // found out: the ears stop lifting
-        if (narrow() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (narrow() || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !Element.prototype.animate) {
             at = target;
             render();
             return;
         }
         turning = true;
+        const forward = direction > 0;
         const spread = book.querySelector('.phone-book-spread');
         const sheet = document.createElement('div');
-        sheet.className = `phone-book-turning ${direction > 0 ? 'forward' : 'backward'}`;
-        if (direction > 0) {
-            sheet.innerHTML = `<div class='front'>${leaf('right', at + 1)}</div><div class='back'>${leaf('left', target)}</div>`;
+        sheet.className = `phone-book-turning ${forward ? 'forward' : 'backward'}`;
+        if (forward) {
+            sheet.innerHTML = sheetHtml(leaf('right', at + 1), leaf('left', target));
             spread.lastElementChild.outerHTML = leaf('right', target + 1);
         } else {
-            sheet.innerHTML = `<div class='front'>${leaf('left', at)}</div><div class='back'>${leaf('right', target + 1)}</div>`;
+            sheet.innerHTML = sheetHtml(leaf('left', at), leaf('right', target + 1));
             spread.firstElementChild.outerHTML = leaf('left', target);
         }
-        sheet.querySelectorAll('.phone-book-leaf').forEach((l) => { l.style.height = '100%'; });
         book.appendChild(sheet);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            sheet.style.transform = `rotateY(${direction > 0 ? -180 : 180}deg)`;
-        }));
-        // only the turn itself ends it: the end of a transition inside the
-        // page (a dog-ear growing under the pointer) bubbles up here too
-        const done = (e) => {
-            if (e.target !== sheet || e.propertyName !== 'transform') return;
-            sheet.removeEventListener('transitionend', done);
+        const sign = forward ? -1 : 1;
+        const flip = sheet.animate([{ transform: 'rotateY(0deg)' }, { transform: `rotateY(${sign * 180}deg)` }],
+            { duration: TURN_MS, easing: 'cubic-bezier(.45, .05, .3, 1)', fill: 'forwards' });
+        // the outer half: ahead while lifted, behind for a moment, then flat
+        const outer = sheet.querySelector(forward ? '.pb-part.r' : '.pb-part.l');
+        outer.animate([
+            { transform: 'rotateY(0deg)' },
+            { transform: `rotateY(${sign * 34}deg)`, offset: 0.3 },
+            { transform: `rotateY(${sign * 10}deg)`, offset: 0.62 },
+            { transform: `rotateY(${-sign * 9}deg)`, offset: 0.86 },
+            { transform: 'rotateY(0deg)' },
+        ], { duration: TURN_MS, easing: 'ease-in-out' });
+        sheet.querySelectorAll('.pb-shade').forEach((shade) => shade.animate(
+            [{ opacity: 0 }, { opacity: 0.4, offset: 0.45 }, { opacity: 0 }], { duration: TURN_MS }));
+        const beneath = forward ? spread.lastElementChild : spread.firstElementChild;
+        beneath.animate([{ filter: 'brightness(.8)' }, { filter: 'brightness(1)' }], { duration: TURN_MS, easing: 'ease-in' });
+        flip.finished.then(() => {
             at = target;
             turning = false;
             render();
-        };
-        sheet.addEventListener('transitionend', done);
+        });
     }
 
     book.addEventListener('click', (e) => {
         if (e.target.closest('a')) return;
         if (swiped) { swiped = false; return; }
-        const page = e.target.closest('.phone-book-leaf');
+        // the corner cut for a dog-ear is no longer the page's own area: a
+        // click there counts for the page it belongs to
+        const page = e.target.closest('.phone-book-leaf') || [...book.querySelectorAll('.phone-book-spread > .phone-book-leaf')].find((l) => {
+            const b = l.getBoundingClientRect();
+            return e.clientX >= b.left && e.clientX <= b.right && e.clientY >= b.top && e.clientY <= b.bottom;
+        });
         if (!page || page.classList.contains('empty')) return;
         // one page at a time: its left half turns back, its right half on
         if (narrow()) {

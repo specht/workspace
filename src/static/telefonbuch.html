@@ -7,6 +7,7 @@
     .phone-book-page {
         --pb-paper: #f8f2de;
         --pb-paper-edge: #e6dabb;
+        --pb-under: #cbb98c;           /* the next sheet, in the shade of the fold */
         --pb-ink: #1d1a14;
         --pb-quiet: #5d5442;
         --pb-rule: #b9ab88;
@@ -41,7 +42,9 @@
     .phone-book-spread {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        background: var(--pb-cover);
+        /* under the pages the next sheet of paper (seen where a dog-ear is
+           folded), around them the cover */
+        background: linear-gradient(var(--pb-under), var(--pb-under)) content-box, var(--pb-cover);
         padding: 10px;
         border-radius: 10px;
         box-shadow: var(--pb-shadow);
@@ -96,52 +99,77 @@
     .pb-remark p { margin: 0 0 .4rem; text-align: left; hyphens: none; }
     .phone-book-page .pb-remark a { color: var(--pb-ink); text-decoration: underline; text-underline-offset: 2px; }
     .phone-book-page .phone-book-none { color: var(--pb-quiet); margin-top: 2rem; text-align: center; }
-    /* the page that turns: front and back, around the spine */
+    /* the page that turns: two halves around the spine (phone_book.js),
+       each with a face for the front and one for the back; a face shows its
+       half of a whole page, which is twice as wide as the face */
     .phone-book-turning {
         position: absolute;
         top: 10px;
         bottom: 10px;
         width: calc(50% - 10px);
         transform-style: preserve-3d;
-        transition: transform .6s ease-in-out;
         z-index: 2;
     }
     .phone-book-turning.forward { left: 50%; transform-origin: left center; }
     .phone-book-turning.backward { left: 10px; transform-origin: right center; }
-    .phone-book-turning > div { position: absolute; inset: 0; backface-visibility: hidden; }
-    .phone-book-turning > .back { transform: rotateY(180deg); }
-    /* a dog-ear: the corner of a page that turns, folded in; it lifts now
-       and then until a page has been turned, and when the page is pointed at */
+    .pb-part { position: absolute; top: 0; bottom: 0; width: 50%; transform-style: preserve-3d; }
+    .pb-part.l { left: 0; transform-origin: right center; }
+    .pb-part.r { left: 50%; transform-origin: left center; }
+    .pb-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; }
+    .pb-face.back { transform: rotateY(180deg); }
+    .pb-face > .phone-book-leaf { position: absolute; top: 0; left: 0; width: 200%; height: 100%; aspect-ratio: auto; }
+    .pb-face.half-r > .phone-book-leaf { left: -100%; }
+    .pb-shade {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        background: linear-gradient(90deg, rgba(40, 30, 10, .55), rgba(40, 30, 10, .15) 60%, rgba(255, 250, 235, .25));
+    }
+    /* a dog-ear: the corner of a page that turns, folded in. The page itself
+       is cut along the fold (--ear-r, --ear-l: the size of the fold at the
+       right and at the left corner), so what lies beneath shows through, also
+       on a page that turns; the flap shows the back of the paper. It lifts now
+       and then until a page has been turned, and when the page is pointed at. */
+    @property --ear-r { syntax: '<length>'; inherits: true; initial-value: 0px; }
+    @property --ear-l { syntax: '<length>'; inherits: true; initial-value: 0px; }
+    .phone-book-leaf.ear-r { --ear-r: 26px; }
+    .phone-book-leaf.ear-l { --ear-l: 26px; }
+    .phone-book-leaf.ear-r, .phone-book-leaf.ear-l {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--ear-r)), calc(100% - var(--ear-r)) 100%,
+                           var(--ear-l) 100%, 0 calc(100% - var(--ear-l)));
+        transition: --ear-r .2s, --ear-l .2s;
+    }
+    .phone-book-leaf.ear-r { animation: pb-ear-lift-r 6s ease-in-out 2s infinite; }
+    .phone-book-leaf.ear-l { animation: pb-ear-lift-l 6s ease-in-out 2s infinite; }
+    .phone-book-leaf.ear-r.ear-l { animation: pb-ear-lift-r 6s ease-in-out 2s infinite, pb-ear-lift-l 6s ease-in-out 2s infinite; }
     .phone-book-leaf > .pb-ear {
         position: absolute;
         bottom: 0;
-        width: 26px;
-        height: 26px;
         mix-blend-mode: normal;
         pointer-events: none;
         filter: drop-shadow(-1px -1px 1.5px rgba(40, 30, 10, .35));
-        animation: pb-ear-lift 6s ease-in-out 2s infinite;
-        transition: width .2s, height .2s;
-    }
-    .pb-ear.next { right: 0; }
-    .pb-ear.prev { left: 0; transform: scaleX(-1); }
-    /* the corner folded away shows the cover; the flap shows the back of the paper */
-    .pb-ear::before, .pb-ear::after { content: ''; position: absolute; inset: 0; }
-    .pb-ear::before { background: var(--pb-cover); clip-path: polygon(100% 0, 100% 100%, 0 100%); }
-    .pb-ear::after {
         background: linear-gradient(135deg, #fbf6e6 0%, var(--pb-paper-edge) 70%, #cbbd94 100%);
         clip-path: polygon(0 0, 100% 0, 0 100%);
     }
-    .phone-book-leaf.right:hover > .pb-ear.next,
-    .phone-book-leaf.left:hover > .pb-ear.prev,
-    .phone-book-leaf.right:hover > .pb-ear.prev { width: 34px; height: 34px; }
-    .phone-book.turned .pb-ear { animation: none; }
+    .pb-ear.next { right: 0; width: var(--ear-r); height: var(--ear-r); }
+    .pb-ear.prev { left: 0; width: var(--ear-l); height: var(--ear-l); transform: scaleX(-1); }
+    /* pointed at: no lifting, the corner a little bigger */
+    .phone-book-leaf.ear-r:hover, .phone-book-leaf.ear-l:hover { animation: none; }
+    .phone-book-leaf.right.ear-r:hover { --ear-r: 34px; }
+    .phone-book-leaf.left.ear-l:hover, .phone-book-leaf.right.ear-l:hover { --ear-l: 34px; }
+    .phone-book.turned .phone-book-leaf { animation: none; }
     /* on the page that is turning, the ears hold still */
-    .phone-book-turning .pb-ear { animation: none; transition: none; }
-    @keyframes pb-ear-lift {
-        0%, 82%, 100% { width: 26px; height: 26px; }
-        88% { width: 38px; height: 38px; }
-        94% { width: 29px; height: 29px; }
+    .phone-book-turning .phone-book-leaf { animation: none; transition: none; }
+    @keyframes pb-ear-lift-r {
+        0%, 82%, 100% { --ear-r: 26px; }
+        88% { --ear-r: 38px; }
+        94% { --ear-r: 29px; }
+    }
+    @keyframes pb-ear-lift-l {
+        0%, 82%, 100% { --ear-l: 26px; }
+        88% { --ear-l: 38px; }
+        94% { --ear-l: 29px; }
     }
     @media (max-width: 640px) {
         .phone-book-spread { grid-template-columns: 1fr; }
@@ -150,8 +178,7 @@
         .phone-book-turning { display: none; }
     }
     @media (prefers-reduced-motion: reduce) {
-        .phone-book-turning { transition: none; }
-        .phone-book-leaf > .pb-ear { animation: none; }
+        .phone-book-leaf.ear-r, .phone-book-leaf.ear-l { animation: none; }
     }
 </style>
 <div class='container phone-book-page'>

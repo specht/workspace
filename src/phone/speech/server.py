@@ -91,7 +91,14 @@ LOANWORDS = [
     (r'hotlines?', None), (r'workspaces?', None),
 ]
 LOANWORD_SOUNDS = {'hotline': 'hˈɒtlaɪn', 'hotlines': 'hˈɒtlaɪns', 'workspace': 'wˈœɐkspɛɪs', 'workspaces': 'wˈœɐkspɛɪsɪs'}
-INTERJECTIONS += LOANWORDS
+# German words the voice says badly (heard on the phone, 13 November 2026):
+# »Fakultätsberatung« came out as »Fekultätsberatung«, espeak stressing its
+# first syllable (both parts stressed: Whisper heard the word best);
+# »wünschen« as »wenschen« (a long ü). Checked with Whisper on the
+# voice's output, which is lenient: the last word is the ear's.
+GERMAN_FIXES = [(r'fakultätsberatung', None), (r'wünschen', None)]
+LOANWORD_SOUNDS.update({'fakultätsberatung': 'fˌɑkʊltˈɛːts bərˈɑːtʊŋ', 'wünschen': 'vˈyːnʃən'})
+INTERJECTIONS += LOANWORDS + GERMAN_FIXES
 _INTERJECTION = re.compile(r'(?<![\w-])(' + '|'.join(f'(?:{p})' for p, _ in INTERJECTIONS) + r')(?![\w-])([,.!?;:…]*)', re.IGNORECASE)
 
 
