@@ -18020,6 +18020,10 @@ html[data-bs-theme="dark"] .document-report {
 }
 .document-new {
     display: inline-block;
+    /* in the point's line (a flex row): on one line, never squeezed */
+    flex: none;
+    align-self: center;
+    white-space: nowrap;
     margin-left: 0.5em;
     padding: 0.05em 0.5em;
     border-radius: 999px;
