@@ -71,12 +71,17 @@ class Hold(unittest.TestCase):
         self.games = {
             # FACT: n! by asking itself for (n-1)!
             '3228': write(self.folder, 'fact.py', """
-                say('Fakultät.')
-                n = int(keys(1) or 0)
+                taste = keys(1, timeout=3)
+                if not taste:
+                    say('Fakultät. Wähl eine Zahl von 1 bis 9.')
+                    taste = keys(1)
+                n = int(taste or 0)
                 if n <= 1:
+                    say(f'Die Fakultät von {n} ist 1.')
                     back('1')
+                say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
                 rest = int(call('FACT', str(n - 1)))
-                say(f'{n} mal {rest} ist {n * rest}.')
+                say(f'{n} mal {rest} ist {n * rest}. Die Fakultät von {n} ist {n * rest}.')
                 back(str(n * rest))
                 """),
             # DICE: the number of sides as the extension, here always the highest
@@ -105,7 +110,7 @@ class Hold(unittest.TestCase):
 
     def test_a_factorial_calls_itself(self):
         _, _, heard, _ = self.call("say('Ergebnis ' + call('FACT', '5'))\n")
-        self.assertIn(('say', '5 mal 24 ist 120.'), heard)
+        self.assertIn(('say', '5 mal 24 ist 120. Die Fakultät von 5 ist 120.'), heard)
         self.assertIn(('say', 'Ergebnis 120'), heard)
         self.assertIn(('tones', '120#'), heard)            # the answer, heard as tones
 

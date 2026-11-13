@@ -37,12 +37,17 @@ class LineHold(unittest.TestCase):
         cls.root = tempfile.mkdtemp()
         published(cls.root, {
             '3228': ('Fakultät', """
-                say('Fakultät.')
-                n = int(keys(1) or 0)
+                taste = keys(1, timeout=3)
+                if not taste:
+                    say('Fakultät. Wähl eine Zahl von 1 bis 9.')
+                    taste = keys(1)
+                n = int(taste or 0)
                 if n <= 1:
+                    say(f'Die Fakultät von {n} ist 1.')
                     back('1')
+                say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
                 rest = int(call('FACT', str(n - 1)))
-                say(f'{n} mal {rest} ist {n * rest}.')
+                say(f'{n} mal {rest} ist {n * rest}. Die Fakultät von {n} ist {n * rest}.')
                 back(str(n * rest))
                 """),
             '3423': ('Würfelbude', """
@@ -85,8 +90,13 @@ class LineHold(unittest.TestCase):
     def test_a_factorial_on_hold(self):
         events = self.call('32285')
         said = self.said(events)
-        self.assertIn('5 mal 24 ist 120.', said)
-        self.assertEqual(5, said.count('Fakultät.'))               # five connections, each with its intro
+        self.assertIn('5 mal 24 ist 120. Die Fakultät von 5 ist 120.', said)
+        # each connection says which factorial it was asked for
+        self.assertEqual(['Die Fakultät von 5? Ich frage nach der Fakultät von 4.', 'Die Fakultät von 4? Ich frage nach der Fakultät von 3.',
+                          'Die Fakultät von 3? Ich frage nach der Fakultät von 2.', 'Die Fakultät von 2? Ich frage nach der Fakultät von 1.'],
+                         [x for x in said if 'Ich frage nach' in x])
+        self.assertIn('Die Fakultät von 1 ist 1.', said)
+        self.assertEqual('5 mal 24 ist 120. Die Fakultät von 5 ist 120.', said[-1])
         tones = [e['tones'] for e in events if 'tones' in e]
         self.assertEqual(['32284', '32283', '32282', '32281', '1#', '2#', '6#', '24#', '120#'], tones)
         self.assertEqual({'ended': 'back'}, events[-1])

@@ -26,7 +26,21 @@ mkdir -p "$OUT/games/2"
 printf "require 'telefon'\nkey = keys(1)\ncase key\nwhen '1' or '2':\n  say 'eins'\nend\n" > "$OUT/games/2/start.rb"
 # FACT (3228): n! by calling itself on hold (call, back)
 mkdir -p "$OUT/games/3"
-printf "from telefon import *\nsay('Fakultät.')\nn = int(keys(1) or 0)\nif n <= 1:\n    back('1')\nrest = int(call('FACT', str(n - 1)))\nsay(f'{n} mal {rest} ist {n * rest}.')\nback(str(n * rest))\n" > "$OUT/games/3/main.py"
+cat > "$OUT/games/3/main.py" <<'EOF'
+from telefon import *
+taste = keys(1, timeout=3)
+if not taste:
+    say('Fakultät. Wähl eine Zahl von 1 bis 9.')
+    taste = keys(1)
+n = int(taste or 0)
+if n <= 1:
+    say(f'Die Fakultät von {n} ist 1.')
+    back('1')
+say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+rest = int(call('FACT', str(n - 1)))
+say(f'{n} mal {rest} ist {n * rest}. Die Fakultät von {n} ist {n * rest}.')
+back(str(n * rest))
+EOF
 echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}, {"number": "124", "title": "Kaputt", "folder": "games/2", "file": "start.rb"}, {"number": "3228", "title": "Fakultät", "folder": "games/3", "file": "main.py"}]}' > "$OUT/games/published.json"
 chmod -R a+rX "$OUT/games"
 cleanup() { docker rm -f phone-e2e-asterisk phone-e2e-speech phone-e2e-runner >/dev/null 2>&1 || true; docker network rm $NET >/dev/null 2>&1 || true; }
@@ -92,8 +106,8 @@ check "$OUT/runner-crash.log" "game 2" "syntax error" "say 'Dieses Spiel hat ger
 lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
 call 10032283 40
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-hold.log"
-check "$OUT/runner-hold.log" "game 3" "tones 32282" "tones 32281" "tones 1#" "call answered '1'" "say '2 mal 1 ist 2." \
-    "call answered '2'" "say '3 mal 2 ist 6." "tones 6#" "game ended: back"
+check "$OUT/runner-hold.log" "game 3" "say 'Die Fakultät von 3? Ich frage nach der Fakultät von 2." "tones 32282" "tones 32281" "tones 1#" "call answered '1'" "say '2 mal 1 ist 2. Die Fakultät von 2 ist 2." \
+    "call answered '2'" "say '3 mal 2 ist 6. Die Fakultät von 3 ist 6." "tones 6#" "game ended: back"
 # each call one line for /statistik: the first two reached game 123, the
 # next two none, then 124, then FACT three times (one connection each);
 # only hour, line, seconds and games (and the error of the game that

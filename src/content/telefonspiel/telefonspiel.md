@@ -1818,11 +1818,10 @@ hört er seinen Wurf, und mit `back` ist der Anruf zu Ende.
 
 ### Tasten, die warten
 
-Die Würfelbude sagt erst etwas und fragt dann nach der Zahl der Seiten. Die 6
-wurde aber schon vorher gewählt. Sie geht nicht verloren, weil das Telefon
-Tasten aufhebt, bis das Spiel sie mit `keys` holt, auch während es spricht.
-Echte Telefonanlagen machen das genauso: Was man während einer Ansage drückt,
-zählt, sobald gefragt wird.
+Die 6 wurde gewählt, bevor die Würfelbude überhaupt angenommen hat. Sie geht
+nicht verloren, weil das Telefon Tasten aufhebt, bis das Spiel sie mit `keys`
+holt, auch wenn es vorher noch etwas sagt. Echte Telefonanlagen machen das
+genauso: Was man während einer Ansage drückt, zählt, sobald gefragt wird.
 
 Jede Verbindung beginnt dabei leer. Das gerufene Spiel bekommt nur, was nach
 seiner Nummer gewählt wurde, nicht die Tasten, die für das erste Spiel gedacht
@@ -1845,14 +1844,19 @@ fragen weiß.
 title 'Fakultät'
 subtitle 'Wähl nach der Nummer eine Zahl von 1 bis 9.'
 
-say 'Fakultät.'
-n = keys(1).to_i
+taste = keys(1, timeout: 3)
+if taste.empty?
+  say 'Fakultät. Wähl eine Zahl von 1 bis 9.'
+  taste = keys(1)
+end
+n = taste.to_i
 if n <= 1
-  say '1 Fakultät ist 1.'
+  say "Die Fakultät von #{n} ist 1."
   back '1'
 end
+say "Die Fakultät von #{n}? Ich frage nach der Fakultät von #{n - 1}."
 vorher = call('FACT', (n - 1).to_s).to_i
-say "#{n} mal #{vorher} ist #{n * vorher}."
+say "#{n} mal #{vorher} ist #{n * vorher}. Die Fakultät von #{n} ist #{n * vorher}."
 back((n * vorher).to_s)
 ```
 <!-- /language -->
@@ -1864,13 +1868,17 @@ from telefon import back, call, keys, say, subtitle, title
 title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 9.')
 
-say('Fakultät.')
-n = int(keys(1) or 0)
+taste = keys(1, timeout=3)
+if not taste:
+    say('Fakultät. Wähl eine Zahl von 1 bis 9.')
+    taste = keys(1)
+n = int(taste or 0)
 if n <= 1:
-    say('1 Fakultät ist 1.')
+    say(f'Die Fakultät von {n} ist 1.')
     back('1')
+say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
 vorher = int(call('FACT', str(n - 1)))
-say(f'{n} mal {vorher} ist {n * vorher}.')
+say(f'{n} mal {vorher} ist {n * vorher}. Die Fakultät von {n} ist {n * vorher}.')
 back(str(n * vorher))
 ```
 <!-- /language -->
@@ -1882,23 +1890,33 @@ const { back, call, keys, say, subtitle, title } = require('telefon');
 title('Fakultät');
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 9.');
 
-say('Fakultät.');
-const n = Number(keys(1));
+let taste = keys(1, 3);
+if (taste === '') {
+  say('Fakultät. Wähl eine Zahl von 1 bis 9.');
+  taste = keys(1);
+}
+const n = Number(taste);
 if (n <= 1) {
-  say('1 Fakultät ist 1.');
+  say(`Die Fakultät von ${n} ist 1.`);
   back('1');
 }
+say(`Die Fakultät von ${n}? Ich frage nach der Fakultät von ${n - 1}.`);
 const vorher = Number(call('FACT', String(n - 1)));
-say(`${n} mal ${vorher} ist ${n * vorher}.`);
+say(`${n} mal ${vorher} ist ${n * vorher}. Die Fakultät von ${n} ist ${n * vorher}.`);
 back(String(n * vorher));
 ```
 <!-- /language -->
 
-Wählst du FACT und 5, wartet das Spiel mit der 5, während das mit der 4
-fragt, und so weiter. Bei der 1 warten vier Spiele übereinander. Dann kommen
-die Antworten zurück, eine nach der anderen, jede als Töne: 1, 2, 6, 24 und
-zuletzt 120. Höchstens acht Spiele dürfen so übereinander warten. Beim
-neunten sind alle Leitungen überlastet, und der Anruf endet.
+Wählst du FACT und 5, sagt das Spiel »Die Fakultät von 5? Ich frage nach der
+Fakultät von 4.« und wartet, während das Spiel mit der 4 fragt, und so weiter.
+Bei der 1 warten vier Spiele übereinander. Dann kommen die Antworten zurück,
+eine nach der anderen, jede als Töne: 1, 2, 6, 24 und zuletzt 120, und als
+Letztes hörst du »Die Fakultät von 5 ist 120.« Höchstens acht
+Spiele dürfen so übereinander warten; beim neunten wären alle Leitungen
+überlastet, und der Anruf endete. Mit FACT und 9 sind es genau acht.
+
+Wählt jemand FACT ohne eine Ziffer dahinter, kommt nach drei Sekunden nichts,
+und das Spiel fragt nach einer Zahl.
 
 Im Workspace kennt `telefon` nur das Spiel, das du startest. Damit es eine
 Nummer erreicht, nennst du sie beim Start: `telefon fakultaet.rb --nummer
@@ -1906,9 +1924,9 @@ FACT` gibt dem Spiel selbst die Nummer FACT, `--nummer DICE=wuerfel/dice.rb`
 ein anderes deiner Spiele.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ruf FACT mit 3 an und zähl, wie oft du »Fakultät.«
-hörst. Dann mit 9 und mit einer Zahl darüber: Achte darauf, bei welcher Zahl
-die Leitung überlastet ist.
+<strong>Ausprobieren:</strong> Ruf FACT mit 4 an. Achte darauf, in welcher
+Reihenfolge die Spiele ihre Zahl nennen und in welcher die Ergebnisse
+zurückkommen.
 </div>
 
 ### Spiele gegeneinander
