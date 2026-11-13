@@ -1535,6 +1535,25 @@ Deine Geschichte hat mindestens vier Szenen und zwei verschiedene Enden, ein
 gutes und ein schlechtes zum Beispiel. Jede Szene sagt, welche Taste wohin
 führt; wer anruft, sieht deine Karte ja nicht.
 
+Fällt dir noch nichts ein? Alles hier geht mit dem, was du schon kannst:
+`say`, `keys`, Musik und eigenen Aufnahmen.
+
+- **Die Hotline, die nie hilft:** »Für Fragen zu Ihrer Frage drücken Sie die
+  1.« Jede Abteilung schickt dich woandershin, dazu Warteschleifenmusik und
+  »Vor Ihnen warten noch 12 Anrufer«, eine Zahl, die immer größer wird. Ein
+  Ende: Du kommst doch noch durch.
+- **Pizza beim Drachen:** Du bestellst bei einem Drachen, der alles mit Feuer
+  zubereitet. Wähl den Belag, die Größe und ob du lieber abholst. Ein Ende ist
+  eine Pizza, das andere ein Häufchen Asche.
+- **Ein Krimi zum Hören:** Drei Verdächtige erzählen, wo sie waren, gern mit
+  deinen eigenen Aufnahmen. Mit den Tasten entscheidest du, wem du glaubst.
+- **Ein Escape-Room:** Aus einem Raum führen Türen in andere. Zahlen, die
+  nebenbei fallen, ergeben am Ende den Code für die letzte Tür.
+- **Eine Zeitmaschine:** Jede Taste ist ein Jahr. Bei den Dinosauriern, im
+  Mittelalter oder in der Zukunft musst du den Weg zurück finden.
+- **Ein Quiz mit Folgen:** Eine richtige Antwort führt zur nächsten Frage,
+  eine falsche in eine Szene, aus der du erst wieder herausfinden musst.
+
 ### Programmieren
 
 <!-- language: ruby -->
@@ -1713,21 +1732,49 @@ Ziffern die Raute drückst?
 <!-- extra -->
 ## Ein Spiel ruft ein anderes
 
-Mit `transfer` gibt ein Spiel den Anruf ab und ist fertig. Manchmal will es
-aber nur etwas wissen und dann weitermachen, so wie jemand am Telefon sagt:
-»Einen Moment, ich frage nach.« Der Anruf wartet, und danach geht es weiter.
-Das kann `call`: Es ruft ein anderes Spiel an und wartet, bis es antwortet.
+Bisher spricht ein Spiel allein mit dem Menschen am Telefon. Spiele können
+aber auch einander anrufen: ein Spiel aus deiner Klasse, eins von dir oder
+sich selbst. Dabei geht über die Leitung nur, was auch über eine echte
+Telefonleitung geht: das Wählen, das Klingeln und Tastentöne.
 
-Hin und zurück geht dabei nur, was über eine Telefonleitung geht: Tastentöne.
-Was hinter der Nummer gewählt wird, ist die **Durchwahl**; das gerufene Spiel
-liest sie mit `keys` wie jede andere Taste. Es antwortet mit `back` und ein
-paar Ziffern, die als Töne zurückkommen.
+### Weiterleiten
+
+Am einfachsten gibt ein Spiel den Anruf ganz ab, wie eine Zentrale, die
+weiterverbindet:
+
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+say 'Einen Würfel? Ich verbinde Sie mit der Würfelbude.'
+transfer 'DICE', '6'
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+say('Einen Würfel? Ich verbinde Sie mit der Würfelbude.')
+transfer('DICE', '6')
+```
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+say('Einen Würfel? Ich verbinde Sie mit der Würfelbude.');
+transfer('DICE', '6');
+```
+<!-- /language -->
+
+`transfer` wählt die Nummer der Würfelbude, DICE (auf den Tasten 3423), und
+dahinter die 6. Was hinter einer Nummer gewählt wird, ist eine
+**Durchwahl**: Das andere Spiel liest sie mit `keys` wie jede andere Taste.
+Für das erste Spiel ist der Anruf damit vorbei.
 
 ### Die Würfelbude
 
-Die Würfelbude hat die Nummer DICE, auf den Tasten 3423. Wer sie anruft,
-wählt dahinter, wie viele Seiten der Würfel haben soll: DICE und 6 ist ein
-gewöhnlicher Würfel, DICE und 20 einer mit zwanzig Seiten.
+Die Würfelbude würfelt mit so vielen Seiten, wie hinter ihrer Nummer gewählt
+wird: DICE und 20 ist ein Würfel mit zwanzig Seiten, DICE allein ein
+gewöhnlicher mit sechs. Ruf sie selbst an, im [Telefonbuch](/telefonbuch) mit
+342320.
 
 <!-- language: ruby -->
 <!-- page-code: own -->
@@ -1735,16 +1782,14 @@ gewöhnlicher Würfel, DICE und 20 einer mit zwanzig Seiten.
 ~ require 'telefon'
 ~
 title 'Würfelbude'
-subtitle 'Wähl nach der Nummer, wie viele Seiten dein Würfel hat.'
+subtitle 'Wähl nach der Nummer, wie viele Seiten dein Würfel hat, sonst sind es sechs.'
 
-seiten = keys(3, timeout: 3).to_i
-if seiten >= 2
-  wurf = rand(1..seiten)
-  say "Würfelbude: #{wurf}."
-  back wurf.to_s
-else
-  say 'Würfelbude. Wähl nach der Nummer, wie viele Seiten dein Würfel hat.'
-end
+# Was nach der Nummer gewählt wurde, ist schon da.
+sides = keys(3, timeout: 0.5).to_i
+sides = 6 if sides < 2
+roll = rand(1..sides)
+say "Würfelbude: #{roll}."
+back roll.to_s
 ```
 <!-- /language -->
 <!-- language: python -->
@@ -1754,15 +1799,15 @@ import random
 from telefon import back, keys, say, subtitle, title
 
 title('Würfelbude')
-subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat.')
+subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat, sonst sind es sechs.')
 
-seiten = int(keys(3, timeout=3) or 0)
-if seiten >= 2:
-    wurf = random.randint(1, seiten)
-    say(f'Würfelbude: {wurf}.')
-    back(str(wurf))
-else:
-    say('Würfelbude. Wähl nach der Nummer, wie viele Seiten dein Würfel hat.')
+# Was nach der Nummer gewählt wurde, ist schon da.
+sides = int(keys(3, timeout=0.5) or 0)
+if sides < 2:
+    sides = 6
+roll = random.randint(1, sides)
+say(f'Würfelbude: {roll}.')
+back(str(roll))
 ```
 <!-- /language -->
 <!-- language: javascript -->
@@ -1771,80 +1816,192 @@ else:
 const { back, keys, say, subtitle, title } = require('telefon');
 
 title('Würfelbude');
-subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat.');
+subtitle('Wähl nach der Nummer, wie viele Seiten dein Würfel hat, sonst sind es sechs.');
 
-const seiten = Number(keys(3, 3));
-if (seiten >= 2) {
-  const wurf = 1 + Math.floor(Math.random() * seiten);
-  say(`Würfelbude: ${wurf}.`);
-  back(String(wurf));
-} else {
-  say('Würfelbude. Wähl nach der Nummer, wie viele Seiten dein Würfel hat.');
-}
+// Was nach der Nummer gewählt wurde, ist schon da.
+let sides = Number(keys(3, 0.5));
+if (sides < 2) sides = 6;
+const roll = 1 + Math.floor(Math.random() * sides);
+say(`Würfelbude: ${roll}.`);
+back(String(roll));
 ```
 <!-- /language -->
 
-Ein anderes Spiel würfelt dann mit einer Zeile:
+Neu ist `back`: Es schickt die Augenzahl als Tastentöne zurück, mit einer Raute
+am Ende, und beendet die Würfelbude. Hat ein Mensch sie angerufen, ist damit
+der Anruf vorbei. Hat ein Spiel sie mit `call` angerufen, geht es danach in
+diesem Spiel weiter:
 
 <!-- language: ruby -->
 <!-- page-code: own -->
 ```ruby
-wurf = call('DICE', '6')
-say "Du hast eine #{wurf} gewürfelt."
+roll = call('DICE', '6')
+say "Du hast eine #{roll} gewürfelt."
 ```
 <!-- /language -->
 <!-- language: python -->
 <!-- page-code: own -->
 ```python
-wurf = call('DICE', '6')
-say(f'Du hast eine {wurf} gewürfelt.')
+roll = call('DICE', '6')
+say(f'Du hast eine {roll} gewürfelt.')
 ```
 <!-- /language -->
 <!-- language: javascript -->
 <!-- page-code: own -->
 ```javascript
-const wurf = call('DICE', '6');
-say(`Du hast eine ${wurf} gewürfelt.`);
+const roll = call('DICE', '6');
+say(`Du hast eine ${roll} gewürfelt.`);
 ```
 <!-- /language -->
 
-`call` wählt 3423 und dann die 6. Wer anruft, hört das Wählen und dann die
-Würfelbude, und `back` schickt die Augenzahl als Töne zurück, mit einer Raute
-am Ende. Danach ist man wieder im ersten Spiel, und `call` gibt die Ziffern
-zurück, zum Beispiel `'4'`.
-
-Die Würfelbude weiß nicht, wer sie anruft. Wählt ein Mensch DICE und 6,
-hört er seinen Wurf, und mit `back` ist der Anruf zu Ende.
-
-### Tasten, die warten
+`call` ist wie eine Rückfrage am Telefon: »Einen Moment, ich frage nach.«
+Das eigene Spiel wartet in der Leitung, die Würfelbude antwortet, und `call`
+gibt ihre Ziffern zurück, zum Beispiel `'4'`. Die Würfelbude weiß nicht, wer
+sie anruft; für sie ist es ein Anruf wie jeder andere.
 
 Die 6 wurde gewählt, bevor die Würfelbude überhaupt angenommen hat. Sie geht
 nicht verloren, weil das Telefon Tasten aufhebt, bis das Spiel sie mit `keys`
-holt, auch wenn es vorher noch etwas sagt. Echte Telefonanlagen machen das
-genauso: Was man während einer Ansage drückt, zählt, sobald gefragt wird.
+holt. Echte Telefonanlagen machen das genauso: Was man während einer Ansage
+drückt, zählt, sobald gefragt wird. Jede neue Verbindung beginnt dabei leer;
+mehr dazu im Handbuch unter [Tasten im Voraus](/reference/telefonspiel#puffer).
 
-Jede Verbindung beginnt dabei leer. Das gerufene Spiel bekommt nur, was nach
-seiner Nummer gewählt wurde, nicht die Tasten, die für das erste Spiel gedacht
-waren. Wie viele Tasten warten und was `clear_keys` damit macht, steht im
-Handbuch unter [Tasten im Voraus](/reference/telefonspiel#puffer).
+### Es klingelt
+
+Jedes Spiel klingelt erst, wie bei einem echten Anruf, ob ein Mensch es
+wählt oder ein Spiel es anruft: Man hört den Freiton, mal nur kurz, mal
+länger, bis das Spiel etwas sagt, und dann, wie es den Hörer abnimmt. Das
+macht das Telefon selbst; dein Spiel muss dafür nichts tun. Legt ein
+gerufenes Spiel auf, bevor es etwas gesagt hat, ist **besetzt**, und `call`
+gibt einen leeren Text zurück.
+
+Wie lange es klingelt, kann ein Spiel auch selbst bestimmen. `pick_up` muss
+vor dem ersten Satz stehen:
+
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+pick_up 12
+say 'Ja, hallo? Entschuldigung, ich war gerade im Keller.'
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+pick_up(12)
+say('Ja, hallo? Entschuldigung, ich war gerade im Keller.')
+```
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+pickUp(12);
+say('Ja, hallo? Entschuldigung, ich war gerade im Keller.');
+```
+<!-- /language -->
 
 ### Ein Spiel ruft sich selbst
 
 Ein Spiel darf auch sich selbst anrufen. Die Fakultät von 5 ist 5 · 4 · 3 · 2
-· 1 = 120. Das Spiel FACT, auf den Tasten 3228, rechnet sie aus, indem es nach
-der Fakultät von 4 fragt und das Ergebnis mit 5 multipliziert. Die Fakultät
-von 4 fragt nach der von 3, und so weiter bis zur 1, die das Spiel ohne zu
-fragen weiß.
+· 1 = 120. Das Spiel FACT (auf den Tasten 3228) rechnet sie aus, indem es
+nach der Fakultät von 4 fragt und das Ergebnis mit 5 multipliziert. Die
+Fakultät von 4 fragt nach der von 3, und so weiter bis zur 1, die das Spiel
+ohne zu fragen weiß. Die Raute nach der Zahl sagt `keys(3)`, dass sie zu Ende
+ist.
 
-Begrüßen, das Ergebnis ansagen und sich verabschieden soll nur das Spiel, das
-ein Mensch angerufen hat, nicht jedes der Spiele dazwischen. Dafür setzt FACT
-eine 0 vor die Zahl, wenn es sich selbst anruft: Eine Zahl mit 0 vorne kommt
-von FACT, eine ohne von einem Menschen. Die Raute dahinter sagt, dass die Zahl
-zu Ende ist.
+<!-- language: ruby -->
+<!-- page-code: own -->
+```ruby
+~ require 'telefon'
+~
+title 'Fakultät'
+subtitle 'Wähl nach der Nummer eine Zahl und dann die Raute.'
 
-Die Ziffern nach der Nummer warten schon, wenn das Spiel anfängt. Darum gibt
-`keys` ihnen nur eine halbe Sekunde: Kommt in der Zeit nichts, hat niemand eine
-Zahl mitgewählt, und das Spiel fragt danach.
+n = keys(3).to_i
+if n <= 1
+  say "Die Fakultät von #{n}? Das ist einfach 1."
+  back '1'
+end
+say "Ich frage nach der Fakultät von #{n - 1}."
+previous = call('FACT', "#{n - 1}#").to_i
+result = n * previous
+say "#{n} mal #{previous} ist #{result}."
+back result.to_s
+```
+<!-- /language -->
+<!-- language: python -->
+<!-- page-code: own -->
+```python
+from telefon import back, call, keys, say, subtitle, title
+
+title('Fakultät')
+subtitle('Wähl nach der Nummer eine Zahl und dann die Raute.')
+
+n = int(keys(3) or 0)
+if n <= 1:
+    say(f'Die Fakultät von {n}? Das ist einfach 1.')
+    back('1')
+say(f'Ich frage nach der Fakultät von {n - 1}.')
+previous = int(call('FACT', f'{n - 1}#'))
+result = n * previous
+say(f'{n} mal {previous} ist {result}.')
+back(str(result))
+```
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+const { back, call, keys, say, subtitle, title } = require('telefon');
+
+title('Fakultät');
+subtitle('Wähl nach der Nummer eine Zahl und dann die Raute.');
+
+const n = Number(keys(3));
+if (n <= 1) {
+  say(`Die Fakultät von ${n}? Das ist einfach 1.`);
+  back('1');
+}
+say(`Ich frage nach der Fakultät von ${n - 1}.`);
+const previous = Number(call('FACT', `${n - 1}#`));
+const result = n * previous;
+say(`${n} mal ${previous} ist ${result}.`);
+back(String(result));
+```
+<!-- /language -->
+
+Wählst du FACT, 5 und die Raute, sagt das Spiel »Ich frage nach der Fakultät
+von 4.« und wartet, während das Spiel mit der 4 fragt, und so weiter. Bei
+der 1 warten vier Spiele übereinander. Dann kommen die Antworten zurück, eine
+nach der anderen, jede als Töne: 1, 2, 6, 24 und zuletzt 120.
+
+Im Workspace kennt `telefon` nur das Spiel, das du startest. Damit es eine
+Nummer erreicht, nennst du sie beim Start: `telefon fakultaet.rb --nummer
+FACT` gibt dem Spiel selbst die Nummer FACT, `--nummer DICE=wuerfel/dice.rb`
+ein anderes deiner Spiele.
+
+<div class='hint try'>
+<strong>Ausprobieren:</strong> Ruf FACT mit 4 an. Achte darauf, in welcher
+Reihenfolge die Spiele ihre Zahl nennen und in welcher die Ergebnisse
+zurückkommen.
+</div>
+
+### Die Fakultätsberatung
+
+Im Telefonbuch steht FACT als rekursive Fakultätsberatung, mit allem, was zu
+einer richtigen Hotline gehört:
+
+- Begrüßen, das Ergebnis ansagen und sich verabschieden soll nur das Spiel,
+  das ein Mensch angerufen hat, nicht jedes dazwischen. Dafür setzt FACT eine 0
+  vor die Zahl, wenn es sich selbst anruft: Eine Zahl mit 0 vorne kommt von
+  FACT, eine ohne von einem Menschen.
+- Wählt jemand FACT ohne Zahl, fragt es danach. Die Ziffern nach der Nummer
+  sind schon da, wenn das Spiel anfängt; darum wartet `keys` auf sie nur eine
+  halbe Sekunde.
+- Ab und zu ist besetzt: Dann legt die gerufene Fakultät auf, bevor sie etwas
+  sagt, und wer angerufen hat, versucht es noch einmal. Und manchmal meldet
+  sich, wer abnimmt, erst mit »Hallo?«.
+- Die Sätze sucht FACT zufällig aus einer Liste aus, damit es nicht jedes Mal
+  gleich klingt. Jeder Satz nennt dabei die Zahlen, so hörst du trotzdem,
+  welches Spiel gerade spricht.
 
 <!-- language: ruby -->
 <!-- page-code: own -->
@@ -1855,26 +2012,29 @@ title 'Fakultät'
 subtitle 'Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.'
 
 # Was nach der Nummer gewählt wurde, ist schon da.
-eingabe = keys(3, timeout: 0.5)
+digits = keys(3, timeout: 0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
-innen = eingabe.length > 1 && eingabe.start_with?('0')
+inner = digits.length > 1 && digits.start_with?('0')
 # Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
-hangup if innen && rand(15) == 0
-unless innen
+hangup if inner && rand(15) == 0
+# Manchmal meldet sich, wer abnimmt, erst einmal.
+say ['Hallo?', 'Ja, bitte?'].sample if inner && rand(10) == 0
+unless inner
   say 'Willkommen zur rekursiven Fakultätsberatung.'
-  if eingabe.empty?
+  if digits.empty?
     say 'Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.'
-    eingabe = keys(3)
+    digits = keys(3)
   end
 end
-n = eingabe.to_i
+n = digits.to_i
 if n > 20
   say 'Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.'
   hangup
 end
 
 if n <= 1
-  ergebnis = 1
+  say "Die Fakultät von #{n}? Das ist einfach 1."
+  result = 1
 else
   say [
     "Die Fakultät von #{n}? Ich frage nach der Fakultät von #{n - 1}.",
@@ -1882,40 +2042,40 @@ else
     "Die Fakultät von #{n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von #{n - 1}.",
     "Die Fakultät von #{n}? Da muss ich kurz bei der Fakultät von #{n - 1} nachfragen."
   ].sample
-  antwort = call('FACT', "0#{n - 1}#")
-  versuche = 1
-  while antwort.empty? && versuche < 5
+  answer = call('FACT', "0#{n - 1}#")
+  tries = 1
+  while answer.empty? && tries < 5
     say [
       'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
       'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
       'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.'
     ].sample
-    antwort = call('FACT', "0#{n - 1}#")
-    versuche += 1
+    answer = call('FACT', "0#{n - 1}#")
+    tries += 1
   end
-  if antwort.empty?
+  if answer.empty?
     say "Die Fakultät von #{n - 1} ist heute nicht zu erreichen. Auf Wiederhören."
     hangup
   end
-  vorher = antwort.to_i
-  ergebnis = n * vorher
+  previous = answer.to_i
+  result = n * previous
   say [
-    "#{n} mal #{vorher} ist #{ergebnis}.",
-    "Danke für Ihre Geduld. #{n} mal #{vorher} macht #{ergebnis}.",
-    "Da bin ich wieder. #{n} mal #{vorher} ergibt #{ergebnis}.",
-    "So, die Antwort ist da: #{n} mal #{vorher} sind #{ergebnis}."
+    "#{n} mal #{previous} ist #{result}.",
+    "Danke für Ihre Geduld. #{n} mal #{previous} macht #{result}.",
+    "Da bin ich wieder. #{n} mal #{previous} ergibt #{result}.",
+    "So, die Antwort ist da: #{n} mal #{previous} sind #{result}."
   ].sample
 end
 
-unless innen
-  say "Die Fakultät von #{n} ist #{ergebnis}."
+unless inner
+  say "Die Fakultät von #{n} ist also #{result}."
   say [
     'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
     'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
     'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.'
   ].sample
 end
-back ergebnis.to_s
+back result.to_s
 ```
 <!-- /language -->
 <!-- language: python -->
@@ -1928,24 +2088,28 @@ title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
 
 # Was nach der Nummer gewählt wurde, ist schon da.
-eingabe = keys(3, timeout=0.5)
+digits = keys(3, timeout=0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
-innen = len(eingabe) > 1 and eingabe.startswith('0')
+inner = len(digits) > 1 and digits.startswith('0')
 # Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
-if innen and random.randrange(15) == 0:
+if inner and random.randrange(15) == 0:
     hangup()
-if not innen:
+# Manchmal meldet sich, wer abnimmt, erst einmal.
+if inner and random.randrange(10) == 0:
+    say(random.choice(['Hallo?', 'Ja, bitte?']))
+if not inner:
     say('Willkommen zur rekursiven Fakultätsberatung.')
-    if not eingabe:
+    if not digits:
         say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
-        eingabe = keys(3)
-n = int(eingabe or 0)
+        digits = keys(3)
+n = int(digits or 0)
 if n > 20:
     say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
     hangup()
 
 if n <= 1:
-    ergebnis = 1
+    say(f'Die Fakultät von {n}? Das ist einfach 1.')
+    result = 1
 else:
     say(random.choice([
         f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
@@ -1953,36 +2117,36 @@ else:
         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
     ]))
-    antwort = call('FACT', f'0{n - 1}#')
-    versuche = 1
-    while not antwort and versuche < 5:
+    answer = call('FACT', f'0{n - 1}#')
+    tries = 1
+    while not answer and tries < 5:
         say(random.choice([
             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
         ]))
-        antwort = call('FACT', f'0{n - 1}#')
-        versuche += 1
-    if not antwort:
+        answer = call('FACT', f'0{n - 1}#')
+        tries += 1
+    if not answer:
         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
         hangup()
-    vorher = int(antwort)
-    ergebnis = n * vorher
+    previous = int(answer)
+    result = n * previous
     say(random.choice([
-        f'{n} mal {vorher} ist {ergebnis}.',
-        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
-        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
-        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+        f'{n} mal {previous} ist {result}.',
+        f'Danke für Ihre Geduld. {n} mal {previous} macht {result}.',
+        f'Da bin ich wieder. {n} mal {previous} ergibt {result}.',
+        f'So, die Antwort ist da: {n} mal {previous} sind {result}.',
     ]))
 
-if not innen:
-    say(f'Die Fakultät von {n} ist {ergebnis}.')
+if not inner:
+    say(f'Die Fakultät von {n} ist also {result}.')
     say(random.choice([
         'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
     ]))
-back(str(ergebnis))
+back(str(result))
 ```
 <!-- /language -->
 <!-- language: javascript -->
@@ -1991,131 +2155,134 @@ back(str(ergebnis))
 const { back, call, hangup, keys, say, subtitle, title } = require('telefon');
 
 // einer der Sätze, zufällig
-const einer = (saetze) => saetze[Math.floor(Math.random() * saetze.length)];
+const pick = (sentences) => sentences[Math.floor(Math.random() * sentences.length)];
 
 title('Fakultät');
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.');
 
 // Was nach der Nummer gewählt wurde, ist schon da.
-let eingabe = keys(3, 0.5);
+let digits = keys(3, 0.5);
 // Ruft FACT sich selbst an, steht eine 0 vorne.
-const innen = eingabe.length > 1 && eingabe.startsWith('0');
+const inner = digits.length > 1 && digits.startsWith('0');
 // Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
-if (innen && Math.random() < 1 / 15) hangup();
-if (!innen) {
+if (inner && Math.random() < 1 / 15) hangup();
+// Manchmal meldet sich, wer abnimmt, erst einmal.
+if (inner && Math.random() < 1 / 10) say(pick(['Hallo?', 'Ja, bitte?']));
+if (!inner) {
   say('Willkommen zur rekursiven Fakultätsberatung.');
-  if (eingabe === '') {
+  if (digits === '') {
     say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.');
-    eingabe = keys(3);
+    digits = keys(3);
   }
 }
-const n = Number(eingabe);
+const n = Number(digits);
 if (n > 20) {
   say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.');
   hangup();
 }
 
-let ergebnis = 1n;
-if (n > 1) {
-  say(einer([
+let result = 1n;
+if (n <= 1) {
+  say(`Die Fakultät von ${n}? Das ist einfach 1.`);
+} else {
+  say(pick([
     `Die Fakultät von ${n}? Ich frage nach der Fakultät von ${n - 1}.`,
     `Moment bitte. Für die Fakultät von ${n} brauche ich die Fakultät von ${n - 1}.`,
     `Die Fakultät von ${n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von ${n - 1}.`,
     `Die Fakultät von ${n}? Da muss ich kurz bei der Fakultät von ${n - 1} nachfragen.`,
   ]));
-  let antwort = call('FACT', `0${n - 1}#`);
-  let versuche = 1;
-  while (antwort === '' && versuche < 5) {
-    say(einer([
+  let answer = call('FACT', `0${n - 1}#`);
+  let tries = 1;
+  while (answer === '' && tries < 5) {
+    say(pick([
       'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
       'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
       'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
     ]));
-    antwort = call('FACT', `0${n - 1}#`);
-    versuche += 1;
+    answer = call('FACT', `0${n - 1}#`);
+    tries += 1;
   }
-  if (antwort === '') {
+  if (answer === '') {
     say(`Die Fakultät von ${n - 1} ist heute nicht zu erreichen. Auf Wiederhören.`);
     hangup();
   }
-  const vorher = BigInt(antwort);
-  ergebnis = BigInt(n) * vorher;
-  say(einer([
-    `${n} mal ${vorher} ist ${ergebnis}.`,
-    `Danke für Ihre Geduld. ${n} mal ${vorher} macht ${ergebnis}.`,
-    `Da bin ich wieder. ${n} mal ${vorher} ergibt ${ergebnis}.`,
-    `So, die Antwort ist da: ${n} mal ${vorher} sind ${ergebnis}.`,
+  const previous = BigInt(answer);
+  result = BigInt(n) * previous;
+  say(pick([
+    `${n} mal ${previous} ist ${result}.`,
+    `Danke für Ihre Geduld. ${n} mal ${previous} macht ${result}.`,
+    `Da bin ich wieder. ${n} mal ${previous} ergibt ${result}.`,
+    `So, die Antwort ist da: ${n} mal ${previous} sind ${result}.`,
   ]));
 }
 
-if (!innen) {
-  say(`Die Fakultät von ${n} ist ${ergebnis}.`);
-  say(einer([
+if (!inner) {
+  say(`Die Fakultät von ${n} ist also ${result}.`);
+  say(pick([
     'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
     'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
     'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
   ]));
 }
-back(String(ergebnis));
+back(String(result));
 ```
 <!-- /language -->
 
-Ruft ein Spiel ein anderes an, klingelt es auf der Leitung wie bei einem
-echten Anruf, mal kurz, mal länger, bis das gerufene Spiel etwas sagt; dann
-hört man, wie es abnimmt. Legt es auf, bevor es etwas gesagt hat, ist besetzt,
-und `call` gibt einen leeren Text zurück. FACT nutzt das: Ab und zu ist es
-besetzt, und wer angerufen hat, versucht es noch einmal, bis zu fünfmal.
-
-Damit es nicht bei jedem Spiel gleich klingt, sucht FACT seine Sätze zufällig
-aus einer Liste aus. Jeder Satz nennt dabei die Zahlen, so hörst du trotzdem,
-welches Spiel gerade spricht. In JavaScript rechnet FACT mit `BigInt` (die Zahl
-mit einem `n` dahinter): Eine gewöhnliche Zahl ist ab der Fakultät von 19 nicht
-mehr genau.
-
-Wählst du FACT, 5 und die Raute, sagt das Spiel zum Beispiel »Die Fakultät
-von 5? Ich frage nach der Fakultät von 4.« und wartet, während das Spiel mit der 4 fragt,
-und so weiter. Bei der 1 warten vier Spiele übereinander. Dann kommen die
-Antworten zurück, eine nach der anderen, jede als Töne: 1, 2, 6, 24 und
-zuletzt 120. Nur das äußerste Spiel sagt danach »Die Fakultät von 5 ist 120«
-und verabschiedet sich. Mit FACT und 20 warten neunzehn Spiele übereinander.
-
-Im Workspace kennt `telefon` nur das Spiel, das du startest. Damit es eine
-Nummer erreicht, nennst du sie beim Start: `telefon fakultaet.rb --nummer
-FACT` gibt dem Spiel selbst die Nummer FACT, `--nummer DICE=wuerfel/dice.rb`
-ein anderes deiner Spiele.
-
-<div class='hint'>
-<strong>Hinweis:</strong> Höchstens zwanzig Anrufe dürfen übereinander warten.
-Ruft sich ein Spiel öfter selbst an, etwa weil es nie bei einer Zahl ankommt,
-bei der es aufhört, hört man beim einundzwanzigsten »Alle Leitungen sind
-überlastet«, und der Anruf ist zu Ende.
-</div>
+In JavaScript rechnet FACT mit `BigInt` (die Zahl mit einem `n` dahinter): Eine
+gewöhnliche Zahl ist ab der Fakultät von 19 nicht mehr genau.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Ruf FACT mit 4 an. Achte darauf, in welcher
-Reihenfolge die Spiele ihre Zahl nennen und in welcher die Ergebnisse
-zurückkommen. Nimm dann die 0 aus <code>call</code> heraus: Was hörst du am
-Ende jetzt?
+<strong>Ausprobieren:</strong> Ruf FACT mit 12 an und hör zu, wie die Leitung
+klingelt, abnimmt und mit etwas Glück einmal besetzt ist. Nimm dann die 0 aus
+<code>call</code> heraus: Was hörst du am Ende jetzt?
 </div>
 
-### Spiele gegeneinander
+### Ein echter Call Stack
 
-Mit `call` können auch Spiele gegeneinander spielen. Zwei Spiele sind die
-Spieler, ein drittes ist der Schiedsrichter: Es ruft abwechselnd die Spieler
-an, gibt ihnen den Stand als Ziffern und bekommt ihren Zug als Ziffern zurück.
-Wer anruft, hört das Spiel als Töne hin und her gehen, und der Schiedsrichter
-sagt an, was passiert.
+Was du bei FACT hörst, ist ein echter **Call Stack**, wie ihn jede
+Programmiersprache hat. Ruft eine Funktion eine andere auf, wartet sie, bis
+die andere zurückkehrt, und macht genau dort weiter, mit ihren eigenen
+Werten. Bei FACT ist jede wartende Fakultät ein eigenes Programm, das in der
+Leitung hängt, mit ihrem eigenen `n`. Die oberste wird zuerst fertig, dann die
+darunter, und zuletzt die, die ein Mensch angerufen hat.
 
-Gut eignet sich Nim: Auf dem Tisch liegen drei Haufen Hölzer, zum Beispiel 3,
-4 und 5. Wer dran ist, nimmt von einem Haufen so viele, wie er will, und wer
-das letzte Holz nimmt, gewinnt. Der Stand passt in drei Ziffern (`345`), ein
-Zug in zwei (`23`: vom zweiten Haufen drei Hölzer). Ein Spieler, der zufällig
-nimmt, ist schnell geschrieben. Ein besserer verliert seltener, und für Nim
-gibt es sogar einen, der nie verliert, wenn er gewinnen kann.
+Auch das Ende des Stapels kennt jede Sprache. Ruft sich eine Funktion zu oft
+selbst auf, meldet Ruby `stack level too deep`, Python `maximum recursion
+depth exceeded` und JavaScript `Maximum call stack size exceeded`.
 
-Abmachen müsst ihr vorher nur, wie der Stand und der Zug als Ziffern aussehen.
-Dann kann jede und jeder einen Spieler schreiben und ins Telefonbuch stellen,
-und der Schiedsrichter lässt sie gegeneinander antreten.
+<div class='hint'>
+<strong>Hinweis:</strong> Am Telefon dürfen höchstens zwanzig Anrufe
+übereinander warten. Beim einundzwanzigsten hört man »Alle Leitungen sind
+überlastet«, und der Anruf ist zu Ende. Mit FACT und 20 warten neunzehn.
+</div>
+
+### Was du mit `call` bauen kannst
+
+Mit `call` wird das Telefonbuch zu einem Netz: Jedes Spiel hat eine Nummer,
+die alle anrufen können. Am meisten Spaß macht das zusammen mit der Klasse.
+
+- **Ein Amt:** Jede Abteilung ist ein Spiel von jemand anderem. Die Anmeldung
+  verbindet weiter, die Abteilung fragt bei einer anderen nach, und am Ende
+  kommt vielleicht ein Stempel zurück, als Ziffer.
+- **Stille Post:** Jedes Spiel verändert eine Zahl ein wenig und ruft das
+  nächste an. Am Ende hört man, was aus der 42 geworden ist.
+- **Ein Taschenrechner:** Für jede Rechenart gibt es eine Abteilung. »Für das
+  Multiplizieren verbinde ich mit der Multiplikation.«
+- **Die Türme von Hanoi:** Ein Spiel sagt Zug für Zug an, wie die Scheiben
+  wandern, und ruft sich dafür für jeden Turm zweimal selbst an.
+- **Fibonacci:** Jede Zahl fragt nach den zwei davor. Hör zu, wie oft dieselbe
+  Zahl ausgerechnet wird, und überleg, wie es schneller ginge.
+- **Ein Prüfziffern-Dienst:** Wähl eine Nummer, und der Dienst sagt, ob ihre
+  Prüfziffer stimmt, wie im Blatt [Prüfziffern](/check-digits).
+- **Ein Turnier:** Ein Schiedsrichter ruft abwechselnd zwei Spieler an, gibt
+  ihnen den Stand als Ziffern und bekommt ihren Zug zurück. Gut eignet sich
+  Nim: drei Haufen Hölzer, zum Beispiel 3, 4 und 5; wer dran ist, nimmt von
+  einem Haufen so viele, wie er will, und wer das letzte nimmt, gewinnt. Der
+  Stand passt in drei Ziffern (`345`), ein Zug in zwei (`23`: vom zweiten Haufen
+  drei). Abmachen müsst ihr nur, wie Stand und Zug als Ziffern aussehen; dann
+  schreibt jede und jeder einen Spieler, und der Schiedsrichter lässt sie
+  gegeneinander antreten. Für Nim gibt es sogar einen Spieler, der nie
+  verliert, wenn er gewinnen kann.
 
 ## Wie geht es weiter?
 

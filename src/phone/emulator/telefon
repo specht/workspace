@@ -350,6 +350,8 @@ class Server:
 
     async def run_call(self):
         self.phone = phone = Emulator(self)
+        # it rings until the game answers, as on the line
+        phone.unanswered = game.ring_seconds()
         show('')
         show(f'Anruf: {" ".join(self.command)}', '1')
         env = game.environment()

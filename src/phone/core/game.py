@@ -97,12 +97,15 @@ def match_number(dialed, numbers):
 
 
 def ring_seconds():
-    """how long a called game's line rings before it answers, as people pick
-    up: now and then at once, mostly after the first or second tone,
-    sometimes the third, now and then the fourth (a German ringback: 1 s
-    tone, 4 s quiet)"""
+    """how long a game's line rings before it answers, as people pick
+    up: mostly at once or after the first tone, sometimes during the
+    second, rarely the third or fourth (a German ringback: 1 s tone, 4 s
+    quiet); short on the whole, so a dive down FACT's stack stays lively"""
     import random
-    at = random.choices([0.5, 1.7, 5.6, 10.7, 15.8], weights=[15, 30, 30, 17, 8])[0]
+    # the tests: always the same (PHONE_RING_SECONDS)
+    if os.environ.get('PHONE_RING_SECONDS'):
+        return float(os.environ['PHONE_RING_SECONDS'])
+    at = random.choices([0.5, 1.7, 5.6, 10.7, 15.8], weights=[35, 40, 18, 6, 1])[0]
     return round(at + random.uniform(-0.25, 0.25), 2)
 
 
@@ -378,9 +381,9 @@ class Phone:
         self.returned = None
         # calls on hold below this one (call)
         self.depth = 0
-        # a called game's line still ringing: the seconds it rings once the
-        # game makes its first move (answering), None when it has answered
-        # or was not called by a game
+        # a game's line still ringing (every game, however it was reached:
+        # dialled, forwarded, called): the seconds it rings once the game
+        # makes its first sound, None when it has answered
         self.unanswered = None
         # the game has made a sound (said, played, …): after that, picking
         # up (pick_up) is past

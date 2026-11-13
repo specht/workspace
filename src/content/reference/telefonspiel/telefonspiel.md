@@ -288,16 +288,16 @@ back rand(1..seiten).to_s
   Tastentöne auf der Leitung zu hören; das Ende einer Antwort ist die Raute.
   Nach der Nummer darf auch selbst eine Raute stehen (`call('FACT', '012#')`):
   Dann weiß `keys` im gerufenen Spiel, dass nichts mehr kommt.
-- Bis das gerufene Spiel etwas sagt (`say`, `play`, `back` …), klingelt es
-  auf der Leitung, mal kurz, mal länger; dann hört man, wie es abnimmt. Die
-  Ziffern nach seiner Nummer kann es schon vorher mit `keys` lesen. Legt es
-  auf, bevor es etwas gesagt hat, hört man das Besetztzeichen, und `call`
-  gibt einen leeren Text zurück.
+- Jedes Spiel klingelt, bis es etwas sagt (`say`, `play`, `back` …), ob ein
+  Mensch es wählt, ein Anruf weitergeleitet wird oder ein Spiel es mit `call`
+  anruft: mal kurz, mal länger, dann hört man, wie es abnimmt. Das macht das
+  Telefon selbst. Die Ziffern nach seiner Nummer kann das Spiel schon vorher
+  mit `keys` lesen. Legt ein gerufenes Spiel auf, bevor es etwas gesagt hat,
+  hört man das Besetztzeichen, und `call` gibt einen leeren Text zurück.
 - Wie lange es klingelt, kann ein Spiel selbst bestimmen: `pick_up 8` nimmt
-  erst nach acht Sekunden Klingeln ab (in JavaScript `pickUp(8)`). Das geht
-  auch, wenn ein Mensch das Spiel anruft: Dann klingelt es für ihn genauso.
-  `pick_up` muss vor dem ersten `say` stehen; danach ist schon abgenommen,
-  und es passiert nichts.
+  erst nach acht Sekunden Klingeln ab (in JavaScript `pickUp(8)`). `pick_up`
+  muss vor dem ersten `say` stehen; danach ist schon abgenommen, und es
+  passiert nichts.
 - `back` beendet das Spiel. Hat ein Mensch es gewählt, ist der Anruf damit zu
   Ende.
 - Endet das gerufene Spiel ohne `back`, legt es auf oder bricht es mit einem

@@ -202,6 +202,9 @@ def phonemes_of(voice, sentence):
             if part[0].isspace():
                 space()
             for piece in voice.phonemize(part):
+                # the short ü (ʏ) comes out of this voice like an e
+                # (»Werfelbude«, »wenschen«, 14 November 2026): the clear ü
+                piece = ['y' if p == 'ʏ' else p for p in piece]
                 if piece:
                     if out and out[-1] != ' ' and piece[0] != ' ':
                         space()
@@ -554,7 +557,8 @@ class Service:
         read = sounding(sentence)
         # a sentence with phonemes in it is made in one piece now, without the
         # noise at its end: a key of its own, so the old one is not used
-        return cache_path('speech', voice + '\n' + read + ('\nwhole' if '[[' in read else ''), '.f32')
+        # a sentence with ü is made anew since its sound changed (phonemes_of)
+        return cache_path('speech', voice + '\n' + read + ('\nwhole' if '[[' in read else '') + ('\nü' if re.search('[üÜ]', read) else ''), '.f32')
 
     async def sentence(self, sentence, mood=None, prepare=False):
         path = self.speech_path(sentence, mood)

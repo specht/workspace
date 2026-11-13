@@ -47,24 +47,28 @@ class LineHold(unittest.TestCase):
 
 
                 # Was nach der Nummer gewählt wurde, ist schon da.
-                eingabe = keys(3, timeout=0.5)
+                digits = keys(3, timeout=0.5)
                 # Ruft FACT sich selbst an, steht eine 0 vorne.
-                innen = len(eingabe) > 1 and eingabe.startswith('0')
+                inner = len(digits) > 1 and digits.startswith('0')
                 # Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
-                if innen and False:
+                if inner and False:
                     hangup()
-                if not innen:
+                # Manchmal meldet sich, wer abnimmt, erst einmal.
+                if inner and random.randrange(10) == 0:
+                    say(random.choice(['Hallo?', 'Ja, bitte?']))
+                if not inner:
                     say('Willkommen zur rekursiven Fakultätsberatung.')
-                    if not eingabe:
+                    if not digits:
                         say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
-                        eingabe = keys(3)
-                n = int(eingabe or 0)
+                        digits = keys(3)
+                n = int(digits or 0)
                 if n > 20:
                     say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
                     hangup()
 
                 if n <= 1:
-                    ergebnis = 1
+                    say(f'Die Fakultät von {n}? Das ist einfach 1.')
+                    result = 1
                 else:
                     say(random.choice([
                         f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
@@ -72,36 +76,36 @@ class LineHold(unittest.TestCase):
                         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
                         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
                     ]))
-                    antwort = call('FACT', f'0{n - 1}#')
-                    versuche = 1
-                    while not antwort and versuche < 5:
+                    answer = call('FACT', f'0{n - 1}#')
+                    tries = 1
+                    while not answer and tries < 5:
                         say(random.choice([
                             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
                             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
                             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
                         ]))
-                        antwort = call('FACT', f'0{n - 1}#')
-                        versuche += 1
-                    if not antwort:
+                        answer = call('FACT', f'0{n - 1}#')
+                        tries += 1
+                    if not answer:
                         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
                         hangup()
-                    vorher = int(antwort)
-                    ergebnis = n * vorher
+                    previous = int(answer)
+                    result = n * previous
                     say(random.choice([
-                        f'{n} mal {vorher} ist {ergebnis}.',
-                        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
-                        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
-                        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+                        f'{n} mal {previous} ist {result}.',
+                        f'Danke für Ihre Geduld. {n} mal {previous} macht {result}.',
+                        f'Da bin ich wieder. {n} mal {previous} ergibt {result}.',
+                        f'So, die Antwort ist da: {n} mal {previous} sind {result}.',
                     ]))
 
-                if not innen:
-                    say(f'Die Fakultät von {n} ist {ergebnis}.')
+                if not inner:
+                    say(f'Die Fakultät von {n} ist also {result}.')
                     say(random.choice([
                         'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
                         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
                         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
                     ]))
-                back(str(ergebnis))
+                back(str(result))
                 """),
             '3423': ('Würfelbude', """
                 sides = int(keys(3, timeout=0.3) or 0)
@@ -114,6 +118,7 @@ class LineHold(unittest.TestCase):
                 """),
         })
         os.environ['PHONE_GAMES'] = cls.root
+        os.environ['PHONE_RING_SECONDS'] = '0.5'           # the same each time
         sys.path.insert(0, os.path.join(ROOT, 'line'))
         import line
         line.GAMES = cls.root
@@ -149,10 +154,10 @@ class LineHold(unittest.TestCase):
         asks = [x for x in said if re.search(r'Fakultät von \d+\D.*Fakultät von \d+', x)]
         self.assertEqual([5, 4, 3, 2], [int(re.search(r'Fakultät von (\d+)', x).group(1)) for x in asks])
         self.assertIn('5 mal 24', said[-3])
-        self.assertEqual('Die Fakultät von 5 ist 120.', said[-2])
+        self.assertEqual('Die Fakultät von 5 ist also 120.', said[-2])
         self.assertIn(said[-1], GOODBYES)
-        # each of the four calls rings before the called game speaks
-        self.assertEqual(['ring'] * 4, [e['signal'] for e in events if 'signal' in e])
+        # every game rings before it speaks: the one dialled and the four it calls
+        self.assertEqual(['ring'] * 5, [e['signal'] for e in events if 'signal' in e])
         tones = [e['tones'] for e in events if 'tones' in e]
         self.assertEqual(['322804#', '322803#', '322802#', '322801#', '1#', '2#', '6#', '24#', '120#'], tones)
         self.assertEqual({'ended': 'back'}, events[-1])

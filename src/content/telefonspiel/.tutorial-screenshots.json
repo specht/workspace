@@ -2,10 +2,10 @@
   "screenshots": {
     "teaser.webp": {
       "environment_fingerprint": "af55f2e6431a56388a808a70129c3e4a624373adaad002d619a8688ed2d75d08",
-      "output_sha256": "01cbb85110d4ac6740dab30425fefd0601ed51b860be34c74ea5206fc3d72e83",
-      "state_hash": "665c861bf86c0f7ab128e9bd570f50fb31c97bfce2e6bf59d6d36333f92dfa2c",
+      "output_sha256": "99f518142d65ff0bf6de60562cd76ef9acc2080ae8df1346972459299b566a96",
+      "state_hash": "cbdd15dec1b2acba89f2f97a6f11614b800bd5d8d2200a5a54c8d92ea5e6edee",
       "variants": {
-        "teaser-dark.webp": "7579b893b6d5eaaae41b093e874c9742732c234ae622b46a7189e20d98dc6798"
+        "teaser-dark.webp": "40a609e0656263ff5c5507e91d9241e8b3d80fb0daa326307244e7a549389824"
       },
       "workspace_look": "4.140.0-ls368"
     }

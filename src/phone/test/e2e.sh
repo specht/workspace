@@ -34,24 +34,28 @@ title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
 
 # Was nach der Nummer gewählt wurde, ist schon da.
-eingabe = keys(3, timeout=0.5)
+digits = keys(3, timeout=0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
-innen = len(eingabe) > 1 and eingabe.startswith('0')
+inner = len(digits) > 1 and digits.startswith('0')
 # Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
-if innen and False:
+if inner and False:
     hangup()
-if not innen:
+# Manchmal meldet sich, wer abnimmt, erst einmal.
+if inner and random.randrange(10) == 0:
+    say(random.choice(['Hallo?', 'Ja, bitte?']))
+if not inner:
     say('Willkommen zur rekursiven Fakultätsberatung.')
-    if not eingabe:
+    if not digits:
         say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
-        eingabe = keys(3)
-n = int(eingabe or 0)
+        digits = keys(3)
+n = int(digits or 0)
 if n > 20:
     say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
     hangup()
 
 if n <= 1:
-    ergebnis = 1
+    say(f'Die Fakultät von {n}? Das ist einfach 1.')
+    result = 1
 else:
     say(random.choice([
         f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
@@ -59,36 +63,36 @@ else:
         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
     ]))
-    antwort = call('FACT', f'0{n - 1}#')
-    versuche = 1
-    while not antwort and versuche < 5:
+    answer = call('FACT', f'0{n - 1}#')
+    tries = 1
+    while not answer and tries < 5:
         say(random.choice([
             'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
             'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
             'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
         ]))
-        antwort = call('FACT', f'0{n - 1}#')
-        versuche += 1
-    if not antwort:
+        answer = call('FACT', f'0{n - 1}#')
+        tries += 1
+    if not answer:
         say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
         hangup()
-    vorher = int(antwort)
-    ergebnis = n * vorher
+    previous = int(answer)
+    result = n * previous
     say(random.choice([
-        f'{n} mal {vorher} ist {ergebnis}.',
-        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
-        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
-        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+        f'{n} mal {previous} ist {result}.',
+        f'Danke für Ihre Geduld. {n} mal {previous} macht {result}.',
+        f'Da bin ich wieder. {n} mal {previous} ergibt {result}.',
+        f'So, die Antwort ist da: {n} mal {previous} sind {result}.',
     ]))
 
-if not innen:
-    say(f'Die Fakultät von {n} ist {ergebnis}.')
+if not inner:
+    say(f'Die Fakultät von {n} ist also {result}.')
     say(random.choice([
         'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
         'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
         'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
     ]))
-back(str(ergebnis))
+back(str(result))
 EOF
 echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}, {"number": "124", "title": "Kaputt", "folder": "games/2", "file": "start.rb"}, {"number": "3228", "title": "Fakultät", "folder": "games/3", "file": "main.py"}]}' > "$OUT/games/published.json"
 chmod -R a+rX "$OUT/games"
@@ -103,7 +107,7 @@ chmod 777 "$CACHE" 2>/dev/null || true
 docker run -d --name phone-e2e-speech --network $NET --network-alias phone-speech \
     -v "$HERE/speech:/app:ro" -v "$CACHE:/cache" phone-speech >/dev/null
 docker run -d --name phone-e2e-runner --network $NET --network-alias runner \
-    -e PHONE_NUMBER=100 -e PHONE_DIRECT_DIAL=1 -e PHONE_CALLS=/calls \
+    -e PHONE_NUMBER=100 -e PHONE_DIRECT_DIAL=1 -e PHONE_CALLS=/calls -e PHONE_RING_SECONDS=1 \
     -v "$HERE:/phone:ro" -v "$OUT/games:/games:ro" -v "$OUT/calls:/calls" phone-runner >/dev/null
 cp "$HERE/test/baresip-config" "$OUT/conf/config"
 echo "<sip:test@asterisk>;auth_pass=test;regint=0" > "$OUT/conf/accounts"
@@ -156,7 +160,7 @@ lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
 call 10032283 90
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-hold.log"
 check "$OUT/runner-hold.log" "game 3" "say 'Willkommen zur rekursiven Fakultätsberatung." "Fakultät von 2" "tones 322802#" "signal ring" "tones 322801#" \
-    "tones 1#" "call answered '1'" "2 mal 1 " "call answered '2'" "3 mal 2 " "say 'Die Fakultät von 3 ist 6." \
+    "tones 1#" "call answered '1'" "2 mal 1 " "call answered '2'" "3 mal 2 " "say 'Die Fakultät von 1? Das ist einfach 1." "say 'Die Fakultät von 3 ist also 6." \
     "tones 6#" "game ended: back"
 # each call one line for /statistik: the first two reached game 123, the
 # next two none, then 124, then FACT three times (one connection each);

@@ -167,11 +167,11 @@ class LinePhone(emulator.Emulator):
             self.server.folder = folder_path(folder)
             # what was dialled after the number: the first keys the game gets
             self.first_keys(str(command.get('extension', ''))[:game.MAX_DIALED])
-            # called by another game: it rings until it answers; what the
-            # menu said before was not this game's (pick_up still works)
+            # every game rings until it answers, as on a real line, however
+            # it was reached (dialled, forwarded, called); what the menu said
+            # before was not this game's (pick_up still works)
             self.sounded = False
-            if self.depth:
-                self.unanswered = game.ring_seconds()
+            self.unanswered = game.ring_seconds()
             number = None if trial else game.published_number(GAMES, folder)
             if number:
                 self.server.reached.append(number)

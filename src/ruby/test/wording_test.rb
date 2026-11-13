@@ -119,9 +119,9 @@ class WordingTest < Minitest::Test
         assert_empty found
     end
 
-    # Stack, Queue, Priority Queue, Hash Table stay English
+    # Stack, Queue, Priority Queue, Hash Table, Call Stack stay English
     def test_english_data_structure_names
-        assert_empty hits(/Warteschlange|Vorrangwarteschlange|Prioritätswarteschlange|Hashtabelle|Stapelspeicher/)
+        assert_empty hits(/Warteschlange|Vorrangwarteschlange|Prioritätswarteschlange|Hashtabelle|Stapelspeicher|Aufrufstapel/)
     end
 
     # video terms German developers say in English: Combing, not Kammeffekt
