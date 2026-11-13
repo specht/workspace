@@ -16,6 +16,17 @@ PHONE_TCP_PORT="${PHONE_TCP_PORT:-8000}"
 PEER_TCP_PORTS="${PEER_TCP_PORTS:-1234}"
 SYNC_INTERVAL="${SYNC_INTERVAL:-2}"
 NFT_TABLE="hackschule_workspace"
+# The real line of the Telefonspiel (phone_asterisk publishes SIP on 5060):
+# only the provider's servers may reach it. Bots on the internet try
+# thousands of extensions and passwords a day; none is ever accepted, but
+# they need not reach Asterisk at all. The addresses are those of the
+# trunk's host name (PHONE_SIP_SERVER in credentials.rb), resolved again
+# every SIP_RESOLVE_INTERVAL seconds; if it cannot be resolved, the last rule
+# stays. Unset (no trunk): no rule.
+SIP_TRUNK_HOST="${SIP_TRUNK_HOST:-}"
+SIP_PORT="${SIP_PORT:-5060}"
+SIP_RESOLVE_INTERVAL="${SIP_RESOLVE_INTERVAL:-300}"
+SIP_TABLE="hackschule_sip"
 
 log() {
     printf '[peer-firewall] %s\n' "$*"
@@ -214,6 +225,64 @@ apply_network_state() {
     } | nft -f -
 }
 
+# The interface of the default route: where the internet comes in
+external_interface() {
+    awk '$2 == "00000000" { print $1; exit }' /proc/net/route
+}
+
+# The trunk's addresses, IPv4 and IPv6, comma-separated (no v4-mapped ones)
+sip_trunk_v4() {
+    getent ahostsv4 "$SIP_TRUNK_HOST" 2>/dev/null | awk '{ print $1 }' | sort -u | paste -sd, -
+}
+
+sip_trunk_v6() {
+    getent ahostsv6 "$SIP_TRUNK_HOST" 2>/dev/null | awk '$1 ~ /:/ && $1 !~ /^::ffff:/ { print $1 }' | sort -u | paste -sd, -
+}
+
+render_sip_ruleset() {
+    # forward, before Docker's own filter (priority 0): a packet dropped
+    # here never reaches the container; the trunk's own replies and calls
+    # come from its addresses and pass
+    printf 'table inet %s {\n' "$SIP_TABLE"
+    printf '    set trunk4 {\n        type ipv4_addr\n'
+    [ -n "$1" ] && printf '        elements = { %s }\n' "$1"
+    printf '    }\n    set trunk6 {\n        type ipv6_addr\n'
+    [ -n "$2" ] && printf '        elements = { %s }\n' "$2"
+    printf '    }\n'
+    printf '    chain forward {\n        type filter hook forward priority -5; policy accept;\n'
+    printf '        iifname "%s" meta nfproto ipv4 meta l4proto udp ct original proto-dst %s ip saddr != @trunk4 counter drop\n' "$3" "$SIP_PORT"
+    printf '        iifname "%s" meta nfproto ipv6 meta l4proto udp ct original proto-dst %s ip6 saddr != @trunk6 counter drop\n' "$3" "$SIP_PORT"
+    printf '    }\n}\n'
+}
+
+sip_last=''
+
+apply_sip_guard() {
+    [ -n "$SIP_TRUNK_HOST" ] || return 0
+    v4="$(sip_trunk_v4)"
+    v6="$(sip_trunk_v6)"
+    iface="$(external_interface)"
+    if [ -z "${v4}${v6}" ] || [ -z "$iface" ]; then
+        log "SIP guard: cannot resolve ${SIP_TRUNK_HOST} or find the external interface; keeping the last rule"
+        return 0
+    fi
+    state="${v4}|${v6}|${iface}"
+    if [ "$state" = "$sip_last" ] && nft list table inet "$SIP_TABLE" >/dev/null 2>&1; then
+        return 0
+    fi
+    # replaced in one batch: there is no moment without the rule
+    if {
+        printf 'table inet %s\n' "$SIP_TABLE"
+        printf 'delete table inet %s\n' "$SIP_TABLE"
+        render_sip_ruleset "$v4" "$v6" "$iface"
+    } | nft -f -; then
+        sip_last="$state"
+        log "SIP guard: UDP ${SIP_PORT} on ${iface} only from ${SIP_TRUNK_HOST} (${v4:-no IPv4}; ${v6:-no IPv6})"
+    else
+        log 'SIP guard: could not install the rule'
+    fi
+}
+
 # Do not tear the table down when this helper exits. Keeping the last known
 # ruleset is safer during image updates or crashes; the next instance replaces
 # it atomically once Docker is available again.
@@ -231,8 +300,19 @@ install_ruleset
 last_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}"
 log "protecting ${WORKSPACE_NETWORK}; peer TCP ports: ${PEER_TCP_PORTS}; peer UDP disabled"
 log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}; phone: ${phone_elements:-none}"
+apply_sip_guard
+sip_checked="$(date +%s)"
 
 while :; do
+    # the SIP guard: again after the interval, or at once if its table went
+    if [ -n "$SIP_TRUNK_HOST" ]; then
+        now="$(date +%s)"
+        if [ $((now - sip_checked)) -ge "$SIP_RESOLVE_INTERVAL" ] || { [ -n "$sip_last" ] && ! nft list table inet "$SIP_TABLE" >/dev/null 2>&1; }; then
+            apply_sip_guard
+            sip_checked="$now"
+        fi
+    fi
+
     if discover_network_state; then
         current_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}"
 

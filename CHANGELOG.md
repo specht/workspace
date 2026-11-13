@@ -21,6 +21,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Telefonspiel, die echte Leitung: SIP (UDP 5060) nimmt der Server nur noch von den Adressen des Anbieters an (`PHONE_SIP_SERVER`, alle fünf Minuten neu aufgelöst); Bots, die Nebenstellen und Passwörter durchprobieren, erreichen Asterisk nicht mehr. Das hält `peer_firewall` aufrecht. Nach dem Update `./config.rb build peer_firewall && ./config.rb up -d peer_firewall`.
 - Neo4j der Lernenden: Eine eigene Neo4j-Datenbank bekommt nur noch, wer Neo4j im Profil einschaltet (und jeder Workspace einer Leistungsüberprüfung); bisher legte jeder Start eines Workspace sie für alle an. Bestehende Datenbanken bleiben; Ausschalten blendet nur den Knopf im Menü aus. Die Datenschutzerklärung sagt es (`privacy.rb`).
 - Neo4j der Lernenden: höchstens 1000 Datenbanken statt 100 (`dbms.max_databases`); bei mehr als 98 Personen bekamen die nächsten keine Datenbank mehr (»The limit of databases is reached«). Nach dem Update `./config.rb up -d neo4j`.
 - Office: Der Dienst `office` liest jetzt auch tiefgestellte Zeichen (CO₂), für die neue Regel `scripts`, und sagt, welche Absatzvorlagen ein Dokument selbst angelegt hat, für die neue Regel `own_style`. Nach dem Update `./config.rb restart office`.

@@ -417,6 +417,14 @@ loop.
 - `config.rb`: `phone_speech` always, on the students' network,
   reachable from Workspaces on port 8000 only (peer-firewall label
   `…peer_firewall.phone`); Asterisk and the runner join with the trunk;
+- SIP only from the provider (13 November 2026, after about 75,000 failed
+  REGISTER guesses a day from two addresses; none accepted, Asterisk has
+  only the trunk's endpoint): `peer_firewall` keeps a table `inet
+  hackschule_sip` that drops UDP to 5060 from anyone but the addresses of
+  `PHONE_SIP_SERVER`, resolved every five minutes, the last rule kept if
+  that fails (`docker/peer-firewall/peer-firewall.sh`, »SIP guard«). The
+  ports for the audio (10000–10099) stay open: the provider may send it
+  from other addresses;
 - tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets)
   and `src/phone/test/e2e.sh` (a whole call: menu, key 1, three guesses,
   the runner's log checked, the recording kept). The test telephone sends

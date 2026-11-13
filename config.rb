@@ -599,6 +599,8 @@ docker_compose[:services][:peer_firewall] = {
         'WORKSPACE_NETWORK' => "#{PROJECT_NAME}_user",
         'INFRASTRUCTURE_LABEL' => 'hackschule.workspace.peer_firewall.infrastructure',
         'PEER_TCP_PORTS' => '1234',
+        # the real line's SIP only from the provider (peer-firewall.sh, »SIP guard«)
+        'SIP_TRUNK_HOST' => defined?(PHONE_SIP_SERVER) && defined?(PHONE_SIP_PASSWORD) && !PHONE_SIP_PASSWORD.to_s.empty? ? PHONE_SIP_SERVER.to_s.sub(/:\d+\z/, '') : '',
     },
     :restart => 'always',
     :healthcheck => {
