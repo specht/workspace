@@ -317,7 +317,11 @@ built by hand; each is a page of a series of its own, about one lesson.
 10. **The hand-in:** an article of one's own for the trip newspaper, every
    earlier point checked at once, the file handed in for the teacher to grade
    (stored like a `submit`, viewed with its marked pages on the class page);
-   then the article exported as PDF.
+   then the article exported as PDF. Extras (13 November 2026): »Ein Artikel in
+   Eile« (the example article built as at the start of the series, the
+   hand-in's check and `text`) and »Ein Infokasten« (the three rules in a
+   box with a line around and a colour behind; rule `box`, the service
+   reports each paragraph's `border` and `shade`).
 
 ## Open
 

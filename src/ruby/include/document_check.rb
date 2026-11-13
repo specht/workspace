@@ -34,6 +34,7 @@ require_relative 'office_client'
 #       - { table_sorted: 'Punkte', order: down }
 #       - title_page           # page 1 without header and footer, the others with them
 #       - { span: 'Tausende Kraniche' }   # this heading over all columns (one column), the text below it in columns
+#       - { box: ['Immer ein', 'Nie beide', 'Auf einer'], shade: true }   # these paragraphs together in a box: a line on all four sides, a colour behind (shade), the paragraphs around without
 #       - { page_numbers: true, total: true }   # the page number as a field, and the number of pages (»Seite 2 von 4«)
 #       - { landscape: ['Zeit'], portrait: ['Projektwoche', …] }   # the pages with these pieces in landscape, those with the others upright
 #       - { order: ['Sägen', 'Säg das', 'Zusammenbauen', …] }   # the paragraphs beginning (or else holding) these pieces in this order: chapters moved with their text
@@ -79,7 +80,7 @@ require_relative 'office_client'
 # its hints one by one; once it holds, its label shows, ticked. Rules
 # without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape title_page span text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape title_page span box text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -153,6 +154,7 @@ module DocumentCheck
                 when 'landscape' then %w[landscape portrait]
                 when 'page_numbers' then %w[page_numbers total]
                 when 'span' then %w[span]
+                when 'box' then %w[box shade]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
                 when 'headings' then %w[headings level]
@@ -169,6 +171,7 @@ module DocumentCheck
                 errors << 'landscape needs a list of pieces of text (on the pages to turn)' unless rule['landscape'].is_a?(Array) && !rule['landscape'].empty? && rule['landscape'].all? { |b| b.is_a?(String) }
                 errors << 'portrait must be a list of pieces of text (on pages that stay upright)' if rule.key?('portrait') && !(rule['portrait'].is_a?(Array) && rule['portrait'].all? { |b| b.is_a?(String) })
             end
+            errors << 'box needs a list of pieces of text (the paragraphs in the box)' if name == 'box' && !(rule['box'].is_a?(Array) && !rule['box'].empty? && rule['box'].all? { |b| b.is_a?(String) })
             errors << 'span needs a piece of the heading that goes over the columns' if name == 'span' && !(rule['span'].is_a?(String) && !rule['span'].empty?)
             %w[order own_style].each do |k|
                 errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].size > (k == 'order' ? 1 : 0) && rule[k].all? { |b| b.is_a?(String) })
@@ -233,7 +236,7 @@ module DocumentCheck
             Array(m['paragraphs']).map do |p|
                 looks = (p['portions'] || []).select { |q| visible?(q) }
                     .map { |q| q.slice('font', 'size', 'bold', 'italic', 'underline', 'color') }.uniq
-                [squish(DocumentDates.normalize(p['text'].to_s)), p['style'], p['align'], looks, p['text'].to_s.count("\t"), p['columns']]
+                [squish(DocumentDates.normalize(p['text'].to_s)), p['style'], p['align'], looks, p['text'].to_s.count("\t"), p['columns'], p['border'], p['shade']]
             end
         end
         # what the paragraphs do not show: header and footer with their
@@ -1720,6 +1723,48 @@ module DocumentCheck
             item.ok = false
             item.message = 'Der Text unter der Überschrift steht nicht mehr in zwei Spalten. Nur die Überschrift soll über die ganze Breite gehen.'
         end
+        item
+    end
+
+    # Paragraphs in a box (an info box): together a line on all four sides
+    # (Word: Rahmen und Schattierung; LibreOffice: Format › Absatz,
+    # Umrandung), with shade: a colour behind them; the paragraphs right
+    # before and after them without a line.
+    def self.rule_box(rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'box', :label => rule['shade'] ? 'Die Regeln in einem Kasten mit Rahmen und Farbe' : 'Die Regeln in einem Kasten',
+                        :ok => true, :marks => [])
+        inside = find_paragraphs(body, rule['box'])
+        if inside.size < Array(rule['box']).size
+            item.ok = false
+            item.message = 'Nicht alle Absätze, die in den Kasten gehören, finde ich noch. Lass ihren Text stehen.'
+            return item
+        end
+        line = ->(p, side) { ((p['border'] || {})[side]).to_f.positive? }
+        first, last = inside.min_by { |p| body.index(p) }, inside.max_by { |p| body.index(p) }
+        open = []
+        open << 'oben' unless line.(first, 'top')
+        open << 'unten' unless line.(last, 'bottom')
+        open << 'links' unless inside.all? { |p| line.(p, 'left') }
+        open << 'rechts' unless inside.all? { |p| line.(p, 'right') }
+        around = [body[body.index(first) - 1], body[body.index(last) + 1]].compact.reject { |p| empty?(p) }
+            .select { |p| %w[top bottom left right].any? { |side| line.(p, side) } }
+        problems = []
+        if open.size == 4
+            problems << 'Um die Absätze steht noch kein Rahmen. Markier sie zusammen und gib ihnen eine Linie an allen vier Seiten; Absätze mit demselben Rahmen nebeneinander werden ein Kasten.'
+        elsif !open.empty?
+            problems << "Der Rahmen geht noch nicht ganz herum: #{names(open)} fehlt eine Linie."
+        end
+        if rule['shade'] && open.size < 4 && !inside.all? { |p| p['shade'] }
+            problems << 'Der Kasten hat noch keine Farbe dahinter. Eine helle Farbe hebt ihn vom Text ab, ohne dass die Schrift schwer zu lesen ist.'
+        end
+        unless around.empty?
+            problems << "Auch »#{short(around.first)}« hat einen Rahmen. In den Kasten gehören nur die Regeln."
+        end
+        return item if problems.empty?
+
+        item.ok = false
+        item.marks = inside.map { |p| para_mark(p).merge(:title => 'im Kasten') }
+        item.message = problems.join(' ')
         item
     end
 

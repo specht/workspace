@@ -6,6 +6,10 @@ activity: trip-newspaper
 tasks:
   - id: artikel
     title: Dein Artikel
+    # passed after many checks: the hurried article; after one or two: the box
+    next:
+      practice: eilig
+      challenge: kasten
     prompt: |
       Prüfe deinen Artikel, so oft du willst. Die zuletzt geprüfte Fassung ist
       deine Abgabe: Deine Lehrkraft sieht sie mit allen Markierungen.
@@ -34,6 +38,69 @@ tasks:
     hint:
       - Fang mit dem Text an, dann die Zwischenüberschriften mit ihren Formatvorlagen, zuletzt Bild und Seitenzahl.
       - Jeder Punkt der Liste hat ein Blatt der Reihe, auf dem er erklärt ist. Die Links stehen oben auf dieser Seite.
+
+  - id: eilig
+    title: Ein Artikel in Eile
+    extra: true
+    prompt: |
+      Diesen Artikel hat jemand in letzter Minute zusammengebaut. Bau ihn so,
+      dass er die Prüfung der Abgabe besteht. Der Text bleibt, wie er ist.
+    check:
+      type: document
+      file: trip-newspaper/10 Artikel in Eile.docx
+      rules:
+        - text
+        - { words: 200 }
+        - spaces
+        - empty_paragraphs
+        - line_breaks
+        - { fonts: 2 }
+        - no_underline
+        - no_caps
+        - typed_lists
+        - { heading_count: 2 }
+        - levels
+        - no_direct
+        - { picture_count: 1 }
+        - ratio
+        - captions
+        - alt_text
+        - page_numbers
+        - justify
+        - hyphenation
+    hint:
+      - Schalte die Formatierungszeichen ein und fang oben an. Die Prüfung markiert jede Stelle auf der Seite.
+      - Die Überschriften und die Liste sind von Hand gemacht. Gib ihnen ihre Formatvorlagen und lösch, was getippt ist.
+      - Zuletzt das Bild (Alternativtext, Nummer der Unterschrift als Feld), die Seitenzahl und Blocksatz mit Silbentrennung.
+
+  - id: kasten
+    title: Ein Infokasten
+    extra: true
+    prompt: |
+      Setz die drei Regeln des Kletterwalds in einen Kasten: eine Linie
+      rundherum und eine helle Farbe dahinter. Der Rest des Artikels bleibt,
+      wie er ist.
+    check:
+      type: document
+      file: trip-newspaper/10 Kletterwald.docx
+      rules:
+        - text
+        - { box: ['Immer ein Karabiner', 'Nie beide Karabiner', 'Auf einer Plattform'], shade: true }
+    hint:
+      - Markier die drei Regeln zusammen. Ein Rahmen und eine Farbe gehören zum Absatz, wie Einzug und Abstand.
+      - Haben Absätze nebeneinander denselben Rahmen, zeichnet das Programm einen Kasten um alle, nicht einen um jeden.
+    word:
+      hint:
+        - "Markier die drei Regeln und öffne *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> der Pfeil neben *Rahmenlinien* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Rahmen und Schattierung…*."
+        - "Register *Rahmen*: *Kontur*, eine Farbe, *Übernehmen für* *Absatz*. Register *Schattierung*: eine helle *Füllung*."
+    libreoffice:
+      hint:
+        - "Markier die drei Regeln und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz…*."
+        - "Register *Umrandung*: unter *Voreinstellungen* das Kästchen mit allen vier Linien, eine Farbe. Register *Fläche*: *Farbe* und eine helle Farbe."
+    nextcloud:
+      hint:
+        - "Markier die drei Regeln und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz…*."
+        - "Register *Umrandung*: unter *Voreinstellungen* das Kästchen mit allen vier Linien, eine Farbe. Register *Fläche*: *Farbe* und eine helle Farbe."
 
   - id: pdf
     title: Der Artikel als PDF

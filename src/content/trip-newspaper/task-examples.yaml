@@ -23,3 +23,20 @@ examples:
     fail:
       - document: stufen/vorlage.pdf
         say: Wörter
+  eilig:
+    pass:
+      - document: stufen/artikel.docx
+    fail:
+      - document: ../../static/trip-newspaper/10 Artikel in Eile.docx
+        say: Listenzeichen
+      - document: ../../static/trip-newspaper/10 Artikel in Eile.docx
+        say: unterstrichen
+  kasten:
+    pass:
+      - document: stufen/kasten-word.docx
+      - document: stufen/kasten-libreoffice.docx
+    fail:
+      - document: ../../static/trip-newspaper/10 Kletterwald.docx
+        say: noch kein Rahmen
+      - document: stufen/kasten-ohne-farbe.docx
+        say: noch keine Farbe

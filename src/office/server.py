@@ -206,6 +206,35 @@ def paragraph_columns(para):
     return most
 
 
+def paragraph_border(para):
+    """the width of the line on each side of a paragraph, in pt (0: none)"""
+    out = {}
+    for side in ('Top', 'Bottom', 'Left', 'Right'):
+        width = 0
+        try:
+            line = getattr(para, side + 'Border')
+            width = line.LineWidth or (line.OuterLineWidth + line.InnerLineWidth + line.LineDistance)
+        except Exception:
+            pass
+        out[side.lower()] = round(width / 100 / 25.4 * 72, 2)
+    return out
+
+
+def paragraph_shade(para):
+    """the colour behind a paragraph (#RRGGBB), or None (none, or white)"""
+    try:
+        if enum_value(para.FillStyle) == 'SOLID' and para.FillColor not in (-1, 0xFFFFFF):
+            return '#%06X' % (para.FillColor & 0xFFFFFF)
+    except Exception:
+        pass
+    try:
+        if not para.ParaBackTransparent and para.ParaBackColor not in (-1, 0xFFFFFF):
+            return '#%06X' % (para.ParaBackColor & 0xFFFFFF)
+    except Exception:
+        pass
+    return None
+
+
 def read_paragraph(para, styles, where):
     style = para.ParaStyleName
     try:
@@ -246,6 +275,10 @@ def read_paragraph(para, styles, where):
     return {
         'text': text,
         'columns': paragraph_columns(para),
+        # a box around the paragraph (Word: Rahmen und Schattierung,
+        # LibreOffice: Umrandung, Fläche): the lines' widths and the fill
+        'border': paragraph_border(para),
+        'shade': paragraph_shade(para),
         'style': style,
         'style_name': display,
         'outline': para.OutlineLevel,

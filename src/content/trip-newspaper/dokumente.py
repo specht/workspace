@@ -108,19 +108,49 @@ def starter(path):
     doc.save(path)
 
 
-def article(path, hurried=False):
+def box_word(paragraph, shade=True):
+    """a box around the paragraph as Word writes it (Rahmen und
+    Schattierung): a line on each side, a light green behind it; paragraphs
+    in a row with the same box are one box"""
+    pr = paragraph._p.get_or_add_pPr()
+    later = ('w:shd', 'w:tabs', 'w:suppressAutoHyphens', 'w:spacing', 'w:ind', 'w:contextualSpacing', 'w:jc', 'w:outlineLvl', 'w:rPr')
+    borders = OxmlElement('w:pBdr')
+    for side in ('top', 'left', 'bottom', 'right'):
+        line = OxmlElement(f'w:{side}')
+        line.set(qn('w:val'), 'single')
+        line.set(qn('w:sz'), '8')
+        line.set(qn('w:space'), '4')
+        line.set(qn('w:color'), '2E6B3A')
+        borders.append(line)
+    pr.insert_element_before(borders, *later)
+    if shade:
+        fill = OxmlElement('w:shd')
+        fill.set(qn('w:val'), 'clear')
+        fill.set(qn('w:color'), 'auto')
+        fill.set(qn('w:fill'), 'E6F0E6')
+        pr.insert_element_before(fill, *later[1:])
+
+
+def article(path, hurried=False, more=False, box=False, shade=True):
     """hurried: the same article put together as at the start of the
     series: headings bold by hand, a list with typed dashes, the caption's
-    number typed, no alt text, »Seite 1« typed in the footer, a double space"""
+    number typed, no alt text, »Seite 1« typed in the footer, a double space;
+    more: also an empty paragraph, a heading in capitals by format, a word
+    underlined, a line ended by hand (»Ein Artikel in Eile«); box: the rules
+    in a box with a line around and (shade) a colour behind (»Ein Infokasten«)"""
     doc = base(newspaper=not hurried)
     doc.add_paragraph(TITLE, style='Title')
     doc.add_paragraph(INTRO.replace('. Viele', '.  Viele') if hurried else INTRO)
+    if more:
+        doc.add_paragraph()
     for heading, texts in PARTS:
         if hurried:
             p = doc.add_paragraph()
             r = p.add_run(heading)
             r.bold = True
             r.font.size = Pt(14)
+            if more and heading == PARTS[0][0]:
+                r.font.all_caps = True
         else:
             doc.add_paragraph(heading, style='Heading 1')
         for text in texts:
@@ -130,7 +160,9 @@ def article(path, hurried=False):
                     if hurried:
                         doc.add_paragraph('- ' + rule)
                     else:
-                        doc.add_paragraph(rule, style='List Bullet')
+                        item = doc.add_paragraph(rule, style='List Bullet')
+                        if box:
+                            box_word(item, shade)
     # the picture: 3:2 at 9 cm, centred, its caption below
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -149,7 +181,17 @@ def article(path, hurried=False):
         c.add_run('Abbildung ')
         field(c, 'SEQ Abbildung \\* ARABIC', '1')
         c.add_run(f': {CAPTION}')
-    doc.add_paragraph(OUTRO)
+    if more:
+        # »stolz« underlined, a line ended by hand after »Abendessen«
+        head, tail = OUTRO.split('stolz', 1)
+        p = doc.add_paragraph(head)
+        p.add_run('stolz').underline = True
+        first, rest = tail.split(' Abendessen ', 1)
+        r = p.add_run(first + ' Abendessen')
+        r.add_break()
+        p.add_run(rest)
+    else:
+        doc.add_paragraph(OUTRO)
     footer = doc.sections[0].footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
     if hurried:
@@ -173,6 +215,67 @@ def to_pdf(docx, target):
         shutil.copy(os.path.join(work, os.path.splitext(os.path.basename(docx))[0] + '.pdf'), target)
     finally:
         shutil.rmtree(work, ignore_errors=True)
+
+
+# ---- The extras (chapters for the quick, extra: true)
+#
+#     src/scripts/office python3 src/content/trip-newspaper/dokumente.py extras
+#
+# An article in a hurry: the Kletterwald put together as at the start of the
+# series, with what the hand-in checks; an info box: the finished article,
+# its three rules to go in a box with a line around and a colour behind.
+HURRIED_FILE = '10 Artikel in Eile.docx'
+BOX_FILE = '10 Kletterwald.docx'
+
+
+def box_libreoffice(path):
+    """the box as LibreOffice makes it: Format › Absatz, Umrandung (all four
+    lines) and Fläche (a colour), for the three rules marked together"""
+    import shutil
+    import subprocess
+    import uno
+    sys.path.insert(0, os.path.join(HERE, '..', 'pictures-in-text'))
+    import dokumente as d
+    process, profile, desktop = d.office()
+    try:
+        doc = desktop.loadComponentFromURL(uno.systemPathToFileUrl(os.path.abspath(os.path.join(STATIC, BOX_FILE))),
+                                           '_blank', 0, (d.prop('Hidden', True),))
+        line = uno.createUnoStruct('com.sun.star.table.BorderLine2')
+        line.Color = 0x2E6B3A
+        line.LineWidth = 26
+        line.OuterLineWidth = 26
+        for p in d.paragraphs(doc):
+            if p.getString() in RULES:
+                for side in ('Top', 'Bottom', 'Left', 'Right'):
+                    setattr(p, side + 'Border', line)
+                    setattr(p, side + 'BorderDistance', 140)
+                p.ParaBackColor = 0xE6F0E6
+                p.ParaBackTransparent = False
+        doc.storeToURL(uno.systemPathToFileUrl(os.path.abspath(path)), (d.prop('FilterName', 'MS Word 2007 XML'),))
+        doc.close(True)
+    finally:
+        process.kill()
+        subprocess.run(['pkill', '-f', 'pipe,name=pictures_in_text'], capture_output=True)
+        shutil.rmtree(profile, ignore_errors=True)
+
+
+def extras():
+    os.makedirs(os.path.join(HERE, 'stufen'), exist_ok=True)
+    for folder in (STATIC, os.path.join(HERE, 'stufen')):
+        for name in os.listdir(folder):
+            if name.startswith('.~lock.'):
+                os.remove(os.path.join(folder, name))
+    article(os.path.join(STATIC, HURRIED_FILE), hurried=True, more=True)
+    article(os.path.join(STATIC, BOX_FILE))
+    article(os.path.join(HERE, 'stufen', 'kasten-word.docx'), box=True)
+    article(os.path.join(HERE, 'stufen', 'kasten-ohne-farbe.docx'), box=True, shade=False)
+    box_libreoffice(os.path.join(HERE, 'stufen', 'kasten-libreoffice.docx'))
+    print('written: static/trip-newspaper/10 Artikel in Eile.docx, 10 Kletterwald.docx and the stages in stufen/')
+
+
+if __name__ == '__main__' and sys.argv[1:] == ['extras']:
+    extras()
+    sys.exit(0)
 
 
 if __name__ == '__main__':

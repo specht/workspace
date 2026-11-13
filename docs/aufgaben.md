@@ -1992,6 +1992,7 @@ check:
     - { page_numbers: true, total: true }   # dazu die Seitenanzahl als Feld (»Seite 2 von 4«)
     - title_page          # Seite 1 ohne Kopf- und Fußzeile, die Seiten danach mit ihnen
     - { span: 'Tausende Kraniche' }   # diese Überschrift über allen Spalten (in einer), der Text darunter in Spalten
+    - { box: ['Immer ein', 'Nie beide'], shade: true }   # diese Absätze zusammen in einem Kasten: Linien an allen vier Seiten, eine Farbe dahinter
     - toc                 # ein Inhaltsverzeichnis des Programms, aktuell, keines getippt
     - { text: true, except: ['Reisebericht der 7b'] }   # text, ohne Absätze der Vorlage, die in die Kopfzeile wandern
     - { header_text: 'Reisebericht der 7b' }   # in der Kopfzeile, nirgends mehr oben auf einer Seite getippt
@@ -2166,7 +2167,9 @@ keine, auf jeder Seite danach welche. Wie die Titelseite gebaut ist (Word
 die seines Bereichs oder seiner Seitenvorlage, die meisten davon); Word setzt
 einen Teil in Spalten mit einem Abschnittsumbruch, LibreOffice mit einem
 Bereich, und Spalten der ganzen Seite aus Word liest LibreOffice als einen
-Bereich um alles. `toc` vergleicht die
+Bereich um alles. `box` liest Rahmen (`border`, die Breite der Linie je Seite)
+und Farbe (`shade`) jedes Absatzes: oben am ersten, unten am letzten, links
+und rechts an allen, die Absätze davor und danach ohne Linie. `toc` vergleicht die
 Einträge des Verzeichnisses mit denen, die es nach dem Aktualisieren hätte,
 ohne die Seitenzahlen (Word und LibreOffice können verschieden umbrechen);
 Zeilen mit Punkten oder Tab und einer Zahl am Ende gelten als getipptes

@@ -104,3 +104,44 @@ _task(pdf)
 <strong>Ausprobieren:</strong> Öffne dein PDF im Browser und leg es neben dein Dokument. Achte auf die Schrift, auf die Stellen, an denen die Zeilen umbrechen, und auf die Seitenzahl.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Zwei Dokumente für alle, die mit Artikel und PDF fertig sind: eins zum Üben
+und eins mit einem neuen Handgriff.
+
+### Ein Artikel in Eile
+
+Dieser Artikel über den Kletterwald ist in letzter Minute entstanden, so wie
+am Anfang der Reihe: Überschriften fett von Hand, eine getippte Liste, die
+Seitenzahl getippt und noch einiges mehr. Die Prüfung ist dieselbe wie bei
+deiner Abgabe.
+
+_task(eilig)
+
+### Ein Infokasten
+
+In einer Zeitung steht, was man sich merken soll, oft in einem Kasten neben
+dem Text: eine Linie rundherum, eine helle Farbe dahinter. Der Kasten gehört
+zu den Absätzen wie ihr Einzug und ihr Abstand. Haben Absätze nebeneinander
+denselben Rahmen, zeichnet das Programm einen Kasten um alle zusammen.
+
+<!-- language: word -->
+In Word markierst du die Absätze und öffnest *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> den Pfeil neben
+*Rahmenlinien* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Rahmen und Schattierung…*: im Register *Rahmen*
+*Kontur*, im Register *Schattierung* eine *Füllung*.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice markierst du die Absätze und öffnest *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Absatz…*: im Register *Umrandung* die Linien an allen vier Seiten, im
+Register *Fläche* eine *Farbe*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office markierst du die Absätze und öffnest *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Absatz…*: im Register *Umrandung* die Linien an allen vier Seiten, im
+Register *Fläche* eine *Farbe*.
+<!-- /language -->
+
+_task(kasten)
+
