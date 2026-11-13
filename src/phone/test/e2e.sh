@@ -20,7 +20,10 @@ NET=phone-e2e
 rm -rf "$OUT"; mkdir -p "$OUT/conf" "$OUT/in" "$OUT/out" "$OUT/games/1" "$OUT/calls" "$CACHE"
 # the published list as the Workspace writes it (phone_games.rb)
 cp "$HERE/games/1/main.py" "$OUT/games/1/"
-echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}]}' > "$OUT/games/published.json"
+# a game with a syntax error (124): the caller hears so and gets the menu
+mkdir -p "$OUT/games/2"
+printf "require 'telefon'\nkey = keys(1)\ncase key\nwhen '1' or '2':\n  say 'eins'\nend\n" > "$OUT/games/2/start.rb"
+echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}, {"number": "124", "title": "Kaputt", "folder": "games/2", "file": "start.rb"}]}' > "$OUT/games/published.json"
 chmod -R a+rX "$OUT/games"
 cleanup() { docker rm -f phone-e2e-asterisk phone-e2e-speech phone-e2e-runner >/dev/null 2>&1 || true; docker network rm $NET >/dev/null 2>&1 || true; }
 trap cleanup EXIT
@@ -74,13 +77,21 @@ lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
 call 100 75
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-quiet.log"
 check "$OUT/runner-quiet.log" "say 'Ruf gern wieder an" "game ended: hangup"
+# 5. a game with a syntax error, dialled directly: the caller hears that it
+# has an error and gets the Telefonbuch's menu instead of silence
+lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
+call 100124 25
+docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-crash.log"
+check "$OUT/runner-crash.log" "game 2" "syntax error" "say 'Dieses Spiel hat gerade einen Fehler" "say 'Hier ist das Telefonbuch"
 # each call one line for /statistik: the first two reached game 123, the
-# others none; only hour, line, seconds and games, never the caller
+# next two none, the last 124; only hour, line, seconds and games (and the
+# error of the game that crashed), never the caller
 sleep 2
-if [ "$(cat "$OUT/calls/telefon.jsonl" 2>/dev/null | wc -l)" = 4 ]; then echo "ok    four calls recorded"; else echo "WRONG calls recorded: $(cat "$OUT/calls/telefon.jsonl" 2>/dev/null | wc -l)"; fail=1; fi
+if [ "$(cat "$OUT/calls/telefon.jsonl" 2>/dev/null | wc -l)" = 5 ]; then echo "ok    five calls recorded"; else echo "WRONG calls recorded: $(cat "$OUT/calls/telefon.jsonl" 2>/dev/null | wc -l)"; fail=1; fi
 games=$(sed -n 's/.*"games": \(\[[^]]*\]\).*/\1/p' "$OUT/calls/telefon.jsonl" 2>/dev/null | tr '\n' ' ')
-if [ "$games" = '["123"] ["123"] [] [] ' ]; then echo "ok    games of the calls: $games"; else echo "WRONG games of the calls: $games"; fail=1; fi
-if grep -qv '^{"hour": [0-9]*, "line": "telefon", "seconds": [0-9]*, "games": \[[^]]*\]}$' "$OUT/calls/telefon.jsonl"; then echo "WRONG a call's line holds more"; fail=1; else echo "ok    nothing but hour, line, seconds, games"; fi
+if [ "$games" = '["123"] ["123"] [] [] ["124"] ' ]; then echo "ok    games of the calls: $games"; else echo "WRONG games of the calls: $games"; fail=1; fi
+if head -4 "$OUT/calls/telefon.jsonl" | grep -qv '^{"hour": [0-9]*, "line": "telefon", "seconds": [0-9]*, "games": \[[^]]*\]}$'; then echo "WRONG a call's line holds more"; fail=1; else echo "ok    nothing but hour, line, seconds, games"; fi
+if tail -1 "$OUT/calls/telefon.jsonl" | grep -q '"errors": \[{"game": "124", "text": ".*syntax error'; then echo "ok    the crash's error recorded for 124"; else echo "WRONG no error recorded for 124"; fail=1; fi
 heard=$(ls "$OUT"/out/*-dec.wav | head -1)
 seconds=$(docker run --rm -v "$OUT:/t" phone-testclient sh -c "sox /t/out/$(basename "$heard") -n stat 2>&1 | sed -n 's/^Length (seconds): *//p'")
 echo "heard ${seconds} s: $heard"

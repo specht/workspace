@@ -261,6 +261,7 @@ class Call(game.Phone):
 
     async def run(self):
         began = None
+        crashed = []
         try:
             await self.setup()
             began = time.monotonic()
@@ -269,6 +270,15 @@ class Call(game.Phone):
             # (transfer): the menu starts again as if that number had been
             # dialled, five times at most, all within the call's time
             deadline = time.monotonic() + GAME_SECONDS
+            # the last lines a game wrote to stderr: its error, if it crashes
+            errors = []
+
+            def output(kind, line):
+                log(f'[{self.channel} {kind}]', line)
+                if kind == 'err':
+                    errors.append(line)
+                    del errors[:-12]
+
             for _ in range(1 + MAX_TRANSFERS):
                 left = int(deadline - time.monotonic())
                 if self.ended.is_set() or left <= 0:
@@ -277,12 +287,20 @@ class Call(game.Phone):
                 self.mixer.set_music(None)
                 env = game.environment({'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/tmp',
                                         'PHONE_GAMES': GAMES, 'PHONE_DIALED': dialed})
+                errors.clear()
                 reason, status = await game.run_game(
-                    self, MENU, MENU_FOLDER, env, lambda kind, line: log(f'[{self.channel} {kind}]', line),
-                    preexec_fn=game_limits, seconds=left)
+                    self, MENU, MENU_FOLDER, env, output, preexec_fn=game_limits, seconds=left)
                 self.log('game ended:', reason, status)
                 if reason == 'time':
                     await self.say('Die Zeit ist um. Tschüss!')
+                # a game that stopped with an error: say so, back to the menu
+                # (not the menu itself crashing, and twice at most)
+                if reason == 'ended' and status and self.switched and not self.ended.is_set() and len(crashed) < 2:
+                    crashed.append({'game': self.reached[-1] if self.reached else '', 'text': '\n'.join(errors)})
+                    self.mixer.set_music(None)
+                    await self.say(game.CRASHED)
+                    dialed = ''
+                    continue
                 if reason != 'transfer':
                     break
                 dialed = self.transfer_to
@@ -294,7 +312,7 @@ class Call(game.Phone):
         finally:
             await self.teardown()
             if began is not None:
-                game.record_call('telefon', self.reached, time.monotonic() - began)
+                game.record_call('telefon', self.reached, time.monotonic() - began, crashed)
 
 
 class Runner:

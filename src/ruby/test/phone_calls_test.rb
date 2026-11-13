@@ -61,6 +61,23 @@ class PhoneCallsTest < Minitest::Test
         end
     end
 
+    def test_a_crashed_game_keeps_its_newest_error_for_its_author
+        Dir.mktmpdir do |dir|
+            crash = { 'game' => '741', 'text' => "start.rb:8: syntax error, unexpected `or'" }
+            File.write(File.join(dir, 'telefon.jsonl'),
+                       JSON.generate('hour' => HOUR, 'line' => 'telefon', 'seconds' => 3, 'games' => ['741'], 'errors' => [crash, { 'game' => 'x' }]) + "\n")
+            neo4j = FakeNeo4j.new
+            PhoneCalls.collect(neo4j, :dir => dir, :now => HOUR + 600)
+            query, params = neo4j.queries.find { |q, _| q.include?('last_error') }
+            assert_includes query, "state: 'published'"
+            assert_equal ['741', crash['text'], HOUR, 1], params.values_at(:number, :text, :at, :count)
+        end
+        # an error line is kept short
+        long = PhoneCalls.parse(JSON.generate('hour' => HOUR, 'line' => 'browser', 'seconds' => 1, 'games' => [],
+                                              'errors' => [{ 'game' => '123', 'text' => 'x' * 5000 }]))
+        assert_equal PhoneCalls::MAX_ERROR, long['errors'].first['text'].size
+    end
+
     def test_the_page_shows_calls_per_day_and_per_game
         now = HOUR + 3600
         phone = [{ :hour => HOUR, :line => 'telefon', :calls => 3, :seconds => 180 }, { :hour => HOUR, :line => 'browser', :calls => 1, :seconds => 30 }]

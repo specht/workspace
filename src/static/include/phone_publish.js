@@ -76,13 +76,18 @@
     function gameHtml(g) {
         const badge = { pending: 'text-bg-warning', published: 'text-bg-success', rejected: 'text-bg-secondary' }[g.state] || 'text-bg-light';
         const reason = g.reason ? `<div class='pp-reason mt-1'><i class='bi bi-chat-left-text'></i> ${esc(g.reason)}</div>` : '';
+        // a call where the game stopped with an error: what its language said
+        const crashed = g.error ? `<div class='pp-crashed mt-2 text-danger small'><i class='bi bi-exclamation-triangle'></i> ` +
+            `Bei einem Anruf ${g.errorAt ? 'am ' + new Date(g.errorAt * 1000).toLocaleDateString('de-DE') + ' ' : ''}ist dein Spiel mit einem Fehler abgebrochen` +
+            `${g.errors > 1 ? ' (' + g.errors + ' Mal)' : ''}; wer anrief, kam zurück ins Telefonbuch. Das hat die Sprache gemeldet:` +
+            `<pre class='pp-syntax mb-0 mt-1'><code>${esc(g.error)}</code></pre>Korrigier es und reich das Spiel noch einmal ein.</div>` : '';
         const renumber = g.state !== 'rejected'
             ? `<button class='btn btn-sm btn-outline-secondary pp-renumber' data-id='${esc(g.id)}'><i class='bi bi-123'></i> Nummer ändern</button>` : '';
         return `<li class='list-group-item'>` +
             `<div class='d-flex flex-wrap gap-2 align-items-baseline'><span class='pp-own-number'>${esc(label(g))}</span>` +
             `<b>${esc(g.title)}</b><span class='badge ${badge}'>${esc(g.stateText)}</span>` +
             `<span class='text-muted small'>${esc(g.file)}</span></div>` +
-            (g.description ? `<div class='text-muted small'>${esc(g.description)}</div>` : '') + reason +
+            (g.description ? `<div class='text-muted small'>${esc(g.description)}</div>` : '') + reason + crashed +
             `<div class='d-flex flex-wrap gap-2 mt-2'>${renumber}` +
             `<button class='btn btn-sm btn-outline-danger pp-withdraw' data-id='${esc(g.id)}'><i class='bi bi-x-lg'></i> ${g.state === 'rejected' ? 'Entfernen' : 'Zurückziehen'}</button></div>` +
             `<div class='pp-edit' data-id='${esc(g.id)}'></div></li>`;
@@ -186,6 +191,11 @@
             taken: 'Diese Nummer hat schon ein anderes Spiel. Nimm eine andere.',
         };
         message(texts[data.error] || data.message || fallback);
+        // a syntax error: what the language says, with its line
+        if (data.error === 'syntax' && data.output) {
+            const box = root.querySelector('.pp-message .alert');
+            if (box) box.insertAdjacentHTML('beforeend', `<pre class='pp-syntax mb-0 mt-2'><code>${esc(data.output)}</code></pre>`);
+        }
     }
 
     root.addEventListener('click', (e) => {

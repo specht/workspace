@@ -23,6 +23,8 @@ class Main < Sinatra::Base
             :id => node[:id], :number => node[:number], :word => node[:word], :title => node[:title], :description => node[:description],
             :file => node[:file], :state => node[:state], :reason => node[:reason], :transcript => node[:transcript],
             :submitted => node[:submitted], :decided => node[:decided], :email => email,
+            # the newest error of a call (PhoneCalls), for its author
+            :error => node[:last_error], :error_at => node[:last_error_at], :errors => node[:errors].to_i,
         }
     end
 
@@ -69,6 +71,21 @@ class Main < Sinatra::Base
         result[:output].to_s.force_encoding('UTF-8').scrub('�')[0, 20000]
     end
 
+    # The program's syntax, checked in the student's Workspace as a guest
+    # (PhoneGames::SYNTAX): { ok:, output: }, or nil when the Workspace does
+    # not run (then the maintainer sees the test run instead)
+    def phone_game_syntax(rel)
+        check = PhoneGames::SYNTAX[File.extname(rel)]
+        return nil unless check
+
+        command = Shellwords.join(check.(File.join('/workspace', rel))) + ' 2>&1 | head -c 4000; exit ${PIPESTATUS[0]}'
+        result = workspace_runtime.run_command(fs_tag_for_email(@session_user[:email]), :command => "bash -c #{Shellwords.escape(command)}",
+            :uid => GUEST_UID, :home => '/tmp', :seconds => 15)
+        return nil if result.nil? || result[:timed_out]
+
+        { :ok => result[:status].to_i.zero?, :output => result[:output].to_s.force_encoding('UTF-8').scrub('�')[0, 4000] }
+    end
+
     post '/api/phone/mine' do
         assert(user_logged_in?)
         respond(phone_games_state)
@@ -86,12 +103,20 @@ class Main < Sinatra::Base
         rescue PhoneGames::Refused, WorkspaceFiles::Refused => e
             halt 400, { :error => 'files', :message => e.message }.to_json
         end
-        file = File.basename(data[:file].to_s)
+        path = data[:file].to_s
+        file = File.basename(path)
+        # a program that does not even start cannot be published: its
+        # syntax checked in the Workspace first (the error with its line)
+        syntax = phone_game_syntax(File.join(PhoneGames::FOLDER, path))
+        if syntax && !syntax[:ok]
+            halt 400, { :error => 'syntax', :message => "#{path} startet nicht: Die Sprache meldet einen Fehler. Korrigier ihn und reich das Spiel dann ein.",
+                        :output => syntax[:output] }.to_json
+        end
         # the names are the game's own: as it states them in the test run
         # (title '…', subtitle '…' in any language), else as its code has them
-        transcript = phone_game_transcript(file)
+        transcript = phone_game_transcript(path)
         ran = PhoneGames.names_from_run(transcript)
-        code = PhoneGames.names(ws.read_text(File.join(PhoneGames::FOLDER, file), :max => 512 * 1024))
+        code = PhoneGames.names(ws.read_text(File.join(PhoneGames::FOLDER, path), :max => 512 * 1024))
         title, description = ran[:title] || code[:title], ran[:subtitle] || code[:subtitle]
         halt 400, { :error => 'title' }.to_json unless title
         halt 400, { :error => 'subtitle' }.to_json unless description
@@ -101,7 +126,7 @@ class Main < Sinatra::Base
             if PhoneGames.taken_numbers(all, email).include?(number)
                 halt 409, { :error => 'taken', :message => "Die Nummer #{word || number} hat schon ein anderes Spiel." }.to_json
             end
-            PhoneGames.copy(ws, files, id)
+            PhoneGames.copy(ws, files, id, path)
             phone_game_transcribe_later(id)
             # a pending version of the same number is replaced by this one; a
             # published one stays playable until this one is approved
@@ -305,7 +330,9 @@ class Main < Sinatra::Base
         items = games.map do |g|
             "<a class='list-group-item list-group-item-action d-flex justify-content-between align-items-center' href='/telefonspiel#veroeffentlichen'>" \
                 "<span><span class='font-monospace me-2'>#{PhoneGames.h(PhoneGames.label(g))}</span><strong>#{PhoneGames.h(g[:title])}</strong></span>" \
-                "<span class='badge #{badge[g[:state]]}'>#{PhoneGames::STATE_TEXT[g[:state]]}</span></a>"
+                "<span class='badge #{badge[g[:state]]}'>#{PhoneGames::STATE_TEXT[g[:state]]}</span></a>" +
+                (g[:error] ? "<div class='list-group-item text-danger small'><i class='bi bi-exclamation-triangle' aria-hidden='true'></i> " \
+                    "#{PhoneGames.h(PhoneGames.label(g))} ist bei einem Anruf mit einem Fehler abgebrochen; was die Sprache gemeldet hat, steht in der Aktivität.</div>" : '')
         end.join
         "<section id='telefonspiele' class='my-4'><h3>Deine Telefonspiele</h3>" \
             "<p>Veröffentlichte Spiele stehen im <a href='/telefonbuch'>Telefonbuch</a>. Ändern, eine andere Nummer wählen oder zurückziehen kannst du sie in der Aktivität.</p>" \

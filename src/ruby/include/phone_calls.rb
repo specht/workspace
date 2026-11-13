@@ -18,6 +18,8 @@ module PhoneCalls
     # a call is at most a quarter of an hour (GAME_SECONDS); more is a
     # broken line
     MAX_SECONDS = 3600
+    # what is kept of a crashed game's error output: its last characters
+    MAX_ERROR = 1500
 
     # One line of a file as an entry, or nil.
     def self.parse(line)
@@ -26,6 +28,10 @@ module PhoneCalls
         return nil unless e['seconds'].is_a?(Integer) && e['seconds'].between?(0, MAX_SECONDS)
         return nil unless e['games'].is_a?(Array) && e['games'].all? { |g| g.is_a?(String) && g.match?(/\A\d{3,4}\z/) }
 
+        # a game that crashed: its number and what its language wrote
+        errors = e['errors'].is_a?(Array) ? e['errors'] : []
+        e['errors'] = errors.select { |x| x.is_a?(Hash) && x['game'].to_s.match?(/\A\d{3,4}\z/) && x['text'].is_a?(String) }
+                            .map { |x| { 'game' => x['game'].to_s, 'text' => x['text'][-MAX_ERROR..] || x['text'] } }.first(3)
         e
     rescue JSON::ParserError
         nil
@@ -66,6 +72,15 @@ module PhoneCalls
                 UNWIND $rows AS r
                 MERGE (h:PhoneGameHour {hour: r.hour, line: r.line, game: r.game})
                 SET h.calls = coalesce(h.calls, 0) + r.calls;
+            END_OF_QUERY
+        end
+        # the newest error of each published game, for its author (the card
+        # and the profile): the text and the hour of the call
+        entries.flat_map { |e| e['errors'].map { |x| x.merge('hour' => e['hour']) } }.group_by { |x| x['game'] }.each do |game, list|
+            last = list.max_by { |x| x['hour'] }
+            neo4j.neo4j_query(<<~END_OF_QUERY, :number => game, :text => last['text'], :at => last['hour'], :count => list.size)
+                MATCH (g:PhoneGame {number: $number, state: 'published'})
+                SET g.last_error = $text, g.last_error_at = $at, g.errors = coalesce(g.errors, 0) + $count;
             END_OF_QUERY
         end
         files.each { |f| File.delete(f) }

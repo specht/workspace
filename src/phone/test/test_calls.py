@@ -21,10 +21,19 @@ class Calls(unittest.TestCase):
             with open(os.path.join(folder, 'telefon.jsonl')) as f:
                 lines = [json.loads(line) for line in f]
         self.assertEqual(2, len(lines))
-        self.assertEqual({'hour', 'line', 'seconds', 'games'}, set(lines[0]))
+        self.assertEqual({'hour', 'line', 'seconds', 'games'}, set(lines[0]))   # no errors: no key
         self.assertEqual(['123', '204'], lines[0]['games'])
         self.assertEqual(95, lines[0]['seconds'])
         self.assertEqual(0, lines[0]['hour'] % 3600)
+
+    def test_a_crash_is_recorded_with_its_error(self):
+        with tempfile.TemporaryDirectory() as folder:
+            game.CALLS = folder
+            game.record_call('browser', ['741'], 4, [{'game': '741', 'text': 'x' * 3000}, {'game': '', 'text': 'menu'}])
+            with open(os.path.join(folder, 'browser.jsonl')) as f:
+                entry = json.loads(f.readline())
+        self.assertEqual(['741'], [e['game'] for e in entry['errors']])
+        self.assertEqual(1500, len(entry['errors'][0]['text']))
 
     def test_nothing_without_the_folder(self):
         with tempfile.TemporaryDirectory() as folder:

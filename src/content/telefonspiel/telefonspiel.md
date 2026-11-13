@@ -1631,6 +1631,16 @@ Nummer; die neue Fassung ersetzt die alte, sobald sie freigegeben ist.
 Zurückziehen kannst du dein Spiel jederzeit, dann ist seine Nummer wieder
 frei.
 
+Schreibst du mehrere Spiele, gib jedem einen eigenen Ordner in `telefon`,
+etwa `telefon/hoehle` und `telefon/quiz`: Mit jedem Spiel wird dann nur sein
+eigener Ordner eingereicht, mit seinen MP3s.
+
+Bevor dein Spiel eingereicht wird, sieht der Workspace nach, ob es überhaupt
+startet. Hat es einen Fehler in der Schreibweise, steht unten, was die Sprache
+meldet, mit der Zeile. Bricht ein veröffentlichtes Spiel bei einem Anruf mit
+einem Fehler ab, hört der Anrufer das und kommt zurück ins Telefonbuch; was die
+Sprache gemeldet hat, steht dann hier bei deinem Spiel.
+
 <div class='phone-publish card card-body' id='veroeffentlichen'>
 <p class='mb-0 text-muted'>Deine Spiele werden geladen …</p>
 </div>

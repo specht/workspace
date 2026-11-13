@@ -43,16 +43,25 @@ def published_number(games_root, folder):
     return None
 
 
-def record_call(line, games, seconds):
+# What a caller hears when a published game stops with an error (a syntax
+# error, an exception): instead of the call ending, the Telefonbuch again
+CRASHED = 'Dieses Spiel hat gerade einen Fehler. Du kommst zurück ins Telefonbuch.'
+
+
+def record_call(line, games, seconds, errors=()):
     """one call for the statistics: when it began (to the hour, as the
     website keeps it), on which line ('telefon' or 'browser'), how long, and
-    the numbers of the games it reached, in order. Never who called: no
-    number, no address."""
+    the numbers of the games it reached, in order, and the errors of a game
+    that crashed. Never who called: no number, no address."""
     if not CALLS:
         return
     import time
     began = time.time() - seconds
     entry = {'hour': int(began - began % 3600), 'line': line, 'seconds': int(round(seconds)), 'games': list(games)}
+    # a game that stopped with an error: its number and the last lines its
+    # language wrote (the error and its line), for the game's author
+    if errors:
+        entry['errors'] = [{'game': e['game'], 'text': e['text'][-1500:]} for e in errors if e.get('game')][:3]
     try:
         with open(os.path.join(CALLS, f'{line}.jsonl'), 'a') as f:
             f.write(json.dumps(entry) + '\n')

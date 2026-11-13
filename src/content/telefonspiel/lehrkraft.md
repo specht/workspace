@@ -10,7 +10,7 @@ Lernende programmieren ein Spiel, das man anrufen kann, in Ruby, Python oder Jav
 <li><b>Für Schnelle:</b> das Zahlenschloss (Extra), die Aussprache englischer Wörter mit Lautschrift.</li>
 </ul></td></tr>
 <tr><th>Dateien</th><td><ul>
-<li>Alles in <code>/workspace/telefon</code>: <code>hallo</code>, <code>frage</code>, <code>hoehle</code> und <code>geschichte</code>, je mit <code>.rb</code>, <code>.py</code> oder <code>.js</code>.</li>
+<li>Alles in <code>/workspace/telefon</code>: <code>hallo</code>, <code>frage</code>, <code>hoehle</code> und <code>geschichte</code>, je mit <code>.rb</code>, <code>.py</code> oder <code>.js</code>. Wer mehrere Spiele einreichen will, gibt jedem einen Ordner darin (<code>telefon/quiz</code>); eingereicht wird dann nur dieser Ordner.</li>
 <li>Der Befehl <code>telefon spiel.rb</code> startet das Spiel und zeigt auf Port 8040 ein Telefon mit Tastenfeld im Browser; das Spiel startet beim Klick auf den grünen Hörer, bei jedem Anruf neu aus der Datei.</li>
 <li>Die Stimme und die Musik von YouTube kommen vom Sprachdienst des Workspace (<code>phone-speech</code>); ohne ihn liest der Browser mit seiner eigenen Stimme vor, und die Seite sagt das.</li>
 </ul></td></tr>

@@ -112,43 +112,70 @@ module PhoneGames
     end
 
     # The games a student can submit: the program files of /workspace/telefon
+    # and of its folders one level down, for a student with several games
+    # (one game per folder): »start.rb«, »quiz/start.rb«
+    MAX_FOLDERS = 50
+
     def self.candidates(ws)
         return [] unless ws && ws.entry(FOLDER)[:type] == :dir
 
-        ws.list(FOLDER).select { |e| e[:type] == :file && LANGUAGES.include?(File.extname(e[:name])) }.map { |e| e[:name] }
+        program = ->(e) { e[:type] == :file && LANGUAGES.include?(File.extname(e[:name])) }
+        top = ws.list(FOLDER)
+        folders = top.select { |e| e[:type] == :dir && !e[:name].start_with?('.') }.first(MAX_FOLDERS)
+        top.select(&program).map { |e| e[:name] } + folders.flat_map do |d|
+            ws.list(File.join(FOLDER, d[:name])).select(&program).map { |e| "#{d[:name]}/#{e[:name]}" }
+        rescue WorkspaceFiles::Refused
+            []
+        end
     rescue WorkspaceFiles::Refused
         []
     end
 
+    # The folder of a game in the Workspace: telefon, or its folder there
+    def self.game_dir(file)
+        sub = File.dirname(file.to_s)
+        sub == '.' ? FOLDER : File.join(FOLDER, sub)
+    end
+
     # What a submission copies: the game and the files beside it it may use
-    # (music, data), from /workspace/telefon only, without subfolders.
-    # [{ name:, size: }]; Refused when the game is missing or too much.
+    # (music, data), from its own folder (telefon or one of its folders),
+    # without what lies deeper. [{ name:, size: }]; Refused when the game is
+    # missing or too much.
     def self.plan(ws, file)
-        name = File.basename(file.to_s)
+        name = file.to_s
         raise Refused.new(:no_workspace, 'Dein Workspace ist gerade nicht erreichbar.') unless ws
         unless candidates(ws).include?(name)
             raise Refused.new(:no_game, "In /workspace/#{FOLDER} gibt es kein Spiel #{name}.")
         end
 
-        files = ws.list(FOLDER).select { |e| e[:type] == :file && KEEP.include?(File.extname(e[:name]).downcase) && e[:size] <= MAX_FILE }
+        files = ws.list(game_dir(name)).select { |e| e[:type] == :file && KEEP.include?(File.extname(e[:name]).downcase) && e[:size] <= MAX_FILE }
         files = files.first(MAX_FILES)
         total = files.sum { |e| e[:size] }
         if total > MAX_TOTAL
-            raise Refused.new(:too_big, "Im Ordner #{FOLDER} liegen zusammen mehr als #{MAX_TOTAL / 1024 / 1024} MB. Nimm große Dateien heraus, die das Spiel nicht braucht.")
+            raise Refused.new(:too_big, "Im Ordner #{game_dir(name)} liegen zusammen mehr als #{MAX_TOTAL / 1024 / 1024} MB. Nimm große Dateien heraus, die das Spiel nicht braucht.")
         end
 
         files.map { |e| { :name => e[:name], :size => e[:size] } }
     end
 
-    # Copies the planned files into ROOT/<id>
-    def self.copy(ws, files, id)
+    # Copies the planned files of the game's folder into ROOT/<id>
+    def self.copy(ws, files, id, file)
         dir = File.join(ROOT, id)
         FileUtils.mkdir_p(dir)
         files.each do |f|
-            File.binwrite(File.join(dir, f[:name]), ws.read(File.join(FOLDER, f[:name]), :max => MAX_FILE))
+            File.binwrite(File.join(dir, f[:name]), ws.read(File.join(game_dir(file), f[:name]), :max => MAX_FILE))
         end
         dir
     end
+
+    # How a game's program is checked for its syntax in the Workspace
+    # before it is submitted (run, never executed): Ruby and Node check,
+    # Python parses
+    SYNTAX = {
+        '.rb' => ->(path) { ['ruby', '-c', path] },
+        '.py' => ->(path) { ['python3', '-c', 'import ast, sys; ast.parse(open(sys.argv[1], encoding="utf-8").read(), sys.argv[1])', path] },
+        '.js' => ->(path) { ['node', '--check', path] },
+    }.freeze
 
     # The list the line reads (src/phone/line/menu.py): every published game
     # with its folder there (games/<id>, the copy)
@@ -352,6 +379,8 @@ module PhoneGames
             :description => game[:description], :file => game[:file], :state => game[:state],
             :stateText => STATE_TEXT[game[:state]], :reason => game[:state] == 'rejected' ? game[:reason] : nil,
             :submitted => game[:submitted], :decided => game[:decided],
+            # the newest error of a call, and when (the hour), for its author
+            :error => game[:state] == 'published' ? game[:error] : nil, :errorAt => game[:error_at], :errors => game[:errors].to_i,
         }
     end
 

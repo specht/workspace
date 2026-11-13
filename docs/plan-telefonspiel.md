@@ -430,6 +430,16 @@ loop.
   the registration and what the provider sends back over it pass. The
   ports for the audio (10000–10099) stay open: the provider may send it
   from other addresses;
+- a game that does not start (the maintainer, 13 November 2026: game 741
+  hung up at once, a Ruby `when '7' or '4':` from Python): before a game is
+  submitted, the Workspace checks its syntax (`PhoneGames::SYNTAX`: `ruby
+  -c`, Python's `ast.parse`, `node --check`, as a guest) and the card shows
+  what the language says; on the line, a published game that exits with an
+  error says so (`game.CRASHED`) and the menu starts again, twice a call at
+  most; its last error lines go with the call's line (`record_call`) to the
+  game's node (`last_error`), for its author on the card and in the
+  profile. Several games: one folder each under `telefon` (one level),
+  submitted with that folder only (`PhoneGames.candidates`, `plan`);
 - calls for `/statistik` (the maintainer, 13 November 2026: which number
   or game was called, not who): the line and the runner write one line per
   call into `internal/phone-calls` (`record_call` in `core/game.py`: the

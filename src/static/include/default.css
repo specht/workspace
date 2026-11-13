@@ -18528,3 +18528,16 @@ figure.slide-with-notes .slide-notes-label {
     margin-bottom: 0.2em;
 }
 figure.slide-with-notes figcaption { margin-top: 0.5em; font-size: 0.9em; color: var(--bs-secondary-color); }
+
+/* the Telefonspiel's card: what a language reported (a syntax error before
+   submitting, the error of a call) */
+.pp-syntax {
+    max-height: 12em;
+    overflow: auto;
+    padding: 0.5em 0.7em;
+    border-radius: 0.3em;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-body-color);
+    font-size: 0.82em;
+    white-space: pre-wrap;
+}

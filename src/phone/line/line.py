@@ -183,8 +183,18 @@ class Line(emulator.Server):
 
     async def run_call(self):
         dialed, trial = self.dialed, self.trial
+        was_trial = bool(trial)
         deadline = time.monotonic() + SECONDS
         began, self.reached = time.monotonic(), []
+        # the last lines a game wrote to stderr: its error, if it crashes
+        errors, crashed = [], []
+
+        def output(kind, line):
+            if kind == 'err':
+                print('game', kind, line, file=sys.stderr, flush=True)
+                errors.append(line)
+                del errors[:-12]
+
         # a game may forward the call to another game's number (transfer):
         # the menu starts again as if that number had been dialled, five
         # times at most, all within the call's time
@@ -201,11 +211,19 @@ class Line(emulator.Server):
             if left <= 0:
                 reason = 'time'
                 break
+            errors.clear()
+            status = None
             try:
-                reason, _ = await game.run_game(phone, self.command, HERE, env, lambda kind, line: print('game', kind, line, file=sys.stderr, flush=True) if kind == 'err' else None,
-                                                preexec_fn=limits, seconds=left)
+                reason, status = await game.run_game(phone, self.command, HERE, env, output, preexec_fn=limits, seconds=left)
             except OSError:
                 reason = 'ended'
+            # a game that stopped with an error: say so, back to the menu
+            # (not the menu itself crashing, and twice at most)
+            if reason == 'ended' and status and phone.switched and self.phone is phone and len(crashed) < 2:
+                crashed.append({'game': self.reached[-1] if self.reached else '', 'text': '\n'.join(errors)})
+                await phone.say(game.CRASHED)
+                dialed, trial = '', None
+                continue
             if reason != 'transfer' or self.phone is not phone:
                 break
             dialed, trial = phone.transfer_to, None
@@ -214,8 +232,8 @@ class Line(emulator.Server):
             self.send({'ended': reason})
         # for /statistik (record_call); a game tried before it is published
         # is its author's, not a call
-        if not trial:
-            game.record_call('browser', self.reached, time.monotonic() - began)
+        if not was_trial:
+            game.record_call('browser', self.reached, time.monotonic() - began, crashed)
 
     def calling(self):
         return self.call is not None and not self.call.done()
