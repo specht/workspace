@@ -7,7 +7,9 @@
 # the game's dialled after it: the game answers at once, without the menu;
 # 100999, a number without a game (the tones, »Kein Anschluss«, the menu);
 # and 100 without pressing a key (after two rounds of titles, goodbye).
-# The test checks the runner's log and keeps the recordings in $OUT.
+# The test checks the runner's log and each call's line for /statistik
+# ($OUT/calls, record_call: the games reached, nothing about the caller),
+# and keeps the recordings in $OUT.
 #   src/phone/test/e2e.sh            (from the repository; images phone-asterisk,
 #                                     phone-speech, phone-runner, phone-testclient built)
 set -eu
@@ -15,7 +17,7 @@ HERE=$(cd "$(dirname "$0")/.." && pwd)
 OUT=${OUT:-/tmp/phone-e2e}
 CACHE=${CACHE:-/tmp/phone-e2e-cache}       # speech, kept between runs
 NET=phone-e2e
-rm -rf "$OUT"; mkdir -p "$OUT/conf" "$OUT/in" "$OUT/out" "$OUT/games/1" "$CACHE"
+rm -rf "$OUT"; mkdir -p "$OUT/conf" "$OUT/in" "$OUT/out" "$OUT/games/1" "$OUT/calls" "$CACHE"
 # the published list as the Workspace writes it (phone_games.rb)
 cp "$HERE/games/1/main.py" "$OUT/games/1/"
 echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}]}' > "$OUT/games/published.json"
@@ -31,8 +33,8 @@ chmod 777 "$CACHE" 2>/dev/null || true
 docker run -d --name phone-e2e-speech --network $NET --network-alias phone-speech \
     -v "$HERE/speech:/app:ro" -v "$CACHE:/cache" phone-speech >/dev/null
 docker run -d --name phone-e2e-runner --network $NET --network-alias runner \
-    -e PHONE_NUMBER=100 -e PHONE_DIRECT_DIAL=1 \
-    -v "$HERE:/phone:ro" -v "$OUT/games:/games:ro" phone-runner >/dev/null
+    -e PHONE_NUMBER=100 -e PHONE_DIRECT_DIAL=1 -e PHONE_CALLS=/calls \
+    -v "$HERE:/phone:ro" -v "$OUT/games:/games:ro" -v "$OUT/calls:/calls" phone-runner >/dev/null
 cp "$HERE/test/baresip-config" "$OUT/conf/config"
 echo "<sip:test@asterisk>;auth_pass=test;regint=0" > "$OUT/conf/accounts"
 cp "$HERE/test/call.py" "$OUT/call.py"
@@ -72,6 +74,13 @@ lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
 call 100 75
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-quiet.log"
 check "$OUT/runner-quiet.log" "say 'Ruf gern wieder an" "game ended: hangup"
+# each call one line for /statistik: the first two reached game 123, the
+# others none; only hour, line, seconds and games, never the caller
+sleep 2
+if [ "$(cat "$OUT/calls/telefon.jsonl" 2>/dev/null | wc -l)" = 4 ]; then echo "ok    four calls recorded"; else echo "WRONG calls recorded: $(cat "$OUT/calls/telefon.jsonl" 2>/dev/null | wc -l)"; fail=1; fi
+games=$(sed -n 's/.*"games": \(\[[^]]*\]\).*/\1/p' "$OUT/calls/telefon.jsonl" 2>/dev/null | tr '\n' ' ')
+if [ "$games" = '["123"] ["123"] [] [] ' ]; then echo "ok    games of the calls: $games"; else echo "WRONG games of the calls: $games"; fail=1; fi
+if grep -qv '^{"hour": [0-9]*, "line": "telefon", "seconds": [0-9]*, "games": \[[^]]*\]}$' "$OUT/calls/telefon.jsonl"; then echo "WRONG a call's line holds more"; fail=1; else echo "ok    nothing but hour, line, seconds, games"; fi
 heard=$(ls "$OUT"/out/*-dec.wav | head -1)
 seconds=$(docker run --rm -v "$OUT:/t" phone-testclient sh -c "sox /t/out/$(basename "$heard") -n stat 2>&1 | sed -n 's/^Length (seconds): *//p'")
 echo "heard ${seconds} s: $heard"

@@ -160,6 +160,9 @@ class LinePhone(emulator.Emulator):
                 return {'error': 'no game'}
             self.switched = True
             self.server.folder = folder_path(folder)
+            number = None if trial else game.published_number(GAMES, folder)
+            if number:
+                self.server.reached.append(number)
             return {'ok': True}
         return await super().execute(command)
 
@@ -173,6 +176,7 @@ class Line(emulator.Server):
         self.seen = time.monotonic()
         self.dialed = ''                                # the number dialled before the call, or ''
         self.trial = None                               # a game tried before it is published (trial_of)
+        self.reached = []                               # the numbers of the games the call reached (record_call)
 
     def title(self):
         return ''                                       # the display says nothing until a game names itself
@@ -180,6 +184,7 @@ class Line(emulator.Server):
     async def run_call(self):
         dialed, trial = self.dialed, self.trial
         deadline = time.monotonic() + SECONDS
+        began, self.reached = time.monotonic(), []
         # a game may forward the call to another game's number (transfer):
         # the menu starts again as if that number had been dialled, five
         # times at most, all within the call's time
@@ -207,6 +212,10 @@ class Line(emulator.Server):
         if self.phone is phone:
             self.phone = None
             self.send({'ended': reason})
+        # for /statistik (record_call); a game tried before it is published
+        # is its author's, not a call
+        if not trial:
+            game.record_call('browser', self.reached, time.monotonic() - began)
 
     def calling(self):
         return self.call is not None and not self.call.done()

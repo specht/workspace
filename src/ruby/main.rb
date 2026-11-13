@@ -880,6 +880,12 @@ class Main < Sinatra::Base
                 rescue => e
                     STDERR.puts "Reading the server's load failed: #{e.class}: #{e.message}"
                 end
+                # the calls of the Telefonspiel, numbers per hour (include/phone_calls.rb)
+                begin
+                    PhoneCalls.collect($neo4j)
+                rescue => e
+                    STDERR.puts "Collecting the calls failed: #{e.class}: #{e.message}"
+                end
                 # labels of the Tag der offenen Tür past their time (with a
                 # photo: two hours unprinted), include/label_printer_api.rb
                 begin

@@ -417,9 +417,20 @@ loop.
 - `config.rb`: `phone_speech` always, on the students' network,
   reachable from Workspaces on port 8000 only (peer-firewall label
   `…peer_firewall.phone`); Asterisk and the runner join with the trunk;
-- tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets)
-  and `src/phone/test/e2e.sh` (a whole call: menu, key 1, three guesses,
-  the runner's log checked, the recording kept). The test telephone sends
+- calls for `/statistik` (the maintainer, 13 November 2026: which number
+  or game was called, not who): the line and the runner write one line per
+  call into `internal/phone-calls` (`record_call` in `core/game.py`: the
+  hour it began, `telefon` or `browser`, its seconds, the numbers of the
+  games it reached; a game tried before it is published does not count),
+  the website adds them up every five minutes into `PhoneHour` and
+  `PhoneGameHour` (`include/phone_calls.rb`, 400 days) and deletes the
+  files; `/statistik` shows them in »Verlauf« and as a table per game.
+  The folder is 0700, written as root in the two containers, never by a
+  game (user game);
+- tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets),
+  `test_calls.py` (a call's line) and `src/phone/test/e2e.sh` (a whole
+  call: menu, key 1, three guesses, the runner's log and the calls' lines
+  checked, the recording kept). The test telephone sends
   keys as RFC 4733 events and needs a key release after each key (0x04 on
   baresip's UDP console), or each key arrives only with the next one.
 

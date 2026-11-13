@@ -1,6 +1,7 @@
 require_relative 'usage_stats'
 require_relative 'workspace_usage'
 require_relative 'server_load'
+require_relative 'phone_calls'
 
 # /statistik (UsageStats): what is used at which school and where tasks
 # are hard, for the administration, without names. The attempts of the
@@ -62,6 +63,7 @@ class Main < Sinatra::Base
             (c[:tasks][:by_id] || {}).each { |id, t| tasks["#{activity}/#{id}"] ||= t['title'].to_s }
         end
         hours = workspace_hours(now - days * 86_400 - 7 * 86_400)
+        phone = phone_hours(now - days * 86_400 - 7 * 86_400)
         server = server_hours(now - days * 86_400 - 7 * 86_400)
         first_server = neo4j_query('MATCH (h:ServerHour) RETURN min(h.hour) AS first;').first&.dig('first')
         server_periods = ServerLoad.periods(server, days, now)
@@ -79,8 +81,9 @@ class Main < Sinatra::Base
             "<p class='abstract'>Welche Aktivitäten und Aufgaben an welcher Schule und in welcher Klasse bearbeitet werden und wo sie haken, " \
             'aus den Ergebnissen der automatischen Prüfung, ohne Namen, und was der Server dabei leistet. Zahlen, die auf weniger als fünf Lernenden beruhen, ' \
             'stehen hier nicht; Lehrkräfte, die Administration und die Testgruppen zählen nicht mit.</p>' +
-            UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours),
-                        :titles => titles, :tasks => tasks, :schools => school_names,
+            UsageStats.html(UsageStats.summary(rows, :days => days, :now => now, :group_school => group_school, :hours => hours,
+                                          :phone => phone[:hours], :phone_games => phone[:games]),
+                        :titles => titles, :tasks => tasks, :schools => school_names, :phone_titles => PhoneCalls.titles,
                         :server => { :periods => server_periods, :rhythm => ServerLoad.rhythm(server), :since => first_server, :today => today },
                         :pins => pins) +
             ServerLoad.html(server_periods, :since => first_server, :today => today)
@@ -133,6 +136,20 @@ class Main < Sinatra::Base
             MATCH (h:ServerHour) WHERE h.hour >= $since
             RETURN properties(h) AS h ORDER BY h.hour;
         END_OF_QUERY
+    end
+
+    # The calls of the Telefonspiel (PhoneCalls) of the window: per hour and
+    # line, and per hour, line and game
+    def phone_hours(since)
+        hours = neo4j_query(<<~END_OF_QUERY, :since => since).map { |r| { :hour => r['hour'].to_i, :line => r['line'], :calls => r['calls'].to_i, :seconds => r['seconds'].to_i } }
+            MATCH (h:PhoneHour) WHERE h.hour >= $since
+            RETURN h.hour AS hour, h.line AS line, h.calls AS calls, h.seconds AS seconds ORDER BY hour;
+        END_OF_QUERY
+        games = neo4j_query(<<~END_OF_QUERY, :since => since).map { |r| { :hour => r['hour'].to_i, :line => r['line'], :game => r['game'].to_s, :calls => r['calls'].to_i } }
+            MATCH (h:PhoneGameHour) WHERE h.hour >= $since
+            RETURN h.hour AS hour, h.line AS line, h.game AS game, h.calls AS calls;
+        END_OF_QUERY
+        { :hours => hours, :games => games }
     end
 
     # The hours of the window, oldest first: [{ hour:, running:, peak: }]

@@ -27,7 +27,7 @@ test('the administration sees what is used, without names; a student does not', 
   await loginAsE2eUser(admin, adminEmail(), testInfo);
   await admin.goto('/statistik');
   await expect(admin.locator('h1')).toHaveText('Nutzung');
-  for (const heading of ['Verlauf', 'Wochenrhythmus', 'Klassen', 'Stolpersteine', 'Schulen', 'Aktivitäten', 'Server']) {
+  for (const heading of ['Verlauf', 'Telefonspiel', 'Wochenrhythmus', 'Klassen', 'Stolpersteine', 'Schulen', 'Aktivitäten', 'Server']) {
     await expect(admin.locator('h2', { hasText: heading })).toBeVisible();
   }
   // the students' strip of the course: a bar per day, its number above it

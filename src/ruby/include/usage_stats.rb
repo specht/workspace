@@ -10,6 +10,8 @@ require 'date'
 # its own (test/usage_stats_test.rb); the page (usage_stats_page.rb) hands
 # in the rows with a number per person instead of an address.
 module UsageStats
+    # the lines of the Telefonspiel (PhoneCalls), as the page names them
+    PHONE_LINES = { 'telefon' => 'am Telefon', 'browser' => 'im Telefonbuch' }.freeze
     MIN_PEOPLE = 5
     WINDOWS = [7, 30, 90, 365].freeze
     DEFAULT_WINDOW = 30
@@ -30,7 +32,7 @@ module UsageStats
     # person a number that stands for one student within this request,
     # groups the classes the student is in (no test groups); group_school:
     # { group => school }.
-    def self.summary(rows, days:, now: Time.now.to_i, min: MIN_PEOPLE, group_school: {}, hours: [])
+    def self.summary(rows, days:, now: Time.now.to_i, min: MIN_PEOPLE, group_school: {}, hours: [], phone: [], phone_games: [])
         first = first_day(days, now)
         since = Time.new(first.year, first.month, first.day).to_i
         rows = rows.select { |r| r[:ts].to_i >= since }
@@ -50,7 +52,63 @@ module UsageStats
             :workspaces => workspace_periods(hours, days, now, min),
             :workspace_rhythm => workspace_rhythm(hours, min),
             :workspaces_since => hours.map { |h| h[:hour] }.min,
+            :phone => phone_periods(phone, days, now),
+            :phone_since => phone.map { |h| h[:hour] }.min,
+            :phone_games => phone_game_counts(phone_games, since),
         }
+    end
+
+    # Calls of the Telefonspiel (PhoneCalls) per day or calendar week, the
+    # lines apart. No threshold: a call says nothing about who it was.
+    def self.phone_periods(hours, days, now)
+        step = days > 90 ? 7 : 1
+        last = day_of(now)
+        by_day = hours.group_by { |h| day_of(h[:hour]) }
+        (first_day(days, now)..last).step(step).map do |from|
+            to = [from + step - 1, last].min
+            inside = (from..to).flat_map { |d| by_day[d] || [] }
+            lines = PHONE_LINES.keys.to_h { |line| [line, inside.select { |h| h[:line] == line }.sum { |h| h[:calls] }] }
+            { :from => from, :to => to, :people => lines.values.sum, :lines => lines,
+              :seconds => inside.sum { |h| h[:seconds] } }
+        end
+    end
+
+    # Calls per game in the window, the lines apart, the busiest first;
+    # the game '' is a call that reached none (only the menu)
+    def self.phone_game_counts(games, since)
+        games.select { |g| g[:hour] >= since }.group_by { |g| g[:game] }.map do |game, list|
+            lines = PHONE_LINES.keys.to_h { |line| [line, list.select { |g| g[:line] == line }.sum { |g| g[:calls] }] }
+            { :game => game, :lines => lines, :calls => lines.values.sum }
+        end.sort_by { |g| [g[:game].empty? ? 1 : 0, -g[:calls], g[:game]] }
+    end
+
+    # The table of the Telefonspiel's games: which numbers were called how
+    # often, on which line.
+    def self.phone_html(summary, titles)
+        games = summary[:phone_games]
+        total = summary[:phone].sum { |p| p[:people] }
+        seconds = summary[:phone].sum { |p| p[:seconds] }
+        io = +"<h2 class='mt-4'>Telefonspiel</h2>"
+        if summary[:phone_since].nil?
+            return io << "<p class='text-muted'>Noch keine Anrufe gezählt. Der Workspace zählt je Stunde, wie viele Anrufe welches Spiel " \
+                         'erreicht haben, am Telefon und im Telefonbuch, nicht wer anruft.</p>'
+        end
+        minutes = total.zero? ? 0 : (seconds / 60.0 / total)
+        io << "<p>#{total} #{total == 1 ? 'Anruf' : 'Anrufe'} im Zeitraum, im Mittel #{decimal(minutes.round(1))} Minuten lang. " \
+              'Welche Nummern angerufen wurden; ein weitergeleiteter Anruf zählt bei jedem Spiel, das er erreicht hat. Wer angerufen hat, wird nicht gespeichert.</p>'
+        if games.empty?
+            return io << "<p class='text-muted'>Im Zeitraum kein Anruf.</p>"
+        end
+        io << "<div class='table-responsive'><table class='table table-sm usage-table'><thead><tr><th>Nummer</th><th>Spiel</th>"
+        PHONE_LINES.each_value { |label| io << "<th class='text-end'>#{h(label)}</th>" }
+        io << "<th class='text-end'>zusammen</th></tr></thead><tbody>"
+        games.each do |g|
+            number, title = g[:game].empty? ? ['–', 'kein Spiel gewählt (nur das Telefonbuch)'] : [g[:game], titles[g[:game]] || 'nicht mehr veröffentlicht']
+            io << "<tr><td>#{h(number)}</td><td>#{h(title)}</td>"
+            PHONE_LINES.each_key { |line| io << "<td class='text-end'>#{g[:lines][line]}</td>" }
+            io << "<td class='text-end'>#{g[:calls]}</td></tr>"
+        end
+        io << '</tbody></table></div>'
     end
 
     def self.people(rows) = rows.map { |r| r[:person] }.uniq
@@ -400,6 +458,13 @@ module UsageStats
                               :few => 'Workspaces', :none => (->(p) { p[:counted] ? 'kein Workspace' : 'nicht gezählt' }))
                      end]
         end
+        unless summary[:phone_since].nil?
+            rows << ['Anrufe beim Telefonspiel', "am Telefon und im Telefonbuch, je #{unit}",
+                     lambda do |axis|
+                         bars(summary[:phone], 1, :axis => axis, :few => 'Anrufe', :none => 'kein Anruf',
+                              :tip => ->(p, n) { "#{n} #{n == 1 ? 'Anruf' : 'Anrufe'}: " + PHONE_LINES.map { |line, label| "#{p[:lines][line]} #{label}" }.join(', ') })
+                     end]
+        end
         if server && server[:since]
             labels = axis_labels(server[:periods])
             ServerLoad::CHARTS.first(2).each do |title, note, value, tip|
@@ -420,6 +485,7 @@ module UsageStats
         io << "<details class='usage-table-view'><summary>Als Tabelle</summary><div class='table-responsive'><table class='table table-sm usage-table'>"
         io << "<thead><tr><th>#{unit}</th><th class='text-end'>Lernende</th><th class='text-end'>Prüfungen</th>"
         io << "<th class='text-end'>Workspaces</th>" unless summary[:workspaces_since].nil?
+        io << "<th class='text-end'>Anrufe</th>" unless summary[:phone_since].nil?
         io << "<th class='text-end'>Prozessoren</th><th class='text-end'>Arbeitsspeicher</th>" if server && server[:since]
         io << '</tr></thead><tbody>'
         pct = ->(v) { v.nil? ? '–' : "#{decimal(v)} %" }
@@ -431,6 +497,7 @@ module UsageStats
                 w = summary[:workspaces][i]
                 io << "<td class='text-end'>#{w.nil? || !w[:counted] ? '–' : (w[:people] == :few ? "&lt; #{min}" : w[:people])}</td>"
             end
+            io << "<td class='text-end'>#{summary[:phone][i][:people]}</td>" unless summary[:phone_since].nil?
             if server && server[:since]
                 sp = server[:periods][i]
                 io << "<td class='text-end'>#{pct.(sp && sp[:cpu_hour])}</td><td class='text-end'>#{pct.(sp && ServerLoad.share(sp[:ram]))}</td>"
@@ -476,7 +543,7 @@ module UsageStats
         io << '</tbody></table></div>'
     end
 
-    def self.html(summary, titles:, tasks:, schools:, server: nil, pins: nil)
+    def self.html(summary, titles:, tasks:, schools:, server: nil, pins: nil, phone_titles: {})
         min = summary[:min]
         activity_link = lambda do |activity|
             title, slug = titles[activity] || [activity, nil]
@@ -508,6 +575,8 @@ module UsageStats
         io << "<p>Wer arbeitet und was der Server dabei leistet, #{unit == 'Tag' ? 'an jedem Tag' : 'in jeder Woche'}, untereinander auf denselben " \
               "#{unit == 'Tag' ? 'Tagen' : 'Wochen'}: Ein voller Tag ist in allen Streifen an derselben Stelle. Jeder Streifen hat seinen eigenen Maßstab.</p>"
         io << course_html(summary, server)
+
+        io << phone_html(summary, phone_titles) if summary.key?(:phone)
 
         io << "<h2 class='mt-4'>Wochenrhythmus</h2>"
         io << '<p>Wann in der Woche gearbeitet wird, je Wochentag und Stunde über den ganzen Zeitraum, nebeneinander.</p>'

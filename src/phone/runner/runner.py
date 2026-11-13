@@ -104,6 +104,7 @@ class Call(game.Phone):
         self.folder = MENU_FOLDER
         self.dialed = ''            # a game's number dialled after the line's (direct_digits)
         self.switched = False
+        self.reached = []           # the numbers of the games the call reached (record_call)
         self.mixer = None
         self.sock = None
         self.port = None
@@ -252,12 +253,17 @@ class Call(game.Phone):
             self.switched = True
             self.folder = os.path.join(GAMES, os.path.basename(folder))
             self.log('game', os.path.basename(folder))
+            number = game.published_number(GAMES, folder)
+            if number:
+                self.reached.append(number)
             return {'ok': True}
         return await super().execute(command)
 
     async def run(self):
+        began = None
         try:
             await self.setup()
+            began = time.monotonic()
             dialed = self.dialed
             # a game may forward the call to another game's number
             # (transfer): the menu starts again as if that number had been
@@ -287,6 +293,8 @@ class Call(game.Phone):
             log('call failed:', repr(error))
         finally:
             await self.teardown()
+            if began is not None:
+                game.record_call('telefon', self.reached, time.monotonic() - began)
 
 
 class Runner:

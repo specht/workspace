@@ -373,8 +373,11 @@ end
 docker_compose[:services][:phone_line] = {
     :build => './docker/phone-runner',
     :command => ['python3', '-u', '/phone/line/line.py'],
-    :volumes => ['./src/phone:/phone:ro', "#{INTERNAL_PATH}/phone-games:/games:ro"],
+    # calls: one line per call (when, how long, which game; never who) for
+    # /statistik, which the website collects and deletes every five minutes
+    :volumes => ['./src/phone:/phone:ro', "#{INTERNAL_PATH}/phone-games:/games:ro", "#{INTERNAL_PATH}/phone-calls:/calls"],
     :environment => { 'PHONE_SPEECH' => 'http://phone-speech:8000', 'PHONE_GAMES' => '/games', 'PHONE_LINES' => '10',
+                      'PHONE_CALLS' => '/calls',
                       # the site, for the pages of telefon in its Workspaces (line.py, workspace_origin)
                       'PHONE_SITE_HOST' => WEBSITE_HOST },
     :networks => ['phone'],
@@ -385,6 +388,10 @@ docker_compose[:services][:phone_line] = {
     :restart => 'always',
 }
 FileUtils.mkpath(File.join(INTERNAL_PATH, 'phone-games'))
+# the calls' lines: the line and the runner write (as root in their
+# container), the website reads and deletes; the games (user game) cannot
+FileUtils.mkpath(File.join(INTERNAL_PATH, 'phone-calls'))
+File.chmod(0o700, File.join(INTERNAL_PATH, 'phone-calls'))
 docker_compose[:networks][:phone] = { :driver => 'bridge', :internal => true }
 docker_compose[:services][:nginx][:networks] << 'phone'
 docker_compose[:services][:phone_speech][:networks]['phone'] = { :aliases => ['phone-speech'] }
@@ -502,8 +509,8 @@ if defined?(PHONE_SIP_SERVER) && defined?(PHONE_SIP_USER) && defined?(PHONE_SIP_
     }
     docker_compose[:services][:phone_runner] = {
         :build => './docker/phone-runner',
-        :volumes => ['./src/phone:/phone:ro', "#{INTERNAL_PATH}/phone-games:/games:ro"],
-        :environment => { 'PHONE_SPEECH' => 'http://phone-speech:8000', 'PHONE_GAMES' => '/games',
+        :volumes => ['./src/phone:/phone:ro', "#{INTERNAL_PATH}/phone-games:/games:ro", "#{INTERNAL_PATH}/phone-calls:/calls"],
+        :environment => { 'PHONE_SPEECH' => 'http://phone-speech:8000', 'PHONE_GAMES' => '/games', 'PHONE_CALLS' => '/calls',
                           'PHONE_ARI' => 'http://asterisk:8088/ari', 'PHONE_ARI_USER' => 'runner', 'PHONE_ARI_PASSWORD' => ari_password,
                           # its own address on phone_call, where Asterisk sends a call's audio
                           'PHONE_RTP_HOST' => 'phone-runner',

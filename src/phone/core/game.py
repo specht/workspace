@@ -24,6 +24,42 @@ LANGUAGES = {
 }
 
 
+# For /statistik: one line per call (record_call), which the website
+# collects every five minutes into numbers per hour and deletes. Set only on
+# the server's line and runner (config.rb), never in a Workspace.
+CALLS = os.environ.get('PHONE_CALLS', '')
+
+
+def published_number(games_root, folder):
+    """the number of the published game in this folder (published.json), or None"""
+    try:
+        with open(os.path.join(games_root, 'published.json')) as f:
+            games = [g for g in json.load(f).get('games', []) if isinstance(g, dict)]
+    except (OSError, ValueError, AttributeError):
+        return None
+    for g in games:
+        if str(g.get('folder')) == str(folder) and re.fullmatch(r'\d{3,4}', str(g.get('number'))):
+            return str(g.get('number'))
+    return None
+
+
+def record_call(line, games, seconds):
+    """one call for the statistics: when it began (to the hour, as the
+    website keeps it), on which line ('telefon' or 'browser'), how long, and
+    the numbers of the games it reached, in order. Never who called: no
+    number, no address."""
+    if not CALLS:
+        return
+    import time
+    began = time.time() - seconds
+    entry = {'hour': int(began - began % 3600), 'line': line, 'seconds': int(round(seconds)), 'games': list(games)}
+    try:
+        with open(os.path.join(CALLS, f'{line}.jsonl'), 'a') as f:
+            f.write(json.dumps(entry) + '\n')
+    except OSError:
+        pass
+
+
 def command_for(args):
     """`spiel.rb` → ['ruby', 'spiel.rb']; anything else stays as it is"""
     if len(args) == 1:
