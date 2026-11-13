@@ -1991,6 +1991,7 @@ check:
     - page_numbers        # die Seitenzahl in Kopf- oder Fußzeile ist ein Feld, keine getippt
     - { page_numbers: true, total: true }   # dazu die Seitenanzahl als Feld (»Seite 2 von 4«)
     - title_page          # Seite 1 ohne Kopf- und Fußzeile, die Seiten danach mit ihnen
+    - { span: 'Tausende Kraniche' }   # diese Überschrift über allen Spalten (in einer), der Text darunter in Spalten
     - toc                 # ein Inhaltsverzeichnis des Programms, aktuell, keines getippt
     - { text: true, except: ['Reisebericht der 7b'] }   # text, ohne Absätze der Vorlage, die in die Kopfzeile wandern
     - { header_text: 'Reisebericht der 7b' }   # in der Kopfzeile, nirgends mehr oben auf einer Seite getippt
@@ -2160,7 +2161,12 @@ es auch ein Feld für die Seitenanzahl. `title_page` sieht im PDF nach, auf
 welchen Seiten Wörter der Kopf- und Fußzeile im oberen und unteren Achtel
 stehen (`header_boxes`, `footer_boxes` des Dienstes `office`): auf Seite 1
 keine, auf jeder Seite danach welche. Wie die Titelseite gebaut ist (Word
-»Erste Seite anders«, LibreOffice eine eigene Seitenvorlage), ist gleich. `toc` vergleicht die
+»Erste Seite anders«, LibreOffice eine eigene Seitenvorlage), ist gleich.
+`span` liest, in wie vielen Spalten jeder Absatz steht (`columns` des Absatzes:
+die seines Bereichs oder seiner Seitenvorlage, die meisten davon); Word setzt
+einen Teil in Spalten mit einem Abschnittsumbruch, LibreOffice mit einem
+Bereich, und Spalten der ganzen Seite aus Word liest LibreOffice als einen
+Bereich um alles. `toc` vergleicht die
 Einträge des Verzeichnisses mit denen, die es nach dem Aktualisieren hätte,
 ohne die Seitenzahlen (Word und LibreOffice können verschieden umbrechen);
 Zeilen mit Punkten oder Tab und einer Zahl am Ende gelten als getipptes

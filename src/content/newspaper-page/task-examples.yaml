@@ -21,3 +21,24 @@ examples:
         say: Zeilenabstand ist noch
       - document: stufen/ohne-trennung.docx
         say: Silbentrennung noch aus
+  runde:
+    pass:
+      - document: stufen/erdkroeten.docx
+    fail:
+      - document: ../../static/newspaper-page/09 Erdkroeten.docx
+        say: in einer Spalte über die ganze Breite
+  titel:
+    pass:
+      - document: stufen/titel-word.docx
+      - document: stufen/titel-libreoffice.docx
+    fail:
+      - document: ../../static/newspaper-page/09 Kraniche Zeitung.docx
+        say: steht noch in der linken Spalte
+  fallen:
+    pass:
+      - document: stufen/kranichabend.docx
+    fail:
+      - document: ../../static/newspaper-page/09 Kranichabend.docx
+        say: 0 von 14 Fallen gefunden
+      - document: stufen/kranichabend-dreizehn.docx
+        say: 13 von 14 Fallen gefunden

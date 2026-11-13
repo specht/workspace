@@ -167,6 +167,45 @@ def read_portion(portion):
     return item
 
 
+# the text columns of each page style, by name, for paragraph_columns
+PAGE_COLUMNS = {}
+
+
+def page_columns(doc):
+    out = {}
+    try:
+        family = doc.StyleFamilies.getByName('PageStyles')
+        for name in family.getElementNames():
+            st = family.getByName(name)
+            out[name] = st.TextColumns.ColumnCount if st.TextColumns is not None else 1
+    except Exception:
+        traceback.print_exc()
+    return out
+
+
+def paragraph_columns(para):
+    """the text columns a paragraph stands in: those of its sections (a part
+    in columns: LibreOffice »Bereich«, Word a section after a continuous
+    break) or of its page style, the most of them; 1 for a heading over the
+    columns of the text below"""
+    most = 1
+    try:
+        section = para.TextSection
+        while section is not None:
+            if section.TextColumns is not None:
+                most = max(most, section.TextColumns.ColumnCount)
+            section = section.ParentSection
+    except Exception:
+        pass
+    # the page style's columns (Word: Layout › Spalten for the whole
+    # document); PAGE_COLUMNS is filled before the paragraphs are read
+    try:
+        most = max(most, PAGE_COLUMNS.get(para.PageStyleName, 1))
+    except Exception:
+        pass
+    return most
+
+
 def read_paragraph(para, styles, where):
     style = para.ParaStyleName
     try:
@@ -206,6 +245,7 @@ def read_paragraph(para, styles, where):
         pass
     return {
         'text': text,
+        'columns': paragraph_columns(para),
         'style': style,
         'style_name': display,
         'outline': para.OutlineLevel,
@@ -800,6 +840,8 @@ def analyze(data, filename, probes=None):
             indexes = read_indexes(doc)
             INDEX_NAMES.clear()
             INDEX_NAMES.update(x['name'] for x in indexes)
+            PAGE_COLUMNS.clear()
+            PAGE_COLUMNS.update(page_columns(doc))
             collect(doc.Text, styles, {}, paragraphs, starts)
             boxes = text_boxes(doc)
             collect_frames(boxes, styles, paragraphs, starts)

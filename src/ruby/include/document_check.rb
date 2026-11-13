@@ -33,6 +33,7 @@ require_relative 'office_client'
 #       - { crop: 1, aspect: 1, keep: [0.36, 0.17, 0.64, 0.75], subject: 'der Kranich' }   # picture 1 of the starting file cropped, square, the region kept (fractions of the original)
 #       - { table_sorted: 'Punkte', order: down }
 #       - title_page           # page 1 without header and footer, the others with them
+#       - { span: 'Tausende Kraniche' }   # this heading over all columns (one column), the text below it in columns
 #       - { page_numbers: true, total: true }   # the page number as a field, and the number of pages (»Seite 2 von 4«)
 #       - { landscape: ['Zeit'], portrait: ['Projektwoche', …] }   # the pages with these pieces in landscape, those with the others upright
 #       - { order: ['Sägen', 'Säg das', 'Zusammenbauen', …] }   # the paragraphs beginning (or else holding) these pieces in this order: chapters moved with their text
@@ -78,7 +79,7 @@ require_relative 'office_client'
 # its hints one by one; once it holds, its label shows, ticked. Rules
 # without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape title_page text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape title_page span text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -151,6 +152,7 @@ module DocumentCheck
                 when 'own_style' then %w[own_style example]
                 when 'landscape' then %w[landscape portrait]
                 when 'page_numbers' then %w[page_numbers total]
+                when 'span' then %w[span]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
                 when 'headings' then %w[headings level]
@@ -167,6 +169,7 @@ module DocumentCheck
                 errors << 'landscape needs a list of pieces of text (on the pages to turn)' unless rule['landscape'].is_a?(Array) && !rule['landscape'].empty? && rule['landscape'].all? { |b| b.is_a?(String) }
                 errors << 'portrait must be a list of pieces of text (on pages that stay upright)' if rule.key?('portrait') && !(rule['portrait'].is_a?(Array) && rule['portrait'].all? { |b| b.is_a?(String) })
             end
+            errors << 'span needs a piece of the heading that goes over the columns' if name == 'span' && !(rule['span'].is_a?(String) && !rule['span'].empty?)
             %w[order own_style].each do |k|
                 errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].size > (k == 'order' ? 1 : 0) && rule[k].all? { |b| b.is_a?(String) })
             end
@@ -230,7 +233,7 @@ module DocumentCheck
             Array(m['paragraphs']).map do |p|
                 looks = (p['portions'] || []).select { |q| visible?(q) }
                     .map { |q| q.slice('font', 'size', 'bold', 'italic', 'underline', 'color') }.uniq
-                [squish(DocumentDates.normalize(p['text'].to_s)), p['style'], p['align'], looks, p['text'].to_s.count("\t")]
+                [squish(DocumentDates.normalize(p['text'].to_s)), p['style'], p['align'], looks, p['text'].to_s.count("\t"), p['columns']]
             end
         end
         # what the paragraphs do not show: header and footer with their
@@ -1692,6 +1695,32 @@ module DocumentCheck
             level(p).zero? && !%w[Title Titel Subtitle Untertitel Caption Beschriftung].include?(p['style']) &&
                 p['plain'].split(' ').size >= 12 && p['numbering'].nil?
         end
+    end
+
+    # A heading over the columns: it stands in one column (Word: a section
+    # of its own before a continuous section break; LibreOffice: outside the
+    # section of two columns), the running text in two or more.
+    def self.rule_span(rule, body, _starter, _all = nil, model = nil)
+        item = Item.new(:rule => 'span', :label => 'Die Überschrift über beide Spalten', :ok => true, :marks => [])
+        heading = find_paragraphs(body, [rule['span']]).first
+        unless heading
+            item.ok = false
+            item.message = "Die Überschrift »#{rule['span']}« finde ich nicht mehr."
+            return item
+        end
+        whole = (model || {})['columns'] || 1
+        cols = ->(p) { (p['columns'] || whole).to_i }
+        text = running_text(body).reject { |p| p.equal?(heading) }.map { |p| cols.(p) }.max || 1
+        if cols.(heading) > 1
+            item.ok = false
+            item.marks = [para_mark(heading).merge(:title => 'in einer Spalte')]
+            item.message = 'Die Überschrift steht noch in der linken Spalte. Über beide Spalten geht sie, wenn nur der Text unter ihr ' \
+                'in Spalten steht: Word mit einem Abschnittsumbruch (fortlaufend) dazwischen, LibreOffice mit einem eigenen Bereich für den Text.'
+        elsif text < 2
+            item.ok = false
+            item.message = 'Der Text unter der Überschrift steht nicht mehr in zwei Spalten. Nur die Überschrift soll über die ganze Breite gehen.'
+        end
+        item
     end
 
     def self.rule_columns(rule, _body, _starter, _all = nil, model = nil)

@@ -57,7 +57,7 @@ PARTS = [
 ]
 
 
-def document(newspaper=False, hyphenation=True):
+def document(newspaper=False, hyphenation=True, title=TITLE, intro=INTRO, parts=PARTS):
     doc = Document()
     section = doc.sections[0]
     section.page_width, section.page_height = Cm(21), Cm(29.7)
@@ -105,14 +105,178 @@ def document(newspaper=False, hyphenation=True):
             auto = OxmlElement('w:autoHyphenation')
             settings.insert(0, auto)
     doc.core_properties.author = 'Klasse 7b'
-    doc.core_properties.title = TITLE
-    doc.add_paragraph(TITLE, style='Title')
-    doc.add_paragraph(INTRO)
-    for heading, texts in PARTS:
+    doc.core_properties.title = title
+    doc.add_paragraph(title, style='Title')
+    doc.add_paragraph(intro)
+    for heading, texts in parts:
         doc.add_paragraph(heading, style='Heading 1')
         for text in texts:
             doc.add_paragraph(text)
     return doc
+
+
+# ---- The extras (chapters for the quick, extra: true)
+#
+#     src/scripts/office python3 src/content/newspaper-page/dokumente.py extras
+#
+# Another round: the 7b's article on the toads, written as the cranes were.
+TOADS_TITLE = 'Eimer für die Erdkröten'
+TOADS_INTRO = ('Jedes Frühjahr wandern Hunderte Erdkröten über die Straße hinter unserer Schule zum Teich im '
+               'Schulgarten. Damit sie dort sicher ankommen, hat die 7b im März zwei Wochen lang jeden Morgen geholfen.')
+TOADS = [
+    ('Der Weg zum Teich', [
+        'Erdkröten verbringen den Winter eingegraben im Wald. Sobald die Nächte wärmer als etwa fünf Grad sind, machen '
+        'sie sich auf den Weg zu dem Gewässer, in dem sie selbst geschlüpft sind. Manche wandern dafür mehr als einen '
+        'Kilometer weit.',
+        'Die meisten Kröten wandern in der Dämmerung und nachts, oft bei Regen. Kommt ein Auto, bleiben sie auf der '
+        'Straße sitzen, statt wegzulaufen. Darum werden in manchen Nächten viele von ihnen überfahren.']),
+    ('Der Zaun und die Eimer', [
+        'Mit dem Naturschutzverein haben wir einen niedrigen Zaun aus Folie neben der Straße aufgestellt. Die Kröten '
+        'laufen an ihm entlang, bis sie in einen der Eimer fallen, die alle zehn Meter in die Erde eingegraben sind.',
+        'Jeden Morgen vor der ersten Stunde haben wir die Eimer geleert, die Kröten gezählt und auf der anderen '
+        'Straßenseite am Teich wieder ausgesetzt. Am Ende waren es 412 Erdkröten und 9 Molche.']),
+    ('Was im Teich passiert', [
+        'Im Teich legen die Weibchen ihre Eier in langen Laichschnüren ab. Nach etwa zwei Wochen schlüpfen die '
+        'Kaulquappen, und im Juni wandern Tausende winzige Kröten zurück in den Wald.',
+        'Im nächsten Frühjahr wollen wir wieder helfen. Wer mitmachen möchte, meldet sich bei der Klassenleitung der 7b.']),
+]
+TOADS_FILE = '09 Erdkroeten.docx'
+# The title over both columns: the cranes as a newspaper page (the page's
+# solution), the title still in the left column.
+SPAN_FILE = '09 Kraniche Zeitung.docx'
+
+
+def span_word(path):
+    """the title over both columns as Word makes it: the title in a section
+    of one column, a continuous section break, the text in two columns"""
+    import copy
+    from docx.enum.section import WD_SECTION
+    doc = document(newspaper=True)
+    body = doc.sections[-1]._sectPr
+    first = copy.deepcopy(body)
+    first.find(qn('w:cols')).set(qn('w:num'), '1')
+    title = doc.paragraphs[0]
+    title._p.get_or_add_pPr().append(first)
+    doc.sections[-1].start_type = WD_SECTION.CONTINUOUS
+    doc.save(path)
+
+
+def span_libreoffice(path):
+    """the title over both columns as LibreOffice makes it: LibreOffice reads
+    Word's columns of the page as a section (»Bereich«) of two columns around
+    everything; that one set to one column (Format › Bereiche…), the text
+    below the title in a new section of two (marked, Format › Spalten…)"""
+    import shutil
+    import subprocess
+    import uno
+    sys.path.insert(0, os.path.join(HERE, '..', 'pictures-in-text'))
+    import dokumente as d
+    process, profile, desktop = d.office()
+    try:
+        doc = desktop.loadComponentFromURL(uno.systemPathToFileUrl(os.path.abspath(os.path.join(STATIC, SPAN_FILE))),
+                                           '_blank', 0, (d.prop('Hidden', True),))
+        family = doc.StyleFamilies.getByName('PageStyles')
+        for name in family.getElementNames():
+            st = family.getByName(name)
+            if st.isInUse():
+                one = st.TextColumns
+                one.setColumnCount(1)
+                st.TextColumns = one
+        sections = doc.getTextSections()
+        for i in range(sections.getCount()):
+            outer = sections.getByIndex(i)
+            one = outer.TextColumns
+            one.setColumnCount(1)
+            outer.TextColumns = one
+        text = doc.Text
+        ps = list(d.paragraphs(doc))
+        cursor = text.createTextCursorByRange(ps[1].getStart())
+        cursor.gotoRange(ps[-1].getEnd(), True)
+        section = doc.createInstance('com.sun.star.text.TextSection')
+        columns = doc.createInstance('com.sun.star.text.TextColumns')
+        columns.setColumnCount(2)
+        section.TextColumns = columns
+        text.insertTextContent(cursor, section, True)
+        doc.storeToURL(uno.systemPathToFileUrl(os.path.abspath(path)), (d.prop('FilterName', 'MS Word 2007 XML'),))
+        doc.close(True)
+    finally:
+        process.kill()
+        subprocess.run(['pkill', '-f', 'pipe,name=pictures_in_text'], capture_output=True)
+        shutil.rmtree(profile, ignore_errors=True)
+
+
+# Fourteen traps: a letter to the families for the crane evening at the lake
+# in October, built as the letter of »Kopfzeile, Fußzeile, Fußnoten« (its
+# open_day): six traps of the first sheet, one of each sheet from the
+# second to the eighth, and one of this one, a paragraph with a wider line
+# spacing set by hand.
+def sheet8():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('headers_and_footnotes', os.path.join(HERE, '..', 'headers-and-footnotes', 'dokumente.py'))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+EVENING = {
+    'title': 'Kranichabend am See',
+    'date': '15. September',
+    'hello': 'Liebe Familien,',
+    'what': ('im Oktober rasten wieder Tausende Kraniche am Kranichsee. Am Samstag, dem 17. Oktober, sehen wir am '
+             'Ufer zu, wie sie abends auf den See kommen.'),
+    'two_spaces': 'Kranichsee. ',
+    'more': 'Die Anmeldung finden Sie auf der zweiten Seite.',
+    'headings': ['Der Ablauf', 'Was mitkommt', 'Der Weg zum Ufer'],
+    'by_hand': 'Was mitkommt',
+    'rooms': [('16:00 Uhr', 'Abfahrt mit dem Bus am Schultor'), ('17:00 Uhr', 'Führung mit dem Kapitän'),
+              ('18:30 Uhr', 'Die Kraniche kommen zum See'), ('20:00 Uhr', 'Ankunft am Schultor')],
+    'need': ['warme Kleidung', 'ein Fernglas', 'etwas zu trinken', 'eine Taschenlampe'],
+    'picture_line': 'So sieht ein Kranich aus der Nähe aus:',
+    'picture': os.path.join(HERE, '..', 'pictures-in-text', 'bilder', 'kranich-uckermark.jpg'),
+    'picture_alt': 'Ein grauer Kranich mit schwarz-weißem Hals und rotem Fleck auf dem Kopf steht in einer hohen Wiese.',
+    'credit': 'Foto: Charles J. Sharp, CC BY-SA 4.0',
+    'wider': ('Am Ufer gibt es Ferngläser zum Ausleihen, und der Kapitän erzählt, woher die Kraniche kommen und wohin '
+              'sie fliegen.'),
+    'money': ('Vom Parkplatz gehen wir zehn Minuten zu Fuß zum Beobachtungsstand am Ufer. Dort warten wir leise, bis '
+              'die ersten Kraniche über den See kommen; manchmal dauert das eine Stunde.'),
+    'note_word': 'Beobachtungsstand',
+    'note': 'Ein Beobachtungsstand ist ein Holzhaus mit Sehschlitzen, aus dem man Vögel beobachtet, ohne sie zu stören.',
+    # the word that ends the first line of »money« (»python3 dokumente.py lines«)
+    'break': 'Dort',
+    'questions': 'Fragen beantwortet die Klassenleitung gern.',
+    'slip': 'Anmeldung zum Kranichabend',
+    'slip_lines': ['Name des Kindes: ______________________________',
+                   'Wir kommen mit ______ Personen.',
+                   'Ort, Datum und Unterschrift: ______________________________'],
+    'title_pad': 50,
+}
+EVENING_FILE = '09 Kranichabend.docx'
+
+
+def extras(only=None):
+    os.makedirs(os.path.join(HERE, 'stufen'), exist_ok=True)
+    toads = dict(title=TOADS_TITLE, intro=TOADS_INTRO, parts=TOADS)
+    document(**toads).save(os.path.join(STATIC, TOADS_FILE))
+    document(newspaper=True, **toads).save(os.path.join(HERE, 'stufen', 'erdkroeten.docx'))
+    document(newspaper=True).save(os.path.join(STATIC, SPAN_FILE))
+    span_word(os.path.join(HERE, 'stufen', 'titel-word.docx'))
+    span_libreoffice(os.path.join(HERE, 'stufen', 'titel-libreoffice.docx'))
+    s8 = sheet8()
+    n = s8.open_day_empties(EVENING)
+    print('empty paragraphs before the slip:', n)
+    s8.open_day(os.path.join(STATIC, EVENING_FILE), n, c=EVENING)
+    thirteen = os.path.join(HERE, 'stufen', 'kranichabend-dreizehn.docx')
+    s8.open_day(thirteen, solved=True, c=EVENING)
+    s8.open_day_footnote(thirteen, os.path.join(HERE, 'stufen', 'kranichabend.docx'), c=EVENING)
+    print('written: static/newspaper-page/09 Erdkroeten.docx, 09 Kraniche Zeitung.docx, 09 Kranichabend.docx and the stages in stufen/')
+
+
+if __name__ == '__main__' and sys.argv[1:] == ['lines']:
+    sheet8().open_day_lines(EVENING)
+    sys.exit(0)
+if __name__ == '__main__' and sys.argv[1:] == ['extras']:
+    extras()
+    sys.exit(0)
 
 
 if __name__ == '__main__':

@@ -50,6 +50,10 @@ tasks:
 
   - id: seite
     title: Der Artikel als Zeitungsseite
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deinen Artikel. Die Prüfung markiert auf deiner Seite jede Stelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -84,3 +88,175 @@ tasks:
         - "*Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Spalten…*: 2 Spalten, Abstand 0,8 cm. *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenränder* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Benutzerdefinierte Seitenränder…*: alle 1,5 cm."
         - "Rechtsklick auf *Standard* in der Liste der Formatvorlagen <i class='bi bi-chevron-right' aria-hidden='true'></i> *Ändern…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz…*: *Blocksatz*, *Erste Zeile* 0,5 cm, *Abstand Nach* 0 pt, *Zeilenabstand* *Einfach*."
         - "Die Silbentrennung: *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Silbentrennung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Automatisch*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Der Artikel über die Erdkröten ist geschrieben wie der über die
+      Kraniche: eine Spalte, breite Ränder, Flattersatz, Lücken zwischen den
+      Absätzen. Setz ihn als Zeitungsseite.
+    check:
+      type: document
+      file: newspaper-page/09 Erdkroeten.docx
+      rules:
+        - text
+        - { columns: 2 }
+        - { margins: 2 }
+        - justify
+        - hyphenation
+        - first_line_indent
+        - { line_spacing: 1.0 }
+    hint:
+      - Zuerst die Seite, zwei Spalten und schmale Ränder.
+      - Den Rest stellst du einmal in »Standard« ein, nicht in jedem Absatz.
+
+  - id: titel
+    title: Die Überschrift über beide Spalten
+    extra: true
+    prompt: |
+      Im fertigen Artikel über die Kraniche steht die Überschrift in der
+      linken Spalte. Bring sie über beide Spalten; der Text darunter bleibt in
+      zwei Spalten.
+    check:
+      type: document
+      file: newspaper-page/09 Kraniche Zeitung.docx
+      rules:
+        - text
+        - { span: 'Tausende Kraniche über dem See' }
+        - { columns: 2 }
+    hint:
+      - Spalten gelten für einen ganzen Teil des Dokuments. Die Überschrift braucht einen Teil für sich, mit einer Spalte.
+      - Nur der Text unter der Überschrift bleibt in zwei Spalten.
+    word:
+      hint:
+        - "Stell den Cursor an den Anfang des ersten Absatzes unter der Überschrift und wähl *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Umbrüche* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Abschnittsumbrüche* *Fortlaufend*."
+        - "Klick in die Überschrift und wähl *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eins*. Das gilt nur für ihren Abschnitt."
+    libreoffice:
+      hint:
+        - "LibreOffice hat den ganzen Artikel in einen Bereich mit zwei Spalten gesetzt. *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bereiche…*, den Bereich wählen, *Optionen…*, Register *Spalten*: eine Spalte."
+        - "Markier den Text vom ersten Absatz unter der Überschrift bis zum Ende und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*: 2 Spalten, Abstand 0,8 cm. LibreOffice macht daraus einen eigenen Bereich."
+    nextcloud:
+      hint:
+        - "Der ganze Artikel steht in einem Bereich mit zwei Spalten. *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bereiche…*, den Bereich wählen, *Optionen…*, Register *Spalten*: eine Spalte."
+        - "Markier den Text vom ersten Absatz unter der Überschrift bis zum Ende und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*: 2 Spalten, Abstand 0,8 cm."
+
+  - id: fallen
+    title: Vierzehn Fallen
+    extra: true
+    prompt: |
+      Der Brief an die Familien zum Kranichabend sieht fertig aus, mit der
+      Anmeldung auf der zweiten Seite. Vierzehn Stellen sind trotzdem falsch
+      gebaut: sechs von der Art wie auf dem ersten Blatt, je eine vom zweiten
+      bis achten und eine von diesem. Die Prüfung sagt dir nur, wie viele du
+      gefunden hast; zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: newspaper-page/09 Kranichabend.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Kranichabend am See'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '15. September'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['im Oktober rasten wieder']
+          label: Nach »Kranichsee.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »Kranichsee.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Die Anmeldung finden']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den kurzen Absatz über die Anmeldung an.
+            - Vor »Die Anmeldung« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['Der Ablauf']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand vor »Der Ablauf« an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn; die Überschrift bringt ihren Abstand selbst mit.
+        - line_breaks: true
+          in: ['Vom Parkplatz gehen wir']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über den Weg zum Ufer an.
+            - Hinter »Dort« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über die Fragen ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+        - list: ['warme Kleidung', 'ein Fernglas', 'etwas zu trinken', 'eine Taschenlampe']
+          label: Ein Punkt der Liste war von Hand getippt.
+          hints:
+            - Diese Falle ist vom dritten Blatt. Sieh dir die Liste genau an.
+            - Versuch bei jedem Punkt der Liste, das Zeichen davor mit der Maus zu markieren. Ein echtes Aufzählungszeichen lässt sich nicht markieren wie ein Buchstabe.
+            - Vor »eine Taschenlampe« sind der Punkt und ein Tab getippt. Lösch beide und mach die Zeile zu einem Punkt der Liste wie die anderen.
+        - table: ['16:00 Uhr', '17:00 Uhr', '18:30 Uhr', '20:00 Uhr']
+          columns: 2
+          label: »20:00 Uhr« stand nicht in der Tabelle.
+          hints:
+            - Diese Falle ist vom vierten Blatt. Sieh dir den Ablauf genau an.
+            - Die Tabelle hat keine Linien. Schalte die Formatierungszeichen ein und sieh dir jede Zeile an. In einer Zelle steht kein →.
+            - Hinter »20:00 Uhr« steht ein Tab; die Zeile steht unter der Tabelle, nicht in ihr. Füg mit <kbd>Tab</kbd> in der letzten Zelle eine Zeile an, trag sie dort ein und lösch die getippte Zeile.
+        - ratio: true
+          names: ['das Foto']
+          label: Das Foto war in die Breite gezogen.
+          hints:
+            - Diese Falle ist vom fünften Blatt. Sieh dir das Foto genau an.
+            - Wirkt der Kranich etwas zu dick? Vergleich das Foto mit dem auf dem fünften Blatt.
+            - Das Foto ist in die Breite gezogen. Setz es auf die Originalgröße zurück und mach es dann an einer Ecke kleiner, etwa 5 cm breit.
+        - headings: ['Der Ablauf', 'Was mitkommt', 'Der Weg zum Ufer']
+          level: 1
+          label: »Was mitkommt« sah nur aus wie eine Überschrift.
+          hints:
+            - Diese Falle ist vom sechsten Blatt. Sieh dir die Überschriften an.
+            - Öffne die Übersicht der Überschriften (Word Navigationsbereich, LibreOffice Navigator). Wie viele Einträge zeigt sie, und wie viele Überschriften siehst du?
+            - »Was mitkommt« hat die Vorlage »Standard« und ist von Hand fett, groß und grün gemacht. Lösch die Formatierung und gib dem Absatz die Vorlage »Überschrift 1«.
+        - page_breaks: ['Anmeldung zum Kranichabend']
+          label: Die Anmeldung stand nur mit einem leeren Absatz auf der zweiten Seite.
+          hints:
+            - Diese Falle ist vom siebten Blatt. Wie kommt die Anmeldung auf die zweite Seite?
+            - Sieh dir das Ende der ersten Seite mit den Formatierungszeichen an.
+            - Unter dem Gruß steht ein leerer Absatz, der die Anmeldung auf die nächste Seite schiebt. Lösch ihn und setz vor die Anmeldung einen Seitenumbruch.
+        - footnotes: 1
+          label: Die Anmerkung zum Beobachtungsstand war von Hand getippt.
+          hints:
+            - Diese Falle ist vom achten Blatt. Steht unten auf der ersten Seite wirklich eine Fußnote?
+            - Sieh dir die kleine ¹ hinter »Beobachtungsstand« an. Kannst du sie markieren wie einen Buchstaben?
+            - Die ¹ und der Satz darunter sind getippt. Lösch beide, stell den Cursor hinter »Beobachtungsstand« und füg eine Fußnote mit dem Satz ein.
+        - line_spacing: 1.0
+          label: Ein Absatz hatte von Hand einen größeren Zeilenabstand.
+          hints:
+            - Diese Falle ist von diesem Blatt. Stehen die Zeilen überall gleich dicht?
+            - Vergleich die Zeilen des Absatzes über die Ferngläser mit denen der anderen Absätze.
+            - Der Absatz über die Ferngläser hat einen Zeilenabstand von 1,3, von Hand eingestellt. Stell ihn auf einzeilig wie die anderen, oder lösch seine Formatierung.
+    solution: |
+      Die vierzehn Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »Kranichsee.«, ein
+      Einzug aus Leerzeichen, ein leerer Absatz statt Abstand vor »Der
+      Ablauf«, ein ↵ hinter »Dort«, wo die Zeile sowieso umgebrochen wäre, der
+      Satz über die Fragen in Arial, »eine Taschenlampe« mit getipptem Punkt
+      und Tab, »20:00 Uhr« unter der Tabelle, das Foto um 12 % in die Breite
+      gezogen, »Was mitkommt«, das nur aussah wie eine Überschrift, die
+      Anmeldung, die ein leerer Absatz auf die zweite Seite schob, die getippte
+      Anmerkung zum Beobachtungsstand statt einer Fußnote und der Absatz über
+      die Ferngläser mit einem Zeilenabstand von 1,3.

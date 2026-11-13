@@ -305,7 +305,15 @@ built by hand; each is a page of a series of its own, about one lesson.
    a narrow column without hyphenation). The office image got `hyphen-de`
    (without it LibreOffice draws German text unhyphenated) and
    `hunspell-de-de` (for a spell check to come). Rules `columns`, `margins`,
-   `justify`, `hyphenation`, `first_line_indent`, `line_spacing`.
+   `justify`, `hyphenation`, `first_line_indent`, `line_spacing`. Extras (13
+   November 2026): »Noch eine Runde« (an article on the toads at the school
+   pond), »Die Überschrift über beide Spalten« (rule `span`; the service
+   reports the columns of each paragraph: LibreOffice reads Word's columns
+   of the page as a section around everything, so its way is to set that
+   one to one column and give the text below the title a section of two),
+   »Vierzehn Fallen« (a letter for the crane evening, built with sheet 8's
+   letter builder: the thirteen kinds so far and a paragraph with a line
+   spacing of 1,3 set by hand).
 10. **The hand-in:** an article of one's own for the trip newspaper, every
    earlier point checked at once, the file handed in for the teacher to grade
    (stored like a `submit`, viewed with its marked pages on the class page);

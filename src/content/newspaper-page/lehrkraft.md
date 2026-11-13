@@ -8,7 +8,7 @@ Lernende setzen einen Artikel so, wie eine Zeitung aussieht: zwei Spalten, schma
 <li><b>10 Minuten:</b> Blocksatz, die Vermutung zu den Lücken, Silbentrennung.</li>
 <li><b>10 Minuten:</b> Einzug und Zeilenabstand in »Standard«.</li>
 <li><b>10 Minuten:</b> prüfen, Silbentrennung aus- und einschalten.</li>
-<li><b>Für Schnelle:</b> eine Zeitung von zu Hause mitbringen und vergleichen: Spaltenbreite, Einzüge, wo Wörter getrennt sind.</li>
+<li><b>Für Schnelle und zum Üben:</b> eine Zeitung von zu Hause mitbringen und vergleichen (Spaltenbreite, Einzüge, wo Wörter getrennt sind) und die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -30,4 +30,12 @@ Lernende setzen einen Artikel so, wie eine Zeitung aussieht: zwei Spalten, schma
 <li>Ein Absatz, der auf einen anderen Absatz Text folgt, hat einen Einzug der ersten Zeile von mindestens 0,3 cm; der Zeilenabstand ist höchstens einzeilig.</li>
 <li>Ob das in »Standard« oder in jedem Absatz eingestellt ist, prüft die Prüfung nicht; die Seite zeigt den Weg über »Standard«.</li>
 </ul></td></tr>
+<tr><th>Extras</th><td>
+<p>Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die Zeitungsseite besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr Prüfungen »Noch eine Runde«, nach einer oder zwei die »Vierzehn Fallen«.</p>
+<ul>
+<li><b>Noch eine Runde:</b> ein Artikel über die Erdkröten am Schulteich, geschrieben wie der über die Kraniche; dieselben Punkte wie bei der Zeitungsseite.</li>
+<li><b>Die Überschrift über beide Spalten:</b> der fertige Kranich-Artikel mit der Überschrift in der linken Spalte. In Word ein Abschnittsumbruch <em>Fortlaufend</em> unter der Überschrift und für ihren Abschnitt eine Spalte; in LibreOffice liest das Programm die Spalten der Seite als einen Bereich um den ganzen Text, der auf eine Spalte kommt, und der Text unter der Überschrift bekommt mit <em>Format</em> <i class='bi bi-chevron-right' aria-hidden='true'></i> <em>Spalten…</em> einen eigenen Bereich mit zwei. Die Prüfung fragt das Programm, in wie vielen Spalten die Überschrift und der Text stehen; beide Wege bestehen.</li>
+<li><b>Vierzehn Fallen:</b> ein Brief an die Familien zum Kranichabend am See mit einer Anmeldung auf der zweiten Seite, mit den Fallen der acht Blätter davor und einer von diesem: Ein Absatz hat von Hand einen Zeilenabstand von 1,3. Die Prüfung zählt nur und zeigt jede Falle erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.</li>
+</ul>
+</td></tr>
 </table>

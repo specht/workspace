@@ -142,3 +142,58 @@ _task(seite)
 <strong>Ausprobieren:</strong> Schalte die Silbentrennung noch einmal aus und wieder ein. Achte auf die Lücken zwischen den Wörtern und darauf, wie viele Zeilen der Artikel braucht.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit einem neuen
+Handgriff und eins zum Suchen.
+
+### Noch eine Runde
+
+Die 7b hat auch über die Erdkröten geschrieben, die jedes Frühjahr zum Teich
+im Schulgarten wandern. Der Artikel ist geschrieben wie der über die Kraniche.
+Setz ihn als Zeitungsseite, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Die Überschrift über beide Spalten
+
+In einer Zeitung steht die Überschrift eines Artikels über allen seinen
+Spalten. Im fertigen Kranich-Artikel steht sie in der linken Spalte, weil die
+zwei Spalten für die ganze Seite gelten. Die Überschrift braucht deshalb einen
+eigenen Teil des Dokuments mit einer Spalte, und nur der Text darunter steht in
+zwei.
+
+<!-- language: word -->
+In Word ist dieser Teil ein **Abschnitt**: Ein Abschnittsumbruch *Fortlaufend*
+vor dem ersten Absatz unter der Überschrift (*Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Umbrüche*)
+trennt sie vom Text, ohne eine neue Seite anzufangen. Danach stellst du für
+den Abschnitt der Überschrift eine Spalte ein.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice ist dieser Teil ein **Bereich**. LibreOffice hat den ganzen
+Artikel in einen Bereich mit zwei Spalten gesetzt; den stellst du unter
+*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bereiche…* auf eine Spalte. Dann markierst du den Text unter
+der Überschrift und gibst ihm mit *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…* zwei Spalten:
+LibreOffice macht daraus einen eigenen Bereich.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office ist dieser Teil ein **Bereich**. Der ganze Artikel steht
+in einem Bereich mit zwei Spalten; den stellst du unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Bereiche…* auf eine Spalte. Dann markierst du den Text unter der Überschrift
+und gibst ihm mit *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…* zwei Spalten.
+<!-- /language -->
+
+_task(titel)
+
+### Vierzehn Fallen
+
+Für den Oktober lädt die 7b die Familien zum Kranichabend am See ein. Der Brief
+hat auf der zweiten Seite eine Anmeldung und sieht fertig aus. Sechs Fallen
+sind von der Art wie auf dem ersten Blatt, je eine vom zweiten bis achten, und
+eine ist von diesem. Wie bei den anderen Fallen zählt die Prüfung nur, und
+jede Falle hat ihre eigenen Tipps.
+
+_task(fallen)
+

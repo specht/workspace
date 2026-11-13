@@ -413,6 +413,7 @@ HARZ_COLUMN = Cm(4.0)
 CRANE = os.path.join(HERE, '..', 'pictures-in-text', 'bilder', 'kranich-uckermark.jpg')
 CRANE_ALT = 'Ein grauer Kranich mit schwarz-weißem Hals und rotem Fleck auf dem Kopf steht in einer hohen Wiese.'
 CRANE_LINE = 'Vielleicht sehen wir unterwegs Kraniche; im April ziehen sie nach Norden.'
+CRANE_CREDIT = 'Foto: Charles J. Sharp, CC BY-SA 4.0'
 
 
 def crane_bytes():
@@ -549,6 +550,9 @@ def harz(path, empties=0, money_break=True, solved=False, slip_left=False):
     shape = p.add_run().add_picture(crane_bytes(), width=Cm(5), height=Cm(3.33) if fixed else Cm(2.97))
     shape._inline.docPr.set('name', 'Grafik 1')
     shape._inline.docPr.set('descr', CRANE_ALT)
+    # the photo is someone else's: who made it, its licence
+    p.paragraph_format.space_after = Pt(0)
+    harz_paragraph(doc, CRANE_CREDIT, after=8, align=WD_ALIGN_PARAGRAPH.CENTER, size=9)
     p, r = harz_paragraph(doc, '')
     if money_break and not fixed:
         head, tail = HARZ_MONEY.split(HARZ_BREAK + ' ', 1)

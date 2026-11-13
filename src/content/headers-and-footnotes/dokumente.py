@@ -369,20 +369,52 @@ DAY_SLIP_LINES = ['Name des Kindes: ______________________________',
                   'Wir bringen ihn am Samstag bis 9:30 Uhr in die Mensa.']
 
 
-def picture_bytes():
+DAY = {
+    'title': DAY_TITLE,
+    'date': DAY_DATE,
+    'hello': DAY_HELLO,
+    'what': DAY_WHAT,
+    'more': DAY_MORE,
+    'headings': DAY_HEADINGS,
+    'by_hand': DAY_BY_HAND,
+    'rooms': DAY_ROOMS,
+    'need': DAY_NEED,
+    'picture_line': DAY_PICTURE_LINE,
+    'picture': DAY_PICTURE,
+    'picture_alt': DAY_PICTURE_ALT,
+    'money': DAY_MONEY,
+    'note_word': DAY_NOTE_WORD,
+    'note': DAY_NOTE,
+    'break': DAY_BREAK,
+    'questions': DAY_QUESTIONS,
+    'slip': DAY_SLIP,
+    'slip_lines': DAY_SLIP_LINES,
+    # the two spaces: after this piece of »what«
+    'two_spaces': 'Türen. ',
+    # a paragraph with a wider line spacing set by hand (the trap of »Die
+    # Zeitungsseite«), None: none
+    'wider': None,
+    'title_pad': 48,
+}
+
+
+def picture_bytes(c=None):
+    c = c or DAY
     import io
     from PIL import Image
-    image = Image.open(DAY_PICTURE).convert('RGB')
+    image = Image.open(c['picture']).convert('RGB')
     out = io.BytesIO()
     image.save(out, 'JPEG', quality=88)
     out.seek(0)
     return out
 
 
-def open_day(path, empties=0, money_break=True, solved=False):
+def open_day(path, empties=0, money_break=True, solved=False, c=None):
     """empties: the empty paragraphs that push the list on page 2; solved:
     all fixed but the footnote, which is still typed (it is made a footnote
-    by open_day_footnote: a footnote python-docx cannot write)"""
+    by open_day_footnote: a footnote python-docx cannot write); c: the
+    content (DAY, or another letter built the same way: »Die Zeitungsseite«)"""
+    c = c or DAY
     from docx.oxml import OxmlElement
     from docx.oxml.ns import qn
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
@@ -390,7 +422,7 @@ def open_day(path, empties=0, money_break=True, solved=False):
     p7 = sheet7()
     para, fixed = p7.harz_paragraph, solved
     doc = p7.base()
-    doc.core_properties.title = DAY_TITLE
+    doc.core_properties.title = c['title']
     doc.styles['Normal'].paragraph_format.space_after = Pt(0)
     doc.styles['Normal'].paragraph_format.line_spacing = 1.0
     h1 = doc.styles['Heading 1']
@@ -402,17 +434,17 @@ def open_day(path, empties=0, money_break=True, solved=False):
         for k in ('w:asciiTheme', 'w:hAnsiTheme', 'w:eastAsiaTheme', 'w:cstheme'):
             el.attrib.pop(qn(k), None)
     if fixed:
-        para(doc, DAY_TITLE, align=WD_ALIGN_PARAGRAPH.CENTER, size=16, bold=True)
-        para(doc, DAY_DATE, align=WD_ALIGN_PARAGRAPH.RIGHT)
+        para(doc, c['title'], align=WD_ALIGN_PARAGRAPH.CENTER, size=16, bold=True)
+        para(doc, c['date'], align=WD_ALIGN_PARAGRAPH.RIGHT)
     else:
-        para(doc, ' ' * 48 + DAY_TITLE, size=16, bold=True)
-        para(doc, ' ' * 140 + DAY_DATE)
-    para(doc, DAY_HELLO)
-    para(doc, DAY_WHAT if fixed else DAY_WHAT.replace('Türen. ', 'Türen.  '))
+        para(doc, ' ' * c['title_pad'] + c['title'], size=16, bold=True)
+        para(doc, ' ' * 140 + c['date'])
+    para(doc, c['hello'])
+    para(doc, c['what'] if fixed else c['what'].replace(c['two_spaces'], c['two_spaces'].replace(' ', '  ', 1)))
     if fixed:
-        para(doc, DAY_MORE, after=6)
+        para(doc, c['more'], after=6)
     else:
-        para(doc, '     ' + DAY_MORE, after=0)
+        para(doc, '     ' + c['more'], after=0)
         empty = doc.add_paragraph()
         marks = OxmlElement('w:rPr')
         sz = OxmlElement('w:sz')
@@ -421,7 +453,7 @@ def open_day(path, empties=0, money_break=True, solved=False):
         empty._p.get_or_add_pPr().append(marks)
 
     def heading(words):
-        if words == DAY_BY_HAND and not fixed:
+        if words == c['by_hand'] and not fixed:
             p, r = para(doc, words, after=4, size=14, bold=True)
             p.paragraph_format.space_before = Pt(12)
             r.font.color.rgb = p7.GREEN
@@ -429,22 +461,31 @@ def open_day(path, empties=0, money_break=True, solved=False):
         else:
             doc.add_paragraph(words, style='Heading 1')
 
-    heading(DAY_HEADINGS[0])
-    p7.harz_table(doc, DAY_ROOMS if fixed else DAY_ROOMS[:-1])
+    heading(c['headings'][0])
+    p7.harz_table(doc, c['rooms'] if fixed else c['rooms'][:-1])
     if not fixed:
         p = doc.add_paragraph()
         p.paragraph_format.tab_stops.add_tab_stop(p7.HARZ_COLUMN, WD_TAB_ALIGNMENT.LEFT)
-        p.add_run('\t'.join(DAY_ROOMS[-1]))
-    para(doc, DAY_PICTURE_LINE, after=4).__getitem__(0).paragraph_format.space_before = Pt(8)
+        p.add_run('\t'.join(c['rooms'][-1]))
+    para(doc, c['picture_line'], after=4).__getitem__(0).paragraph_format.space_before = Pt(8)
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.space_after = Pt(4)
-    shape = p.add_run().add_picture(picture_bytes(), width=Cm(5), height=Cm(3.33) if fixed else Cm(2.97))
+    shape = p.add_run().add_picture(picture_bytes(c), width=Cm(5), height=Cm(3.33) if fixed else Cm(2.97))
     shape._inline.docPr.set('name', 'Grafik 1')
-    shape._inline.docPr.set('descr', DAY_PICTURE_ALT)
-    heading(DAY_HEADINGS[1])
-    for i, item in enumerate(DAY_NEED):
-        last = i == len(DAY_NEED) - 1
+    shape._inline.docPr.set('descr', c['picture_alt'])
+    # a photo that is someone else's: who made it, its licence
+    if c.get('credit'):
+        p.paragraph_format.space_after = Pt(0)
+        para(doc, c['credit'], after=4, align=WD_ALIGN_PARAGRAPH.CENTER, size=9)
+    # a paragraph with a wider line spacing, set by hand on it alone
+    if c['wider']:
+        p, _ = para(doc, c['wider'], after=8)
+        if not fixed:
+            p.paragraph_format.line_spacing = 1.3
+    heading(c['headings'][1])
+    for i, item in enumerate(c['need']):
+        last = i == len(c['need']) - 1
         if last and not fixed:
             ref = doc.styles['List Bullet'].paragraph_format
             p = doc.add_paragraph()
@@ -457,37 +498,38 @@ def open_day(path, empties=0, money_break=True, solved=False):
             p = doc.add_paragraph(style='List Bullet')
             p.paragraph_format.space_after = Pt(8 if last else 0)
             p.add_run(item)
-    heading(DAY_HEADINGS[2])
+    heading(c['headings'][2])
     # the money, with »Förderverein¹« and the note typed under it
-    money = DAY_MONEY.replace(DAY_NOTE_WORD, DAY_NOTE_WORD + SUPERSCRIPT[0], 1)
+    money = c['money'].replace(c['note_word'], c['note_word'] + SUPERSCRIPT[0], 1)
     p, r = para(doc, '', after=4)
     if money_break and not fixed:
-        head, tail = money.split(' ' + DAY_BREAK + ' ', 1)
-        r.text = head + ' ' + DAY_BREAK
+        head, tail = money.split(' ' + c['break'] + ' ', 1)
+        r.text = head + ' ' + c['break']
         r.add_break()
         p.add_run(tail)
     else:
         r.text = money
-    para(doc, SUPERSCRIPT[0] + ' ' + DAY_NOTE, after=12, size=10)
+    para(doc, SUPERSCRIPT[0] + ' ' + c['note'], after=12, size=10)
     if fixed:
-        para(doc, DAY_QUESTIONS, after=12)
+        para(doc, c['questions'], after=12)
     else:
-        para(doc, DAY_QUESTIONS, after=12, font='Arial', size=12)
+        para(doc, c['questions'], after=12, font='Arial', size=12)
     para(doc, 'Viele Grüße', after=0)
     para(doc, 'die Klasse 7b', after=0)
     if not fixed:
         for _ in range(empties):
             doc.add_paragraph()
-    slip = doc.add_paragraph(DAY_SLIP, style='Heading 1')
+    slip = doc.add_paragraph(c['slip'], style='Heading 1')
     if fixed:
         slip.paragraph_format.page_break_before = True
-    for line in DAY_SLIP_LINES:
+    for line in c['slip_lines']:
         para(doc, line, after=18)
     doc.save(path)
 
 
-def open_day_footnote(source, path):
+def open_day_footnote(source, path, c=None):
     """the solved letter with the typed note made a footnote, in LibreOffice"""
+    c = c or DAY
     import uno
     import dokumente as d
     process, profile, desktop = d.office()
@@ -496,19 +538,19 @@ def open_day_footnote(source, path):
         text = doc.Text
         typed = next(q for q in d.paragraphs(doc) if q.getString().startswith(SUPERSCRIPT[0] + ' '))
         d.remove_paragraph(doc, typed)
-        p = next(p for p in d.paragraphs(doc) if (DAY_NOTE_WORD + SUPERSCRIPT[0]) in p.getString())
-        at = p.getString().index(DAY_NOTE_WORD + SUPERSCRIPT[0]) + len(DAY_NOTE_WORD)
+        p = next(p for p in d.paragraphs(doc) if (c['note_word'] + SUPERSCRIPT[0]) in p.getString())
+        at = p.getString().index(c['note_word'] + SUPERSCRIPT[0]) + len(c['note_word'])
         cursor = text.createTextCursorByRange(p.getStart())
         cursor.goRight(at, False)
         cursor.goRight(1, True)
         cursor.setString('')
         footnote = doc.createInstance('com.sun.star.text.Footnote')
         text.insertTextContent(cursor, footnote, False)
-        footnote.setString(DAY_NOTE)
+        footnote.setString(c['note'])
         # removing a paragraph joins the next one into it: the greeting
         # keeps its look, the list its page break
         for q in d.paragraphs(doc):
-            if q.getString() == DAY_SLIP:
+            if q.getString() == c['slip']:
                 q.ParaStyleName = 'Heading 1'
                 q.BreakType = enum('com.sun.star.style.BreakType', 'PAGE_BEFORE')
         doc.storeToURL(uno.systemPathToFileUrl(os.path.abspath(path)), (d.prop('FilterName', 'MS Word 2007 XML'),))
@@ -519,18 +561,22 @@ def open_day_footnote(source, path):
         shutil.rmtree(profile, ignore_errors=True)
 
 
-def open_day_empties():
+def open_day_empties(c=None):
     """as many empty paragraphs as push the list onto page 2"""
+    c = c or DAY
     import server
     work = tempfile.mkdtemp()
     try:
         path = os.path.join(work, 'try.docx')
         for n in range(0, 80):
-            open_day(path, n)
+            open_day(path, n, c=c)
             with open(path, 'rb') as f:
                 model = server.analyze(f.read(), 'try.docx')
-            slip = [p for p in model['paragraphs'] if p['text'] == DAY_SLIP][0]
+            slip = [p for p in model['paragraphs'] if p['text'] == c['slip']][0]
             if slip['box']['page'] >= 2:
+                # none: the page is full without them, and there is no trap
+                if n == 0:
+                    raise RuntimeError('page 1 is full without empty paragraphs: shorten the letter')
                 return n
         raise RuntimeError('the list never reached page 2')
     finally:
@@ -538,13 +584,13 @@ def open_day_empties():
         shutil.rmtree(work, ignore_errors=True)
 
 
-def open_day_lines():
+def open_day_lines(c=None):
     """where LibreOffice ends the lines of the letter without the break by
-    hand (to choose DAY_BREAK)"""
+    hand (to choose c['break'])"""
     work = tempfile.mkdtemp()
     try:
         path = os.path.join(work, 'brief.docx')
-        open_day(path, 0, money_break=False)
+        open_day(path, 0, money_break=False, c=c)
         subprocess.run(['soffice', '--headless', f'-env:UserInstallation=file://{work}/profile', '--convert-to', 'pdf', '--outdir', work, path],
                        check=True, capture_output=True)
         print(subprocess.run(['pdftotext', '-layout', os.path.join(work, 'brief.pdf'), '-'], capture_output=True, text=True, check=True).stdout)
