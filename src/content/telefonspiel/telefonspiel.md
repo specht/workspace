@@ -1836,11 +1836,15 @@ der Fakultät von 4 fragt und das Ergebnis mit 5 multipliziert. Die Fakultät
 von 4 fragt nach der von 3, und so weiter bis zur 1, die das Spiel ohne zu
 fragen weiß.
 
-Am Ende soll nur das Spiel das Ergebnis ansagen und sich verabschieden, das
+Begrüßen, das Ergebnis ansagen und sich verabschieden soll nur das Spiel, das
 ein Mensch angerufen hat, nicht jedes der Spiele dazwischen. Dafür setzt FACT
 eine 0 vor die Zahl, wenn es sich selbst anruft: Eine Zahl mit 0 vorne kommt
 von FACT, eine ohne von einem Menschen. Die Raute dahinter sagt, dass die Zahl
-zu Ende ist; ohne sie wartete `keys(3)` drei Sekunden auf eine dritte Ziffer.
+zu Ende ist.
+
+Die Ziffern nach der Nummer warten schon, wenn das Spiel anfängt. Darum gibt
+`keys` ihnen nur eine halbe Sekunde: Kommt in der Zeit nichts, hat niemand eine
+Zahl mitgewählt, und das Spiel fragt danach.
 
 <!-- language: ruby -->
 <!-- page-code: own -->
@@ -1850,13 +1854,17 @@ zu Ende ist; ohne sie wartete `keys(3)` drei Sekunden auf eine dritte Ziffer.
 title 'Fakultät'
 subtitle 'Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.'
 
-eingabe = keys(3, timeout: 3)
-if eingabe.empty?
-  say 'Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.'
-  eingabe = keys(3)
-end
+# Was nach der Nummer gewählt wurde, ist schon da.
+eingabe = keys(3, timeout: 0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
 innen = eingabe.length > 1 && eingabe.start_with?('0')
+unless innen
+  say 'Willkommen zur rekursiven Fakultätsberatung.'
+  if eingabe.empty?
+    say 'Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.'
+    eingabe = keys(3)
+  end
+end
 n = eingabe.to_i
 if n > 20
   say 'Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.'
@@ -1866,15 +1874,29 @@ end
 if n <= 1
   ergebnis = 1
 else
-  say "Die Fakultät von #{n}? Ich frage nach der Fakultät von #{n - 1}."
+  say [
+    "Die Fakultät von #{n}? Ich frage nach der Fakultät von #{n - 1}.",
+    "Moment bitte. Für die Fakultät von #{n} brauche ich die Fakultät von #{n - 1}.",
+    "Die Fakultät von #{n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von #{n - 1}.",
+    "Die Fakultät von #{n}? Da muss ich kurz bei der Fakultät von #{n - 1} nachfragen."
+  ].sample
   vorher = call('FACT', "0#{n - 1}#").to_i
   ergebnis = n * vorher
-  say "#{n} mal #{vorher} ist #{ergebnis}."
+  say [
+    "#{n} mal #{vorher} ist #{ergebnis}.",
+    "Danke für Ihre Geduld. #{n} mal #{vorher} macht #{ergebnis}.",
+    "Da bin ich wieder. #{n} mal #{vorher} ergibt #{ergebnis}.",
+    "So, die Antwort ist da: #{n} mal #{vorher} sind #{ergebnis}."
+  ].sample
 end
 
 unless innen
   say "Die Fakultät von #{n} ist #{ergebnis}."
-  say 'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.'
+  say [
+    'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+    'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+    'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.'
+  ].sample
 end
 back ergebnis.to_s
 ```
@@ -1882,17 +1904,21 @@ back ergebnis.to_s
 <!-- language: python -->
 <!-- page-code: own -->
 ```python
+import random
 from telefon import back, call, hangup, keys, say, subtitle, title
 
 title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
 
-eingabe = keys(3, timeout=3)
-if not eingabe:
-    say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
-    eingabe = keys(3)
+# Was nach der Nummer gewählt wurde, ist schon da.
+eingabe = keys(3, timeout=0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
 innen = len(eingabe) > 1 and eingabe.startswith('0')
+if not innen:
+    say('Willkommen zur rekursiven Fakultätsberatung.')
+    if not eingabe:
+        say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+        eingabe = keys(3)
 n = int(eingabe or 0)
 if n > 20:
     say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
@@ -1901,14 +1927,28 @@ if n > 20:
 if n <= 1:
     ergebnis = 1
 else:
-    say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+    say(random.choice([
+        f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
+        f'Moment bitte. Für die Fakultät von {n} brauche ich die Fakultät von {n - 1}.',
+        f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
+        f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
+    ]))
     vorher = int(call('FACT', f'0{n - 1}#'))
     ergebnis = n * vorher
-    say(f'{n} mal {vorher} ist {ergebnis}.')
+    say(random.choice([
+        f'{n} mal {vorher} ist {ergebnis}.',
+        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
+        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
+        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+    ]))
 
 if not innen:
     say(f'Die Fakultät von {n} ist {ergebnis}.')
-    say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.')
+    say(random.choice([
+        'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+        'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+        'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+    ]))
 back(str(ergebnis))
 ```
 <!-- /language -->
@@ -1917,16 +1957,23 @@ back(str(ergebnis))
 ```javascript
 const { back, call, hangup, keys, say, subtitle, title } = require('telefon');
 
+// einer der Sätze, zufällig
+const einer = (saetze) => saetze[Math.floor(Math.random() * saetze.length)];
+
 title('Fakultät');
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.');
 
-let eingabe = keys(3, 3);
-if (eingabe === '') {
-  say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.');
-  eingabe = keys(3);
-}
+// Was nach der Nummer gewählt wurde, ist schon da.
+let eingabe = keys(3, 0.5);
 // Ruft FACT sich selbst an, steht eine 0 vorne.
 const innen = eingabe.length > 1 && eingabe.startsWith('0');
+if (!innen) {
+  say('Willkommen zur rekursiven Fakultätsberatung.');
+  if (eingabe === '') {
+    say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.');
+    eingabe = keys(3);
+  }
+}
 const n = Number(eingabe);
 if (n > 20) {
   say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.');
@@ -1935,36 +1982,58 @@ if (n > 20) {
 
 let ergebnis = 1n;
 if (n > 1) {
-  say(`Die Fakultät von ${n}? Ich frage nach der Fakultät von ${n - 1}.`);
+  say(einer([
+    `Die Fakultät von ${n}? Ich frage nach der Fakultät von ${n - 1}.`,
+    `Moment bitte. Für die Fakultät von ${n} brauche ich die Fakultät von ${n - 1}.`,
+    `Die Fakultät von ${n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von ${n - 1}.`,
+    `Die Fakultät von ${n}? Da muss ich kurz bei der Fakultät von ${n - 1} nachfragen.`,
+  ]));
   const vorher = BigInt(call('FACT', `0${n - 1}#`));
   ergebnis = BigInt(n) * vorher;
-  say(`${n} mal ${vorher} ist ${ergebnis}.`);
+  say(einer([
+    `${n} mal ${vorher} ist ${ergebnis}.`,
+    `Danke für Ihre Geduld. ${n} mal ${vorher} macht ${ergebnis}.`,
+    `Da bin ich wieder. ${n} mal ${vorher} ergibt ${ergebnis}.`,
+    `So, die Antwort ist da: ${n} mal ${vorher} sind ${ergebnis}.`,
+  ]));
 }
 
 if (!innen) {
   say(`Die Fakultät von ${n} ist ${ergebnis}.`);
-  say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.');
+  say(einer([
+    'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+    'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+    'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+  ]));
 }
 back(String(ergebnis));
 ```
 <!-- /language -->
 
-In JavaScript rechnet FACT mit `BigInt` (die Zahl mit einem `n` dahinter): Eine
-gewöhnliche Zahl ist ab der Fakultät von 19 nicht mehr genau.
+Damit es nicht bei jedem Spiel gleich klingt, sucht FACT seine Sätze zufällig
+aus einer Liste aus. Jeder Satz nennt dabei die Zahlen, so hörst du trotzdem,
+welches Spiel gerade spricht. In JavaScript rechnet FACT mit `BigInt` (die Zahl
+mit einem `n` dahinter): Eine gewöhnliche Zahl ist ab der Fakultät von 19 nicht
+mehr genau.
 
-Wählst du FACT, 5 und die Raute, sagt das Spiel »Die Fakultät von 5? Ich
-frage nach der Fakultät von 4.« und wartet, während das Spiel mit der 4 fragt,
+Wählst du FACT, 5 und die Raute, sagt das Spiel zum Beispiel »Die Fakultät
+von 5? Ich frage nach der Fakultät von 4.« und wartet, während das Spiel mit der 4 fragt,
 und so weiter. Bei der 1 warten vier Spiele übereinander. Dann kommen die
 Antworten zurück, eine nach der anderen, jede als Töne: 1, 2, 6, 24 und
 zuletzt 120. Nur das äußerste Spiel sagt danach »Die Fakultät von 5 ist 120«
-und verabschiedet sich. Höchstens zwanzig Spiele dürfen so übereinander
-warten; beim einundzwanzigsten wären alle Leitungen überlastet, und der Anruf
-endete. Mit FACT und 20 sind es neunzehn.
+und verabschiedet sich. Mit FACT und 20 warten neunzehn Spiele übereinander.
 
 Im Workspace kennt `telefon` nur das Spiel, das du startest. Damit es eine
 Nummer erreicht, nennst du sie beim Start: `telefon fakultaet.rb --nummer
 FACT` gibt dem Spiel selbst die Nummer FACT, `--nummer DICE=wuerfel/dice.rb`
 ein anderes deiner Spiele.
+
+<div class='hint'>
+<strong>Hinweis:</strong> Höchstens zwanzig Anrufe dürfen übereinander warten.
+Ruft sich ein Spiel öfter selbst an, etwa weil es nie bei einer Zahl ankommt,
+bei der es aufhört, hört man beim einundzwanzigsten »Alle Leitungen sind
+überlastet«, und der Anruf ist zu Ende.
+</div>
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ruf FACT mit 4 an. Achte darauf, in welcher

@@ -20,6 +20,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), 'core'))
 import game  # noqa: E402
 
+# FACT's goodbyes, one of them at random
+GOODBYES = {'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+            'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+            'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.'}
+
 
 class TestPhone(game.Phone):
     """the other end: speech and tones go into heard; numbers reach the
@@ -71,12 +76,18 @@ class Hold(unittest.TestCase):
         self.games = {
             # FACT: n! by asking itself for (n-1)!
             '3228': write(self.folder, 'fact.py', """
-                eingabe = keys(3, timeout=3)
-                if not eingabe:
-                    say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
-                    eingabe = keys(3)
+                import random
+
+
+                # Was nach der Nummer gewählt wurde, ist schon da.
+                eingabe = keys(3, timeout=0.5)
                 # Ruft FACT sich selbst an, steht eine 0 vorne.
                 innen = len(eingabe) > 1 and eingabe.startswith('0')
+                if not innen:
+                    say('Willkommen zur rekursiven Fakultätsberatung.')
+                    if not eingabe:
+                        say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+                        eingabe = keys(3)
                 n = int(eingabe or 0)
                 if n > 20:
                     say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
@@ -85,14 +96,28 @@ class Hold(unittest.TestCase):
                 if n <= 1:
                     ergebnis = 1
                 else:
-                    say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+                    say(random.choice([
+                        f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
+                        f'Moment bitte. Für die Fakultät von {n} brauche ich die Fakultät von {n - 1}.',
+                        f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
+                        f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
+                    ]))
                     vorher = int(call('FACT', f'0{n - 1}#'))
                     ergebnis = n * vorher
-                    say(f'{n} mal {vorher} ist {ergebnis}.')
+                    say(random.choice([
+                        f'{n} mal {vorher} ist {ergebnis}.',
+                        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
+                        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
+                        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+                    ]))
 
                 if not innen:
                     say(f'Die Fakultät von {n} ist {ergebnis}.')
-                    say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.')
+                    say(random.choice([
+                        'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+                        'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+                        'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+                    ]))
                 back(str(ergebnis))
                 """),
             # DICE: the number of sides as the extension, here always the highest
@@ -122,13 +147,25 @@ class Hold(unittest.TestCase):
     def test_a_factorial_calls_itself(self):
         _, _, heard, _ = self.call("say('Ergebnis ' + call('FACT', '5#'))\n")
         said = [h[1] for h in heard if h[0] == 'say']
-        self.assertIn('5 mal 24 ist 120.', said)
+        # each asks for the next one (the sentence is one of several) and
+        # says its product on the way back
+        for n in (5, 4, 3, 2):
+            self.assertTrue(any(f'Fakultät von {n}' in x and f'Fakultät von {n - 1}' in x for x in said), n)
+        self.assertTrue(any('5 mal 24' in x and x.endswith('120.') for x in said))
         self.assertIn(('tones', '322804#'), heard)        # it calls itself with a 0 in front
         # only the outer one states the result and says goodbye
         self.assertEqual(1, sum(1 for x in said if x.startswith('Die Fakultät von') and ' ist ' in x))
-        self.assertEqual(['Die Fakultät von 5 ist 120.', 'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
-                          'Ergebnis 120'], said[-3:])
+        self.assertEqual('Die Fakultät von 5 ist 120.', said[-3])
+        self.assertIn(said[-2], GOODBYES)
+        self.assertEqual('Ergebnis 120', said[-1])
         self.assertIn(('tones', '120#'), heard)            # the answer, heard as tones
+        self.assertEqual(['Willkommen zur rekursiven Fakultätsberatung.'], [x for x in said if x.startswith('Willkommen')])
+
+    def test_without_a_number_it_asks_at_once(self):
+        _, _, heard, _ = self.call("say('Ergebnis ' + call('FACT'))\n", keys='')
+        said = [h[1] for h in heard if h[0] == 'say']
+        self.assertEqual(['Willkommen zur rekursiven Fakultätsberatung.',
+                          'Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.'], said[:2])
 
     def test_twenty_deep_and_numbers_of_two_digits(self):
         _, _, heard, phone = self.call("say(call('FACT', '20#'))\n")

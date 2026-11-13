@@ -48,6 +48,10 @@ GAP = re.compile(r'#\{|\$\{|\{')
 # other texts that look like sentences (a list of questions, say text later):
 # a capital letter at the start, . ! ? or … at the end, nothing filled in
 SENTENCE = re.compile(r'''(?<![\w])(['"])([A-ZÄÖÜ](?:(?!\1)[^\\\n])*?[.!?…])\1''')
+# the same in texts filled in while the game runs, anywhere (a list of
+# sentences to choose from): Python's f'…' and JavaScript's `…`; their
+# sentences without a gap
+FILLED = re.compile(r'''(?<![\w])f(['"])((?:\\.|(?!\1)[^\\\n])*)\1|`((?:\\.|[^\\`])*)`''')
 MAX_SENTENCES = 300                # rendered in advance per run, at most
 MOOD = re.compile(r'''\bmood\s*[:=]\s*(?:['"]|:)(\w+)''')   # on the rest of the line of a say ('whisper' or :whisper)
 COLOR = sys.stdout.isatty()
@@ -231,11 +235,14 @@ class Server:
                         if (sentence, mood) not in self.spoken and len(self.spoken) < MAX_SENTENCES:
                             self.spoken.add((sentence, mood))
                             new.append((sentence, mood))
-                for m in SENTENCE.finditer(text):
-                    if any(a <= m.start(2) < b for a, b in said):
+                others = [(m.start(2), m.group(2)) for m in SENTENCE.finditer(text)] + \
+                    [(m.start(), m.group(2) if m.group(2) is not None else m.group(3)) for m in FILLED.finditer(text)]
+                for at, literal in others:
+                    if any(a <= at < b for a, b in said):
                         continue
-                    for sentence in game.sentences(m.group(2)):
-                        if '#{' in sentence:
+                    for sentence in game.sentences(literal):
+                        # filled in while the game runs: made then
+                        if GAP.search(sentence) or not re.match(r'[A-ZÄÖÜ]', sentence):
                             continue
                         if (sentence, None) not in self.spoken and len(self.spoken) < MAX_SENTENCES:
                             self.spoken.add((sentence, None))

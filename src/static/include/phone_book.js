@@ -145,11 +145,16 @@
         requestAnimationFrame(() => requestAnimationFrame(() => {
             sheet.style.transform = `rotateY(${direction > 0 ? -180 : 180}deg)`;
         }));
-        sheet.addEventListener('transitionend', () => {
+        // only the turn itself ends it: the end of a transition inside the
+        // page (a dog-ear growing under the pointer) bubbles up here too
+        const done = (e) => {
+            if (e.target !== sheet || e.propertyName !== 'transform') return;
+            sheet.removeEventListener('transitionend', done);
             at = target;
             turning = false;
             render();
-        }, { once: true });
+        };
+        sheet.addEventListener('transitionend', done);
     }
 
     book.addEventListener('click', (e) => {

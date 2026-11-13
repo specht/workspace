@@ -11,6 +11,7 @@ called by a game gets »Kein Anschluss« and an empty answer.
 import asyncio
 import json
 import os
+import re
 import sys
 import tempfile
 import textwrap
@@ -18,6 +19,11 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+
+# FACT's goodbyes, one of them at random
+GOODBYES = {'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+            'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+            'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.'}
 
 
 def published(root, games):
@@ -37,12 +43,18 @@ class LineHold(unittest.TestCase):
         cls.root = tempfile.mkdtemp()
         published(cls.root, {
             '3228': ('Fakultät', """
-                eingabe = keys(3, timeout=3)
-                if not eingabe:
-                    say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
-                    eingabe = keys(3)
+                import random
+
+
+                # Was nach der Nummer gewählt wurde, ist schon da.
+                eingabe = keys(3, timeout=0.5)
                 # Ruft FACT sich selbst an, steht eine 0 vorne.
                 innen = len(eingabe) > 1 and eingabe.startswith('0')
+                if not innen:
+                    say('Willkommen zur rekursiven Fakultätsberatung.')
+                    if not eingabe:
+                        say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+                        eingabe = keys(3)
                 n = int(eingabe or 0)
                 if n > 20:
                     say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
@@ -51,14 +63,28 @@ class LineHold(unittest.TestCase):
                 if n <= 1:
                     ergebnis = 1
                 else:
-                    say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+                    say(random.choice([
+                        f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
+                        f'Moment bitte. Für die Fakultät von {n} brauche ich die Fakultät von {n - 1}.',
+                        f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
+                        f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
+                    ]))
                     vorher = int(call('FACT', f'0{n - 1}#'))
                     ergebnis = n * vorher
-                    say(f'{n} mal {vorher} ist {ergebnis}.')
+                    say(random.choice([
+                        f'{n} mal {vorher} ist {ergebnis}.',
+                        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
+                        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
+                        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+                    ]))
 
                 if not innen:
                     say(f'Die Fakultät von {n} ist {ergebnis}.')
-                    say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.')
+                    say(random.choice([
+                        'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+                        'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+                        'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+                    ]))
                 back(str(ergebnis))
                 """),
             '3423': ('Würfelbude', """
@@ -101,14 +127,14 @@ class LineHold(unittest.TestCase):
     def test_a_factorial_on_hold(self):
         events = self.call('32285')
         said = self.said(events)
-        # each connection says which factorial it was asked for; the inner
-        # ones are called with a 0 in front, and only the outer one states
-        # the result and says goodbye
-        self.assertEqual(['Die Fakultät von 5? Ich frage nach der Fakultät von 4.', 'Die Fakultät von 4? Ich frage nach der Fakultät von 3.',
-                          'Die Fakultät von 3? Ich frage nach der Fakultät von 2.', 'Die Fakultät von 2? Ich frage nach der Fakultät von 1.'],
-                         [x for x in said if 'Ich frage nach' in x])
-        self.assertEqual(['5 mal 24 ist 120.', 'Die Fakultät von 5 ist 120.',
-                          'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.'], said[-3:])
+        # each connection says which factorial it was asked for (one of
+        # several sentences); the inner ones are called with a 0 in front,
+        # and only the outer one states the result and says goodbye
+        asks = [x for x in said if re.search(r'Fakultät von \d+\D.*Fakultät von \d+', x)]
+        self.assertEqual([5, 4, 3, 2], [int(re.search(r'Fakultät von (\d+)', x).group(1)) for x in asks])
+        self.assertIn('5 mal 24', said[-3])
+        self.assertEqual('Die Fakultät von 5 ist 120.', said[-2])
+        self.assertIn(said[-1], GOODBYES)
         tones = [e['tones'] for e in events if 'tones' in e]
         self.assertEqual(['322804#', '322803#', '322802#', '322801#', '1#', '2#', '6#', '24#', '120#'], tones)
         self.assertEqual({'ended': 'back'}, events[-1])

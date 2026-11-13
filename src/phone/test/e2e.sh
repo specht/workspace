@@ -27,17 +27,21 @@ printf "require 'telefon'\nkey = keys(1)\ncase key\nwhen '1' or '2':\n  say 'ein
 # FACT (3228): n! by calling itself on hold (call, back)
 mkdir -p "$OUT/games/3"
 cat > "$OUT/games/3/main.py" <<'EOF'
+import random
 from telefon import back, call, hangup, keys, say, subtitle, title
 
 title('Fakultät')
 subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
 
-eingabe = keys(3, timeout=3)
-if not eingabe:
-    say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
-    eingabe = keys(3)
+# Was nach der Nummer gewählt wurde, ist schon da.
+eingabe = keys(3, timeout=0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
 innen = len(eingabe) > 1 and eingabe.startswith('0')
+if not innen:
+    say('Willkommen zur rekursiven Fakultätsberatung.')
+    if not eingabe:
+        say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+        eingabe = keys(3)
 n = int(eingabe or 0)
 if n > 20:
     say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
@@ -46,14 +50,28 @@ if n > 20:
 if n <= 1:
     ergebnis = 1
 else:
-    say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+    say(random.choice([
+        f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
+        f'Moment bitte. Für die Fakultät von {n} brauche ich die Fakultät von {n - 1}.',
+        f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
+        f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
+    ]))
     vorher = int(call('FACT', f'0{n - 1}#'))
     ergebnis = n * vorher
-    say(f'{n} mal {vorher} ist {ergebnis}.')
+    say(random.choice([
+        f'{n} mal {vorher} ist {ergebnis}.',
+        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
+        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
+        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+    ]))
 
 if not innen:
     say(f'Die Fakultät von {n} ist {ergebnis}.')
-    say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.')
+    say(random.choice([
+        'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+        'Vielen Dank, dass Sie die Fakultät gewählt haben. Beehren Sie uns bald wieder.',
+        'Die Fakultät bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+    ]))
 back(str(ergebnis))
 EOF
 echo '{"games": [{"number": "123", "title": "Zahlenraten", "folder": "games/1", "file": "main.py"}, {"number": "124", "title": "Kaputt", "folder": "games/2", "file": "start.rb"}, {"number": "3228", "title": "Fakultät", "folder": "games/3", "file": "main.py"}]}' > "$OUT/games/published.json"
@@ -121,9 +139,9 @@ check "$OUT/runner-crash.log" "game 2" "syntax error" "say 'Dieses Spiel hat ger
 lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
 call 10032283 40
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-hold.log"
-check "$OUT/runner-hold.log" "game 3" "say 'Die Fakultät von 3? Ich frage nach der Fakultät von 2." "tones 322802#" "tones 322801#" \
-    "tones 1#" "call answered '1'" "say '2 mal 1 ist 2." "call answered '2'" "say '3 mal 2 ist 6." "say 'Die Fakultät von 3 ist 6." \
-    "say 'Vielen Dank für Ihren Anruf bei der Fakultät" "tones 6#" "game ended: back"
+check "$OUT/runner-hold.log" "game 3" "say 'Willkommen zur rekursiven Fakultätsberatung." "Fakultät von 2" "tones 322802#" "tones 322801#" \
+    "tones 1#" "call answered '1'" "2 mal 1 " "call answered '2'" "3 mal 2 " "say 'Die Fakultät von 3 ist 6." \
+    "tones 6#" "game ended: back"
 # each call one line for /statistik: the first two reached game 123, the
 # next two none, then 124, then FACT three times (one connection each);
 # only hour, line, seconds and games (and the error of the game that
