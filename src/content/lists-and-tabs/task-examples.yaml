@@ -11,6 +11,9 @@ examples:
     fail:
       - document: ../../static/lists-and-tabs/03 Packliste.docx
         say: Tab
+      # too much selected: the heading after the list a point of it too
+      - document: stufen/packliste-zu-viel.docx
+        say: auch ein Punkt der Liste geworden
   runde:
     pass:
       - document: stufen/flohmarkt.docx

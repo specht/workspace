@@ -11,6 +11,9 @@ examples:
     fail:
       - document: ../../static/character-formatting/02 Aushang.docx
         say: Schriftarten
+      # capitals typed to make it stand out: written differently, not missing
+      - document: stufen/aushang-grossgetippt.docx
+        say: Großbuchstaben zum Hervorheben sind eine Formatierung
   runde:
     pass:
       - document: stufen/spieleabend.docx

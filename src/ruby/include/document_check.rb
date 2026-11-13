@@ -452,7 +452,8 @@ module DocumentCheck
         skip = Array(rule.is_a?(Hash) ? rule['except'] : nil).map { |x| squish(x) }
         theirs = starter['paragraphs'].reject { |p| p['text'].to_s.match?(TYPED_TOC_LINE) || skip.include?(squish(p['text'])) }
         missing = words.(theirs).tally.flat_map { |w, n| [w] * [n - have[w].to_i, 0].max }
-        return item if missing.empty?
+        merged, split = paragraphs_changed(theirs, Array(all || body), words)
+        return item if missing.empty? && merged.empty? && split.empty?
 
         # Words run together are a space gone, not words gone: »Satz.Der«
         # where the starting file has »Satz.« and »Der« (two spaces replaced
@@ -464,17 +465,49 @@ module DocumentCheck
         counted = theirs_tokens.tally
         added = tokens.(Array(all || body) + extra).tally.flat_map { |w, n| [w] * [n - counted[w].to_i, 0].max }
         joined = []
-        added.each do |w|
+        (missing.empty? ? [] : added).each do |w|
             parts = (2..4).lazy.map { |k| theirs_tokens.each_cons(k).find { |c| c.join == w } }.find(&:itself)
             next unless parts && parts.all? { |part| clean.(part).empty? || missing.include?(clean.(part)) }
 
             joined << parts
             parts.each { |part| (i = missing.index(clean.(part))) && missing.delete_at(i) }
         end
-        return item if missing.empty? && joined.empty?
+        # the same word, typed in other letters (»MÄRZ« for »März«, to make
+        # it stand out): written differently, not missing
+        recased = []
+        unless missing.empty?
+            spare = added.map { |w| clean.(w) } - joined.flatten.map { |w| clean.(w) }
+            missing.dup.each do |w|
+                other = spare.find { |x| x != w && x.downcase == w.downcase }
+                next unless other
+
+                recased << [w, other]
+                spare.delete_at(spare.index(other))
+                missing.delete_at(missing.index(w))
+            end
+        end
+        return item if missing.empty? && joined.empty? && merged.empty? && split.empty? && recased.empty?
 
         item.ok = false
         said = []
+        unless recased.empty?
+            w, other = recased.first
+            said << (recased.size == 1 ? "»#{q(other)}« heißt in der Vorlage »#{q(w)}«." :
+                "#{recased.size} Wörter sind anders geschrieben als in der Vorlage, zum Beispiel »#{q(other)}« statt »#{q(w)}«.") +
+                ' Großbuchstaben zum Hervorheben sind eine Formatierung; getippt ändern sie den Text selbst.'
+        end
+        unless merged.empty?
+            merged.first(3).each { |p| item.marks << para_mark(p[:into]).merge(:title => 'Absätze zusammengerutscht') }
+            first = merged.first
+            said << "#{merged.size == 1 ? "»#{q(first[:start])}« steht" : "#{merged.size} Absätze stehen, zum Beispiel »#{q(first[:start])}«,"} nicht mehr am Anfang eines Absatzes: " \
+                'Absätze sind zusammengerutscht, weil das ¶ dazwischen gelöscht ist. Löschen sollst du nur leere Absätze, in denen nichts als ¶ steht; ' \
+                'das ¶ am Ende eines Absatzes mit Text gehört dorthin.'
+        end
+        unless split.empty?
+            split.first(3).each { |p| item.marks << para_mark(p).merge(:title => 'neuer Absatz mitten im Satz') }
+            said << "#{split.size == 1 ? 'Mitten in einem Satz beginnt ein neuer Absatz' : "An #{split.size} Stellen beginnt mitten in einem Satz ein neuer Absatz"}: " \
+                "»#{q(short(split.first, 3))}«. Wo ein ↵ war, gehört ein Leerzeichen hin, kein ¶: Dann bricht das Programm die Zeile selbst um."
+        end
         unless joined.empty?
             joined.first(3).each do |parts|
                 p = Array(all || body).find { |x| x['plain'].include?(parts.join) }
@@ -490,6 +523,38 @@ module DocumentCheck
         end
         item.message = said.join(' ')
         item
+    end
+
+    # Paragraphs of the starting file run together or cut apart (rule
+    # text): [merged, split]. Merged: a paragraph of the starting file with
+    # text no longer begins a paragraph, its first words now inside another
+    # (its ¶ deleted along with the empty ones), as {start:, into:}. Split:
+    # a paragraph that begins in the middle of a sentence where the starting
+    # file has none (an ↵ replaced by Enter instead of a space): it is none
+    # of the starting file's, and the one before ends without a full stop.
+    # Cells of tables, frames and a table of contents are left out: there
+    # paragraphs are made on purpose.
+    def self.paragraphs_changed(theirs, mine, words)
+        aside = ->(p) { w = p['where'] || {}; w['table'] || w['frame'] || w['index'] }
+        free = mine.reject { |p| empty?(p) || aside.(p) }
+        lead = ->(p) { words.([p]).first(3) }
+        own = theirs.reject { |p| p['text'].to_s.strip.empty? || aside.(p) || words.([p]).empty? }
+        starts = theirs.reject { |p| p['text'].to_s.strip.empty? }.map { |p| lead.(p) }.reject(&:empty?)
+        # merged: the end of one paragraph of the starting file and the start
+        # of the next one side by side inside one paragraph now
+        mine_words = free.map { |p| [p, words.([p])] }
+        merged = own.each_cons(2).filter_map do |a, b|
+            seam = words.([a]).last(2) + words.([b]).first(2)
+            into = mine_words.find { |_, w| w.each_cons(seam.size).include?(seam) }
+            into && { :start => words.([b]).first(3).join(' '), :into => into.first }
+        end
+        split = free.each_cons(2).filter_map do |a, b|
+            next if starts.include?(lead.(b)) || lead.(b).empty?
+            next if a['plain'].to_s.strip.match?(/[.!?:;…»«"“)]\z/)
+
+            b
+        end
+        [merged, split]
     end
 
     # Pieces of text somewhere in the document, in any case (a message
@@ -907,6 +972,22 @@ module DocumentCheck
             item.marks << para_mark(p).merge(:title => title)
             problems << [kind, p]
         end
+        # selected too much: the paragraph just before or after the list a
+        # point of it too (a heading, the first line of what follows); not
+        # for points one level down or a numbered list with them, nor for a
+        # trap, whose tips do not speak of it
+        if depth <= 1 && !rule['numbered'] && !rule['hints']
+            at = Array(rule['list']).filter_map { |piece| body.index { |x| x['plain'].include?(piece) } }
+            unless at.empty?
+                [at.min - 1, at.max + 1].each do |i|
+                    next if i.negative? || body[i].nil? || empty?(body[i]) || body[i]['numbering'].nil?
+                    next if at.include?(i)
+
+                    item.marks << para_mark(body[i]).merge(:title => 'auch ein Listenpunkt')
+                    problems << [:spill, body[i]]
+                end
+            end
+        end
         return item if problems.empty?
 
         item.ok = false
@@ -915,17 +996,20 @@ module DocumentCheck
             first = short(list.first.last, 2)
             n = list.size
             case kind
+            when :spill then "#{names(list.map { |_, p| "»#{short(p, 3)}«" })} #{n == 1 ? 'ist' : 'sind'} auch ein Punkt der Liste geworden. " \
+                'Markier nur die Zeilen, die zur Liste gehören, und schalte die Liste für die anderen wieder aus.'
             when :typed then n == 1 ? "Vor »#{first}« steht ein Zeichen, das jemand getippt hat." : "Vor #{n} Punkten steht ein Zeichen, das jemand getippt hat, zum Beispiel vor »#{first}«."
             when :plain then n == 1 ? "»#{first}« ist kein Punkt einer Liste." : "#{n} Zeilen sind keine Punkte einer Liste, zum Beispiel »#{first}«."
             when :level then n == 1 ? "»#{first}« steht nicht auf Ebene #{depth}." : "#{n} Punkte stehen nicht auf Ebene #{depth}, zum Beispiel »#{first}«."
             else n == 1 ? "Vor »#{first}« steht ein Aufzählungszeichen, keine Zahl." : "Vor #{n} Punkten steht ein Aufzählungszeichen, keine Zahl, zum Beispiel vor »#{first}«."
             end
         end
-        why = if problems.all? { |k, _| k == :level } then 'Ein Tab am Anfang eines Punkts rückt ihn eine Ebene tiefer, Shift und Tab wieder höher.'
+        why = if problems.all? { |k, _| k == :spill } then ''
+              elsif problems.all? { |k, _| k == :level } then 'Ein Tab am Anfang eines Punkts rückt ihn eine Ebene tiefer, Shift und Tab wieder höher.'
               elsif problems.all? { |k, _| k == :bullet } then 'Eine nummerierte Liste zählt von selbst weiter, auch wenn ein Schritt dazukommt.'
               else 'Eine Liste, die das Programm führt, rückt jeden Punkt gleich ein, auch wenn er über zwei Zeilen geht, und zählt von selbst weiter.'
               end
-        item.message = "#{said.join(' ')} #{why}"
+        item.message = "#{said.join(' ')} #{why}".strip
         item
     end
 

@@ -1952,7 +1952,10 @@ check:
     '2. März': heute      # der Tag des Herunterladens
     '9. März': Dienstag   # der erste Dienstag mindestens eine Woche danach
   rules:
-    - text                # jedes Wort der Vorlage ist noch da
+    - text                # jedes Wort der Vorlage ist noch da, jeder Absatz noch einer; sie benennt die Fehler von
+                          # Anfängern: zusammengerutschte Wörter (»Satz.Der«, zwei Leerzeichen durch nichts ersetzt),
+                          # zusammengerutschte Absätze (jedes ¶ gelöscht), ein neuer Absatz mitten im Satz (Enter statt
+                          # Leerzeichen, wo ein ↵ war), Wörter in anderen Buchstaben getippt (»MÄRZ« statt »März«)
     - spaces              # keine Leerzeichen hintereinander
     - empty_paragraphs    # keine leeren Absätze (am Ende zählen sie nicht)
     - line_breaks         # keine Zeilenumbrüche von Hand (Shift+Enter)
@@ -1964,7 +1967,7 @@ check:
     - { sparing: ['Am Donnerstag', 'Wo:'] }         # diese Absätze nicht ganz fett
     - no_underline        # nichts unterstrichen
     - no_caps             # keine Großbuchstaben als Format
-    - { list: ['Schlafsack', 'Hausschuhe'] }        # eine Liste des Programms, kein »- « getippt
+    - { list: ['Schlafsack', 'Hausschuhe'] }        # eine Liste des Programms, kein »- « getippt; der Absatz davor und danach kein Punkt der Liste (zu viel markiert)
     - { list: ['Jede Gruppe', 'Nach einer'], numbered: true }   # dazu nummeriert (Zahlen oder Buchstaben, keine Aufzählungszeichen)
     - { list: ['Sucht die', 'An jeder'], level: 2 }   # dazu eine Ebene tiefer (Tab am Anfang des Punkts)
     - { tabs: ['Busfahrt', 'Zusammen'], align: [right, decimal] }   # je ein Tab, ein Tabstopp dieser Art, alle an einer Stelle

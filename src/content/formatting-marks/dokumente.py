@@ -342,10 +342,44 @@ def joined(path):
     raise RuntimeError('no sentence to join')
 
 
+def one_paragraph(path):
+    """the solution with every paragraph's ¶ deleted: all text in one
+    paragraph (a class did it, thinking every ¶ had to go)"""
+    solution(path)
+    doc = Document(path)
+    ps = [p for p in doc.paragraphs if p.text.strip()]
+    ps[0].runs[-1].text += ' ' + ' '.join(p.text for p in ps[1:])
+    for p in ps[1:]:
+        p._p.getparent().remove(p._p)
+    doc.save(path)
+
+
+def split_line(path):
+    """the solution with Enter where an ↵ was, not a space: »Auf dem« and
+    »Elternabend stellen …« two paragraphs"""
+    import copy
+    solution(path)
+    doc = Document(path)
+    p = next(p for p in doc.paragraphs if p.text.startswith('im Mai'))
+    text = p.text
+    head, tail = text.split(' Elternabend stellen', 1)
+    for r in p.runs[1:]:
+        r._r.getparent().remove(r._r)
+    p.runs[0].text = head
+    new = copy.deepcopy(p._p)
+    p._p.addnext(new)
+    from docx.text.paragraph import Paragraph
+    q = Paragraph(new, p._parent)
+    q.runs[0].text = 'Elternabend stellen' + tail
+    doc.save(path)
+
+
 def extras():
     notice(os.path.join(STATIC, '01 Abfahrt.docx'))
     notice_solution(os.path.join(HERE, 'stufen', 'abfahrt.docx'))
     joined(os.path.join(HERE, 'stufen', 'einladung-zusammen.docx'))
+    one_paragraph(os.path.join(HERE, 'stufen', 'einladung-ein-absatz.docx'))
+    split_line(os.path.join(HERE, 'stufen', 'einladung-geteilt.docx'))
     letter(os.path.join(STATIC, '01 Brief an die Jugendherberge.docx'))
     letter_solution(os.path.join(HERE, 'stufen', 'brief.docx'))
     secret(os.path.join(STATIC, '01 Geheimbotschaft.docx'))

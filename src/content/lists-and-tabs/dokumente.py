@@ -379,8 +379,19 @@ def sport_solution(path, typed_last=False):
     doc.save(path)
 
 
+def list_spilled(path):
+    """the solution with the heading after the packing list a point of
+    the list too (too much selected)"""
+    solution(path)
+    doc = Document(path)
+    p = next(p for p in doc.paragraphs if p.text == COST_HEAD)
+    p.style = doc.styles['List Bullet']
+    doc.save(path)
+
+
 def extras():
     os.makedirs(os.path.join(HERE, 'stufen'), exist_ok=True)
+    list_spilled(os.path.join(HERE, 'stufen', 'packliste-zu-viel.docx'))
     flea(os.path.join(STATIC, '03 Flohmarkt.docx'))
     flea(os.path.join(HERE, 'stufen', 'flohmarkt.docx'), solved=True)
     hike(os.path.join(STATIC, '03 Wandertag.docx'))

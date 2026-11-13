@@ -17,6 +17,12 @@ examples:
       # a space gone between two sentences: named as such, not as two missing words
       - document: stufen/einladung-zusammen.docx
         say: Hier fehlt ein Leerzeichen
+      # every ¶ deleted, all text one paragraph (a class did it)
+      - document: stufen/einladung-ein-absatz.docx
+        say: nicht mehr am Anfang eines Absatzes
+      # Enter where an ↵ was, not a space
+      - document: stufen/einladung-geteilt.docx
+        say: Mitten in einem Satz beginnt ein neuer Absatz
   runde:
     pass:
       - document: stufen/abfahrt.docx

@@ -273,7 +273,21 @@ def thanks_solution(path):
     doc.save(path)
 
 
+def caps_typed(path):
+    """the solution with »vor der Mensa« typed in capitals to stand out,
+    not formatted (an example: the check says the word is written
+    differently, not that it is missing)"""
+    solution(path)
+    doc = Document(path)
+    for p in doc.paragraphs:
+        for r in p.runs:
+            if 'vor der Mensa' in r.text:
+                r.text = r.text.replace('vor der Mensa', 'VOR DER MENSA')
+    doc.save(path)
+
+
 def extras():
+    caps_typed(os.path.join(HERE, 'stufen', 'aushang-grossgetippt.docx'))
     games(os.path.join(STATIC, '02 Spieleabend.docx'))
     games_solution(os.path.join(HERE, 'stufen', 'spieleabend.docx'))
     record(os.path.join(STATIC, '02 Messprotokoll.docx'))
