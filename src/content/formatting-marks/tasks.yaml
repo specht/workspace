@@ -271,7 +271,7 @@ tasks:
       rules:
         - contains: ['Wir treffen uns um neun Uhr', 'hinter der Jugendherberge', 'beim Bootssteg', 'verratet keinem etwas', 'Losungswort heißt Kranichfeder']
           label: Die Botschaft ist entschlüsselt
-          say: Ein Teil der Botschaft ist noch verschlüsselt.
+          say: Ein Teil der Botschaft ist noch verschlüsselt oder vertippt. Abgetippt schleichen sich Fehler ein; Suchen und Ersetzen tauscht jeden Buchstaben genau.
     hint:
       - Ersetze nicht erst a durch e und gleich danach e durch a; was dann passiert, steht in deiner Vermutung. Ist es schon passiert, macht <kbd>Strg</kbd>+<kbd>Z</kbd> jedes Ersetzen einzeln rückgängig.
       - "Nimm ein Zeichen als Zwischenlager, das im Text nicht vorkommt, zum Beispiel §: erst alle a durch §, dann alle e durch a, dann alle § durch e."
