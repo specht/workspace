@@ -186,3 +186,52 @@ _task(artikel)
 <strong>Ausprobieren:</strong> Schneide die Karte mit ihrer Beschriftung aus, füge sie über dem ersten Absatz ein und aktualisiere die Felder. Achte auf die Nummern unter beiden Bildern.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit einem neuen
+Handgriff und eins zum Suchen.
+
+### Noch eine Runde
+
+Die 7b hat in der Projektwoche Vogelhäuser gebaut und darüber einen Artikel
+geschrieben, gebaut wie der über die Kraniche. Bau ihn richtig, diesmal ohne
+oben nachzusehen.
+
+_task(runde)
+
+### Zuschneiden
+
+In der Schülerzeitung bekommt jedes Tier des Monats einen quadratischen Kasten.
+Das Foto des Kranichs ist aber breiter als hoch. Zieh es nicht in die Form,
+sondern **schneid es zu**: Zuschneiden nimmt vom Rand weg, was nicht gebraucht
+wird, und lässt den Rest, wie er ist. Das Seitenverhältnis des Ausschnitts
+bestimmst du selbst; verzerrt wird dabei nichts.
+
+<!-- language: word -->
+In Word klickst du auf das Foto und im Register *Bildformat* auf
+*Zuschneiden*. An den Rändern erscheinen schwarze Balken; zieh an ihnen, und
+klick daneben, wenn der Ausschnitt passt. Unter dem Pfeil bei *Zuschneiden*
+steht auch *Auf Seitenverhältnis zuschneiden*.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice klickst du mit der rechten Maustaste auf das Foto und wählst
+*Zuschneiden*; an den Ecken und Seiten erscheinen Griffe zum Ziehen. Genau, in
+Zentimetern, geht es unter *Eigenschaften…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zuschneiden*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office klickst du mit der rechten Maustaste auf das Foto und
+wählst *Zuschneiden*; an den Ecken und Seiten erscheinen Griffe zum Ziehen.
+<!-- /language -->
+
+_task(zuschneiden)
+
+### Zehn Fallen
+
+Die 7b lädt zum Schulfest ein. Die Einladung sieht fertig aus. Sechs Fallen
+sind von der Art wie auf dem ersten Blatt, je eine vom zweiten, dritten und
+vierten, und eine ist von diesem. Wie bei den anderen Fallen zählt die Prüfung
+nur, und jede Falle hat ihre eigenen Tipps.
+
+_task(fallen)

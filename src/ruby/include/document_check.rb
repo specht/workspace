@@ -30,6 +30,7 @@ require_relative 'office_client'
 #       - { list: ['Schlafsack', …] }   # these paragraphs a real list, no »- « typed
 #       - { list: ['Jede Gruppe', …], numbered: true }   # … with numbers (or letters), not bullets
 #       - { list: ['Sucht die', …], level: 2 }   # … one level down (Tab at the start of a point)
+#       - { crop: 1, aspect: 1, keep: [0.36, 0.17, 0.64, 0.75], subject: 'der Kranich' }   # picture 1 of the starting file cropped, square, the region kept (fractions of the original)
 #       - { table_sorted: 'Punkte', order: down }   # the rows below the header cell »Punkte« sorted by its column's numbers (down: most first), the header on top
 #       - { tabs: ['Busfahrt', …], align: [right, decimal] }   # one tab each, at one tab stop of this kind
 #                              # (align: [left]: a column of text at an own stop, not the default ones)
@@ -72,7 +73,7 @@ require_relative 'office_client'
 # its hints one by one; once it holds, its label shows, ticked. Rules
 # without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[contains same_as scripts table_sorted text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts table_sorted crop text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -141,6 +142,7 @@ module DocumentCheck
                 when 'tabs' then %w[tabs align]
                 when 'list' then %w[list numbered level]
                 when 'table_sorted' then %w[table_sorted order]
+                when 'crop' then %w[crop aspect keep subject names]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
                 when 'headings' then %w[headings level]
@@ -153,6 +155,11 @@ module DocumentCheck
             errors << 'align needs paragraph: (a piece of its text)' if name == 'align' && !(rule['paragraph'].is_a?(String) && !rule['paragraph'].empty?)
             errors << 'gaps must look like 6pt' if name == 'gaps' && pt(rule['gaps']) <= 0
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
+            if name == 'crop'
+                errors << 'crop must be the number of a picture of the starting file (1, 2, …)' unless rule['crop'].is_a?(Integer) && rule['crop'].positive?
+                errors << 'aspect must be width : height as a number (1 for a square)' if rule.key?('aspect') && !(rule['aspect'].is_a?(Numeric) && rule['aspect'].positive?)
+                errors << 'keep must be [left, top, right, bottom], fractions of the picture' if rule.key?('keep') && !(rule['keep'].is_a?(Array) && rule['keep'].size == 4 && rule['keep'].all? { |v| v.is_a?(Numeric) && v.between?(0, 1) })
+            end
             errors << 'table_sorted needs the text of a header cell and order: down or up' if name == 'table_sorted' && !(rule['table_sorted'].is_a?(String) && %w[down up].include?(rule['order']))
             errors << 'numbered must be true' if name == 'list' && rule.key?('numbered') && rule['numbered'] != true
             errors << 'level must be 2 or deeper (1 is the top of the list)' if name == 'list' && rule.key?('level') && !(rule['level'].is_a?(Integer) && rule['level'] > 1)
@@ -906,6 +913,54 @@ module DocumentCheck
             message += ' Sortiert ist wie bei Wörtern, Ziffer für Ziffer, nicht nach der Größe der Zahlen: Wähl beim Sortieren als Typ »Zahl« (in LibreOffice »Numerisch«).'
         end
         item.message = "#{message} Sortieren stellt ganze Zeilen um, #{down ? 'die größte Zahl' : 'die kleinste Zahl'} nach oben; die Kopfzeile bleibt dabei oben."
+        item
+    end
+
+    # A picture of the starting file cut to size: cropped, in the shape
+    # aspect (width : height), the region keep of the original ([left, top,
+    # right, bottom] as fractions) still to see. Stretching is the rule
+    # ratio's.
+    def self.rule_crop(rule, _body, starter, _all = nil, model = nil)
+        n = rule['crop'].to_i
+        subject = rule['subject'] || 'das Wichtigste'
+        item = Item.new(:rule => 'crop', :label => rule['aspect'].to_f == 1.0 ? 'Zu einem Quadrat zugeschnitten' : 'Zugeschnitten', :ok => true, :marks => [])
+        pic = pictures(rule, model, starter).find { |p| p['number'] == n }
+        if pic.nil?
+            item.ok = false
+            item.message = "Das #{n}. Bild der Vorlage finde ich nicht mehr."
+            return item
+        end
+        w, h = pic['actual']
+        l, r, t, b = (pic['crop'] || [0, 0, 0, 0]).map(&:to_f)
+        problems = []
+        if !(w.to_f.positive? && h.to_f.positive?) || [l, r, t, b].all? { |v| v <= 0 }
+            problems << "#{cap(pic['called'])} ist noch nicht zugeschnitten: Es zeigt noch alles, was auf dem Original ist."
+        else
+            seen = [l / w, t / h, 1 - r / w, 1 - b / h]
+            keep = Array(rule['keep']).map(&:to_f)
+            unless keep.empty?
+                cut = []
+                cut << 'links' if seen[0] > keep[0] + 0.01
+                cut << 'oben' if seen[1] > keep[1] + 0.01
+                cut << 'rechts' if seen[2] < keep[2] - 0.01
+                cut << 'unten' if seen[3] < keep[3] - 0.01
+                problems << "#{cap(names(cut))} ist zu viel weggeschnitten: #{cap(subject)} ist nicht mehr ganz zu sehen." unless cut.empty?
+            end
+            if rule['aspect'] && pic['width'].to_f.positive? && pic['height'].to_f.positive?
+                shown = pic['width'] / pic['height']
+                if (shown / rule['aspect'].to_f - 1).abs > 0.04
+                    cm = ->(v) { (v / 72 * 2.54).round(1).to_s.tr('.', ',') }
+                    problems << "#{cap(pic['called'])} ist #{cm.(pic['width'])} cm breit und #{cm.(pic['height'])} cm hoch, " +
+                        (rule['aspect'].to_f == 1.0 ? 'noch kein Quadrat.' : 'noch nicht in der verlangten Form.')
+                end
+            end
+        end
+        return item if problems.empty?
+
+        item.ok = false
+        mark = picture_mark(pic, 'zuschneiden')
+        item.marks << mark if mark
+        item.message = "#{problems.join(' ')} Zuschneiden schneidet vom Rand weg, ohne das Bild zu verzerren; zieh dafür an den Griffen des Zuschneidewerkzeugs, nicht an denen des Bildes."
         item
     end
 

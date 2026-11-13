@@ -18,3 +18,28 @@ examples:
         say: wie ein großer Buchstabe
       - document: stufen/kraniche-getippt.docx
         say: getippte Nummern
+  runde:
+    pass:
+      - document: stufen/vogelhaeuser.docx
+    fail:
+      - document: ../../static/pictures-in-text/05 Vogelhaeuser.docx
+        say: Breite gezogen
+  zuschneiden:
+    pass:
+      - document: stufen/tier-des-monats.docx
+      - document: stufen/tier-des-monats-libreoffice.docx
+    fail:
+      - document: ../../static/pictures-in-text/05 Tier des Monats.docx
+        say: noch nicht zugeschnitten
+      - document: stufen/tier-des-monats-ohne-kopf.docx
+        say: Oben ist zu viel weggeschnitten
+      - document: stufen/tier-des-monats-gestaucht.docx
+        say: in die Höhe gezogen
+  fallen:
+    pass:
+      - document: stufen/schulfest.docx
+    fail:
+      - document: ../../static/pictures-in-text/05 Schulfest.docx
+        say: 0 von 10 Fallen gefunden
+      - document: stufen/schulfest-neun.docx
+        say: 9 von 10 Fallen gefunden

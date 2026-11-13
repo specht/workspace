@@ -77,6 +77,10 @@ tasks:
 
   - id: artikel
     title: Der Artikel mit Bildern
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deinen Artikel. Die Prüfung markiert auf deiner Seite jede Stelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -109,3 +113,151 @@ tasks:
         - "Fang beim Foto an: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Typ*, *Verhältnis beibehalten*, *Originalgröße*, dann die Breite 7,5 cm."
         - "Rechtsklick auf das Foto <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verankerung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Am Absatz*, dann *Umlauf* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Parallel*. Schieb das Foto an den rechten Rand neben den ersten Absatz."
         - "Rechtsklick auf jedes Bild <i class='bi bi-chevron-right' aria-hidden='true'></i> *Beschriftung einfügen…*, Kategorie *Abbildung*, und lösch danach die getippte Unterschrift. Den Alternativtext schreibst du über Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Alternativer Text…* in das Feld *Beschreibung*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Der Artikel über die Vogelhäuser ist gebaut wie der über die Kraniche.
+      Bau ihn richtig: kein Bild verzerrt, das Vogelhaus rechts neben dem
+      ersten Absatz, Unterschriften, die selbst zählen, und zu jedem Bild ein
+      Alternativtext.
+    check:
+      type: document
+      file: pictures-in-text/05 Vogelhaeuser.docx
+      rules:
+        - text
+        - { ratio: true, names: ['das Vogelhaus', 'der Plan'] }
+        - { wrap: 1, side: right, names: ['das Vogelhaus', 'der Plan'] }
+        - { captions: true, names: ['das Vogelhaus', 'der Plan'] }
+        - { alt_text: true, names: ['das Vogelhaus', 'der Plan'] }
+    hint:
+      - Fang beim Vogelhaus an. Setz es auf seine Originalgröße zurück und mach es dann 7,5 cm breit, mit gesperrtem Seitenverhältnis.
+      - Damit Text neben dem Bild stehen kann, braucht es einen anderen Textumbruch (Word) oder Umlauf (LibreOffice).
+      - Füg an beiden Bildern eine Beschriftung ein und lösch danach die getippten Unterschriften. Der Plan hat schon einen Alternativtext, aber den hat niemand geschrieben, der den Plan kennt.
+
+  - id: zuschneiden
+    title: Zuschneiden
+    extra: true
+    prompt: |
+      Für die Schülerzeitung soll das Foto des Kranichs in ein Quadrat von
+      6 cm × 6 cm. Schneid es zu, ohne es zu verzerren, und so, dass der
+      ganze Kranich zu sehen bleibt, vom Schnabel bis zu den Schwanzfedern.
+    check:
+      type: document
+      file: pictures-in-text/05 Tier des Monats.docx
+      rules:
+        - text
+        - { ratio: true, names: ['das Foto'] }
+        - { crop: 1, aspect: 1, keep: [0.37, 0.18, 0.63, 0.74], subject: 'der Kranich', names: ['das Foto'] }
+    hint:
+      - Schalte das Zuschneiden ein und zieh an den Griffen links und rechts, bis das Foto etwa so breit wie hoch ist.
+      - Schneid oben nur wenig weg, sonst verliert der Kranich seinen Kopf. Unten ist viel Wiese, die gehen kann.
+      - Setz zum Schluss die Größe auf 6 cm × 6 cm, mit gesperrtem Seitenverhältnis. Steht dort eine andere Höhe, ist der Ausschnitt noch kein Quadrat.
+    word:
+      hint:
+        - "Klick auf das Foto und im Register *Bildformat* auf *Zuschneiden*. Zieh an den schwarzen Balken links und rechts, bis das Foto etwa so breit wie hoch ist, und klick daneben."
+        - Schneid oben nur wenig weg, sonst verliert der Kranich seinen Kopf. Unten ist viel Wiese, die gehen kann.
+        - "Schneller geht es mit dem Pfeil unter *Zuschneiden*: *Auf Seitenverhältnis zuschneiden* <i class='bi bi-chevron-right' aria-hidden='true'></i> *1:1*. Zieh dann das Foto im Ausschnitt so, dass der Kranich ganz drin ist, und setz die Größe auf 6 cm × 6 cm."
+    libreoffice:
+      hint:
+        - "Rechtsklick auf das Foto <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zuschneiden*. Zieh an den Griffen links und rechts, bis das Foto etwa so breit wie hoch ist."
+        - Schneid oben nur wenig weg, sonst verliert der Kranich seinen Kopf. Unten ist viel Wiese, die gehen kann.
+        - "Genau geht es unter Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zuschneiden*: links, rechts, oben und unten getrennt, und darunter die Bildgröße 6 cm × 6 cm."
+    nextcloud:
+      hint:
+        - "Rechtsklick auf das Foto <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zuschneiden*. Zieh an den Griffen links und rechts, bis das Foto etwa so breit wie hoch ist."
+        - Schneid oben nur wenig weg, sonst verliert der Kranich seinen Kopf. Unten ist viel Wiese, die gehen kann.
+        - "Setz zum Schluss die Größe auf 6 cm × 6 cm, mit gesperrtem Seitenverhältnis. Steht dort eine andere Höhe, ist der Ausschnitt noch kein Quadrat."
+
+  - id: fallen
+    title: Zehn Fallen
+    extra: true
+    prompt: |
+      Die Einladung zum Schulfest sieht fertig aus. Zehn Stellen sind
+      trotzdem falsch gebaut: sechs von der Art wie auf dem ersten Blatt, je
+      eine vom zweiten, dritten und vierten und eine von diesem. Die Prüfung
+      sagt dir nur, wie viele du gefunden hast; zu jeder Falle gibt es Tipps,
+      einen nach dem anderen.
+    check:
+      type: document
+      file: pictures-in-text/05 Schulfest.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Einladung zum Schulfest'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '22. Juni'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['am Freitag, dem 3. Juli']
+          label: Nach »19 Uhr.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »19 Uhr.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Die 7b hat Vogelhäuser']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den kurzen Absatz über die 7b an.
+            - Vor »Die 7b hat« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['Das Programm']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand vor »Das Programm« an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn und gib dem Absatz davor 12 pt Abstand nach, wie den anderen.
+        - line_breaks: true
+          in: ['Mit dem Erlös']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über die Tombola an.
+            - Hinter »Schulgarten.« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über den Regen ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+        - list: ['Kuchen oder Muffins', 'Salate', 'Brot und Brötchen', 'Getränke']
+          label: Ein Punkt der Liste war von Hand getippt.
+          hints:
+            - Diese Falle ist vom dritten Blatt. Sieh dir die Liste genau an.
+            - Versuch bei jedem Punkt der Liste, das Zeichen davor mit der Maus zu markieren. Ein echtes Aufzählungszeichen lässt sich nicht markieren wie ein Buchstabe.
+            - Vor »Getränke« sind der Punkt und ein Tab getippt. Lösch beide und mach die Zeile zu einem Punkt der Liste wie die anderen.
+        - table: ['Begrüßung', 'Führung', 'Auftritt', 'Tombola']
+          columns: 2
+          label: Die Tombola stand nicht in der Tabelle.
+          hints:
+            - Diese Falle ist vom vierten Blatt. Sieh dir das Programm genau an.
+            - Die Tabelle hat keine Linien. Schalte die Formatierungszeichen ein und sieh dir jede Zeile an. In einer Zelle steht kein →.
+            - Hinter »18 Uhr« steht ein Tab; die Zeile steht unter der Tabelle, nicht in ihr. Füg mit <kbd>Tab</kbd> in der letzten Zelle eine Zeile an, trag die Tombola dort ein und lösch die getippte Zeile.
+        - ratio: true
+          names: ['das Vogelhaus']
+          label: Das Vogelhaus war in die Breite gezogen.
+          hints:
+            - Diese Falle ist von diesem Blatt. Sieh dir das Bild genau an.
+            - Das Einflugloch ist rund gebaut. Ist es auf dem Bild auch rund?
+            - Das Bild ist in die Breite gezogen. Setz es auf die Originalgröße zurück und mach es dann an einer Ecke kleiner, etwa 7,5 cm breit.
+    solution: |
+      Die zehn Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »19 Uhr.«, ein
+      Einzug aus Leerzeichen, ein leerer Absatz statt Abstand, ein ↵ am Ende
+      einer Zeile, die sowieso dort umgebrochen wäre, der Satz über den Regen
+      in Arial statt in Calibri, »Getränke« mit getipptem Punkt und Tab, die
+      Tombola mit einem Tab unter der Tabelle statt in ihr und das Vogelhaus,
+      das um 12 % in die Breite gezogen war: Sein rundes Loch war oval.

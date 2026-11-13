@@ -180,8 +180,12 @@ day, the last point of its list typed), and sheet 4 (Noch eine Runde: the
 sports day's results; Zwei Handgriffe: a scoreboard, a row added with Tab and
 sorted by points, which as text would put 98 first, the rule `table_sorted`;
 Neun Fallen: a letter about the project week, the last row of a table
-without borders a paragraph with a tab below it). The class view has its
-lines. Next: sheets 5 to 10 as the class reaches them.
+without borders a paragraph with a tab below it), and sheet 5 (Noch eine
+Runde: an article about the bird houses, two new drawings in
+bilder/vogelhaus.py; Zuschneiden: the crane cut to a square without losing
+it, the rule `crop`; Zehn Fallen: an invitation to the school fest, the bird
+house stretched by 12 %, its round hole an oval). The class view has its
+lines. Next: sheets 6 to 10 as the class reaches them.
 
 ## Findings of the word processing series
 

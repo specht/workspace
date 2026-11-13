@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" font-family="PT Sans, sans-serif">
+  <!-- made by vogelhaus.py -->
+  <rect width="1200" height="800" fill="#f1f3e6"/>
+  <!-- the school at the bottom, the paths -->
+  <rect x="300" y="700" width="600" height="100" fill="#d9c7a8" stroke="#9c8660" stroke-width="4"/>
+  <text x="600" y="765" text-anchor="middle" font-size="32" font-weight="bold" fill="#2f3b2a">Schule</text>
+  <path d="M600 700V380M600 380H200M600 380H1000" stroke="#d8cdb4" stroke-width="40" fill="none" stroke-linecap="round"/>
+  <!-- raised beds and the pond -->
+  <g fill="#b98f5f" stroke="#7a5a32" stroke-width="4">
+    <rect x="360" y="220" width="190" height="90" rx="6"/><rect x="660" y="220" width="190" height="90" rx="6"/>
+  </g>
+  <g stroke="#7fa362" stroke-width="5" stroke-linecap="round">
+    <path d="M385 245h140M385 265h140M385 285h140M685 245h140M685 265h140M685 285h140"/>
+  </g>
+  <ellipse cx="760" cy="560" rx="110" ry="70" fill="#a8cfe8" stroke="#5f93bd" stroke-width="4"/>
+  <g fill="#2f3b2a" font-size="26">
+    <text x="455" y="345" text-anchor="middle">Hochbeet</text>
+    <text x="755" y="345" text-anchor="middle">Hochbeet</text>
+    <text x="760" y="568" text-anchor="middle" fill="#2f6690" font-style="italic">Teich</text>
+  </g>
+  <circle cx="180" cy="200" r="70" fill="#a9c98a" stroke="#7fa362" stroke-width="4"/><circle cx="620" cy="120" r="70" fill="#a9c98a" stroke="#7fa362" stroke-width="4"/><circle cx="1010" cy="170" r="70" fill="#a9c98a" stroke="#7fa362" stroke-width="4"/><circle cx="980" cy="520" r="70" fill="#a9c98a" stroke="#7fa362" stroke-width="4"/><circle cx="240" cy="560" r="70" fill="#a9c98a" stroke="#7fa362" stroke-width="4"/>
+  <g fill="#2f3b2a" font-size="24"><text x="180" y="300" text-anchor="middle">Apfelbaum</text><text x="620" y="220" text-anchor="middle">Eiche</text><text x="1010" y="270" text-anchor="middle">Kastanie</text><text x="980" y="620" text-anchor="middle">Linde</text><text x="240" y="660" text-anchor="middle">Birke</text></g>
+  <g transform="translate(214 170)"><path d="M-22 18v-26l22-18 22 18v26z" fill="#6fa6a0" stroke="#3f6f6a" stroke-width="3" stroke-linejoin="round"/><text y="13" text-anchor="middle" font-size="22" font-weight="bold" fill="#ffffff">1</text></g><g transform="translate(654 90)"><path d="M-22 18v-26l22-18 22 18v26z" fill="#6fa6a0" stroke="#3f6f6a" stroke-width="3" stroke-linejoin="round"/><text y="13" text-anchor="middle" font-size="22" font-weight="bold" fill="#ffffff">2</text></g><g transform="translate(1044 140)"><path d="M-22 18v-26l22-18 22 18v26z" fill="#6fa6a0" stroke="#3f6f6a" stroke-width="3" stroke-linejoin="round"/><text y="13" text-anchor="middle" font-size="22" font-weight="bold" fill="#ffffff">3</text></g><g transform="translate(1014 490)"><path d="M-22 18v-26l22-18 22 18v26z" fill="#6fa6a0" stroke="#3f6f6a" stroke-width="3" stroke-linejoin="round"/><text y="13" text-anchor="middle" font-size="22" font-weight="bold" fill="#ffffff">4</text></g><g transform="translate(274 530)"><path d="M-22 18v-26l22-18 22 18v26z" fill="#6fa6a0" stroke="#3f6f6a" stroke-width="3" stroke-linejoin="round"/><text y="13" text-anchor="middle" font-size="22" font-weight="bold" fill="#ffffff">5</text></g>
+  <!-- legend -->
+  <g transform="translate(1000 700)">
+    <path d="M-22 18v-26l22-18 22 18v26z" fill="#6fa6a0" stroke="#3f6f6a" stroke-width="3" stroke-linejoin="round"/>
+    <text x="34" y="12" font-size="24" fill="#2f3b2a">Vogelhaus</text>
+  </g>
+</svg>

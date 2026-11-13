@@ -7,7 +7,7 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 <li><b>15 Minuten:</b> die Vermutung zu den Nummern, das Seitenverhältnis mit der Rechenaufgabe, der Textumbruch.</li>
 <li><b>15 Minuten:</b> Beschriftungen, der Alternativtext.</li>
 <li><b>10 Minuten:</b> prüfen, die Karte nach oben schieben und die Felder aktualisieren.</li>
-<li><b>Für Schnelle:</b> ein drittes Bild mit Beschriftung einfügen (ein Foto aus dem eigenen Ort mit freier Lizenz) und die Quelle in die Bildunterschrift schreiben.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten); wer danach noch Zeit hat, fügt ein drittes Bild mit Beschriftung ein (ein Foto aus dem eigenen Ort mit freier Lizenz) und schreibt die Quelle in die Bildunterschrift.</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -42,3 +42,24 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 
 - Die Vermutung zu den Nummern zeigt, warum getippte Nummern nicht reichen. Die Antwort steht erst nach der Aufgabe.
 - Die Rechenaufgabe zur Höhe bereitet das gesperrte Seitenverhältnis vor: Wer sie gelöst hat, erkennt, ob das Programm richtig rechnet.
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer den
+Artikel besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Zehn Fallen«.
+
+- **Noch eine Runde:** ein Artikel über die Vogelhäuser der 7b, gebaut wie
+  der über die Kraniche (das Vogelhaus verzerrt in einer eigenen Zeile,
+  getippte Unterschriften, ein Plan mit dem Alternativtext, den Word selbst
+  rät); dieselben Punkte wie beim Artikel.
+- **Zuschneiden:** das Foto des Kranichs als Quadrat von 6 cm × 6 cm für die
+  Schülerzeitung. Die Prüfung verlangt einen Zuschnitt (kein Stauchen), ein
+  Quadrat und dass der ganze Kranich zu sehen bleibt, vom Schnabel bis zu den
+  Schwanzfedern; sie sagt, an welcher Seite zu viel weggeschnitten ist. In
+  Word geht es am schnellsten mit *Auf Seitenverhältnis zuschneiden* *1:1*.
+- **Zehn Fallen:** eine Einladung zum Schulfest mit den Fallen der vier
+  Blätter davor und einer von diesem: Das Vogelhaus ist um 12 % in die Breite
+  gezogen, so wenig, dass es nur am Einflugloch auffällt, das oval statt rund
+  ist. Die Prüfung zählt nur und zeigt jede Falle erst, wenn sie behoben ist;
+  Tipps gibt es für jede einzeln.
