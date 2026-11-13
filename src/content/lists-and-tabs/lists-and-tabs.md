@@ -112,3 +112,73 @@ _task(packliste)
 <strong>Ausprobieren:</strong> Stell die Kosten in eine andere Schrift und eine andere Größe. Achte darauf, wo die Preise enden.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit zwei neuen
+Handgriffen und eins zum Suchen.
+
+### Noch eine Runde
+
+Für den Flohmarkt der 7b hat jemand einen Aushang gemacht, gebaut wie die
+Packliste. Bau ihn richtig, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Im Plan für den Wandertag stehen oben die wichtigsten Angaben: links ein Wort
+wie »Ziel« oder »Treffpunkt«, rechts daneben, was dazugehört. Auch diese Spalte
+ist mit Leerzeichen gebaut.
+
+Ersetz die Leerzeichen durch einen Tab, und die Spalte springt zu den
+Tabstopps, die es von selbst alle 1,25 cm gibt: hinter »Ziel« zum ersten, hinter
+»Treffpunkt« zum zweiten. Gerade wird sie mit einem eigenen **linksbündigen**
+Tabstopp: Dort beginnt der Text hinter dem Tab, egal wie lang das Wort davor
+ist.
+
+<!-- language: word -->
+In Word setzt du ihn unter *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Tabstopps* mit der Ausrichtung *Links*. Schneller geht es am Lineal: Links
+neben dem Lineal steht, welche Art ein Klick setzt; ein L heißt linksbündig.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice setzt du ihn unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Tabulatoren* mit dem Typ *Links*. Schneller geht es am Lineal: Ein Klick
+setzt einen linksbündigen Tabstopp.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office setzt du ihn unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Tabulatoren* mit dem Typ *Links*.
+<!-- /language -->
+
+Der zweite Handgriff: Die Rallye am Gipfel ist von Hand nummeriert, ihre
+Unterpunkte sind mit Leerzeichen eingerückt. Eine **nummerierte Liste** zählt
+von selbst, und ihre Punkte können auf verschiedenen **Ebenen** stehen:
+<kbd>Tab</kbd> am Anfang eines Punkts rückt ihn eine Ebene tiefer,
+<kbd>Shift</kbd>+<kbd>Tab</kbd> holt ihn wieder hoch. Die Zahlen der oberen
+Ebene zählen dabei weiter, als stünden die Unterpunkte nicht dazwischen.
+
+<!-- language: word -->
+In Word schaltest du sie im Register *Start* mit *Nummerierung* ein.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice schaltest du sie in der Leiste mit der Liste mit den Zahlen ein
+oder mit <kbd>F12</kbd>.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office schaltest du sie im Register *Start* mit der Liste mit den
+Zahlen ein.
+<!-- /language -->
+
+_task(handgriffe)
+
+### Acht Fallen
+
+Die 7b schreibt den Eltern einen Brief zum Sportfest. Er sieht fertig aus.
+Sechs Fallen sind von der Art wie auf dem ersten Blatt, eine ist vom zweiten,
+und eine ist von diesem: Auf dem Papier sieht man sie nicht. Wie bei den
+anderen Fallen zählt die Prüfung nur, und jede Falle hat ihre eigenen Tipps.
+
+_task(fallen)

@@ -28,7 +28,10 @@ require_relative 'office_client'
 #       - no_underline         # nothing underlined
 #       - no_caps              # no capitals set by formatting
 #       - { list: ['Schlafsack', …] }   # these paragraphs a real list, no »- « typed
+#       - { list: ['Jede Gruppe', …], numbered: true }   # … with numbers (or letters), not bullets
+#       - { list: ['Sucht die', …], level: 2 }   # … one level down (Tab at the start of a point)
 #       - { tabs: ['Busfahrt', …], align: [right, decimal] }   # one tab each, at one tab stop of this kind
+#                              # (align: [left]: a column of text at an own stop, not the default ones)
 #       - { table: ['Montag', 'Dienstag', …], columns: 3, header: 'Tag' }   # these in the cells of one table
 #       - no_tabs              # no tab anywhere
 #       - alt_text             # every picture has an alt text that says what is on it
@@ -135,6 +138,7 @@ module DocumentCheck
                 when 'same_as' then %w[same_as paragraphs]
                 when 'size' then %w[size paragraphs]
                 when 'tabs' then %w[tabs align]
+                when 'list' then %w[list numbered level]
                 when 'table' then %w[table columns header]
                 when 'wrap' then %w[wrap side names]
                 when 'headings' then %w[headings level]
@@ -147,6 +151,8 @@ module DocumentCheck
             errors << 'align needs paragraph: (a piece of its text)' if name == 'align' && !(rule['paragraph'].is_a?(String) && !rule['paragraph'].empty?)
             errors << 'gaps must look like 6pt' if name == 'gaps' && pt(rule['gaps']) <= 0
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
+            errors << 'numbered must be true' if name == 'list' && rule.key?('numbered') && rule['numbered'] != true
+            errors << 'level must be 2 or deeper (1 is the top of the list)' if name == 'list' && rule.key?('level') && !(rule['level'].is_a?(Integer) && rule['level'] > 1)
             errors << 'fonts must be a number' if name == 'fonts' && !rule['fonts'].is_a?(Integer)
             errors << 'same_as needs a piece of the model paragraph and paragraphs: (pieces of the others)' if name == 'same_as' && !(rule['same_as'].is_a?(String) && rule['paragraphs'].is_a?(Array) && rule['paragraphs'].all? { |b| b.is_a?(String) })
             if name == 'scripts'
@@ -393,7 +399,7 @@ module DocumentCheck
         # program wrote as »1«)
         # any date is the same word: the starting file's dates were filled
         # in on the day of its download (DocumentDates)
-        words = ->(ps) { ps.flat_map { |p| DocumentDates.normalize(p['text']).split(/\s+/) }.map { |w| w.gsub(SUPERSCRIPT_DIGITS, '').gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
+        words = ->(ps) { ps.flat_map { |p| DocumentDates.normalize(p['text']).sub(TYPED_MARKER, '').split(/\s+/) }.map { |w| w.gsub(SUPERSCRIPT_DIGITS, '').gsub(EDGE_PUNCT, '') }.reject(&:empty?) }
         # the whole document, the cells of tables too, and what moved into
         # footnotes, headers and footers (a note typed in the text)
         extra = (model && model['footnotes'] || []).map { |n| { 'text' => n['text'] } } +
@@ -798,8 +804,13 @@ module DocumentCheck
 
     # ---- lists and tab stops
 
+    # list: these paragraphs points of a real list; numbered: with numbers
+    # (or letters) in front, not bullets; level: 2 one level down (Tab at
+    # the start of a point, Shift+Tab back).
     def self.rule_list(rule, body, _starter, _all = nil, _model = nil)
-        item = Item.new(:rule => 'list', :label => 'Eine echte Liste', :ok => true, :marks => [])
+        depth = rule['level'].to_i
+        label = depth > 1 ? "Unterpunkte auf Ebene #{depth}" : (rule['numbered'] ? 'Eine nummerierte Liste' : 'Eine echte Liste')
+        item = Item.new(:rule => 'list', :label => label, :ok => true, :marks => [])
         problems = []
         Array(rule['list']).each do |piece|
             p = body.find { |x| x['plain'].include?(piece) }
@@ -808,10 +819,20 @@ module DocumentCheck
                 next
             end
             typed = p['text'].to_s.match?(TYPED_MARKER)
-            next if p['numbering'] && !typed
+            kind = if typed || !p['numbering'] then typed ? :typed : :plain
+                   elsif depth > 1 && p['numbering']['level'].to_i + 1 != depth then :level
+                   elsif rule['numbered'] && !p['numbering']['label'].to_s.match?(/[[:alnum:]]/) then :bullet
+                   end
+            next if kind.nil?
 
-            item.marks << para_mark(p).merge(:title => typed ? 'Zeichen von Hand' : 'kein Listenpunkt')
-            problems << [typed ? :typed : :plain, p]
+            title = case kind
+                    when :typed then 'Zeichen von Hand'
+                    when :plain then 'kein Listenpunkt'
+                    when :level then "Ebene #{p['numbering']['level'].to_i + 1}"
+                    else 'keine Zahl'
+                    end
+            item.marks << para_mark(p).merge(:title => title)
+            problems << [kind, p]
         end
         return item if problems.empty?
 
@@ -819,19 +840,26 @@ module DocumentCheck
         said = problems.group_by(&:first).map do |kind, list|
             next list.map(&:last).join(' ') if kind == :missing
             first = short(list.first.last, 2)
+            n = list.size
             case kind
-            when :typed then list.size == 1 ? "Vor »#{first}« steht ein Zeichen, das jemand getippt hat." : "Vor #{list.size} Punkten steht ein Zeichen, das jemand getippt hat, zum Beispiel vor »#{first}«."
-            else list.size == 1 ? "»#{first}« ist kein Punkt einer Liste." : "#{list.size} Zeilen sind keine Punkte einer Liste, zum Beispiel »#{first}«."
+            when :typed then n == 1 ? "Vor »#{first}« steht ein Zeichen, das jemand getippt hat." : "Vor #{n} Punkten steht ein Zeichen, das jemand getippt hat, zum Beispiel vor »#{first}«."
+            when :plain then n == 1 ? "»#{first}« ist kein Punkt einer Liste." : "#{n} Zeilen sind keine Punkte einer Liste, zum Beispiel »#{first}«."
+            when :level then n == 1 ? "»#{first}« steht nicht auf Ebene #{depth}." : "#{n} Punkte stehen nicht auf Ebene #{depth}, zum Beispiel »#{first}«."
+            else n == 1 ? "Vor »#{first}« steht ein Aufzählungszeichen, keine Zahl." : "Vor #{n} Punkten steht ein Aufzählungszeichen, keine Zahl, zum Beispiel vor »#{first}«."
             end
         end
-        item.message = "#{said.join(' ')} " \
-            'Eine Liste, die das Programm führt, rückt jeden Punkt gleich ein, auch wenn er über zwei Zeilen geht, und zählt von selbst weiter.'
+        why = if problems.all? { |k, _| k == :level } then 'Ein Tab am Anfang eines Punkts rückt ihn eine Ebene tiefer, Shift und Tab wieder höher.'
+              elsif problems.all? { |k, _| k == :bullet } then 'Eine nummerierte Liste zählt von selbst weiter, auch wenn ein Schritt dazukommt.'
+              else 'Eine Liste, die das Programm führt, rückt jeden Punkt gleich ein, auch wenn er über zwei Zeilen geht, und zählt von selbst weiter.'
+              end
+        item.message = "#{said.join(' ')} #{why}"
         item
     end
 
     def self.rule_tabs(rule, body, _starter, _all = nil, _model = nil)
         kinds = Array(rule['align'] || %w[right decimal]).map(&:to_s)
-        item = Item.new(:rule => 'tabs', :label => 'Preise an einem Tabstopp', :ok => true, :marks => [])
+        left = kinds == ['left']
+        item = Item.new(:rule => 'tabs', :label => left ? 'Eine Spalte an einem Tabstopp' : 'Preise an einem Tabstopp', :ok => true, :marks => [])
         problems = []
         stops = []
         Array(rule['tabs']).each do |piece|
@@ -871,8 +899,9 @@ module DocumentCheck
             else n == 1 ? "»#{first}« hat keinen #{stop_kind}." : "#{n} Zeilen haben keinen #{stop_kind}, zum Beispiel »#{first}«."
             end
         end
-        item.message = "#{said.join(' ')} " \
-            'Ein Tab springt zum nächsten Tabstopp; ein rechtsbündiger Tabstopp am Rand stellt die Preise genau untereinander, in jeder Schrift.'
+        item.message = "#{said.join(' ')} " +
+            (left ? 'Ein Tab springt zum nächsten Tabstopp; ein eigener linksbündiger Tabstopp lässt jede Zeile der Spalte an derselben Linie beginnen, wie lang das Wort davor auch ist.' :
+                'Ein Tab springt zum nächsten Tabstopp; ein rechtsbündiger Tabstopp am Rand stellt die Preise genau untereinander, in jeder Schrift.')
         item
     end
 

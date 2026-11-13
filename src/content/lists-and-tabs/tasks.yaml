@@ -52,6 +52,10 @@ tasks:
 
   - id: packliste
     title: Liste und Preise, sauber gebaut
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe dein Blatt. Die Prüfung markiert auf deiner Seite jede Stelle, an
       der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -83,3 +87,137 @@ tasks:
         - "Lösch die getippten Striche, markier die sechs Zeilen der Packliste und klick im Register *Start* auf die Liste mit den Punkten."
         - "Lösch in jeder Zeile der Kosten alle Leerzeichen zwischen Posten und Preis und drück einmal <kbd>Tab</kbd>. Mit *Suchen und Ersetzen* siehst du danach nach, ob noch irgendwo zwei Leerzeichen stehen."
         - "Markier die fünf Zeilen der Kosten und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 16 cm, Typ *Rechts*, Füllzeichen *.......*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Der Aushang für den Flohmarkt ist gebaut wie die Packliste: Striche von
+      Hand und Preise, die mit Leerzeichen nach rechts geschoben sind. Bau ihn
+      richtig: eine Liste mit Aufzählungszeichen und die Preise an einem
+      rechtsbündigen Tabstopp.
+    check:
+      type: document
+      file: lists-and-tabs/03 Flohmarkt.docx
+      rules:
+        - text
+        - { list: ['Bücher und Comics', 'Spiele und Puzzles', 'Kuscheltiere', 'Kleidung, die', 'Selbst gebackenen'] }
+        - spaces
+        - { tabs: ['Ein Buch', 'Ein Spiel', 'Ein Kuscheltier', 'Ein Stück', 'Ein Becher'], align: [right, decimal] }
+    hint:
+      - Zuerst die getippten Striche weg, dann die fünf Zeilen markieren und die Liste einschalten.
+      - In jeder Zeile der Preise bleibt nur ein Tab zwischen dem, was verkauft wird, und dem Preis.
+      - Markier die fünf Zeilen der Preise und setz für alle einen rechtsbündigen Tabstopp bei 16 cm.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Im Plan für den Wandertag stehen die Angaben mit Leerzeichen in einer
+      Spalte, die Rallye ist von Hand nummeriert. Setz die Angaben an einen
+      linksbündigen Tabstopp und mach aus der Rallye eine nummerierte Liste,
+      deren Unterpunkte eine Ebene tiefer stehen.
+    check:
+      type: document
+      file: lists-and-tabs/03 Wandertag.docx
+      rules:
+        - text
+        - spaces
+        - { tabs: ['Ziel', 'Treffpunkt', 'Abfahrt', 'Zurück', 'Mitbringen', 'Bei Regen'], align: [left] }
+        - { list: ['Jede Gruppe holt', 'Nach einer Stunde', 'Die Lehrkräfte', 'Die Gruppe mit'], numbered: true }
+        - { list: ['Sucht die Stationen', 'An jeder Station', 'Jede richtige Antwort', 'Bei gleich vielen'], level: 2 }
+    hint:
+      - Ersetz in jeder Angabe die Leerzeichen durch einen Tab. Die Spalte springt dann zu den Tabstopps, die es von selbst alle 1,25 cm gibt, und steht noch nicht gerade.
+      - Markier die sechs Angaben und setz einen eigenen linksbündigen Tabstopp, etwa bei 3,5 cm.
+      - Lösch die getippten Zahlen und Striche, markier die ganze Rallye und schalte die Nummerierung ein. Stell dann den Cursor an den Anfang jedes Unterpunkts und drück <kbd>Tab</kbd>.
+    word:
+      hint:
+        - Ersetz in jeder Angabe die Leerzeichen durch einen Tab. Die Spalte springt dann zu den Tabstopps, die es von selbst alle 1,25 cm gibt, und steht noch nicht gerade.
+        - "Markier die sechs Angaben und öffne *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabstopps*: Position 3,5 cm, Ausrichtung *Links*. Oder klick bei 3,5 cm auf das Lineal, solange links am Lineal das Zeichen für links steht (ein L)."
+        - "Lösch die getippten Zahlen und Striche, markier die ganze Rallye und klick im Register *Start* auf *Nummerierung*. Stell dann den Cursor an den Anfang jedes Unterpunkts und drück <kbd>Tab</kbd>; <kbd>Shift</kbd>+<kbd>Tab</kbd> holt einen Punkt wieder hoch."
+    libreoffice:
+      hint:
+        - Ersetz in jeder Angabe die Leerzeichen durch einen Tab. Die Spalte springt dann zu den Tabstopps, die es von selbst alle 1,25 cm gibt, und steht noch nicht gerade.
+        - "Markier die sechs Angaben und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 3,5 cm, Typ *Links*. Oder klick bei 3,5 cm auf das Lineal; ein Klick setzt einen linksbündigen Tabstopp."
+        - "Lösch die getippten Zahlen und Striche, markier die ganze Rallye und klick in der Leiste auf die Liste mit den Zahlen (oder <kbd>F12</kbd>). Stell dann den Cursor an den Anfang jedes Unterpunkts und drück <kbd>Tab</kbd>; <kbd>Shift</kbd>+<kbd>Tab</kbd> holt einen Punkt wieder hoch."
+    nextcloud:
+      hint:
+        - Ersetz in jeder Angabe die Leerzeichen durch einen Tab. Die Spalte springt dann zu den Tabstopps, die es von selbst alle 1,25 cm gibt, und steht noch nicht gerade.
+        - "Markier die sechs Angaben und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 3,5 cm, Typ *Links*."
+        - "Lösch die getippten Zahlen und Striche, markier die ganze Rallye und klick im Register *Start* auf die Liste mit den Zahlen. Stell dann den Cursor an den Anfang jedes Unterpunkts und drück <kbd>Tab</kbd>; <kbd>Shift</kbd>+<kbd>Tab</kbd> holt einen Punkt wieder hoch."
+
+  - id: fallen
+    title: Acht Fallen
+    extra: true
+    prompt: |
+      Der Brief zum Sportfest sieht fertig aus. Acht Stellen sind trotzdem
+      falsch gebaut: sechs von der Art wie auf dem ersten Blatt, eine vom
+      zweiten und eine von diesem. Die Prüfung sagt dir nur, wie viele du
+      gefunden hast; zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: lists-and-tabs/03 Sportfest.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Unser Sportfest'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '2. Juni'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['am Freitag, dem 12. Juni']
+          label: Nach »13 Uhr.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »13 Uhr.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Die 7b hilft']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den Anfang des Absatzes über den Aufbau an.
+            - Vor »Die 7b hilft« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['Bitte geben Sie']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand vor »Bitte geben Sie Ihrem Kind mit« an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn und gib dem Absatz davor 12 pt Abstand nach, wie den anderen.
+        - line_breaks: true
+          in: ['Wer bei einer Disziplin']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über die Entschuldigung an.
+            - Hinter »Für alle« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über das Gewitter ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+        - list: ['Sportsachen', 'eine Mütze', 'genug zu trinken', 'Sonnencreme']
+          label: Ein Punkt der Liste war von Hand getippt.
+          hints:
+            - Diese Falle ist von diesem Blatt. Sieh dir die Liste genau an.
+            - Versuch bei jedem Punkt der Liste, das Zeichen davor mit der Maus zu markieren. Ein echtes Aufzählungszeichen lässt sich nicht markieren wie ein Buchstabe.
+            - Vor »Sonnencreme« sind der Punkt und ein Tab getippt. Lösch beide und mach die Zeile zu einem Punkt der Liste wie die anderen.
+    solution: |
+      Die acht Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »13 Uhr.«, ein
+      Einzug aus Leerzeichen, ein leerer Absatz statt Abstand, ein ↵ am Ende
+      einer Zeile, die sowieso dort umgebrochen wäre, der Satz über das
+      Gewitter in Arial statt in Calibri und »Sonnencreme«, vor dem der
+      Punkt und ein Tab getippt waren.

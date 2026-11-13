@@ -172,8 +172,12 @@ Sechs Fallen: the letter to the youth hostel; Eine Geheimbotschaft), and
 sheet 2 (Noch eine Runde: a games evening's poster; Zwei Handgriffe: the
 record of measurements, Format übertragen and km², CO₂; Sieben Fallen: the
 thank-you letter, one sentence in Arial). Each in one extra chapter »Üben und
-knobeln« at the end of the page. The class view has its lines. Next:
-sheets 3 to 10 as the class reaches them.
+knobeln« at the end of the page. Sheet 3 too (Noch eine Runde: a flea
+market's notice; Zwei Handgriffe: the plan of a hiking day, a column at an own
+left tab stop and a numbered list with points one level down, the rule
+`list` with `numbered:` and `level:`; Acht Fallen: a letter about the sports
+day, the last point of its list typed). The class view has its lines. Next:
+sheets 4 to 10 as the class reaches them.
 
 ## Findings of the word processing series
 

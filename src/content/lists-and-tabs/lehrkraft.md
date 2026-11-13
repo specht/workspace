@@ -7,7 +7,7 @@ Lernende bauen eine Packliste mit getippten Strichen zu einer echten Liste um un
 <li><b>15 Minuten:</b> die Vermutung zur anderen Schrift, die Liste.</li>
 <li><b>15 Minuten:</b> Tab und Tabstopp, das Lineal.</li>
 <li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, der Versuch mit einer anderen Schrift.</li>
-<li><b>Für Schnelle:</b> eine nummerierte Liste mit zwei Ebenen (Tagesplan der Fahrt: Tage, darunter Programmpunkte).</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -39,3 +39,24 @@ Lernende bauen eine Packliste mit getippten Strichen zu einer echten Liste um un
 
 - Die Vermutung zur anderen Schrift vor dem Öffnen der Datei, die Auflösung als Bild danach.
 - Das Zeichen für einen Tab (→) ergänzt die Formatierungszeichen aus dem ersten Blatt.
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Packliste besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Acht Fallen«.
+
+- **Noch eine Runde:** der Aushang für einen Flohmarkt, gebaut wie die
+  Packliste (getippte Striche, Preise mit Leerzeichen), mit denselben Punkten.
+- **Zwei Handgriffe:** der Plan für einen Wandertag. Die Angaben oben (»Ziel«,
+  »Treffpunkt«, …) kommen an einen eigenen linksbündigen Tabstopp; mit einem
+  Tab allein springen sie zu den Standard-Tabstopps und stehen nicht gerade.
+  Die Rallye wird eine nummerierte Liste, ihre Unterpunkte kommen mit
+  <kbd>Tab</kbd> eine Ebene tiefer. Die Prüfung verlangt vor den Schritten
+  Zahlen oder Buchstaben, keine Aufzählungszeichen, und die Unterpunkte auf
+  Ebene 2; welche Zeichen dort stehen, ist frei.
+- **Acht Fallen:** ein Brief an die Eltern zum Sportfest mit den sechs Arten
+  von Fallen des ersten Blatts, der Schrift des zweiten (ein Satz in Arial
+  11 pt) und einer von diesem: Vor dem letzten Punkt der Liste sind ein »•«
+  und ein Tab getippt, eingerückt wie die anderen. Die Prüfung zählt nur und
+  zeigt jede Falle erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.

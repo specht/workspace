@@ -1965,7 +1965,10 @@ check:
     - no_underline        # nichts unterstrichen
     - no_caps             # keine Großbuchstaben als Format
     - { list: ['Schlafsack', 'Hausschuhe'] }        # eine Liste des Programms, kein »- « getippt
+    - { list: ['Jede Gruppe', 'Nach einer'], numbered: true }   # dazu nummeriert (Zahlen oder Buchstaben, keine Aufzählungszeichen)
+    - { list: ['Sucht die', 'An jeder'], level: 2 }   # dazu eine Ebene tiefer (Tab am Anfang des Punkts)
     - { tabs: ['Busfahrt', 'Zusammen'], align: [right, decimal] }   # je ein Tab, ein Tabstopp dieser Art, alle an einer Stelle
+    - { tabs: ['Ziel', 'Treffpunkt'], align: [left] }   # eine Spalte an einem eigenen linksbündigen Tabstopp (nicht den Standard-Tabstopps)
     - { table: ['Montag', 'Freitag'], columns: 3, header: 'Programm' }   # in den Zellen einer Tabelle, die Kopfzeile wiederholt sich
     - no_tabs             # kein Tab mehr im Dokument
     - { ratio: true, names: ['das Foto', 'die Karte'] }   # kein Bild verzerrt

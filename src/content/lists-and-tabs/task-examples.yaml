@@ -11,3 +11,25 @@ examples:
     fail:
       - document: ../../static/lists-and-tabs/03 Packliste.docx
         say: Tab
+  runde:
+    pass:
+      - document: stufen/flohmarkt.docx
+    fail:
+      - document: ../../static/lists-and-tabs/03 Flohmarkt.docx
+        say: getippt
+  handgriffe:
+    pass:
+      - document: stufen/wandertag.docx
+    fail:
+      - document: ../../static/lists-and-tabs/03 Wandertag.docx
+        say: linksbündiger Tabstopp
+      - document: stufen/wandertag-eine-ebene.docx
+        say: nicht auf Ebene 2
+  fallen:
+    pass:
+      - document: stufen/sportfest.docx
+    fail:
+      - document: ../../static/lists-and-tabs/03 Sportfest.docx
+        say: 0 von 8 Fallen gefunden
+      - document: stufen/sportfest-sieben.docx
+        say: 7 von 8 Fallen gefunden
