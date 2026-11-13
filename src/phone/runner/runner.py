@@ -64,7 +64,7 @@ def game_limits():
     os.setsid()
     resource.setrlimit(resource.RLIMIT_CPU, (GAME_CPU, GAME_CPU))
     resource.setrlimit(resource.RLIMIT_AS, (GAME_MEMORY, GAME_MEMORY))
-    resource.setrlimit(resource.RLIMIT_NPROC, (64, 64))
+    resource.setrlimit(resource.RLIMIT_NPROC, (256, 256))   # threads count too; calls on hold are processes
     if os.getuid() == 0:
         user = pwd.getpwnam('game')
         os.setgid(user.pw_gid)

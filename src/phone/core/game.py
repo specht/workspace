@@ -55,8 +55,9 @@ CRASHED_CALLED = 'Dieses Spiel hat gerade einen Fehler.'
 # starts with only the digits dialled after its number (the extension).
 MAX_KEYS = 20
 # calls on hold at most (call inside call); one more and the line is
-# overloaded: the caller hears it and the call ends
-MAX_DEPTH = 8
+# overloaded: the caller hears it and the call ends. Each waits as a process
+# of its own (a game in Ruby about 13 MB, in JavaScript about 50 MB)
+MAX_DEPTH = 20
 OVERLOADED = 'Alle Leitungen sind überlastet. Bitte ruf später noch einmal an.'
 # a number with its extension: at most this many digits
 MAX_DIALED = 20
@@ -74,6 +75,8 @@ def dial_digits(text):
             out += c
         elif c in KEYPAD:
             out += KEYPAD[c]
+        elif c in '*#':
+            out += c
         elif c in ' -/':
             continue
         else:
@@ -464,7 +467,7 @@ class Phone:
             extension = dial_digits(command.get('extension', '') or '')
             if not number or not re.fullmatch(r'\d{3,4}\d*', number):
                 return {'error': f'{kind}: Eine Spielnummer hat drei oder vier Ziffern oder Buchstaben, nicht »{command[kind]}«.'}
-            if extension is None or not re.fullmatch(r'[\d*]*', extension):
+            if extension is None or not re.fullmatch(r'[\d*#]*', extension):
                 return {'error': f'{kind}: Nach der Nummer kommen nur Ziffern, nicht »{command.get("extension")}«.'}
             dialed = number + extension
             if len(dialed) > MAX_DIALED:

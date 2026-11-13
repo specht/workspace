@@ -37,18 +37,29 @@ class LineHold(unittest.TestCase):
         cls.root = tempfile.mkdtemp()
         published(cls.root, {
             '3228': ('Fakultät', """
-                taste = keys(1, timeout=3)
-                if not taste:
-                    say('Fakultät. Wähl eine Zahl von 1 bis 9.')
-                    taste = keys(1)
-                n = int(taste or 0)
+                eingabe = keys(3, timeout=3)
+                if not eingabe:
+                    say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+                    eingabe = keys(3)
+                # Ruft FACT sich selbst an, steht eine 0 vorne.
+                innen = len(eingabe) > 1 and eingabe.startswith('0')
+                n = int(eingabe or 0)
+                if n > 20:
+                    say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
+                    hangup()
+
                 if n <= 1:
-                    say(f'Die Fakultät von {n} ist 1.')
-                    back('1')
-                say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
-                rest = int(call('FACT', str(n - 1)))
-                say(f'{n} mal {rest} ist {n * rest}. Die Fakultät von {n} ist {n * rest}.')
-                back(str(n * rest))
+                    ergebnis = 1
+                else:
+                    say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+                    vorher = int(call('FACT', f'0{n - 1}#'))
+                    ergebnis = n * vorher
+                    say(f'{n} mal {vorher} ist {ergebnis}.')
+
+                if not innen:
+                    say(f'Die Fakultät von {n} ist {ergebnis}.')
+                    say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.')
+                back(str(ergebnis))
                 """),
             '3423': ('Würfelbude', """
                 sides = int(keys(3, timeout=0.3) or 0)
@@ -90,15 +101,16 @@ class LineHold(unittest.TestCase):
     def test_a_factorial_on_hold(self):
         events = self.call('32285')
         said = self.said(events)
-        self.assertIn('5 mal 24 ist 120. Die Fakultät von 5 ist 120.', said)
-        # each connection says which factorial it was asked for
+        # each connection says which factorial it was asked for; the inner
+        # ones are called with a 0 in front, and only the outer one states
+        # the result and says goodbye
         self.assertEqual(['Die Fakultät von 5? Ich frage nach der Fakultät von 4.', 'Die Fakultät von 4? Ich frage nach der Fakultät von 3.',
                           'Die Fakultät von 3? Ich frage nach der Fakultät von 2.', 'Die Fakultät von 2? Ich frage nach der Fakultät von 1.'],
                          [x for x in said if 'Ich frage nach' in x])
-        self.assertIn('Die Fakultät von 1 ist 1.', said)
-        self.assertEqual('5 mal 24 ist 120. Die Fakultät von 5 ist 120.', said[-1])
+        self.assertEqual(['5 mal 24 ist 120.', 'Die Fakultät von 5 ist 120.',
+                          'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.'], said[-3:])
         tones = [e['tones'] for e in events if 'tones' in e]
-        self.assertEqual(['32284', '32283', '32282', '32281', '1#', '2#', '6#', '24#', '120#'], tones)
+        self.assertEqual(['322804#', '322803#', '322802#', '322801#', '1#', '2#', '6#', '24#', '120#'], tones)
         self.assertEqual({'ended': 'back'}, events[-1])
 
     def test_no_game_no_answer_and_a_service(self):

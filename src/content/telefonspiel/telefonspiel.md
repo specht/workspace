@@ -1836,87 +1836,130 @@ der Fakultät von 4 fragt und das Ergebnis mit 5 multipliziert. Die Fakultät
 von 4 fragt nach der von 3, und so weiter bis zur 1, die das Spiel ohne zu
 fragen weiß.
 
+Am Ende soll nur das Spiel das Ergebnis ansagen und sich verabschieden, das
+ein Mensch angerufen hat, nicht jedes der Spiele dazwischen. Dafür setzt FACT
+eine 0 vor die Zahl, wenn es sich selbst anruft: Eine Zahl mit 0 vorne kommt
+von FACT, eine ohne von einem Menschen. Die Raute dahinter sagt, dass die Zahl
+zu Ende ist; ohne sie wartete `keys(3)` drei Sekunden auf eine dritte Ziffer.
+
 <!-- language: ruby -->
 <!-- page-code: own -->
 ```ruby
 ~ require 'telefon'
 ~
 title 'Fakultät'
-subtitle 'Wähl nach der Nummer eine Zahl von 1 bis 9.'
+subtitle 'Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.'
 
-taste = keys(1, timeout: 3)
-if taste.empty?
-  say 'Fakultät. Wähl eine Zahl von 1 bis 9.'
-  taste = keys(1)
+eingabe = keys(3, timeout: 3)
+if eingabe.empty?
+  say 'Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.'
+  eingabe = keys(3)
 end
-n = taste.to_i
+# Ruft FACT sich selbst an, steht eine 0 vorne.
+innen = eingabe.length > 1 && eingabe.start_with?('0')
+n = eingabe.to_i
+if n > 20
+  say 'Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.'
+  hangup
+end
+
 if n <= 1
-  say "Die Fakultät von #{n} ist 1."
-  back '1'
+  ergebnis = 1
+else
+  say "Die Fakultät von #{n}? Ich frage nach der Fakultät von #{n - 1}."
+  vorher = call('FACT', "0#{n - 1}#").to_i
+  ergebnis = n * vorher
+  say "#{n} mal #{vorher} ist #{ergebnis}."
 end
-say "Die Fakultät von #{n}? Ich frage nach der Fakultät von #{n - 1}."
-vorher = call('FACT', (n - 1).to_s).to_i
-say "#{n} mal #{vorher} ist #{n * vorher}. Die Fakultät von #{n} ist #{n * vorher}."
-back((n * vorher).to_s)
+
+unless innen
+  say "Die Fakultät von #{n} ist #{ergebnis}."
+  say 'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.'
+end
+back ergebnis.to_s
 ```
 <!-- /language -->
 <!-- language: python -->
 <!-- page-code: own -->
 ```python
-from telefon import back, call, keys, say, subtitle, title
+from telefon import back, call, hangup, keys, say, subtitle, title
 
 title('Fakultät')
-subtitle('Wähl nach der Nummer eine Zahl von 1 bis 9.')
+subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
 
-taste = keys(1, timeout=3)
-if not taste:
-    say('Fakultät. Wähl eine Zahl von 1 bis 9.')
-    taste = keys(1)
-n = int(taste or 0)
+eingabe = keys(3, timeout=3)
+if not eingabe:
+    say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+    eingabe = keys(3)
+# Ruft FACT sich selbst an, steht eine 0 vorne.
+innen = len(eingabe) > 1 and eingabe.startswith('0')
+n = int(eingabe or 0)
+if n > 20:
+    say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
+    hangup()
+
 if n <= 1:
-    say(f'Die Fakultät von {n} ist 1.')
-    back('1')
-say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
-vorher = int(call('FACT', str(n - 1)))
-say(f'{n} mal {vorher} ist {n * vorher}. Die Fakultät von {n} ist {n * vorher}.')
-back(str(n * vorher))
+    ergebnis = 1
+else:
+    say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+    vorher = int(call('FACT', f'0{n - 1}#'))
+    ergebnis = n * vorher
+    say(f'{n} mal {vorher} ist {ergebnis}.')
+
+if not innen:
+    say(f'Die Fakultät von {n} ist {ergebnis}.')
+    say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.')
+back(str(ergebnis))
 ```
 <!-- /language -->
 <!-- language: javascript -->
 <!-- page-code: own -->
 ```javascript
-const { back, call, keys, say, subtitle, title } = require('telefon');
+const { back, call, hangup, keys, say, subtitle, title } = require('telefon');
 
 title('Fakultät');
-subtitle('Wähl nach der Nummer eine Zahl von 1 bis 9.');
+subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.');
 
-let taste = keys(1, 3);
-if (taste === '') {
-  say('Fakultät. Wähl eine Zahl von 1 bis 9.');
-  taste = keys(1);
+let eingabe = keys(3, 3);
+if (eingabe === '') {
+  say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.');
+  eingabe = keys(3);
 }
-const n = Number(taste);
-if (n <= 1) {
-  say(`Die Fakultät von ${n} ist 1.`);
-  back('1');
+// Ruft FACT sich selbst an, steht eine 0 vorne.
+const innen = eingabe.length > 1 && eingabe.startsWith('0');
+const n = Number(eingabe);
+if (n > 20) {
+  say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.');
+  hangup();
 }
-say(`Die Fakultät von ${n}? Ich frage nach der Fakultät von ${n - 1}.`);
-const vorher = Number(call('FACT', String(n - 1)));
-say(`${n} mal ${vorher} ist ${n * vorher}. Die Fakultät von ${n} ist ${n * vorher}.`);
-back(String(n * vorher));
+
+let ergebnis = 1n;
+if (n > 1) {
+  say(`Die Fakultät von ${n}? Ich frage nach der Fakultät von ${n - 1}.`);
+  const vorher = BigInt(call('FACT', `0${n - 1}#`));
+  ergebnis = BigInt(n) * vorher;
+  say(`${n} mal ${vorher} ist ${ergebnis}.`);
+}
+
+if (!innen) {
+  say(`Die Fakultät von ${n} ist ${ergebnis}.`);
+  say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.');
+}
+back(String(ergebnis));
 ```
 <!-- /language -->
 
-Wählst du FACT und 5, sagt das Spiel »Die Fakultät von 5? Ich frage nach der
-Fakultät von 4.« und wartet, während das Spiel mit der 4 fragt, und so weiter.
-Bei der 1 warten vier Spiele übereinander. Dann kommen die Antworten zurück,
-eine nach der anderen, jede als Töne: 1, 2, 6, 24 und zuletzt 120, und als
-Letztes hörst du »Die Fakultät von 5 ist 120.« Höchstens acht
-Spiele dürfen so übereinander warten; beim neunten wären alle Leitungen
-überlastet, und der Anruf endete. Mit FACT und 9 sind es genau acht.
+In JavaScript rechnet FACT mit `BigInt` (die Zahl mit einem `n` dahinter): Eine
+gewöhnliche Zahl ist ab der Fakultät von 19 nicht mehr genau.
 
-Wählt jemand FACT ohne eine Ziffer dahinter, kommt nach drei Sekunden nichts,
-und das Spiel fragt nach einer Zahl.
+Wählst du FACT, 5 und die Raute, sagt das Spiel »Die Fakultät von 5? Ich
+frage nach der Fakultät von 4.« und wartet, während das Spiel mit der 4 fragt,
+und so weiter. Bei der 1 warten vier Spiele übereinander. Dann kommen die
+Antworten zurück, eine nach der anderen, jede als Töne: 1, 2, 6, 24 und
+zuletzt 120. Nur das äußerste Spiel sagt danach »Die Fakultät von 5 ist 120«
+und verabschiedet sich. Höchstens zwanzig Spiele dürfen so übereinander
+warten; beim einundzwanzigsten wären alle Leitungen überlastet, und der Anruf
+endete. Mit FACT und 20 sind es neunzehn.
 
 Im Workspace kennt `telefon` nur das Spiel, das du startest. Damit es eine
 Nummer erreicht, nennst du sie beim Start: `telefon fakultaet.rb --nummer
@@ -1926,7 +1969,8 @@ ein anderes deiner Spiele.
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Ruf FACT mit 4 an. Achte darauf, in welcher
 Reihenfolge die Spiele ihre Zahl nennen und in welcher die Ergebnisse
-zurückkommen.
+zurückkommen. Nimm dann die 0 aus <code>call</code> heraus: Was hörst du am
+Ende jetzt?
 </div>
 
 ### Spiele gegeneinander

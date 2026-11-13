@@ -283,18 +283,19 @@ back rand(1..seiten).to_s
 ```
 
 - Hin und zurück geht es nur über Tasten: Was nach der Nummer gewählt wird,
-  und was `back` zurückgibt, sind Ziffern (und `*`), höchstens 20. Beides ist
-  als Tastentöne auf der Leitung zu hören; das Ende einer Antwort ist die
-  Raute.
+  und was `back` zurückgibt, sind Ziffern, höchstens 20. Beides ist als
+  Tastentöne auf der Leitung zu hören; das Ende einer Antwort ist die Raute.
+  Nach der Nummer darf auch selbst eine Raute stehen (`call('FACT', '012#')`):
+  Dann weiß `keys` im gerufenen Spiel, dass nichts mehr kommt.
 - `back` beendet das Spiel. Hat ein Mensch es gewählt, ist der Anruf damit zu
   Ende.
 - Endet das gerufene Spiel ohne `back`, legt es auf oder bricht es mit einem
   Fehler ab, gibt `call` einen leeren Text zurück. Gibt es die Nummer nicht,
   hört man »Kein Anschluss unter dieser Nummer«, und die Antwort ist auch
   leer.
-- Ein Spiel darf sich selbst anrufen. Höchstens acht Anrufe warten
-  übereinander; beim neunten sind alle Leitungen überlastet, und der Anruf
-  endet.
+- Ein Spiel darf sich selbst anrufen. Höchstens zwanzig Anrufe warten
+  übereinander; beim einundzwanzigsten sind alle Leitungen überlastet, und
+  der Anruf endet.
 - Im Workspace erreicht `call` die Spiele, die du beim Start nennst:
   `telefon spiel.rb --nummer FACT` gibt dem Spiel selbst die Nummer FACT,
   `--nummer DICE=wuerfel/dice.rb` ein anderes deiner Spiele.

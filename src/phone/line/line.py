@@ -52,7 +52,7 @@ def limits():
     resource.setrlimit(resource.RLIMIT_AS, (MEMORY, MEMORY))
     if os.getuid() == 0:
         # processes count per user: only for game, whose processes are the calls'
-        resource.setrlimit(resource.RLIMIT_NPROC, (64, 64))
+        resource.setrlimit(resource.RLIMIT_NPROC, (256, 256))   # threads count too; calls on hold are processes
         user = pwd.getpwnam('game')
         os.setgroups([])
         os.setgid(user.pw_gid)

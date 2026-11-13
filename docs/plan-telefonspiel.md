@@ -363,8 +363,11 @@ real phone system's type-ahead: the MT8870 decoder holds one digit,
 VoiceXML collects keys without fixing a size). `call` keeps the calling
 game's process waiting on its answer line while the runner (`connect`)
 or the line (`call_from`, a phone per connection) runs the next connection;
-8 calls deep at most, the ninth is »Alle Leitungen sind überlastet« and the
-call ends. A crash of a called game: »Dieses Spiel hat gerade einen
+20 calls deep at most (13 November 2026, from 8: FACT up to 20, whose
+result has 19 digits; a waiting game is a process, Ruby about 13 MB and two
+threads, JavaScript about 50 MB and seven, so RLIMIT_NPROC for the user game
+went from 64 to 256), the 21st is »Alle Leitungen sind überlastet« and the
+call ends. An extension may hold # (the end of a number for keys). A crash of a called game: »Dieses Spiel hat gerade einen
 Fehler«, and the calling game gets "". The tones are generated (DTMF
 pairs, 100 ms, `game.tones`) on the phone and played by the page in the
 browser. In the Workspace `telefon spiel.rb --nummer FACT --nummer

@@ -98,9 +98,19 @@
         render();
     }
 
+    // a dog-ear at the outer corner of a page that can be turned: at the
+    // right for the next page, at the left for the one before (on a narrow
+    // screen both on the one page)
+    function ears(side, index) {
+        let out = '';
+        if (side === 'right' && index + 1 < pages.length) out += "<span class='pb-ear next' aria-hidden='true'></span>";
+        if ((side === 'left' || narrow()) && index > 0) out += "<span class='pb-ear prev' aria-hidden='true'></span>";
+        return out;
+    }
+
     function leaf(side, index) {
         const empty = !pages[index];
-        return `<div class='phone-book-leaf ${side}${empty ? ' empty' : ''}' data-side='${side}'>${empty ? '' : pageHtml(index)}</div>`;
+        return `<div class='phone-book-leaf ${side}${empty ? ' empty' : ''}' data-side='${side}'>${empty ? '' : pageHtml(index) + ears(side, index)}</div>`;
     }
 
     function render() {
@@ -113,6 +123,7 @@
     function turn(direction) {
         const target = at + direction * step();
         if (turning || target < 0 || target >= pages.length) return;
+        book.classList.add('turned');        // found out: the ears stop lifting
         if (narrow() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             at = target;
             render();

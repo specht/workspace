@@ -71,18 +71,29 @@ class Hold(unittest.TestCase):
         self.games = {
             # FACT: n! by asking itself for (n-1)!
             '3228': write(self.folder, 'fact.py', """
-                taste = keys(1, timeout=3)
-                if not taste:
-                    say('Fakultät. Wähl eine Zahl von 1 bis 9.')
-                    taste = keys(1)
-                n = int(taste or 0)
+                eingabe = keys(3, timeout=3)
+                if not eingabe:
+                    say('Fakultät, guten Tag. Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+                    eingabe = keys(3)
+                # Ruft FACT sich selbst an, steht eine 0 vorne.
+                innen = len(eingabe) > 1 and eingabe.startswith('0')
+                n = int(eingabe or 0)
+                if n > 20:
+                    say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
+                    hangup()
+
                 if n <= 1:
-                    say(f'Die Fakultät von {n} ist 1.')
-                    back('1')
-                say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
-                rest = int(call('FACT', str(n - 1)))
-                say(f'{n} mal {rest} ist {n * rest}. Die Fakultät von {n} ist {n * rest}.')
-                back(str(n * rest))
+                    ergebnis = 1
+                else:
+                    say(f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.')
+                    vorher = int(call('FACT', f'0{n - 1}#'))
+                    ergebnis = n * vorher
+                    say(f'{n} mal {vorher} ist {ergebnis}.')
+
+                if not innen:
+                    say(f'Die Fakultät von {n} ist {ergebnis}.')
+                    say('Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.')
+                back(str(ergebnis))
                 """),
             # DICE: the number of sides as the extension, here always the highest
             '3423': write(self.folder, 'dice.py', """
@@ -105,14 +116,25 @@ class Hold(unittest.TestCase):
     def test_the_extension_waits_through_the_intro(self):
         reason, _, heard, _ = self.call("say('Gesamt: ' + call('FACT', '1'))\n")
         self.assertEqual('ended', reason)
-        self.assertIn(('tones', '32281'), heard)           # dialled: the number and its extension
+        self.assertIn(('tones', '32281'), heard)          # dialled: the number and its extension
         self.assertIn(('say', 'Gesamt: 1'), heard)
 
     def test_a_factorial_calls_itself(self):
-        _, _, heard, _ = self.call("say('Ergebnis ' + call('FACT', '5'))\n")
-        self.assertIn(('say', '5 mal 24 ist 120. Die Fakultät von 5 ist 120.'), heard)
-        self.assertIn(('say', 'Ergebnis 120'), heard)
+        _, _, heard, _ = self.call("say('Ergebnis ' + call('FACT', '5#'))\n")
+        said = [h[1] for h in heard if h[0] == 'say']
+        self.assertIn('5 mal 24 ist 120.', said)
+        self.assertIn(('tones', '322804#'), heard)        # it calls itself with a 0 in front
+        # only the outer one states the result and says goodbye
+        self.assertEqual(1, sum(1 for x in said if x.startswith('Die Fakultät von') and ' ist ' in x))
+        self.assertEqual(['Die Fakultät von 5 ist 120.', 'Vielen Dank für Ihren Anruf bei der Fakultät. Wir wünschen Ihnen einen schönen Tag.',
+                          'Ergebnis 120'], said[-3:])
         self.assertIn(('tones', '120#'), heard)            # the answer, heard as tones
+
+    def test_twenty_deep_and_numbers_of_two_digits(self):
+        _, _, heard, phone = self.call("say(call('FACT', '20#'))\n")
+        self.assertFalse(phone.ended.is_set())             # 19 on hold: not overloaded
+        self.assertIn(('say', '2432902008176640000'), heard)
+        self.assertIn(('tones', '3228019#'), heard)
 
     def test_letters_and_one_string_dial_the_same(self):
         _, _, heard, _ = self.call("say(call('DICE6') + call('3423', '12'))\n")
