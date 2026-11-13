@@ -50,6 +50,9 @@ class LineHold(unittest.TestCase):
                 eingabe = keys(3, timeout=0.5)
                 # Ruft FACT sich selbst an, steht eine 0 vorne.
                 innen = len(eingabe) > 1 and eingabe.startswith('0')
+                # Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
+                if innen and False:
+                    hangup()
                 if not innen:
                     say('Willkommen zur rekursiven Fakultätsberatung.')
                     if not eingabe:
@@ -69,7 +72,20 @@ class LineHold(unittest.TestCase):
                         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
                         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
                     ]))
-                    vorher = int(call('FACT', f'0{n - 1}#'))
+                    antwort = call('FACT', f'0{n - 1}#')
+                    versuche = 1
+                    while not antwort and versuche < 5:
+                        say(random.choice([
+                            'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
+                            'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
+                            'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
+                        ]))
+                        antwort = call('FACT', f'0{n - 1}#')
+                        versuche += 1
+                    if not antwort:
+                        say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
+                        hangup()
+                    vorher = int(antwort)
                     ergebnis = n * vorher
                     say(random.choice([
                         f'{n} mal {vorher} ist {ergebnis}.',
@@ -135,6 +151,8 @@ class LineHold(unittest.TestCase):
         self.assertIn('5 mal 24', said[-3])
         self.assertEqual('Die Fakultät von 5 ist 120.', said[-2])
         self.assertIn(said[-1], GOODBYES)
+        # each of the four calls rings before the called game speaks
+        self.assertEqual(['ring'] * 4, [e['signal'] for e in events if 'signal' in e])
         tones = [e['tones'] for e in events if 'tones' in e]
         self.assertEqual(['322804#', '322803#', '322802#', '322801#', '1#', '2#', '6#', '24#', '120#'], tones)
         self.assertEqual({'ended': 'back'}, events[-1])

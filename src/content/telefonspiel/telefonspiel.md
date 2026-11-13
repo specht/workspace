@@ -1858,6 +1858,8 @@ subtitle 'Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.'
 eingabe = keys(3, timeout: 0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
 innen = eingabe.length > 1 && eingabe.start_with?('0')
+# Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
+hangup if innen && rand(15) == 0
 unless innen
   say 'Willkommen zur rekursiven Fakultätsberatung.'
   if eingabe.empty?
@@ -1880,7 +1882,22 @@ else
     "Die Fakultät von #{n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von #{n - 1}.",
     "Die Fakultät von #{n}? Da muss ich kurz bei der Fakultät von #{n - 1} nachfragen."
   ].sample
-  vorher = call('FACT', "0#{n - 1}#").to_i
+  antwort = call('FACT', "0#{n - 1}#")
+  versuche = 1
+  while antwort.empty? && versuche < 5
+    say [
+      'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
+      'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
+      'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.'
+    ].sample
+    antwort = call('FACT', "0#{n - 1}#")
+    versuche += 1
+  end
+  if antwort.empty?
+    say "Die Fakultät von #{n - 1} ist heute nicht zu erreichen. Auf Wiederhören."
+    hangup
+  end
+  vorher = antwort.to_i
   ergebnis = n * vorher
   say [
     "#{n} mal #{vorher} ist #{ergebnis}.",
@@ -1914,6 +1931,9 @@ subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
 eingabe = keys(3, timeout=0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
 innen = len(eingabe) > 1 and eingabe.startswith('0')
+# Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
+if innen and random.randrange(15) == 0:
+    hangup()
 if not innen:
     say('Willkommen zur rekursiven Fakultätsberatung.')
     if not eingabe:
@@ -1933,7 +1953,20 @@ else:
         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
     ]))
-    vorher = int(call('FACT', f'0{n - 1}#'))
+    antwort = call('FACT', f'0{n - 1}#')
+    versuche = 1
+    while not antwort and versuche < 5:
+        say(random.choice([
+            'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
+            'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
+            'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
+        ]))
+        antwort = call('FACT', f'0{n - 1}#')
+        versuche += 1
+    if not antwort:
+        say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
+        hangup()
+    vorher = int(antwort)
     ergebnis = n * vorher
     say(random.choice([
         f'{n} mal {vorher} ist {ergebnis}.',
@@ -1967,6 +2000,8 @@ subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.');
 let eingabe = keys(3, 0.5);
 // Ruft FACT sich selbst an, steht eine 0 vorne.
 const innen = eingabe.length > 1 && eingabe.startsWith('0');
+// Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
+if (innen && Math.random() < 1 / 15) hangup();
 if (!innen) {
   say('Willkommen zur rekursiven Fakultätsberatung.');
   if (eingabe === '') {
@@ -1988,7 +2023,22 @@ if (n > 1) {
     `Die Fakultät von ${n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von ${n - 1}.`,
     `Die Fakultät von ${n}? Da muss ich kurz bei der Fakultät von ${n - 1} nachfragen.`,
   ]));
-  const vorher = BigInt(call('FACT', `0${n - 1}#`));
+  let antwort = call('FACT', `0${n - 1}#`);
+  let versuche = 1;
+  while (antwort === '' && versuche < 5) {
+    say(einer([
+      'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
+      'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
+      'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
+    ]));
+    antwort = call('FACT', `0${n - 1}#`);
+    versuche += 1;
+  }
+  if (antwort === '') {
+    say(`Die Fakultät von ${n - 1} ist heute nicht zu erreichen. Auf Wiederhören.`);
+    hangup();
+  }
+  const vorher = BigInt(antwort);
   ergebnis = BigInt(n) * vorher;
   say(einer([
     `${n} mal ${vorher} ist ${ergebnis}.`,
@@ -2009,6 +2059,12 @@ if (!innen) {
 back(String(ergebnis));
 ```
 <!-- /language -->
+
+Ruft ein Spiel ein anderes an, klingelt es auf der Leitung wie bei einem
+echten Anruf, mal kurz, mal länger, bis das gerufene Spiel etwas sagt; dann
+hört man, wie es abnimmt. Legt es auf, bevor es etwas gesagt hat, ist besetzt,
+und `call` gibt einen leeren Text zurück. FACT nutzt das: Ab und zu ist es
+besetzt, und wer angerufen hat, versucht es noch einmal, bis zu fünfmal.
 
 Damit es nicht bei jedem Spiel gleich klingt, sucht FACT seine Sätze zufällig
 aus einer Liste aus. Jeder Satz nennt dabei die Zahlen, so hörst du trotzdem,

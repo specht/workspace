@@ -37,6 +37,9 @@ subtitle('Wähl nach der Nummer eine Zahl von 1 bis 20 und dann die Raute.')
 eingabe = keys(3, timeout=0.5)
 # Ruft FACT sich selbst an, steht eine 0 vorne.
 innen = len(eingabe) > 1 and eingabe.startswith('0')
+# Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
+if innen and False:
+    hangup()
 if not innen:
     say('Willkommen zur rekursiven Fakultätsberatung.')
     if not eingabe:
@@ -56,7 +59,20 @@ else:
         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
     ]))
-    vorher = int(call('FACT', f'0{n - 1}#'))
+    antwort = call('FACT', f'0{n - 1}#')
+    versuche = 1
+    while not antwort and versuche < 5:
+        say(random.choice([
+            'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
+            'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
+            'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
+        ]))
+        antwort = call('FACT', f'0{n - 1}#')
+        versuche += 1
+    if not antwort:
+        say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
+        hangup()
+    vorher = int(antwort)
     ergebnis = n * vorher
     say(random.choice([
         f'{n} mal {vorher} ist {ergebnis}.',
@@ -137,9 +153,9 @@ check "$OUT/runner-crash.log" "game 2" "syntax error" "say 'Dieses Spiel hat ger
 # 6. FACT with the extension 3, dialled directly: it calls itself on hold
 # with 2, that one with 1; the answers come back as tones (1#, 2#, 6#)
 lines=$(docker logs phone-e2e-runner 2>&1 | wc -l)
-call 10032283 40
+call 10032283 90
 docker logs phone-e2e-runner 2>&1 | tail -n +$((lines + 1)) > "$OUT/runner-hold.log"
-check "$OUT/runner-hold.log" "game 3" "say 'Willkommen zur rekursiven Fakultätsberatung." "Fakultät von 2" "tones 322802#" "tones 322801#" \
+check "$OUT/runner-hold.log" "game 3" "say 'Willkommen zur rekursiven Fakultätsberatung." "Fakultät von 2" "tones 322802#" "signal ring" "tones 322801#" \
     "tones 1#" "call answered '1'" "2 mal 1 " "call answered '2'" "3 mal 2 " "say 'Die Fakultät von 3 ist 6." \
     "tones 6#" "game ended: back"
 # each call one line for /statistik: the first two reached game 123, the

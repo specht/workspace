@@ -257,6 +257,11 @@ class Call(game.Phone):
             self.log('game', os.path.basename(folder))
             # what was dialled after the number: the first keys the game gets
             self.first_keys(str(command.get('extension', ''))[:game.MAX_DIALED])
+            # called by another game: it rings until it answers; what the
+            # menu said before was not this game's (pick_up still works)
+            self.sounded = False
+            if self.depth:
+                self.unanswered = game.ring_seconds()
             number = game.published_number(GAMES, folder)
             if number:
                 self.reached.append(number)
@@ -307,6 +312,10 @@ class Call(game.Phone):
             dialed = self.transfer_to
         return reason
 
+    async def line_signal(self, kind, seconds=0.0):
+        self.log('signal', kind, seconds)
+        await self.mixer.say(np.array(game.signal(kind, seconds), dtype=np.float32))
+
     async def dtmf(self, digits):
         self.log('tones', digits)
         heard = self.mixer.say(np.array(game.tones(digits), dtype=np.float32))
@@ -320,10 +329,14 @@ class Call(game.Phone):
         try:
             reason = await self.connect(dialed)
             answer = self.returned if reason == 'back' and self.returned is not None else ''
+            # ended without a sound: nobody answered, the line is busy
+            if self.unanswered is not None and not self.ended.is_set():
+                self.unanswered = None
+                await self.line_signal('busy')
         finally:
             self.depth -= 1
             self.folder, self.switched = held[0], held[1]
-            self.transfer_to, self.returned = None, None
+            self.transfer_to, self.returned, self.unanswered = None, None, None
             self.fresh_keys()
             if held[2] is not None:
                 self.mixer.set_music(held[2], held[3])

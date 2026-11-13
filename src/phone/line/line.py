@@ -167,6 +167,11 @@ class LinePhone(emulator.Emulator):
             self.server.folder = folder_path(folder)
             # what was dialled after the number: the first keys the game gets
             self.first_keys(str(command.get('extension', ''))[:game.MAX_DIALED])
+            # called by another game: it rings until it answers; what the
+            # menu said before was not this game's (pick_up still works)
+            self.sounded = False
+            if self.depth:
+                self.unanswered = game.ring_seconds()
             number = None if trial else game.published_number(GAMES, folder)
             if number:
                 self.server.reached.append(number)
@@ -248,6 +253,11 @@ class Line(emulator.Server):
         if self.phone is phone or self.phone is None:
             self.phone = holding
         self.folder = folder
+        # ended without a sound: nobody answered, the line is busy (heard on
+        # the holding phone, which the page answers now)
+        if phone is not None and phone.unanswered is not None and not phone.ended.is_set():
+            phone.unanswered = None
+            await holding.line_signal('busy')
         holding.fresh_keys()
         if getattr(holding, 'shown', ''):
             self.send({'title': holding.shown})

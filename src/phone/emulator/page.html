@@ -650,6 +650,47 @@ async function lineTones(digits, id) {
     post('/heard?id=' + id);
 }
 
+// the line's own sounds while a game calls another (game.py, signal):
+// 'ring' the ringback of the German network (425 Hz, 1 s on, 4 s off) for
+// so many seconds, then the click of the receiver; 'busy' the busy tone
+async function lineSignal(kind, seconds, id) {
+    const mine = call;
+    note(kind === 'busy' ? 'Besetzt.' : 'Es klingelt …');
+    if (ctx) {
+        const now = ctx.currentTime, gain = ctx.createGain(), o = ctx.createOscillator();
+        gain.gain.setValueAtTime(0, now);
+        const beeps = kind === 'busy' ? [0, .96, 1.92].map((t) => [t, .48])
+            : Array.from({ length: Math.ceil(seconds / 5) }, (_, i) => [i * 5, Math.min(1, seconds - i * 5)]).filter(([, d]) => d > 0);
+        for (const [t, d] of beeps) {
+            gain.gain.setValueAtTime(0, now + t);
+            gain.gain.linearRampToValueAtTime(0.16, now + t + 0.01);
+            gain.gain.setValueAtTime(0.16, now + t + d - 0.01);
+            gain.gain.linearRampToValueAtTime(0, now + t + d);
+        }
+        o.frequency.value = 425;
+        o.connect(gain);
+        gain.connect(ctx.destination);
+        const length = kind === 'busy' ? 2.9 : seconds;
+        o.start(now);
+        o.stop(now + length + 0.05);
+        if (kind === 'ring') {
+            // the receiver lifted: a short burst of noise, dull
+            const n = Math.floor(ctx.sampleRate * 0.03), buffer = ctx.createBuffer(1, n, ctx.sampleRate), data = buffer.getChannelData(0);
+            for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * 0.35 * Math.exp(-i / (ctx.sampleRate * 0.004));
+            const click = ctx.createBufferSource(), lowpass = ctx.createBiquadFilter();
+            lowpass.type = 'lowpass';
+            lowpass.frequency.value = 1800;
+            click.buffer = buffer;
+            click.connect(lowpass);
+            lowpass.connect(ctx.destination);
+            click.start(now + seconds);
+        }
+        await new Promise((resolve) => setTimeout(resolve, (length + (kind === 'ring' ? 0.3 : 0)) * 1000));
+    }
+    if (mine !== call) return;
+    post('/heard?id=' + id);
+}
+
 // the end of a call: the busy tone of German phones, 425 Hz, three times
 // 240 ms with pauses as long
 function hangupTone() {
@@ -894,6 +935,8 @@ function onEvent(message) {
         $('title').textContent = e.title;
     } else if (e.tones) {
         lineTones(e.tones, e.id);
+    } else if (e.signal) {
+        lineSignal(e.signal, e.seconds, e.id);
     } else if (e.play) {
         playRecording(e.play, e.name, e.id, e.interrupt);
     } else if (e.say) {

@@ -96,6 +96,44 @@ def match_number(dialed, numbers):
     return number, str(dialed)[len(number):]
 
 
+def ring_seconds():
+    """how long a called game's line rings before it answers, as people pick
+    up: now and then at once, mostly after the first or second tone,
+    sometimes the third, now and then the fourth (a German ringback: 1 s
+    tone, 4 s quiet)"""
+    import random
+    at = random.choices([0.5, 1.7, 5.6, 10.7, 15.8], weights=[15, 30, 30, 17, 8])[0]
+    return round(at + random.uniform(-0.25, 0.25), 2)
+
+
+def signal(kind, seconds=0.0, rate=16000):
+    """the line's own sounds as float samples, as in the German network:
+    'ring' the ringback a caller hears while the other side rings (425 Hz,
+    1 s on, 4 s off) for so many seconds, then the click of picking up;
+    'busy' the busy tone (425 Hz, 480 ms on and off), three times"""
+    import math
+    import random
+
+    def beep(n):
+        fade = int(rate * 0.006)
+        return [0.25 * min(1.0, i / fade, (n - i) / fade) * math.sin(2 * math.pi * 425 * i / rate) for i in range(n)]
+    out = []
+    if kind == 'ring':
+        total = int(rate * seconds)
+        while len(out) < total:
+            out.extend(beep(min(rate, total - len(out))))
+            out.extend([0.0] * min(rate * 4, max(0, total - len(out))))
+        # the receiver lifted: a short dull click
+        rnd = random.Random(7)
+        click = [rnd.uniform(-1, 1) * 0.35 * math.exp(-i / (rate * 0.004)) for i in range(int(rate * 0.03))]
+        smooth = [sum(click[max(0, i - 3):i + 1]) / 4 for i in range(len(click))]
+        out.extend(smooth + [0.0] * int(rate * 0.25))
+    elif kind == 'busy':
+        for _ in range(3):
+            out.extend(beep(int(rate * 0.48)) + [0.0] * int(rate * 0.48))
+    return out
+
+
 def tones(digits, rate=16000):
     """the key tones (DTMF) of these digits as float samples: each key its two
     frequencies for 100 ms, 80 ms between the keys"""
@@ -340,6 +378,13 @@ class Phone:
         self.returned = None
         # calls on hold below this one (call)
         self.depth = 0
+        # a called game's line still ringing: the seconds it rings once the
+        # game makes its first move (answering), None when it has answered
+        # or was not called by a game
+        self.unanswered = None
+        # the game has made a sound (said, played, …): after that, picking
+        # up (pick_up) is past
+        self.sounded = False
 
     def log(self, *parts):
         pass
@@ -370,6 +415,10 @@ class Phone:
     async def dtmf(self, digits):
         """the key tones of these digits on the line, heard by the caller
         (dialling with call, answering with back)"""
+
+    async def line_signal(self, kind, seconds=0.0):
+        """the line's own sounds, heard by the caller (signal): 'ring' and
+        the click of picking up, 'busy'"""
 
     async def call_game(self, dialed):
         """call: the game of this number (with its extension) while this one
@@ -418,6 +467,30 @@ class Phone:
         """one command; the answer, or None to hang up"""
         if not isinstance(command, dict):
             return {'error': 'a command is a JSON object'}
+        # a called game answers with its first sound (not naming itself, not
+        # reading the digits dialled after its number, which arrive before
+        # anyone answers, not hanging up: hanging up unanswered leaves the
+        # line busy): until then the caller hears it ring, then the receiver
+        quiet = {'title', 'subtitle', 'clear_keys', 'hangup', 'game', 'keys', 'pick_up'}
+        if self.unanswered is not None and not (quiet & set(command)):
+            seconds, self.unanswered = self.unanswered, None
+            await self.line_signal('ring', seconds)
+        if not (quiet & set(command)):
+            self.sounded = True
+        if 'pick_up' in command:
+            # pick up after so many seconds of ringing: called by a game, its
+            # line rings that long; dialled by a person, the call is through
+            # already, and the caller hears the same ringing; after the
+            # first sound it is too late, and nothing happens
+            try:
+                seconds = max(0.0, min(30.0, float(command['pick_up'])))
+            except (TypeError, ValueError):
+                return {'error': f'pick_up: Eine Zahl von Sekunden, nicht »{command["pick_up"]}«.'}
+            if self.unanswered is not None or not self.sounded:
+                self.unanswered = None
+                self.sounded = True
+                await self.line_signal('ring', seconds)
+            return {'ok': True}
         if 'title' in command or 'subtitle' in command:
             self.titled(str(command.get('title', '')), str(command.get('subtitle', '')))
             return {'ok': True}
@@ -460,6 +533,10 @@ class Phone:
             self.fresh_keys()
             return {'ok': True}
         if command.get('hangup'):
+            # not answered yet: the caller hears the line busy
+            if self.unanswered is not None:
+                self.unanswered = None
+                await self.line_signal('busy')
             return None
         if 'transfer' in command or 'call' in command:
             kind = 'transfer' if 'transfer' in command else 'call'

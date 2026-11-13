@@ -41,6 +41,9 @@ class TestPhone(game.Phone):
     async def dtmf(self, digits):
         self.heard.append(('tones', digits))
 
+    async def line_signal(self, kind, seconds=0.0):
+        self.heard.append(('signal', kind))
+
     def transfer_problem(self, number):
         if game.match_number(number, self.games)[0] is None:
             return f'transfer: Ein Spiel mit der Nummer {number} gibt es nicht.'
@@ -52,9 +55,12 @@ class TestPhone(game.Phone):
             self.heard.append(('say', 'Kein Anschluss unter dieser Nummer.'))
             return ''
         callee = TestPhone(self.games, self.folder, self.heard, self.depth + 1, extension)
+        callee.unanswered = 1.0                            # it rings until it answers
         reason, _ = await run(callee, self.games[number], self.folder)
         if callee.ended.is_set():
             self.ended.set()
+        if callee.unanswered is not None and not callee.ended.is_set():
+            await self.line_signal('busy')                 # ended without a sound
         return callee.returned if reason == 'back' else ''
 
 
@@ -83,6 +89,9 @@ class Hold(unittest.TestCase):
                 eingabe = keys(3, timeout=0.5)
                 # Ruft FACT sich selbst an, steht eine 0 vorne.
                 innen = len(eingabe) > 1 and eingabe.startswith('0')
+                # Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
+                if innen and False:
+                    hangup()
                 if not innen:
                     say('Willkommen zur rekursiven Fakultätsberatung.')
                     if not eingabe:
@@ -102,7 +111,20 @@ class Hold(unittest.TestCase):
                         f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
                         f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
                     ]))
-                    vorher = int(call('FACT', f'0{n - 1}#'))
+                    antwort = call('FACT', f'0{n - 1}#')
+                    versuche = 1
+                    while not antwort and versuche < 5:
+                        say(random.choice([
+                            'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
+                            'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
+                            'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
+                        ]))
+                        antwort = call('FACT', f'0{n - 1}#')
+                        versuche += 1
+                    if not antwort:
+                        say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
+                        hangup()
+                    vorher = int(antwort)
                     ergebnis = n * vorher
                     say(random.choice([
                         f'{n} mal {vorher} ist {ergebnis}.',
@@ -127,6 +149,73 @@ class Hold(unittest.TestCase):
                 back(str(sides))
                 """),
             '555': write(self.folder, 'quiet.py', "say('Ich sage nichts zurück.')\n"),
+            '444': write(self.folder, 'busy.py', "hangup()\n"),
+            '446': write(self.folder, 'silent.py', "x = 1\n"),
+            '447': write(self.folder, 'late.py', "pick_up(8)\nsay('Endlich.')\npick_up(3)\nback('7')\n"),
+            # FACT, busy the first time each number is called inside
+            '3229': write(self.folder, 'flaky.py', """
+                import os
+                import random
+
+
+                # Was nach der Nummer gewählt wurde, ist schon da.
+                eingabe = keys(3, timeout=0.5)
+                # Ruft FACT sich selbst an, steht eine 0 vorne.
+                innen = len(eingabe) > 1 and eingabe.startswith('0')
+                # Manchmal ist besetzt: Wer auflegt, bevor er etwas sagt, hat nicht abgenommen.
+                if innen and not os.path.exists(f'busy-{eingabe}'):
+                    open(f'busy-{eingabe}', 'w').close()
+                    hangup()
+                if not innen:
+                    say('Willkommen zur rekursiven Fakultätsberatung.')
+                    if not eingabe:
+                        say('Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.')
+                        eingabe = keys(3)
+                n = int(eingabe or 0)
+                if n > 20:
+                    say('Über 20 wird das Ergebnis zu lang für die Leitung. Auf Wiederhören.')
+                    hangup()
+
+                if n <= 1:
+                    ergebnis = 1
+                else:
+                    say(random.choice([
+                        f'Die Fakultät von {n}? Ich frage nach der Fakultät von {n - 1}.',
+                        f'Moment bitte. Für die Fakultät von {n} brauche ich die Fakultät von {n - 1}.',
+                        f'Die Fakultät von {n}, sehr gern. Einen Augenblick, ich verbinde mit der Fakultät von {n - 1}.',
+                        f'Die Fakultät von {n}? Da muss ich kurz bei der Fakultät von {n - 1} nachfragen.',
+                    ]))
+                    antwort = call('3229', f'0{n - 1}#')
+                    versuche = 1
+                    while not antwort and versuche < 5:
+                        say(random.choice([
+                            'Hm, da ist besetzt. Ich versuche es gleich noch einmal.',
+                            'Die Leitung ist belegt. Einen Moment, ich wähle neu.',
+                            'Besetzt. Da telefoniert wohl gerade jemand. Ich probiere es noch einmal.',
+                        ]))
+                        antwort = call('3229', f'0{n - 1}#')
+                        versuche += 1
+                    if not antwort:
+                        say(f'Die Fakultät von {n - 1} ist heute nicht zu erreichen. Auf Wiederhören.')
+                        hangup()
+                    vorher = int(antwort)
+                    ergebnis = n * vorher
+                    say(random.choice([
+                        f'{n} mal {vorher} ist {ergebnis}.',
+                        f'Danke für Ihre Geduld. {n} mal {vorher} macht {ergebnis}.',
+                        f'Da bin ich wieder. {n} mal {vorher} ergibt {ergebnis}.',
+                        f'So, die Antwort ist da: {n} mal {vorher} sind {ergebnis}.',
+                    ]))
+
+                if not innen:
+                    say(f'Die Fakultät von {n} ist {ergebnis}.')
+                    say(random.choice([
+                        'Vielen Dank für Ihren Anruf bei der Fakultätsberatung. Wir wünschen Ihnen einen schönen Tag.',
+                        'Vielen Dank, dass Sie die Fakultätsberatung gewählt haben. Beehren Sie uns bald wieder.',
+                        'Die Fakultätsberatung bedankt sich für Ihr Vertrauen. Auf Wiederhören.',
+                    ]))
+                back(str(ergebnis))
+                """),
             '666': write(self.folder, 'broken.py', "say('Gleich.')\nraise RuntimeError('kaputt')\n"),
             '777': write(self.folder, 'deep.py', "call('777')\n"),
         }
@@ -166,6 +255,36 @@ class Hold(unittest.TestCase):
         said = [h[1] for h in heard if h[0] == 'say']
         self.assertEqual(['Willkommen zur rekursiven Fakultätsberatung.',
                           'Bitte wählen Sie eine Zahl von 1 bis 20 und dann die Raute.'], said[:2])
+
+    def test_a_call_rings_until_the_game_says_something(self):
+        _, _, heard, _ = self.call("say(call('DICE', '6'))\n")
+        ring = heard.index(('signal', 'ring'))
+        self.assertLess(heard.index(('tones', '34236')), ring)
+        self.assertLess(ring, heard.index(('say', 'Würfelbude: 6.')))
+
+    def test_hanging_up_unanswered_or_ending_silently_is_busy(self):
+        _, _, heard, _ = self.call("say('[' + call('444') + '] [' + call('446') + ']')\n")
+        self.assertEqual(2, heard.count(('signal', 'busy')))
+        self.assertNotIn(('signal', 'ring'), heard)
+        self.assertIn(('say', '[] []'), heard)
+
+    def test_pick_up_late_and_only_once(self):
+        _, _, heard, _ = self.call("say(call('447'))\n")
+        self.assertEqual(1, heard.count(('signal', 'ring')))           # its own pick_up, not the line's ringing too
+        self.assertLess(heard.index(('signal', 'ring')), heard.index(('say', 'Endlich.')))
+        self.assertIn(('say', '7'), heard)
+        # dialled by a person: the same ringing first
+        heard = []
+        phone = TestPhone(self.games, self.folder, heard)
+        asyncio.run(run(phone, 'late.py', self.folder))
+        self.assertEqual([('signal', 'ring'), ('say', 'Endlich.')], heard[:2])
+
+    def test_fact_tries_again_when_busy(self):
+        _, _, heard, _ = self.call("say(call('3229', '4#'))\n")
+        said = [h[1] for h in heard if h[0] == 'say']
+        self.assertEqual(3, heard.count(('signal', 'busy')))          # the 3, the 2 and the 1 once each
+        self.assertEqual(3, sum(1 for x in said if 'besetzt' in x.lower() or 'belegt' in x))
+        self.assertEqual('24', said[-1])
 
     def test_twenty_deep_and_numbers_of_two_digits(self):
         _, _, heard, phone = self.call("say(call('FACT', '20#'))\n")

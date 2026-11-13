@@ -1,4 +1,4 @@
-// The Telefonspiel in JavaScript (Node): say, play, keys, music, sleep, hangup, transfer, call, back.
+// The Telefonspiel in JavaScript (Node): say, play, keys, music, sleep, hangup, transfer, call, back, pickUp.
 //
 // Every function writes one command as a line of JSON and waits for the
 // answer, so a game is an ordinary program that runs from top to bottom.
@@ -66,6 +66,11 @@ function sleep(seconds) { command({ sleep: Math.round(seconds * 1000) }); }
 // end the call
 function hangup() { command({ hangup: true }); process.exit(0); }
 
+// pick up after the line has rung for so many seconds (then the click of the
+// receiver); before the game's first sound, else nothing happens. Without
+// it, a game another one calls is picked up after a while of its own.
+function pickUp(seconds) { command({ pick_up: Number(seconds) }); }
+
 // forget the keys pressed so far (also digits dialled after this game's
 // number that keys() has not read yet)
 function clearKeys() { command({ clear_keys: true }); }
@@ -84,4 +89,4 @@ function call(number, extension = '') { return command({ call: String(number), e
 // and this game ends (dialled by a person, the call ends)
 function back(digits = '') { command({ back: String(digits) }); process.exit(0); }
 
-module.exports = { title, subtitle, say, play, keys, music, sleep, hangup, transfer, clearKeys, call, back };
+module.exports = { title, subtitle, say, play, keys, music, sleep, hangup, transfer, clearKeys, call, back, pickUp };

@@ -99,9 +99,9 @@
     .pb-remark p { margin: 0 0 .4rem; text-align: left; hyphens: none; }
     .phone-book-page .pb-remark a { color: var(--pb-ink); text-decoration: underline; text-underline-offset: 2px; }
     .phone-book-page .phone-book-none { color: var(--pb-quiet); margin-top: 2rem; text-align: center; }
-    /* the page that turns: two halves around the spine (phone_book.js),
+    /* the page that turns: narrow strips around the spine (phone_book.js),
        each with a face for the front and one for the back; a face shows its
-       half of a whole page, which is twice as wide as the face */
+       slice of a whole page, which is as many times as wide as the strip */
     .phone-book-turning {
         position: absolute;
         top: 10px;
@@ -112,19 +112,21 @@
     }
     .phone-book-turning.forward { left: 50%; transform-origin: left center; }
     .phone-book-turning.backward { left: 10px; transform-origin: right center; }
-    .pb-part { position: absolute; top: 0; bottom: 0; width: 50%; transform-style: preserve-3d; }
-    .pb-part.l { left: 0; transform-origin: right center; }
-    .pb-part.r { left: 50%; transform-origin: left center; }
-    .pb-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; }
+    .pb-strip { position: absolute; top: 0; bottom: 0; transform-style: preserve-3d; }
+    .phone-book-turning.forward .pb-strip { transform-origin: left center; }
+    .phone-book-turning.backward .pb-strip { transform-origin: right center; }
+    /* a hair wider than its strip, so the strips meet without a seam */
+    .pb-face { position: absolute; inset: 0 -0.6px; overflow: hidden; backface-visibility: hidden; }
     .pb-face.back { transform: rotateY(180deg); }
-    .pb-face > .phone-book-leaf { position: absolute; top: 0; left: 0; width: 200%; height: 100%; aspect-ratio: auto; }
-    .pb-face.half-r > .phone-book-leaf { left: -100%; }
+    .pb-slice { position: absolute; top: 0; height: 100%; margin-left: 0.6px; }
+    .pb-slice > .phone-book-leaf { height: 100%; aspect-ratio: auto; }
     .pb-shade {
         position: absolute;
         inset: 0;
         opacity: 0;
         pointer-events: none;
-        background: linear-gradient(90deg, rgba(40, 30, 10, .55), rgba(40, 30, 10, .15) 60%, rgba(255, 250, 235, .25));
+        /* soft: darkest at the spine, fading out over the page */
+        background: linear-gradient(90deg, rgba(40, 30, 10, .35), rgba(40, 30, 10, .12) 45%, rgba(40, 30, 10, 0) 85%);
     }
     /* a dog-ear: the corner of a page that turns, folded in. The page itself
        is cut along the fold (--ear-r, --ear-l: the size of the fold at the

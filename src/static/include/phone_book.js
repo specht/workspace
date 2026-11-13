@@ -122,17 +122,31 @@
     }
 
     // a page turns around the spine: its front is the page it was, its back
-    // the page it becomes. It turns in two halves, the outer one hinged to
-    // the inner one, so that the paper bends: the outer half leads as the
-    // page is lifted and settles flat at the end. Each half shows its half of
-    // the front and, mirrored, the other half of the back. A shadow runs
-    // over the turning paper, and the page beneath lies in its shade at first.
+    // the page it becomes. It turns as STRIPS narrow strips, each hinged to
+    // the one before it and bent by the same small angle, so the paper curves
+    // evenly: the outer edge leads as the page is lifted and settles flat at
+    // the end. Each strip shows its slice of the front and, on its back, the
+    // slice of the back page that lands there. A shadow runs over the turning
+    // paper, and the page beneath lies in its shade at first.
     const TURN_MS = 850;
+    const STRIPS = 8;
 
-    function sheetHtml(front, back) {
-        const face = (html, side, half) => `<div class='pb-face ${side} half-${half}'>${html}<div class='pb-shade'></div></div>`;
-        return `<div class='pb-part l'>${face(front, 'front', 'l')}${face(back, 'back', 'r')}</div>` +
-            `<div class='pb-part r'>${face(front, 'front', 'r')}${face(back, 'back', 'l')}</div>`;
+    function sheetHtml(front, back, forward) {
+        // the shade spans the whole page, each strip shows its slice of it
+        // (the face is a hair wider than its strip, pb-face: the page as wide
+        // as STRIPS strips, so its lines break as on the page itself)
+        const face = (html, side, slice) => `<div class='pb-face ${side}'><div class='pb-slice' style='width: calc((100% - 1.2px) * ${STRIPS}); ` +
+            `left: calc((100% - 1.2px) * ${-slice})'>${html}<div class='pb-shade'></div></div></div>`;
+        let html = '';
+        // from the outer edge in: each strip holds the next one outwards
+        for (let k = STRIPS - 1; k >= 0; k--) {
+            const frontSlice = forward ? k : STRIPS - 1 - k;
+            const backSlice = forward ? STRIPS - 1 - k : k;
+            const at = k === 0 ? (forward ? 'left: 0' : 'right: 0') : (forward ? 'left: 100%' : 'right: 100%');
+            html = `<div class='pb-strip' style='${at}; width: ${k === 0 ? 100 / STRIPS : 100}%'>` +
+                face(front, 'front', frontSlice) + face(back, 'back', backSlice) + html + '</div>';
+        }
+        return html;
     }
 
     function turn(direction) {
@@ -150,29 +164,30 @@
         const sheet = document.createElement('div');
         sheet.className = `phone-book-turning ${forward ? 'forward' : 'backward'}`;
         if (forward) {
-            sheet.innerHTML = sheetHtml(leaf('right', at + 1), leaf('left', target));
+            sheet.innerHTML = sheetHtml(leaf('right', at + 1), leaf('left', target), true);
             spread.lastElementChild.outerHTML = leaf('right', target + 1);
         } else {
-            sheet.innerHTML = sheetHtml(leaf('left', at), leaf('right', target + 1));
+            sheet.innerHTML = sheetHtml(leaf('left', at), leaf('right', target + 1), false);
             spread.firstElementChild.outerHTML = leaf('left', target);
         }
         book.appendChild(sheet);
         const sign = forward ? -1 : 1;
         const flip = sheet.animate([{ transform: 'rotateY(0deg)' }, { transform: `rotateY(${sign * 180}deg)` }],
             { duration: TURN_MS, easing: 'cubic-bezier(.45, .05, .3, 1)', fill: 'forwards' });
-        // the outer half: ahead while lifted, behind for a moment, then flat
-        const outer = sheet.querySelector(forward ? '.pb-part.r' : '.pb-part.l');
-        outer.animate([
-            { transform: 'rotateY(0deg)' },
-            { transform: `rotateY(${sign * 34}deg)`, offset: 0.3 },
-            { transform: `rotateY(${sign * 10}deg)`, offset: 0.62 },
-            { transform: `rotateY(${-sign * 9}deg)`, offset: 0.86 },
-            { transform: 'rotateY(0deg)' },
-        ], { duration: TURN_MS, easing: 'ease-in-out' });
+        // every strip but the first bends a little against the one before:
+        // the outer edge ahead while lifted, behind for a moment, then flat
+        const bend = (deg) => `rotateY(${sign * deg}deg)`;
+        sheet.querySelectorAll('.pb-strip .pb-strip').forEach((strip) => strip.animate([
+            { transform: bend(0) },
+            { transform: bend(5), offset: 0.3 },
+            { transform: bend(1.5), offset: 0.62 },
+            { transform: bend(-1.4), offset: 0.86 },
+            { transform: bend(0) },
+        ], { duration: TURN_MS, easing: 'ease-in-out' }));
         sheet.querySelectorAll('.pb-shade').forEach((shade) => shade.animate(
-            [{ opacity: 0 }, { opacity: 0.4, offset: 0.45 }, { opacity: 0 }], { duration: TURN_MS }));
+            [{ opacity: 0 }, { opacity: 0.3, offset: 0.45 }, { opacity: 0 }], { duration: TURN_MS, easing: 'ease-in-out' }));
         const beneath = forward ? spread.lastElementChild : spread.firstElementChild;
-        beneath.animate([{ filter: 'brightness(.8)' }, { filter: 'brightness(1)' }], { duration: TURN_MS, easing: 'ease-in' });
+        beneath.animate([{ filter: 'brightness(.9)' }, { filter: 'brightness(1)' }], { duration: TURN_MS, easing: 'ease-in' });
         flip.finished.then(() => {
             at = target;
             turning = false;
