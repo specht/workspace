@@ -18348,12 +18348,21 @@ body.document-full-open {
     left: 0;
     z-index: 1;
     min-width: 11em;
+    max-width: 14em;
     text-align: left;
     white-space: nowrap;
     font-weight: 600;
 }
 .class-series-table tbody .class-series-name {
     box-shadow: 1px 0 0 var(--bs-border-color-translucent);
+}
+/* on a phone the names take less of the width and may break */
+@media (max-width: 576px) {
+    .class-series-name {
+        min-width: 7em;
+        max-width: 9em;
+        white-space: normal;
+    }
 }
 .class-series-last {
     white-space: nowrap;
@@ -18414,26 +18423,27 @@ body.document-full-open {
 .class-series-none {
     color: var(--bs-tertiary-color, var(--bs-secondary-color));
 }
-.class-series-table td.class-series-done {
-    background: var(--bs-success-bg-subtle);
+/* a sheet finished: the same cell, its bar full, a tick before the figure */
+.class-series-done .bi-check-lg {
     color: var(--bs-success-text-emphasis);
-    font-weight: 600;
 }
-.class-series-table tbody tr:hover > td.class-series-done {
-    background: var(--bs-success-bg-subtle);
-}
+/* one segment per task: solved, checked but not solved yet, not touched */
 .class-series-bar {
-    display: block;
-    height: 4px;
-    margin: 0.25em auto 0;
-    width: 4.5em;
-    border-radius: 2px;
-    background: var(--bs-secondary-bg);
-    overflow: hidden;
+    display: flex;
+    gap: 2px;
+    width: 5em;
+    height: 6px;
+    margin: 0.3em auto 0;
 }
-.class-series-bar > span {
-    display: block;
-    height: 100%;
+.class-series-seg {
+    flex: 1 1 0;
+    border-radius: 1px;
+    background: var(--bs-secondary-bg);
+}
+.class-series-seg-solved {
+    background: var(--bs-success, #198754);
+}
+.class-series-seg-tried {
     background: var(--bs-warning, #ffc107);
 }
 .class-series-extra {

@@ -2884,13 +2884,20 @@ class Main < Sinatra::Base
                 extra = extras.positive? ? "<span class='class-series-extra'><i class='bi bi-stars' aria-hidden='true'></i>+#{extras}</span>" : ''
                 if mine.empty?
                     cells << "<td class='class-series-cell class-series-none' title='#{h.(title)}: noch nichts bearbeitet'><span class='visually-hidden'>noch nichts</span><span aria-hidden='true'>–</span></td>"
-                elsif complete
-                    cells << "<td class='class-series-cell class-series-done' title='#{h.(tip)}'><span class='class-series-figure'>" \
-                             "<i class='bi bi-check-lg' aria-hidden='true'></i>#{done}/#{core.size}#{extra}</span></td>"
                 else
-                    share = core.empty? ? 0 : (100.0 * done / core.size).round
-                    cells << "<td class='class-series-cell class-series-part' title='#{h.(tip)}'><span class='class-series-figure'>#{done}/#{core.size}#{extra}</span>" \
-                             "<span class='class-series-bar' aria-hidden='true'><span style='width: #{share}%'></span></span></td>"
+                    # one segment per task, in the order of the page: solved,
+                    # checked but not solved yet, not touched
+                    segments = core.map do |t|
+                        state = mine[t[:id]]
+                        kind, word = if solved.(t) then ['solved', 'gelöst']
+                                     elsif state then ['tried', 'noch nicht gelöst']
+                                     else ['open', 'noch nicht bearbeitet']
+                                     end
+                        "<span class='class-series-seg class-series-seg-#{kind}' title='#{h.(t[:title])}: #{word}'></span>"
+                    end.join
+                    tick = complete ? "<i class='bi bi-check-lg' aria-hidden='true'></i>" : ''
+                    cells << "<td class='class-series-cell#{complete ? ' class-series-done' : ''}' title='#{h.(tip)}'><span class='class-series-figure'>#{tick}#{done}/#{core.size}#{extra}</span>" \
+                             "<span class='class-series-bar' aria-hidden='true'>#{segments}</span></td>"
                 end
             end
             io << "<tr><th scope='row' class='class-series-name'>#{h.(m[:name])}</th>" \
@@ -2901,6 +2908,7 @@ class Main < Sinatra::Base
         finished_per_sheet.each { |n| io << "<td class='class-series-cell class-series-sum'>#{n} von #{members.size}</td>" }
         io << '<td></td></tr></tfoot></table></div>'
         io << "<p class='class-setting-hint'>Gezählt sind die Aufgaben eines Blatts ohne die Extras; gelöste Extras stehen dahinter (<i class='bi bi-stars' aria-hidden='true'></i>+2). " \
+              'Der Balken hat einen Abschnitt je Aufgabe, in der Reihenfolge der Seite: grün gelöst, gelb geprüft, aber noch nicht gelöst, grau noch nicht bearbeitet. ' \
               'Ein Klick auf ein Blatt zeigt seine Aufgaben einzeln; über einer Zelle steht, was bei einem Dokument noch offen ist.</p>'
         io
     end
