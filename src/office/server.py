@@ -161,6 +161,8 @@ def read_portion(portion):
     item['caps'] = portion.CharCaseMap == 1
     # raised (a footnote's number typed and made superscript by hand)
     item['superscript'] = (portion.CharEscapement or 0) > 0
+    # lowered (CO2 with its 2 set below the line)
+    item['subscript'] = (portion.CharEscapement or 0) < 0
     item['direct'] = [n for n in CHAR_PROPS if is_direct(portion, n)]
     return item
 

@@ -466,6 +466,8 @@
         showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
         // a document's checklist and its pages with the marks
         if (data.report && window.DocumentTask) DocumentTask.render(card, data.report);
+        // passed: another round after many checks, something harder after few
+        if (data.offer && window.DocumentTask) DocumentTask.offer(card, data.offer);
         if (data.stored && window.DocumentTask) DocumentTask.showFile(card, data.stored);
         if (data.state) {
             setBadge(card, data.state.status, data.status === 'correct' && card.dataset.status !== 'correct');

@@ -130,6 +130,10 @@ haben. Entschieden ist:
   getrennt: An einem Schulrechner, an dem nacheinander mehrere arbeiten,
   findet niemand die Tipps der Person davor schon aufgeklappt. Lernende
   sollen Hilfe nehmen, ohne sich zu fragen, wie das aussieht.
+- **Auch Fallen haben Tipps in Stufen.** In einem Dokument voller Fallen
+  (`traps: true`, docs/aufgaben.md) zeigt die Prüfung nicht, wo sie stecken;
+  jede versteckte Falle hat ihre eigenen Tipps, vom Ort bis zur Lösung, mit
+  derselben Minute dazwischen und ebenso nur im Browser gemerkt.
 - **Hängen alle, hilft die Lehrkraft der Gruppe.** Die Tipps ersetzen nicht
   den Unterricht; wo viele an derselben Stelle hängen, ist das ein Thema für
   alle.

@@ -87,7 +87,7 @@ module TaskSpec
     # Check types that need the network; they are never used in exams.
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
-    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam starter level extra] + CodeLanguages::LANGUAGES).freeze
+    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam starter level extra next] + CodeLanguages::LANGUAGES).freeze
     # The levels of a Kata (docs/katas.md): 1 Einstieg, 2 Übung, 3 Knobelei.
     LEVELS = [1, 2, 3].freeze
 
@@ -196,6 +196,22 @@ module TaskSpec
             errors.concat(validate_task(task).map { |e| "#{where}: #{e}" })
             if task['id'].is_a?(String) && !seen.add?(task['id'])
                 errors << "#{where}: duplicate id"
+            end
+        end
+        # next: what a passed card offers (a document card, task_api.rb):
+        # practice after several checks, challenge after one or two; both
+        # extras of this page
+        tasks.select { |t| t.is_a?(Hash) && t.key?('next') }.each do |task|
+            offer = task['next']
+            unless offer.is_a?(Hash) && !offer.empty? && (offer.keys - %w[practice challenge]).empty?
+                errors << "task '#{task['id']}': next must map practice and/or challenge to the id of an extra"
+                next
+            end
+            errors << "task '#{task['id']}': next only works with document checks" unless task['check'].is_a?(Hash) && task['check']['type'] == 'document'
+            offer.each_value do |id|
+                target = tasks.find { |t| t.is_a?(Hash) && t['id'] == id }
+                errors << "task '#{task['id']}': next names #{id.inspect}, which is no task here" if target.nil?
+                errors << "task '#{task['id']}': next names #{id.inspect}, which is no extra (extra: true)" if target && target['extra'] != true
             end
         end
         errors
@@ -714,7 +730,7 @@ module TaskSpec
             errors.concat(KeyboardCheck.spec_errors(check))
         when 'document'
             # A document the student uploads, read by the office service.
-            allowed += %w[file rules dates accept]
+            allowed += %w[file rules dates accept traps]
             errors.concat(DocumentCheck.spec_errors(check))
             errors.concat(DocumentDates.spec_errors(check['dates'])) if check.key?('dates')
         end

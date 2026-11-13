@@ -594,10 +594,11 @@ Kein späteres Kapitel, das nicht selbst ein Extra ist, baut auf seinem Code
 oder seinen Begriffen auf (in den Stufen nachsehen: Steht sein Code in der
 Stufe eines späteren Kapitels für alle, gehört es dazu), und die Dauer im
 Meta-Block reicht ohne die Extras. Am besten sind es die letzten Kapitel vor
-»Zeigen und veröffentlichen« oder »Wie geht es weiter?«. Ein Extra hat keine
-Aufgabe, sonst käme »x von y Aufgaben« für alle, die es auslassen, nie ans
-Ende; `extra_chapters_test.rb` prüft beides, die Stelle der Marke und dass
-kein `_task()` in einem Extra steht. Markiert werden nur ganze Kapitel
+»Zeigen und veröffentlichen« oder »Wie geht es weiter?«. Eine Aufgabe in
+einem Extra ist selbst ein Extra (`extra: true`, docs/aufgaben.md): Sie zählt
+bei niemandem mit, sonst käme »x von y Aufgaben« für alle, die es auslassen,
+nie ans Ende; `extra_chapters_test.rb` prüft beides, die Stelle der Marke und
+dass jedes `_task()` in einem Extra eins ist. Markiert werden nur ganze Kapitel
 (`##`), keine Abschnitte, und die Notiz für Lehrkräfte nennt die Extras im
 Ablauf.
 

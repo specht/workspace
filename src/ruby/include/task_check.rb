@@ -344,7 +344,8 @@ module TaskCheck
             end
         end
         status, items, message = DocumentCheck.evaluate(check, answer, starter)
-        Result.new(:status => status, :message => message, :read => DocumentCheck.xray(answer),
+        # traps: what the check read would show where they hide
+        Result.new(:status => status, :message => message, :read => check['traps'] ? nil : DocumentCheck.xray(answer),
             :solution => status == :correct ? task['solution'] : nil,
             :report => DocumentCheck.report(items, answer))
     end

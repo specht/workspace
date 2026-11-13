@@ -46,6 +46,9 @@ require_relative 'office_client'
 #       - { heading_count: 2 } # at least so many headings with a heading style
 #       - { picture_count: 1 } # at least so many pictures
 #       - typed_lists          # no list marker typed by hand (»- «, »1. «) outside a real list
+#       - { contains: ['Kranichfeder', …] }   # these pieces of text somewhere (any case): a message decoded
+#       - { same_as: 'Montag', paragraphs: ['Dienstag', …] }   # these paragraphs set like the first (font, size, bold, italic, colour): Format übertragen
+#       - { scripts: { up: ['km2'], down: ['CO2'] } }   # the digits in these pieces raised or lowered (² and ₂ typed count too)
 #
 # The rules about pictures may carry names: (how the messages call the
 # pictures, in the order of the starting file: ['das Foto', 'die Karte']).
@@ -54,8 +57,18 @@ require_relative 'office_client'
 #
 # Every rule may carry label: (the point on the checklist) and say: (what
 # the card says when it fails, instead of the built-in sentence).
+# spaces, line_breaks and empty_paragraphs may carry in: (pieces of text):
+# then only those paragraphs count (for empty paragraphs: those right after
+# them).
+#
+# A document full of traps (traps: true on the check): it looks finished,
+# and the student finds what is wrong with it. A rule with hints: (a list,
+# from general to precise) is a trap: while it fails, the card shows only
+# that a trap is still hidden, with no label, message or mark, and offers
+# its hints one by one; once it holds, its label shows, ticked. Rules
+# without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -81,7 +94,7 @@ module DocumentCheck
 
     # number: the open points' numbers, 1, 2, … in the order of the
     # checklist; every place of a point carries its point's number
-    Item = Struct.new(:rule, :label, :ok, :message, :marks, :number, keyword_init: true)
+    Item = Struct.new(:rule, :label, :ok, :message, :marks, :number, :hints, keyword_init: true)
 
     # Problems with a check's definition in tasks.yaml (TaskSpec).
     def self.spec_errors(check)
@@ -100,6 +113,10 @@ module DocumentCheck
         end
         rules = check['rules']
         return errors + ['rules must be a list'] unless rules.is_a?(Array) && !rules.empty?
+        if check.key?('traps')
+            errors << 'traps must be true (or left out)' unless check['traps'] == true
+            errors << 'traps: true needs at least one rule with hints: (a trap)' unless rules.any? { |r| r.is_a?(Hash) && r.key?('hints') }
+        end
 
         rules.each do |rule|
             name = rule_name(rule)
@@ -108,13 +125,14 @@ module DocumentCheck
                 next
             end
             next unless rule.is_a?(Hash)
-            known = %w[label say] + case name
+            known = %w[label say hints] + (%w[spaces line_breaks empty_paragraphs].include?(name) ? ['in'] : []) + case name
                 when *SHEET_RULES then [name, 'sheet']
                 when *SLIDE_RULES then [name]
                 when 'text' then %w[text except]
                 when 'styled' then %w[styled]
                 when 'align' then %w[align paragraph]
                 when 'gaps' then %w[gaps before]
+                when 'same_as' then %w[same_as paragraphs]
                 when 'size' then %w[size paragraphs]
                 when 'tabs' then %w[tabs align]
                 when 'table' then %w[table columns header]
@@ -130,12 +148,17 @@ module DocumentCheck
             errors << 'gaps must look like 6pt' if name == 'gaps' && pt(rule['gaps']) <= 0
             errors << 'gaps needs before: (pieces of the paragraphs)' if name == 'gaps' && !(rule['before'].is_a?(Array) && rule['before'].all? { |b| b.is_a?(String) })
             errors << 'fonts must be a number' if name == 'fonts' && !rule['fonts'].is_a?(Integer)
+            errors << 'same_as needs a piece of the model paragraph and paragraphs: (pieces of the others)' if name == 'same_as' && !(rule['same_as'].is_a?(String) && rule['paragraphs'].is_a?(Array) && rule['paragraphs'].all? { |b| b.is_a?(String) })
+            if name == 'scripts'
+                sc = rule['scripts']
+                errors << 'scripts maps up: and/or down: to lists of pieces with digits (km2, CO2)' unless sc.is_a?(Hash) && !sc.empty? && (sc.keys - %w[up down]).empty? && sc.values.all? { |v| v.is_a?(Array) && v.all? { |b| b.is_a?(String) && b.match?(/\d/) } }
+            end
             errors << "#{name} must be a number" if %w[min_size max_words title_words notes_words].include?(name) && !rule[name].is_a?(Numeric)
             errors << 'facts needs a list of pieces of text (alternatives with |)' if name == 'facts' && !(rule['facts'].is_a?(Array) && rule['facts'].all? { |b| b.is_a?(String) })
             errors << 'notes needs a list of pieces of text' if name == 'notes' && !(rule['notes'].is_a?(Array) && rule['notes'].all? { |b| b.is_a?(String) })
             errors << 'slide_count must be [min, max]' if name == 'slide_count' && !(rule['slide_count'].is_a?(Array) && rule['slide_count'].size == 2)
             errors << 'size must be [min, max] in pt' if name == 'size' && !(rule['size'].is_a?(Array) && rule['size'].size == 2 && rule['size'].all? { |v| v.is_a?(Numeric) })
-            %w[bold sparing list tabs table page_breaks].each do |k|
+            %w[bold sparing list tabs table page_breaks contains].each do |k|
                 errors << "#{k} needs a list of pieces of text" if name == k && !(rule[k].is_a?(Array) && rule[k].all? { |b| b.is_a?(String) })
             end
             errors << 'wrap must be the number of a picture of the starting file (1, 2, …)' if name == 'wrap' && !(rule['wrap'].is_a?(Integer) && rule['wrap'].positive?)
@@ -155,6 +178,11 @@ module DocumentCheck
             errors << 'names must be a list of text' if rule.key?('names') && !(rule['names'].is_a?(Array) && rule['names'].all? { |n| n.is_a?(String) })
             errors << 'size needs paragraphs: (pieces of their text)' if name == 'size' && !(rule['paragraphs'].is_a?(Array) && rule['paragraphs'].all? { |b| b.is_a?(String) })
             %w[label say].each { |k| errors << "#{k} must be text" if rule.key?(k) && !rule[k].is_a?(String) }
+            errors << 'in must be a list of pieces of text' if rule.key?('in') && !(rule['in'].is_a?(Array) && !rule['in'].empty? && rule['in'].all? { |b| b.is_a?(String) })
+            if rule.key?('hints')
+                errors << 'hints must be a list of text, from general to precise' unless rule['hints'].is_a?(Array) && !rule['hints'].empty? && rule['hints'].all? { |b| b.is_a?(String) }
+                errors << 'a trap (hints:) needs label: (what shows once it is found)' unless rule['label'].is_a?(String)
+            end
         end
         errors
     end
@@ -176,21 +204,34 @@ module DocumentCheck
         # each recalc rule reads its probe (in their order, as probes sent them)
         probe = -1
         rules = (check['rules'] || []).map { |r| r.is_a?(Hash) && r.key?('recalc') ? r.merge('_probe' => (probe += 1)) : r }
+        traps = check['traps'] == true
         items = rules.map do |rule|
-            item = send("rule_#{rule_name(rule)}", rule.is_a?(Hash) ? rule : {}, body, starter, paragraphs, model)
+            name = rule_name(rule)
+            # in: only the paragraphs with these pieces of text (spaces,
+            # line breaks; empty paragraphs look at it themselves)
+            scope = body
+            if rule.is_a?(Hash) && rule['in'] && %w[spaces line_breaks].include?(name)
+                pieces = rule['in'].map { |x| squish(x) }
+                scope = body.select { |p| pieces.any? { |x| p['plain'].include?(x) } }
+            end
+            item = send("rule_#{name}", rule.is_a?(Hash) ? rule : {}, scope, starter, paragraphs, model)
             item.label = rule['label'] if rule.is_a?(Hash) && rule['label']
             item.message = rule['say'] if rule.is_a?(Hash) && rule['say'] && !item.ok
+            item.hints = rule['hints'] if traps && rule.is_a?(Hash) && rule['hints']
             item
         end
         n = 0
         items.each do |item|
-            next item.marks = [] if item.ok
+            # a trap still hidden: no number, no mark on the page
+            next item.marks = [] if item.ok || item.hints
 
             item.number = (n += 1)
             item.marks = item.marks.first(MAX_MARKS).each_with_index.map { |m, i| m.merge(:n => item.number, :i => i) }
         end
         done = items.count(&:ok)
-        message = if done == items.size
+        message = if traps
+            trap_message(items)
+        elsif done == items.size
             "Alle #{items.size} Punkte erfüllt."
         else
             "#{done} von #{items.size} Punkten erfüllt."
@@ -198,11 +239,29 @@ module DocumentCheck
         [done == items.size ? :correct : :wrong, items, message]
     end
 
+    # The verdict of a document with traps: how many found, how many still
+    # hidden, and what else is open (a point without hints, shown as usual).
+    def self.trap_message(items)
+        traps = items.select(&:hints)
+        found = traps.count(&:ok)
+        open = items.reject(&:hints).reject(&:ok)
+        return "Alle #{traps.size} Fallen gefunden." if found == traps.size && open.empty?
+
+        text = found == traps.size ? "Alle #{traps.size} Fallen gefunden." : "#{found} von #{traps.size} Fallen gefunden, #{traps.size - found == 1 ? 'eine ist' : "#{traps.size - found} sind"} noch versteckt."
+        text += " Offen ist noch: #{open.map(&:label).join(', ')}." unless open.empty?
+        text
+    end
+
     # What the card shows: the checklist with its marks and the pages.
+    # A trap still hidden shows only its hints (traps: true).
     def self.report(items, model)
         marks = items.flat_map(&:marks)
         {
-            :items => items.map { |i| { :label => i.label, :ok => i.ok, :message => i.message, :marks => i.marks, :n => i.number } },
+            :items => items.map do |i|
+                next { :trap => true, :ok => false, :hints => i.hints, :marks => [] } if i.hints && !i.ok
+                { :label => i.label, :ok => i.ok, :message => i.message, :marks => i.marks, :n => i.number, :trap => i.hints ? true : nil }.compact
+            end,
+            :traps => items.any?(&:hints) ? true : nil,
             :pages => (model['pages'] || []).each_with_index.map do |pg, i|
                 { :width => pg['width'], :height => pg['height'], :src => "data:image/svg+xml;base64,#{pg['svg']}",
                   :crop => crop(model, marks, i + 1, pg) }
@@ -283,6 +342,11 @@ module DocumentCheck
     # A short answer for the class overview: which points are open
     # (items: those of report).
     def self.summary(filename, items)
+        # traps: how many found, never which are left
+        if items.any? { |i| i[:trap] }
+            traps = items.select { |i| i[:trap] }
+            return "#{filename}: #{traps.count { |i| i[:ok] }} von #{traps.size} Fallen gefunden"
+        end
         open = items.reject { |i| i[:ok] }.map { |i| i[:label] }
         base = "#{filename}: #{items.count { |i| i[:ok] }} von #{items.size}"
         return base if open.empty?
@@ -349,6 +413,97 @@ module DocumentCheck
         item
     end
 
+    # Pieces of text somewhere in the document, in any case (a message
+    # decoded with Suchen und Ersetzen). The message names none of them:
+    # they are what the student is to find.
+    def self.rule_contains(rule, _body, _starter, all = nil, _model = nil)
+        item = Item.new(:rule => 'contains', :label => 'Der Text ist vollständig', :ok => true, :marks => [])
+        text = squish(Array(all).map { |p| p['text'] }.join(' ')).downcase
+        missing = rule['contains'].reject { |piece| text.include?(squish(piece).downcase) }
+        return item if missing.empty?
+
+        item.ok = false
+        item.message = missing.size == rule['contains'].size ? 'Davon finde ich noch nichts.' : "#{rule['contains'].size - missing.size} von #{rule['contains'].size} Stellen finde ich schon."
+        item
+    end
+
+    # How a portion looks, for comparing (Format übertragen).
+    LOOK = %w[font size bold italic color].freeze
+    def self.look(q)
+        LOOK.to_h { |k| [k, k == 'size' ? q[k].to_f.round(1) : q[k]] }
+    end
+
+    # These paragraphs set like the model: every visible portion of each
+    # in the font, size, weight, slant and colour of the model's first.
+    def self.rule_same_as(rule, body, _starter, _all = nil, _model = nil)
+        model = find_paragraphs(body, [rule['same_as']]).first
+        item = Item.new(:rule => 'same_as', :label => "Wie »#{rule['same_as']}« gesetzt", :ok => false, :marks => [])
+        if model.nil?
+            item.message = "Den Absatz »#{rule['same_as']}« finde ich nicht mehr."
+            return item
+        end
+        first = ranges(model).map(&:last).find { |q| visible?(q) }
+        want = first ? look(first) : {}
+        others = find_paragraphs(body, rule['paragraphs'])
+        differ = others.select { |p| ranges(p).any? { |_, _, q| visible?(q) && look(q) != want } }
+        missing = rule['paragraphs'].size - others.size
+        item.ok = differ.empty? && missing.zero?
+        return item if item.ok
+
+        item.marks = differ.map { |p| para_mark(p).merge(:title => 'anders gesetzt') }
+        item.message = if differ.empty?
+            'Einen der Absätze finde ich nicht mehr.'
+        else
+            "#{differ.size == 1 ? "»#{short(differ.first)}« sieht" : "#{differ.size} Absätze sehen"} noch anders aus als »#{rule['same_as']}«: " \
+                'Schrift, Größe, fett, kursiv oder Farbe. Mit *Format übertragen* (dem Pinsel) bekommen sie genau dasselbe.'
+        end
+        item
+    end
+
+    SUPERSCRIPT = { '2' => '²', '3' => '³', '1' => '¹' }.freeze
+    SUBSCRIPT = ('0'..'9').to_h { |d| [d, (0x2080 + d.to_i).chr(Encoding::UTF_8)] }.freeze
+
+    # The digits in these pieces raised (m², km²) or lowered (CO₂): set so
+    # by formatting, or typed as such a character.
+    def self.rule_scripts(rule, body, _starter, _all = nil, _model = nil)
+        item = Item.new(:rule => 'scripts', :label => 'Hoch- und tiefgestellte Zahlen', :ok => true, :marks => [])
+        problems = []
+        gone = []
+        { 'up' => SUPERSCRIPT, 'down' => SUBSCRIPT }.each do |dir, chars|
+            Array(rule['scripts'][dir]).each do |piece|
+                # the piece as typed, or with its digits as raised or lowered characters
+                pattern = Regexp.new(piece.chars.map { |c| c.match?(/\d/) ? "[#{c}#{chars[c]}]" : Regexp.escape(c) }.join)
+                seen = false
+                body.each do |p|
+                    text = p['text'].to_s
+                    text.to_enum(:scan, pattern).each do
+                        m = Regexp.last_match
+                        seen = true
+                        wrong = (m.begin(0)...m.end(0)).select do |i|
+                            next false unless text[i].match?(/\d/)
+
+                            q = ranges(p).find { |a, b, _| a <= i && i < b }&.last
+                            !(q && q[dir == 'up' ? 'superscript' : 'subscript'])
+                        end
+                        next if wrong.empty?
+
+                        problems << "»#{m[0]}«" unless problems.include?("»#{m[0]}«")
+                        item.marks.concat(range_marks(p, m.begin(0), m.end(0), dir == 'up' ? 'nicht hochgestellt' : 'nicht tiefgestellt'))
+                    end
+                end
+                gone << "»#{piece}«" unless seen
+            end
+        end
+        return item if problems.empty? && gone.empty?
+
+        item.ok = false
+        text = []
+        text << "Noch auf der Zeile: #{problems.first(4).join(', ')}#{problems.size > 4 ? ' …' : ''}. Markier nur die Zahl und stell sie hoch (km²) oder tief (CO₂)." unless problems.empty?
+        text << "#{gone.join(', ')} finde ich nicht mehr." unless gone.empty?
+        item.message = text.join(' ')
+        item
+    end
+
     def self.rule_spaces(_rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'spaces', :label => 'Keine Leerzeichen hintereinander', :ok => true, :marks => [])
         places = []
@@ -373,7 +528,7 @@ module DocumentCheck
         item
     end
 
-    def self.rule_empty_paragraphs(_rule, body, _starter, _all = nil, _model = nil)
+    def self.rule_empty_paragraphs(rule, body, _starter, _all = nil, _model = nil)
         item = Item.new(:rule => 'empty_paragraphs', :label => 'Keine leeren Absätze', :ok => true, :marks => [])
         # empty paragraphs at the very end change nothing on the page; the
         # one right before a page break is what Word leaves of Ctrl+Enter
@@ -381,6 +536,14 @@ module DocumentCheck
         holds_break = body.each_index.select { |i| empty?(body[i]) && body[i + 1] && page_break?(body[i + 1]) && (i.zero? || !empty?(body[i - 1])) }.map { |i| body[i] }
         groups = body[0..last].slice_when { |a, b| empty?(a) != empty?(b) }.select { |g| empty?(g.first) }
             .map { |g| g - holds_break }.reject(&:empty?)
+        # in: only the empty paragraphs right after these
+        if rule['in']
+            pieces = rule['in'].map { |x| squish(x) }
+            groups = groups.select do |g|
+                i = body.index(g.first)
+                i&.positive? && pieces.any? { |x| body[i - 1]['plain'].include?(x) }
+            end
+        end
         return item if groups.empty?
 
         item.ok = false
@@ -432,12 +595,17 @@ module DocumentCheck
             return item
         end
         name = p['plain'][found]
-        item.ok = p['align'] == want
+        # centred or pushed right by spaces as well: not where it seems
+        pushed = p['text'].to_s.match?(/\A {2,}/)
+        item.ok = p['align'] == want && !(pushed && want != 'left')
         return item if item.ok
 
         item.marks = [para_mark(p).merge(:title => ALIGN[p['align']])]
-        item.message = if p['text'].to_s.start_with?('  ') && p['align'] == 'left'
+        item.message = if pushed && p['align'] == 'left'
             "»#{name}« steht nur mit Leerzeichen #{want == 'right' ? 'rechts' : 'in der Mitte'}. Lösche sie und mach den Absatz #{ALIGN[want]}."
+        elsif pushed
+            want == 'right' ? "»#{name}« ist rechtsbündig, aber davor stehen noch Leerzeichen. Mit größerer Schrift schieben sie es in eine neue Zeile. Lösche sie." :
+                "»#{name}« ist #{ALIGN[p['align']]}, aber davor stehen noch Leerzeichen, die es aus der Mitte schieben. Lösche sie."
         else
             "»#{name}« ist #{ALIGN[p['align']]}, soll aber #{ALIGN[want]} sein."
         end

@@ -6318,13 +6318,15 @@ body.cl-dragging-page * {
     color: #6c7a8c;
 }
 
-.cb-quiet-line {
+.cb-quiet-line,
+.cb-help-line {
     margin: 0.4em 0 0;
     font-size: 90%;
     color: #4a5868;
 }
 
-.cb-quiet-line .bi {
+.cb-quiet-line .bi,
+.cb-help-line .bi {
     margin-right: 0.4em;
 }
 
@@ -17596,6 +17598,46 @@ body.mail-app-open {
 .document-message {
     font-size: 0.92em;
     margin-top: 0.1em;
+}
+/* a trap not found yet (traps: true): its hints, opened one by one */
+.document-trap .document-label {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+.document-trap-hints {
+    margin: 0.25em 0 0;
+    padding-left: 1.2em;
+    font-size: 0.92em;
+}
+.document-trap-hints li {
+    display: list-item;
+    margin-bottom: 0.2em;
+}
+.document-trap-hint {
+    padding: 0.1em 0;
+    font-size: 0.88em;
+    text-decoration: none;
+    display: inline-flex;
+    gap: 0.35em;
+    align-items: center;
+}
+.document-trap-count {
+    color: var(--bs-secondary-color);
+}
+/* after a pass: another round or something harder (document_offer) */
+.document-offer {
+    display: flex;
+    gap: 0.45em;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin: 0 0 0.8em;
+    padding: 0.5em 0.7em;
+    border-radius: 0.5em;
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary-text-emphasis);
+}
+.document-offer a {
+    font-weight: 600;
 }
 .document-message p:last-child {
     margin-bottom: 0;

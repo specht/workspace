@@ -121,6 +121,7 @@ class Main < Sinatra::Base
         if result.counts?
             state = store_task_result(found, result.status.to_s, DocumentCheck.summary(name, result.report[:items]))
         end
+        offer = result.status == :correct && state ? document_offer(found, state[:attempts].to_i) : nil
         report = link_document_pages(result.report)
         if report
             report = report.merge(:items => report[:items].map { |i| i.merge(:message => i[:message] ? render_task_markdown(i[:message]) : nil) })
@@ -133,7 +134,30 @@ class Main < Sinatra::Base
             :report => report,
             :state => state,
             :stored => stored,
+            :offer => offer,
         )
+    end
+
+    # What a passed document card offers next (next: in tasks.yaml): after
+    # three checks or more another round, after one or two something
+    # harder; { :id, :title, :text } or nil.
+    def document_offer(found, attempts)
+        offer = found[:task]['next']
+        return nil unless offer.is_a?(Hash)
+
+        kind, text = if attempts >= 3 && offer['practice']
+            ['practice', 'Das hat ein paar Versuche gebraucht. Eine Runde mehr, dann sitzt es:']
+        elsif attempts <= 2 && offer['challenge']
+            ['challenge', 'Schnell geschafft. Wenn du magst, wartet hier etwas Kniffligeres:']
+        end
+        return nil unless kind
+
+        activity = found[:key].split('/', 2).first
+        entry = @@content.values.find { |c| (c[:tasks] || {})[:activity] == activity }
+        task = entry && entry[:tasks][:by_id][offer[kind]]
+        return nil unless task
+
+        { :id => offer[kind], :title => task['title'], :text => text }
     end
     # The last version of a document task kept for a person: its name, when,
     # and where to fetch it; nil without one.

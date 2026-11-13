@@ -1040,7 +1040,10 @@
         const done = el('div', 'document-done');
         done.innerHTML = "<svg class='document-done-mark' viewBox='0 0 52 52' aria-hidden='true'>" +
             "<circle cx='26' cy='26' r='23'></circle><path d='M15 27 l7 7 l15 -16'></path></svg>" +
-            (report.sheet
+            (report.traps
+                ? "<div><div class='document-done-title'>Keine Falle übersehen</div>" +
+                  "<div class='document-done-text'>Was auf dem Papier ordentlich aussah, ist jetzt auch ordentlich gebaut.</div></div>"
+                : report.sheet
                 ? "<div><div class='document-done-title'>Rechnet richtig</div>" +
                   "<div class='document-done-text'>Ändere eine Zahl: Alles, was mit ihr rechnet, rechnet mit.</div></div>"
                 : report.pdf
@@ -1051,7 +1054,9 @@
         side.insertBefore(done, side.firstChild);
         side.querySelectorAll('.document-checklist li').forEach(function (li, i) { li.style.setProperty('--i', String(i)); });
         control.sheets.slice(0, 1).forEach(function (sheet) {
-            const stamp = el('div', 'document-stamp', 'Alle ' + report.items.length + ' Punkte');
+            const stamp = el('div', 'document-stamp', report.traps
+                ? 'Alle ' + report.items.filter(function (i) { return i.trap; }).length + ' Fallen'
+                : 'Alle ' + report.items.length + ' Punkte');
             stamp.setAttribute('aria-hidden', 'true');
             // in the corner of the part with text, which the view shows
             const page = report.pages[0];
@@ -1066,6 +1071,113 @@
             void wrap.offsetWidth;
             wrap.classList.add('document-success-now');
         }
+    }
+
+    // A trap of a document full of them (traps: true, DocumentCheck), not
+    // found yet: »Falle 3: noch versteckt« and its hints, from general to
+    // precise, one more with each click. How many are open is remembered in
+    // this browser, so that a reload does not hide them again.
+    function trapHintsOpen(card) {
+        if (card.documentTrapHints) return card.documentTrapHints;
+        let open = {};
+        try {
+            open = JSON.parse(localStorage.getItem('document-trap-hints:' + card.dataset.task) || '{}') || {};
+        } catch (err) {
+            open = {};
+        }
+        card.documentTrapHints = open;
+        return open;
+    }
+
+    // the next tip of a trap a minute after the one before, as with every
+    // tip in steps (HintSteps::DELAY_SECONDS, docs/didaktik.md)
+    const TRAP_HINT_DELAY = 60;
+
+    function hiddenTrap(card, index, hints) {
+        const li = el('li', 'document-open document-trap');
+        const icon = el('i', 'bi bi-eye-slash');
+        icon.setAttribute('aria-hidden', 'true');
+        li.appendChild(icon);
+        const text = el('div', 'document-item');
+        const head = el('div', 'document-label');
+        head.appendChild(el('span', 'visually-hidden', 'Offen: '));
+        head.appendChild(document.createTextNode('Falle ' + index + ': noch versteckt'));
+        text.appendChild(head);
+        const shown = el('ol', 'document-trap-hints');
+        const button = el('button', 'btn btn-link btn-sm document-trap-hint');
+        button.type = 'button';
+        const open = trapHintsOpen(card);
+        // opened: how many, and when the last one was (seconds)
+        const count = function () { return typeof open[index] === 'number' ? open[index] : (open[index] || {}).n || 0; };
+        const at = function () { return (open[index] || {}).at || 0; };
+        let timer = null;
+        let placed = false;
+        const draw = function () {
+            // a newer result replaced this list: stop counting
+            if (button.isConnected) placed = true;
+            else if (placed) return;
+            const n = Math.min(count(), hints.length);
+            shown.textContent = '';
+            hints.slice(0, n).forEach(function (hint) {
+                const item = el('li');
+                item.innerHTML = hint;
+                shown.appendChild(item);
+            });
+            shown.hidden = n === 0;
+            button.hidden = n >= hints.length;
+            const wait = n === 0 ? 0 : Math.ceil(at() + TRAP_HINT_DELAY - Date.now() / 1000);
+            button.disabled = wait > 0;
+            button.innerHTML = "<i class='bi bi-lightbulb' aria-hidden='true'></i>" + (n === 0 ? 'Tipp' : 'Noch ein Tipp') +
+                " <span class='document-trap-count'>(" + (n + 1) + ' von ' + hints.length +
+                (wait > 0 ? ', in ' + wait + ' Sekunden' : '') + ')</span>';
+            clearTimeout(timer);
+            if (wait > 0) timer = setTimeout(draw, 1000);
+        };
+        button.addEventListener('click', function () {
+            open[index] = { n: count() + 1, at: Math.floor(Date.now() / 1000) };
+            try {
+                localStorage.setItem('document-trap-hints:' + card.dataset.task, JSON.stringify(open));
+            } catch (err) { /* only this visit, then */ }
+            draw();
+            const last = shown.lastElementChild;
+            if (last) last.focus && last.setAttribute('tabindex', '-1');
+        });
+        draw();
+        text.appendChild(shown);
+        text.appendChild(button);
+        li.appendChild(text);
+        return li;
+    }
+
+    // After a pass, what comes next (task_api.rb, document_offer): another
+    // round or something harder, a link to its card further down.
+    function offer(card, next) {
+        const wrap = card.documentReportEl && card.documentReportEl.isConnected ? card.documentReportEl : card.querySelector('.document-report');
+        const side = wrap && wrap.querySelector('.document-side');
+        if (!side || !next || !next.id) return;
+        const old = side.querySelector('.document-offer');
+        if (old) old.remove();
+        const box = el('p', 'document-offer');
+        const icon = el('i', 'bi ' + (next.text.indexOf('Runde') >= 0 ? 'bi-arrow-repeat' : 'bi-stars'));
+        icon.setAttribute('aria-hidden', 'true');
+        const link = el('a', null, next.title);
+        link.href = '#aufgabe-' + next.id;
+        // out of full screen first (its step back in the history), then to
+        // the card
+        link.addEventListener('click', function (e) {
+            const report = card.documentReportEl;
+            if (!report || !report.classList.contains('document-fullscreen')) return;
+            e.preventDefault();
+            const close = report.querySelector("[aria-label='Vollbild verlassen']");
+            if (close) close.click();
+            setTimeout(function () {
+                const target = document.getElementById('aufgabe-' + next.id);
+                if (target) target.scrollIntoView({ block: 'start' });
+            }, 300);
+        });
+        box.append(icon, document.createTextNode(' ' + next.text + ' '), link);
+        const done = side.querySelector('.document-done');
+        side.insertBefore(box, done ? done.nextSibling : side.querySelector('.document-checklist'));
     }
 
     function render(card, report) {
@@ -1084,8 +1196,11 @@
         // the verdict, for full screen, which does not take the card's
         // line along
         const done = report.items.filter(function (i) { return i.ok; }).length;
-        side.appendChild(el('p', 'document-verdict', done === report.items.length
-            ? 'Alle ' + done + ' Punkte erfüllt.' : done + ' von ' + report.items.length + ' Punkten erfüllt.'));
+        const traps = report.items.filter(function (i) { return i.trap; });
+        const found = traps.filter(function (i) { return i.ok; }).length;
+        side.appendChild(el('p', 'document-verdict', report.traps
+            ? (found === traps.length ? 'Alle ' + found + ' Fallen gefunden.' : found + ' von ' + traps.length + ' Fallen gefunden.')
+            : done === report.items.length ? 'Alle ' + done + ' Punkte erfüllt.' : done + ' von ' + report.items.length + ' Punkten erfüllt.'));
         const status = el('p', 'document-status');
         status.setAttribute('aria-live', 'polite');
         side.appendChild(status);
@@ -1098,13 +1213,21 @@
 
         if (!all && fresh.length) {
             const gain = el('p', 'document-gain');
-            gain.innerHTML = "<i class='bi bi-arrow-up-circle-fill' aria-hidden='true'></i>" +
-                (fresh.length === 1 ? 'Ein Punkt mehr' : fresh.length + ' Punkte mehr') + ' als beim letzten Prüfen.';
+            gain.innerHTML = "<i class='bi bi-arrow-up-circle-fill' aria-hidden='true'></i>" + (report.traps
+                ? (fresh.length === 1 ? 'Eine Falle mehr gefunden' : fresh.length + ' Fallen mehr gefunden')
+                : (fresh.length === 1 ? 'Ein Punkt mehr' : fresh.length + ' Punkte mehr')) + ' als beim letzten Prüfen.';
             side.appendChild(gain);
         }
         const list = el('ul', 'document-checklist');
         list.setAttribute('aria-label', 'Was die Prüfung nachgesehen hat');
+        let trapIndex = 0;
         report.items.forEach(function (item) {
+            // a trap still hidden: its number and its hints, nothing else
+            if (item.trap) trapIndex += 1;
+            if (item.trap && !item.ok) {
+                list.appendChild(hiddenTrap(card, trapIndex, item.hints || []));
+                return;
+            }
             const li = el('li', item.ok ? 'document-ok' : 'document-open');
             if (fresh.indexOf(item.label) >= 0 && !all) li.classList.add('document-fresh');
             if (item.n) li.dataset.n = item.n;
@@ -1232,5 +1355,5 @@
         line.textContent = answer ? 'Zuletzt geprüft: ' + answer : 'oder hierher ziehen';
     }
 
-    window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored, showFile: showFile, nextcloud: nextcloud };
+    window.DocumentTask = { setup: setup, check: check, render: render, showStored: showStored, showFile: showFile, nextcloud: nextcloud, offer: offer };
 })();

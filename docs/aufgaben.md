@@ -2062,6 +2062,51 @@ ohne verknüpfte Inhalte zu laden, und zeichnet die Seiten als SVG.
 selbst. Die Regeln zur Schrift lesen die Abschnitte eines Absatzes mit
 gleicher Formatierung und markieren die Wörter, die betroffen sind.
 
+`spaces`, `line_breaks` und `empty_paragraphs` nehmen `in:`, eine Liste von
+Textstücken: Dann zählen nur die Absätze mit diesen Stücken (bei leeren
+Absätzen die direkt dahinter). `{ contains: ['Kranichfeder', …] }` verlangt
+Textstücke irgendwo im Dokument, ohne auf Groß- und Kleinschreibung zu achten
+(eine entschlüsselte Botschaft); die Meldung nennt keins davon. `align:` gilt
+nur, wenn keine Leerzeichen mehr davor stehen: Eine Zeile, die zentriert ist
+und noch mit Leerzeichen anfängt, steht nicht in der Mitte.
+
+**Ein Dokument voller Fallen** (`traps: true` am Check): Es sieht fertig aus,
+und die Lernenden finden selbst, was falsch gebaut ist. Eine Regel mit
+`hints:` (einer Liste von Tipps, vom Allgemeinen zum Genauen) ist eine Falle;
+sie braucht ein `label:`, das zeigt, was sie war. Solange sie nicht behoben
+ist, zeigt die Karte nur »Falle 3: noch versteckt«, ohne Namen, Meldung oder
+Markierung, und bietet ihre Tipps einzeln an, den nächsten eine Minute nach
+dem vorigen wie bei allen Tipps in Stufen (welche aufgeklappt sind, merkt
+sich nur der Browser). Behoben steht sie mit ihrem `label:` abgehakt da.
+Regeln ohne `hints:` (`text`) erscheinen wie sonst. Das Urteil zählt nur
+(»2 von 6 Fallen gefunden«), »Was der Workspace gelesen hat« fehlt, weil es
+die Fallen zeigen würde, und die Zeile für die Klassenübersicht nennt keine
+offene Falle.
+
+```yaml
+check:
+  type: document
+  file: formatting-marks/03 Brief an die Jugendherberge.docx
+  traps: true
+  rules:
+    - text
+    - spaces: true
+      in: ['wir sind die Klasse 7b']
+      label: Nach »Lehrkräfte.« standen zwei Leerzeichen.
+      hints:
+        - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+        - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+        - Nach »Lehrkräfte.« stehen zwei Leerzeichen. Eins ist zu viel.
+```
+
+**Was nach dem Bestehen kommt** (`next:` an der Aufgabe, nur bei
+`document`): `{ practice: runde, challenge: fallen }` nennt zwei Extras
+derselben Seite (`extra: true`). Wer die Karte nach drei oder mehr Prüfungen
+besteht, bekommt im Ergebnis »Eine Runde mehr, dann sitzt es« mit einem Link
+zu `practice`, wer sie nach einer oder zwei besteht, »wartet hier etwas
+Kniffligeres« mit `challenge`. Gezählt werden die Prüfungen, die zählen
+(nicht die mit falscher Datei).
+
 Ein Brief vom »2. März«, im November gelesen, wirkt vergessen. Mit `dates:`
 bekommt die Vorlage beim Herunterladen ihre Daten
 (`/api/task/document_starter/<aktivität>/<aufgabe>`, `DocumentDates`): `heute`

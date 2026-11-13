@@ -614,7 +614,9 @@ test('the accounts of the trip are handed in as a table and a PDF', async ({ pag
 // »Eine Folie, ein Gedanke«: a presentation, its slides read and drawn; the
 // card offers the .odp to LibreOffice and the .pptx to PowerPoint, and
 // checks both
-test('a presentation is checked for titles, words, sizes and notes', async ({ page, e2eEmail }, testInfo) => {
+// Presentations are shelved (docs/plan-praesentationen.md): /good-slides is in
+// no catalog and answers 404. Back with `.good-slides` in sections.yaml.
+test.skip('a presentation is checked for titles, words, sizes and notes', async ({ page, e2eEmail }, testInfo) => {
   await page.setViewportSize({ width: 960, height: 1040 });
   await loginAsE2eUser(page, e2eEmail, testInfo);
   const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
