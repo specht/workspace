@@ -219,6 +219,9 @@ docker_compose[:services][:neo4j] = {
         # and started anew every 16 MB, so that old logs can go.
         'NEO4J_db_tx__log_preallocate' => 'false',
         'NEO4J_db_tx__log_rotation_size' => '16MiB',
+        # One database per person: Neo4j allows 100 by default (its own two
+        # included), and the 99th person was the last to get one.
+        'NEO4J_dbms_max__databases' => '1000',
     },
 }
 

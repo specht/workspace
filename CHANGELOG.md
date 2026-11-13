@@ -21,6 +21,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- Neo4j der Lernenden: höchstens 1000 Datenbanken statt 100 (`dbms.max_databases`); bei mehr als 98 Personen bekamen die nächsten keine Datenbank mehr (»The limit of databases is reached«). Nach dem Update `./config.rb up -d neo4j`.
 - Office: Der Dienst `office` liest jetzt auch tiefgestellte Zeichen (CO₂), für die neue Regel `scripts`, und sagt, welche Absatzvorlagen ein Dokument selbst angelegt hat, für die neue Regel `own_style`. Nach dem Update `./config.rb restart office`.
 - Nextcloud der Schule: Auf der Klassenseite (»Einstellungen«) kann eine Lehrkraft die Adresse der Nextcloud ihrer Schule eintragen; der Workspace fragt dort `status.php` ab und speichert die Adresse nur, wenn eine Nextcloud antwortet (`GroupSetting.nextcloud`). Die Karten im Abschnitt Office nehmen dann statt einer Datei auch einen Link zum Teilen (`…/s/<Token>`); jede Prüfung holt das Dokument vom Ruby-Dienst aus über `…/s/<Token>/download`, nur von dieser Adresse, nur über https und Port 443, nie von einer privaten Adresse, höchstens 10 MB. Der Ruby-Dienst braucht dafür Verbindungen nach außen. Gespeichert wird der Link mit der zuletzt geprüften Fassung (im selben Archiv, geht mit »Ergebnis löschen« und dem Konto; `privacy.rb`). Nach dem Update `./config.rb restart ruby`.
 
