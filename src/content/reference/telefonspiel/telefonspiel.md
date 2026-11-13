@@ -72,7 +72,7 @@ prüfen auch die Aufgaben dein Spiel.
 ## Alle Befehle
 
 <!-- part: befehle -->
-<!-- short: `say`, `play`, `keys`, `clear_keys`, `music`, `sleep`, `hangup`, `transfer`, `call`, `back`, `pick_up`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
+<!-- short: `say`, `play`, `keys`, `clear_keys`, `music`, `sleep`, `hangup`, `transfer`, `call`, `back`, `title` und `subtitle`, in Ruby, Python und JavaScript nebeneinander. -->
 ### Auf einen Blick
 
 <div class='scroll-x'><table class='table table-sm reference-table reference-table-wide'>
@@ -96,7 +96,6 @@ prüfen auch die Aufgaben dein Spiel.
 <tr><th>… mit Ziffern dahinter</th><td><code>transfer 'DICE', '6'</code></td><td><code>transfer('DICE', '6')</code></td><td><code>transfer('DICE', '6');</code></td></tr>
 <tr><th>Ein Spiel anrufen und auf seine Antwort warten</th><td><code>wurf = call('DICE', '6')</code></td><td><code>wurf = call('DICE', '6')</code></td><td><code>const wurf = call('DICE', '6');</code></td></tr>
 <tr><th>Dem Spiel antworten, das angerufen hat</th><td><code>back '4'</code></td><td><code>back('4')</code></td><td><code>back('4');</code></td></tr>
-<tr><th>Erst nach acht Sekunden Klingeln abnehmen</th><td><code>pick_up 8</code></td><td><code>pick_up(8)</code></td><td><code>pickUp(8);</code></td></tr>
 <tr><th>Der Name des Spiels</th><td><code>title 'Die Höhle'</code></td><td><code>title('Die Höhle')</code></td><td><code>title('Die Höhle');</code></td></tr>
 <tr><th>Ein Satz fürs Telefonbuch</th><td><code>subtitle '…'</code></td><td><code>subtitle('…')</code></td><td><code>subtitle('…');</code></td></tr>
 </tbody>
@@ -150,7 +149,7 @@ zurück, `''`.
 Eine Taste ist auf der Leitung nur ein kurzer Ton, und die Leitung selbst
 merkt sich nichts. Was sich Tasten merkt, ist das Gerät am anderen Ende, das
 sie hört. Ein einfacher Baustein, der Tastentöne erkennt, hält genau eine
-Ziffer fest; die nächste überschreibt sie ([Datenblatt des MT8870](https://www.da.isy.liu.se/vanheden/pdf/mt8870.pdf)).
+Ziffer fest; die nächste überschreibt sie ([Datenblatt des MT8870](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/7180/MT8870.pdf)).
 Telefonanlagen mit Ansagen sammeln dagegen, was jemand schon während der Ansage
 drückt, und geben es weiter, sobald gefragt wird. Wie viel sie sammeln, legt
 jede Anlage selbst fest. Die Norm für Sprachmenüs, VoiceXML, schreibt keine
@@ -294,10 +293,6 @@ back rand(1..seiten).to_s
   Telefon selbst. Die Ziffern nach seiner Nummer kann das Spiel schon vorher
   mit `keys` lesen. Legt ein gerufenes Spiel auf, bevor es etwas gesagt hat,
   hört man das Besetztzeichen, und `call` gibt einen leeren Text zurück.
-- Wie lange es klingelt, kann ein Spiel selbst bestimmen: `pick_up 8` nimmt
-  erst nach acht Sekunden Klingeln ab (in JavaScript `pickUp(8)`). `pick_up`
-  muss vor dem ersten `say` stehen; danach ist schon abgenommen, und es
-  passiert nichts.
 - `back` beendet das Spiel. Hat ein Mensch es gewählt, ist der Anruf damit zu
   Ende.
 - Endet das gerufene Spiel ohne `back`, legt es auf oder bricht es mit einem

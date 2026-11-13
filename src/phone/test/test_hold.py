@@ -155,7 +155,6 @@ class Hold(unittest.TestCase):
             '555': write(self.folder, 'quiet.py', "say('Ich sage nichts zurück.')\n"),
             '444': write(self.folder, 'busy.py', "hangup()\n"),
             '446': write(self.folder, 'silent.py', "x = 1\n"),
-            '447': write(self.folder, 'late.py', "pick_up(8)\nsay('Endlich.')\npick_up(3)\nback('7')\n"),
             # FACT, busy the first time each number is called inside
             '3229': write(self.folder, 'flaky.py', """
                 import os
@@ -276,17 +275,6 @@ class Hold(unittest.TestCase):
         self.assertEqual(2, heard.count(('signal', 'busy')))
         self.assertNotIn(('signal', 'ring'), heard)
         self.assertIn(('say', '[] []'), heard)
-
-    def test_pick_up_late_and_only_once(self):
-        _, _, heard, _ = self.call("say(call('447'))\n")
-        self.assertEqual(1, heard.count(('signal', 'ring')))           # its own pick_up, not the line's ringing too
-        self.assertLess(heard.index(('signal', 'ring')), heard.index(('say', 'Endlich.')))
-        self.assertIn(('say', '7'), heard)
-        # dialled by a person: the same ringing first
-        heard = []
-        phone = TestPhone(self.games, self.folder, heard)
-        asyncio.run(run(phone, 'late.py', self.folder))
-        self.assertEqual([('signal', 'ring'), ('say', 'Endlich.')], heard[:2])
 
     def test_fact_tries_again_when_busy(self):
         _, _, heard, _ = self.call("say(call('3229', '4#'))\n")

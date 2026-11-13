@@ -385,9 +385,6 @@ class Phone:
         # dialled, forwarded, called): the seconds it rings once the game
         # makes its first sound, None when it has answered
         self.unanswered = None
-        # the game has made a sound (said, played, …): after that, picking
-        # up (pick_up) is past
-        self.sounded = False
 
     def log(self, *parts):
         pass
@@ -474,26 +471,10 @@ class Phone:
         # reading the digits dialled after its number, which arrive before
         # anyone answers, not hanging up: hanging up unanswered leaves the
         # line busy): until then the caller hears it ring, then the receiver
-        quiet = {'title', 'subtitle', 'clear_keys', 'hangup', 'game', 'keys', 'pick_up'}
+        quiet = {'title', 'subtitle', 'clear_keys', 'hangup', 'game', 'keys'}
         if self.unanswered is not None and not (quiet & set(command)):
             seconds, self.unanswered = self.unanswered, None
             await self.line_signal('ring', seconds)
-        if not (quiet & set(command)):
-            self.sounded = True
-        if 'pick_up' in command:
-            # pick up after so many seconds of ringing: called by a game, its
-            # line rings that long; dialled by a person, the call is through
-            # already, and the caller hears the same ringing; after the
-            # first sound it is too late, and nothing happens
-            try:
-                seconds = max(0.0, min(30.0, float(command['pick_up'])))
-            except (TypeError, ValueError):
-                return {'error': f'pick_up: Eine Zahl von Sekunden, nicht »{command["pick_up"]}«.'}
-            if self.unanswered is not None or not self.sounded:
-                self.unanswered = None
-                self.sounded = True
-                await self.line_signal('ring', seconds)
-            return {'ok': True}
         if 'title' in command or 'subtitle' in command:
             self.titled(str(command.get('title', '')), str(command.get('subtitle', '')))
             return {'ok': True}

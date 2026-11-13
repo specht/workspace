@@ -258,9 +258,7 @@ class Call(game.Phone):
             # what was dialled after the number: the first keys the game gets
             self.first_keys(str(command.get('extension', ''))[:game.MAX_DIALED])
             # every game rings until it answers, as on a real line, however
-            # it was reached (dialled, forwarded, called); what the menu said
-            # before was not this game's (pick_up still works)
-            self.sounded = False
+            # it was reached (dialled, forwarded, called)
             self.unanswered = game.ring_seconds()
             number = game.published_number(GAMES, folder)
             if number:

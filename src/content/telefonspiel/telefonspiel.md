@@ -1874,31 +1874,6 @@ macht das Telefon selbst; dein Spiel muss dafür nichts tun. Legt ein
 gerufenes Spiel auf, bevor es etwas gesagt hat, ist **besetzt**, und `call`
 gibt einen leeren Text zurück.
 
-Wie lange es klingelt, kann ein Spiel auch selbst bestimmen. `pick_up` muss
-vor dem ersten Satz stehen:
-
-<!-- language: ruby -->
-<!-- page-code: own -->
-```ruby
-pick_up 12
-say 'Ja, hallo? Entschuldigung, ich war gerade im Keller.'
-```
-<!-- /language -->
-<!-- language: python -->
-<!-- page-code: own -->
-```python
-pick_up(12)
-say('Ja, hallo? Entschuldigung, ich war gerade im Keller.')
-```
-<!-- /language -->
-<!-- language: javascript -->
-<!-- page-code: own -->
-```javascript
-pickUp(12);
-say('Ja, hallo? Entschuldigung, ich war gerade im Keller.');
-```
-<!-- /language -->
-
 ### Ein Spiel ruft sich selbst
 
 Ein Spiel darf auch sich selbst anrufen. Die Fakultät von 5 ist 5 · 4 · 3 · 2
