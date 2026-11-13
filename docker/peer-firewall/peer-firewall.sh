@@ -21,8 +21,11 @@ NFT_TABLE="hackschule_workspace"
 # thousands of extensions and passwords a day; none is ever accepted, but
 # they need not reach Asterisk at all. The addresses are those of the
 # trunk's host name (PHONE_SIP_SERVER in credentials.rb), resolved again
-# every SIP_RESOLVE_INTERVAL seconds; if it cannot be resolved, the last rule
-# stays. Unset (no trunk): no rule.
+# every SIP_RESOLVE_INTERVAL seconds. The name has several addresses and DNS
+# gives one at a time, so the set only grows (read back from the table at
+# start); and only what someone else starts is dropped: Asterisk's own
+# registration and what the provider sends back over it pass, whichever
+# address it uses. Unset (no trunk): no rule.
 SIP_TRUNK_HOST="${SIP_TRUNK_HOST:-}"
 SIP_PORT="${SIP_PORT:-5060}"
 SIP_RESOLVE_INTERVAL="${SIP_RESOLVE_INTERVAL:-300}"
@@ -230,13 +233,25 @@ external_interface() {
     awk '$2 == "00000000" { print $1; exit }' /proc/net/route
 }
 
-# The trunk's addresses, IPv4 and IPv6, comma-separated (no v4-mapped ones)
+# The trunk's addresses, IPv4 and IPv6, comma-separated (no v4-mapped
+# ones): what the name resolves to now, a few times (DNS answers with one
+# address at a time), and what the table allows already
+sip_known() {
+    nft list set inet "$SIP_TABLE" "$1" 2>/dev/null | sed -n 's/.*elements = { *\(.*\) *}.*/\1/p' | tr ',' '\n' | tr -d ' '
+}
+
 sip_trunk_v4() {
-    getent ahostsv4 "$SIP_TRUNK_HOST" 2>/dev/null | awk '{ print $1 }' | sort -u | paste -sd, -
+    {
+        for _ in 1 2 3 4; do getent ahostsv4 "$SIP_TRUNK_HOST" 2>/dev/null | awk '{ print $1 }'; done
+        sip_known trunk4
+    } | grep -E '^[0-9.]+$' | sort -u | paste -sd, -
 }
 
 sip_trunk_v6() {
-    getent ahostsv6 "$SIP_TRUNK_HOST" 2>/dev/null | awk '$1 ~ /:/ && $1 !~ /^::ffff:/ { print $1 }' | sort -u | paste -sd, -
+    {
+        for _ in 1 2 3 4; do getent ahostsv6 "$SIP_TRUNK_HOST" 2>/dev/null | awk '$1 ~ /:/ && $1 !~ /^::ffff:/ { print $1 }'; done
+        sip_known trunk6
+    } | grep ':' | sort -u | paste -sd, -
 }
 
 render_sip_ruleset() {
@@ -250,8 +265,8 @@ render_sip_ruleset() {
     [ -n "$2" ] && printf '        elements = { %s }\n' "$2"
     printf '    }\n'
     printf '    chain forward {\n        type filter hook forward priority -5; policy accept;\n'
-    printf '        iifname "%s" meta nfproto ipv4 meta l4proto udp ct original proto-dst %s ip saddr != @trunk4 counter drop\n' "$3" "$SIP_PORT"
-    printf '        iifname "%s" meta nfproto ipv6 meta l4proto udp ct original proto-dst %s ip6 saddr != @trunk6 counter drop\n' "$3" "$SIP_PORT"
+    printf '        iifname "%s" meta nfproto ipv4 meta l4proto udp ct direction original ct original proto-dst %s ip saddr != @trunk4 counter drop\n' "$3" "$SIP_PORT"
+    printf '        iifname "%s" meta nfproto ipv6 meta l4proto udp ct direction original ct original proto-dst %s ip6 saddr != @trunk6 counter drop\n' "$3" "$SIP_PORT"
     printf '    }\n}\n'
 }
 

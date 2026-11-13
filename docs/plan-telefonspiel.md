@@ -421,8 +421,13 @@ loop.
   REGISTER guesses a day from two addresses; none accepted, Asterisk has
   only the trunk's endpoint): `peer_firewall` keeps a table `inet
   hackschule_sip` that drops UDP to 5060 from anyone but the addresses of
-  `PHONE_SIP_SERVER`, resolved every five minutes, the last rule kept if
-  that fails (`docker/peer-firewall/peer-firewall.sh`, »SIP guard«). The
+  `PHONE_SIP_SERVER`, resolved every five minutes
+  (`docker/peer-firewall/peer-firewall.sh`, »SIP guard«). The name has
+  several addresses and DNS gives one at a time: the first version, with
+  the set replaced, dropped the answers to Asterisk's registration for
+  three minutes. So the set only grows (read back from the table at start),
+  and only what someone else starts is dropped (`ct direction original`):
+  the registration and what the provider sends back over it pass. The
   ports for the audio (10000–10099) stay open: the provider may send it
   from other addresses;
 - tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets)
