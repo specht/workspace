@@ -288,7 +288,7 @@ if (LINE) {
 }
 // a number handed over in the address (?dial=123: a game in the Workspace
 // forwarded its call there): dialled already, the call button calls it
-const DIAL = LINE ? (new URLSearchParams(location.search).get('dial') || '').replace(/\D/g, '').slice(0, 4) : '';
+const DIAL = LINE ? (new URLSearchParams(location.search).get('dial') || '').replace(/\D/g, '').slice(0, 20) : '';
 if (DIAL) {
     dialed = DIAL;
     $('digits').textContent = dialed;
@@ -675,8 +675,9 @@ function press(key) {
     button.classList.add('down');
     setTimeout(() => button.classList.remove('down'), 120);
     if (!inCall) {
-        // the line: up to four digits, then the call button dials them
-        if (!LINE || $('call').disabled || dialed.length >= 4 || !/\d/.test(key)) return;
+        // the line: a number and what is dialled after it (the extension,
+        // up to 20 digits as on the line), then the call button dials them
+        if (!LINE || $('call').disabled || dialed.length >= 20 || !/\d/.test(key)) return;
         audio();
         tone(key);
         if (!dialed) { $('title').textContent = ''; $('status').textContent = 'Bereit'; }

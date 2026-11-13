@@ -13,7 +13,7 @@
 (function () {
     const number = new URLSearchParams(location.search).get('nummer') || '';
     const phone = document.querySelector('iframe.phone-book-line');
-    if (phone && /^\d{3,4}$/.test(number)) {
+    if (phone && /^\d{3,20}$/.test(number)) {          // a game's number and an extension after it
         phone.src = '/telefonbuch/telefon/?line&dial=' + number;
         phone.scrollIntoView({ block: 'center' });
     }
