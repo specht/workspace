@@ -131,6 +131,50 @@ These hold for word processing and for the series still to come
 - **Nothing limited per IP address:** a class at school shares one (the
   Telefonbuch's line had one call per address; it would have thwarted lessons).
 
+## Practice and differentiation (the maintainer, 13 November 2026)
+
+Compared with the drill sheets used before (Easy4Me, ICDL: 12 to 30
+separate orders with menu paths, made-up text, nothing checked), the series
+teaches better but practises too little, and its handles before everything
+(selecting, cut and paste, Format übertragen, superscript, the spell
+check) are assumed. The decisions:
+
+- **Three layers on every sheet.** The core for everyone stays short enough
+  for the slower half to finish in the lesson. »Noch eine Runde«: a second,
+  shorter document with the same rules and another text (more practice, no
+  new reading). Extras for the quick: harder and different, not more of the
+  same: a document full of traps, building from nothing, the handles the
+  drill sheets had (on the sheet each belongs to).
+- **All of it as extras** (`extra: true`, `<!-- extra -->` chapters at the
+  end of the page): they never count against anyone. The core card offers
+  the right one when it passes (`next:` in tasks.yaml): after three checks
+  or more another round, after one or two the traps.
+- **The traps are not shown** (the maintainer: like the other document
+  cards would, the marks would give them away): `traps: true` counts what is
+  found, names each trap once it is fixed, and has tips for each hidden one,
+  from where to look to what is there, a minute apart. The trap document
+  grows along the series: from each earlier sheet one trap more.
+- **A secret message on sheet 1**: a and e, i and o swapped, decoded with
+  Suchen und Ersetzen; a prediction first (a by e, then e by a leaves only
+  a), then the swap through a placeholder, which comes back in programming
+  as swapping two variables.
+- **Order**: sheets 1 and 2 complete before the first lesson with the 7b
+  (who did the old sheets up to 2b), then one sheet ahead of the class.
+- **Teachers see who is stuck from the checks**, never from the tips: tips
+  stay private (docs/didaktik.md). On »Fortschritt« (docs/teacher-access.md,
+  »Wer still ist«): who may need help (three checks or more on one card,
+  still not solved), where many are stuck at once, who has passed every
+  core card and how many extras are left. Counting tips per card
+  anonymously was offered and left out for now.
+
+Sheet 1 has them (Noch eine Runde: the notice for the day of departure;
+Sechs Fallen: the letter to the youth hostel; Eine Geheimbotschaft), and
+sheet 2 (Noch eine Runde: a games evening's poster; Zwei Handgriffe: the
+record of measurements, Format übertragen and km², CO₂; Sieben Fallen: the
+thank-you letter, one sentence in Arial). Each in one extra chapter »Üben und
+knobeln« at the end of the page. The class view has its lines. Next:
+sheets 3 to 10 as the class reaches them.
+
 ## Findings of the word processing series
 
 - **The loop:** the starting file as a plain download (in the browser's

@@ -11,3 +11,21 @@ examples:
     fail:
       - document: ../../static/character-formatting/02 Aushang.docx
         say: Schriftarten
+  runde:
+    pass:
+      - document: stufen/spieleabend.docx
+    fail:
+      - document: ../../static/character-formatting/02 Spieleabend.docx
+        say: Schriftarten
+  handgriffe:
+    pass:
+      - document: stufen/messprotokoll.docx
+    fail:
+      - document: ../../static/character-formatting/02 Messprotokoll.docx
+        say: Format übertragen
+  fallen:
+    pass:
+      - document: stufen/dankesbrief.docx
+    fail:
+      - document: ../../static/character-formatting/02 Dankesbrief.docx
+        say: 0 von 7 Fallen gefunden

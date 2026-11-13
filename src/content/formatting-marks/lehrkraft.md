@@ -54,6 +54,27 @@ Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zen
 - Die Zahl der Absätze (16) und das Zeichen am Zeilenende zeigen, ob die Formatierungszeichen an sind und gelesen werden.
 - Die letzte Aufgabe (zwei gleiche Ausdrucke) ist die Idee der Stunde in einem Satz.
 
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Einladung besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Sechs Fallen«.
+
+- **Noch eine Runde:** ein kürzerer Aushang mit denselben Fehlern und
+  denselben Punkten. Wiederholung für alle, denen die Einladung schwerfiel.
+- **Sechs Fallen:** ein Brief, der auch auf dem Bildschirm fertig aussieht.
+  Die Prüfung zählt nur, wie viele Fallen gefunden sind, und zeigt jede erst,
+  wenn sie behoben ist; zu jeder Falle gibt es drei Tipps, vom Ort bis zur
+  Lösung. Die sechs Fallen: Überschrift und Datum mit Leerzeichen gesetzt,
+  zwei Leerzeichen nach »Lehrkräfte.«, ein Einzug aus Leerzeichen, ein leerer
+  Absatz (mit 9 pt, so hoch wie 12 pt Abstand) und ein ↵ genau dort, wo die
+  Zeile sowieso endet.
+- **Eine Geheimbotschaft:** a und e, i und o sind vertauscht. Die Vermutung
+  zeigt, warum zweimal Ersetzen nicht reicht; entschlüsselt wird mit einem
+  Zwischenlager (§), sechsmal *Alle ersetzen*. Das Losungswort ist
+  »Kranichfeder«; der Tausch mit Zwischenlager kommt beim Programmieren als
+  Tausch zweier Variablen wieder.
+
 #### Eigene Projekte
 
 - **Ein Aushang für die Klasse** (eine Stunde): ein eigener Aushang, Überschrift zentriert, Abstand statt leerer Absätze, mit Formatierungszeichen kontrolliert. Bewertet: ob er mit größerer Schrift noch stimmt.

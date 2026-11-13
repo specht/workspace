@@ -129,3 +129,77 @@ So kann der Aushang aussehen:
 <strong>Ausprobieren:</strong> Zeig deinen Aushang jemandem zwei Sekunden lang und dreh ihn dann um. Frag, wann und wo der Kuchenverkauf ist. Probier dasselbe mit der Vorlage.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins mit zwei neuen
+Handgriffen und eins zum Suchen.
+
+### Noch eine Runde
+
+Für den Spieleabend der 7b hat jemand ein Plakat gemacht, mit genauso viel
+Begeisterung wie den Aushang. Setz es mit Absicht, diesmal ohne oben
+nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Im Messprotokoll vom Kranichsee steht für jeden Tag eine Überschrift, aber nur
+»Montag« ist schon gesetzt: Georgia, 14 pt, fett, blau. Das ließe sich für
+jeden Tag einzeln einstellen, viermal vier Handgriffe. Schneller geht es mit
+**Format übertragen**, dem Pinsel: Er nimmt das Aussehen der Stelle, an der der
+Cursor steht, und malt es auf das, was du danach anklickst oder markierst.
+
+<!-- language: word -->
+In Word ist der Pinsel im Register *Start* ganz links, neben *Einfügen*. Ein
+Klick überträgt einmal; ein Doppelklick lässt ihn an, bis du
+<kbd>Esc</kbd> drückst.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice ist der Pinsel in der Leiste oben und heißt *Formatierung
+übertragen*. Ein Klick überträgt einmal; ein Doppelklick lässt ihn an, bis du
+<kbd>Esc</kbd> drückst.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office ist der Pinsel im Register *Start* und heißt
+*Formatierung übertragen*. Er überträgt einmal; für den nächsten Tag klickst du
+zuerst wieder in »Montag« und auf den Pinsel.
+<!-- /language -->
+
+Der zweite Handgriff: Im Protokoll stehen Flächen in km² und m² und die Gase
+O₂ (Sauerstoff) und CO₂ (Kohlendioxid). Bei einer Fläche steht die 2 oben, bei
+einem Gas unten, kleiner als die Buchstaben. Das ist kein anderes Zeichen,
+sondern eine Formatierung: **hochgestellt** und **tiefgestellt**. Markier nur
+die Zahl, nicht die Buchstaben davor.
+
+<!-- language: word -->
+In Word stellt <kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd> hoch und
+<kbd>Strg</kbd>+<kbd>#</kbd> tief, oder die Knöpfe x² und x₂ im Register
+*Start*.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice stellt <kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> hoch und
+<kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> tief; beides steht auch unter
+*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office steht beides unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text*:
+*Hochgestellt* und *Tiefgestellt*.
+<!-- /language -->
+
+Die hohe 2 kannst du auch gleich tippen: <kbd>AltGr</kbd>+<kbd>2</kbd> schreibt
+², <kbd>AltGr</kbd>+<kbd>3</kbd> schreibt ³. Für die tiefe 2 gibt es keine Taste.
+
+_task(handgriffe)
+
+### Sieben Fallen
+
+Nach dem Kuchenverkauf schreibt die 7b den Eltern einen Dankesbrief. Er sieht
+fertig aus. Sechs Fallen sind von der Art wie auf dem ersten Blatt, eine ist
+von diesem: Sie fällt nur auf, wer genau hinsieht, welche Schrift jeder Absatz
+hat. Wie bei den sechs Fallen zählt die Prüfung nur, und jede Falle hat ihre
+eigenen Tipps.
+
+_task(fallen)

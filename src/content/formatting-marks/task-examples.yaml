@@ -11,3 +11,22 @@ examples:
     fail:
       - document: ../../static/formatting-marks/01 Einladung.docx
         say: Leerzeichen
+  runde:
+    pass:
+      - document: stufen/abfahrt.docx
+    fail:
+      - document: ../../static/formatting-marks/01 Abfahrt.docx
+        say: von 7 Punkten
+  fallen:
+    pass:
+      - document: stufen/brief.docx
+    fail:
+      - document: ../../static/formatting-marks/01 Brief an die Jugendherberge.docx
+        say: 0 von 6 Fallen gefunden
+  botschaft:
+    pass:
+      - document: stufen/botschaft.docx
+    fail:
+      - document: ../../static/formatting-marks/01 Geheimbotschaft.docx
+        say: noch verschlüsselt
+

@@ -206,3 +206,62 @@ _task(ausdruck)
 <p><strong>Woher LibreOffice kommt.</strong> 1985 gründete Marco Börries mit 16 Jahren, noch als Schüler, in Lüneburg die Firma Star Division. Ihr Textprogramm StarWriter lief bald auch auf den Heimcomputern von Schneider; daraus wurde das Paket StarOffice. 1999 kaufte die Firma Sun StarOffice und gab seinen Quelltext frei, als OpenOffice.org. 2010 machten Entwicklerinnen und Entwickler daraus LibreOffice, mit der Stiftung The Document Foundation, die seit 2012 ihren Sitz in Berlin hat. LibreOffice ist freie Software: Jede und jeder darf es benutzen, weitergeben und verändern, kostenlos.</p>
 </div>
 
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Dokumente für alle, die mehr wollen: eins zum Üben, eins zum Suchen und
+eins zum Entschlüsseln.
+
+### Noch eine Runde
+
+Was du einmal gemacht hast, geht beim zweiten Mal schneller. Am Tag der
+Abfahrt hängt ein Aushang an der Tür der 7b, genauso in Eile getippt wie die
+Einladung: Überschrift und Unterschrift mit Leerzeichen an ihrem Platz, leere
+Absätze als Abstand, ein Zeilenumbruch von Hand. Lade ihn herunter und bau
+ihn sauber, diesmal ohne nachzusehen, wie es oben stand.
+
+_task(runde)
+
+### Sechs Fallen
+
+Die 7b hat der Jugendherberge einen Brief geschrieben. Ausgedruckt sieht er
+fertig aus, und auf dem Bildschirm auch, solange die Formatierungszeichen aus
+sind. Trotzdem sind sechs Stellen so gebaut wie in der Einladung.
+
+Diesmal sagt dir die Prüfung nicht, wo sie stecken. Sie zählt nur, wie viele
+Fallen du schon gefunden hast, und zeigt jede, sobald du sie gefunden hast.
+Kommst du bei einer nicht weiter, hat sie Tipps, einen nach dem anderen:
+erst, wo du suchen sollst, zuletzt, was dort steht.
+
+_task(fallen)
+
+### Eine Geheimbotschaft
+
+Für die Nachtwanderung am Kranichsee gibt es eine Geheimbotschaft. Wer sie
+verschlüsselt hat, hat zwei Paare von Buchstaben die Plätze tauschen lassen:
+Jedes a ist ein e geworden und jedes e ein a, und genauso i und o. Aus
+»Steg« wurde so »Stag«.
+
+Mit der Hand wäre das viel Arbeit. **Suchen und Ersetzen**
+(<kbd>Strg</kbd>+<kbd>H</kbd>) ersetzt ein Zeichen überall auf einmal: Oben
+steht, was gesucht wird, darunter, was stattdessen hinkommt, und *Alle
+ersetzen* macht es im ganzen Dokument. Aber Vorsicht beim Tauschen:
+
+_task(tauschen)
+
+<!-- after: tauschen -->
+Wer zwei Buchstaben tauschen will, braucht deshalb ein **Zwischenlager**: ein
+Zeichen, das sonst nirgends im Text vorkommt, zum Beispiel §. Erst werden alle
+a zu §, dann alle e zu a, zuletzt alle § zu e. So geht kein Buchstabe verloren.
+
+<div class='hint'>
+<strong>Tipp:</strong> In der Botschaft beginnt kein Wort mit einem großen A, E, I oder O. Ob <em>Groß-/Kleinschreibung beachten</em> an ist, macht hier also keinen Unterschied.
+</div>
+
+Beim Programmieren begegnet dir dasselbe wieder: Wer die Werte von zwei
+Variablen tauschen will, braucht eine dritte, die einen davon so lange
+aufhebt.
+<!-- /after -->
+
+_task(botschaft)

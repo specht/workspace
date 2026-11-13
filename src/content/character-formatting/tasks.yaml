@@ -71,6 +71,10 @@ tasks:
 
   - id: aushang
     title: Der Aushang, mit Absicht gesetzt
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deinen Aushang. Die Prüfung markiert auf deiner Seite jede Stelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Word, bevor du
@@ -108,3 +112,131 @@ tasks:
         - "Markier den ganzen Aushang (<kbd>Strg</kbd>+<kbd>A</kbd>) und lösch die Formatierung mit <kbd>Strg</kbd>+<kbd>M</kbd>. Dann ist der Text wieder einheitlich."
         - "Die Schriftart wählst du im Register *Start* im Feld ganz links, die Größe daneben: eine Schrift für die Überschrift und die Zeile darunter, eine für den Rest, in 12 pt."
         - "Zuletzt markierst du nur das Datum, die Zeit und den Ort und machst sie fett, mit dem Knopf im Register *Start*."
+
+  # ---- Extras: another round, two handles, seven traps
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Das Plakat für den Spieleabend ist mit genauso viel Begeisterung
+      gemacht wie der Aushang. Setz es mit Absicht: höchstens zwei Schriften,
+      der Text in einer Größe, fett nur, wann und wo, nichts unterstrichen,
+      keine Großbuchstaben als Format.
+    check:
+      type: document
+      file: character-formatting/02 Spieleabend.docx
+      rules:
+        - text
+        - { fonts: 2 }
+        - { size: [11, 12], paragraphs: ['Am Freitag', 'Wo:', 'Bringt euer', 'Wer mitspielen'] }
+        - { sparing: ['Am Freitag', 'Wo:', 'Bringt euer', 'Wer mitspielen'] }
+        - { bold: ['Freitag nach den Ferien', 'ab 17 Uhr', 'in der Aula'] }
+        - no_underline
+        - no_caps
+    hint:
+      - Fang wie beim Aushang mit Formatierung löschen an, für das ganze Plakat.
+      - Dann eine Schrift für die Überschrift und die Zeile darunter, eine für den übrigen Text in 12 pt.
+      - Fett werden nur »Freitag nach den Ferien«, »ab 17 Uhr« und »in der Aula«.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Im Messprotokoll der 7b ist nur »Montag« schon als Überschrift
+      gesetzt. Gib den anderen Tagen mit *Format übertragen* genau dasselbe
+      Aussehen. Stell danach die Zahlen in km², m², O₂ und CO₂ hoch oder tief.
+    check:
+      type: document
+      file: character-formatting/02 Messprotokoll.docx
+      rules:
+        - { same_as: 'Montag', paragraphs: ['Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'], label: 'Alle Tage wie »Montag« gesetzt' }
+        - { scripts: { up: ['km2', 'm2'], down: ['CO2', 'O2'] } }
+    hint:
+      - "Klick in »Montag«, dann auf den Pinsel *Format übertragen*, dann auf »Dienstag«. Mit einem Doppelklick auf den Pinsel bleibt er an, bis du <kbd>Esc</kbd> drückst."
+      - Bei km² und m² geht die Zahl nach oben, bei O₂ und CO₂ nach unten. Markier jeweils nur die 2, nicht die Buchstaben.
+      - "Die ² kannst du auch tippen: <kbd>AltGr</kbd>+<kbd>2</kbd>. Für die tiefe 2 gibt es keine Taste; sie wird formatiert."
+    word:
+      hint:
+        - "Klick in »Montag«, dann im Register *Start* ganz links auf den Pinsel *Format übertragen*, dann auf »Dienstag«. Ein Doppelklick auf den Pinsel lässt ihn an, bis du <kbd>Esc</kbd> drückst."
+        - "Markier nur die 2. Hochstellen: <kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd> oder der Knopf x² im Register *Start*; tiefstellen: <kbd>Strg</kbd>+<kbd>#</kbd> oder der Knopf x₂."
+        - "Die ² kannst du auch tippen: <kbd>AltGr</kbd>+<kbd>2</kbd>. Für die tiefe 2 gibt es keine Taste; sie wird formatiert."
+    libreoffice:
+      hint:
+        - "Klick in »Montag«, dann auf den Pinsel *Formatierung übertragen* in der Leiste oben, dann auf »Dienstag«. Ein Doppelklick auf den Pinsel lässt ihn an, bis du <kbd>Esc</kbd> drückst."
+        - "Markier nur die 2. Hochstellen: <kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>; tiefstellen: <kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>. Beides steht auch unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text*."
+        - "Die ² kannst du auch tippen: <kbd>AltGr</kbd>+<kbd>2</kbd>. Für die tiefe 2 gibt es keine Taste; sie wird formatiert."
+    nextcloud:
+      hint:
+        - "Klick in »Montag«, dann im Register *Start* auf den Pinsel *Formatierung übertragen*, dann auf »Dienstag«. Für jeden weiteren Tag klickst du zuerst wieder in »Montag« und auf den Pinsel."
+        - "Markier nur die 2. Hoch- und tiefstellen: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Hochgestellt* oder *Tiefgestellt*."
+        - "Die ² kannst du auch tippen: <kbd>AltGr</kbd>+<kbd>2</kbd>. Für die tiefe 2 gibt es keine Taste; sie wird formatiert."
+
+  - id: fallen
+    title: Sieben Fallen
+    extra: true
+    prompt: |
+      Der Dankesbrief nach dem Kuchenverkauf sieht fertig aus. Sieben Stellen
+      sind trotzdem falsch gebaut: sechs von der Art wie auf dem ersten Blatt,
+      eine von diesem. Die Prüfung sagt dir nur, wie viele du gefunden hast;
+      zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: character-formatting/02 Dankesbrief.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Danke fürs Backen'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Was steht vor der Überschrift? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '24. März'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['unser Kuchenverkauf']
+          label: Nach »verkauft.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »verkauft.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Das Geld kommt']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den Anfang des Absatzes über das Geld an.
+            - Vor »Das Geld« stehen Leerzeichen. Lösch sie.
+        - gaps: 6pt
+          before: ['Ein besonderer Dank']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand nach dem Absatz über das Geld an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn und gib dem Absatz davor 12 pt Abstand nach, wie den anderen.
+        - line_breaks: true
+          in: ['Ein besonderer Dank']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über die Kuchen an.
+            - Hinter »Erstes« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+        - fonts: 1
+          label: Ein Satz stand in Arial, alle anderen in Calibri.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sieh dir die Schriften an, Absatz für Absatz.
+            - Stell den Cursor nacheinander in jeden Absatz und lies im Feld ganz links ab, welche Schrift dort steht.
+            - Der Satz über den Mai ist in Arial. Lösch seine Formatierung, dann bekommt er die Schrift der anderen.
+    solution: |
+      Die sieben Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »verkauft.«, ein
+      Einzug aus Leerzeichen, ein leerer Absatz statt Abstand, ein ↵ am Ende
+      einer Zeile, die sowieso dort umgebrochen wäre, und der Satz über den Mai
+      in Arial statt in Calibri.

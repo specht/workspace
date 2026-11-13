@@ -171,6 +171,7 @@ with the before filter. New routes go into `include/` by topic.
 * **Digital audio** – oscillators, frequency and amplitude, envelopes, mixing, waveform/spectrum views, a tiny synthesizer or drum machine (headphones needed)
 * **WebGPU / parallel computing** – a minimal WGSL compute shader, CPU vs GPU, particles, cellular automata, image processing or fractals
 * **Git collaboration, further** – pull requests and basic CI on top of the class quiz (`class-quiz` has branches, merges, conflicts and a review)
+* **Ciphers** – an activity of its own (the maintainer, 13 November 2026): from swapping letters (the secret message on »Was das Auge nicht sieht« swaps a/e and i/o with Suchen und Ersetzen) and Caesar to frequency analysis that breaks them, Vigenère, and why modern encryption is different; the Katas already have a Caesar function
 * **Data formats** – text vs binary, CSV, JSON, encodings, hex dumps; connects JPEG and network protocols
 * **PixelRAM projects** – plasma, Game of Life, Mandelbrot, raycaster, raytracer, a software rasterizer; do not turn PixelRAM into a second raylib
 * **PostgreSQL** – next to MySQL, with the exercises of [practical-sql](https://github.com/anthonydb/practical-sql)

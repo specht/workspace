@@ -39,3 +39,22 @@ Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größ
 
 - Die Zahl der Schriften (7) lässt sich nur mit dem Cursor im Text finden, nicht mit dem Auge.
 - Die Vermutung zum Löschen der Formatierung bereitet Formatvorlagen vor: Was nicht von Hand gesetzt ist, kommt aus dem Dokument.
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer den
+Aushang besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Sieben Fallen«.
+
+- **Noch eine Runde:** das Plakat für einen Spieleabend, mit denselben
+  Fehlern und denselben sieben Punkten wie der Aushang.
+- **Zwei Handgriffe:** ein Messprotokoll vom Kranichsee. *Format übertragen*
+  (der Pinsel) gibt allen Tagen das Aussehen von »Montag«; die Prüfung
+  vergleicht Schrift, Größe, fett, kursiv und Farbe. Dann hoch- und
+  tiefgestellt: km², m², O₂, CO₂. Eine mit <kbd>AltGr</kbd>+<kbd>2</kbd>
+  getippte ² zählt auch.
+- **Sieben Fallen:** ein Dankesbrief mit den sechs Arten von Fallen des
+  ersten Blatts und einer von diesem: ein Satz in Arial 11 pt zwischen
+  Calibri 12 pt, der kaum auffällt. Die Prüfung zählt nur und zeigt jede
+  Falle erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.
+

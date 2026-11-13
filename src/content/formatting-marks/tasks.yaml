@@ -73,6 +73,10 @@ tasks:
 
   - id: einladung
     title: Die Einladung, sauber gebaut
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deine Einladung. Die Prüfung liest dein Dokument und markiert auf
       deiner Seite jede Stelle, an der noch etwas fehlt. Speichere in Word oder
@@ -136,3 +140,143 @@ tasks:
       Am Ausdruck gar nicht. Den Unterschied sieht man erst mit den
       Formatierungszeichen oder sobald sich etwas ändert, die Schrift oder ein
       Wort.
+
+  # ---- Extras: another round, six traps, a secret message
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Der Aushang für den Tag der Abfahrt ist genauso in Eile getippt wie die
+      Einladung. Bau ihn sauber: Überschrift zentriert, Unterschrift
+      rechtsbündig, Abstand statt leerer Absätze, Zeilen, die das Programm
+      selbst umbricht.
+    check:
+      type: document
+      file: formatting-marks/01 Abfahrt.docx
+      rules:
+        - text
+        - spaces
+        - empty_paragraphs
+        - line_breaks
+        - { align: center, paragraph: 'Abfahrt an den Kranichsee' }
+        - { align: right, paragraph: 'Eure Klassenleitung' }
+        - { gaps: 6pt, before: ['Wir treffen uns', 'Denkt an eure', 'Eure Klassenleitung'] }
+    hint:
+      - Es sind dieselben Fehler wie in der Einladung. Schalte zuerst die Formatierungszeichen ein und geh die Zeilen von oben nach unten durch.
+      - "Vor der Überschrift und vor der Unterschrift stehen Leerzeichen; zwischen den Absätzen stehen leere Absätze; am Ende der ersten Zeile des Treffpunkts steht ein ↵."
+      - "Doppelte Leerzeichen findet Suchen und Ersetzen: zwei Leerzeichen suchen, durch eins ersetzen, *Alle ersetzen*."
+
+  - id: fallen
+    title: Sechs Fallen
+    extra: true
+    prompt: |
+      Der Brief der 7b an die Jugendherberge sieht fertig aus. Trotzdem sind
+      sechs Stellen so gebaut wie in der Einladung. Die Prüfung sagt dir nur,
+      wie viele du schon gefunden hast, nicht wo die anderen sind; zu jeder
+      Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: formatting-marks/01 Brief an die Jugendherberge.docx
+      traps: true
+      rules:
+        - text
+        - align: center
+          paragraph: 'Ankunft am Kranichsee'
+          label: Die Überschrift stand nur mit Leerzeichen in der Mitte.
+          hints:
+            - Fang ganz oben an.
+            - Steht die Überschrift wirklich in der Mitte, oder sieht sie nur so aus? Die Formatierungszeichen zeigen es.
+            - Vor der Überschrift stehen Leerzeichen. Lösch sie und zentriere den Absatz.
+        - align: right
+          paragraph: '12. März'
+          label: Das Datum stand nur mit Leerzeichen rechts.
+          hints:
+            - Sieh dir die zweite Zeile an.
+            - Was schiebt das Datum an den rechten Rand?
+            - Vor dem Datum stehen Leerzeichen. Lösch sie und richte den Absatz rechtsbündig aus.
+        - spaces: true
+          in: ['wir sind die Klasse 7b']
+          label: Nach »Lehrkräfte.« standen zwei Leerzeichen.
+          hints:
+            - Im ersten langen Absatz versteckt sich etwas zwischen zwei Sätzen.
+            - Zähl mit den Formatierungszeichen die Punkte (·) zwischen den Sätzen.
+            - Nach »Lehrkräfte.« stehen zwei Leerzeichen. Eins ist zu viel.
+        - spaces: true
+          in: ['Können wir unser Gepäck']
+          label: Der Einzug war aus Leerzeichen gemacht.
+          hints:
+            - Ein Absatz fängt nicht ganz links an. Woraus ist der Einzug gemacht?
+            - Sieh dir den Anfang des Absatzes mit den Fragen an.
+            - Vor »Können wir« stehen Leerzeichen. Lösch sie. Ein Brief braucht keinen Einzug; wer einen will, stellt ihn im Absatz-Dialog ein (Einzug der ersten Zeile).
+        - gaps: 6pt
+          before: ['Zwei von uns essen']
+          label: Ein Abstand kam von einem leeren Absatz.
+          hints:
+            - Sind alle Abstände zwischen den Absätzen gleich gebaut?
+            - Sieh dir den Abstand nach dem Absatz mit den Fragen an.
+            - Dort steht ein leerer Absatz, ein ¶ allein in einer Zeile. Lösch ihn und gib dem Absatz davor 12 pt Abstand nach, wie den anderen.
+        - line_breaks: true
+          in: ['Zwei von uns essen']
+          label: Eine Zeile endete mit einem Umbruch von Hand.
+          hints:
+            - Eine Zeile endet anders als die anderen, obwohl man es auf dem Papier nicht sieht.
+            - Sieh dir das Ende der Zeilen im Absatz über das Essen an.
+            - Hinter »ihr« steht ein ↵. Lösch es und setz ein Leerzeichen, wo vorher keins war.
+    solution: |
+      Die sechs Fallen: die Überschrift mit Leerzeichen in der Mitte, das
+      Datum mit Leerzeichen rechts, zwei Leerzeichen nach »Lehrkräfte.«, ein
+      Einzug aus Leerzeichen, ein leerer Absatz statt Abstand und ein ↵ am
+      Ende einer Zeile, die sowieso dort umgebrochen wäre.
+
+  - id: tauschen
+    title: Erst a, dann e
+    extra: true
+    prediction: true
+    prompt: |
+      In einem Text sollen alle a und e die Plätze tauschen. Jemand ersetzt
+      zuerst alle a durch e und danach alle e durch a. Was steht dann im
+      Text?
+    check:
+      type: choice
+      options:
+        - Die a und die e haben die Plätze getauscht.
+        - Wo vorher ein a oder ein e stand, steht jetzt überall ein a.
+        - Wo vorher ein a oder ein e stand, steht jetzt überall ein e.
+        - Der Text ist wieder so wie am Anfang.
+      correct: 1
+      shuffle: false
+    feedback:
+      - when: { picked: 0 }
+        say: Geh es Schritt für Schritt durch. Was ist nach dem ersten Ersetzen aus den a geworden, und was macht der zweite Schritt mit ihnen?
+      - when: { picked: 2 }
+        say: Der zweite Schritt macht aus jedem e ein a. Welche e gibt es nach dem ersten Schritt?
+      - when: { picked: 3 }
+        say: Kann man nach dem ersten Schritt noch erkennen, welches e vorher ein a war?
+    solution: |
+      Nach dem ersten Schritt steht überall ein e, wo vorher ein a oder ein e
+      stand, und niemand kann sie mehr auseinanderhalten. Der zweite Schritt
+      macht aus all diesen e ein a.
+
+  - id: botschaft
+    title: Die Geheimbotschaft
+    extra: true
+    prompt: |
+      Entschlüssle die Geheimbotschaft mit Suchen und Ersetzen und prüfe sie.
+      Die Prüfung sagt nur, ob alles stimmt, nicht, was in der Botschaft
+      steht.
+    check:
+      type: document
+      file: formatting-marks/01 Geheimbotschaft.docx
+      rules:
+        - contains: ['Treffpunkt für die Nachtwanderung', 'hinter der Jugendherberge', 'Taschenlampe', 'verratet niemandem', 'Losungswort heißt Kranichfeder']
+          label: Die Botschaft ist entschlüsselt
+          say: Ein Teil der Botschaft ist noch verschlüsselt.
+    hint:
+      - Ersetze nicht erst a durch e und gleich danach e durch a; was dann passiert, steht in deiner Vermutung.
+      - "Nimm ein Zeichen als Zwischenlager, das im Text nicht vorkommt, zum Beispiel §: erst alle a durch §, dann alle e durch a, dann alle § durch e."
+      - "Mit i und o genauso: erst alle i durch §, dann alle o durch i, dann alle § durch o. Das sind sechs Mal *Alle ersetzen*."
+    solution: |
+      »Treffpunkt für die Nachtwanderung: um neun Uhr am Steg hinter der
+      Jugendherberge. Bringt eine Taschenlampe mit, aber verratet niemandem
+      etwas. Das Losungswort heißt Kranichfeder.«
