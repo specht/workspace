@@ -3110,16 +3110,18 @@ class Main < Sinatra::Base
         counts = usage[:counts]
         titles = []
         per_task = []
+        pages = []
         people = 0
         slugs.each do |s|
             tasks = @@content[s][:tasks]
             activity = tasks[:activity]
             ids = tasks[:on_page] || []
+            pages << ids.size
             per_task.concat(ids.map { |id| counts[:tasks]["#{activity}/#{id}"].to_i })
             titles.concat(ids.map { |id| tasks[:by_id][id]['title'].to_s })
             people = [people, counts[:people][activity].to_i].max
         end
-        CardUsage.band_html(titles, per_task, :solved => per_task.sum, :people => people,
+        CardUsage.band_html(titles, per_task, :solved => per_task.sum, :people => people, :pages => pages,
                             :css_class => css_class, :of => usage[:mode] == :teacher ? counts[:of] : nil)
     end
 

@@ -48,6 +48,15 @@ class CardUsageTest < Minitest::Test
         assert_includes html, 'ohne Lehrkräfte, Admins und Testkonten'
     end
 
+    # A series: a gap between the tasks of two pages, none before or after,
+    # none for a page without tasks
+    def test_pages_of_a_series
+        html = CardUsage.band_html(%w[A B C D E], [1, 2, 3, 4, 5], :solved => 15, :people => 5, :pages => [2, 0, 3], :css_class => 'card-usage')
+        strip = html[/<span class='usage-strip'.*?<\/span><span class='usage'/m]
+        assert_equal ['bar', 'bar', 'gap', 'bar', 'bar', 'bar'], strip.scan(/usage-(bar|gap)\b/).flatten
+        assert_equal 0, CardUsage.band_html(%w[A B], [1, 1], :solved => 2, :people => 1, :css_class => 'x').scan('usage-gap').size
+    end
+
     # A student's own: a segment per core task in the pinned card's colours
     def test_own_band
         html = CardUsage.own_html(%w[Eins Zwei Drei], [:done, :wrong, :open], :css_class => 'card-usage')

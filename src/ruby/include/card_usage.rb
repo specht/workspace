@@ -40,14 +40,22 @@ module CardUsage
     # The band for admins and teachers. tasks: [title] in page order;
     # per_task: how many solved each; solved: their sum; people: how many
     # solved at least one; of: the teacher's number of students (nil for
-    # admins, whose steps follow the most solved task).
-    def self.band_html(tasks, per_task, solved:, people:, css_class:, of: nil)
+    # admins, whose steps follow the most solved task); pages: how many of
+    # the tasks each page of a series has, in order (a small gap between
+    # two pages; nil: one page). Many tasks wrap into rows (default.css).
+    def self.band_html(tasks, per_task, solved:, people:, css_class:, of: nil, pages: nil)
         top = of ? of : per_task.max.to_i
-        bars = tasks.each_with_index.map do |title, i|
+        cells = tasks.each_with_index.map do |title, i|
             n = per_task[i].to_i
             what = of ? "#{n} von #{of} deiner Lernenden gelöst" : "#{n}-mal gelöst"
             "<span class='usage-bar usage-level-#{level(n, top)}' title='#{i + 1}. #{h(title)}: #{what}'></span>"
         end
+        bars = []
+        Array(pages || [tasks.size]).reject { |n| n.to_i <= 0 }.each do |n|
+            bars << "<span class='usage-gap'></span>" unless bars.empty?
+            bars.concat(cells.shift(n))
+        end
+        bars.concat(cells)
         text = if of
                    "Deine Lernenden: #{people} von #{of} haben hier etwas gelöst, zusammen #{solved} Aufgaben"
                else

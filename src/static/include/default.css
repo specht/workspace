@@ -6989,17 +6989,23 @@ html[data-bs-theme="dark"] .usage-charts {
     --usage-4: #86b6ef;
     --usage-5: #b7d3f6;
 }
+/* a segment per task; many wrap into rows of the same columns (the last
+   row ragged), few fill the width; an empty cell between two pages of a
+   series (.usage-gap). Three rows are about as tall as the counts beside */
 .usage-strip {
-    display: flex;
+    display: grid;
     flex: 1 1 auto;
-    gap: 2px;
-    height: 4px;
+    grid-template-columns: repeat(auto-fit, minmax(4px, 1fr));
+    gap: 3px 2px;
+    align-content: center;
 }
 .usage-bar {
-    flex: 1 1 0;
-    min-width: 2px;
+    height: 4px;
     border-radius: 1px;
     background: var(--bs-border-color);
+}
+.usage-gap {
+    height: 4px;
 }
 .usage-level-1 { background: var(--usage-1); }
 .usage-level-2 { background: var(--usage-2); }
