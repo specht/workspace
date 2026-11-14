@@ -921,7 +921,10 @@ telnet towel.blinkenlights.nl
 <!-- tutorial-screenshot
 terminal-run: clear
 terminal-run: telnet towel.blinkenlights.nl
-sleep: 25
+# measured 14 November 2026: from 24.4 s to 27 s the screen is empty
+# (between »A long time ago …« and the logo); from 37 s the opening crawl
+# runs for a long while
+sleep: 40
 crop-terminal-lines: 99
 -->
 

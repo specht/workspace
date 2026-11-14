@@ -1481,14 +1481,16 @@ async function waitForWorkspaceWorkbench(page, workspaceUrl) {
 async function waitForFreshWorkspaceUi(page) {
     // `.monaco-workbench` becomes available before all built-in contributions
     // have finished starting. In particular, Explorer's "Clone Repository"
-    // welcome action appears a little later.
+    // welcome action appears a little later: it comes with the Git
+    // extension, which under load (a long run, several Workspaces starting)
+    // took more than 30 s with code-server 4.145, so give it 90
     await page.getByText('NO FOLDER OPENED', { exact: false }).first().waitFor({
         state: 'visible',
         timeout: 30_000,
     });
     await page.getByText('Clone Repository', { exact: true }).first().waitFor({
         state: 'visible',
-        timeout: 30_000,
+        timeout: 90_000,
     });
     await page.waitForTimeout(250);
 }
@@ -1722,9 +1724,16 @@ async function waitForTerminalPrompt(seconds = 60) {
                 .map(row => (row.textContent || '').replace(/\s+/g, ' ').trim())
                 .filter(Boolean);
             const lastLine = lines.at(-1) || '';
+            // a prompt that follows output without a line break (curl's
+            // JSON) and wraps: »…}student@workspa« / »ce:~$«, so the last two
+            // rows read together; the prompt must close them, with no space
+            // between »@workspace:« and the »$« (a command line has one)
+            const wrapped = lines.slice(-2).join('');
+            const atEnd = new RegExp(`${user}@workspace:\\S*[#$]$`);
             // Bash, or the second line of bash-git-prompt (Git tutorial,
             // »Etwas Luxus im Terminal«): »19:09 $«.
             return (lastLine.includes(`${user}@workspace`) && /[#$]$/.test(lastLine)) ||
+                atEnd.test(wrapped) ||
                 /^\d{1,2}:\d{2} [#$]$/.test(lastLine);
         },
         SCREENSHOT_WORKSPACE_USER,
@@ -2191,14 +2200,19 @@ async function openFile(relativePath) {
     else await waitForEditorSettled(workspace);
 }
 
-// VS Code shows a picture in its image preview, a webview, not in a text
-// editor. Its content lives in an iframe of another origin, so wait for the
-// visible webview to be ready and give the picture a moment to paint.
+// VS Code shows a picture in its image preview, not in a text editor: up to
+// code-server 4.140 a webview (an iframe of another origin, ready when it
+// has the class »ready«), from 4.145 (VS Code 1.145) in the editor itself
+// (.image-preview-editor, an <img> in .image-viewer.ready). Wait for either
+// to be visible and loaded, and give the picture a moment to paint.
 const IMAGE_FILE = /\.(png|jpe?g|gif|webp|bmp|ico|svg)$/i;
 
 async function waitForImagePreview(page) {
     await page.waitForFunction(
-        () => [...document.querySelectorAll('iframe.webview')].some(frame => {
+        () => [...document.querySelectorAll('.image-preview-editor .image-viewer.ready img')].some(img => {
+            const rect = img.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0 && img.complete && img.naturalWidth > 0;
+        }) || [...document.querySelectorAll('iframe.webview')].some(frame => {
             const rect = frame.getBoundingClientRect();
             return rect.width > 0 && rect.height > 0 && frame.classList.contains('ready');
         }),
@@ -2324,6 +2338,14 @@ async function openNeo4jBrowser() {
     await preview.getByRole('button', { name: 'Connect', exact: true }).click();
     await preview.locator('input[name=password]').waitFor({ state: 'hidden', timeout: 30_000 });
     await preview.locator('[data-testid=main-editor] .cm-content').waitFor({ state: 'visible', timeout: 30_000 });
+    // Neo4j 2026.10 greets a first connection with a tour (»New: Work in
+    // tabs«, 1/3) that lies over the editor: dismissed, as a person would,
+    // so it neither blocks a click nor stands in a picture
+    const dismiss = preview.getByRole('button', { name: 'Dismiss', exact: true });
+    if (await dismiss.waitFor({ state: 'visible', timeout: 5_000 }).then(() => true, () => false)) {
+        await dismiss.click();
+        await dismiss.waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => {});
+    }
 }
 
 // A page of the Workspace site itself (TIC-80 at /tic80/, say) as the
