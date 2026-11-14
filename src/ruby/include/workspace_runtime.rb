@@ -2,6 +2,7 @@ require 'securerandom'
 require 'json'
 require 'shellwords'
 require_relative 'workspace_processes'
+require_relative 'workspace_activity'
 
 # Semantic boundary for operations on student Workspace containers.
 # DirectDocker intentionally preserves the existing Docker CLI behavior; a
@@ -318,6 +319,15 @@ module WorkspaceRuntime
                 :timeout => timeout, :allow_failure => true, :log_command => false,
             )
             WorkspaceProcesses.parse(output)
+        end
+
+        # 'ended', 'gone' or 'changed' (WorkspaceProcesses::END_SCRIPT)
+        def end_process(fs_tag, pid, start, timeout: 15)
+            output = @capture.call(
+                "docker exec hs_code_#{fs_tag} sh -c #{Shellwords.escape(WorkspaceProcesses::END_SCRIPT)} end #{pid.to_i} #{start.to_i}",
+                :timeout => timeout, :allow_failure => true, :log_command => false,
+            )
+            output.to_s.strip.split.last.to_s
         end
 
         def live_app_processes(fs_tag, uid:, timeout: nil)

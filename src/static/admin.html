@@ -240,7 +240,7 @@
                 row.append(who, $('<td>').text(info.group || '–'), $(`<td class='num td_cpu'>`), $(`<td class='num td_ram'>`), $(`<td class='num td_pid'>`), $(`<td class='num td_disk'>`));
                 const actions = $(`<td class='text-end text-nowrap'>`).appendTo(row);
                 // what keeps it busy (program and file of each process)
-                actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-workspace-processes me-1' title='Prozesse' aria-label='Prozesse'><i class='bi bi-list-ul'></i></button>`).attr('data-tag', tag).attr('data-name', info.name || info.email || tag));
+                actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-workspace-processes me-1' title='Prozesse' aria-label='Prozesse'><i class='bi bi-list-ul'></i></button>`).attr('data-tag', tag).attr('data-name', info.name || info.email || tag).attr('data-email', info.email || ''));
                 if (info.email && info.email !== my_email) {
                     actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-open-workspace-as-admin me-1' title='Workspace öffnen' aria-label='Workspace öffnen'><i class='bi bi-code-slash'></i></button>`).attr('data-email', info.email));
                     actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-impersonate me-1' title='Nachahmen' aria-label='Nachahmen'><i class='bi bi-person-vcard'></i></button>`).attr('data-email', info.email));
@@ -402,27 +402,88 @@
         // Stopping someone's Workspace (a runaway program): the processes end,
         // the files stay; with a reason the person sees.
         // What keeps a Workspace busy: its busiest processes right now
-        // (WorkspaceProcesses), read again on »Neu lesen«
-        function processes_html(data) {
+        // (WorkspaceProcesses), read again on »Neu lesen«; above them what the
+        // person last did (a browser with VS Code open, a file changed), so
+        // that a forgotten loop shows; below them the actions: end one
+        // program (the rest keeps running) or stop the whole Workspace.
+        function processes_html(data, who) {
             const esc = (t) => $('<span>').text(t).html();
             const mb = (b) => (b / 1024 / 1024).toFixed(b < 10 * 1024 * 1024 ? 1 : 0).replace('.', ',') + ' MB';
-            const time = (s) => s < 60 ? `${s} s` : s < 3600 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1).replace('.', ',')} h`;
-            if (!data.processes || !data.processes.length) return '<p>Keine Prozesse gefunden; vielleicht läuft der Workspace nicht mehr.</p>';
-            const rows = data.processes.map((p) => `<tr><td>${esc(p.label)}</td><td class='text-end'>${p.cpu.toFixed(1).replace('.', ',')} %</td>` +
-                `<td class='text-end'>${mb(p.rss)}</td><td class='text-end'>${time(p.seconds)}</td></tr>`).join('');
-            return `<p class='small text-body-secondary'>Gerade eben, über eine halbe Sekunde gemessen; 100 % ist ein ganzer Kern. Jeder Prozess mit seinem Programm und der Datei, die es ausführt.</p>` +
-                `<div class='table-responsive'><table class='table table-sm'><thead><tr><th>Prozess</th><th class='text-end'>CPU</th><th class='text-end'>RAM</th><th class='text-end'>läuft seit</th></tr></thead>` +
-                `<tbody>${rows}</tbody></table></div>` + (data.total > data.processes.length ? `<p class='small text-body-secondary mb-0'>und ${data.total - data.processes.length} weitere</p>` : '');
+            const time = (s) => s < 60 ? `${s} s` : s < 3600 ? `${Math.round(s / 60)} min` : `${Math.floor(s / 3600)} h ${Math.round((s % 3600) / 60)} min`;
+            const clock = (ts) => {
+                const d = new Date(ts * 1000), today = new Date();
+                const hm = d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                return d.toDateString() === today.toDateString() ? `heute, ${hm} Uhr` : `am ${d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })} um ${hm} Uhr`;
+            };
+            const now = Date.now() / 1000;
+            let activity = '';
+            if (!data.connected_at) {
+                activity += `<li>Kein Lebenszeichen eines Browsers.</li>`;
+            } else if (now - data.connected_at < 180) {
+                activity += `<li>VS Code ist gerade in einem Browser offen (Lebenszeichen vor ${time(Math.max(0, Math.round(now - data.connected_at)))}).</li>`;
+            } else {
+                const stop_from = data.connected_at + data.idle_timeout;
+                activity += `<li><strong>Seit ${time(Math.round(now - data.connected_at))} kein Browser mehr</strong> (zuletzt ${clock(data.connected_at)}). ` +
+                    (stop_from > now ? `Ohne Browser stoppt die stündliche Aufräumrunde den Workspace nach ${data.idle_timeout / 3600} Stunden, also zwischen ${clock(stop_from).replace(/^heute, /, '')} und ${clock(stop_from + 3600).replace(/^heute, /, '')}, außer eine geteilte App läuft.</li>`
+                                     : `Die stündliche Aufräumrunde stoppt ihn bei ihrem nächsten Lauf, außer eine geteilte App läuft.</li>`);
+            }
+            if (data.files_at) activity += `<li>Zuletzt eine Datei geändert: ${clock(data.files_at)}${data.files_measured_at ? ` (einmal am Tag gemessen, zuletzt ${clock(data.files_measured_at)})` : ''}.</li>`;
+            let html = `<ul class='small mb-3 ps-3'>${activity}</ul>`;
+            if (!data.processes || !data.processes.length) return html + '<p>Keine Prozesse gefunden; vielleicht läuft der Workspace nicht mehr.</p>';
+            const can_act = who.email && who.email !== my_email;
+            // the label wraps (a long path), the numbers stay in view; a
+            // command in mono, a part of VS Code in the text's font
+            const num = "class='text-end text-nowrap'";
+            const rows = data.processes.map((p, i) => {
+                const vscode = p.label.startsWith('VS Code');
+                const end = can_act && !vscode ? `<button class='btn btn-sm btn-outline-danger bu-end-process py-0' data-index='${i}' title='Nur dieses Programm beenden'><i class='bi bi-x-octagon'></i>Beenden</button>` : '';
+                return `<tr><td style='overflow-wrap: anywhere; white-space: normal'${vscode ? '' : " class='font-monospace'"}>${esc(p.label)}</td><td ${num}>${p.cpu.toFixed(1).replace('.', ',')} %</td>` +
+                    `<td ${num}>${mb(p.rss)}</td><td ${num}>${time(p.seconds)}</td><td class='text-end text-nowrap'>${end}</td></tr>`;
+            }).join('');
+            html += `<p class='small text-body-secondary'>Gerade eben, über eine halbe Sekunde gemessen; 100 % ist ein ganzer Kern. Jeder Prozess mit seinem Programm und der Datei, die es ausführt.</p>` +
+                `<table class='table table-sm align-middle' style='width: 100%'><thead><tr><th>Prozess</th><th ${num}>CPU</th><th ${num}>RAM</th><th ${num}>läuft seit</th><th><span class='visually-hidden'>Aktionen</span></th></tr></thead>` +
+                `<tbody>${rows}</tbody></table>` + (data.total > data.processes.length ? `<p class='small text-body-secondary'>und ${data.total - data.processes.length} weitere</p>` : '');
+            if (can_act) {
+                html += `<p class='small text-body-secondary mb-2'>»Beenden« beendet nur dieses Programm, VS Code und alles andere laufen weiter. »Workspace stoppen« beendet alle Programme; die Dateien bleiben, und »Workspace öffnen« startet ihn wieder. Beides mit einem Grund, den die Person liest.</p>` +
+                    `<button class='btn btn-sm btn-outline-danger bu-stop-workspace' data-email='${esc(who.email)}' data-name='${esc(who.name)}'><i class='bi bi-stop-circle'></i>Workspace stoppen</button>`;
+            }
+            return html;
         }
-        $(document).on('click', '.bu-workspace-processes', function () {
-            const button = $(this);
-            const load = () => api_call('/api/admin/workspace_processes', { tag: button.data('tag') }, function (data) {
+        let processes_shown = null;
+        function open_processes(who) {
+            const load = () => api_call('/api/admin/workspace_processes', { tag: who.tag }, function (data) {
                 if (data.success === false) return;
-                $('#__template_modal .modal-body').html(processes_html(data));
+                processes_shown = { who: who, list: data.processes || [] };
+                $('#__template_modal .modal-body').html(processes_html(data, who));
             }, { no_please_wait: true });
-            showTemplateModal(`Prozesse von ${$('<span>').text(button.data('name')).html()}`, '<p>Einen Moment …</p>',
+            showTemplateModal(`Prozesse von ${$('<span>').text(who.name).html()}`, '<p>Einen Moment …</p>',
                 "<i class='bi bi-arrow-clockwise'></i>Neu lesen", 'btn-outline-secondary', 'Schließen', 'btn-primary', () => { load(); return false; });
             load();
+        }
+        $(document).on('click', '.bu-workspace-processes', function () {
+            const b = $(this);
+            open_processes({ tag: b.data('tag'), name: b.data('name'), email: b.data('email') });
+        });
+        // one program ended, with a reason the person reads; afterwards the
+        // list again, read anew
+        $(document).on('click', '.bu-end-process', function () {
+            if (!processes_shown) return;
+            const who = processes_shown.who, p = processes_shown.list[$(this).data('index')];
+            if (!p) return;
+            const esc = (t) => $('<span>').text(t).html();
+            admin_action_dialog({ title: `Programm von ${who.name} beenden`, confirm: 'Beenden', icon: 'bi-x-octagon', danger: true,
+                intro: `<p>Nur dieses Programm endet: <code>${esc(p.label)}</code>. VS Code und die Dateien bleiben.</p>` }, function (reason, notify) {
+                api_call('/api/admin/end_process', { email: who.email, tag: who.tag, pid: p.pid, start: p.start, label: p.label, reason: reason, notify: notify }, function (data) {
+                    if (data.success === false) {
+                        // ended by itself meanwhile, or its number names another process now
+                        if (`${data.error}`.startsWith('process_')) { show_error_message('Dieses Programm läuft nicht mehr; die Liste ist neu gelesen.'); open_processes(who); }
+                        return;
+                    }
+                    show_success_message('Das Programm ist beendet.');
+                    open_processes(who);
+                });
+                return false;
+            });
         });
 
         $(document).on('click', '.bu-stop-workspace', function (e) {

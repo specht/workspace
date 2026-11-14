@@ -43,5 +43,9 @@ class WorkspaceProcessesTest < Minitest::Test
         assert_equal 'kworker', WorkspaceProcesses.label([], 'kworker')
         assert_equal 'VS Code: Erweiterungen', WorkspaceProcesses.label(['/app/code-server/lib/node', '--type=extensionHost'], 'node')
         refute_includes WorkspaceProcesses.label(['python3', 'a.py', '--password=geheim'], 'python3'), 'geheim'
+        assert_equal 'VS Code: Erweiterung ms-python.python',
+                     WorkspaceProcesses.label(['python', '/workspace/.extensions/ms-python.python-2026.4.0-universal/python_files/run-jedi-language-server.py'], 'python')
+        assert_equal 'VS Code: Erweiterung ms-python.python',
+                     WorkspaceProcesses.label(['python', '.extensions/ms-python.python-2026.4.0-universal/python_files/lib/jedilsp/jedi/inference/compiled/subprocess/__main__.py'], 'python')
     end
 end

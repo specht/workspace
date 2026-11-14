@@ -30,7 +30,7 @@ class Main < Sinatra::Base
         rows = admin_access_entries
         return "<p class='text-body-secondary'>Noch keine.</p>" if rows.empty?
 
-        kinds = { 'workspace' => 'Workspace geöffnet', 'impersonate' => 'nachgeahmt', 'stop' => 'Workspace gestoppt', 'cleanup' => 'Platz geschaffen' }
+        kinds = { 'workspace' => 'Workspace geöffnet', 'impersonate' => 'nachgeahmt', 'stop' => 'Workspace gestoppt', 'end_process' => 'Programm beendet', 'cleanup' => 'Platz geschaffen' }
         "<table class='table table-sm people-table'><thead><tr><th>Wann</th><th>Wer</th><th>Was</th><th>Konto</th><th>Grund</th></tr></thead><tbody>" +
             rows.map { |r| "<tr><td>#{h.(Time.at(r['ts'].to_i).strftime('%d.%m.%Y %H:%M'))}</td><td>#{h.(r['admin'])}</td><td>#{h.(kinds[r['kind']] || r['kind'])}</td><td>#{h.(r['account'])}</td><td>#{r['reason'].to_s.empty? ? '–' : h.(r['reason'])}</td></tr>" }.join +
             '</tbody></table>'

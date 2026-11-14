@@ -682,6 +682,21 @@ keinen Hinweis (Entscheidung des Maintainers, 14. November 2026): Es ist
 weniger als ein Blick in den Workspace, gespeichert wird nichts, und wer den
 Workspace danach stoppt, gibt dort einen Grund an.
 
+Über der Liste steht, was die Person zuletzt getan hat: ob gerade ein Browser
+VS Code offen hat (code-server schreibt dann etwa jede Minute ein
+Lebenszeichen, `WorkspaceActivity`), seit wann nicht mehr und wann die
+stündliche Aufräumrunde (`housekeeping.rb`) den Workspace deshalb stoppt
+(drei Stunden nach dem letzten Lebenszeichen, außer eine geteilte App läuft),
+dazu die letzte geänderte Datei, wie die Aufräumrunde sie einmal am Tag
+misst. Befehle stehen in Schreibmaschinenschrift; Prozesse einer
+VS-Code-Erweiterung heißen nach ihr (»VS Code: Erweiterung
+ms-python.python«). Unter der Liste die zwei Eingriffe, beide mit einem
+Grund, den die Person liest (und auf Wunsch per E-Mail): »Beenden« beendet
+nur ein Programm (`/api/admin/end_process`: TERM, nach zwei Sekunden KILL,
+nur wenn die Nummer noch denselben Prozess meint, erkannt an seiner
+Startzeit), VS Code und alles andere laufen weiter; »Workspace stoppen«
+beendet alle Programme, die Dateien bleiben.
+
 ## Testkonto
 
 Jede Lehrkraft hat genau ein Testkonto, `adresse+test@domain`, ob mit `+`,

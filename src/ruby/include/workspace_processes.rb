@@ -32,6 +32,21 @@ module WorkspaceProcesses
     SH
     INTERVAL = 0.5
 
+    # Ends one process (»Beenden« in the list): only when the number still
+    # names the process that was listed (its start), TERM first, KILL after
+    # two seconds. Prints ended, gone (no longer there) or changed (another
+    # process has the number now). $1 the pid, $2 its start.
+    END_SCRIPT = <<~'SH'
+        start_of() { s=$(cat "/proc/$1/stat" 2>/dev/null) || return 1; r=${s##*) }; set -- $r; echo "${20}"; }
+        now=$(start_of "$1") || { echo gone; exit 0; }
+        [ "$now" = "$2" ] || { echo changed; exit 0; }
+        kill -TERM "$1" 2>/dev/null
+        i=0
+        while [ $i -lt 20 ] && [ "$(start_of "$1")" = "$2" ]; do sleep 0.1; i=$((i + 1)); done
+        [ "$(start_of "$1")" = "$2" ] && kill -KILL "$1" 2>/dev/null
+        echo ended
+    SH
+
     # [{ :pid, :label, :cpu (percent of a core), :rss (bytes), :seconds }],
     # the busiest first; processes that ended between the readings drop out
     def self.parse(output)
@@ -68,6 +83,9 @@ module WorkspaceProcesses
 
             {
                 :pid => pid,
+                # when it started (clock ticks since boot): ending it checks
+                # that the number still names the same process
+                :start => b[:start],
                 :label => label(b[:argv], b[:comm]),
                 :cpu => ((b[:ticks] - a[:ticks]).to_f / hz / INTERVAL * 100).round(1),
                 :rss => b[:rss] * page,
@@ -78,7 +96,7 @@ module WorkspaceProcesses
 
     # A process as the administration reads it: the program and the file it
     # runs (inside /workspace relative to it, elsewhere its name), or what
-    # part of VS Code it is
+    # part of VS Code it is (an extension's process by the extension)
     def self.label(argv, comm)
         joined = argv.join(' ')
         if joined.include?('code-server') || joined.include?('/out/server-main') || joined.include?('bootstrap-fork')
@@ -96,6 +114,11 @@ module WorkspaceProcesses
 
         file = argv.drop(1).find { |a| !a.start_with?('-') && (a.include?('.') || a.include?('/')) }
         return program unless file
+
+        # a file of a VS Code extension (its language server): the
+        # extension's name without version, not its long path
+        extension = file.match(%r{(?:\A|/)\.?(?:vscode-server/)?extensions/([^/]+)/})
+        return "VS Code: Erweiterung #{extension[1].sub(/-\d+(?:\.\d+)+.*\z/, '')}" if extension
 
         shown = file.start_with?('/workspace/') ? file.delete_prefix('/workspace/') : File.basename(file)
         "#{program} #{shown}"

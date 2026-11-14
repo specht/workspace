@@ -2727,6 +2727,11 @@ class Main < Sinatra::Base
         # all a teacher has (a teacher with * only), and when it is asked for
         listed = groups.reject { |g| @@test_groups.include?(g) }
         listed = groups if listed.empty?
+        # an administrator sees every group: their own come first (and are
+        # the default), under »Deine Gruppen«, the others by school below
+        mine = admin_logged_in? ? own_class_groups & listed : []
+        mine = [] if mine.size == listed.size
+        listed = mine + (listed - mine)
         group = (groups.include?(params['group']) ? params['group'] : nil) || [prefs['group']].find { |g| listed.include?(g) } || listed.first
         groups = listed.include?(group) ? listed : listed + [group]
         # »gruppe«: the tab that managed the group is part of »Lernende« now.
@@ -2742,8 +2747,12 @@ class Main < Sinatra::Base
         # nested under their school; test groups and groups without a school
         # come last, on their own.
         schools = school_names_of_groups
-        by_school = groups.group_by { |g| schools[g] }
-        if (by_school.keys - [nil]).size > 1
+        io << "<optgroup label='Deine Gruppen'>#{mine.map(&option).join}</optgroup>" unless mine.empty?
+        others = groups - mine
+        by_school = others.group_by { |g| schools[g] }
+        if !mine.empty? && (by_school.keys - [nil]).size <= 1
+            io << "<optgroup label='Weitere Gruppen'>#{others.map(&option).join}</optgroup>" unless others.empty?
+        elsif (by_school.keys - [nil]).size > 1
             by_school.each do |school, names|
                 next if school.nil?
 
@@ -2751,7 +2760,7 @@ class Main < Sinatra::Base
             end
             (by_school[nil] || []).each { |g| io << option.call(g) }
         else
-            groups.each { |g| io << option.call(g) }
+            others.each { |g| io << option.call(g) }
         end
         io << "</select></label><input type='hidden' name='tab' value='#{h.(tab)}'>"
         io << "<noscript><button class='btn btn-primary'>Anzeigen</button></noscript>"

@@ -60,6 +60,9 @@ module LookIn
         case look[:kind]
         when 'stop'
             "#{who} hat #{at} deinen Workspace gestoppt: #{why} Deine Dateien sind alle noch da; »Workspace öffnen« startet ihn wieder."
+        when 'end_process'
+            "#{who} hat #{at} in deinem Workspace ein Programm beendet (#{CGI.escapeHTML(look[:details].to_s)}): #{why} " \
+                'Alles andere läuft weiter, deine Dateien sind alle noch da.'
         when 'cleanup'
             "#{who} hat #{at} in deinem Workspace Platz geschaffen: #{why} Gelöscht wurden Ordner, die ein Befehl wieder anlegt: " \
                 "#{CGI.escapeHTML(look[:details].to_s)}."

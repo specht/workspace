@@ -144,6 +144,10 @@ module MailTexts
             body << "<p>#{h(by_name)} hat deinen Workspace (#{link(web_root)}) gestoppt: »#{h(reason)}«</p>\n"
             body << "<p>Deine Dateien sind alle noch da. »Workspace öffnen« startet ihn wieder.</p>\n"
             subject = 'Dein Workspace wurde gestoppt'
+        elsif kind == 'end_process'
+            body << "<p>#{h(by_name)} hat in deinem Workspace (#{link(web_root)}) ein Programm beendet, #{h(details)}: »#{h(reason)}«</p>\n"
+            body << "<p>Alles andere läuft weiter, und deine Dateien sind alle noch da.</p>\n"
+            subject = 'In deinem Workspace wurde ein Programm beendet'
         else
             body << "<p>#{h(by_name)} hat in deinem Workspace (#{link(web_root)}) Platz geschaffen: »#{h(reason)}«</p>\n"
             body << "<p>Gelöscht wurden nur Ordner, die ein Werkzeug anlegt und ein Befehl im Projektordner wieder anlegt:</p>\n"

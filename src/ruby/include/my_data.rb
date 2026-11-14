@@ -143,7 +143,34 @@ class Main < Sinatra::Base
         tag = data[:tag].to_s
         halt 400 unless tag.match?(/\A[a-z0-9]{8,32}\z/)
         list = workspace_runtime.processes(tag)
-        respond(:processes => list.first(12), :total => list.size)
+        # what the person last did: a browser with the Workspace open
+        # (code-server's heartbeat, once a minute; housekeeping stops a
+        # Workspace three hours after the last one), a file changed (as
+        # housekeeping measured it, once a day)
+        activity = (JSON.parse(File.read('/internal/activity_for_fs_tag.json')) rescue {})
+        respond(:processes => list.first(12), :total => list.size,
+                :connected_at => WorkspaceActivity.last_connected_at(tag),
+                :idle_timeout => WorkspaceActivity::IDLE_TIMEOUT,
+                :files_at => (activity['files'] || {})[tag], :files_measured_at => activity['files_measured_at'])
+    end
+
+    # One process of a running Workspace ended (the runaway loop), the rest
+    # keeps running: with a reason the person reads, like stopping.
+    post '/api/admin/end_process' do
+        admins_only!
+        data = parse_request_data(:required_keys => [:email, :tag, :pid, :start, :label, :reason], :optional_keys => [:notify],
+            :types => { :pid => Integer, :start => Integer, :notify => Object }, :max_value_lengths => { :tag => 32, :label => 300 })
+        email = data[:email].to_s.downcase
+        tag = data[:tag].to_s
+        halt 400 unless tag.match?(/\A[a-z0-9]{8,32}\z/) && fs_tag_for_email(email) == tag
+        halt 400 unless data[:pid] > 1 && data[:start].positive?
+        halt 400, { :error => 'own_account' }.to_json if email == @session_user[:email]
+        halt 400, { :error => 'reason_missing' }.to_json unless LookIn.reason(data[:reason])
+        result = workspace_runtime.end_process(tag, data[:pid], data[:start])
+        halt 400, { :error => "process_#{result.empty? ? 'gone' : result}" }.to_json unless result == 'ended'
+        tell_about(email, 'end_process', data[:reason], :details => data[:label].to_s, :notify => data[:notify] == true)
+        log_event "#{@session_user[:email]} ended a process in the Workspace of #{email}: #{data[:label]}"
+        respond(:ended => data[:pid])
     end
 
     post '/api/admin/stop_workspace' do
