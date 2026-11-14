@@ -2762,14 +2762,15 @@ class Main < Sinatra::Base
         office = {
             :group => group, :ranked => group_office_suites([group])[group] || [CodeLanguages::OFFICE.first],
             :default => CodeLanguages::OFFICE.first,
-            :languages => CodeLanguages::OFFICE.map { |l| { :id => l, :name => CodeLanguages::NAMES[l], :icon => CodeLanguages::ICONS[l] } },
+            :languages => CodeLanguages::OFFICE.map { |l| name, detail, icon = CodeLanguages::SUITES[l]; { :id => l, :name => name, :detail => detail, :icon => icon } },
             :activities => multi_language_activities(:office => true),
             :api => '/api/set_group_office_suites', :title => 'class-office-title',
             :words => { :more => 'Weitere Programme', :least => 'Die Klasse braucht mindestens ein Programm.', :none => 'keines dieser Programme' },
         }
         io << "<section class='class-setting class-setting-languages'><h3 class='class-setting-title' id='class-office-title'>Office-Programme der Klasse</h3>" \
-            "<p class='class-setting-hint'>Die Seiten zur Textverarbeitung sagen, wo in diesem Programm ein Knopf oder ein Menü ist: in LibreOffice, Word oder Nextcloud Office. " \
-            "Jede Seite nimmt das erste Programm dieser Liste. Lernende können auf der Seite selbst umschalten.</p>" \
+            "<p class='class-setting-hint'>Die Seiten zur Textverarbeitung und Tabellenkalkulation sagen, wo im Programm ein Knopf oder ein Menü ist: " \
+            "in Microsoft Office (Word und Excel), LibreOffice (Writer und Calc) oder Nextcloud Office. " \
+            "Jede Seite nimmt das erste Programm dieser Liste; Lernende können auf der Seite selbst umschalten.</p>" \
             "<div class='class-languages' data-languages='#{h.(office.to_json)}'></div></section>"
         io << "<script src='/include/class_languages.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>"
         io << class_nextcloud_html(group)

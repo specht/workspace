@@ -5350,6 +5350,13 @@ ul.task-teacher-list .task-teacher-answer {
 .cl-name {
     font-weight: 600;
 }
+/* an office suite: the programs of it below its name */
+.cl-detail {
+    display: block;
+    font-size: 80%;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
 
 .cl-count {
     margin-left: auto;
@@ -16240,7 +16247,9 @@ html[data-bs-theme="dark"] .activity-parts {
     display: flex;
     align-items: center;
     gap: 0.45em;
-    padding: 0.25em 0.7em 0.25em 0.35em;
+    /* the circle of the number in the round end of the pill: as far from
+       the left edge as from the top and the bottom */
+    padding: 0.25em 0.8em 0.25em 0.25em;
     border: 1px solid var(--bs-border-color);
     border-radius: 2em;
     color: inherit;
@@ -16264,7 +16273,9 @@ a.activity-part:focus-visible { outline: 2px solid var(--part-mark); outline-off
     font-size: 0.85em;
     font-variant-numeric: tabular-nums;
 }
-.activity-series .activity-part { padding-left: 0.8em; }
+/* a pill without a number (a series whose titles carry their own, the
+   Backrooms' »Level 1«) */
+.activity-part:not(:has(.activity-part-number)) { padding-left: 0.8em; }
 .activity-part.current .activity-part-number { background-color: var(--part-mark); color: var(--part-mark-ink); }
 .activity-part-next { margin: 2.5em 0 1em; }
 

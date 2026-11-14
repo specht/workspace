@@ -10,7 +10,7 @@ template: https://github.com/specht/backrooms-starter.git
 template_name: der Backrooms-Vorlage
 </div>
 
-# Level 2: Das Bad
+# Level 2: Die Pools
 
 <div
     class="autotoc-secondary-trigger"
@@ -28,7 +28,7 @@ Unter den gelben Gängen riecht es nach Chlor. Du baust ein Bad aus Fliesen, Sch
 </div>
 
 <table class='table'>
-<tr><th>Level</th><td>2, »Das Bad«</td></tr>
+<tr><th>Level</th><td>2, »Die Pools«</td></tr>
 <tr><th>Überlebensschwierigkeit</th><td>Klasse 2: Die Fliesen sind glatt, das Wasser ist tief. Wie tief, steht in einer Aufgabe.</td></tr>
 <tr><th>Ausdehnung</th><td>gekachelt, so weit man sieht</td></tr>
 <tr><th>Ausgänge</th><td>einer, durch das Licht (siehe »Ein Ausgang«)</td></tr>
@@ -211,8 +211,8 @@ hook: open view=36.00,29.60,-42,0,,0
 hook: light
 hook: info off
 -->
-<img src='bad.webp' alt='Das Bad: ein Becken voll klarem, blaugrünem Wasser mit gefliestem Rand und Geländer, darin eine runde Säule; dahinter führt eine weiße Treppe mit Geländer auf ein Podest, auf dem ein Plastikstuhl steht. Die Wände sind unten dunkel gefliest, oben weiß.'>
-<figcaption>Das Bad</figcaption>
+<img src='bad.webp' alt='Die Pools: ein Becken voll klarem, blaugrünem Wasser mit gefliestem Rand und Geländer, darin eine runde Säule; dahinter führt eine weiße Treppe mit Geländer auf ein Podest, auf dem ein Plastikstuhl steht. Die Wände sind unten dunkel gefliest, oben weiß.'>
+<figcaption>Die Pools</figcaption>
 </figure>
 <figure>
 <!-- tutorial-screenshot

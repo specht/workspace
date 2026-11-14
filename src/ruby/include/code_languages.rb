@@ -66,6 +66,11 @@ module CodeLanguages
     KIND_NAMES = { 'sheet' => { 'word' => 'Excel' }, 'slides' => { 'word' => 'PowerPoint' } }.freeze
     KIND_ICONS = { 'sheet' => { 'word' => 'bi-file-earmark-excel', 'libreoffice' => 'bi-file-earmark-spreadsheet' },
                    'slides' => { 'word' => 'bi-file-earmark-ppt', 'libreoffice' => 'bi-file-earmark-slides' } }.freeze
+    # in »Office-Programme der Klasse« the choice is a suite: its name and
+    # the programs of it the pages describe
+    SUITES = { 'word' => ['Microsoft Office', 'Word und Excel', 'bi-microsoft'],
+               'libreoffice' => ['LibreOffice', 'Writer und Calc', 'bi-file-earmark-richtext'],
+               'nextcloud' => ['Nextcloud Office', 'im Browser', 'bi-cloud'] }.freeze
     # What a teacher can rank for a class
     GROUP_LANGUAGES = PROGRAMMING
     # What a person's own switch stores as their choice for every page

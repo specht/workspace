@@ -49,7 +49,7 @@
                 "<i class='bi bi-grip-vertical cl-grip' aria-hidden='true'></i>" +
                 (l.icon ? `<i class='bi ${esc(l.icon)} cl-logo cl-icon' aria-hidden='true'></i>`
                     : `<img class='cl-logo' src='/images/languages/${esc(l.id)}.webp' alt='' width='22' height='22'>`) +
-                `<span class='cl-name'>${esc(l.name)}</span>` +
+                `<span class='cl-name'>${esc(l.name)}${l.detail ? `<span class='cl-detail'>${esc(l.detail)}</span>` : ''}</span>` +
                 `<span class='cl-count'>in ${activities(count[l.id])}</span>` +
                 "<span class='cl-tools'>" +
                 `<button type='button' class='cl-btn cl-up' aria-label='${esc(l.name)} nach oben'><i class='bi bi-arrow-up' aria-hidden='true'></i></button>` +

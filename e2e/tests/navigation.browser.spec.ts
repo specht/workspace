@@ -42,7 +42,7 @@ test('the bar lists the parts, the series, or else the title', async ({ page, e2
   await page.goto('/prolog');
   expect(await labels()).toEqual(['Logisch programmieren mit Prolog']);
   await page.goto('/level-1-7e3a91c4');
-  expect(await labels()).toEqual(['Die Backrooms', 'Level 1: Die Tiefe', 'Level 2: Das Bad', 'Level 3: Das Licht']);
+  expect(await labels()).toEqual(['Die Backrooms', 'Level 1: Die Tiefe', 'Level 2: Die Pools', 'Level 3: Das Licht']);
   await expect(page.locator('nav.autotoc .items button[aria-current=page]')).toHaveText('Level 1: Die Tiefe');
 });
 
