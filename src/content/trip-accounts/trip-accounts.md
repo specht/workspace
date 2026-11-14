@@ -115,3 +115,40 @@ In Nextcloud Office: *Format* <i class='bi bi-chevron-right' aria-hidden='true'>
 <!-- /language -->
 
 _task(pdf)
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Abrechnungen für alle, die mehr wollen: eine zum Üben, eine mit zwei
+neuen Handgriffen und eine zum Suchen.
+
+### Noch eine Runde
+
+Im Dezember war die 7b im Theater; jedes Kind hat 22 € bezahlt. Bau die
+Abrechnung wie die der Klassenfahrt, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Eine Woche nach dem Elternabend schickt das Busunternehmen noch eine
+Rechnung: 450 € für die Wartezeit. Jetzt fehlen 131,50 €, und jedes Kind
+zahlt nach. Rundet G17 dabei ab, zahlt jedes Kind einen Bruchteil eines
+Cents zu wenig, und am Ende fehlt der Klassenkasse ein Cent. Fehlt Geld, muss
+G17 deshalb **aufrunden**; bleibt etwas übrig, weiter abrunden.
+
+Und damit auf dem Elternabend niemand die Nachzahlung übersieht, soll G19
+rot werden, sobald dort »Nachzahlung« steht. Eine bedingte Formatierung
+vergleicht nicht nur Zahlen, auch Text: »Zellwert ist gleich« mit dem Wort
+in Anführungszeichen.
+
+_task(handgriffe)
+
+### Fünf Fallen
+
+Die Abrechnung des Wandertags ist in Eile entstanden und sieht fertig aus.
+Fünf Stellen sind trotzdem falsch gebaut, je eine vom ersten bis vierten
+Blatt der Reihe und eine von diesem. Die Prüfung sagt dir nur, wie viele du
+gefunden hast, und jede Falle hat ihre eigenen Tipps.
+
+_task(fallen)

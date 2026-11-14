@@ -461,7 +461,9 @@ module DocumentCheck
     # a conditional format on (part of) these cells; positive: true, it
     # colours exactly the cells above 0 (as far as its condition can be
     # worked out here: a comparison with a number; a formula or a colour
-    # scale counts as right)
+    # scale counts as right); shows: »Nachzahlung«, other: »Rückzahlung«, it
+    # colours a cell that shows the one and not one that shows the other
+    # (a condition on text: equal, contains …, or a formula A1="…")
     def self.rule_conditional(rule, _body, _starter, _all = nil, model = nil)
         range = rule['conditional'].to_s
         want = cells_of(range)
@@ -475,6 +477,7 @@ module DocumentCheck
             item.message = "#{range} hat noch keine bedingte Formatierung. Mit ihr färbt das Programm eine Zelle selbst, je nachdem, was in ihr steht."
             return item
         end
+        return text_conditional(item, rule, formats, want, model) if rule['shows']
         return item unless rule['positive']
 
         wrong = want.filter_map do |n|
@@ -497,6 +500,68 @@ module DocumentCheck
                             "Die bedingte Formatierung färbt #{n} (#{q(shown_value)}) nicht, wo noch etwas offen ist.") +
             ' Gefärbt werden sollen genau die Beträge über 0: die Bedingung »größer als 0«.'
         item
+    end
+
+    def self.text_conditional(item, rule, formats, cells, model)
+        text = rule['shows'].to_s
+        other = rule['other'].to_s
+        n = cells.first
+        coloured = coloured_text?(formats, n, text)
+        plain = other.empty? ? false : coloured_text?(formats, n, other)
+        return item if coloured != false && plain != true
+
+        item.ok = false
+        item.marks = [cell_mark(model, rule['sheet'].to_i, n, coloured == false ? "nicht gefärbt bei #{text}" : "gefärbt bei #{other}")]
+        if coloured == false
+            item.problem = "#{n} wird bei »#{text}« nicht gefärbt"
+            item.message = "Die bedingte Formatierung in #{n} färbt die Zelle nicht, wenn dort »#{text}« steht. " \
+                "Die Bedingung heißt »Zellwert ist gleich« mit \"#{text}\" in Anführungszeichen."
+        else
+            item.problem = "#{n} wird auch bei »#{other}« gefärbt"
+            item.message = "Die bedingte Formatierung in #{n} färbt die Zelle auch, wenn dort »#{other}« steht. " \
+                "Gefärbt werden soll sie nur bei »#{text}«: die Bedingung »Zellwert ist gleich« mit \"#{text}\"."
+        end
+        item
+    end
+
+    # Whether a cell's conditional formats colour it when it shows this
+    # text: true, false, or nil when a condition cannot be worked out here.
+    # Conditions on text (operator 0 =, 5 <>, 20 begins with, 21 ends with,
+    # 22 contains, 23 does not contain, the text in quotes), and a formula
+    # (24) of the form A1="text"
+    def self.coloured_text?(formats, name, text)
+        entries = formats.select { |f| f['ranges'].any? { |r| (cells_of(r) rescue []).include?(name) } }.flat_map { |f| f['entries'] || [] }
+        return false if entries.empty?
+
+        value = text.downcase
+        results = entries.map do |e|
+            f = e['formula1'].to_s.strip
+            op = e['operator'].to_i
+            next nil unless e['type'].to_i.zero?
+
+            if op == 24
+                m = f.match(/\A\$?[A-Z]{1,3}\$?\d+\s*=\s*"(.*)"\z/i)
+                next nil unless m
+
+                op = 0
+                f = "\"#{m[1]}\""
+            end
+            next nil unless f.length >= 2 && f.start_with?('"') && f.end_with?('"')
+
+            t = f[1..-2].downcase
+            case op
+            when 0 then value == t
+            when 5 then value != t
+            when 20 then value.start_with?(t)
+            when 21 then value.end_with?(t)
+            when 22 then value.include?(t)
+            when 23 then !value.include?(t)
+            end
+        end
+        return true if results.include?(true)
+        return nil if results.include?(nil)
+
+        false
     end
 
     # Whether a cell's conditional formats colour it at this value: true,

@@ -141,7 +141,7 @@ module DocumentCheck
             end
             next unless rule.is_a?(Hash)
             known = %w[label say hints] + (%w[spaces line_breaks empty_paragraphs].include?(name) ? ['in'] : []) + case name
-                when *SHEET_RULES then [name, 'sheet'] + (name == 'conditional' ? ['positive'] : [])
+                when *SHEET_RULES then [name, 'sheet'] + (name == 'conditional' ? %w[positive shows other] : [])
                 when *SLIDE_RULES then [name]
                 when 'text' then %w[text except]
                 when 'styled' then %w[styled]

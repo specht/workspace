@@ -1,7 +1,8 @@
 # Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
 # für die Prüfungen«): Die fertige Abrechnung und ihr PDF müssen die
 # Prüfung bestehen; die Vorlage, eine getippte und aufgerundete Rückzahlung
-# und ein PDF mit nichts als dem Titel scheitern. Alle macht dokumente.py.
+# und ein PDF mit nichts als dem Titel scheitern. Bei den Zwei Handgriffen
+# scheitert auch, wer nur aufrundet. Alle macht dokumente.py.
 format: 1
 activity: trip-accounts
 examples:
@@ -21,3 +22,25 @@ examples:
     fail:
       - document: stufen/nur-titel.pdf
         say: Wörter
+  runde:
+    pass:
+      - document: stufen/theaterfahrt.xlsx
+    fail:
+      - document: ../../static/trip-accounts/07 Theaterfahrt.xlsx
+        say: keine Formel
+  handgriffe:
+    pass:
+      - document: stufen/nachzahlung.xlsx
+    fail:
+      - document: ../../static/trip-accounts/07 Nachzahlung.xlsx
+        say: G17 rechnet noch nicht mit AUFRUNDEN
+      - document: stufen/nur-aufgerundet.xlsx
+        say: "G17 rechnet nicht mit: Nachdem ich H10 auf 0"
+  fallen:
+    pass:
+      - document: stufen/wandertag.xlsx
+    fail:
+      - document: ../../static/trip-accounts/07 Wandertag.xlsx
+        say: 0 von 5 Fallen gefunden
+      - document: stufen/wandertag-vier.xlsx
+        say: 4 von 5 Fallen gefunden

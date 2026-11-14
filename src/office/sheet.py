@@ -142,10 +142,31 @@ COMPARE = {0: lambda v, a, b: v == a, 1: lambda v, a, b: v < a, 2: lambda v, a, 
            6: lambda v, a, b: min(a, b) <= v <= max(a, b), 7: lambda v, a, b: not min(a, b) <= v <= max(a, b)}
 
 
+# conditions on text (»Zellwert ist gleich "Nachzahlung"«, »enthält«): 0 =,
+# 5 <>, 20 begins with, 21 ends with, 22 contains, 23 does not contain; 24
+# a formula, read here only in the form A1="text"
+TEXT_COMPARE = {0: lambda v, t: v == t, 5: lambda v, t: v != t, 20: lambda v, t: v.startswith(t),
+                21: lambda v, t: v.endswith(t), 22: lambda v, t: t in v, 23: lambda v, t: t not in v}
+
+
+def text_condition(entry):
+    """(test, text) of a condition on text, or None"""
+    f = (entry.get('formula1') or '').strip()
+    if entry.get('type') != 0:
+        return None
+    m = re.fullmatch(r'\$?[A-Z]{1,3}\$?\d+\s*=\s*"(.*)"', f) if entry.get('operator') == 24 else None
+    if m:
+        return TEXT_COMPARE[0], m.group(1).lower()
+    if entry.get('operator') in TEXT_COMPARE and len(f) >= 2 and f[0] == f[-1] == '"':
+        return TEXT_COMPARE[entry['operator']], f[1:-1].lower()
+    return None
+
+
 def apply_conditional(doc, cells, conditional):
     """the colours a conditional format gives the cells (»Zellwert ist größer
     als 0«), so that the drawn sheet shows them as the program does; only
-    conditions on the cell's value against numbers, the first that holds"""
+    conditions on the cell's value against numbers, or on its text
+    (text_condition), the first that holds"""
     try:
         styles = doc.StyleFamilies.getByName('CellStyles')
     except Exception:
@@ -162,16 +183,24 @@ def apply_conditional(doc, cells, conditional):
             for r in range(r1, r2 + 1):
                 for c in range(c1, c2 + 1):
                     cell = by_name.get(address(c, r))
-                    value = cell.get('value') if cell else None
-                    if value is None or (cell.get('type') == 'formula' and cell.get('result') != 'value'):
+                    if not cell:
+                        continue
+                    texty = cell.get('type') == 'text' or (cell.get('type') == 'formula' and cell.get('result') == 'text')
+                    value = cell.get('value')
+                    if not texty and (value is None or (cell.get('type') == 'formula' and cell.get('result') != 'value')):
                         continue
                     for e in f['entries']:
-                        try:
-                            a, b = float(e.get('formula1', '')), float(e.get('formula2') or 0)
-                        except ValueError:
-                            continue
-                        test = COMPARE.get(e.get('operator')) if e.get('type') == 0 else None
-                        if test and test(value, a, b) and styles.hasByName(e.get('stylename', '')):
+                        if texty:
+                            found = text_condition(e)
+                            holds = bool(found) and found[0](cell.get('shown', '').lower(), found[1])
+                        else:
+                            try:
+                                a, b = float(e.get('formula1', '')), float(e.get('formula2') or 0)
+                            except ValueError:
+                                continue
+                            test = COMPARE.get(e.get('operator')) if e.get('type') == 0 else None
+                            holds = bool(test) and test(value, a, b)
+                        if holds and styles.hasByName(e.get('stylename', '')):
                             style = styles.getByName(e['stylename'])
                             if style.CellBackColor != -1:
                                 cell['background'] = style.CellBackColor

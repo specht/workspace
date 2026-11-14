@@ -2037,6 +2037,7 @@ check:
     - autofilter                       # ein Filter über der Tabelle
     - { conditional: 'E4:E30' }        # eine bedingte Formatierung dort
     - { conditional: 'E4:E30', positive: true }   # und sie färbt genau die Zellen über 0 (Vergleich mit einer Zahl; eine Formel gilt als richtig)
+    - { conditional: 'G19', shows: Nachzahlung, other: Rückzahlung }   # färbt die Zelle bei diesem Text, nicht bei dem anderen (gleich, enthält, beginnt/endet mit, eine Formel G19="…"; eine andere Formel gilt als richtig)
     - { chart: { type: column, title: true, axis_titles: true, range: 'A3:B8' } }
     - no_errors                        # keine Formel zeigt #DIV/0!, #NAME? …
 ```

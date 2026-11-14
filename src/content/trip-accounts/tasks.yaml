@@ -72,9 +72,11 @@ tasks:
         - { values: { G13: 6590.5, G14: 6272, G15: 318.5, G16: 27, G17: 11.79, G18: 0.17, G19: Rückzahlung } }
         - { number_format: { 'C5:D31': currency, 'H5:H9': currency, 'G13:G15': currency, 'G17:G18': currency, 'A5:A31': date, 'F5:F9': date } }
         - { chart: { type: pie, title: true, range: 'H5:H9' } }
-        - { recalc: { set: { H5: 1400 }, expect: { G15: 168.5, G17: 6.24, G19: Rückzahlung } } }
+        - { recalc: { set: { H5: 1400 }, expect: { G15: 168.5, G17: 6.24, G18: 0.02, G19: Rückzahlung } } }
         - { recalc: { set: { H5: 1700 }, expect: { G15: -131.5, G19: Nachzahlung } } }
+        - { no_constants: ['G13:G16', 'G18', 'D5:D31'] }
         - no_errors
+    next: { practice: runde, challenge: fallen }
     hint:
       - Fang mit der Abrechnung in F12 bis G19 an, von oben nach unten. Jede Zelle rechnet mit den Zellen darüber oder mit den Listen links.
       - Dann die Spalte »zurück« mit festem Bezug auf G17, die Formate, die sortierte Liste und zuletzt das Diagramm.
@@ -123,3 +125,119 @@ tasks:
       hint:
         - "Wähl *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Herunterladen als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF-Dokument (.pdf)*. Das PDF landet in deinen Downloads."
         - "Lade das PDF aus deinen Downloads hoch."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Bau die Abrechnung der Theaterfahrt wie die der Klassenfahrt: in G13
+      bis G19, die Spalte »zurück«, die Formate, die Liste nach der Familie
+      sortiert und ein Kreisdiagramm der Ausgaben mit Titel.
+    check:
+      type: document
+      file: trip-accounts/07 Theaterfahrt.xlsx
+      rules:
+        - { sorted: { range: 'A5:C31', by: B, order: asc } }
+        - { same_data: ['F5:H7'] }
+        - { formulas: ['G13:G19', 'D5:D31'] }
+        - { functions: { G13: SUM, G14: SUM, G16: COUNT, G17: ROUNDDOWN, G19: IF } }
+        - { absolute: { cells: 'D5:D31', ref: 'G17' } }
+        - { values: { G13: 594, G14: 533, G15: 61, G16: 27, G17: 2.25, G18: 0.25, G19: Rückzahlung } }
+        - { number_format: { 'C5:D31': currency, 'H5:H7': currency, 'G13:G15': currency, 'G17:G18': currency, 'A5:A31': date, 'F5:F7': date } }
+        - { chart: { type: pie, title: true, range: 'H5:H7' } }
+        - { recalc: { set: { H6: 200 }, expect: { G15: 46, G17: 1.7, G18: 0.1, G19: Rückzahlung } } }
+        - { recalc: { set: { H6: 250 }, expect: { G15: -4, G19: Nachzahlung } } }
+        - { no_constants: ['G13:G16', 'G18', 'D5:D31'] }
+        - no_errors
+    hint:
+      - Die Abrechnung ist gebaut wie die der Klassenfahrt; nur stehen rechts drei Rechnungen statt fünf.
+      - 61 € für 27 Kinder sind 2,259… € pro Kind. Gerundet wären es 2,26 €, und es fehlten 2 Cent; ABRUNDEN gibt 2,25 €.
+      - Zuletzt die Formate, die sortierte Liste und das Diagramm über H5 bis H7.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Eine Woche nach dem Elternabend kommt noch eine Rechnung, und jetzt
+      fehlt Geld. Sorg dafür, dass in G17 aufgerundet wird, wenn Geld fehlt,
+      und abgerundet, wenn etwas übrig ist. Färb »Nachzahlung« in G19 rot,
+      mit einer bedingten Formatierung.
+    check:
+      type: document
+      file: trip-accounts/07 Nachzahlung.xlsx
+      rules:
+        - { formulas: ['G13:G19', 'D5:D31'] }
+        - { functions: { G17: ROUNDUP } }
+        - { values: { G15: -131.5, G17: -4.88, G18: 0.26, G19: Nachzahlung } }
+        - { recalc: { set: { H10: 0 }, expect: { G17: 11.79, G18: 0.17, G19: Rückzahlung } } }
+        - { conditional: 'G19', shows: Nachzahlung, other: Rückzahlung }
+        - no_errors
+    hint:
+      - "Rechne nach, was in G18 steht: 27 Kinder zahlen je 4,87 € nach, das sind 131,49 €. Es fehlt ein Cent in der Kasse."
+      - Fehlt Geld, muss jedes Kind ein bisschen mehr zahlen, also aufrunden. Bleibt Geld übrig, wird abgerundet. Welche Funktion entscheidet zwischen zwei Fällen?
+      - In G17 kommt `=WENN(G15<0;AUFRUNDEN(G15/G16;2);ABRUNDEN(G15/G16;2))`. AUFRUNDEN rundet von der 0 weg, auch bei Zahlen unter 0.
+    libreoffice:
+      hint:
+        - "Rechne nach, was in G18 steht: 27 Kinder zahlen je 4,87 € nach, das sind 131,49 €. Es fehlt ein Cent in der Kasse."
+        - "In G17 kommt `=WENN(G15<0;AUFRUNDEN(G15/G16;2);ABRUNDEN(G15/G16;2))`. AUFRUNDEN rundet von der 0 weg, auch bei Zahlen unter 0."
+        - "Für die Farbe: G19 markieren, *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingt* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*, *Zellwert ist* *gleich* `\"Nachzahlung\"` mit Anführungszeichen, als Vorlage *Schlecht*."
+    word:
+      hint:
+        - "Rechne nach, was in G18 steht: 27 Kinder zahlen je 4,87 € nach, das sind 131,49 €. Es fehlt ein Cent in der Kasse."
+        - "In G17 kommt `=WENN(G15<0;AUFRUNDEN(G15/G16;2);ABRUNDEN(G15/G16;2))`. AUFRUNDEN rundet von der 0 weg, auch bei Zahlen unter 0."
+        - "Für die Farbe: G19 markieren, *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Regeln zum Hervorheben von Zellen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Gleich…*, dort Nachzahlung und eine rote Füllung."
+    nextcloud:
+      hint:
+        - "Rechne nach, was in G18 steht: 27 Kinder zahlen je 4,87 € nach, das sind 131,49 €. Es fehlt ein Cent in der Kasse."
+        - "In G17 kommt `=WENN(G15<0;AUFRUNDEN(G15/G16;2);ABRUNDEN(G15/G16;2))`. AUFRUNDEN rundet von der 0 weg, auch bei Zahlen unter 0."
+        - "Für die Farbe: G19 markieren, *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingt* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*, *Zellwert ist* *gleich* `\"Nachzahlung\"` mit Anführungszeichen, als Vorlage *Schlecht*."
+
+  - id: fallen
+    title: Fünf Fallen
+    extra: true
+    prompt: |
+      Die Abrechnung des Wandertags ist in Eile entstanden und sieht fertig
+      aus. Fünf Stellen sind trotzdem falsch gebaut: je eine vom ersten bis
+      vierten Blatt der Reihe und eine von diesem. Die Prüfung sagt dir nur,
+      wie viele du gefunden hast; zu jeder Falle gibt es Tipps, einen nach
+      dem anderen.
+    check:
+      type: document
+      file: trip-accounts/07 Wandertag.xlsx
+      traps: true
+      rules:
+        - no_errors
+        - ranges: { G13: 'C5:C14' }
+          label: G13 ließ die Familie Jansen aus.
+          hints:
+            - Diese Falle ist vom ersten Blatt. Über welche Zellen rechnet die Summe in G13?
+            - Vergleich den Bereich in G13 mit der Liste links. Wo endet sie?
+            - G13 rechnet über C5 bis C13, die Liste geht bis C14. Ändere den Bereich auf C5:C14.
+        - text_numbers: 'C5:C14'
+          label: In C9 stand »18 €« als Text.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Stehen alle Beträge in Spalte C gleich?
+            - Sieh dir die Familie Engel an, und wie viele Kinder G16 zählt.
+            - In C9 steht »18 €« als Text, den weder SUMME noch ANZAHL zählt. Tipp dort 18 und gib der Zelle das Format Währung.
+        - absolute: { cells: 'D5:D14', ref: 'G17' }
+          label: Spalte D rechnete ohne $ mit G17.
+          hints:
+            - Diese Falle ist vom dritten Blatt. Klick nacheinander auf die Zellen in Spalte D.
+            - Was passiert mit =G17, wenn du die Formel nach unten ziehst?
+            - In Spalte D steht überall =G17, jede Zelle einzeln getippt. Schreib in D5 =$G$17 und fülle bis D14 aus.
+        - functions: { G19: IF }
+          label: In G19 stand »Rückzahlung« getippt.
+          hints:
+            - Diese Falle ist vom vierten Blatt. Klick auf das Ergebnis in G19.
+            - Würde G19 »Nachzahlung« zeigen, wenn das Geld nicht reicht?
+            - In G19 steht das Wort getippt. Schreib `=WENN(G15>=0;"Rückzahlung";"Nachzahlung")`.
+        - functions: { G17: ROUNDDOWN }
+          label: G17 rundete, statt abzurunden.
+          hints:
+            - Diese Falle ist von diesem Blatt. Sieh dir an, was in G18 in der Klassenkasse bleibt.
+            - Mit welcher Funktion rundet G17?
+            - G17 rundet mit RUNDEN. Wird aufgerundet, bekommt jedes Kind etwas zu viel, und G18 zeigt, was in der Kasse fehlt. Nimm ABRUNDEN.
+    solution: |
+      Die fünf Fallen: G13 ließ die Familie Jansen aus, in C9 stand »18 €«
+      als Text, Spalte D rechnete ohne $ mit G17, in G19 stand »Rückzahlung«
+      getippt, und G17 rundete statt abzurunden.
