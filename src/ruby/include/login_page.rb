@@ -429,7 +429,7 @@ class Main < Sinatra::Base
             halt 429, { :error => 'login_request_rate_limited' }.to_json
         end
         Main.load_invitations()
-        data = parse_request_data(:required_keys => [:email])
+        data = parse_request_data(:required_keys => [:email], :optional_keys => [:mail])
         email = data[:email].downcase.strip
 
         unless @@invitations.include?(email)
@@ -454,6 +454,11 @@ class Main < Sinatra::Base
         end
 
         user = ensure_user_account(email)
+        # an account with an Authenticator app (authenticator_page.rb): no
+        # e-mail, the page asks for the app's code; with mail: true (»Code
+        # per E-Mail schicken«) the e-mail as for everyone
+        app = !neo4j_query('MATCH (u:User {email: $email}) WHERE u.totp_secret IS NOT NULL RETURN 1 AS yes;', :email => email).empty?
+        quiet = app && data[:mail].to_s != 'true'
 
         login_request = @@login_request_mutex.synchronize do
             cleanup_login_requests
@@ -480,7 +485,7 @@ class Main < Sinatra::Base
 
             if existing
                 request_node = existing['r']
-                resend = now - request_node[:last_sent_at].to_i >= Authentication::LOGIN_REQUEST_RESEND_SECONDS
+                resend = !quiet && now - request_node[:last_sent_at].to_i >= Authentication::LOGIN_REQUEST_RESEND_SECONDS
                 if resend
                     neo4j_query(<<~END_OF_QUERY, {:tag => request_node[:tag], :now => now})
                         MATCH (r:LoginRequest {tag: $tag})
@@ -514,6 +519,8 @@ class Main < Sinatra::Base
                     :tag => tag,
                     :code => code,
                     :created_at => now,
+                    # nothing sent yet (app): an e-mail may follow at once
+                    :last_sent_at => quiet ? 0 : now,
                     :expires_at => expires_at,
                 }
                 neo4j_query_expect_one(<<~END_OF_QUERY, create_request_params)
@@ -523,12 +530,12 @@ class Main < Sinatra::Base
                     SET r.tag = $tag,
                         r.code = $code,
                         r.created_at = $created_at,
-                        r.last_sent_at = $created_at,
+                        r.last_sent_at = $last_sent_at,
                         r.expires_at = $expires_at,
                         r.attempts = 0
                     RETURN u.email;
                 END_OF_QUERY
-                { :tag => tag, :code => code, :send_mail => true }
+                { :tag => tag, :code => code, :send_mail => !quiet }
             end
         end
 
@@ -568,7 +575,7 @@ class Main < Sinatra::Base
                 end
             end
         end
-        respond(:ok => 'yay', :tag => login_request[:tag])
+        respond(:ok => 'yay', :tag => login_request[:tag], :authenticator => app, :mailed => !!login_request[:send_mail])
     end
     post '/api/complete_login' do
         unless DEVELOPMENT || LOGIN_TRIES_PER_CLIENT.allow?(client_ip)
@@ -608,7 +615,15 @@ class Main < Sinatra::Base
                 next nil
             end
 
+            # the code of the e-mail, or one from the Authenticator app
+            # (each of those once: the step of the last one is kept)
+            app_step = nil
             unless request_node[:code].to_s == code
+                user_node = row['u']
+                secret = user_node[:totp_secret] && Totp.decrypt(user_node[:totp_secret], LOGIN_CODE_SALT)
+                app_step = secret && Totp.verify(secret, code, :last_step => user_node[:totp_last_step])
+            end
+            unless request_node[:code].to_s == code || app_step
                 attempts = request_node[:attempts].to_i + 1
                 if attempts >= Authentication::LOGIN_REQUEST_MAX_ATTEMPTS
                     neo4j_query(<<~END_OF_QUERY, :tag => tag)
@@ -633,14 +648,17 @@ class Main < Sinatra::Base
                 :sid => Authentication.session_key(sid),
                 :session_expires => session_expires,
                 :session_info => new_session_fields,
+                :app_step => app_step,
             }
             neo4j_query_expect_one(<<~END_OF_QUERY, complete_params)
-                MATCH (r:LoginRequest {tag: $tag, code: $code})-[:FOR]->(u:User)
+                MATCH (r:LoginRequest {tag: $tag})-[:FOR]->(u:User)
                 WHERE r.expires_at > $now
                   AND COALESCE(r.attempts, 0) < $max_attempts
+                  AND (r.code = $code OR $app_step IS NOT NULL)
                 DETACH DELETE r
                 WITH u
                 REMOVE u.login_request_created_at
+                SET u.totp_last_step = CASE WHEN $app_step IS NULL THEN u.totp_last_step ELSE $app_step END
                 CREATE (s:Session {sid: $sid, expires: $session_expires})-[:FOR]->(u)
                 SET s += $session_info
                 RETURN u.email AS email, u.server_sid AS server_sid;

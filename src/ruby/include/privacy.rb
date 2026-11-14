@@ -272,6 +272,15 @@ module Privacy
                 :how_long => "#{session_days} Tage, bis zur Abmeldung (auch aus einem anderen Browser über das Profil) oder bis zur Löschung des Kontos",
             },
             {
+                :data => 'Anmelden mit einer Authenticator-App, nur wenn die Person es im Profil einrichtet: ein geheimer Schlüssel, ' \
+                    'verschlüsselt gespeichert (der Schlüssel dazu liegt nicht in der Datenbank), der Tag der Einrichtung und welcher Code ' \
+                    'zuletzt verwendet wurde, damit er kein zweites Mal gilt; während der Einrichtung der noch nicht bestätigte Schlüssel',
+                :categories => [:account],
+                :purpose => 'Anmeldung mit einem Code aus der App statt mit einem Code per E-Mail',
+                :who => 'niemand; die Person sieht im Profil, dass die App eingerichtet ist, den Schlüssel nur beim Einrichten',
+                :how_long => 'bis die Person die App im Profil ausschaltet oder bis zur Löschung des Kontos; ein nicht bestätigter Schlüssel bis zum nächsten Einrichten',
+            },
+            {
                 :data => 'Einstellungen: Helligkeit, Programmiersprache, Sprache der Seiten; bei Lehrkräften das Bundesland, nach dessen Lehrplänen die Seiten eingeordnet werden',
                 :categories => [:account],
                 :purpose => 'Darstellung',

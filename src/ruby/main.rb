@@ -550,6 +550,7 @@ class Main < Sinatra::Base
     require './include/live_apps.rb'
     require './include/login_page.rb'
     require './include/login_sessions_page.rb'
+    require './include/authenticator_page.rb'
     require './include/look_ins_page.rb'
     require './include/my_data.rb'
     require './include/nginx_config.rb'

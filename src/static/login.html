@@ -68,6 +68,27 @@
     var resend_at = 0;
     var resend_timer = null;
     var requested_email = null;
+    // the account has an Authenticator app and no e-mail went out: the code
+    // comes from the app, the e-mail button sends one only when asked
+    var by_app = false;
+
+    // the second step for the app's code or for the e-mail's
+    function show_code_step(app) {
+        by_app = app;
+        $('#part1_hint').text(app ? 'Gib den Code aus deiner Authenticator-App ein.'
+            : 'Die E-Mail mit dem Code ist unterwegs. Kommt keine, sieh im Spam-Ordner nach.');
+        $('#ti_code').attr('placeholder', app ? 'Code aus der App' : '6-stelliger Code');
+        $('#resend_label').text(app ? 'Code per E-Mail schicken' : 'Code erneut senden');
+        $('#bu_resend_code i').attr('class', app ? 'bi bi-envelope' : 'bi bi-arrow-repeat');
+        if (app) {
+            clearInterval(resend_timer);
+            resend_timer = null;
+            $('#bu_resend_code').prop('disabled', false);
+            $('#resend_wait').text('');
+        } else {
+            start_resend_wait();
+        }
+    }
 
     function update_resend_button() {
         let left = Math.ceil((resend_at - Date.now()) / 1000);
@@ -240,10 +261,10 @@
                 if (data.success) {
                     tag = data.tag;
                     requested_email = email;
+                    show_code_step(data.authenticator && !data.mailed);
                     $('#part1').slideDown();
                     $('#part1_hint').slideDown();
                     $('#login_again').slideDown();
-                    start_resend_wait();
                     $('#ti_code').focus();
                     return;
                 }
@@ -266,11 +287,12 @@
             e.preventDefault();
             if (!requested_email) return;
             $('#bu_resend_code').prop('disabled', true);
-            api_call('/api/request_login', {email: requested_email}, function(data) {
-                start_resend_wait();
+            let first_mail = by_app;
+            api_call('/api/request_login', {email: requested_email, mail: 'true'}, function(data) {
+                show_code_step(false);
                 if (data.success) {
                     tag = data.tag;
-                    show_success_message('Die E-Mail mit dem Code ist noch einmal unterwegs.');
+                    if (!first_mail) show_success_message('Die E-Mail mit dem Code ist noch einmal unterwegs.');
                     $('#ti_code').prop('disabled', false).val('').focus();
                     $('#bu_submit_code').prop('disabled', false);
                     return;
@@ -328,7 +350,8 @@
                     <form id='form' autocomplete='on'>
                         <p>
                             Bitte gib deine E-Mail-Adresse ein.
-                            Du bekommst dann eine E-Mail mit einem Code, den du im nächsten Schritt eingeben musst, um angemeldet zu werden.
+                            Du bekommst dann eine E-Mail mit einem Code, den du im nächsten Schritt eingeben musst, um angemeldet zu werden;
+                            hast du im Profil eine Authenticator-App eingerichtet, nimmst du den Code aus der App.
                         </p>
                         <div id='part0' class="input-group login-step mb-3">
                             <input type="email" id='ti_email' class="form-control" placeholder="E-Mail-Adresse" aria-label='E-Mail-Adresse' autocomplete='email'>
@@ -368,7 +391,7 @@
                         </p>
                         <div id='login_again' class='login-again mb-3' style='display: none;'>
                             <button type='button' id='bu_other_address' class='btn btn-sm btn-outline-secondary'><i class='bi bi-pencil'></i>Andere Adresse</button>
-                            <button type='button' id='bu_resend_code' class='btn btn-sm btn-outline-secondary' disabled><i class='bi bi-arrow-repeat'></i>Code erneut senden <span id='resend_wait'></span></button>
+                            <button type='button' id='bu_resend_code' class='btn btn-sm btn-outline-secondary' disabled><i class='bi bi-arrow-repeat'></i><span id='resend_label'>Code erneut senden</span> <span id='resend_wait'></span></button>
                         </div>
                         <div class='api_messages' style='display: none;'></div>
                     </form>

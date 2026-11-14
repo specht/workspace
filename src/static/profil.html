@@ -567,6 +567,7 @@
                     #{(n = other_sessions_count) > 0 && !@impersonated_by ? "<button type='button' id='bu_sign_out_elsewhere' class='btn btn-outline-secondary'><i class='bi bi-pc-display'></i>In allen anderen Browsern abmelden (<span class='other-sessions-count'>#{n}</span>)</button>" : ''}
                 </div>
                 <p class='small text-body-secondary mt-2'>Eine Anmeldung gilt ein Jahr lang im jeweiligen Browser. Warst du an einem fremden Rechner angemeldet, meldest du dich hier dort ab. Das Gerät erkennt der Workspace grob an der Kennung, die der Browser mitschickt; ein iPad nennt sich dabei oft Mac.</p>
+                <div class='authenticator'>#{authenticator_html}</div>
             </section>
 
             <section class="profile-section" aria-labelledby="my-data">
@@ -1297,6 +1298,59 @@ vscode_config: {}</pre>
             e.preventDefault();
             api_call('/api/share_server', {}, function (data) {
                 if (data.success) $('#share_expiry').text('Gültig bis ' + new Date(data.share_expires * 1000).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }) + ' (verlängert)');
+            });
+        });
+        // the Authenticator app (authenticator_page.rb): a QR code to scan,
+        // one code to confirm it; switched off in one click
+        $('#bu_authenticator_start').on('click', function () {
+            api_call('/api/authenticator/start', {}, function (data) {
+                if (!data.success) return;
+                $('#authenticator_qr').attr('src', data.qr);
+                $('#authenticator_secret').text(data.secret);
+                $('#authenticator_link').attr('href', data.uri);
+                $('#authenticator_message').text('');
+                $('#bu_authenticator_start').prop('hidden', true);
+                $('#authenticator_setup').prop('hidden', false);
+                $('#ti_authenticator_code').val('').focus();
+            });
+        });
+        $('#bu_authenticator_cancel').on('click', function () {
+            $('#authenticator_setup').prop('hidden', true);
+            $('#bu_authenticator_start').prop('hidden', false);
+        });
+        const confirmAuthenticator = function () {
+            const code = $('#ti_authenticator_code').val().replace(/\s/g, '');
+            if (!/^\d{6}$/.test(code)) {
+                $('#authenticator_message').text('Der Code hat sechs Ziffern.');
+                return;
+            }
+            api_call('/api/authenticator/confirm', { code: code }, function (data) {
+                if (data.success) {
+                    location.hash = 'authenticator';
+                    location.reload();
+                    return;
+                }
+                $('#authenticator_message').text(data.error === 'no_setup'
+                    ? 'Die Einrichtung ist abgelaufen. Fang bitte noch einmal mit »Einrichten« an.'
+                    : 'Der Code passt nicht. Nimm den Code, den die App gerade zeigt, und prüf, ob die Uhr des Handys stimmt.');
+                $('#ti_authenticator_code').val('').focus();
+            }, { no_please_wait: true });
+        };
+        $('#bu_authenticator_confirm').on('click', confirmAuthenticator);
+        $('#ti_authenticator_code').on('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); confirmAuthenticator(); }
+        });
+        $('#bu_authenticator_off').on('click', function () {
+            const button = $(this);
+            if (!button.data('sure')) {
+                button.data('sure', true).html("<i class='bi bi-x-lg'></i>Wirklich ausschalten?");
+                return;
+            }
+            api_call('/api/authenticator/off', {}, function (data) {
+                if (data.success) {
+                    location.hash = 'authenticator';
+                    location.reload();
+                }
             });
         });
         $('#bu_sign_out_elsewhere').on('click', function () {
