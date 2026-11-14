@@ -7,7 +7,7 @@
       "variants": {
         "editor-dark.webp": "800028e1045c409d9769adae500600c0e9750aa3415e3baf32c4ecaa7c6e2775"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "teaser.webp": {
       "environment_fingerprint": "0323f0181c107b21fc3a6fcc125b5329b5d034b4ffea18e130a8b52221a4ff75",
@@ -16,7 +16,7 @@
       "variants": {
         "teaser-dark.webp": "3dd424c2f22203aa30a5259ac3139cc248e96411a622bd81db97f2f7d28523ad"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     }
   },
   "version": 1

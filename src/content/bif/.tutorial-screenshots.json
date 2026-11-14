@@ -2,9 +2,9 @@
   "screenshots": {
     "bif-project.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "028f1ca1e42be408dc8304dc69c7523ab3909e6c1b4ea34d284ea1d14d0a8a61",
+      "output_sha256": "97bf24ba19852eb9900ef1f7fd554b9698a6fd06c92d15b3ec96a5683b7a9ae7",
       "state_hash": "8ff53bc4925db86fb33a4e1c1e22b9d5213389cd119fb8934aa7d56166925b33",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "branching-story.webp": {
@@ -14,7 +14,7 @@
       "variants": {
         "branching-story-dark.webp": "0b20c3fcda2ec3d5a195af0fb232c1b7896fa9388e7ceeb9d2bd49b6d56053a3"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "first-page.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -23,27 +23,27 @@
       "variants": {
         "first-page-dark.webp": "9e0392b72b29208a38e4a140cff92ffc5a403244dda59e4046c5ae40c4bfd88e"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "included-workspace-choose-folder.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "fd4020515f55765520f870bfc3e938541835894ae75965aeca0c2e52099ab85a",
+      "output_sha256": "4d594f31441a1cd6295d5bfefb02a988500ddd73c409342be0362e1952249df6",
       "state_hash": "c0a47d81b371badbf369d0897157e4a4ebb87c1779ec28ab5bde9dcc735028b6",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "included-workspace-git-clone.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "946e2ad715adba1467dad6c16f2a04932b5c7cdd8610d8a1cad0906a5ef03772",
+      "output_sha256": "546631bc170fee712650a382779d4da18926a4a8e49e1864d04904f9bd129b89",
       "state_hash": "f2e826476009df4d5f18d3f44bb62c2c5e98f1745cfc721c260c40ce4aefaa3a",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "included-workspace-open-yes-or-no.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "75dca9b8c201e3c1f96a96202047b87562db0046959e1c9363b9d25ee3ca7c22",
+      "output_sha256": "2d5468264d9ac03c6931e745fd9a16cdfb0975c6370dfd4094d074b268c4db3f",
       "state_hash": "5c41d96019b502bf0b653d1857fc8234f7ec72f2a013f2c66cecf5d478faf84b",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "local-choice.webp": {
@@ -53,7 +53,7 @@
       "variants": {
         "local-choice-dark.webp": "0b37ba5128b8d48e44f66712c1faecc181c573c5cda0c5a1c7ba31d4714bc14b"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "locked-door.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -62,13 +62,13 @@
       "variants": {
         "locked-door-dark.webp": "312526a72961cd758abad1358d9aedbf82b50bfad4fbf607c2529a026a0b24ce"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "new-file.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "c7a422baf4bef223bf3eef4c0f2db7afd2613659684ccdd9f9edc6e8b25bee9a",
+      "output_sha256": "b25ef1c46d9f0fef0bb1231108e33a0e7d4e301d12f4575e1ac88661e1a84f2d",
       "state_hash": "48676099c80fa052ff99201fa6045272c49356617296779dc8dda0b3eca41434",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "script-error.webp": {
@@ -78,13 +78,13 @@
       "variants": {
         "script-error-dark.webp": "c3a65b03e8d3cb4b424a1f4c8dfb87b26ac2806cfea140595cfe45917ddb731c"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "story-begin.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
-      "output_sha256": "07d5301f072923053425cac6c3569e1adfbf32d2a11fedbe8feb44ac31583946",
+      "output_sha256": "c8409ee19993c02f9d108be3e5c2ecc1ad35b4b4037ba6cc04fb3f1b084ae6d9",
       "state_hash": "314234c2094b508955e612316d40fc0e6add0a00cf954f47d73eb66c3ac0c35a",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "take-key.webp": {
@@ -94,7 +94,7 @@
       "variants": {
         "take-key-dark.webp": "3e8211a7ca702bc9eb4b83ab784ef4ac5dcff8a704417d52019cda968e4da0b9"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "two-pages.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -103,7 +103,7 @@
       "variants": {
         "two-pages-dark.webp": "993edcbdc5106e150dded448ce5241d90b74839481e91e47718b0112a7e59a51"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "unlocked-door.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -112,7 +112,7 @@
       "variants": {
         "unlocked-door-dark.webp": "198fc9563f1cc439bc2eb54a97da0cddf29c1c9ec65e99c8109d90817a0ca133"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "unreachable-page.webp": {
       "environment_fingerprint": "ca4a7671761833cac841be5e7309c9ab7ac08b5f85b6cc11c8c41d5429866740",
@@ -121,7 +121,7 @@
       "variants": {
         "unreachable-page-dark.webp": "b417b616ce3d393d02b14bc33e333a4cbc092d239ad84fcad147bb90eed5d7b4"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     }
   },
   "version": 1

@@ -143,10 +143,13 @@ test('pictures for the exam guide', async ({ browser }, testInfo) => {
     tag = (await (await teacher.request.post('/api/get_my_test_archives', { data: {} })).json()).entries
       .find((e: any) => e.filename === 'Klassenarbeit Schleifen.tar.gz').tag;
     await teacher.setViewportSize({ width: 1280, height: 720 });
-    const row = teacher.locator('#table_my_test_archives tr', { hasText: 'Klassenarbeit Schleifen' });
+    // »Ausprobieren« (/pruefung-ansehen, the start page as the class sees
+    // it), there »Von vorn beginnen«: the preview Workspace, fresh
+    // by its tag: an exam of the same name may be left from an earlier run
+    await teacher.locator(`a.bu-exam-try[href*="tag=${tag}"]`).click();
+    await teacher.waitForURL(/\/pruefung-ansehen/);
     const popup = teacher.waitForEvent('popup', { timeout: 240_000 });
-    await row.getByRole('button', { name: 'Workspace', exact: true }).click();
-    await teacher.locator('#__template_modal').getByRole('button', { name: 'Frischen Workspace öffnen' }).click();
+    await teacher.locator('#bu_exam_try_fresh').click();
     const workspace = await popup;
     await workspace.setViewportSize({ width: 1280, height: 720 });
     await expect(workspace.locator('.monaco-workbench')).toBeVisible({ timeout: 180_000 });

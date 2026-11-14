@@ -7,7 +7,7 @@
       "variants": {
         "automatron-zahl-dark.webp": "963e0da3c3fa54dfa02b4fababca60d5dd57a88dcf58e0167321062836cb9c2a"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "baum.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
@@ -16,20 +16,20 @@
       "variants": {
         "baum-dark.webp": "724f007a8ff15dffd015c3b3044bf78b49c75b619bdefa4b11e25bcecd01214d"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "rechner-python.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
-      "output_sha256": "68c217c9f0e59f2e357da081a9017a7c2fcb686c11082a3e82a0e4c22ca74f50",
+      "output_sha256": "b0ff212538c975db3af498e1de20848a776814043c95e7d6865093d9fffca453",
       "state_hash": "226c63b4734fff7e97fbb8148817cf63447ad02923a1da36f5e4b89d27d7c544",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "rechner.webp": {
       "environment_fingerprint": "38969cf7edcb64d69c7503528c872dc915c02e8e64e13075466e5258fb6f442e",
-      "output_sha256": "f7366418d115475d9e471ec1c61be2d568f4ed22d7799c6e9ccc657eaaab9d5d",
+      "output_sha256": "db7506e0a7c4fc16aafc062c3ea56ae5e0be2903ea3934b68ba25e186cec5ff5",
       "state_hash": "240f24d5dcc0f2c1fac3c084bc4e1ba5a39985b0b43b206e9bd45ea48663ee53",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     }
   },

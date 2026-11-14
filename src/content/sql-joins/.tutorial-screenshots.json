@@ -2,65 +2,65 @@
   "screenshots": {
     "distance-berlin.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "ad992ee7c2359432ea0bfabd8175aecad9bcf5ca47db29a7932dac14e765c646",
+      "output_sha256": "30f84565783117ae156898db152113d80c5106771d9ebd4772367131097ac835",
       "state_hash": "c793a827335af6d9ce0b16e20e13bb76266eeffa6b338ab4b534d6c7d90fdff2",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "group-by-sum.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "f938bc0cf89fbc92d9de42c71981ca680f275f14c4f2f6342cfd1c7ddef45301",
+      "output_sha256": "bd66aaef8fdd0caf0e72733d4d529aba12ad6631e7a16abcca7c6e1871033faf",
       "state_hash": "60bb82c0bbb7981cb029e4b683b103752637e3ba019d2047a37cc0b9bdc98747",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "group-by.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "4f1918e67290acf4ed1b50e2834eb34a86a280b7f41d3cc85a6a323b49bfe8d0",
+      "output_sha256": "e456265b8d72f985c86d76967db74f8ca1d2e3e7fb16af4690dc8c08de6a5dcb",
       "state_hash": "b9d2b1ee7c21f78153e3a608e6687657a28305514721305049252b3ad3eaf68a",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "join-capitals.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "ed8ab9208e4ca2cd07052604f89dee8abc50f4c52b6f9069bf1f9d1b344c288a",
+      "output_sha256": "725d5364898e1635837d5e296331532d4890c8c61e28b9aa1514121e8e617e64",
       "state_hash": "debae397046f095a261bd064742f551c030ff710e7ca2eaf66949883654a583f",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "join-languages.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "ff76c45bb015b32f14d5c2781398f21269a815c8a4f0fe1a76b98f362be9f226",
+      "output_sha256": "84dd8a8a4b3ae589a35dffc06d07c4c57b7386f7c010cd0538e7fe828314158f",
       "state_hash": "60ee2b09186cbc32586403a075d9677048d7e9905471500840f4c745abdcd71e",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "join-neighbors.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "07a62a4c9cf8fd6c2e3e8eaf969c3474babe89d0e24b0ad16666302e4248a93a",
+      "output_sha256": "14db4bc926c713dd29f4c5e37d93fd9c64a7afba59347ad80c27b51ea5afc599",
       "state_hash": "ee387b1cd9c5bde63f0a36c80392b7a8e9450da0917f3924b8468c3bb6d78a8f",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "left-join.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5e7a8a3eeb5284b4b69815f04d9b46e8f0a6149a96be16566a4aa4d8f477bd59",
+      "output_sha256": "133ea60adf76d5560b54876517c33b92c8588b3a96e903eef8f3bd46dbaa9435",
       "state_hash": "c102f63a3b283dd031ddf411254373ca0bb029ca80d7c9f2ea2bf26c8fb2415d",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "show-tables-full.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "1edc89a72798427c9bb85e969b93df8aded6957f4ddf42fc9c836a9eb01d9aa7",
+      "output_sha256": "ecc3ed42aaf4df50c0c2df96acdbf023f2ebf76a748c627384322f9fe18779d2",
       "state_hash": "53e43d9142f0e38316c39d1f85af6784a72b62a3ce387bbd6ca3d26acb7cb29a",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "sql-import-full.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "6fb4aca81ada61a8469344762e590cdb65a7aa195727e781fafe4cb24a3c207f",
+      "output_sha256": "9e0db638d96ed4579917ce4da74e2eeecea957635e4dc8081afdeb7a358e64d4",
       "state_hash": "357905403fd09e30c4057a75d96f4a94b1ca27cc1835925d0303a985d873fd63",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     }
   },

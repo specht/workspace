@@ -2,23 +2,23 @@
   "screenshots": {
     "keyboard-chapters.webp": {
       "environment_fingerprint": "bab52b2c950d1a2bcb330f12502f9482d6e7ce760376b84a667a303236c70a2e",
-      "output_sha256": "37e4304e09b372f3046751e8d889a78bb616473930c8d5a94667d2bca13692b3",
+      "output_sha256": "95dd0ae136faaab9de8af90fd4e62222fabdb578cd20a82f86d23150d80bb01f",
       "state_hash": "a94270d47e8e886320f3e41aa6a364e21411b62fd5c9a8699b74802c5ad0f02f",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "keyboard-tutorial.webp": {
       "environment_fingerprint": "bab52b2c950d1a2bcb330f12502f9482d6e7ce760376b84a667a303236c70a2e",
-      "output_sha256": "b66e5b5a4efabaca39cffe391c7896029d285a17c18c47c5634e68a56dd29a05",
+      "output_sha256": "72bd621807f06698f12f07f22219a92ddaf629b68c233c675a924ae147493045",
       "state_hash": "3c5cc8c5239f57af4fa5489d8b97e56d131d2bc2a7f5f04e5ffb396c09ff8e5a",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "teaser.webp": {
       "environment_fingerprint": "bab52b2c950d1a2bcb330f12502f9482d6e7ce760376b84a667a303236c70a2e",
-      "output_sha256": "a620b5d13c0f3522712c56a183837d496d2fe94ee523f3eefb58251cb63cc2bb",
+      "output_sha256": "e59bc3521ac1c734a99f1232f7cfc7c51a392854ea14171870311ae7f5d51081",
       "state_hash": "d495fea743913ab4af1f4d22551fa04518b3aef779c7aeb21b7ac7c08805a99b",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     }
   },

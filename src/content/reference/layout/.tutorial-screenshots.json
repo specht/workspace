@@ -7,7 +7,7 @@
       "variants": {
         "beschriftung-folie.webp": "dd14d9d9614dc4677b743ebddb28d1fa6c704d0385aa379861dff7f96ab50609"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "nebeneinander.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -16,7 +16,7 @@
       "variants": {
         "nebeneinander-folie.webp": "44fdafc304af916d298a1b27b160437b466606d864ab00f2729ea6c493652400"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "spalten.webp": {
       "environment_fingerprint": "f47973a5e3c4b4dc65faea2317e5baacfab79aae92a89de8f43db4cd4ceee6c9",
@@ -25,7 +25,7 @@
       "variants": {
         "spalten-folie.webp": "afbf23a862c9f28a4b5eff8f8383684133682eb30b5e935368a711fa5d6915a4"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     }
   },
   "version": 1

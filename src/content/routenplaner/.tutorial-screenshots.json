@@ -7,7 +7,7 @@
       "variants": {
         "breitensuche-dark.webp": "4a0d3cd8e477228b262f8ec75146196a705b560b0818b9987fb44b85bbf2484d"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "dijkstra.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -16,27 +16,27 @@
       "variants": {
         "dijkstra-dark.webp": "ae41ccd9e97ebdc4e55ccae702060282515792f5fc491854beacaede18acfaaf"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "included-workspace-choose-folder.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
-      "output_sha256": "6588564d57666fffe9673151fd87a00393c883794dbcd4704d0a4345c2d4e1d4",
+      "output_sha256": "f42ec51cfef9952fb10d7b848441bddcd84439c3a21095af9d41ae59766b0127",
       "state_hash": "6a19604b3edc40cba6678e3d40da94e000f9e60b3d5f846d32313e84187a9312",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "included-workspace-git-clone.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
-      "output_sha256": "24b479ea92fc4b771e6955f43f2b2acca15d2443e5b3d98fda3ab3c1b52888be",
+      "output_sha256": "ee95bf58cd56eeec921bc3e8b7420fa73a1200ffd8e83d47ec1b1e9d3fa1cfd7",
       "state_hash": "e63fbd1a13d0b48d5df5d80a8ea2ff4354b5c2d19a06ecbfe34641305ff1b8e0",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "included-workspace-open-yes-or-no.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
-      "output_sha256": "4e6ee2207599ef7d06e33bb3939e1d1059939afe2f2bc07261396eee37d0ac7c",
+      "output_sha256": "55476e51f149b165b3487008a7bf925eb3dceef091c57e72878cfec2cbe383c1",
       "state_hash": "4ae5dceeb34f44f3b2594feec92b50095cac9f2bb470da217240fc3a04f7a722",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "karte.webp": {
@@ -46,7 +46,7 @@
       "variants": {
         "karte-dark.webp": "dbc5f791590905fd3191b1bb9ffc43c5f4822f3bcc417549f00d637b1d449a9d"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "nachbarn.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -55,7 +55,7 @@
       "variants": {
         "nachbarn-dark.webp": "892b80e3092a4e6981ff832d042ca6587ac02702d1205b991a26ec921bc57b0d"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "pfaueninsel-breitensuche.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -64,7 +64,7 @@
       "variants": {
         "pfaueninsel-breitensuche-dark.webp": "a6fae3e767cb5b6e8eb71e077478a4ec30337e31f963f97e025b5391dbe55be8"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "pfaueninsel-dijkstra.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -73,7 +73,7 @@
       "variants": {
         "pfaueninsel-dijkstra-dark.webp": "970dfb0a3f5541ad066040a5cfa5a5b999067f8549f988ae3874b567604e9597"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "rundfahrt-beste.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -82,7 +82,7 @@
       "variants": {
         "rundfahrt-beste-dark.webp": "ab93226b669d715f7841d1731dd2beb20b73759ebb80b45c72361f0050c452c8"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "rundfahrt-nachbar.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -91,20 +91,20 @@
       "variants": {
         "rundfahrt-nachbar-dark.webp": "54d155bed84ff1ebbbb393ed0a05216c4c7362e0b774269cc8e67b3c20c6e853"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "server-python.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
-      "output_sha256": "18f01bd340df2f5784b6b897f3bfa264f840dccda1e2f2084980c98a4f7ff7c5",
+      "output_sha256": "14afce595f4b75e6909f534853e8ffa0071fb6b534c54afa9690e4a0731d7744",
       "state_hash": "bc307f5708f6b6cf3472cb740beb6be1da6a47391fb84199eaed226d9f8ee223",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "server.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
-      "output_sha256": "30592566d6e4977a12acd8b3f372a53b8cfcdadd2d5488425197cc15588326ee",
+      "output_sha256": "c84bb495142f4a02bd767bdf392e323524989d50663b91a16ebce1cd07a6087e",
       "state_hash": "493add073851a59476aacbb3abce147a17e12a1acd4f316985ba83bd3dcd844a",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "teaser.webp": {
@@ -114,7 +114,7 @@
       "variants": {
         "teaser-dark.webp": "88d1d3addab14999a06534078ff59692a879a4c5f6875ad8207aba647a48ce7d"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "tor-astern.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -123,7 +123,7 @@
       "variants": {
         "tor-astern-dark.webp": "cef3b9a8054f87adb56f62e689da65baf128216a7d1b0a554f8acca3da3004d5"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "tor-auto.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -132,7 +132,7 @@
       "variants": {
         "tor-auto-dark.webp": "e6e5bd439d377b9eab9f70bed99d24a7966d72668cc103121abb27cb96315bfd"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "tor-dijkstra.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -141,7 +141,7 @@
       "variants": {
         "tor-dijkstra-dark.webp": "155d48fff2bb407b2a582b5707bf618ccb8e3934e5500f3d61c53b2cc4521f13"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "tor-rad.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
@@ -150,7 +150,7 @@
       "variants": {
         "tor-rad-dark.webp": "50aae2f452956be515afa6de2d979a37d872ac0137d6f3f89550c37f703b52ed"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     }
   },
   "version": 1

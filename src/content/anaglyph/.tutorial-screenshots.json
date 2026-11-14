@@ -9,7 +9,7 @@
         "27-cubes-loop-dark-anaglyph.webp": "0c9a9cd01100cd89af72ebd0df0efa238e25a6c007e9ea3b06bcdf05127b99ed",
         "27-cubes-loop-dark.webp": "8577b9daee70b2444c13972fb33aa803475fbbbfc0f624b989addd1031e498aa"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "3-cubes-row.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -20,7 +20,7 @@
         "3-cubes-row-dark-anaglyph.webp": "dd0013c9060a9693cc8795ccc44bef6b44789f6e634b271a7d1ed2c3c675a194",
         "3-cubes-row-dark.webp": "72f46953b06102799153ee567279aefba159a71c2606bd899b41708fabb435ca"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "3d-torus.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -31,7 +31,7 @@
         "3d-torus-dark-anaglyph.webp": "5b39708057cfd4358aadc32e47def9e34a7ee3caeae5d4bc4f2c73798e246a69",
         "3d-torus-dark.webp": "4534db1849b0969e09c02e58a50dc3402e848d2ff592c5f63785663fd88009e8"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "9-cubes-loop.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -42,7 +42,7 @@
         "9-cubes-loop-dark-anaglyph.webp": "b4f2016dcfebff18251beb6b3f4c8c574515e6c1875874e7a9c29c2f41fb9fe6",
         "9-cubes-loop-dark.webp": "ed64b409feaee9e2545354d3b91534b208cb5f4e3be2ccb78054f11da229cc91"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "ampel.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -53,7 +53,7 @@
         "ampel-dark-anaglyph.webp": "b6b45c73013d847e59b806ad643685e3ecdef502411d23a287ae039a65551f89",
         "ampel-dark.webp": "f6e88e472af24a4acb9a75c8d1e23f3fedee548a66ca003ef3e8d78865867b59"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "animation1.mp4": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -64,7 +64,7 @@
         "animation1-dark-anaglyph.mp4": "d15b6c8ce074433f877238a5ca1e60c90d2883ac79313fd90678990d4911081f",
         "animation1-dark.mp4": "35bb2eed4d5f42029bd8c3bfd6dcb3bc452f2da0526a97c2f1db332b40ac66ac"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "animation2.mp4": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -75,7 +75,7 @@
         "animation2-dark-anaglyph.mp4": "b41716af903b9188aaac7e3ee55b27749c57c66f2310f41a499939083fdd8c88",
         "animation2-dark.mp4": "8ba244fedb908141d7271c23a3cca23de16c780f811f5890dbf62fde33b41013"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "animation3.mp4": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -84,7 +84,7 @@
       "variants": {
         "animation3-anaglyph.mp4": "f65f6823a51037236b3dbcd2c917a1dc278eab7a7f26fdbd3ff6fa1f4e2efe34"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "box-move-right.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -95,7 +95,7 @@
         "box-move-right-dark-anaglyph.webp": "7f7eff7a52d59cde4bd93138a3401ae2ce60dfbd6e8c98e6b2729a4db2c7518f",
         "box-move-right-dark.webp": "097cdef6b69e3f28c293b93a8c7af1bd3b1d1f4e292a3bbd363f4621ecd93513"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "box.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -106,7 +106,7 @@
         "box-dark-anaglyph.webp": "81332f4ed469395e78222c98fd43bb01c908a0e1b843b1dba046a9910824bb0d",
         "box-dark.webp": "f7349767a8a327bf0f60f997768ac0dd24afcd6899c62316fe8dc88eccf84338"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-black-black-shade.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -115,7 +115,7 @@
       "variants": {
         "cone-black-black-shade-anaglyph.webp": "7ac4b22b1fe6bdd8e2de8ae5a7fb11faf870de781b0f515a778fa293c9add0fb"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-black-off-shade.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -124,7 +124,7 @@
       "variants": {
         "cone-black-off-shade-anaglyph.webp": "650ac753064bc213d736d231aba2b4ba4ef266bd2eabd2ab7d1b3f3976333ce8"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-black-white-black.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -133,7 +133,7 @@
       "variants": {
         "cone-black-white-black-anaglyph.webp": "33b63d2dbfc8127bdc6827cac1255a737bf9a63295bae126c6205c2e1b084add"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-black-white-off.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -142,7 +142,7 @@
       "variants": {
         "cone-black-white-off-anaglyph.webp": "e40128bf3547291e933148b676e9c4567c2237e1d03864366b8e6e1b9f332f13"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-white-black-off.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -151,7 +151,7 @@
       "variants": {
         "cone-white-black-off-anaglyph.webp": "5c5fa4fbb4a9ace553a9fbe3de2c35c332a585164c3a9a6d760245578b2432cb"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-white-black-shade.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -160,7 +160,7 @@
       "variants": {
         "cone-white-black-shade-anaglyph.webp": "01a78c5ad5cd52cac6454df0693319e8a21081e85a01135bef595a0f3cc32608"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-white-black-white.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -169,7 +169,7 @@
       "variants": {
         "cone-white-black-white-anaglyph.webp": "f0276e647dc161aea6dbcc5a082124c3521c10b1fd61cb5703e692aaafe3016b"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cone-white-off-shade.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -178,7 +178,7 @@
       "variants": {
         "cone-white-off-shade-anaglyph.webp": "d19afac2db130c0c87b88856b612ba6389387f45fd1abac2fc918da85acb74bc"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "cube-star.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -189,7 +189,7 @@
         "cube-star-dark-anaglyph.webp": "0327b50510972ccd4568999f4ed617d28a57bb8c2975fa7d9cfba9d9c1ed72b8",
         "cube-star-dark.webp": "b38d3c6ebd64ca77e582bad4eb46501835edd1a472c2e181f17c0393c80f31b2"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "eis.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -200,7 +200,7 @@
         "eis-dark-anaglyph.webp": "737922b36c5b2829895525ad910d82b390c0a269f39ddfe4cd3b5c78363aacfc",
         "eis-dark.webp": "3a12ea360ff47a749d09ad1c7a669e97fbe9d66047abb6e0f8675758bd3cbe34"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "hello-shade.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -211,7 +211,7 @@
         "hello-shade-dark-anaglyph.webp": "2249b8eef6d5ef988e2b6062327852b20e12dda4f35b7bf20b36ce0a3d40517f",
         "hello-shade-dark.webp": "f219b9070c81f41e54e20c58da5b6dc0d6a128ed9b6e4bb20a077d1bab2a7a0c"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "hello.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -222,34 +222,34 @@
         "hello-dark-anaglyph.webp": "0e2509dca81db562ed8f256698e3c86173bf6225bb94321adf4782f94d04ac67",
         "hello-dark.webp": "fce1009d42de7aba9a9cb63fdb32688220b0869a3fea6412c0dcf8775ba60503"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "included-workspace-choose-folder.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
-      "output_sha256": "89550ba2c1ffbc5c3fe6e2b3b29d52f960caec05bf1b423edba5869c877aeded",
+      "output_sha256": "f8284106ccd14247a4ce811352e891509d933259f8e57e3dece745bfe594f878",
       "state_hash": "2100a08f7c775a56970a08ecac35c63fcd6f86a663e9fe8f9c9db8f6f2c7f23a",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "included-workspace-git-clone.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
-      "output_sha256": "21acbbc7a69b3185a1e14c9bad19ae2836b69a254e307e74ae6691c4fa1276d7",
+      "output_sha256": "c2f3fbafd713b6277dd2ad163e9d6379f05f9757530b81276c355d4259c38e71",
       "state_hash": "04e4bae72ad1a1c781e415c3f53e51a9f4b07023fbc6c236a4ec7285339f861e",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "included-workspace-open-yes-or-no.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
-      "output_sha256": "75dca9b8c201e3c1f96a96202047b87562db0046959e1c9363b9d25ee3ca7c22",
+      "output_sha256": "55476e51f149b165b3487008a7bf925eb3dceef091c57e72878cfec2cbe383c1",
       "state_hash": "b7fa5421133fa961fe3054745241617d25ce61dc74c5ba4595ec10f9a82a1240",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "lets-start.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
-      "output_sha256": "d8af9c3edd8ed0ff482b68f8ad2d7d7bbb6bae3f2b3a5496daad0eeab7494343",
+      "output_sha256": "9b8abcbda5bf43a4db01462bc126b3f4a1867cc41c41e6e137876172874e93ad",
       "state_hash": "4a20172b953a7ce761b608cc23bab037069a4b37fe8b033cb6a54ef0c46fa615",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "move-then-rotate.webp": {
@@ -261,7 +261,7 @@
         "move-then-rotate-dark-anaglyph.webp": "010593617f407a92a37874b7237e3d635a26ead4733d69e74c7acfd5920ed276",
         "move-then-rotate-dark.webp": "033f75faf7bd514793767d3285308b583fd333fedb3a7d219a0404cf73151a14"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "pancake.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -272,7 +272,7 @@
         "pancake-dark-anaglyph.webp": "91e5e4267fd8e77fed7e494f7a8a8989b5a9be10f6c77f8f621c0bb578ac739a",
         "pancake-dark.webp": "ed631d1ffb79513f8efcf6710f66063bce14aea2e70d9154aa164d81aa9aacad"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "rotate-boxes.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -283,7 +283,7 @@
         "rotate-boxes-dark-anaglyph.webp": "db78bc30b7617de87fb3f17fb856d620817c9724dbd4c5186132fae5d1a8e74c",
         "rotate-boxes-dark.webp": "d0e9c8e796ac189b09b905298ddf6927661af0e5b70a916ae70080f8de014e17"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "rotate-then-move.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -294,7 +294,7 @@
         "rotate-then-move-dark-anaglyph.webp": "b44ca1ff330f75ede8a60b63ed0e85ef7c9fe1196db9d15e7e8a182f6613fc35",
         "rotate-then-move-dark.webp": "65d81c488f43f413d2b8bc4a2d3b8364d59e13f26744f3a6037b34210164f5fd"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "scaled-spheres.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -305,7 +305,7 @@
         "scaled-spheres-dark-anaglyph.webp": "ff7e2710e80755190a4a2a0f4a27aea4ade97a903bbd054eb5c28d6a6aef1375",
         "scaled-spheres-dark.webp": "2986cfaccc9c4a39a953b70aae1307af641b60cca83e79d8a8d086bed697b878"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "schneemann.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -316,7 +316,7 @@
         "schneemann-dark-anaglyph.webp": "5fb0391c7800b7bec7d81311dc17c011272c65b53c9bcace3ce11665c1b9f44e",
         "schneemann-dark.webp": "2d584908550e451f11c237d7d07195289af402b1439f5303ba02bc4f99f11f8e"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "slab.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -327,7 +327,7 @@
         "slab-dark-anaglyph.webp": "b0455bfeabd19b2a3a9e35b7c6765691241734167dcc457d8020ba913e337a9d",
         "slab-dark.webp": "5aa7acc6e1b8c6e45442c25b42d6464b7c10a03c405abc8b0bb88037be6a6dec"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "sphere-with-grid.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -338,7 +338,7 @@
         "sphere-with-grid-dark-anaglyph.webp": "fb7b719e7b5fff574974d0712277bec13f3d2b6aabae4e3343e39d9831729bd2",
         "sphere-with-grid-dark.webp": "9637572f8319a55beea5ce605ec3c5ca45d36f3c9bf955e05427518f29d206d1"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "sphere-with-torus.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -349,7 +349,7 @@
         "sphere-with-torus-dark-anaglyph.webp": "ce7a014540bbcd1f1fc68ed6949304de29f504f2084b20a13d280785063bbd5e",
         "sphere-with-torus-dark.webp": "65db561566eafbbb4e44bfd8883d70c26d485c97a7ea2df2e872629004f91824"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "sphere.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -360,7 +360,7 @@
         "sphere-dark-anaglyph.webp": "b31e89185b2991988c681cb762d9d40e6fe17e7f298bb9d9bbaace85615b8b2c",
         "sphere-dark.webp": "711feeed59907338cbdd1794676a3aef2e7c9a240beccbbc32694f56fac8a2d6"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "teaser.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -371,7 +371,7 @@
         "teaser-dark-anaglyph.webp": "b2987cc748f4edef6596eb965ea0965632107c11622b73c9263b6de765d56e0a",
         "teaser-dark.webp": "cc9fe393e1fda279035a3d2b3401f5bcc5d35dda77bc18f29d84816331148a27"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "three-cubes.webp": {
       "environment_fingerprint": "6aebf5514a3fcac9930899e569b98de13bca3f56fd0e1ae75be57b7858e925e4",
@@ -382,7 +382,7 @@
         "three-cubes-dark-anaglyph.webp": "0d71460469fe51763e06a708bffbde1ab3132d535be19c985bf7749e3c3e86c8",
         "three-cubes-dark.webp": "7b93b32c8ab98cdde569ac5c79a9d2661e5034fd110b2afc18e7d85b65ecdb5e"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     }
   },
   "version": 1

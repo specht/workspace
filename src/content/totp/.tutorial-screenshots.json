@@ -2,23 +2,23 @@
   "screenshots": {
     "teaser.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5fd7d7461c68b140e4989231bb436cc0ff7acb6bc784a720a5ba835832dde3ff",
+      "output_sha256": "39d3ae63a830b20ac854924ae6cb30a9e4d00260a4c3155f78bacc9602534de3",
       "state_hash": "01f04a7b447e414d1d6ad229965462205ef25462d8fedbf0feca220f2311455b",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "totp-app-python.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "db1f859f63ffd73aa9b8913bab350d1771508ba3f7d5abae1c996e482739296b",
+      "output_sha256": "09f6553c55278e36ba35f8e6d9487fd1ecefbc492d39e22176c6b74ca1e6ace1",
       "state_hash": "ea3892e4429733fd6c6a76282fba689cbac27f40af6410e707dadc5a0c3c25ea",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "totp-app.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "8daff4f52d5f716904c4ec353f390a57ebc15c5a05f61428cf248d6df667c205",
+      "output_sha256": "33e6b3473b3a07b91860e3fd710c7b4b895bfa6dcfdf50925e6d5628ad344c0d",
       "state_hash": "87f9c9f029d8a8def3ba7cc656ad07f14d580fee708f1ebfa8e93e5371b6348e",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     }
   },

@@ -7,13 +7,13 @@
       "variants": {
         "start-page-dark.webp": "cc4ff9aa523d2ec5c28f46b82fd34cf2c68659a702c99558b48c5c83057cd8b0"
       },
-      "workspace_look": "4.140.0-ls368"
+      "workspace_look": "4.145.2-ls376"
     },
     "workspace.webp": {
       "environment_fingerprint": "11dc94b678a5eeac8a0691138ff2002fc1c3018fd81cdb2d7bdd93ca156376c4",
-      "output_sha256": "ad1e3ae6791781e84e051f86c4a0afdd1b678559d40eddf4e29f1a61526fea8e",
+      "output_sha256": "8a0ad1c79f5e7f0f740cc202f25cd9d8ec073a3f07de0d86bd49d165bf780702",
       "state_hash": "a0a09ccf242229f00f3b9729c3e5a1ad3ce375a6421d23e45a4f0c9ad7f311ef",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     }
   },

@@ -2,58 +2,58 @@
   "screenshots": {
     "bubblesort.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "eab33699bb839d4b68ce79d6f00486ee59ea4b5bc3b88fcf0e685e028a77b41a",
+      "output_sha256": "f6a65d13b67d7a225299e49c422e6ddbf090538725183e74b88619a143261caf",
       "state_hash": "3bb354b3d8131b2dd7e5a0a7c3efd051307b69b8a2e50db01f305e9c882fb535",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "enter-filename.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "52f5ab6d63515ecc2eae4b3099fe8b3ff35d56bbab22a19163b88e2ab2387a01",
+      "output_sha256": "3aa90a181ceb8b07db724be35e3ad16b5e99b1d966a5cfab4833f17a82a0c5d0",
       "state_hash": "3751ff255c82eefa87fe6f5f1cd8e2243f06e0be27688ba641b9c2fee79ec6b5",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "hello-error.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
       "output_sha256": "c98a6fc5ad59dd6c69377e9b74b3a967a8697c1eab6ed2f328b15604046b612a",
       "state_hash": "809270830355f36dbc91d5d305e487ac489456c2c0a081f9c35d3c7936add5a5",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "lets-compile.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "286ea096cbd68811d33b05c83fc8731307fccad75d1216d0385dd5475bdaed16",
+      "output_sha256": "f3f553f6ed8311e911d4e542dc5de6f226e6e6329b73aec59345ffda6865e7a1",
       "state_hash": "15c16b70f1f8285bf98de786684b3bc006d899da9badebd08c4e150045a2a0de",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "ls.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "76df3c0a577cc2824e14a5d9fc9cfbb8bd435413ddd5a55adbe6f2e9e6f95b16",
+      "output_sha256": "a2981ea2d8d011cb69332c4445c575110a7a443f7b71b1c7060c62d3fbf9c84a",
       "state_hash": "3e7af923250755b488084d4949ae69c1ee1fd2ce85234bf6b131ae7ebd196976",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "no-syntax-highlighting.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "821cdc8df01e3442bd356fd9aba428a04acec10b6c5e0a7070c8b852b7601289",
+      "output_sha256": "a89ba677d197f8e0d9d12cb5a73a789f036e0830a3cfd1ffbdb04cecfa4a149c",
       "state_hash": "c1cb243b14b72ecc452fa8f50544704c84cc254dd84019b66d066144958bfe4b",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "syntax-highlighting.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "d03f7033b6b11bb9741d4d2fc752710e43a9a331edbe9328cd7913591189d9fa",
+      "output_sha256": "1aa934762ef8b2b5373745497cf1f2317befd8008dde4b479a92eed9d304236b",
       "state_hash": "34d64736caff889f298eb9eaddfca8b7958d2fff130059c765434257577b2d40",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
     "try-factor.webp": {
       "environment_fingerprint": "b8c140eadfadbd2cbfcf6583f9d9d2176e19c147a88eee8e2fc6eb149313b73a",
-      "output_sha256": "5130430568fb8c22ea5e81b708748524b7a31ed12123f7e504811bd15c0440a6",
+      "output_sha256": "84b4fc22d2f0a4067f0c9f7a2ba39c9d7fea330960fbf1ea357b7c4d8cb5d319",
       "state_hash": "29772f34e4e9c027f7d96ffdac64f362c898074e59df6a079de888582afbb6bc",
-      "workspace_look": "4.140.0-ls368",
+      "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     }
   },
