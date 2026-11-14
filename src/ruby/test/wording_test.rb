@@ -124,6 +124,12 @@ class WordingTest < Minitest::Test
         assert_empty hits(/Warteschlange|Vorrangwarteschlange|Prioritätswarteschlange|Hashtabelle|Stapelspeicher|Aufrufstapel/)
     end
 
+    # names from films and games stay as they are: Stormtrooper, not
+    # Sturmtruppler (docs/checkliste.md)
+    def test_names_from_films_stay
+        assert_empty hits(/Sturmtruppler/)
+    end
+
     # video terms German developers say in English: Combing, not Kammeffekt
     def test_english_video_terms
         assert_empty hits(/Kammeffekt|Kamm-Effekt/)
