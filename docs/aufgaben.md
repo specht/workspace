@@ -2027,6 +2027,8 @@ check:
     - { values: { D9: 6595 } }         # diese Ergebnisse
     - { recalc: { set: { C5: 152 }, expect: { D5: 4408, D9: 6711 } } }   # eine Zahl ändern, neu rechnen: so muss es dann aussehen
     - { absolute: { cells: 'E4:E8', ref: 'B12' } }   # kopierte Formeln mit $B$12
+    - { no_constants: 'D4:D8' }        # Formeln mit Zellen, keine getippten Zahlen darin (=29*148)
+    - { ranges: { D9: 'D4:D8' } }      # die Funktion in D9 rechnet genau über D4:D8
     - { number_format: { 'C4:D9': currency, 'B2': percent, 'A4:A9': date, 'E4:E8': { decimals: 1 } } }
     - { text_numbers: 'B4:D9' }        # keine Zahl als Text getippt (»12,50 €«, »EUR 12,50«)
     - { bold_cells: 'A3:D3' }
@@ -2043,6 +2045,12 @@ zurück. Eine Tabelle mit getippten Ergebnissen zeigt dann die alten Zahlen.
 `values` und `expect` von `recalc` nehmen auch Text (`{ B36: ja }`, das
 Ergebnis von WENN), verglichen mit dem, was die Zelle zeigt. Ein Schlüssel von
 `functions` darf ein Bereich sein (`{ 'B33:E33': AVERAGE }`): jede Zelle darin.
+`no_constants` findet jede Zahl in einer Formel, auch die 2 in `=RUNDEN(D9;2)`
+und die 0 in `=WENN(B4>0;…)`: nur für Zellen, die allein mit Zellen rechnen
+sollen. `recalc` findet eine Formel mit getippten Zahlen nur in den Zellen,
+die von der geänderten abhängen; `no_constants` in allen. `ranges` urteilt nur
+über einen Bereich, der in der Formel steht (`=SUMME(D4:D7)`); eine Zelle ohne
+Bereich ist Sache von `formulas` und `functions`.
 `number_format: currency` nimmt jedes Format mit €, EUR oder einem
 Währungskürzel: Excel speichert sein Euro-Zeichen als Text im Format, auch
 bei *Buchhaltung*, und Calc liest das als gewöhnliches Zahlenformat.

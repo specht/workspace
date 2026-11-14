@@ -27,4 +27,26 @@ class DocumentUntouchedTest < Minitest::Test
         refute DocumentCheck.untouched?(starter.merge('page_parts' => parts), starter)
         refute DocumentCheck.untouched?(starter.merge('pages' => [starter['pages'][0], { 'width' => 841.9, 'height' => 595.3 }]), starter)
     end
+
+    # a workbook: the cells, their look, filter and charts
+    def workbook
+        { 'kind' => 'sheet', 'sheets' => [{ 'cells' => [
+            { 'cell' => 'A1', 'type' => 'text', 'text' => 'Posten', 'bold' => true },
+            { 'cell' => 'B2', 'type' => 'value', 'value' => 148.0, 'number_format' => { 'format' => 'General' } },
+            { 'cell' => 'D2', 'type' => 'empty' },
+        ], 'autofilter' => { 'on' => false }, 'charts' => [] }] }
+    end
+
+    def test_a_workbook_untouched_and_changed
+        assert DocumentCheck.untouched?(workbook, workbook)
+        cells = ->(extra) { workbook.merge('sheets' => [workbook['sheets'][0].merge('cells' => workbook['sheets'][0]['cells'] + extra)]) }
+        refute DocumentCheck.untouched?(cells.([{ 'cell' => 'D3', 'type' => 'formula', 'formula' => '=B2*C2', 'value' => 0 }]), workbook)
+        changed = Marshal.load(Marshal.dump(workbook))
+        changed['sheets'][0]['cells'][1]['number_format'] = { 'format' => '#,##0.00 [$€-407]' }
+        refute DocumentCheck.untouched?(changed, workbook), 'a number format'
+        changed = Marshal.load(Marshal.dump(workbook))
+        changed['sheets'][0]['autofilter'] = { 'on' => true }
+        refute DocumentCheck.untouched?(changed, workbook), 'a filter'
+        refute DocumentCheck.untouched?({ 'paragraphs' => [] }, workbook)
+    end
 end

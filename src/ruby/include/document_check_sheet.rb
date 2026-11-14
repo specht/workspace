@@ -11,7 +11,7 @@
 # as the checks of code run it.
 module DocumentCheck
     SHEET_RULES = %w[formulas values recalc functions absolute same_data number_format text_numbers bold_cells
-                     sorted autofilter conditional chart no_errors].freeze
+                     sorted autofilter conditional chart no_errors no_constants ranges].freeze
 
     # German names of the functions a class meets (LibreOffice and Excel
     # show them so; the file stores the English ones)
@@ -145,6 +145,67 @@ module DocumentCheck
         item.message = "#{typed.size == 1 ? "In #{typed.first} steht" : "In #{typed.size} Zellen, zum Beispiel #{typed.first}, steht"} " \
             "#{first ? "eine getippte #{first['type'] == 'text' ? 'Angabe' : 'Zahl'} (#{q(shown(first))})" : 'nichts'}, keine Formel. " \
             'Ändert sich eine Zahl, mit der sie gerechnet wurde, bleibt sie falsch. Eine Formel beginnt mit =, zum Beispiel =B2*C2.'
+        item
+    end
+
+    # The numbers typed into a formula (»=29*148«, »=6595«): what is left
+    # of it without strings, cell addresses and function names
+    def self.constants(formula)
+        rest = formula.to_s.sub(/\A=/, '').gsub(/"[^"]*"/, '')
+        rest = rest.gsub(/(?:[\w.]+[.!])?\$?[A-Z]{1,3}\$?\d+(?::\$?[A-Z]{1,3}\$?\d+)?/i, 'R').gsub(/[A-Z][A-Z0-9.]*\(/i, '(')
+        rest.scan(/\d+(?:[.,]\d+)?/)
+    end
+
+    # these cells calculate with cells, not with numbers typed into the
+    # formula: =29*148 is right today and wrong when the price changes,
+    # and the recalc of one cell finds it in that one only
+    def self.rule_no_constants(rule, _body, _starter, _all = nil, model = nil)
+        ranges = Array(rule['no_constants'])
+        sheet = sheet_of(model, rule)
+        one = ranges.size == 1 && !ranges.first.include?(':')
+        item = Item.new(:rule => 'no_constants', :label => "#{cells_label(ranges)} #{one ? 'rechnet' : 'rechnen'} mit Zellen", :ok => true, :marks => [])
+        found = ranges.flat_map { |r| cells_of(r) }.select do |n|
+            c = cell(sheet, n)
+            c && c['type'] == 'formula' && !constants(c['formula']).empty?
+        end
+        return item if found.empty?
+
+        item.ok = false
+        item.marks = found.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'getippte Zahlen') }
+        item.problem = found.size == 1 ? "#{found.first} rechnet mit getippten Zahlen" : "#{found.size} Zellen rechnen mit getippten Zahlen"
+        f = cell(sheet, found.first)['formula']
+        item.message = "#{found.size == 1 ? "In #{found.first} steht" : "In #{found.size} Zellen, zum Beispiel #{found.first}, steht"} " \
+            "»#{q(german_formula(f))}«: eine Formel mit Zahlen, die jemand ausgerechnet oder abgeschrieben hat. Heute stimmt das Ergebnis; " \
+            'ändert sich eine dieser Zahlen in der Tabelle, rechnet die Zelle nicht mit. Schreib die Adressen der Zellen statt ihrer Zahlen, zum Beispiel =B2*C2.'
+        item
+    end
+
+    # a function in these cells adds up (or averages) exactly this range:
+    # =SUMME(D4:D7) misses the last row (written so, or a row inserted
+    # right above the total and left out). A cell without any range in its
+    # formula is the business of formulas and functions.
+    def self.rule_ranges(rule, _body, _starter, _all = nil, model = nil)
+        wants = rule['ranges'] || {}
+        sheet = sheet_of(model, rule)
+        item = Item.new(:rule => 'ranges', :label => names(wants.map { |n, r| "#{n} über #{r.to_s.upcase}" }), :ok => true, :marks => [])
+        wrong = wants.filter_map do |n, want|
+            f = (cell(sheet, n) || {})['formula'].to_s.upcase.delete('$')
+            have = f.scan(/(?<![A-Z])([A-Z]{1,3}\d+:[A-Z]{1,3}\d+)/).flatten
+            next if have.empty? || have.include?(want.to_s.upcase.delete('$'))
+
+            [n, want.to_s.upcase, have.first]
+        end
+        return item if wrong.empty?
+
+        item.ok = false
+        item.marks = wrong.map { |n, _, _| cell_mark(model, rule['sheet'].to_i, n, 'falscher Bereich') }
+        n, want, have = wrong.first
+        missing = cells_of(want) - cells_of(have)
+        extra = cells_of(have) - cells_of(want)
+        item.problem = missing.empty? ? "#{n} zählt zu viel mit" : "#{n} lässt #{missing.size == 1 ? missing.first : "#{missing.size} Zellen"} aus"
+        item.message = "#{n} rechnet über #{have}, die Zahlen stehen aber in #{want}: " +
+            (missing.empty? ? "#{names(extra.first(3))} #{extra.size == 1 ? 'gehört' : 'gehören'} nicht dazu. " : "#{names(missing.first(3))} #{missing.size == 1 ? 'zählt' : 'zählen'} nicht mit. ") +
+            "Ändere den Bereich in der Formel auf #{want}."
         item
     end
 

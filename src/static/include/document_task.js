@@ -58,6 +58,9 @@
         },
     }];
     const wantsSlides = (card) => !!card.querySelector(".document-task[data-accept='slides']");
+    // the button that chooses another file, named for the kind of file
+    const pickLabel = (card) => wantsPdf(card) ? 'Anderes PDF' : wantsSheet(card) ? 'Andere Tabelle'
+        : wantsSlides(card) ? 'Andere Präsentation' : 'Anderes Dokument';
     // the programs a card names: Excel for a table, Word for a text; a PDF
     // card on a page of tables (office: sheet) names Excel too
     const sheetPage = () => !!document.querySelector(".code-language-switch-office[data-office-kind='sheet']");
@@ -94,7 +97,7 @@
         if (card.documentHandle && saved) {
             line.appendChild(document.createTextNode(', gespeichert um ' + new Date(saved).toLocaleTimeString('de-DE') + '. Speichere in ' + programs(card) + ', dann prüft die Seite von selbst.'));
         }
-        card.querySelector('.document-pick').lastChild.textContent = wantsPdf(card) ? 'Anderes PDF' : wantsSheet(card) ? 'Andere Tabelle' : wantsSlides(card) ? 'Andere Präsentation' : 'Anderes Dokument';
+        card.querySelector('.document-pick').lastChild.textContent = pickLabel(card);
         mirror(card);
     }
 
@@ -276,10 +279,11 @@
         chosen(card, file.name, file.lastModified);
         const line = card.querySelector('.document-name');
         const note = el('span', 'document-unchanged');
+        const kind = wantsSheet(card) ? { program: 'Excel', odf: '.ods' } : wantsSlides(card) ? { program: 'PowerPoint', odf: '.odp' } : { program: 'Word', odf: '.odt' };
         note.innerHTML = '<br>Seit der letzten Prüfung hat sich diese Datei nicht geändert: Zuletzt gespeichert wurde sie um ' +
             new Date(file.lastModified).toLocaleTimeString('de-DE') + '. Hast du danach gespeichert, ging es in eine andere Datei. ' +
-            'LibreOffice fragt beim Speichern nach dem Dateiformat: Mit <em>Word…-Format verwenden</em> bleibt es dieselbe Datei, <em>ODF-Format verwenden</em> legt daneben eine neue .odt-Datei an. ' +
-            'Bearbeitest du eine andere Datei (etwa eine zweite aus den Downloads), wähle sie mit <em>Anderes Dokument</em>.';
+            'LibreOffice fragt beim Speichern nach dem Dateiformat: Mit <em>' + kind.program + '…-Format verwenden</em> bleibt es dieselbe Datei, <em>ODF-Format verwenden</em> legt daneben eine neue ' + kind.odf + '-Datei an. ' +
+            'Bearbeitest du eine andere Datei (etwa eine zweite aus den Downloads), wähle sie mit <em>' + pickLabel(card) + '</em>.';
         line.appendChild(note);
         mirror(card);
     }

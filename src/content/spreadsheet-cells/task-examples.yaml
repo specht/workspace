@@ -1,7 +1,8 @@
 # Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
 # für die Prüfungen«): Die rechnende Tabelle muss die Prüfung bestehen; die
-# Vorlage und die Tabelle mit getipptem Gesamtbetrag scheitern. Alle macht
-# dokumente.py.
+# Vorlage und die Tabelle mit getipptem Gesamtbetrag scheitern, ebenso eine
+# Formel mit getippten Zahlen und eine SUMME ohne die letzte Zeile. Alle
+# macht dokumente.py.
 format: 1
 activity: spreadsheet-cells
 examples:
@@ -15,3 +16,29 @@ examples:
         say: "rechnet nicht mit: Nachdem ich C5 auf 152 geändert habe"
       - document: stufen/gesamt-getippt.xlsx
         say: D9 rechnet noch nicht mit SUMME
+      - document: stufen/kosten-zahlen.xlsx
+        say: 'In D5 steht »=29\*148«'
+      - document: stufen/summe-kurz.xlsx
+        say: "D9 rechnet über D4:D7, die Zahlen stehen aber in D4:D8: D8 zählt nicht mit"
+  runde:
+    pass:
+      - document: stufen/sommerfest.xlsx
+    fail:
+      - document: ../../static/spreadsheet-cells/01 Sommerfest.xlsx
+        say: keine Formel
+  handgriffe:
+    pass:
+      - document: stufen/eis.xlsx
+    fail:
+      - document: ../../static/spreadsheet-cells/01 Eis.xlsx
+        say: richtig wäre 29
+      - document: stufen/eis-bereich.xlsx
+        say: "D10 rechnet über D4:D8, die Zahlen stehen aber in D4:D9: D9 zählt nicht mit"
+  fallen:
+    pass:
+      - document: stufen/wandertag.xlsx
+    fail:
+      - document: ../../static/spreadsheet-cells/01 Wandertag.xlsx
+        say: 0 von 5 Fallen gefunden
+      - document: stufen/wandertag-vier.xlsx
+        say: 4 von 5 Fallen gefunden

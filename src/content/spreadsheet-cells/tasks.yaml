@@ -70,6 +70,10 @@ tasks:
 
   - id: kosten
     title: Die Kosten, die selbst rechnen
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
@@ -80,7 +84,9 @@ tasks:
       rules:
         - { same_data: 'A3:C8' }
         - { formulas: ['D4:D8', 'D9'] }
+        - { no_constants: 'D4:D8' }
         - { functions: { D9: SUM } }
+        - { ranges: { D9: 'D4:D8' } }
         - { values: { D4: 1250, D5: 4292, D6: 661.5, D7: 261, D8: 130.5, D9: 6595 } }
         - { recalc: { set: { C5: 152 }, expect: { D5: 4408, D9: 6711 } } }
     hint:
@@ -102,3 +108,114 @@ tasks:
         - "Klick in D4, tipp `=B4*C4` und drück <kbd>Enter</kbd>. Was in einer Zelle steht, zeigt die Zeile über der Tabelle."
         - "Klick wieder in D4 und zieh das kleine Quadrat unten rechts an der Zelle bis D8 nach unten."
         - "Klick in D9 und tipp `=SUMME(D4:D8)`, oder klick über der Tabelle auf **Σ** <i class='bi bi-chevron-right' aria-hidden='true'></i> *Summe*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Den Einkauf fürs Sommerfest hat jemand mit dem Taschenrechner
+      ausgerechnet. Lass die Tabelle selbst rechnen: jede Summe mit einer
+      Formel, den Gesamtbetrag mit SUMME.
+    check:
+      type: document
+      file: spreadsheet-cells/01 Sommerfest.xlsx
+      rules:
+        - { same_data: 'A3:C9' }
+        - { formulas: ['D4:D9', 'D10'] }
+        - { no_constants: 'D4:D9' }
+        - { functions: { D10: SUM } }
+        - { ranges: { D10: 'D4:D9' } }
+        - { values: { D4: 27, D5: 21, D6: 15.48, D7: 16.47, D8: 3.98, D9: 7.47, D10: 91.4 } }
+        - { recalc: { set: { C5: 0.4 }, expect: { D5: 24, D10: 94.4 } } }
+    hint:
+      - In jede Zeile kommt Anzahl mal Preis aus derselben Zeile, als Formel mit den Adressen.
+      - Eine Formel genügt; die anderen füllst du am kleinen Quadrat nach unten aus.
+      - Der Gesamtbetrag ist die SUMME über alle Summen, von der ersten bis zur letzten Zeile.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Füg vor der Zeile »Gesamt« eine Zeile ein: Eis, 29 Personen, 2,00 €.
+      Der Gesamtbetrag muss das Eis mitzählen. Schreib dann unter
+      »Personen« in A13 »Pro Person« und in D13, was das für jede Person
+      kostet.
+    check:
+      type: document
+      file: spreadsheet-cells/01 Eis.xlsx
+      rules:
+        - { same_data: 'A3:C8' }
+        - { values: { B9: 29, C9: 2, D9: 58 } }
+        - { formulas: ['D4:D9', 'D10', 'D13'] }
+        - { no_constants: ['D4:D9', 'D13'] }
+        - { ranges: { D10: 'D4:D9' } }
+        - { values: { D10: 6653, D13: 229.4138 } }
+        - { recalc: { set: { C9: 2.5, B12: 30 }, expect: { D10: 6667.5, D13: 222.25 } } }
+    hint:
+      - Eine Zeile fügst du über der Zeilennummer ein, auf die du rechts klickst. Die Formel für das Eis holst du am kleinen Quadrat aus der Zeile darüber.
+      - Klick auf den Gesamtbetrag und sieh dir den Bereich in der SUMME an. Reicht er bis zum Eis?
+      - Pro Person ist der Gesamtbetrag geteilt durch die Zahl der Personen, mit den Adressen beider Zellen.
+    libreoffice:
+      hint:
+        - "Klick mit der rechten Maustaste auf die Zeilennummer 9 und wähl *Zeilen oberhalb einfügen*. Trag Eis, 29 und 2 ein und zieh die Formel aus D8 am kleinen Quadrat nach D9."
+        - "Klick auf den Gesamtbetrag und sieh in der *Eingabezeile* nach, über welchen Bereich die SUMME rechnet. Reicht er nicht bis D9, ändere ihn auf D4:D9."
+        - "In D13 kommt `=D10/B12`: der Gesamtbetrag geteilt durch die Personen. Das Geteiltzeichen ist der Schrägstrich `/`."
+    word:
+      hint:
+        - "Klick mit der rechten Maustaste auf die Zeilennummer 9 und wähl *Einfügen*. Trag Eis, 29 und 2 ein und zieh die Formel aus D8 am kleinen Quadrat nach D9."
+        - "Klick auf den Gesamtbetrag und sieh in der *Bearbeitungsleiste* nach, über welchen Bereich die SUMME rechnet. Reicht er nicht bis D9, ändere ihn auf D4:D9."
+        - "In D13 kommt `=D10/B12`: der Gesamtbetrag geteilt durch die Personen. Das Geteiltzeichen ist der Schrägstrich `/`."
+    nextcloud:
+      hint:
+        - "Klick mit der rechten Maustaste auf die Zeilennummer 9 und wähl *Zeilen oberhalb einfügen*. Trag Eis, 29 und 2 ein und zieh die Formel aus D8 am kleinen Quadrat nach D9."
+        - "Klick auf den Gesamtbetrag und sieh in der Zeile über der Tabelle nach, über welchen Bereich die SUMME rechnet. Reicht er nicht bis D9, ändere ihn auf D4:D9."
+        - "In D13 kommt `=D10/B12`: der Gesamtbetrag geteilt durch die Personen. Das Geteiltzeichen ist der Schrägstrich `/`."
+
+  - id: fallen
+    title: Fünf Fallen
+    extra: true
+    prompt: |
+      Die Kosten des Wandertags sehen fertig aus, und jede Zelle in Spalte D
+      zeigt eine Zahl. Fünf Zellen sind trotzdem falsch gebaut. Die Prüfung
+      sagt dir nur, wie viele du gefunden hast; zu jeder Falle gibt es Tipps,
+      einen nach dem anderen.
+    check:
+      type: document
+      file: spreadsheet-cells/01 Wandertag.xlsx
+      traps: true
+      rules:
+        - { same_data: 'A3:C8' }
+        - recalc: { set: { B5: 28 }, expect: { D5: 182 } }
+          label: In D5 stand eine getippte Zahl.
+          hints:
+            - Klick nacheinander auf die Summen in Spalte D und sieh dir an, was wirklich in der Zelle steht, nicht nur, was sie zeigt.
+            - Sieh dir den Eintritt in den Tierpark an.
+            - In D5 steht die Zahl 175,5, keine Formel. Schreib `=B5*C5`.
+        - no_constants: 'D6'
+          label: D6 rechnete mit getippten Zahlen.
+          hints:
+            - Eine Formel kann stimmen und trotzdem nicht mitrechnen. Was steht in den Formeln, Adressen oder Zahlen?
+            - Sieh dir die Führung an.
+            - In D6 steht `=2*45`. Schreib die Adressen statt der Zahlen, `=B6*C6`.
+        - values: { D7: 92.8 }
+          label: D7 nahm den Preis aus der falschen Zeile.
+          hints:
+            - Rechne eine Zeile im Kopf nach. Passt das Ergebnis zu Anzahl und Preis?
+            - Sieh dir das Picknick an.
+            - In D7 steht `=B7*C8`; C8 ist der Preis der Getränke. Richtig ist `=B7*C7`.
+        - values: { D8: 43.5 }
+          label: D8 zählte Anzahl und Preis zusammen, statt sie zu multiplizieren.
+          hints:
+            - Schau auf die Rechenzeichen in den Formeln.
+            - Sieh dir die Getränke an.
+            - In D8 steht `=B8+C8`. Anzahl und Preis werden multipliziert, `=B8*C8`.
+        - ranges: { D9: 'D4:D8' }
+          label: Die SUMME ließ die letzte Zeile aus.
+          hints:
+            - Stimmt der Gesamtbetrag, wenn du alle Summen zusammenzählst?
+            - Klick auf den Gesamtbetrag und sieh dir den Bereich in der SUMME an.
+            - Die SUMME rechnet über D4:D7; D8 fehlt. Ändere den Bereich auf D4:D8.
+    solution: |
+      Die fünf Fallen: in D5 eine getippte Zahl, in D6 eine Formel mit
+      getippten Zahlen, in D7 der Preis aus der Zeile darunter, in D8 ein Plus
+      statt eines Malzeichens und eine SUMME, die bei D7 aufhört.

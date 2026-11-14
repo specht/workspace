@@ -151,3 +151,54 @@ _task(kosten)
 <strong>Ausprobieren:</strong> Füg zwischen Zeile 7 und 8 eine neue Zeile ein (Rechtsklick auf die Zeilennummer 8, <em>Zeilen oberhalb einfügen</em> oder <em>Einfügen</em>) und trag einen Posten ein, etwa »Eis« für 29 Personen zu 2,00. Füll die Formel in D aus und achte auf den Bereich in der SUMME.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Tabellen für alle, die mehr wollen: eine zum Üben, eine mit zwei neuen
+Handgriffen und eine zum Suchen.
+
+### Noch eine Runde
+
+Den Einkauf fürs Sommerfest der 7b hat jemand mit dem Taschenrechner
+ausgerechnet, gebaut wie die Kosten der Klassenfahrt. Lass die Tabelle selbst
+rechnen, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+In die Kosten der Klassenfahrt kommt noch ein Eis für alle: 29 Personen zu
+2,00 €. Die Vorlage dazu rechnet schon und hat unter dem Gesamtbetrag eine
+Zeile mit der Zahl der Personen.
+
+Eine neue Zeile fügst du über einer anderen ein: Klick mit der rechten
+Maustaste auf deren Zeilennummer.
+
+<!-- language: libreoffice -->
+In LibreOffice wählst du dann *Zeilen oberhalb einfügen*.
+<!-- /language -->
+<!-- language: word -->
+In Excel wählst du dann *Einfügen*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office wählst du dann *Zeilen oberhalb einfügen*.
+<!-- /language -->
+
+Die Formel der neuen Zeile holst du am kleinen Quadrat aus der Zeile darüber.
+Sieh dir danach den Gesamtbetrag an: Rechnet seine SUMME die neue Zeile mit?
+
+Was jede Person bezahlt, ist der Gesamtbetrag geteilt durch die Zahl der
+Personen. Eine Formel darf mit dem Ergebnis einer anderen Formel rechnen;
+ändert sich ein Preis, rechnen beide neu.
+
+_task(handgriffe)
+
+### Fünf Fallen
+
+Die Kosten des Wandertags sehen fertig aus: Jede Zelle in Spalte D zeigt eine
+Zahl. Fünf Zellen sind trotzdem falsch gebaut, alle von der Art wie auf
+diesem Blatt. Die Prüfung sagt dir nur, wie viele du gefunden hast, und jede
+Falle hat ihre eigenen Tipps.
+
+_task(fallen)

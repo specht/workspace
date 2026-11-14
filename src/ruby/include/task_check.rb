@@ -349,7 +349,7 @@ module TaskCheck
             name = File.basename(check['file'])
             copy = name.sub(/(\.[^.]+)\z/, ' (1)\\1')
             message = "In dieser Datei hat sich noch nichts geändert: Sie ist genau die Vorlage. Hast du die Vorlage zweimal heruntergeladen? " \
-                "Dann bearbeitest du vielleicht eine andere Datei, etwa »#{copy}«. Wähl die Datei, die du offen hast, mit »Anderes Dokument«. #{message}"
+                "Dann bearbeitest du vielleicht eine andere Datei, etwa »#{copy}«. Wähl die Datei, die du offen hast, mit »#{DocumentCheck.sheet_check?(check) ? 'Andere Tabelle' : check['file'].to_s.match?(/\.(pptx|odp)\z/i) ? 'Andere Präsentation' : 'Anderes Dokument'}«. #{message}"
         end
         # traps: what the check read would show where they hide
         Result.new(:status => status, :message => message, :read => check['traps'] ? nil : DocumentCheck.xray(answer),

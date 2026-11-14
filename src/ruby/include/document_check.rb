@@ -233,6 +233,7 @@ module DocumentCheck
     # worked in another file, mostly a second download (»01 Einladung
     # (1).docx«), and had this one checked.
     def self.untouched?(model, starter)
+        return sheet_untouched?(model, starter) if sheet?(starter)
         return false unless model.is_a?(Hash) && starter.is_a?(Hash) && starter['paragraphs'].is_a?(Array)
 
         print = lambda do |m|
@@ -256,6 +257,26 @@ module DocumentCheck
         end
         theirs = print.(starter)
         !theirs.empty? && print.(model) == theirs && layout.(model) == layout.(starter)
+    end
+
+    # A workbook still as it was: every sheet's cells with what is in them
+    # (number or text, formula), how they look (number format, bold), and
+    # its filter, conditional formats and charts. A workbook has no dates
+    # filled in on download.
+    def self.sheet_untouched?(model, starter)
+        return false unless sheet?(model)
+
+        print = lambda do |m|
+            Array(m['sheets']).map do |s|
+                cells = Array(s['cells']).reject { |c| c['type'] == 'empty' }.map do |c|
+                    [c['cell'], c['type'], c['formula'].to_s, c['type'] == 'text' ? c['text'].to_s : format('%.6f', c['value'].to_f),
+                     (c['number_format'] || {})['format'].to_s, c['bold'] ? true : false]
+                end
+                [cells.sort, (s['autofilter'] || {})['on'] ? true : false, Array(s['conditional']).size, Array(s['charts']).size]
+            end
+        end
+        theirs = print.(starter)
+        !theirs.empty? && print.(model) == theirs
     end
 
     # align: is a rule and a key of tabs: the other rule wins

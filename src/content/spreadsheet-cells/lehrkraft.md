@@ -8,7 +8,7 @@ Lernende ersetzen in einer Tabelle der Kosten der Klassenfahrt getippte Ergebnis
 <li><b>15 Minuten:</b> Formeln in D4 und D5, ein Preis zum Ausprobieren, die Vermutung zum Ausfüllen, nach unten ausfüllen.</li>
 <li><b>10 Minuten:</b> SUMME, prüfen, bis alles erfüllt ist.</li>
 <li><b>5 Minuten:</b> der Versuch mit einer eingefügten Zeile.</li>
-<li><b>Für Schnelle:</b> unter dem Gesamtbetrag ausrechnen lassen, was jedes Kind bezahlt (27 Kinder; das nächste Blatt fängt mit festen Bezügen an).</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -26,8 +26,30 @@ Lernende ersetzen in einer Tabelle der Kosten der Klassenfahrt getippte Ergebnis
 <tr><th>Dateien</th><td>Die Vorlage <code>01 Kosten.xlsx</code> kommt von der Seite; LibreOffice, Excel und Nextcloud Office öffnen und speichern sie. Speichern als <code>.ods</code> geht auch. Wie die Prüfung arbeitet (zwei Hälften des Bildschirms, Prüfen beim Speichern): die Notiz zum ersten Blatt der Textverarbeitung, <a href='/formatting-marks'>Was das Auge nicht sieht</a>.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Die Daten der Vorlage (Posten, Anzahl, Preis) sind unverändert.</li>
-<li>In D4 bis D8 und in D9 stehen Formeln, keine getippten Zahlen; D9 rechnet mit SUMME.</li>
+<li>In D4 bis D8 und in D9 stehen Formeln, keine getippten Zahlen; auch in den Formeln von D4 bis D8 stehen Adressen, keine Zahlen (<code>=29*148</code> zeigt das richtige Ergebnis und rechnet doch nicht mit).</li>
+<li>D9 rechnet mit SUMME, über genau D4 bis D8; eine SUMME bis D7 sagt die Prüfung mit der fehlenden Zelle.</li>
 <li>Die Ergebnisse stimmen.</li>
 <li>Rechnet mit: Die Prüfung setzt in ihrer Kopie den Preis der Jugendherberge (C5) auf 152 und rechnet neu; dann müssen D5 4.408 und D9 6.711 zeigen. Getippte Ergebnisse bleiben bei den alten Zahlen.</li>
 </ul></td></tr>
 </table>
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Kosten besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Fünf Fallen«.
+
+- **Noch eine Runde:** der Einkauf fürs Sommerfest, gebaut wie die Kosten
+  und ebenso mit dem Taschenrechner ausgerechnet; dieselben Punkte wie bei
+  den Kosten.
+- **Zwei Handgriffe:** die Kosten, schon rechnend, mit der Zahl der Personen
+  darunter. Über »Gesamt« kommt eine Zeile für das Eis; die SUMME muss sie
+  mitzählen, und wo sie es nicht tut, sagt die Prüfung, welche Zelle fehlt.
+  Dazu ausrechnen, was jede Person bezahlt: eine Formel, die mit dem
+  Ergebnis einer anderen rechnet (<code>=D10/B12</code>).
+- **Fünf Fallen:** die Kosten des Wandertags. Jede Zelle in Spalte D zeigt
+  eine Zahl, aber eine ist getippt, eine rechnet mit getippten Zahlen
+  (<code>=2*45</code>), eine nimmt den Preis aus der Zeile darunter, eine
+  zählt zusammen statt zu multiplizieren, und die SUMME hört eine Zeile zu
+  früh auf. Die Prüfung zählt nur und zeigt jede Falle erst, wenn sie behoben
+  ist; Tipps gibt es für jede einzeln.
