@@ -151,3 +151,39 @@ _task(einzahlungen)
 <strong>Ausprobieren:</strong> Tipp in eine leere Zelle eine <code>1</code> und gib ihr das Format Datum. Achte darauf, welcher Tag Tag 1 ist. In LibreOffice ist es der 31. Dezember 1899, in Excel der 1. Januar 1900: Excel zählt den 29. Februar 1900 mit.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Tabellen für alle, die mehr wollen: eine zum Üben, eine mit zwei neuen
+Handgriffen und eine zum Suchen.
+
+### Noch eine Runde
+
+Die Ausgaben der Klassenkasse im April: Manche Beträge sind von den
+Kassenzetteln kopiert, die Daten stehen als Zahlen da, und der Rabatt im
+Schreibwarenladen steht als 0,1. Bring die Tabelle in Form, diesmal ohne oben
+nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Für die Klassenfahrt zahlt jede Familie bei der Anmeldung einen Teil an, die
+Anzahlung: 20 % des Preises. Eine Zelle mit dem Format Prozent enthält eine
+Zahl, 20 % sind 0,2, und mit ihr rechnest du wie mit jeder anderen Zahl.
+
+Zahlen muss jede Familie zwei Wochen nach ihrer Anmeldung. Ein Datum plus 14
+ist der Tag zwei Wochen später; die Zelle mit der Formel bekommt ihr Format
+wie jede andere, sonst zeigt sie die Zahl des Tages.
+
+_task(handgriffe)
+
+### Fünf Fallen
+
+Die Einzahlungen für den Wandertag sehen fertig aus. Fünf Stellen sind
+trotzdem falsch gebaut: vier von der Art wie auf diesem Blatt, eine vom
+ersten. Die Prüfung sagt dir nur, wie viele du gefunden hast, und jede Falle
+hat ihre eigenen Tipps.
+
+_task(fallen)

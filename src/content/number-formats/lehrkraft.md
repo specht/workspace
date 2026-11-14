@@ -8,7 +8,7 @@ Lernende reparieren die Tabelle der Einzahlungen für die Klassenfahrt: Vier Bet
 <li><b>15 Minuten:</b> Zahlenformate: die Vermutung zur gerundeten Anzeige, Währung und Prozent setzen.</li>
 <li><b>10 Minuten:</b> ein Datum ist eine Zahl: die Tage zwischen zwei Einzahlungen ausrechnen, das Format Datum setzen, prüfen, bis alles erfüllt ist.</li>
 <li><b>5 Minuten:</b> der Versuch mit Tag 1; wer Excel und LibreOffice in der Klasse hat, vergleicht.</li>
-<li><b>Für Schnelle:</b> neben jede Einzahlung schreiben, wie viele Tage sie nach der ersten kam; das nächste Blatt fängt mit einer Zelle an, auf die alle Formeln zeigen.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -32,3 +32,23 @@ Lernende reparieren die Tabelle der Einzahlungen für die Klassenfahrt: Vier Bet
 </ul></td></tr>
 <tr><th>Unterschiede zwischen den Programmen</th><td>Tippt man <code>245 €</code> in eine Zelle, erkennen LibreOffice und Excel auf Deutsch meist eine Zahl mit Währungsformat; das ist richtig und besteht die Prüfung. Text entsteht vor allem beim Kopieren aus E-Mails oder Webseiten und bei <code>EUR 245</code>. Rechnet man <code>=A13-A4</code> in Excel, bekommt das Ergebnis oft das Datumsformat der Zellen und zeigt <code>07.01.1900</code>; der Tipp zur Aufgabe sagt, was dann zu tun ist.</td></tr>
 </table>
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Einzahlungen besteht, bekommt auf der Karte einen Vorschlag: nach drei oder
+mehr Prüfungen »Noch eine Runde«, nach einer oder zwei die »Fünf Fallen«.
+
+- **Noch eine Runde:** die Ausgaben der Klassenkasse im April, gebaut wie die
+  Einzahlungen: Beträge als Text (`12,40 €`, `EUR 25`), Daten als Zahlen, der
+  Rabatt als 0,1; dieselben Punkte wie bei den Einzahlungen.
+- **Zwei Handgriffe:** die Anzahlung, 20 % des Preises, als Formel mit der
+  Zelle in Prozent (<code>=C2*C3</code>, 49,00 €), und der Tag, bis zu dem
+  jede Familie zahlt, zwei Wochen nach der Anmeldung
+  (<code>=B7+14</code>), mit dem Format Datum. Die Prüfung ändert Preis und
+  Anmeldedatum und rechnet neu.
+- **Fünf Fallen:** die Einzahlungen für den Wandertag. Ein Betrag steht als
+  Text, ein Datum zeigt seine Zahl, in C2 steht 5 statt 0,05 (500 %), ein
+  Betrag hat das Format Datum, und die SUMME hört eine Zeile zu früh auf
+  (eine Falle vom ersten Blatt). Die Prüfung zählt nur und zeigt jede Falle
+  erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.

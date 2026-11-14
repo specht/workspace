@@ -62,16 +62,100 @@ def table(calc, path, amounts='mixed', formats=False):
     calc.save(doc, path)
 
 
+def ledger(calc, path, title, rate_label, rate, rows, head='Familie', typed=True, formats=False, total=None, after=None):
+    """a list like the payments: dates as numbers, amounts, some typed as
+    text (typed), the rate in C2; formats: currency, date and percent;
+    total: the total's formula; after(doc, last): more to set"""
+    doc = calc.new()
+    put(doc, 'A1', [[title], [rate_label, None, rate], ['Datum', head, 'Betrag']])
+    for i, (date, name, amount, text) in enumerate(rows):
+        put(doc, f'A{4 + i}', [[date, name, text if typed and text else amount]])
+    last = 3 + len(rows)
+    put(doc, f'A{last + 1}', [[None, 'Zusammen', total or f'=SUM(C4:C{last})']])
+    bold(doc, f'A1, A3:C3, B{last + 1}:C{last + 1}')
+    if formats:
+        fmt(doc, f'C4:C{last + 1}', '#.##0,00 [$€-407]')
+        fmt(doc, f'A4:A{last}', 'TT.MM.JJJJ')
+        fmt(doc, 'C2', '0 %')
+    if after:
+        after(doc, last)
+    widths(doc, [2.6, 5.0, 2.6])
+    calc.save(doc, path)
+
+
+def day(month, d):
+    return (datetime.date(YEAR, month, d) - datetime.date(1899, 12, 30)).days
+
+
+# »Noch eine Runde«: what the class fund paid in April, some amounts
+# copied from receipts as text; the stationer's discount 10 %
+FUND = [
+    (day(4, 6), 'Bastelpapier', 12.4, '12,40 €'), (day(4, 8), 'Kleber', 6.9, None),
+    (day(4, 12), 'Geschenk für den Hausmeister', 25, 'EUR 25'), (day(4, 15), 'Getränke für den Wandertag', 18.75, None),
+    (day(4, 19), 'Laminierfolie', 9.99, '9,99 €'), (day(4, 22), 'Briefmarken', 8.5, None),
+    (day(4, 26), 'Pinnwand', 34.9, None), (day(4, 29), 'Batterien', 7.2, '7,20 €'),
+]
+
+# »Fünf Fallen«: the payments for the hiking day, 18 € each, 17,10 € for
+# siblings; C6 typed as text, A9 a date without its format, C2 a 5 where
+# 0,05 belongs (500 %), C11 an amount formatted as a date, the total one
+# row short (a trap of the first sheet)
+HIKE = [
+    (day(5, 3), 'Familie Arslan', 18, None), (day(5, 3), 'Familie Becker', 18, None), (day(5, 4), 'Familie Çelik', 18, '18 €'),
+    (day(5, 5), 'Familie Dąbrowski', 18, None), (day(5, 6), 'Familie Engel', 18, None), (day(5, 7), 'Familie Fischer', 17.1, None),
+    (day(5, 7), 'Familie Groß', 18, None), (day(5, 10), 'Familie Hoang', 17.1, None), (day(5, 11), 'Familie Ivanova', 18, None),
+    (day(5, 12), 'Familie Jansen', 18, None),
+]
+
+
+def hike_traps(doc, last):
+    fmt(doc, 'A9', 'Standard')
+    fmt(doc, 'C11', 'TT.MM.JJJJ')
+    put(doc, 'C2', [[5]])
+
+
+def deposit(calc, path, solved):
+    """»Zwei Handgriffe«: the deposit, 20 % of the price, and the day it is
+    due, two weeks after a family signed up"""
+    doc = calc.new()
+    put(doc, 'A1', [['Anmeldung zur Klassenfahrt'], ['Preis', None, 245], ['Anzahlung', None, 0.2],
+                    ['Anzahlung je Familie'], [], ['Familie', 'Angemeldet am', 'Anzahlung bis']])
+    for i, (name, d) in enumerate([('Familie Arslan', 1), ('Familie Becker', 3), ('Familie Çelik', 4), ('Familie Dąbrowski', 8)]):
+        put(doc, f'A{7 + i}', [[name, day(2, d)] + ([f'=B{7 + i}+14'] if solved else [])])
+    if solved:
+        put(doc, 'C4', [['=C2*C3']])
+        fmt(doc, 'C4', '#.##0,00 [$€-407]')
+        fmt(doc, 'C7:C10', 'TT.MM.JJJJ')
+    fmt(doc, 'C2', '#.##0,00 [$€-407]')
+    fmt(doc, 'C3', '0 %')
+    fmt(doc, 'B7:B10', 'TT.MM.JJJJ')
+    bold(doc, 'A1, A6:C6')
+    widths(doc, [4.4, 3.4, 3.4])
+    calc.save(doc, path)
+
+
 if __name__ == '__main__':
     os.makedirs(STATIC, exist_ok=True)
     for folder in ('stufen', 'bilder'):
         os.makedirs(os.path.join(HERE, folder), exist_ok=True)
+    stage = lambda name: os.path.join(HERE, 'stufen', name)  # noqa: E731
     with Calc() as calc:
         starter = os.path.join(STATIC, STARTER)
         table(calc, starter)
-        table(calc, os.path.join(HERE, 'stufen', 'einzahlungen.xlsx'), amounts='numbers', formats=True)
-        table(calc, os.path.join(HERE, 'stufen', 'ohne-format.xlsx'), amounts='numbers', formats=False)
-        table(calc, os.path.join(HERE, 'stufen', 'excel-format.xlsx'), amounts='numbers', formats='excel')
+        table(calc, stage('einzahlungen.xlsx'), amounts='numbers', formats=True)
+        table(calc, stage('ohne-format.xlsx'), amounts='numbers', formats=False)
+        table(calc, stage('excel-format.xlsx'), amounts='numbers', formats='excel')
         calc.picture(starter, os.path.join(HERE, 'bilder', 'einzahlungen.svg'))
-        calc.picture(os.path.join(HERE, 'stufen', 'einzahlungen.xlsx'), os.path.join(HERE, 'bilder', 'einzahlungen-fertig.svg'))
-    print('written: static/number-formats/02 Einzahlungen.xlsx, stufen/*.xlsx, bilder/*.svg')
+        calc.picture(stage('einzahlungen.xlsx'), os.path.join(HERE, 'bilder', 'einzahlungen-fertig.svg'))
+        # Üben und knobeln
+        fund = dict(title='Klassenkasse der 7b: Ausgaben im April', rate_label='Rabatt im Schreibwarenladen', rate=0.1, rows=FUND, head='Wofür')
+        ledger(calc, os.path.join(STATIC, '02 Klassenkasse.xlsx'), **fund)
+        ledger(calc, stage('klassenkasse.xlsx'), typed=False, formats=True, **fund)
+        deposit(calc, os.path.join(STATIC, '02 Anzahlung.xlsx'), False)
+        deposit(calc, stage('anzahlung.xlsx'), True)
+        hike = dict(title='Einzahlungen für den Wandertag', rate_label='Ermäßigung für Geschwister', rate=0.05, rows=HIKE)
+        ledger(calc, os.path.join(STATIC, '02 Wandertag.xlsx'), formats=True, total='=SUM(C4:C12)', after=hike_traps, **hike)
+        ledger(calc, stage('wandertag.xlsx'), typed=False, formats=True, **hike)
+        # four traps fixed, the total still one row short
+        ledger(calc, stage('wandertag-vier.xlsx'), typed=False, formats=True, total='=SUM(C4:C12)', **hike)
+    print('written: static/number-formats/02 *.xlsx, stufen/*.xlsx, bilder/*.svg')

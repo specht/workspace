@@ -15,3 +15,23 @@ examples:
         say: Text, nicht als Zahl
       - document: stufen/ohne-format.xlsx
         say: als Währung formatiert
+  runde:
+    pass:
+      - document: stufen/klassenkasse.xlsx
+    fail:
+      - document: ../../static/number-formats/02 Klassenkasse.xlsx
+        say: Text, nicht als Zahl
+  handgriffe:
+    pass:
+      - document: stufen/anzahlung.xlsx
+    fail:
+      - document: ../../static/number-formats/02 Anzahlung.xlsx
+        say: "zum Beispiel C4, steht nichts, keine Formel"
+  fallen:
+    pass:
+      - document: stufen/wandertag.xlsx
+    fail:
+      - document: ../../static/number-formats/02 Wandertag.xlsx
+        say: 0 von 5 Fallen gefunden
+      - document: stufen/wandertag-vier.xlsx
+        say: 4 von 5 Fallen gefunden

@@ -96,6 +96,10 @@ tasks:
 
   - id: einzahlungen
     title: Die Einzahlungen in Form
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
@@ -129,3 +133,112 @@ tasks:
         - "Klick in C5, tipp `245` und drück <kbd>Enter</kbd>. Ebenso in C7, C10 und C12."
         - "Markiere C4 bis C14, dann Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Zahlen* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Währung*."
         - "Für A4 bis A13 nimmst du im selben Fenster die Kategorie *Datum*, für C2 *Prozent*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Die Ausgaben der Klassenkasse im April: Manche Beträge sind von den
+      Kassenzetteln als Text kopiert, die Daten stehen als Zahlen da, der
+      Rabatt als 0,1. Mach Zahlen aus den Beträgen und gib allem sein
+      Format: Währung, Datum, Prozent.
+    check:
+      type: document
+      file: number-formats/02 Klassenkasse.xlsx
+      rules:
+        - { same_data: ['A1:C3', 'A4:B11'] }
+        - { text_numbers: 'C4:C11' }
+        - { values: { C12: 123.64 } }
+        - { formulas: ['C12'] }
+        - { functions: { C12: SUM } }
+        - { number_format: { 'C4:C12': currency, 'A4:A11': date, C2: percent } }
+    hint:
+      - Die Beträge, die links in ihrer Zelle stehen, sind Text. Tipp sie als Zahl, ohne Euro-Zeichen.
+      - Gib den Beträgen mit der Summe das Format Währung, den Zahlen in Spalte A das Format Datum.
+      - Der Rabatt in C2 bekommt das Format Prozent; 0,1 sind 10 %.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Rechne in C4 aus, wie viel Euro jede Familie anzahlt: den Preis mal
+      die Anzahlung. Und schreib in C7 bis C10, bis wann sie zahlen muss:
+      zwei Wochen nach der Anmeldung. Gib beiden Ergebnissen ihr Format.
+    check:
+      type: document
+      file: number-formats/02 Anzahlung.xlsx
+      rules:
+        - { same_data: ['A1:C3', 'A7:B10'] }
+        - { formulas: ['C4', 'C7:C10'] }
+        - { no_constants: 'C4' }
+        - { values: { C4: 49, C7: 46433, C8: 46435, C9: 46436, C10: 46440 } }
+        - { number_format: { C4: currency, 'C7:C10': date } }
+        - { recalc: { set: { C2: 250, B7: 46420 }, expect: { C4: 50, C7: 46434 } } }
+    hint:
+      - Eine Zelle mit Prozent enthält eine Zahl, 20 % sind 0,2. Mit ihr rechnest du wie mit jeder anderen Zahl.
+      - Ein Datum ist eine Zahl von Tagen. Zwei Wochen später ist das Datum plus 14.
+      - Das Ergebnis einer Formel bekommt sein Format wie jede andere Zelle; ohne Format zeigt C7 eine Zahl wie 46433.
+    libreoffice:
+      hint:
+        - "In C4 kommt `=C2*C3`: der Preis mal die Anzahlung. Gib C4 das Format Währung."
+        - "In C7 kommt `=B7+14`; zieh die Formel am kleinen Quadrat bis C10."
+        - "Markiere C7 bis C10 und gib ihnen mit <kbd>Strg</kbd>+<kbd>1</kbd> <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Zahlen* die Kategorie *Datum*."
+    word:
+      hint:
+        - "In C4 kommt `=C2*C3`: der Preis mal die Anzahlung. Gib C4 das Format Währung."
+        - "In C7 kommt `=B7+14`; zieh die Formel am kleinen Quadrat bis C10."
+        - "Markiere C7 bis C10 und wähle im Register *Start* im Feld *Zahlenformat* *Datum, kurz*."
+    nextcloud:
+      hint:
+        - "In C4 kommt `=C2*C3`: der Preis mal die Anzahlung. Gib C4 das Format Währung."
+        - "In C7 kommt `=B7+14`; zieh die Formel am kleinen Quadrat bis C10."
+        - "Markiere C7 bis C10, dann Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Zahlen* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Datum*."
+
+  - id: fallen
+    title: Fünf Fallen
+    extra: true
+    prompt: |
+      Die Einzahlungen für den Wandertag sehen fertig aus. Fünf Stellen sind
+      trotzdem falsch gebaut: vier von der Art wie auf diesem Blatt, eine vom
+      ersten. Die Prüfung sagt dir nur, wie viele du gefunden hast; zu jeder
+      Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: number-formats/02 Wandertag.xlsx
+      traps: true
+      rules:
+        - { same_data: 'A4:B13' }
+        - text_numbers: 'C6'
+          label: In C6 stand der Betrag als Text.
+          hints:
+            - Steht jeder Betrag dort in seiner Zelle, wo Zahlen stehen?
+            - Sieh dir die Einzahlung der Familie Çelik an.
+            - In C6 steht »18 €« als Text, links in der Zelle. Tipp nur `18`.
+        - number_format: { A9: date }
+          label: A9 zeigte eine Zahl statt eines Datums.
+          hints:
+            - Zeigt jede Zelle in Spalte A ein Datum?
+            - Sieh dir die Einzahlung der Familie Fischer an.
+            - In A9 steht 46514 ohne Format. Gib der Zelle das Format Datum; die Zahl bleibt, wie sie ist.
+        - values: { C2: 0.05 }
+          label: In C2 standen 500 % statt 5 %.
+          hints:
+            - Lies die Zeilen über der Tabelle. Stimmt, was dort steht?
+            - Wie viel Ermäßigung bekommen Geschwister, und was zeigt C2?
+            - In C2 steht die Zahl 5, mit dem Format Prozent also 500 %. 5 % sind 0,05; tipp `0,05` oder `5 %`.
+        - number_format: { C11: currency }
+          label: C11 zeigte ein Datum statt eines Betrags.
+          hints:
+            - Zeigt jede Zelle in Spalte C einen Betrag?
+            - Sieh dir die Einzahlung der Familie Hoang an.
+            - C11 hat das Format Datum und zeigt 17,10 € als Tag im Januar 1900. Gib ihr das Format Währung wie den anderen.
+        - ranges: { C14: 'C4:C13' }
+          label: Die SUMME ließ die letzte Einzahlung aus.
+          hints:
+            - Diese Falle ist vom ersten Blatt. Stimmt der Betrag ganz unten?
+            - Klick auf die Summe und sieh dir den Bereich an.
+            - Die SUMME rechnet über C4:C12; C13 fehlt. Ändere den Bereich auf C4:C13.
+    solution: |
+      Die fünf Fallen: in C6 ein Betrag als Text, in A9 ein Datum ohne
+      Format, in C2 die Zahl 5 als 500 %, in C11 ein Betrag im Format Datum,
+      und eine SUMME, die bei C12 aufhört.
