@@ -36,6 +36,10 @@ class Main < Sinatra::Base
     # shows; for a class (group), everyone in it takes part. The number of
     # them; raises the package's errors (ConfigError, Error).
     def create_exam(blob, filename, group)
+        # the file name of a multipart upload arrives as binary: as text, and
+        # never invalid UTF-8 (neo4j_bolt refuses that; 0.5.1 stored it as a
+        # list of numbers)
+        filename = filename.to_s.dup.force_encoding('UTF-8').scrub
         sha1 = Digest::SHA1.hexdigest(blob)
         tag = RandomTag.generate(24)
         debug "Got a file called #{filename} with #{blob.size} bytes."
