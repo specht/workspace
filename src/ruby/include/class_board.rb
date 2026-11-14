@@ -33,7 +33,9 @@ module ClassBoard
     # viewer:  { email:, name: } of the teacher looking, if not a member: their
     #          own row once they worked on a task (board[:own]), shown below
     #          the class and not counted with it
-    def self.build(members, tasks, states, viewer: nil)
+    # extras:  more such rows, not members either (the teacher's test
+    #          account), each once it worked on a task (board[:extras])
+    def self.build(members, tasks, states, viewer: nil, extras: [])
         row = lambda do |m|
             cells = tasks.map do |t|
                 s = (states[m[:email]] || {})[t[:id]]
@@ -55,6 +57,8 @@ module ClassBoard
             own = row.call(viewer)
             own = nil if own[:cells].all? { |c| c.status == 'none' }
         end
+        more = extras.reject { |m| members.any? { |x| x[:email] == m[:email] } }.map(&row)
+                     .reject { |r| r[:cells].all? { |c| c.status == 'none' } }
         summary = tasks.each_with_index.map do |t, i|
             cells = rows.map { |r| r[:cells][i] }
             tried = cells.count { |c| %w[correct wrong sent].include?(c.status) }
@@ -68,7 +72,7 @@ module ClassBoard
                 :predicted_right => t[:prediction] ? cells.count { |c| c.first_status == 'correct' } : nil,
             }
         end
-        { :rows => rows, :own => own, :summary => summary, :tasks => tasks }
+        { :rows => rows, :own => own, :extras => more, :summary => summary, :tasks => tasks }
     end
 
     # The last time a row did anything on the activity (epoch seconds), or nil.
@@ -301,9 +305,14 @@ module ClassBoard
             io << row_cells(r, tasks, activity, meeting, now)
         end
         io << '</tbody>'
-        if (own = board[:own])
-            io << "<tbody class='cb-own'><tr data-email='#{h(own[:email])}'><th class='cb-name'>#{h(own[:name])}</th>"
-            io << row_cells(own, tasks, activity, meeting, now) << '</tbody>'
+        mine = [board[:own], *board[:extras]].compact
+        unless mine.empty?
+            io << "<tbody class='cb-own'>"
+            mine.each do |own|
+                io << "<tr data-email='#{h(own[:email])}'><th class='cb-name'>#{h(own[:name])}</th>"
+                io << row_cells(own, tasks, activity, meeting, now)
+            end
+            io << '</tbody>'
         end
         io << '<tfoot><tr><th class="cb-name">Klasse</th>'
         board[:summary].each_with_index do |s, i|
@@ -313,7 +322,7 @@ module ClassBoard
             io << "<td class='cb-summary#{s[:often_wrong] ? ' cb-often-wrong' : ''}#{i == meeting ? ' cb-meeting' : ''}'>#{notes.map { |n| h(n) }.join('<br>')}</td>"
         end
         io << '<td></td><td></td></tr></tfoot></table></div>'
-        rows = board[:own] ? board[:rows] + [board[:own]] : board[:rows]
+        rows = board[:rows] + [board[:own], *board[:extras]].compact
 
         # What students wrote and handed in, per task.
         tasks.each_with_index do |t, i|
@@ -347,7 +356,7 @@ module ClassBoard
             # A new round: the group's hand-ins of this task go (class_board.js
             # asks first). The teacher's own row is not counted.
             if submit
-                count = entries.count { |r, c| r != board[:own] && %w[sent stale].include?(c.status) }
+                count = entries.count { |r, c| r != board[:own] && !Array(board[:extras]).include?(r) && %w[sent stale].include?(c.status) }
                 if count > 0
                     io << "<button type='button' class='btn btn-sm btn-outline-danger class-delete-submissions' " \
                         "data-task='#{h(activity)}/#{h(t[:id])}' data-title='#{h(t[:title])}' data-count='#{count}'>" \

@@ -441,7 +441,9 @@
         const go = (reason) => {
             button.disabled = true;
             if (impersonate) {
-                api_call('/api/impersonate', { email: email, reason: reason }, function (data) {
+                // the test account from a class: it sees what this class sees
+                const extra = button.dataset.group ? { group: button.dataset.group } : {};
+                api_call('/api/impersonate', Object.assign({ email: email, reason: reason }, extra), function (data) {
                     if (data.success !== false) location.href = '/';
                 });
             } else {

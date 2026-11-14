@@ -76,6 +76,19 @@ class ClassBoardTest < Minitest::Test
         assert_includes html, "cb-task cb-often-wrong"
     end
 
+    # the teacher's test account below the class too, not counted with it
+    def test_test_account_row_below_the_class
+        states = { 'me+test@x' => { 'adresse' => state('correct') } }
+        b = ClassBoard.build(MEMBERS, TASKS, states, viewer: { :email => 'me@x', :name => 'Du (Lehrkraft)' },
+                             extras: [{ :email => 'me+test@x', :name => 'Dein Testkonto' }])
+        assert_nil b[:own]
+        assert_equal ['Dein Testkonto'], b[:extras].map { |r| r[:name] }
+        assert_equal 0, b[:summary][0][:done]
+        html = ClassBoard.html(b, activity: 'tcpip')
+        assert_includes html, "<tbody class='cb-own'><tr data-email='me+test@x'><th class='cb-name'>Dein Testkonto</th>"
+        assert_empty ClassBoard.build(MEMBERS, TASKS, {}, extras: [{ :email => 'me+test@x', :name => 'Dein Testkonto' }])[:extras]
+    end
+
     def test_own_row_below_the_class
         states = { 'ada@x' => { 'adresse' => state('correct') }, 'me@x' => { 'abgabe' => state('sent', answer: '3 Dateien, 1 kB') } }
         b = ClassBoard.build(MEMBERS, TASKS, states, viewer: { :email => 'me@x', :name => 'Du (Lehrkraft)' })

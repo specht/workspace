@@ -56,12 +56,17 @@ class Main < Sinatra::Base
     # who started (impersonated_by), also across a second impersonation.
     post '/api/impersonate' do
         assert(teacher_logged_in?)
-        data = parse_request_data(:required_keys => [:email], :optional_keys => [:reason],
+        data = parse_request_data(:required_keys => [:email], :optional_keys => [:reason, :group],
             :max_body_length => 2048, :max_string_length => 1024)
         email = data[:email].to_s.downcase
         halt 403 unless may_look_in?(email)
         record_look_in(email, 'impersonate', data[:reason])
         ensure_user_account(email)
+        # the teacher's own test account, imitated from a class: it sees the
+        # start page as that class does (my_groups)
+        if @@test_accounts[email] == @session_user[:email] && data[:group] && (@@teachers[@session_user[:email]] || Set.new).include?(data[:group])
+            neo4j_query('MATCH (u:User {email: $email}) SET u.test_class = $group;', :email => email, :group => data[:group])
+        end
         neo4j_query(<<~END_OF_STRING, {:sid => current_session_key, :email => email, :by => @session_user[:email]})
             MATCH (s:Session {sid: $sid})-[r:FOR]->(:User), (u:User {email: $email})
             DELETE r

@@ -117,14 +117,17 @@ class Main < Sinatra::Base
         END_OF_STRING
             # who takes part in one uploaded before exams belonged to a
             # class: shown in the classes they are in (exams.js)
-            emails = row['t'][:group] ? nil : row['emails']
+            # an exam of the test group (no class one chooses any more) is shown
+            # like one without a class, to be given to one
+            group = @@test_groups.include?(row['t'][:group]) ? nil : row['t'][:group]
+            emails = group ? nil : row['emails']
             entries << {
                 tag: row['t'][:tag],
                 running: row['t'][:running],
                 size: bytes_to_str(row['f'][:size]),
                 filename: row['t'][:filename],
                 ts: row['t'][:ts],
-                group: row['t'][:group],
+                group: group,
                 count: row['COUNT(u2)'],
                 emails: emails,
             }.compact
@@ -190,6 +193,8 @@ class Main < Sinatra::Base
         data = {
             :group => group, :order => my_user_group_order, :groups => my_user_groups,
             :names => my_invitations, :schools => school_names_of_groups.slice(*my_user_group_order), :mySchool => school,
+            # the test group is shown as the teacher's test account
+            :testGroup => @@test_group_of[me],
         }
         # trying it first: »Ausprobieren« shows the start page as the class
         # sees it and opens the teacher's preview behind it

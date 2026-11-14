@@ -1175,6 +1175,12 @@
         }, { no_please_wait: true });
     }
 
+    // »Antworten aus 9b«; the teacher's test group (TestAccounts.plan names
+    // it »Testgruppe (Name)«) is its test account
+    function answersLabel(group) {
+        return /^Testgruppe \(/.test(group) ? 'Antworten deines Testkontos' : 'Antworten aus ' + group;
+    }
+
     // The buttons of one card: example answers if it has some, a button per
     // group, »Ausblenden«, and a select for the other groups.
     function renderBar(panel, card) {
@@ -1184,7 +1190,7 @@
             html += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='examples'>Beispielantworten</button>";
         buttonGroups().forEach((group) => {
             html += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='group' data-group='" +
-                escapeHtml(group) + "'>Antworten aus " + escapeHtml(group) + "<span class='task-teacher-tally'></span></button>";
+                escapeHtml(group) + "'>" + escapeHtml(answersLabel(group)) + "<span class='task-teacher-tally'></span></button>";
         });
         html += "<button type='button' class='btn btn-sm btn-outline-secondary task-teacher-view' data-view='off'>Ausblenden</button>";
         views.innerHTML = html;
@@ -1221,7 +1227,7 @@
                 if (tally) {
                     const count = groupCount(card, button.dataset.group);
                     tally.textContent = count ? count[0] + '/' + count[1] : '';
-                    button.setAttribute('aria-label', 'Antworten aus ' + button.dataset.group +
+                    button.setAttribute('aria-label', answersLabel(button.dataset.group) +
                         (count ? ', ' + count[0] + ' von ' + count[1] + ' haben geantwortet' : ''));
                 }
             });

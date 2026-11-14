@@ -32,6 +32,11 @@ function participant_groups(entry) {
         .filter(([, n]) => n > 0);
 }
 
+// a group as the teacher reads it: the test group is its test account
+function group_label(group) {
+    return group === E.testGroup ? 'Dein Testkonto' : group;
+}
+
 function refresh_test_archives() {
     if (!document.getElementById('table_my_test_archives')) return;
     api_call('/api/get_my_test_archives', {}, function(data) {
@@ -55,7 +60,7 @@ function refresh_test_archives() {
                 .append($("<div class='small text-body-secondary'>").text(`${uploaded ? 'hochgeladen am ' + uploaded + ', ' : ''}${entry.size}`))
                 .appendTo(row);
             if (!entry.group) {
-                const from = participant_groups(entry).map(([g, n]) => `${g} (${n})`).join(', ');
+                const from = participant_groups(entry).map(([g, n]) => g === E.testGroup ? group_label(g) : `${g} (${n})`).join(', ');
                 name_cell.append($("<div class='small text-body-secondary exam-unassigned'>")
                     .text(`Noch keiner Klasse zugeordnet${from ? '. Teilnehmende aus: ' + from : ''}`));
                 const assign = $(`<button type='button' class='btn btn-link btn-sm px-0 exam-assign'><i class='bi bi-box-arrow-in-down-right'></i>Dieser Klasse zuordnen</button>`);
@@ -147,7 +152,7 @@ function open_exam_people(entry) {
             const members = (user_groups[group] || []).slice().sort((a, b) => exam_name(a).localeCompare(exam_name(b), 'de'));
             const details = $(`<details class='exam-people-group'>`).appendTo(target);
             const summary = $(`<summary><span class='exam-people-group-name'></span><span class='exam-people-group-count text-body-secondary small'></span></summary>`).appendTo(details);
-            summary.find('.exam-people-group-name').text(group);
+            summary.find('.exam-people-group-name').text(group_label(group));
             const actions = $(`<span class='exam-people-group-actions'>
                 <button type='button' class='btn btn-link btn-sm' data-flag='1'>Alle</button>
                 <button type='button' class='btn btn-link btn-sm' data-flag='0'>Keine</button></span>`).appendTo(summary);

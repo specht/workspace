@@ -676,19 +676,38 @@ zusätzlich steht jeder Zugriff der Administration ein Jahr lang in
 ## Testkonto
 
 Jede Lehrkraft hat genau ein Testkonto, `adresse+test@domain`, ob mit `+`,
-mit `*` oder als Admin, allein in einer eigenen **Testgruppe (Name)**. Nur
-sie sieht diese Gruppe; sie steht in der Gruppenauswahl der Klassenseite
-zuletzt, und auch Admins sehen die Testgruppen der anderen nicht. Damit
-probiert sie aus, was Lernende sehen: Aufgaben, Abgaben, die Galerie,
-Leistungsüberprüfungen; eine Leistungsüberprüfung, die sie in der Testgruppe
-hochlädt, schreibt das Testkonto von selbst als Teilnehmer ein. »Nachahmen« braucht dort keinen Satz.
+mit `*` oder als Admin (`TestAccounts.plan`). Intern steht es allein in einer
+eigenen **Testgruppe (Name)**, damit es sich anmelden, Aufgaben lösen und an
+Leistungsüberprüfungen teilnehmen kann; in keiner Klasse zählt es mit. Die
+Gruppenauswahl der Klassenseite bietet die Testgruppe nicht an (nur, wenn sie
+alles ist, was eine Lehrkraft hat, etwa mit `*` allein; mit ihrer Adresse
+öffnet sie sich weiter). Stattdessen:
 
-**Testkonto zurücksetzen** (Klassenseite, Reiter »Lernende« der Testgruppe)
-leert den Workspace des Testkontos und seine Workspaces in
-Leistungsüberprüfungen, legt seine Datenbanken neu an und löscht seine
-Antworten, Versuche und Abgaben. Zugewiesen bleibt es; andere Konten ändern
-sich nicht. Wer sich direkt als Testkonto anmeldet, bekommt den Anmelde-Code an die
-eigene Adresse ohne `+test`; nicht jedes Postfach nimmt Adressen mit `+` an.
+- **Unter »Lernende« jeder Klasse,** die sie betreut, steht ganz unten
+  »Dein Testkonto« (`class_test_account_rows`), nur für sie: »Workspace
+  öffnen«, »Nachahmen« (ohne Satz) und »Testkonto zurücksetzen«.
+- **Nachahmen aus einer Klasse** merkt sich die Klasse am Testkonto
+  (`u.test_class`, `/api/impersonate` mit `group`); `my_groups` gibt dem
+  Testkonto diese Klasse dazu, solange seine Lehrkraft sie betreut. So sieht
+  es die Startseite wie diese Klasse: ihre angehefteten Aktivitäten, Sprachen,
+  Office-Programme und Repositorys, ohne Mitglied zu sein. Meldet es sich
+  direkt an, sieht es die Klasse, aus der es zuletzt nachgeahmt wurde.
+- **Im Reiter »Fortschritt«** steht es unter der Klasse in einer eigenen
+  Zeile »Dein Testkonto« (`ClassBoard.build`, `extras:`), wie »Du
+  (Lehrkraft)«, nicht mitgezählt; unter offenen Fragen heißt sein Knopf
+  »Antworten deines Testkontos«.
+- **Leistungsüberprüfungen:** »Ausprobieren« braucht kein Testkonto. Im
+  Dialog »Teilnehmende« steht es als »Dein Testkonto« und lässt sich
+  ankreuzen; Leistungsüberprüfungen, die noch in der Testgruppe angelegt
+  wurden, stehen wie solche ohne Klasse in den Klassen, mit »Dieser Klasse
+  zuordnen«.
+
+**Testkonto zurücksetzen** leert den Workspace des Testkontos und seine
+Workspaces in Leistungsüberprüfungen, legt seine Datenbanken neu an und
+löscht seine Antworten, Versuche und Abgaben. Zugewiesen bleibt es; andere
+Konten ändern sich nicht. Wer sich direkt als Testkonto anmeldet, bekommt den
+Anmelde-Code an die eigene Adresse ohne `+test`; nicht jedes Postfach nimmt
+Adressen mit `+` an.
 
 ## Einstieg für Lehrkräfte
 

@@ -2199,7 +2199,14 @@ class Main < Sinatra::Base
     def my_groups
         return [] unless user_logged_in? && defined?(@@group_members)
 
-        @@group_members.select { |_, members| members.include?(@session_user[:email]) }.keys
+        mine = @@group_members.select { |_, members| members.include?(@session_user[:email]) }.keys
+        # a test account sees the start page as the class its teacher last
+        # imitated it from (class_test_account_rows): that class's pins and
+        # settings, while it counts in none of the class's numbers
+        teacher = (defined?(@@test_accounts) ? @@test_accounts : {})[@session_user[:email]]
+        chosen = @session_user[:test_class]
+        mine += [chosen] if teacher && chosen && (@@teachers[teacher] || Set.new).include?(chosen) && !mine.include?(chosen)
+        mine
     end
 
     # Activities teachers pinned for groups: [{ slug:, group:, ts: }].
@@ -2614,8 +2621,36 @@ class Main < Sinatra::Base
             end
             io << "</td></tr>"
         end
-        io << "</tbody></table></div></section>"
+        io << "</tbody>"
+        io << class_test_account_rows(group, running) unless test_group
+        io << "</table></div></section>"
         io
+    end
+
+    # The teacher's own test account under »Lernende« of every class it
+    # teaches, only for it: »Nachahmen« as the test account sees the start
+    # page as this class does (its pins and settings: my_groups adds the
+    # class, u.test_class), »Workspace öffnen«, »Testkonto zurücksetzen«.
+    # It is in no class itself (its own hidden test group), so no count of
+    # the class includes it.
+    def class_test_account_rows(group, running)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        me = @session_user[:email]
+        email = @@test_accounts.find { |_, teacher| teacher == me }&.first
+        return '' unless email && (@@teachers[me] || Set.new).include?(group)
+
+        name = (@@invitations[email] || {})[:name] || email
+        on = running.include?(fs_tag_for_email(email))
+        attrs = "data-email='#{h.(email)}' data-name='#{h.(name)}' data-test='1' data-group='#{h.(group)}'"
+        "<tbody class='class-test-account'><tr class='class-test-head'><th colspan='5'>Dein Testkonto " \
+            "<span class='class-test-note'>Damit probierst du aus, was Lernende sehen, wie diese Klasse; nur du siehst es, und keine Zahl der Klasse zählt es mit.</span></th></tr>" \
+            "<tr data-email='#{h.(email)}'><td class='class-person'>#{h.(name)}</td>" \
+            "<td class='class-ws-status#{on ? ' class-ws-running' : ''}' data-fs-tag='#{h.(fs_tag_for_email(email))}'><span class='class-ws-dot' aria-hidden='true'></span><span class='class-ws-text'>#{on ? 'läuft' : 'aus'}</span></td>" \
+            "<td class='class-ws-cpu text-end'>–</td><td class='class-ws-ram text-end'>–</td><td class='class-person-actions'>" \
+            "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-open-workspace' #{attrs} title='Workspace öffnen'><i class='bi bi-code-slash' aria-hidden='true'></i><span class='class-btn-label'>Workspace öffnen</span></button> " \
+            "<button type='button' class='btn btn-sm btn-outline-secondary bu-class-impersonate' #{attrs} title='Nachahmen'><i class='bi bi-person-vcard' aria-hidden='true'></i><span class='class-btn-label'>Nachahmen</span></button> " \
+            "<button type='button' class='btn btn-sm btn-outline-danger bu-class-reset-test' title='Testkonto zurücksetzen'><i class='bi bi-arrow-counterclockwise' aria-hidden='true'></i><span class='class-btn-label'>Testkonto zurücksetzen</span></button>" \
+            "<span class='class-test-reset-note' aria-live='polite'></span></td></tr></tbody>"
     end
 
     # What a teacher looked at last on the class page: the group, and per
@@ -2687,7 +2722,13 @@ class Main < Sinatra::Base
         end
 
         prefs = class_prefs
-        group = [params['group'], prefs['group']].find { |g| groups.include?(g) } || groups.first
+        # the test group is not offered: the test account has its row under
+        # »Lernende« of every class (class_people_html); it stays where it is
+        # all a teacher has (a teacher with * only), and when it is asked for
+        listed = groups.reject { |g| @@test_groups.include?(g) }
+        listed = groups if listed.empty?
+        group = (groups.include?(params['group']) ? params['group'] : nil) || [prefs['group']].find { |g| listed.include?(g) } || listed.first
+        groups = listed.include?(group) ? listed : listed + [group]
         # »gruppe«: the tab that managed the group is part of »Lernende« now.
         wanted = params['tab'] == 'gruppe' ? 'lernende' : params['tab']
         # the link of an activity page to its class repository (/klasse?repos=SLUG)
@@ -2977,10 +3018,13 @@ class Main < Sinatra::Base
         # members of the group, e.g. to try a task before the class does).
         me = @session_user[:email]
         viewer = { :email => me, :name => 'Du (Lehrkraft)' }
-        states = class_board_states((members.map { |m| m[:email] } + [me]).uniq, activity_key)
+        # and one's test account, which belongs to no class (class_test_account_rows)
+        test_email = @@test_accounts.find { |_, teacher| teacher == me }&.first
+        extras = test_email ? [{ :email => test_email, :name => 'Dein Testkonto' }] : []
+        states = class_board_states((members.map { |m| m[:email] } + [me] + extras.map { |x| x[:email] }).uniq, activity_key)
         # How did it go? Once the group looks finished (ActivityFeedback)
         io << activity_feedback_html(group, activity_key, states)
-        board = ClassBoard.build(members, tasks, states, :viewer => viewer)
+        board = ClassBoard.build(members, tasks, states, :viewer => viewer, :extras => extras)
         # The meeting point: who has arrived (class_meeting.js asks again
         # while the page is open), and the line on the board after its task
         point = meeting_points([group], activity_key)[group]
@@ -2988,7 +3032,7 @@ class Main < Sinatra::Base
             "#{point ? MeetingPoint.status_html(MeetingPoint.status(tasks, point, members, states)) : ''}</div>"
         io << ClassBoard.html(board, :activity => activity_key, :meeting => point,
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
-        io << class_scene_galleries_html(activity_key, tasks, board[:own] ? members + [viewer] : members)
+        io << class_scene_galleries_html(activity_key, tasks, members + (board[:own] ? [viewer] : []) + extras.select { |x| board[:extras].any? { |r| r[:email] == x[:email] } })
         io << class_kata_hand_ins_html(activity_key, tasks, members)
         io
     end

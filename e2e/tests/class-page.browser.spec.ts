@@ -52,10 +52,14 @@ test('the class page remembers the group and each group\'s activity', async ({ p
   await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
   const testGroup = 'Testgruppe (E2E Teacher)';
   await page.goto('/klasse?group=E2E&activity=bif');
+  // the test group, asked for by its address, keeps its own activity, but
+  // is not offered as the group to come back to (docs/teacher-access.md)
   await page.goto('/klasse?group=' + encodeURIComponent(testGroup) + '&activity=tcpip');
-  await page.goto('/klasse');
+  await page.goto('/klasse?group=' + encodeURIComponent(testGroup));
   await expect(page.locator(".class-board-select select[name='group']")).toHaveValue(testGroup);
   await expect(page.locator('.class-activity-select select')).toHaveValue('tcpip');
+  await page.goto('/klasse');
+  await expect(page.locator(".class-board-select select[name='group']")).toHaveValue('E2E');
   // the group is a search field over the hidden select
   await page.locator('.class-board-select input[role=combobox]').fill('E2E');
   await page.keyboard.press('Enter');
@@ -99,12 +103,19 @@ test('each teacher has its own test group and resets its test account', async ({
   const states = await (await student.request.post('/api/task/states', { data: { activity: 'tcpip' } })).json();
   expect(states.states['traceroute-erklaeren']).toBeUndefined();
 
-  // A group administrator: its group and its own test group, no other
+  // A group administrator: its group, no test group to choose; its test
+  // account has a row of its own under »Lernende« of the class
   const teacher = await (await page.context().browser()!.newContext()).newPage();
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
-  await teacher.goto('/klasse');
+  await teacher.goto('/klasse?group=E2E&tab=lernende');
   const names = await teacher.locator(".class-board-select select[name='group'] option").allTextContents();
-  expect(names.filter((n) => n.startsWith('Testgruppe'))).toEqual(['Testgruppe (E2E Teacher) (1)']);
+  expect(names.filter((n) => n.startsWith('Testgruppe'))).toEqual([]);
+  const own = teacher.locator('.class-test-account');
+  await expect(own).toContainText('Dein Testkonto');
+  await expect(own).toContainText('Testkonto (E2E Teacher)');
+  await expect(own.getByRole('button', { name: 'Testkonto zurücksetzen' })).toBeVisible();
+  // the class's count does not include it
+  await expect(teacher.locator('#class-panel-lernende tbody:not(.class-test-account) tr[data-email="e2e-teacher+test@example.com"]')).toHaveCount(0);
 });
 
 // Activities are found by typing: the board's activity and the one to pin
@@ -156,4 +167,26 @@ test('the class page finds activities by typing', async ({ page }, testInfo) => 
   await page.getByRole('tab', { name: 'Startseite' }).click();
   await page.locator(".class-pin:has(a[href='/reference/ffmpeg']) .class-unpin").click();
   await expect(page.locator(".class-pin:has(a[href='/reference/ffmpeg'])")).toHaveCount(0);
+});
+
+// The test account imitated from a class sees the start page as that class
+// does: its pins, though it belongs to no class (my_groups, test_class).
+test('the test account imitated from a class sees what the class sees', async ({ browser }, testInfo) => {
+  const context = await browser.newContext();
+  const teacher = await context.newPage();
+  await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
+  await teacher.request.post('/api/class/pin', { data: { group: 'E2E', slug: 'tcpip' } });
+  try {
+    await teacher.goto('/klasse?group=E2E&tab=lernende');
+    await teacher.locator('.class-test-account .bu-class-impersonate').click();
+    await teacher.waitForURL((u) => u.pathname === '/');
+    await expect(teacher.locator('.look-in-bar')).toContainText('Testkonto (E2E Teacher)');
+    await expect(teacher.locator('#student-home-title')).toContainText('Von deiner Lehrkraft');
+    await expect(teacher.locator('.student-home-cards')).toContainText('TCP/IP');
+    await teacher.locator('.bu-stop-impersonation').click();
+    await teacher.waitForURL(/\/klasse/);
+  } finally {
+    await teacher.request.post('/api/class/unpin', { data: { group: 'E2E', slug: 'tcpip' } });
+    await context.close();
+  }
 });
