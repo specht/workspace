@@ -19,3 +19,23 @@ examples:
         say: '#DIV/0!'
       - document: stufen/getippt.xlsx
         say: "rechnet nicht mit: Nachdem ich B2 auf 24"
+  runde:
+    pass:
+      - document: stufen/sportfest.xlsx
+    fail:
+      - document: ../../static/absolute-references/03 Sportfest.xlsx
+        say: keine Formel
+  handgriffe:
+    pass:
+      - document: stufen/preise.xlsx
+    fail:
+      - document: ../../static/absolute-references/03 Preise.xlsx
+        say: steht nichts, keine Formel
+  fallen:
+    pass:
+      - document: stufen/wandertag.xlsx
+    fail:
+      - document: ../../static/absolute-references/03 Wandertag.xlsx
+        say: 0 von 5 Fallen gefunden
+      - document: stufen/wandertag-vier.xlsx
+        say: 4 von 5 Fallen gefunden

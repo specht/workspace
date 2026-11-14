@@ -73,6 +73,10 @@ tasks:
 
   - id: anteile
     title: Was ein Kind bezahlt
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
@@ -83,6 +87,7 @@ tasks:
       rules:
         - { same_data: ['A1:B10'] }
         - { formulas: ['C6:D10', 'C11:D11'] }
+        - { no_constants: 'C6:C10' }
         - { absolute: { cells: 'C6:C10', ref: 'B2' } }
         - { absolute: { cells: 'D6:D10', ref: 'B3' } }
         - { functions: { C11: SUM, D11: SUM } }
@@ -109,3 +114,116 @@ tasks:
         - "Klick in C6 und tipp die Formel neu, mit den Dollarzeichen: `=B6/$B$2`. Mit <kbd>Enter</kbd> bestätigen und am kleinen Quadrat bis C10 ziehen."
         - "In D6 tippst du `=C6*(1-$B$3)` und ziehst bis D10."
         - "In C11 `=SUMME(C6:C10)`, in D11 ebenso für D. Dann C6 bis D11 markieren, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Währung*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Was ein Kind fürs Sportfest bezahlt: die Kosten geteilt durch die Zahl
+      der Kinder in B2, mit Ermäßigung weniger B3. In C6 steht schon die
+      erste Formel, ohne Dollarzeichen.
+    check:
+      type: document
+      file: absolute-references/03 Sportfest.xlsx
+      rules:
+        - { same_data: ['A1:B9'] }
+        - { formulas: ['C6:D9', 'C10:D10'] }
+        - { no_constants: 'C6:C9' }
+        - { absolute: { cells: 'C6:C9', ref: 'B2' } }
+        - { absolute: { cells: 'D6:D9', ref: 'B3' } }
+        - { functions: { C10: SUM, D10: SUM } }
+        - { values: { C10: 18.55, D10: 16.695 } }
+        - { recalc: { set: { B2: 30, B3: 0.2 }, expect: { C10: 17.3133, D10: 13.8507 } } }
+        - no_errors
+        - { number_format: { 'C6:D10': currency } }
+    hint:
+      - In C6 bekommt B2 Dollarzeichen, dann füllst du die Formel nach unten aus.
+      - In D6 kommt der Anteil mal 1 minus die Ermäßigung, mit festem Bezug auf B3.
+      - Unter beide Spalten kommt eine SUMME, und alles bekommt das Format Währung.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Fülle C4 bis E7 mit einer einzigen Formel: was jeder Posten für 25,
+      27 und 29 Kinder kostet. Schreib dann in F4 bis F7, welchen Anteil
+      jeder Posten an dem hat, was ein Kind zusammen bezahlt, als Prozent.
+    check:
+      type: document
+      file: absolute-references/03 Preise.xlsx
+      rules:
+        - { same_data: ['A3:E3', 'A4:B7'] }
+        - { formulas: ['C4:F7'] }
+        - { no_constants: 'C4:F7' }
+        - { values: { C4: 3700, E4: 4292, D5: 661.5, C7: 112.5, E7: 130.5, F4: 0.7957, F5: 0.1317, F6: 0.0484, F7: 0.0242 } }
+        - { absolute: { cells: 'F4:F7', ref: 'B8' } }
+        - { number_format: { 'F4:F7': percent } }
+        - { recalc: { set: { B4: 150, D3: 28 }, expect: { C4: 3750, D4: 4200, F4: 0.7979 } } }
+    hint:
+      - In C4 steht der Preis pro Kind mal die Zahl der Kinder darüber. Nach rechts soll der Preis in Spalte B bleiben, nach unten die Zahl in Zeile 3.
+      - Ein Dollarzeichen vor dem B hält nur die Spalte fest, eins vor der 3 nur die Zeile. So wird aus `=$B4*C$3` beim Ausfüllen in E7 `=$B7*E$3`.
+      - Der Anteil ist der Preis pro Kind geteilt durch die Summe in B8, mit festem Bezug auf B8, im Format Prozent.
+    libreoffice:
+      hint:
+        - "In C4 kommt `=$B4*C$3`. Zieh sie am kleinen Quadrat bis E4 nach rechts, dann die drei Zellen zusammen bis Zeile 7 nach unten."
+        - "<kbd>Shift</kbd>+<kbd>F4</kbd> wechselt in der *Eingabezeile* zwischen `$B$4`, `B$4`, `$B4` und `B4`: Drück so oft, bis nur noch vor dem B ein $ steht."
+        - "In F4 kommt `=B4/$B$8`, bis F7 nach unten gezogen; dann F4 bis F7 **Als Prozent formatieren**."
+    word:
+      hint:
+        - "In C4 kommt `=$B4*C$3`. Zieh sie am kleinen Quadrat bis E4 nach rechts, dann die drei Zellen zusammen bis Zeile 7 nach unten."
+        - "<kbd>F4</kbd> wechselt in der *Bearbeitungsleiste* zwischen `$B$4`, `B$4`, `$B4` und `B4`: Drück so oft, bis nur noch vor dem B ein $ steht."
+        - "In F4 kommt `=B4/$B$8`, bis F7 nach unten gezogen; dann F4 bis F7 im Feld *Zahlenformat* als *Prozent*."
+    nextcloud:
+      hint:
+        - "In C4 kommt `=$B4*C$3`. Zieh sie am kleinen Quadrat bis E4 nach rechts, dann die drei Zellen zusammen bis Zeile 7 nach unten."
+        - "Die Dollarzeichen tippst du selbst: eins vor das B, eins vor die 3, `=$B4*C$3`."
+        - "In F4 kommt `=B4/$B$8`, bis F7 nach unten gezogen; dann F4 bis F7 mit Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* als *Prozent*."
+
+  - id: fallen
+    title: Fünf Fallen
+    extra: true
+    prompt: |
+      Was ein Kind beim Wandertag bezahlt, sieht fertig aus. Fünf Stellen
+      sind trotzdem falsch gebaut: drei von der Art wie auf diesem Blatt, je
+      eine vom ersten und zweiten. Die Prüfung sagt dir nur, wie viele du
+      gefunden hast; zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: absolute-references/03 Wandertag.xlsx
+      traps: true
+      rules:
+        - { same_data: ['A1:B9'] }
+        - absolute: { cells: 'C7', ref: 'B2' }
+          label: C7 teilte durch die Ermäßigung statt durch die Zahl der Kinder.
+          hints:
+            - Klick nacheinander auf die Anteile in Spalte C und sieh dir an, durch welche Zelle jede teilt.
+            - Sieh dir den Eintritt in den Tierpark an. Ist der Anteil eines Kindes wirklich so groß?
+            - In C7 steht `=B7/B3`; die Formel ist ohne Dollarzeichen ausgefüllt worden. Richtig ist `=B7/$B$2`.
+        - no_constants: 'C8'
+          label: C8 teilte durch eine getippte 26.
+          hints:
+            - Eine Formel kann stimmen und trotzdem nicht mitrechnen. Ändere B2 und sieh nach, welcher Anteil sich nicht ändert.
+            - Sieh dir die Führung an.
+            - In C8 steht `=B8/26`. Schreib `=B8/$B$2`.
+        - recalc: { set: { B3: 0.1 }, expect: { D9: 2.88 } }
+          label: D9 nahm getippte 5 % weg.
+          hints:
+            - Ändere die Ermäßigung in B3 und sieh nach, welcher Betrag in Spalte D sich nicht ändert.
+            - Sieh dir das Picknick an.
+            - In D9 steht `=C9*0.95`. Schreib `=C9*(1-$B$3)`.
+        - number_format: { D6: currency }
+          label: D6 hatte kein Format Währung.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sehen alle Beträge in Spalte D gleich aus?
+            - Sieh dir den Bus an.
+            - D6 zeigt eine Zahl mit vielen Stellen nach dem Komma. Gib der Zelle das Format Währung wie den anderen.
+        - ranges: { C10: 'C6:C9' }
+          label: Die SUMME der Anteile ließ den letzten Posten aus.
+          hints:
+            - Diese Falle ist vom ersten Blatt. Stimmen die Summen ganz unten?
+            - Klick auf die Summe in Spalte C und sieh dir den Bereich an.
+            - Die SUMME rechnet über C6:C8; C9 fehlt. Ändere den Bereich auf C6:C9.
+    solution: |
+      Die fünf Fallen: C7 teilte durch B3 statt durch $B$2, C8 durch eine
+      getippte 26, D9 nahm getippte 5 % weg, D6 hatte kein Format Währung,
+      und die SUMME in C10 hörte bei C8 auf.

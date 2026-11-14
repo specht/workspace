@@ -138,3 +138,40 @@ _task(anteile)
 <strong>Ausprobieren:</strong> Schreib in E6 <code>=$B6</code> und füll die Formel nach rechts und nach unten aus, ein paar Zellen weit. Achte darauf, welcher Teil des Bezugs sich ändert und welcher nicht.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Tabellen für alle, die mehr wollen: eine zum Üben, eine mit zwei neuen
+Handgriffen und eine zum Suchen.
+
+### Noch eine Runde
+
+Was ein Kind fürs Sportfest bezahlt, gebaut wie die Anteile der Klassenfahrt:
+die Zahl der Kinder in B2, die Ermäßigung in B3, in C6 die erste Formel ohne
+Dollarzeichen. Rechne die Anteile aus, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Wie viel kostet die Fahrt eine ganze Klasse, wenn 25, 27 oder 29 Kinder
+mitfahren? In jeder Zelle steht der Preis pro Kind aus Spalte B mal die Zahl
+der Kinder aus Zeile 3. Mit einer einzigen Formel füllst du alle zwölf Zellen,
+wenn sie nach rechts und nach unten richtig wandert: Ein `$` nur vor dem B hält
+die Spalte fest, eins nur vor der 3 die Zeile. Ein solcher Bezug heißt
+**gemischt**.
+
+Danach soll neben jedem Posten stehen, welchen Anteil er an dem hat, was ein
+Kind zusammen bezahlt: der Preis geteilt durch die Summe in B8, als Prozent.
+
+_task(handgriffe)
+
+### Fünf Fallen
+
+Was ein Kind beim Wandertag bezahlt, sieht fertig aus. Fünf Stellen sind
+trotzdem falsch gebaut: drei von der Art wie auf diesem Blatt, je eine vom
+ersten und zweiten. Die Prüfung sagt dir nur, wie viele du gefunden hast, und
+jede Falle hat ihre eigenen Tipps.
+
+_task(fallen)

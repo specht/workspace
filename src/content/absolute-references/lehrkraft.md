@@ -8,7 +8,7 @@ Lernende rechnen aus, was ein Kind für die Klassenfahrt bezahlt: die Kosten jed
 <li><b>15 Minuten:</b> das Dollarzeichen: C6 bis C10 mit <code>$B$2</code>, die SUMME, B2 zum Ausprobieren ändern; die Vermutung zum Ziehen nach rechts.</li>
 <li><b>10 Minuten:</b> die Ermäßigung mit <code>$B$3</code>, das Format Währung, prüfen, bis alles erfüllt ist.</li>
 <li><b>5 Minuten:</b> der Versuch mit <code>=$B6</code>, nach rechts und unten ausgefüllt.</li>
-<li><b>Für Schnelle:</b> eine Spalte E »für 26 Kinder«, die mit einer eigenen Zelle für die Zahl der Kinder rechnet; das nächste Blatt wertet die Umfrage nach der Fahrt aus.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -26,8 +26,28 @@ Lernende rechnen aus, was ein Kind für die Klassenfahrt bezahlt: die Kosten jed
 <tr><th>Dateien</th><td>Die Vorlage <code>03 Anteile.xlsx</code> kommt von der Seite; LibreOffice, Excel und Nextcloud Office öffnen und speichern sie. Speichern als <code>.ods</code> geht auch. Die Kosten sind die der Kinder aus dem ersten Blatt (die beiden Lehrkräfte bezahlen nicht die Familien); jede Familie hat im zweiten Blatt 245 € im Voraus eingezahlt, was übrig bleibt, kommt im letzten Blatt zurück.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Die Daten der Vorlage (Zahl der Kinder, Ermäßigung, Posten und Kosten) sind unverändert.</li>
-<li>C6 bis D11 rechnen mit Formeln; C6 bis C10 mit festem Bezug auf B2, D6 bis D10 auf B3 (<code>B$2</code> genügt, nur die Zeile muss fest sein); C11 und D11 mit SUMME.</li>
+<li>C6 bis D11 rechnen mit Formeln, in C6 bis C10 ohne getippte Zahlen (<code>=B6/27</code> sagt die Prüfung mit der Formel); C6 bis C10 mit festem Bezug auf B2, D6 bis D10 auf B3 (<code>B$2</code> genügt, nur die Zeile muss fest sein); C11 und D11 mit SUMME.</li>
 <li>Die Summen stimmen (232,30 € und 220,68 €), keine Zelle zeigt einen Fehler, C6 bis D11 haben ein Währungsformat.</li>
 <li>Rechnet mit: Die Prüfung setzt in ihrer Kopie die Zahl der Kinder auf 24 und die Ermäßigung auf 10 %; dann müssen C11 261,33 € und D11 235,20 € zeigen. Wer 27 oder 0,95 in die Formeln getippt hat, bleibt bei den alten Zahlen.</li>
 </ul></td></tr>
 </table>
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Anteile besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Fünf Fallen«.
+
+- **Noch eine Runde:** was ein Kind fürs Sportfest bezahlt, gebaut wie die
+  Anteile: 28 Kinder, 10 % Ermäßigung; dieselben Punkte wie bei den Anteilen.
+- **Zwei Handgriffe:** eine Preistabelle für 25, 27 und 29 Kinder aus einer
+  einzigen Formel mit gemischten Bezügen (<code>=$B4*C$3</code>), nach
+  rechts und nach unten ausgefüllt, und der Anteil jedes Postens an der
+  Summe pro Kind (<code>=B4/$B$8</code>) als Prozent. Die Prüfung ändert einen
+  Preis und eine Kinderzahl und rechnet neu.
+- **Fünf Fallen:** was ein Kind beim Wandertag bezahlt. Eine Formel teilt
+  durch die Ermäßigung (ohne $ ausgefüllt), eine durch eine getippte 26, eine
+  nimmt getippte 5 % weg, ein Betrag hat kein Format Währung (vom zweiten
+  Blatt), und eine SUMME hört eine Zeile zu früh auf (vom ersten). Die
+  Prüfung zählt nur und zeigt jede Falle erst, wenn sie behoben ist; Tipps
+  gibt es für jede einzeln.
