@@ -191,20 +191,11 @@ class Main < Sinatra::Base
             :group => group, :order => my_user_group_order, :groups => my_user_groups,
             :names => my_invitations, :schools => school_names_of_groups.slice(*my_user_group_order), :mySchool => school,
         }
-        # trying it with the test account first: in a class, the way to the
-        # test group; in the test group, what to do there
-        how = 'Dein Testkonto öffnest du im Reiter <em>Lernende</em> der Testgruppe mit <em>Nachahmen</em> ' \
-              'oder in einem privaten Fenster mit <code>+test</code> vor dem @ deiner Adresse.'
-        own_test_group = @@test_group_of[me]
-        tip = if @@test_groups.include?(group)
-            '<strong>Deine Testgruppe:</strong> Hier nimmt dein Testkonto teil, eine Klasse merkt nichts davon. ' \
-                "Starte die Leistungsüberprüfung, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how}"
-        elsif own_test_group
-            '<strong>Erst ausprobieren?</strong> Leg die Leistungsüberprüfung zuerst in deiner ' \
-                "<a href='/klasse?group=#{CGI.escape(own_test_group)}&amp;tab=pruefungen'>Testgruppe</a> an, dort nimmt dein Testkonto teil. " \
-                "Starte sie, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how} " \
-                'Kennt deine Klasse den Ablauf noch nicht, hilft vielleicht ein kurzer Probelauf mit einer kleinen Leistungsüberprüfung von dir, bevor es zählt.'
-        end
+        # trying it first: »Ausprobieren« shows the start page as the class
+        # sees it and opens the teacher's preview behind it
+        tip = '<strong>Erst ausprobieren?</strong> Mit <em>Ausprobieren</em> unter <em>Vorschau</em> siehst du die Startseite, wie die Klasse sie ' \
+              'während der Leistungsüberprüfung sieht, und öffnest von dort deine Vorschau des Workspace; die Klasse merkt davon nichts. ' \
+              'Kennt deine Klasse den Ablauf noch nicht, hilft vielleicht ein kurzer Probelauf mit einer kleinen Leistungsüberprüfung von dir, bevor es zählt.'
         "<div class='class-exams'>" \
             "<div class='class-exams-head'><p class='mb-0'>Für eine Leistungsüberprüfung ziehst du ihren Ordner von deinem Rechner hierher, mit der Aufgabe und allem, " \
             "was die Klasse zu Beginn bekommt; ein Ordner aus deinem Workspace oder ein fertiges Paket geht auch. " \
@@ -343,9 +334,54 @@ class Main < Sinatra::Base
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
     end
+    # The teacher's look at an exam as the class sees it (»Ausprobieren« on
+    # the class page): the start page during the exam, the menu hidden as
+    # for a student, its button opening the teacher's preview Workspace
+    # (carrying on where it was; »Von vorn beginnen« starts it again), and
+    # a bar back to the class page
+    get '/pruefung-ansehen' do
+        redirect "#{WEB_ROOT}/" unless teacher_logged_in?
+        tag = params['tag'].to_s
+        test = neo4j_query('MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag}) RETURN t;',
+                           :email => @session_user[:email], :tag => tag).first
+        halt 404 unless test
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        title = test['t'][:filename].to_s.sub(/\.(tar\.gz|tgz|tar\.bz2|tar)\z/i, '')
+        group = params['group'].to_s
+        back = "/klasse?#{group.empty? ? '' : "group=#{CGI.escape(group)}&"}tab=pruefungen"
+        me = (@@invitations[@session_user[:email]] || {})[:name] || @session_user[:email]
+        running_tests = [{ :tag => tag, :teacher => me }]
+        @exam_try_page = "<div class='container'><div class='exam-try-bar' role='note'><i class='bi bi-eye' aria-hidden='true'></i>" \
+            "<div><strong>Vorschau von »#{h.(title)}«:</strong> So sieht die Startseite für alle aus, die teilnehmen, solange die Leistungsüberprüfung läuft. " \
+            'Der Knopf öffnet deine Vorschau, getrennt von den Workspaces der Klasse; öffnest du sie wieder, geht es dort weiter.</div>' \
+            "<div class='exam-try-actions'><button type='button' class='btn btn-sm btn-outline-secondary bu-exam-demo' id='bu_exam_try_fresh' data-tag='#{h.(tag)}'>" \
+            "<i class='bi bi-arrow-counterclockwise'></i>Von vorn beginnen</button>" \
+            "<a class='btn btn-sm btn-primary' href='#{h.(back)}'><i class='bi bi-arrow-left'></i>Zurück zur Klasse</a></div></div>" +
+            running_tests_html(running_tests, :demo => true) + '</div>' +
+            "<script>(function () {\n" \
+            "  function open(button, fresh) {\n" \
+            "    button.prop('disabled', true).find('.bi').addClass('bi-spin');\n" \
+            "    api_call('/api/start_test_demo', { tag: button.data('tag'), keep: fresh ? 'no' : 'yes' }, function (data) {\n" \
+            "      if (data.success && data.status !== 'failed') { check_server_tag_update(data.server_tag); check_server_online(data.server_tag); }\n" \
+            "      else button.prop('disabled', false).find('.bi').removeClass('bi-spin');\n" \
+            "    });\n" \
+            "  }\n" \
+            "  $('.bu-launch-test-demo').addClass('bu-exam-demo').on('click', function () { open($(this), false); });\n" \
+            "  $('#bu_exam_try_fresh').on('click', function () { open($(this), true); });\n" \
+            "})();</script>"
+        path = request.path
+        slug = nil
+        template = File.read(File.join(@@static_dir, '_template.html'))
+        html = Main.inject_page_metadata(TrustedTemplate.render_page(template, '#{@exam_try_page}', binding), request.path)
+        respond_raw_with_mimetype(html, 'text/html')
+    end
+
     post '/api/start_test_demo' do
         assert(teacher_logged_in?)
-        data = parse_request_data(:required_keys => [:tag])
+        # keep: 'yes' carries on in the preview as it is (Ausprobieren);
+        # otherwise it starts again from the package
+        data = parse_request_data(:required_keys => [:tag], :optional_keys => [:keep])
+        keep = data[:keep] == 'yes'
         email = @session_user[:email]
         test_tag = data[:tag]
 
@@ -366,12 +402,14 @@ class Main < Sinatra::Base
             :server_tag => server_tag
         ) do
             container_name = fs_tag_for_email("#{email}#{demo_tag}")
-            workspace_runtime.stop_workspace(
-                container_name,
-                :timeout => shell_timeout(:docker_kill),
-            )
-            FileUtils.rm_rf("/user/#{container_name}")
-            reset_test_demo_databases(email, demo_tag)
+            unless keep
+                workspace_runtime.stop_workspace(
+                    container_name,
+                    :timeout => shell_timeout(:docker_kill),
+                )
+                FileUtils.rm_rf("/user/#{container_name}")
+                reset_test_demo_databases(email, demo_tag)
+            end
             start_server(
                 email,
                 test_tag,

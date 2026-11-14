@@ -31,12 +31,8 @@ test('an exam uploaded for a class: its students take part, one taken out and ba
   const members = await page.locator('#class-panel-lernende tr[data-email]').evaluateAll(
     (rows) => rows.map((r) => r.getAttribute('data-email')!));
   test.skip(members.length < 2, 'the class needs two students');
-  // the hint: try it in the test group first, where the test account takes part
-  const tip = page.locator('.class-exams-tip');
-  await expect(tip).toContainText('Erst ausprobieren?');
-  await tip.getByRole('link', { name: 'Testgruppe' }).click();
-  await expect(page.locator('.class-exams-tip')).toContainText('Hier nimmt dein Testkonto teil');
-  await page.goto(`/klasse?group=${encodeURIComponent(group)}&tab=pruefungen`);
+  // the hint: try it with »Ausprobieren«
+  await expect(page.locator('.class-exams-tip')).toContainText('Mit Ausprobieren unter Vorschau');
 
   const archive = examPackage();
   const name = path.basename(archive);
@@ -69,6 +65,32 @@ test('an exam uploaded for a class: its students take part, one taken out and ba
     await box.check();
     await expect(page.locator('.exam-people-count')).toHaveText(`${taking.length} ausgewählt`);
     await page.locator('#test_modal').getByRole('button', { name: 'Fertig' }).click();
+
+    // »Ausprobieren«: the start page as the class sees it, the menu hidden,
+    // a bar back; the button carries on in the preview, »Von vorn
+    // beginnen« starts it again; spinning while the Workspace boots
+    const asked: string[] = [];
+    await page.route('**/api/start_test_demo', async (route) => {
+      asked.push(route.request().postDataJSON().keep);
+      await route.fulfill({ json: { success: true, status: 'started', server_tag: 'e2etryboot' } });
+    });
+    await page.route('**/w/e2etryboot/', (route) => route.fulfill({ status: 502, body: '' }));
+    await row.getByRole('link', { name: /ausprobieren$/ }).click();
+    await expect(page).toHaveURL(/\/pruefung-ansehen\?tag=/);
+    await expect(page.locator('.exam-try-bar')).toContainText('So sieht die Startseite für alle aus');
+    await expect(page.locator('.menu').first()).toBeHidden();
+    const launch = page.locator('.bu-launch-test-demo');
+    await expect(launch).toContainText('Leistungsüberprüfung bei');
+    await launch.click();
+    await expect.poll(() => asked).toEqual(['yes']);
+    await page.waitForResponse('**/w/e2etryboot/');
+    await expect(launch.locator('.bi')).toHaveClass(/bi-spin/);
+    await page.reload();
+    await page.locator('#bu_exam_try_fresh').click();
+    await expect.poll(() => asked).toEqual(['yes', 'no']);
+    await page.unroute('**/api/start_test_demo');
+    await page.getByRole('link', { name: 'Zurück zur Klasse' }).click();
+    await expect(page).toHaveURL(/\/klasse\?group=.*tab=pruefungen/);
   } finally {
     fs.rmSync(archive, { force: true });
     if (tag) await page.request.post('/api/delete_test', { data: { tag } });

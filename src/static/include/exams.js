@@ -86,31 +86,13 @@ function refresh_test_archives() {
             // Two buttons side by side, not a btn-group: its overlapping
             // borders look doubled at some zoom levels.
             const preview = $(`<div class='d-flex gap-1' role='group' aria-label='Vorschau'>`);
-            const bu_demo = $(`<button type='button' class='btn btn-sm btn-outline-secondary bu-exam-demo'><i class='bi bi-box-arrow-up-right'></i>Workspace</button>`).appendTo(preview);
+            // the start page as the class sees it during the exam, with
+            // the button to the teacher's preview Workspace (/pruefung-ansehen)
+            $(`<a class='btn btn-sm btn-outline-secondary bu-exam-try'><i class='bi bi-eye'></i>Ausprobieren</a>`)
+                .attr('href', `/pruefung-ansehen?tag=${encodeURIComponent(entry.tag)}&group=${encodeURIComponent(exam_group)}`)
+                .attr('aria-label', `${title} ausprobieren`).appendTo(preview);
             const bu_demo_pdf = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-printer'></i>Druckansicht</button>`).appendTo(preview);
             $('<td>').append(preview).appendTo(row);
-            bu_demo.on('click', function() {
-                showTemplateModal('Workspace-Vorschau öffnen', `
-                    <p>Die Vorschau ist von deinem Workspace und von den Workspaces der Teilnehmenden getrennt.</p>
-                    <p>Beim Öffnen werden <strong>nur deine bisherigen Vorschau-Dateien und Vorschau-Datenbanken zurückgesetzt</strong>.
-                    Du bekommst den frischen Workspace, den auch die Teilnehmenden beim ersten Start sehen.</p>`,
-                    "<i class='bi bi-box-arrow-up-right'></i>Frischen Workspace öffnen", 'btn-primary',
-                    "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function() {
-                        bu_demo.prop('disabled', true);
-                        bu_demo.find('.bi').addClass('bi-spin');
-                        // spinning until the Workspace answers: check_server_online
-                        // stops it (.bu-exam-demo) when it opens the tab
-                        api_call('/api/start_test_demo', { tag: entry.tag }, function(data2) {
-                            if (data2.success && data2.status !== 'failed') {
-                                check_server_tag_update(data2.server_tag);
-                                check_server_online(data2.server_tag);
-                            } else {
-                                bu_demo.prop('disabled', false);
-                                bu_demo.find('.bi').removeClass('bi-spin');
-                            }
-                        });
-                    });
-            });
             bu_demo_pdf.on('click', () => window.open(`/api/pdf_for_test_demo/${entry.tag}`, '_blank'));
 
             const results = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-printer'></i>Ergebnisse</button>`);
@@ -570,7 +552,7 @@ async function build_exam() {
         });
         bootstrap.Modal.getOrCreateInstance(document.getElementById('exam_builder_modal')).hide();
         $('#test_archive_upload_status').removeClass('text-danger').addClass('text-success')
-            .text(`Leistungsüberprüfung angelegt (${data.files} ${data.files === 1 ? 'Datei' : 'Dateien'}); ${data.count === 1 ? 'eine Person nimmt' : `${data.count} Personen nehmen`} teil, sobald du sie startest. Sieh sie dir vorher mit »Workspace« unter Vorschau an.`);
+            .text(`Leistungsüberprüfung angelegt (${data.files} ${data.files === 1 ? 'Datei' : 'Dateien'}); ${data.count === 1 ? 'eine Person nimmt' : `${data.count} Personen nehmen`} teil, sobald du sie startest. Mit »Ausprobieren« siehst du sie vorher, wie die Klasse sie sieht.`);
         refresh_test_archives();
     } catch (error) {
         $('#eb_status').addClass('text-danger').text(error.message);

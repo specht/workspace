@@ -379,9 +379,15 @@ stehen in den Klassen der Lehrkraft, in denen jemand der Teilnehmenden ist
 
 ## Vor dem Einsatz prüfen
 
-Auf der Klassenseite, im Reiter »Leistungsüberprüfungen« der Klasse, gibt es für jedes hochgeladene Paket eine
-Workspace-Vorschau und eine Druckansicht der Vorschau. Es empfiehlt sich,
-beides vor der Leistungsüberprüfung einmal zu öffnen.
+Auf der Klassenseite, im Reiter »Leistungsüberprüfungen« der Klasse, hat jedes
+Paket »Ausprobieren« und eine Druckansicht der Vorschau. »Ausprobieren«
+(`/pruefung-ansehen?tag=…`, `exams_page.rb`) zeigt die Startseite, wie sie die
+Teilnehmenden während der Prüfung sehen (`running_tests_html`, das Menü
+ausgeblendet), mit einem Band zurück zur Klasse; ihr Knopf startet die Vorschau
+der Lehrkraft (`/api/start_test_demo` mit `keep: 'yes'`: weiter, wo sie war),
+»Von vorn beginnen« ohne `keep` setzt sie zurück und holt sie frisch aus dem
+Paket. Die Vorschau ist eine eigene Instanz (`Main.test_demo_tag`), getrennt von
+den Workspaces der Teilnehmenden.
 
 Bei den Ergebnissen kann anschließend entweder die gesamte Gruppe oder gezielt
 eine einzelne Person gedruckt werden.

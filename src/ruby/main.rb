@@ -3377,21 +3377,27 @@ class Main < Sinatra::Base
                 end
                 io.puts "<script src='/include/card_series.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script>" if series_cards
             else
-                io.puts "<div style='text-align: center;'>"
-                io.puts "<h2>Leistungsüberprüfung</h2>"
-                io.puts "<p style='text-align: center;'>"
-                io.puts "Momentan läuft eine Leistungsüberprüfung. Klicke auf den entsprechenden Button, um den dazugehörigen Workspace zu öffnen."
-                io.puts "</p>"
-                running_tests.each do |entry|
-                    io.puts "<p style='text-align: center;'><button class='btn btn-success bu-launch-test' data-tag='#{entry[:tag]}'><i class='bi bi-code-slash'></i>Leistungsüberprüfung bei #{entry[:teacher]}</button></p>"
-                end
-                io.puts "</div>"
+                io.puts running_tests_html(running_tests)
             end
             io.string
         end
         doc = Nokogiri::HTML::DocumentFragment.parse(html)
         Main.inject_autotoc(doc, inject_numbers: false)
         doc.to_html
+    end
+
+    # What a student sees on the start page while an exam runs: the notice
+    # and a button for each exam; demo: the teacher's look at it
+    # (/pruefung-ansehen), whose button opens the teacher's preview
+    def running_tests_html(running_tests, demo: false)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        buttons = running_tests.map do |entry|
+            "<p style='text-align: center;'><button class='btn btn-success #{demo ? 'bu-launch-test-demo' : 'bu-launch-test'}' data-tag='#{h.(entry[:tag])}'>" \
+                "<i class='bi bi-code-slash'></i>Leistungsüberprüfung bei #{h.(entry[:teacher])}</button></p>"
+        end
+        "<div style='text-align: center;'><h2>Leistungsüberprüfung</h2><p style='text-align: center;'>" \
+            'Momentan läuft eine Leistungsüberprüfung. Klicke auf den entsprechenden Button, um den dazugehörigen Workspace zu öffnen.</p>' \
+            "#{buttons.join}</div>"
     end
 
     # Use the same server-side visibility rule for the initial table and the

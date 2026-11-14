@@ -70,9 +70,9 @@ Das Paket ist ein Abzug deines Ordners: Änderst du danach etwas im Ordner, leg 
 
 ## Ausprobieren
 
-Unter **Vorschau** öffnet **Workspace** einen frischen Workspace der Leistungsüberprüfung, genau wie ihn die Klasse beim ersten Start sieht. Er ist von deinem Workspace und von denen der Klasse getrennt; öffnest du die Vorschau noch einmal, beginnt sie wieder von vorn. **Druckansicht** zeigt, wie deine Dateien in der Vorschau gedruckt aussehen.
+Unter **Vorschau** zeigt **Ausprobieren** die Startseite, wie sie alle sehen, die teilnehmen, solange die Leistungsüberprüfung läuft: die Nachricht und den Knopf, der den Workspace der Leistungsüberprüfung öffnet. Bei dir öffnet er deine Vorschau, einen Workspace der Leistungsüberprüfung nur für dich, getrennt von deinem Workspace und von denen der Klasse; die Klasse merkt davon nichts. Öffnest du die Vorschau wieder, geht es dort weiter, wo du warst; **Von vorn beginnen** holt den Workspace noch einmal frisch aus dem Paket. **Zurück zur Klasse** bringt dich zurück. **Druckansicht** zeigt, wie deine Dateien in der Vorschau gedruckt aussehen.
 
-Wie es sich als Schülerin oder Schüler anfühlt, zeigt dein Testkonto: Leg die Leistungsüberprüfung in deiner **Testgruppe** an (unter **Klassen** oben die Testgruppe wählen); dein Testkonto nimmt dann teil. Starte sie und öffne dein Testkonto im Reiter **Lernende** der Testgruppe mit **Nachahmen** oder in einem privaten Fenster mit `+test` vor dem @ deiner Adresse. Bearbeite die Aufgabe, beende die Leistungsüberprüfung und sieh dir die Ergebnisse an. So weißt du vorher, was die Klasse sieht und was am Ende bei dir ankommt.
+Wer auch sehen will, was am Ende in den Ergebnissen ankommt, nimmt sein Testkonto: Leg die Leistungsüberprüfung in deiner **Testgruppe** an (unter **Klassen** oben die Testgruppe wählen); dein Testkonto nimmt dann teil. Starte sie und öffne dein Testkonto im Reiter **Lernende** der Testgruppe mit **Nachahmen**. Bearbeite die Aufgabe, beende die Leistungsüberprüfung und sieh dir die Ergebnisse an.
 
 ## Ein Probelauf mit der Klasse
 
