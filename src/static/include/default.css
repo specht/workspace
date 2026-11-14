@@ -6976,10 +6976,14 @@ body.cl-dragging-page * {
     --usage-bar: var(--usage-3);
     --usage-few: #8a8b8f;
 }
+/* the counts at the bottom right, level with the last row of dots */
 .usage-row {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 0.7em;
+}
+.usage-row > .usage {
+    margin-left: auto;
 }
 html[data-bs-theme="dark"] .usage-row,
 html[data-bs-theme="dark"] .usage-charts {
