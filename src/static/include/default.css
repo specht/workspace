@@ -19039,6 +19039,11 @@ form.phone-manage-dirty {
 .exam-builder .eb-preview .eb-p-status { height: 7%; background: var(--eb-c); }
 .exam-builder .eb-preview[data-look="theme"][data-color="blue"] { --eb-editor: #002451; --eb-line: #7285b7; --eb-c: #001c40; }
 .exam-builder .eb-preview[data-look="theme"][data-color="red"] { --eb-editor: #390000; --eb-line: #b16a6a; --eb-c: #580000; }
+.exam-builder .eb-shared {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+}
 .exam-builder .eb-empty {
     padding: 0.75rem 1rem;
     background: var(--bs-tertiary-bg);

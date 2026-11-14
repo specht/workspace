@@ -97,6 +97,16 @@ Eine Leistungsüberprüfung im Workspace ist keine abgeschlossene Prüfungsumgeb
 - **Keine KI im Editor:** Im Workspace ist keine KI-Erweiterung installiert.
 - **Was geht:** die Datenbanken des Workspace (MySQL und Neo4j), und alles, was im Workspace der Leistungsüberprüfung selbst läuft, etwa ein Dienst, den die Klasse untersuchen soll und den du mit `exam.setup.every_start` startest (unten). Soll die Klasse einen Dienst im Internet erreichen, nenn ihn in `network.allow`; dann geht genau dieser, sonst nichts.
 
+### Wer deinen Ordner lesen kann
+
+Bisher lagen die Aufgaben einer Klassenarbeit auf deinem Rechner, jetzt in deinem Workspace. Wer kommt an sie heran?
+
+- **Die Lernenden nicht:** Die Adresse deines Workspace öffnet sich nur mit deiner Anmeldung. Von ihrem Workspace aus erreichen sie deinen nicht, und in ihrem Workspace liegen nur ihre eigenen Ordner. Öffnest du eine Seite, die eine Schülerin oder ein Schüler gebaut hat, kann diese Seite deinen Workspace nicht übernehmen. All das prüft ein Test des Workspace.
+- **Bis zum Start bleibt das Paket bei dir:** In den Workspace der Leistungsüberprüfung kommt es erst, wenn du auf **Starten** klickst, und nur zu denen, die teilnehmen.
+- **Andere Lehrkräfte nicht:** In den Workspace einer Lehrkraft kann keine andere Lehrkraft hineinsehen, auch nicht in einer gemeinsamen Gruppe.
+- **Die Administration der Installation schon:** Wer den Workspace betreibt, kann in jeden Workspace sehen, nennt dafür aber einen Grund, und du siehst, wer wann warum hineingesehen hat.
+- **Wer einen Link zu deinem Workspace hat:** Teilst du deinen Workspace (im Profil, **Workspace teilen**), kann jeder mit dem Link alles darin lesen, auch den Ordner der Leistungsüberprüfung. Der Dialog **Aus deinem Workspace** warnt dich dann und beendet das Teilen auf einen Klick.
+
 Was nicht abgeschirmt ist:
 
 - **Der Rest des Geräts:** Der Workspace läuft im Browser. Ein anderer Tab, ein anderes Programm oder ein Handy erreicht das Internet wie immer, auch eine KI. Dafür ist die Farbe da: Wer im Workspace der Leistungsüberprüfung ist, sieht man von hinten im Raum; wer gerade etwas anderes zeigt, fällt auf.

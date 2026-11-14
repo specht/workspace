@@ -320,6 +320,23 @@ Getestet: `workspace_runtime_test.rb` (MAC, Label, Namen), die Ausnahmen in
 Regel selbst von Hand gegen die Bridge der Entwicklung (ein Container mit
 dieser MAC erreicht den Host nicht mehr, MySQL und Neo4j weiter).
 
+## Wer den Ordner der Lehrkraft lesen kann
+
+Die Aufgaben liegen vor der Leistungsüberprüfung im Workspace der Lehrkraft.
+`e2e/tests/workspace-isolation.browser.spec.ts` prüft mit dem Workspace einer
+Lehrkraft und dem einer Schülerin, beide laufend: Die Adresse öffnet nur mit
+dem eigenen `hs_server_sid` (nginx), nicht für andere und nicht ohne Anmeldung;
+ein WebSocket von einer Seite der Schülerin (Subdomain `<tag>-<port>`) mit dem
+Cookie der Lehrkraft lehnt code-server ab (anderer Origin, 403; mit dem
+eigenen Origin 101); aus dem Container der Schülerin ist der der Lehrkraft
+nicht erreichbar (`peer_firewall`), und gemountet sind nur ihre eigenen Ordner,
+kein `/user`. In den Workspace einer Lehrkraft sieht keine andere Lehrkraft
+(`LookIn.allowed?`), die Administration mit Grund, den die Lehrkraft sieht.
+Ein geteilter Workspace (`/api/share_server`) öffnet alles für jeden mit dem
+Link; der Dialog »Aus deinem Workspace« warnt dann und beendet das Teilen
+(`/api/unshare_server`). Das Paket kommt erst mit »Starten« in die Workspaces
+der Teilnehmenden (`/api/start_server` verlangt eine laufende Prüfung).
+
 ## Klasse und Teilnehmende
 
 Hochgeladen wird ein Paket auf der Klassenseite, im Reiter

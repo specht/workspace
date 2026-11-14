@@ -29,6 +29,15 @@ test('an exam from a folder of the Workspace: what is ticked, the printout, the 
   let tag = '';
   try {
     await loginAsE2eUser(page, TEACHER, testInfo);
+    // a shared Workspace: the dialog warns and ends the sharing
+    await page.request.post('/api/share_server', { data: {} });
+    await page.goto('/klasse?tab=pruefungen');
+    await page.locator('#bu_exam_builder').click();
+    await expect(page.locator('#eb_shared')).toBeVisible();
+    await page.locator('#bu_eb_unshare').click();
+    await expect(page.locator('#eb_shared')).toBeHidden();
+    await page.goto('/profil');
+    await expect(page.locator('#bu_share')).toBeVisible();
     await page.goto('/klasse?tab=pruefungen');
     await page.locator('#bu_exam_builder').click();
     const modal = page.locator('#exam_builder_modal');
@@ -77,6 +86,7 @@ test('an exam from a folder of the Workspace: what is ticked, the printout, the 
     expect(config).toContain('mode: fresh');
     expect(config).toContain('- tests/test_main.py');
   } finally {
+    await page.request.post('/api/unshare_server', { data: {} });
     ruby(`rm -rf ${dir}`);
     if (tag) await page.request.post('/api/delete_test', { data: { tag } });
   }

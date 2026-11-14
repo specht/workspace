@@ -425,6 +425,7 @@ function eb_render(data) {
     $(`input[name=eb_git][value=${c.git === 'none' ? 'none' : 'fresh'}]`).prop('checked', true);
     const kept = (c.kept || []);
     $('#eb_kept').prop('hidden', !c.present).html(c.present ? `Den Ordner beschreibt schon eine <code>.workspace/config.yaml</code>; ihre Farbe, Git und das Drucken stehen oben.${kept.length ? ' Diese Angaben daraus bleiben, wie sie sind: ' + kept.map((k) => `<code>${$('<span>').text(k).html()}</code>`).join(', ') + '.' : ''}` : '');
+    $('#eb_shared').prop('hidden', !data.shared);
     eb_preview();
     eb_update();
 }
@@ -492,6 +493,8 @@ $(function () {
     $('#eb_folder').on('change', eb_load_folder);
     $(document).on('change', 'input[name=eb_color], input[name=eb_look]', eb_preview);
     $('#bu_eb_build').on('click', build_exam);
+    // a shared Workspace: end the sharing from the dialog
+    $('#bu_eb_unshare').on('click', () => api_call('/api/unshare_server', {}, (d) => { if (d.success) $('#eb_shared').prop('hidden', true); }));
     refresh_test_archives();
 });
 })();

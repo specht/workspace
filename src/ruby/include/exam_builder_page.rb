@@ -33,6 +33,9 @@ class Main < Sinatra::Base
             "<label class='eb-field'><span>Name der Leistungsüberprüfung</span><input type='text' id='eb_name' class='form-control' maxlength='120'></label></div>" \
             "<p id='eb_empty' class='eb-empty' hidden>In deinem Workspace gibt es noch keinen Ordner. Leg dort einen an, etwa <code>klassenarbeit-schleifen</code>, " \
             'mit allem, was die Klasse zu Beginn haben soll: der Aufgabe, Vorlagen, Daten.</p>' \
+            "<div id='eb_shared' class='alert alert-warning eb-shared' role='alert' hidden><i class='bi bi-exclamation-triangle' aria-hidden='true'></i>" \
+                '<div><strong>Dein Workspace ist geteilt.</strong> Wer den Link hat, kann alles darin lesen, auch diesen Ordner mit der Leistungsüberprüfung. ' \
+                "<button type='button' id='bu_eb_unshare' class='btn btn-sm btn-warning ms-1'><i class='bi bi-x-lg'></i>Teilen beenden</button></div></div>" \
             "<div id='eb_body' class='eb-body'>" \
             "<section><h6>Was ins Paket kommt</h6>" \
             "<p class='small text-body-secondary mb-2'>Versteckte Dateien, Build-Ordner und Git-Verläufe sind nicht angekreuzt, Links gehen nicht in ein Paket. " \
@@ -83,6 +86,9 @@ class Main < Sinatra::Base
         # unticked under »Drucken« (np: not printed)
         tree[:entries].each { |e| e[:np] = true if before.any? { |pattern| ExamBuilder.matches?(pattern, e[:p]) } }
         respond(:entries => tree[:entries], :truncated => tree[:truncated],
+                # a shared Workspace opens to anyone with the link, this
+                # folder too: the dialog says so and offers to end it
+                :shared => !@session_user[:share_tag].nil?,
                 :config => {
                     :present => !existing.empty?,
                     :color => exam['color'], :look => exam['look'], :git => git['mode'],
