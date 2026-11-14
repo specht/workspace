@@ -1,4 +1,4 @@
-FROM ruby:3.4.12-bookworm@sha256:d7c312a48736dd291d7ce043c847f04dfde9bdf7334491ca6a545a4a184395be
+FROM ruby:3.4.12-trixie@sha256:5803b69dd8a875a9afc7e3bbc10d0ba683e12aad2640dbbd44295b4890cc8927
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   less \
@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y \
   && echo \
      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
      https://download.docker.com/linux/debian \
-     bookworm stable" \
+     trixie stable" \
      > /etc/apt/sources.list.d/docker.list \
   && apt-get update \
   && apt-get install -y docker-ce-cli \

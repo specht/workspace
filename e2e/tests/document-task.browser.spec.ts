@@ -367,12 +367,12 @@ test('an article of ones own is checked on every point, and the hand-in shows it
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-newspaper/stufen/artikel-eilig.docx'));
   await expect(card).toHaveAttribute('data-status', 'wrong');
   // (the hurried article is ragged right, without hyphenation, too)
-  await expect(card.locator('.document-report .document-checklist li.document-open')).toHaveCount(8);
+  await expect(card.locator('.document-report .document-checklist li.document-open')).toHaveCount(9);
   // the hand-in: the last checked version with its marks, as the teacher sees it
   await page.goto('/abgabe/dokument/trip-newspaper/artikel');
   await expect(page.locator('.document-handin-file')).toContainText('artikel-eilig.docx');
   const report = page.locator('.document-handin-card .document-report');
-  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(8);
+  await expect(report.locator('.document-checklist li.document-open')).toHaveCount(9);
   await expect(report.locator('.document-sheet img')).toHaveCount(1);
   await expect(report.locator('.document-recheck')).toHaveCount(0);
   if (shots) await page.screenshot({ path: path.join(shots, 'handin.png') });
@@ -484,7 +484,7 @@ test('a spreadsheet is checked for its formulas and whether it calculates', asyn
   await expect(card).toContainText('Das ist ein Textdokument');
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-cells/stufen/kosten.xlsx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
-  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(5);
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
   if (shots) await page.screenshot({ path: path.join(shots, 'sheet-correct.png') });
 });
 
@@ -533,7 +533,7 @@ test('a spreadsheet is checked for absolute references and errors', async ({ pag
   if (shots) await page.screenshot({ path: path.join(shots, 'absolute-wrong.png') });
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/absolute-references/stufen/anteile.xlsx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
-  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(9);
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(10);
 });
 
 // »Auswerten«: functions over the answers, ranges that miss the last rows
@@ -553,7 +553,7 @@ test('a spreadsheet is checked for functions and their ranges', async ({ page, e
   if (shots) await page.screenshot({ path: path.join(shots, 'functions-wrong.png') });
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/spreadsheet-functions/stufen/umfrage.xlsx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
-  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(7);
+  await expect(report.locator('.document-checklist li.document-ok')).toHaveCount(8);
 });
 
 // »Sortieren, Filtern, Hervorheben«: a column of names sorted alone is
@@ -609,7 +609,7 @@ test('the accounts of the trip are handed in as a table and a PDF', async ({ pag
   await expect(card.locator('.document-report')).toContainText('ABRUNDEN');
   await card.locator('.document-input').setInputFiles(path.join(repo, 'src/content/trip-accounts/stufen/abrechnung.xlsx'));
   await expect(card).toHaveAttribute('data-status', 'correct');
-  await expect(card.locator('.document-report .document-checklist li.document-ok')).toHaveCount(11);
+  await expect(card.locator('.document-report .document-checklist li.document-ok')).toHaveCount(12);
   if (shots) await page.screenshot({ path: path.join(shots, 'accounts-correct.png') });
   const pdf = page.locator(".task-card[data-task='trip-accounts/pdf']:visible");
   await expect(pdf.locator('.document-input')).toHaveAttribute('accept', '.pdf');
