@@ -199,6 +199,17 @@ Dieselbe Zeile siehst du oben auf jeder Aktivitätsseite: Die Namen der Themen d
 5. **Beobachten:** Behalt **Fortschritt** offen. Rote Kreuze zeigen, wer hängt, eine gelbe Spalte, wo viele hängen, die Zeile über der Tabelle, wer still ist. Ist die Treffpunkt-Zeile grün, sind alle da.
 6. **Am Ende:** Der Reiter **Überblick** zeigt, wie weit alle gekommen sind, auch über mehrere Aktivitäten.
 
+## Leistungsüberprüfungen
+
+Für einen Test oder eine Klausur bekommt jede Person einen frischen
+Workspace mit deinen Aufgaben. Er kommt nicht ins Internet und hat eine
+Farbe, die man auch von hinten im Raum sieht; der eigene Workspace bleibt
+unberührt. Danach druckst du die Ergebnisse oder lädst alle Dateien als ZIP
+herunter. Vorbereitet ist das schnell: Du ziehst einen Ordner, eine ZIP- oder
+eine tar.gz-Datei in den Dialog im Reiter **Leistungsüberprüfungen** und
+probierst das Paket vorher selbst aus. Schritt für Schritt:
+[Leistungsüberprüfungen vorbereiten](/lehrmaterial-leistungsueberpruefung).
+
 ## Selbst ausprobieren
 
 Für dich gibt es ein **Testkonto**, genau eins: ein Konto wie das einer Schülerin, nur dass es dir gehört. Es steht im Reiter **Lernende** jeder deiner Klassen ganz unten, als **Dein Testkonto**. Nur du siehst es, auch andere Lehrkräfte der Klasse nicht, und keine Zahl der Klasse zählt es mit. Was du mit dem Testkonto tust, landet bei keiner Klasse. Betreust du noch keine Klasse, steht es in einer Gruppe **Testgruppe (dein Name)**, die nur du siehst.
