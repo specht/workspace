@@ -40,9 +40,9 @@ loops-exam/
     └── test_average.py
 ```
 
-Die Aufgabe steht am besten in einer Datei wie `AUFGABE.md`; sag der Klasse, dass sie sie zuerst öffnen soll. Vorlagen, Daten und Tests sind, was deine Aufgabe braucht; an eine Sprache ist das Paket nicht gebunden. Probier die Aufgabe in deinem Workspace einmal selbst durch, bevor du sie bereitstellst.
+Die Aufgabe steht am besten in einer Datei wie `AUFGABE.md`; sag der Klasse, dass sie sie zuerst öffnen soll. Vorlagen, Daten und Tests sind, was deine Aufgabe braucht; an eine Sprache ist das Paket nicht gebunden. Probier die Aufgabe in deinem Workspace einmal selbst durch, bevor du die Leistungsüberprüfung anlegst.
 
-## Bereitstellen
+## Anlegen
 
 Öffne **Klassen**, wähl oben die Klasse und dann den Reiter **Leistungsüberprüfungen**. Klick auf **Aus deinem Workspace**.
 
@@ -63,15 +63,15 @@ Soll die Klasse mit einem Git-Verlauf arbeiten, den du vorbereitet hast (Branche
 
 In beiden Fällen trägt der Workspace in jedem dieser Repositorys Namen und Adresse der Schülerin oder des Schülers ein, damit Commits gleich gehen; nur bei **Kein Repository** richtet er nichts ein.
 
-Klick dann auf **Für 9b bereitstellen** (mit dem Namen deiner Klasse). Der Workspace packt die Dateien und prüft das Paket; danach steht die Leistungsüberprüfung in der Liste, und alle aus der Klasse nehmen teil, ohne Lehrkräfte. Unter **Teilnehmende** nimmst du Einzelne heraus oder fügst sie aus anderen Gruppen hinzu, etwa jemanden, der nachschreibt.
+Klick dann auf **Leistungsüberprüfung anlegen**. Der Workspace packt die Dateien und prüft das Paket; danach steht die Leistungsüberprüfung in der Liste. Die Klasse merkt davon noch nichts: Die Leistungsüberprüfung beginnt erst, wenn du sie startest ([In der Stunde](#6-in-der-stunde)). Teilnehmen werden alle aus der Klasse, ohne Lehrkräfte. Unter **Teilnehmende** nimmst du Einzelne heraus oder fügst sie aus anderen Gruppen hinzu, etwa jemanden, der nachschreibt.
 
-Das Paket ist ein Abzug deines Ordners: Änderst du danach etwas im Ordner, stell ihn noch einmal bereit und lösch die alte Leistungsüberprüfung.
+Das Paket ist ein Abzug deines Ordners: Änderst du danach etwas im Ordner, leg die Leistungsüberprüfung noch einmal an und lösch die alte.
 
 ## Ausprobieren
 
 Unter **Vorschau** öffnet **Workspace** einen frischen Workspace der Leistungsüberprüfung, genau wie ihn die Klasse beim ersten Start sieht. Er ist von deinem Workspace und von denen der Klasse getrennt; öffnest du die Vorschau noch einmal, beginnt sie wieder von vorn. **Druckansicht** zeigt, wie deine Dateien in der Vorschau gedruckt aussehen.
 
-Wie es sich als Schülerin oder Schüler anfühlt, zeigt dein Testkonto: Stell die Leistungsüberprüfung in deiner **Testgruppe** bereit (unter **Klassen** oben die Testgruppe wählen); dein Testkonto nimmt dann teil. Starte sie und öffne dein Testkonto im Reiter **Lernende** der Testgruppe mit **Nachahmen** oder in einem privaten Fenster mit `+test` vor dem @ deiner Adresse. Bearbeite die Aufgabe, beende die Leistungsüberprüfung und sieh dir die Ergebnisse an. So weißt du vorher, was die Klasse sieht und was am Ende bei dir ankommt.
+Wie es sich als Schülerin oder Schüler anfühlt, zeigt dein Testkonto: Leg die Leistungsüberprüfung in deiner **Testgruppe** an (unter **Klassen** oben die Testgruppe wählen); dein Testkonto nimmt dann teil. Starte sie und öffne dein Testkonto im Reiter **Lernende** der Testgruppe mit **Nachahmen** oder in einem privaten Fenster mit `+test` vor dem @ deiner Adresse. Bearbeite die Aufgabe, beende die Leistungsüberprüfung und sieh dir die Ergebnisse an. So weißt du vorher, was die Klasse sieht und was am Ende bei dir ankommt.
 
 ## Ein Probelauf mit der Klasse
 

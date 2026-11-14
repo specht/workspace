@@ -44,7 +44,7 @@ function refresh_test_archives() {
                 (!e.group && (!(e.emails || []).length || participant_groups(e).some(([g]) => g === exam_group))))
             .sort((a, b) => (!a.group) - (!b.group) || (b.ts || 0) - (a.ts || 0));
         if (exam_entries.length === 0) {
-            tbody.append(`<tr><td colspan='6' class='text-body-secondary'>Noch keine für diese Klasse. Stell oben eine bereit; alle in der Klasse nehmen dann teil.</td></tr>`);
+            tbody.append(`<tr><td colspan='6' class='text-body-secondary'>Noch keine für diese Klasse. Leg oben eine an; alle in der Klasse nehmen teil, sobald du sie startest.</td></tr>`);
             return;
         }
         for (let entry of exam_entries) {
@@ -477,7 +477,7 @@ async function build_exam() {
         });
         bootstrap.Modal.getOrCreateInstance(document.getElementById('exam_builder_modal')).hide();
         $('#test_archive_upload_status').removeClass('text-danger').addClass('text-success')
-            .text(`Leistungsüberprüfung bereitgestellt (${data.files} ${data.files === 1 ? 'Datei' : 'Dateien'}); ${data.count === 1 ? 'eine Person nimmt' : `${data.count} Personen nehmen`} teil. Sieh sie dir mit »Workspace« unter Vorschau an.`);
+            .text(`Leistungsüberprüfung angelegt (${data.files} ${data.files === 1 ? 'Datei' : 'Dateien'}); ${data.count === 1 ? 'eine Person nimmt' : `${data.count} Personen nehmen`} teil, sobald du sie startest. Sieh sie dir vorher mit »Workspace« unter Vorschau an.`);
         refresh_test_archives();
     } catch (error) {
         $('#eb_status').addClass('text-danger').text(error.message);

@@ -200,14 +200,14 @@ class Main < Sinatra::Base
             '<strong>Deine Testgruppe:</strong> Hier nimmt dein Testkonto teil, eine Klasse merkt nichts davon. ' \
                 "Starte die Leistungsüberprüfung, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how}"
         elsif own_test_group
-            '<strong>Erst ausprobieren?</strong> Lade die Leistungsüberprüfung zuerst in deiner ' \
-                "<a href='/klasse?group=#{CGI.escape(own_test_group)}&amp;tab=pruefungen'>Testgruppe</a> hoch, dort nimmt dein Testkonto teil. " \
+            '<strong>Erst ausprobieren?</strong> Leg die Leistungsüberprüfung zuerst in deiner ' \
+                "<a href='/klasse?group=#{CGI.escape(own_test_group)}&amp;tab=pruefungen'>Testgruppe</a> an, dort nimmt dein Testkonto teil. " \
                 "Starte sie, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how} " \
                 'Kennt deine Klasse den Ablauf noch nicht, hilft vielleicht ein kurzer Probelauf mit einer kleinen Leistungsüberprüfung von dir, bevor es zählt.'
         end
         "<div class='class-exams'>" \
-            "<div class='class-exams-head'><p class='mb-0'>Eine Leistungsüberprüfung stellst du aus einem Ordner deines Workspace bereit oder lädst ein fertiges Paket hoch. " \
-            "Alle aus der Klasse #{h.(group)} nehmen teil; Einzelne nimmst du unter <em>Teilnehmende</em> heraus oder fügst sie aus anderen Gruppen hinzu. " \
+            "<div class='class-exams-head'><p class='mb-0'>Eine Leistungsüberprüfung legst du aus einem Ordner deines Workspace an oder lädst ein fertiges Paket hoch. " \
+            "Alle aus der Klasse #{h.(group)} nehmen teil, sobald du sie startest; Einzelne nimmst du unter <em>Teilnehmende</em> heraus oder fügst sie aus anderen Gruppen hinzu. " \
             "Wie das geht: <a href='/lehrmaterial-leistungsueberpruefung'>Leistungsüberprüfungen vorbereiten</a>.</p>" \
             "<div class='class-exams-actions'><button id='bu_exam_builder' class='btn btn-primary'><i class='bi bi-folder2-open'></i>Aus deinem Workspace</button>" \
             "<button id='bu_upload_test_archive' class='btn btn-outline-secondary'><i class='bi bi-upload'></i>Paket hochladen</button></div></div>" \

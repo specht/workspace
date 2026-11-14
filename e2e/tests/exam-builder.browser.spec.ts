@@ -60,7 +60,7 @@ test('an exam from a folder of the Workspace: what is ticked, the printout, the 
     await modal.locator('.eb-swatch', { hasText: 'Magenta' }).click();
 
     await page.locator('#bu_eb_build').click();
-    await expect(page.locator('#test_archive_upload_status')).toContainText('bereitgestellt', { timeout: 60_000 });
+    await expect(page.locator('#test_archive_upload_status')).toContainText('angelegt', { timeout: 60_000 });
     await expect(modal).toBeHidden();
     const entry = (await (await page.request.post('/api/get_my_test_archives', { data: {} })).json()).entries
       .find((e: any) => e.filename === `${FOLDER}.tar.gz`);

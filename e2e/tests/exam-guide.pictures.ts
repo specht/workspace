@@ -4,7 +4,7 @@
 //   HS_PICTURES=1 npx playwright test --project=pictures exam-guide
 //
 // A folder with a small exam in the e2e teacher's Workspace, the dialog »Aus
-// deinem Workspace« with it (the group shown as 9b), then the exam built in
+// deinem Workspace« with it, then the exam built in
 // yellow with the frame and its preview Workspace opened. The folder and the
 // exam (with its preview) are deleted afterwards. The Workspace picture is
 // 16:9, 1280 x 720 at twice the pixels, and the card's picture too; written
@@ -117,11 +117,6 @@ test('pictures for the exam guide', async ({ browser }, testInfo) => {
     await modal.locator('.eb-item[data-path="tests"] .eb-print').uncheck();
     await modal.locator('.eb-swatch', { hasText: 'Gelb' }).click();
     await modal.getByLabel('Rahmen in der Farbe, der Editor bleibt dunkel').check();
-    // the group as in the other pictures of the guides
-    await teacher.evaluate(() => {
-      const b = document.querySelector('#bu_eb_build')!;
-      b.lastChild!.textContent = 'Für 9b bereitstellen';
-    });
     // the page frames the picture: the dialog without its own border, tall
     // enough that nothing scrolls; two wide pictures, the files and below
     // them the colour and Git
@@ -144,7 +139,7 @@ test('pictures for the exam guide', async ({ browser }, testInfo) => {
 
     // the exam, its preview Workspace in yellow with AUFGABE.md open
     await teacher.locator('#bu_eb_build').click();
-    await expect(teacher.locator('#test_archive_upload_status')).toContainText('bereitgestellt', { timeout: 120_000 });
+    await expect(teacher.locator('#test_archive_upload_status')).toContainText('angelegt', { timeout: 120_000 });
     tag = (await (await teacher.request.post('/api/get_my_test_archives', { data: {} })).json()).entries
       .find((e: any) => e.filename === 'Klassenarbeit Schleifen.tar.gz').tag;
     await teacher.setViewportSize({ width: 1280, height: 720 });

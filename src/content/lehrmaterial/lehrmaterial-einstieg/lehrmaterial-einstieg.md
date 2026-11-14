@@ -214,7 +214,7 @@ Für dich gibt es ein **Testkonto**, genau eins: ein Konto wie das einer Schüle
 - **Abgaben und Galerie:** Gib als Testkonto eine Webseite oder eine Szene ab und sieh sie dir als Lehrkraft unter **Fortschritt** an, so wie du später die Abgaben der Klasse öffnest.
 - **Offene Antworten:** Schreib als Testkonto eine Reflexion. Unter derselben Aufgabe zeigt dir der Kasten »Für Lehrkräfte« mit **Antworten aus Testgruppe** genau, was du später von der Klasse siehst.
 - **Den Workspace:** Alles, was Lernende im Workspace tun, auch das, was dort schiefgehen kann, ohne dass ein echter Workspace einer Schülerin leidet.
-- **Leistungsüberprüfungen:** Wähl unter **Klassen** deine Testgruppe, stell im Reiter **Leistungsüberprüfungen** eine bereit; dein Testkonto nimmt dann von selbst teil. Starte sie, mach sie als Testkonto mit, beende sie und sieh dir die **Ergebnisse** an. So weißt du vorher, was die Klasse sieht und was am Ende bei dir ankommt.
+- **Leistungsüberprüfungen:** Wähl unter **Klassen** deine Testgruppe, leg im Reiter **Leistungsüberprüfungen** eine an; dein Testkonto nimmt dann von selbst teil. Starte sie, mach sie als Testkonto mit, beende sie und sieh dir die **Ergebnisse** an. So weißt du vorher, was die Klasse sieht und was am Ende bei dir ankommt.
 
 ### Zurücksetzen
 

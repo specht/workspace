@@ -18,8 +18,7 @@ class Main < Sinatra::Base
     ].freeze
 
     # The dialog »Aus deinem Workspace« (exams.js fills and sends it)
-    def exam_builder_modal_html(group)
-        h = ->(t) { CGI.escapeHTML(t.to_s) }
+    def exam_builder_modal_html(_group)
         swatches = EXAM_BUILDER_COLORS.map do |key, label|
             bg, fg = TestWorkspacePackage::EXAM_FRAME_COLORS[key]
             "<label class='eb-swatch' style='--eb-c: #{bg}; --eb-f: #{fg};'><input type='radio' name='eb_color' value='#{key}'>" \
@@ -58,9 +57,10 @@ class Main < Sinatra::Base
             '</div>' \
             "<p id='eb_kept' class='small text-body-secondary mt-3 mb-0' hidden></p>" \
             '</div></div>' \
-            "<div class='modal-footer'><span id='eb_status' class='small me-auto' role='status' aria-live='polite'></span>" \
+            "<div class='modal-footer'><div class='small me-auto'><div id='eb_status' role='status' aria-live='polite'></div>" \
+                "<div class='text-body-secondary'>Die Klasse merkt davon nichts, bis du die Leistungsüberprüfung in der Liste startest.</div></div>" \
             "<button type='button' class='btn btn-outline-secondary' data-bs-dismiss='modal'>Abbrechen</button>" \
-            "<button type='button' id='bu_eb_build' class='btn btn-primary'><i class='bi bi-box-seam'></i>Für #{h.(group)} bereitstellen</button></div>" \
+            "<button type='button' id='bu_eb_build' class='btn btn-primary'><i class='bi bi-box-seam'></i>Leistungsüberprüfung anlegen</button></div>" \
             '</div></div></div>'
     end
 
