@@ -42,7 +42,8 @@ module CardUsage
     # solved at least one; of: the teacher's number of students (nil for
     # admins, whose steps follow the most solved task); pages: how many of
     # the tasks each page of a series has, in order (a small gap between
-    # two pages; nil: one page). Many tasks wrap into rows (default.css).
+    # two pages, which wrap as a whole; nil: one page, its segments filling
+    # the width).
     def self.band_html(tasks, per_task, solved:, people:, css_class:, of: nil, pages: nil)
         top = of ? of : per_task.max.to_i
         cells = tasks.each_with_index.map do |title, i|
@@ -50,12 +51,13 @@ module CardUsage
             what = of ? "#{n} von #{of} deiner Lernenden gelöst" : "#{n}-mal gelöst"
             "<span class='usage-bar usage-level-#{level(n, top)}' title='#{i + 1}. #{h(title)}: #{what}'></span>"
         end
-        bars = []
-        Array(pages || [tasks.size]).reject { |n| n.to_i <= 0 }.each do |n|
-            bars << "<span class='usage-gap'></span>" unless bars.empty?
-            bars.concat(cells.shift(n))
-        end
-        bars.concat(cells)
+        # a series: each page's tasks a group that wraps as a whole
+        groups = Array(pages || [tasks.size]).reject { |n| n.to_i <= 0 }
+        bars = if groups.size > 1
+                   groups.map { |n| "<span class='usage-page'>#{cells.shift(n).join}</span>" } + cells
+               else
+                   cells
+               end
         text = if of
                    "Deine Lernenden: #{people} von #{of} haben hier etwas gelöst, zusammen #{solved} Aufgaben"
                else
@@ -63,7 +65,7 @@ module CardUsage
                end
         people_shown = of ? "#{people}/#{of}" : people.to_s
         "<span class='usage-row #{css_class}'>" \
-            "<span class='usage-strip' role='img' aria-label='#{h(text)}'>#{bars.join}</span>" \
+            "<span class='usage-strip#{groups.size > 1 ? ' usage-pages' : ''}' role='img' aria-label='#{h(text)}'>#{bars.join}</span>" \
             "<span class='usage' title='#{h(text)}'>" \
             "<span aria-hidden='true'><i class='bi bi-check2-all'></i>#{solved}</span>" \
             "<span aria-hidden='true'><i class='bi bi-person'></i>#{people_shown}</span>" \

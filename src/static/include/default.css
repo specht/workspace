@@ -6989,23 +6989,35 @@ html[data-bs-theme="dark"] .usage-charts {
     --usage-4: #86b6ef;
     --usage-5: #b7d3f6;
 }
-/* a segment per task; many wrap into rows of the same columns (the last
-   row ragged), few fill the width; an empty cell between two pages of a
-   series (.usage-gap). Three rows are about as tall as the counts beside */
+/* a segment per task, filling the width; a series (.usage-pages): each
+   page's tasks a group of dots that wraps as a whole, the gap between
+   groups the row's own (none at the start of a row) */
 .usage-strip {
-    display: grid;
+    display: flex;
     flex: 1 1 auto;
-    grid-template-columns: repeat(auto-fit, minmax(4px, 1fr));
-    gap: 3px 2px;
-    align-content: center;
+    gap: 2px;
+    align-items: center;
+}
+.usage-strip > .usage-bar {
+    flex: 1 1 0;
+    min-width: 2px;
 }
 .usage-bar {
     height: 4px;
     border-radius: 1px;
     background: var(--bs-border-color);
 }
-.usage-gap {
-    height: 4px;
+.usage-strip.usage-pages {
+    flex-wrap: wrap;
+    gap: 3px 6px;
+}
+.usage-page {
+    display: flex;
+    gap: 2px;
+}
+.usage-page > .usage-bar {
+    flex: none;
+    width: 5px;
 }
 .usage-level-1 { background: var(--usage-1); }
 .usage-level-2 { background: var(--usage-2); }
