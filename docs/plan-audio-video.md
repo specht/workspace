@@ -6,7 +6,9 @@ with programming tasks, listening and watching at every step, and the
 history beside it. Not a reimplementation of MP3 or H.264: the students build
 small coders that work on the same principles, and read real files where a
 real format is the point. Written 10 November 2026 for the maintainer to
-check before anything is built; nothing of it exists yet.
+check before anything was built; both are built since (`audio-compression`,
+`video-compression`, in the catalog), and the open points below may be
+settled in the pages themselves.
 
 ## What the Workspace needs
 

@@ -24,6 +24,17 @@ Der Workspace bündelt bewusst unterschiedliche Bereiche der Informatik in einer
 - Kommandozeile, Dateien, TCP/IP und Git
 - Facharbeiten und andere Dokumente mit LaTeX
 - HTML-Präsentationen mit shower.js
+- Office: Textverarbeitung und Tabellenkalkulation in LibreOffice, Word/Excel oder Nextcloud Office, Arbeitsblätter, deren Dokumente der Workspace prüft und auf den Seiten markiert
+- Katas und Pip unter Funkelbach: Programmieren üben in Ruby, Python, JavaScript, Dart und Java, mit Prüfung im Browser
+- Kompression von JPEG über Audio und Video bis zu Audioeffekten, Kryptographie, Automaten, Grammatiken und Logikgatter
+
+Für Lehrkräfte:
+
+- eine Klassenseite: wer welche Aufgabe gelöst hat und wer hängt, Treffpunkt, Abgaben, Anmelde-Codes am Beamer, ein Testkonto zum Ausprobieren
+- Leistungsüberprüfungen: ein Ordner, eine ZIP- oder tar.gz-Datei wird zu einem eigenen Workspace je Person, ohne Internet und farbig markiert, mit Druck und Download der Ergebnisse
+- Git-Repositorys für die Klasse auf einem eigenen Git-Server, zum Ansehen im Browser
+- der Lehrplan: welche Aktivität zu welchem Thema der Rahmenlehrpläne passt, für mehrere Bundesländer
+- Anleitungen für Lehrkräfte und Unterlagen zum Datenschutz für die Schule
 
 Direkte Netzwerkverbindungen zwischen studentischen Workspaces sind bewusst eingeschränkt. Für Netzwerkübungen steht TCP-Port 1234 zur Verfügung; laufende Webanwendungen lassen sich kontrolliert über Shared Live Apps teilen.
 

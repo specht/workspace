@@ -5,8 +5,8 @@ A new activity, `src/content/audio-effects`, decided by the maintainer on
 Python with numpy and each with a widget to listen to while turning its
 knobs. It builds on »Audio komprimieren« (`requires: [audio-compression]`):
 samples as numbers from −1 to 1, WAV files, Dezibel, the FFT. Until it is
-finished it stands in the catalog with a dot (`- .audio-effects`), only in
-development.
+finished it stood in the catalog with a dot (`- .audio-effects`), only in
+development; it is in the catalog since.
 
 ## Chapters (one Doppelstunde each, roughly)
 
