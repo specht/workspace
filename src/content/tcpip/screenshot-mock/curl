@@ -1,0 +1,18 @@
+#!/bin/sh
+# Stand-in for curl in the screenshots of tcpip.md (tutorial-screenshot
+# recipes): catfact.ninja answers a random fact, so a picture would change
+# with every rendering. The recipe first asks the real service (and fails
+# when it no longer answers); then this answers two real facts in the
+# service's format, the first call the one, every later call the other.
+# Anything else goes to the real curl.
+case "$*" in
+    *catfact.ninja/fact*)
+        if [ -e /tmp/hs-catfact-shown ]; then
+            printf '%s' '{"fact":"The life expectancy of cats has nearly doubled over the last fifty years.","length":73}'
+        else
+            touch /tmp/hs-catfact-shown
+            printf '%s' '{"fact":"A cat lover is called an Ailurophile (Greek: cat+lover).","length":56}'
+        fi
+        ;;
+    *) exec /usr/bin/curl "$@" ;;
+esac

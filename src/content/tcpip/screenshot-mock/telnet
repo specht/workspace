@@ -1,0 +1,11 @@
+#!/bin/bash
+# Stand-in for telnet in the Star Wars screenshot of tcpip.md: the animation
+# at towel.blinkenlights.nl runs for twenty minutes, so the picture shows a
+# scene recorded from it (14 November 2026, at 88 s: Darth Vader between two
+# stormtroopers) instead of whatever is on screen at the moment. The recipe
+# first checks that the real server still sends the animation.
+printf 'Trying 213.136.8.188...\r\nConnected to towel.blinkenlights.nl.\r\nEscape character is '"'"'^]'"'"'.\r\n'
+printf '\033[H\033[J'
+cat "$(dirname "$0")/starwars-vader.txt"
+# waits under telnet's name, so the terminal's title says telnet
+exec -a telnet sleep 600

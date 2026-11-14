@@ -875,6 +875,15 @@ curl https://catfact.ninja/fact
 Die Ausgabe ist etwas schwer zu lesen:
 
 <!-- tutorial-screenshot
+# catfact.ninja answers a random fact: first the real service (the picture
+# fails to render when it no longer answers), then stand-ins for curl and
+# telnet in front of PATH (screenshot-mock/), so the pictures stay the same
+terminal-run: curl -s https://catfact.ninja/fact | jq -e .fact > /dev/null && echo CAT''FACT-OK
+wait-for-text: CATFACT-OK
+write-file: .hs-mock/curl <- file:screenshot-mock/curl
+write-file: .hs-mock/telnet <- file:screenshot-mock/telnet
+write-file: .hs-mock/starwars-vader.txt <- file:screenshot-mock/starwars-vader.txt
+terminal-run: chmod +x ~/.hs-mock/curl ~/.hs-mock/telnet && rm -f /tmp/hs-catfact-shown && export PATH=~/.hs-mock:$PATH
 terminal-run: clear
 terminal-run: curl https://catfact.ninja/fact
 terminal-wait-for-prompt
@@ -919,16 +928,18 @@ telnet towel.blinkenlights.nl
 ```
 
 <!-- tutorial-screenshot
+# first the real server: does it still send the animation (its credits)?
+# Then the stand-in telnet (screenshot-mock/telnet, in PATH since the cat
+# facts) shows a recorded scene: Darth Vader between two stormtroopers
+terminal-run: timeout 20 /usr/bin/telnet towel.blinkenlights.nl 2> /dev/null | grep -q 'Simon Jansen' && echo STAR''WARS-OK
+wait-for-text: STARWARS-OK
 terminal-run: clear
 terminal-run: telnet towel.blinkenlights.nl
-# measured 14 November 2026: from 24.4 s to 27 s the screen is empty
-# (between »A long time ago …« and the logo); from 37 s the opening crawl
-# runs for a long while
-sleep: 40
+sleep: 2
 crop-terminal-lines: 99
 -->
 
-<img class='full' src='starwars.webp' alt='Eine Star-Wars-Szene aus Textzeichen im Terminal.'>
+<img class='full' src='starwars.webp' alt='Eine Star-Wars-Szene aus Textzeichen im Terminal: Darth Vader zwischen zwei Stormtroopern mit ihren Gewehren.'>
 
 <!-- tutorial-screenshot
 # Die Mülltonne über dem Terminal, mit Mauszeiger und Tooltip; nur die
