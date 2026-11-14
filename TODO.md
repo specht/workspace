@@ -150,7 +150,7 @@ Platform-wide:
 
 Improve supply-chain reproducibility gradually rather than rewriting the Docker build at once.
 
-* [ ] Pin the running services' images in `config.rb` (mysql, neo4j, phpmyadmin, ruby alpine) to the digests that run on the server: their tags were republished since, so pinning to today's digest would change what runs; the maintainer reads them there (`docker image inspect --format '{{join .RepoDigests " "}}' mysql:8.4.11`). The Dockerfiles' base images are pinned. Not checked: the TeX Live installer (no versions, tlmgr checks its packages) and pwndbg (its installer takes the latest)
+* [ ] Pin phpMyAdmin in `config.rb` to the digest that runs on the server (`docker image inspect --format '{{join .RepoDigests " "}}' phpmyadmin/phpmyadmin:5.2.3` there); MySQL, Neo4j and the Alpine Ruby images are pinned since their update on 14 November 2026. Not checked: the TeX Live installer (no versions, tlmgr checks its packages) and pwndbg (its installer takes the latest)
 
 ### Continuous integration
 

@@ -1,4 +1,4 @@
-FROM neo4j:2026.07.1-community@sha256:956faa5d14b6beaa629b80c718bfd389ec12064f97e276ed9a58b0c53b25a323
+FROM neo4j:2026.10.2-community@sha256:4a2fd4f41ce384aa7d6a74b399f22c202e154f3966119c28a18ed9a500904f5e
 
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y tzdata && rm -rf /var/cache/apt/*

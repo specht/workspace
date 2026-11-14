@@ -1,4 +1,4 @@
-FROM ruby:3.4.10-bookworm@sha256:cc183c94af21fe763dcf1a89f731da75797b80b399e1c4d0a9408bcd3f87c63c
+FROM ruby:3.4.12-bookworm@sha256:d7c312a48736dd291d7ce043c847f04dfde9bdf7334491ca6a545a4a184395be
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   less \

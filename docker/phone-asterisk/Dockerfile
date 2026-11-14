@@ -1,6 +1,6 @@
 # Asterisk for the Telefonspiel (docs/plan-telefonspiel.md): answers calls
 # from a SIP trunk or a test telephone and hands each to the runner (ARI).
-FROM alpine:3.20
+FROM alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
 RUN apk add --no-cache asterisk asterisk-srtp
 # Nothing a caller says is recorded or kept: the folders where Asterisk
 # would put recordings, voicemail and monitored calls belong to root and
