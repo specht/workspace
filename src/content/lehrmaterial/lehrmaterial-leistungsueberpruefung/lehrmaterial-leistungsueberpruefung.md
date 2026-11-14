@@ -11,7 +11,7 @@ image: workspace-rahmen.webp
 # Leistungsüberprüfungen vorbereiten
 
 <p class='abstract'>
-Wie du aus einem Ordner deines Workspace eine Leistungsüberprüfung machst, sie mit deinem Testkonto ausprobierst, mit der Klasse schreibst und die Ergebnisse druckst. Wer sein Paket lieber selbst baut, findet unten, was hineingehört. Diese Seite sehen nur Lehrkräfte.
+Wie du aus einem Ordner, einer ZIP- oder einer tar.gz-Datei eine Leistungsüberprüfung machst, sie vorher selbst ausprobierst, mit der Klasse schreibst und die Ergebnisse druckst. Wer sein Paket lieber selbst baut, findet unten, was hineingehört. Diese Seite sehen nur Lehrkräfte.
 </p>
 
 ## Was die Klasse erlebt

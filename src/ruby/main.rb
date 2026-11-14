@@ -354,8 +354,7 @@ class Main < Sinatra::Base
         # The 2D Game Studio is a playground of its own; Lehrmaterial had only
         # its page and the list of teacher notes, which is in the profile now.
         'lehrmaterial-2d' => 'https://2d.hackschule.de/',
-        'lehrmaterial' => 'lehrmaterial-einstieg',
-        'lehrmaterial.html' => 'lehrmaterial-einstieg',
+        'lehrmaterial.html' => 'lehrmaterial',
         # Code Bites and its practice sets are gone (2026-10-18, TODO.md).
         'codebites' => '',
         'codebites_admin' => '',

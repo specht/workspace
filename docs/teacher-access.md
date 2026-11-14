@@ -733,17 +733,27 @@ Konten ändern sich nicht. Wer sich direkt als Testkonto anmeldet, bekommt den
 Anmelde-Code an die eigene Adresse ohne `+test`; nicht jedes Postfach nimmt
 Adressen mit `+` an.
 
-## Einstieg für Lehrkräfte
+## Anleitungen für Lehrkräfte
 
-`/lehrmaterial-einstieg` (`src/content/lehrmaterial/lehrmaterial-einstieg/`)
-erklärt neuen Lehrkräften die erste Stunde: Anmeldung mit den Codes am Beamer,
-die Reiter der Klassenseite, Abgaben ansehen, das Testkonto und »Nachahmen«,
-die Notiz für Lehrkräfte und was der Server speichert. Die Klassenseite weist
-mit »Neu hier?« darauf hin, bis die Lehrkraft den Hinweis ausblendet (in
-diesem Browser); der Link neben der Überschrift bleibt. `/lehrmaterial`
-führt ebenfalls dorthin. Die Bilder (16:9, doppelte Pixeldichte)
-nimmt ein Skript mit den E2E-Konten unter erfundenen Namen auf und räumt
-danach wieder auf; nach Änderungen an der Klassenseite neu aufnehmen:
+`/lehrmaterial` (`src/static/lehrmaterial.html`) zeigt die Anleitungen für
+Lehrkräfte als Karten, aus dem Katalog `src/content/lehrmaterial/sections.yaml`
+(Entscheidung des Maintainers, 14. November 2026: eine Karte je Thema statt
+eines langen Artikels): **Anfangen** mit dem Einstieg (`lehrmaterial-einstieg`:
+was die Lernenden haben, die Anmeldung mit den Codes am Beamer, Gruppen, die
+erste Doppelstunde, das Testkonto) und der Klassenseite
+(`lehrmaterial-klassenseite`: die Reiter, Treffpunkt, Rückmeldung, Abgaben);
+**Im Unterricht** den Lehrplan (`lehrmaterial-lehrplan`), die
+Git-Repositorys der Klasse (`lehrmaterial-git`) und die
+Leistungsüberprüfungen (`lehrmaterial-leistungsueberpruefung`); **Schule und
+Datenschutz** (`lehrmaterial-datenschutz`). Ein neues Thema bekommt eine
+eigene Seite und einen Eintrag dort. Wer keine Lehrkraft ist, bekommt unter
+`/lehrmaterial` und `/lehrmaterial-…` eine 403. Die Klassenseite weist mit
+»Neu hier?« auf den Einstieg hin, bis die Lehrkraft den Hinweis ausblendet
+(in diesem Browser); die Links »Einstieg für Lehrkräfte« und »Anleitungen«
+neben der Überschrift bleiben. Die Bilder (16:9, doppelte Pixeldichte) nimmt
+ein Skript mit den E2E-Konten unter erfundenen Namen auf, jedes in den Ordner
+der Seite, die es zeigt, und räumt danach wieder auf; nach Änderungen an der
+Klassenseite neu aufnehmen:
 
 ```bash
 cd e2e && HS_PICTURES=1 npx playwright test --project=pictures

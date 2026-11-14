@@ -1,11 +1,31 @@
-# Seiten nur für Lehrkräfte (docs/teacher-access.md). Wer keine Lehrkraft
-# ist, bekommt unter /lehrmaterial-… eine 403.
+# Seiten nur für Lehrkräfte (docs/teacher-access.md), als Karten unter
+# /lehrmaterial (src/static/lehrmaterial.html). Wer keine Lehrkraft ist,
+# bekommt unter /lehrmaterial und /lehrmaterial-… eine 403.
 - key: lehrmaterial-start
-  label: Für Lehrkräfte
-  icon: /images/book.png
+  label: Anfangen
+  icon: /images/rocket.png
   description: |
-    Wie der Workspace im Unterricht funktioniert: Anmeldung, Klassenseite,
-    Abgaben, ausprobieren und nachsehen.
+    Die erste Stunde mit dem Workspace: wie sich deine Klasse anmeldet, wie
+    du alles vorher mit deinem Testkonto ausprobierst, und was die
+    Klassenseite zeigt.
   entries:
     - lehrmaterial-einstieg
+    - lehrmaterial-klassenseite
+- key: lehrmaterial-unterricht
+  label: Im Unterricht
+  icon: /images/memo.png
+  description: |
+    Eine Aktivität zu deinem Lehrplan finden, mit der Klasse in einem
+    gemeinsamen Git-Repository arbeiten, Leistungsüberprüfungen vorbereiten.
+  entries:
+    - lehrmaterial-lehrplan
+    - lehrmaterial-git
     - lehrmaterial-leistungsueberpruefung
+- key: lehrmaterial-schule
+  label: Schule und Datenschutz
+  icon: /images/key.png
+  description: |
+    Was der Server speichert, und was deine Schule braucht, um dem Einsatz
+    zuzustimmen.
+  entries:
+    - lehrmaterial-datenschutz

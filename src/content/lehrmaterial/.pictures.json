@@ -24,22 +24,24 @@
     "src/ruby/include/curriculum_overview.rb",
     "src/content/static-website/lehrkraft.md",
     "src/ruby/include/git_overview.rb",
-    "src/ruby/include/git_server.rb"
+    "src/ruby/include/git_server.rb",
+    "src/ruby/include/privacy_documents.rb"
   ],
-  "hash": "07040f375baca6009c7b51213e3ca19fc203389fc5c9affa87e94e2744aea3b7",
+  "hash": "c45a6f0f1bf8b44516533a042e3aacff514c3dbf5241dd64a22ed1253e482bf5",
   "pictures": [
-    "abgabe-ansehen.webp",
-    "aktivitaet-lehrkraft.webp",
-    "codes-beamer.webp",
-    "git-uebersicht.webp",
-    "klasse-einstellungen.webp",
-    "klasse-fortschritt.webp",
-    "klasse-lernende.webp",
-    "klasse-treffpunkt.webp",
-    "klasse-ueberblick.webp",
-    "lehrplan-pdf.webp",
-    "lehrplan.webp",
-    "startseite-angeheftet.webp",
-    "treffpunkt-band.webp"
+    "lehrmaterial-datenschutz/datenschutz.webp",
+    "lehrmaterial-einstieg/aktivitaet-lehrkraft.webp",
+    "lehrmaterial-einstieg/codes-beamer.webp",
+    "lehrmaterial-git/git-uebersicht.webp",
+    "lehrmaterial-klassenseite/abgabe-ansehen.webp",
+    "lehrmaterial-klassenseite/klasse-einstellungen.webp",
+    "lehrmaterial-klassenseite/klasse-fortschritt.webp",
+    "lehrmaterial-klassenseite/klasse-lernende.webp",
+    "lehrmaterial-klassenseite/klasse-treffpunkt.webp",
+    "lehrmaterial-klassenseite/klasse-ueberblick.webp",
+    "lehrmaterial-klassenseite/startseite-angeheftet.webp",
+    "lehrmaterial-klassenseite/treffpunkt-band.webp",
+    "lehrmaterial-lehrplan/lehrplan-pdf.webp",
+    "lehrmaterial-lehrplan/lehrplan.webp"
   ]
 }

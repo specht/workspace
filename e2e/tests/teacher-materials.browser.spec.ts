@@ -1,9 +1,9 @@
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
-// Lehrmaterial is gone (October 2026). Teacher notes stand on top of each
-// activity; the profile no longer lists them, and /lehrmaterial forwards to
-// the onboarding for teachers.
+// Lehrmaterial as a list of teacher notes is gone (October 2026); teacher
+// notes stand on top of each activity. /lehrmaterial shows the guides for
+// teachers as cards (November 2026), only to teachers.
 
 test('the profile has no list of teacher notes', async ({ page }, testInfo) => {
   await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
@@ -11,10 +11,27 @@ test('the profile has no list of teacher notes', async ({ page }, testInfo) => {
   await expect(page.getByRole('heading', { name: 'Notizen für Lehrkräfte' })).toHaveCount(0);
 });
 
-test('designated teacher reaches the onboarding from /lehrmaterial', async ({ page }, testInfo) => {
+test('designated teacher finds the guides as cards on /lehrmaterial', async ({ page, browser }, testInfo) => {
   await loginAsE2eUser(page, 'e2e-materials-teacher@example.com', testInfo);
   await page.goto('/lehrmaterial');
-  expect(new URL(page.url()).pathname).toBe('/lehrmaterial-einstieg');
+  expect(new URL(page.url()).pathname).toBe('/lehrmaterial');
+  await expect(page.getByRole('heading', { name: 'Für Lehrkräfte', level: 1 })).toBeVisible();
+  for (const slug of ['einstieg', 'klassenseite', 'lehrplan', 'git', 'leistungsueberpruefung', 'datenschutz']) {
+    await expect(page.locator(`a.tutorial_card3[href="/lehrmaterial-${slug}"]`)).toBeVisible();
+  }
+  const broken: string[] = [];
+  page.on('response', (r) => { if (r.status() >= 400 && /\.(webp|png|jpg)/.test(r.url())) broken.push(r.status() + ' ' + r.url()); });
+  for (const slug of ['klassenseite', 'lehrplan', 'git', 'datenschutz']) {
+    await page.goto(`/lehrmaterial-${slug}`);
+    for (const img of await page.locator('img').all()) { await img.scrollIntoViewIfNeeded(); }
+  }
+  expect(broken).toEqual([]);
+  // students get neither the cards nor a guide
+  const s = await (await browser.newContext()).newPage();
+  await loginAsE2eUser(s, 'e2e-0@example.com', testInfo);
+  expect((await s.request.get('/lehrmaterial')).status()).toBe(403);
+  expect((await s.request.get('/lehrmaterial-git')).status()).toBe(403);
+  await s.context().close();
   await expect(page.getByRole('link', { name: 'Administration' })).toHaveCount(0);
   // A 403 without a body makes page.goto throw in Chromium; ask directly.
   const response = await page.request.get('/admin');

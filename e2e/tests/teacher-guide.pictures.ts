@@ -1,5 +1,7 @@
-// Pictures for »Einstieg für Lehrkräfte« (src/content/lehrmaterial/
-// lehrmaterial-einstieg), from the running development site:
+// Pictures for the guides for teachers (src/content/lehrmaterial/: the
+// Einstieg, the class page, the curricula, Git, data protection), each into
+// the folder of the page that shows it (FOLDER), from the running
+// development site:
 //
 //   HS_PICTURES=1 npx playwright test --project=pictures
 //
@@ -17,7 +19,17 @@ import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 import { WorkspaceContainer } from './workspace-container';
 
-const GUIDE = path.resolve(__dirname, '../../src/content/lehrmaterial/lehrmaterial-einstieg');
+const GUIDES = path.resolve(__dirname, '../../src/content/lehrmaterial');
+// the page each picture belongs to; the others are the Einstieg's
+const FOLDER: Record<string, string> = {
+  'klasse-fortschritt': 'lehrmaterial-klassenseite', 'abgabe-ansehen': 'lehrmaterial-klassenseite',
+  'klasse-treffpunkt': 'lehrmaterial-klassenseite', 'treffpunkt-band': 'lehrmaterial-klassenseite',
+  'klasse-ueberblick': 'lehrmaterial-klassenseite', 'klasse-lernende': 'lehrmaterial-klassenseite',
+  'startseite-angeheftet': 'lehrmaterial-klassenseite', 'klasse-einstellungen': 'lehrmaterial-klassenseite',
+  'git-uebersicht': 'lehrmaterial-git', 'lehrplan': 'lehrmaterial-lehrplan', 'lehrplan-pdf': 'lehrmaterial-lehrplan',
+  'datenschutz': 'lehrmaterial-datenschutz',
+};
+const pictureOf = (name: string) => `${FOLDER[name] ?? 'lehrmaterial-einstieg'}/${name}.webp`;
 const REPO = path.resolve(__dirname, '../..');
 // What the pictures show comes from these files: when one changes,
 // src/scripts/recreate-screenshots.rb --status calls the pictures stale, and
@@ -32,7 +44,7 @@ const INPUTS = [
   'src/static/include/meeting_point.js', 'src/static/include/meeting_status.js', 'src/static/include/class_meeting.js',
   'src/ruby/include/student_home.rb', 'src/static/lehrplan.html', 'src/ruby/include/curriculum_graph.rb', 'src/ruby/include/curriculum_overview.rb',
   'src/content/static-website/lehrkraft.md',
-  'src/ruby/include/git_overview.rb', 'src/ruby/include/git_server.rb',
+  'src/ruby/include/git_overview.rb', 'src/ruby/include/git_server.rb', 'src/ruby/include/privacy_documents.rb',
 ];
 const taken: string[] = [];
 
@@ -188,8 +200,8 @@ async function shoot(page: Page, name: string, anchor: string | null, out: strin
   await noAddresses(page, name);
   const png = path.join(out, name + '.png');
   await page.screenshot({ path: png });
-  execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
-  taken.push(name + '.webp');
+  execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDES, pictureOf(name))]);
+  taken.push(pictureOf(name));
 }
 
 // A picture of a part of the page: the box around the elements (selectors),
@@ -216,8 +228,8 @@ async function shootBox(page: Page, name: string, selectors: string[], out: stri
   }, [selectors, room, maxHeight, every] as const);
   const png = path.join(out, name + '.png');
   await page.screenshot({ path: png, fullPage: true, clip: box });
-  execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDE, name + '.webp')]);
-  taken.push(name + '.webp');
+  execFileSync('convert', [png, '-quality', '85', '-define', 'webp:method=6', path.join(GUIDES, pictureOf(name))]);
+  taken.push(pictureOf(name));
 }
 
 test('pictures for the teacher guide', async ({ freshWorkspace: workspace, browser }, testInfo) => {
@@ -452,6 +464,12 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
     await dress(teacher);
     await shootBox(teacher, 'lehrplan-pdf', ['h2#sek-i', 'h2#sek-i + p.lp-source'], out, { top: 12, bottom: 12 });
 
+    // The documents for the school (the card of »Datenschutz und Zustimmung
+    // der Schule«)
+    await teacher.goto('/datenschutz');
+    await dress(teacher);
+    await shoot(teacher, 'datenschutz', null, out);
+
     // An activity as a teacher sees it: the curriculum line at the top and
     // the teacher's note opened
     await teacher.goto('/static-website');
@@ -481,7 +499,7 @@ test('pictures for the teacher guide', async ({ freshWorkspace: workspace, brows
       window.dispatchEvent(new Event('resize'));
     });
     await shoot(teacher, 'codes-beamer', null, out);
-    fs.writeFileSync(path.join(GUIDE, '.pictures.json'), JSON.stringify({
+    fs.writeFileSync(path.join(GUIDES, '.pictures.json'), JSON.stringify({
       script: 'e2e/tests/teacher-guide.pictures.ts',
       command: 'cd e2e && HS_PICTURES=1 npx playwright test --project=pictures',
       inputs: INPUTS, hash: inputsHash(), pictures: [...taken].sort(),

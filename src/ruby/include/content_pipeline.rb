@@ -463,8 +463,8 @@ class Main < Sinatra::Base
         # Keep the student and teacher catalogs independent while sharing the
         # Markdown renderer, image cache, and screenshot generator.
         student_sections = YAML.load(File.read('/src/content/sections.yaml'))
-        # Teacher-only pages (src/content/lehrmaterial) are optional; there
-        # are none at the moment.
+        # Teacher-only pages (src/content/lehrmaterial, the guides shown as
+        # cards on /lehrmaterial) are optional.
         teaching_sections = File.exist?('/src/content/lehrmaterial/sections.yaml') ?
             (YAML.load(File.read('/src/content/lehrmaterial/sections.yaml')) || []) : []
         # Reference pages (Handbuch) live in their own catalog and are
