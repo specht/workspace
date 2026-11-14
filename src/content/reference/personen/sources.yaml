@@ -4338,3 +4338,29 @@ brinch-hansen:
     sources:
       - url: https://en.wikipedia.org/wiki/Monitor_(synchronization)
         quote: "In the Java language, each object may be used as a monitor. Methods requiring mutual exclusion must be explicitly marked with the synchronized keyword."
+
+cook-karp:
+  - text: Stephen Cook (geboren 1939) und Richard Karp (geboren 1935), amerikanische Informatiker, Cook an der Universität Toronto, Karp in Berkeley.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stephen_Cook
+        quote: "December 14, 1939 … Buffalo, New York … professor emeritus at the University of Toronto, Department of Computer Science and Department of Mathematics"
+      - url: https://en.wikipedia.org/wiki/Richard_M._Karp
+        quote: "is an American computer scientist and computational theorist at the University of California, Berkeley"
+  - text: "1971 stellte Cook die Frage, ob P gleich NP ist, und zeigte, dass ein Problem aus der Logik so schwer ist wie jedes andere in NP: Wer es schnell löst, kann sie alle schnell lösen."
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stephen_Cook
+        quote: "In his seminal 1971 paper \"The Complexity of Theorem Proving Procedures\", Cook formalized the notions of polynomial-time reduction (also known as Cook reduction) and NP-completeness, and proved the existence of an NP-complete problem by showing that the Boolean satisfiability problem (usually known as SAT) is NP-complete. … The paper also formulated the most famous problem in computer science, the P vs. NP problem."
+      - url: https://en.wikipedia.org/wiki/NP-completeness
+        quote: "If some NP-complete problem has a polynomial-time algorithm, all problems in NP do."
+  - text: Ein Jahr später zeigte Karp dasselbe für 21 bekannte Probleme, darunter eine Rundfahrt, die jeden Ort genau einmal besucht, das Einfärben eines Graphen mit möglichst wenigen Farben und das Rucksackproblem.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Richard_M._Karp
+        quote: "in 1972 he published a landmark paper in complexity theory, \"Reducibility Among Combinatorial Problems\", in which he proved 21 problems to be NP-complete."
+      - url: https://en.wikipedia.org/wiki/Karp%27s_21_NP-complete_problems
+        quote: "Undirected Hamilton circuit (Karp's name, now usually called Undirected Hamiltonian cycle) … Chromatic number (also called the Graph Coloring Problem) … Knapsack"
+  - text: Beide bekamen den Turing Award, den wichtigsten Preis der Informatik, Cook 1982 und Karp 1985.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stephen_Cook
+        quote: "He won the 1982 ACM Turing Award."
+      - url: https://en.wikipedia.org/wiki/Richard_M._Karp
+        quote: "for which he received the 1985 ACM Turing Award"

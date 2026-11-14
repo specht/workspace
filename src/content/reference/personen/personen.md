@@ -709,6 +709,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <!-- /part -->
 
 <!-- year: 1939 -->
+<!-- part: cook-karp -->
+### Stephen Cook und Richard Karp
+
+<div class='person pair'>
+<div class='portraits'><div class='portrait'><img src='cook.webp' alt='Stephen Cook 2012 bei einem Vortrag: ein Mann mit weißem Haar in hellblauem Hemd und dunkler Weste vor blauem Hintergrund, mitten im Sprechen.'><span>Stephen Cook</span></div><div class='portrait'><img src='karp.webp' alt='Richard Karp 2009: ein älterer Mann mit Brille und lichtem Haar in einem blauen Hemd, lächelnd.'><span>Richard Karp</span></div></div>
+<p><strong>Stephen Cook</strong> (geboren 1939) und <strong>Richard Karp</strong> (geboren 1935), amerikanische Informatiker, Cook an der Universität Toronto, Karp in Berkeley. 1971 stellte Cook die Frage, ob P gleich NP ist, und zeigte, dass ein Problem aus der Logik so schwer ist wie jedes andere in NP: Wer es schnell löst, kann sie alle schnell lösen.</p>
+<p>Ein Jahr später zeigte Karp dasselbe für 21 bekannte Probleme, darunter eine Rundfahrt, die jeden Ort genau einmal besucht, das Einfärben eines Graphen mit möglichst wenigen Farben und das Rucksackproblem. Beide bekamen den Turing Award, den wichtigsten Preis der Informatik, Cook 1982 und Karp 1985.</p>
+<p class='person-credit'>Fotos: orcmid, 2012, CC BY 2.0 (<a href='https://commons.wikimedia.org/wiki/File:2012-06-15_Stephen_A._Cook.jpg'>Wikimedia Commons</a>); Rama, 2009, CC BY-SA 2.0 fr (<a href='https://commons.wikimedia.org/wiki/File:Karp_mg_7725-b.cr2.jpg'>Wikimedia Commons</a>), beide zugeschnitten</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1939 -->
 <!-- part: bayer-mccreight -->
 ### Rudolf Bayer und Edward M. McCreight
 

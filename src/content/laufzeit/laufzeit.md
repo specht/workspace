@@ -593,6 +593,8 @@ Mathematics Institute eine Million Dollar ausgesetzt hat. Bis dahin hilft,
 was du mit der Rundfahrt zum nächsten Ort gebaut hast: eine Lösung, die gut
 genug ist, statt der besten.
 
+_person(cook-karp)
+
 <!-- extra -->
 ## Schneller geht es nicht
 
