@@ -124,3 +124,35 @@ _task(diagramme)
 <strong>Ausprobieren:</strong> Ändere in B17 die Sterne des Moormuseums auf 4,5. Achte auf das Säulendiagramm, und darauf, ob du dafür etwas am Diagramm tun musstest. Mach die Änderung danach rückgängig (<kbd>Strg</kbd>+<kbd>Z</kbd>).
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Tabellen für alle, die mehr wollen: eine zum Üben, eine mit zwei neuen
+Handgriffen und eine zum Suchen.
+
+### Noch eine Runde
+
+Wofür hat die Klassenkasse ausgegeben, und wer ist in welcher AG? Mach aus
+beidem das passende Diagramm, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Wie die Anmeldungen bis zum Stichtag gewachsen sind, ist eine Zahl, die sich
+mit der Zeit ändert: ein Fall für ein **Liniendiagramm**, die Wochen an der
+waagerechten Achse. Und für den Ausflug stehen lange Namen zur Wahl; an
+waagerechten Balken lassen sie sich lesen, ohne dass das Programm sie kippt
+oder abschneidet: ein **Balkendiagramm**.
+
+_task(handgriffe)
+
+### Fünf Fallen
+
+Die Diagramme zum Wandertag sehen fertig aus. Fünf Stellen sind trotzdem
+falsch gebaut: drei von der Art wie auf diesem Blatt, je eine vom ersten und
+zweiten. Die Prüfung sagt dir nur, wie viele du gefunden hast, und jede Falle
+hat ihre eigenen Tipps.
+
+_task(fallen)

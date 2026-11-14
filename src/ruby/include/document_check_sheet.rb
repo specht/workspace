@@ -554,11 +554,18 @@ module DocumentCheck
             want = cells_of(spec['range'])
             have = Array(chart['ranges']).flat_map { |r| cells_of(r) rescue [] }
             problems << "es zeigt nicht die Daten aus #{spec['range']}" unless (want - have).empty?
+            # a row below the data in the same columns: mostly the total,
+            # which in a pie would be a second slice as big as all the rest
+            cols = want.map { |n| cell_index(n).first }.uniq
+            last = want.map { |n| cell_index(n).last }.max
+            below = have.select { |n| c, r = cell_index(n); cols.include?(c) && r > last }
+            problems << "es zeigt auch #{below.first}, eine Zeile unter den Daten (die Summe ist kein Teil des Ganzen)" unless below.empty?
         end
         item.ok = problems.empty?
         unless item.ok
             first = problems.first
-            item.problem = if first.start_with?('es ist ein') then 'Ein anderes Diagramm'
+            item.problem = if first.start_with?('es zeigt auch') then 'Das Diagramm zeigt auch die Summe'
+                           elsif first.start_with?('es ist ein') then 'Ein anderes Diagramm'
                            elsif first.include?('keinen Titel') && first.start_with?('es') then 'Das Diagramm hat keinen Titel'
                            elsif first.include?('Achse') then 'Eine Achse ohne Titel'
                            else 'Das Diagramm zeigt andere Daten'

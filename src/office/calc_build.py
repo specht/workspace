@@ -150,7 +150,8 @@ def address(sheet, text):
 
 
 def chart(doc, name, source, kind, title, x_title=None, y_title=None, where=(0, 0, 12000, 7500)):
-    """a chart on the first sheet: kind 'pie' or 'column'; where in 1/100 mm"""
+    """a chart on the first sheet: kind 'pie', 'column', 'bar' (horizontal)
+    or 'line'; where in 1/100 mm"""
     sh = sheet_of(doc)
     rect = Rectangle()
     rect.X, rect.Y, rect.Width, rect.Height = where
@@ -158,9 +159,11 @@ def chart(doc, name, source, kind, title, x_title=None, y_title=None, where=(0, 
     emb = sh.Charts.getByName(name).EmbeddedObject
     if kind == 'pie':
         emb.setDiagram(emb.createInstance('com.sun.star.chart.PieDiagram'))
+    elif kind == 'line':
+        emb.setDiagram(emb.createInstance('com.sun.star.chart.LineDiagram'))
     else:
         emb.setDiagram(emb.createInstance('com.sun.star.chart.BarDiagram'))
-        emb.Diagram.Vertical = False
+        emb.Diagram.Vertical = kind == 'bar'
     emb.HasMainTitle = bool(title)
     if title:
         emb.Title.String = title

@@ -13,3 +13,25 @@ examples:
         say: noch kein Diagramm
       - document: stufen/falsch.xlsx
         say: keinen Titel
+      - document: stufen/mit-summe.xlsx
+        say: es zeigt auch B9
+  runde:
+    pass:
+      - document: stufen/klassenkasse.xlsx
+    fail:
+      - document: ../../static/spreadsheet-charts/06 Klassenkasse.xlsx
+        say: noch kein Diagramm
+  handgriffe:
+    pass:
+      - document: stufen/anmeldungen.xlsx
+    fail:
+      - document: ../../static/spreadsheet-charts/06 Anmeldungen.xlsx
+        say: noch kein Diagramm
+  fallen:
+    pass:
+      - document: stufen/wandertag.xlsx
+    fail:
+      - document: ../../static/spreadsheet-charts/06 Wandertag.xlsx
+        say: 0 von 5 Fallen gefunden
+      - document: stufen/wandertag-vier.xlsx
+        say: 4 von 5 Fallen gefunden

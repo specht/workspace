@@ -8,7 +8,7 @@ Lernende machen aus zwei Tabellen der Klassenfahrt Diagramme für den Elternaben
 <li><b>15 Minuten:</b> das Kreisdiagramm mit Titel, den Anteil der Jugendherberge ausrechnen.</li>
 <li><b>10 Minuten:</b> das Säulendiagramm mit Achsentiteln, prüfen, bis alles erfüllt ist.</li>
 <li><b>10 Minuten:</b> die Vermutung zur kurzen Achse, dann im eigenen Diagramm die Achse bei 2,5 beginnen lassen und vergleichen; Gespräch: Wo sieht man solche Diagramme?</li>
-<li><b>Für Schnelle:</b> ein Balkendiagramm derselben Sterne, sortiert vom besten zum schlechtesten Programmpunkt.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -30,3 +30,22 @@ Lernende machen aus zwei Tabellen der Klassenfahrt Diagramme für den Elternaben
 <li>Ein Säulendiagramm mit Titel und zwei Achsentiteln zeichnet die Sterne aus B15 bis B18. Wo seine Achse anfängt, prüft der Workspace nicht.</li>
 </ul></td></tr>
 </table>
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Diagramme besteht, bekommt auf der Karte einen Vorschlag: nach drei oder
+mehr Prüfungen »Noch eine Runde«, nach einer oder zwei die »Fünf Fallen«.
+Bei jedem Diagramm sieht die Prüfung auch nach, ob es eine Zeile unter den
+Daten mitzeichnet: Ein Kreis mit der Zeile »Zusammen« fällt auf.
+
+- **Noch eine Runde:** die Ausgaben der Klassenkasse (ein Kreis) und die AGs
+  (Säulen mit Achsentiteln).
+- **Zwei Handgriffe:** ein Liniendiagramm der Anmeldungen über sechs Wochen
+  und ein Balkendiagramm für Ausflüge mit langen Namen, beide mit Titel und
+  Achsentiteln.
+- **Fünf Fallen:** die Diagramme zum Wandertag. Der Kreis zeigt die Summe als
+  Stück, die Säulen haben keinen Titel und keine Achsentitel, ein Betrag
+  steht als Text (vom zweiten Blatt, sein Stück fehlt im Kreis), und die
+  Summe ist getippt (vom ersten). Die Prüfung zählt nur und zeigt jede Falle
+  erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.

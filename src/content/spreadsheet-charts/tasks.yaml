@@ -74,6 +74,10 @@ tasks:
 
   - id: diagramme
     title: Zwei Diagramme
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deine Tabelle. Die Prüfung sieht nach, welche Diagramme darin
       stehen, mit welchen Daten und welchen Titeln. Speichere in LibreOffice
@@ -104,3 +108,104 @@ tasks:
         - "Markiere A3 bis B8, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, unter *Diagrammtyp* das *Kreisdiagramm*."
         - "Im Schritt *Diagrammelemente* trägst du den *Titel* ein."
         - "Für A14 bis B18 wählst du das *Säulendiagramm* und trägst auch die Titel der beiden Achsen ein."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Mach aus den Ausgaben der Klassenkasse ein Kreisdiagramm mit Titel und
+      aus den AGs ein Säulendiagramm mit Titel und Achsentiteln.
+    check:
+      type: document
+      file: spreadsheet-charts/06 Klassenkasse.xlsx
+      rules:
+        - { same_data: ['A3:B7', 'A13:B17'] }
+        - { chart: { type: pie, title: true, range: 'B4:B7' } }
+        - { chart: { type: column, title: true, axis_titles: true, range: 'B14:B17' } }
+    hint:
+      - Die Ausgaben sind ein Ganzes, das sich aufteilt; die AGs werden verglichen.
+      - Markier für den Kreis die Zwecke mit ihren Beträgen und der Überschrift, aber nicht die Zeile »Zusammen«.
+      - Die Säulen bekommen einen Titel und an jeder Achse einen Achsentitel.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Zeig mit einem Liniendiagramm, wie die Anmeldungen bis zum Stichtag
+      gewachsen sind, und mit einem Balkendiagramm, wohin der Ausflug gehen
+      soll. Beide bekommen einen Titel und Achsentitel.
+    check:
+      type: document
+      file: spreadsheet-charts/06 Anmeldungen.xlsx
+      rules:
+        - { same_data: ['A3:B9', 'A13:B17'] }
+        - { chart: { type: line, title: true, axis_titles: true, range: 'B4:B9' } }
+        - { chart: { type: bar, title: true, axis_titles: true, range: 'B14:B17' } }
+    hint:
+      - Was sich mit der Zeit ändert, zeigt eine Linie; die Wochen stehen an der waagerechten Achse.
+      - Bei langen Namen liegen die Säulen besser waagerecht, ein Balkendiagramm; dann passen die Namen an die Achse.
+      - Beide Diagramme brauchen einen Titel und Achsentitel.
+    libreoffice:
+      hint:
+        - "Markier A3 bis B9, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, Typ *Linie*."
+        - "Für die Stimmen markierst du A13 bis B17 und wählst den Typ *Balken*."
+        - "Im letzten Schritt des Assistenten, *Diagrammelemente*, trägst du den Titel und die Achsentitel ein."
+    word:
+      hint:
+        - "Markier A3 bis B9, dann im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Linien- oder Flächendiagramm einfügen*."
+        - "Für die Stimmen markierst du A13 bis B17 und wählst *Säulen- oder Balkendiagramm einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Gruppierte Balken*."
+        - "Den Titel schreibst du ins Feld *Diagrammtitel*; die Achsentitel fügt das Plus neben dem Diagramm hinzu, *Diagrammelemente* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Achsentitel*."
+    nextcloud:
+      hint:
+        - "Markier A3 bis B9, dann *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, Typ *Linie*."
+        - "Für die Stimmen markierst du A13 bis B17 und wählst den Typ *Balken*."
+        - "Im letzten Schritt, *Diagrammelemente*, trägst du den Titel und die Achsentitel ein."
+
+  - id: fallen
+    title: Fünf Fallen
+    extra: true
+    prompt: |
+      Die Diagramme zum Wandertag sehen fertig aus. Fünf Stellen sind
+      trotzdem falsch gebaut: drei von der Art wie auf diesem Blatt, je eine
+      vom ersten und zweiten. Die Prüfung sagt dir nur, wie viele du gefunden
+      hast; zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: spreadsheet-charts/06 Wandertag.xlsx
+      traps: true
+      rules:
+        - { same_data: ['A3:A8', 'A13:B17', 'B4', 'B6:B7'] }
+        - chart: { type: pie, title: true, range: 'B4:B7' }
+          label: Der Kreis zeigte auch die Summe als Stück.
+          hints:
+            - Ist jedes Stück im Kreis ein Teil des Ganzen?
+            - Sieh dir an, welche Zellen der Kreis zeichnet; ein Stück ist so groß wie alle anderen zusammen.
+            - Der Kreis zeichnet A3 bis B8, auch »Zusammen«. Ändere seinen Datenbereich auf A3 bis B7.
+        - chart: { type: column, title: true }
+          label: Die Säulen hatten keinen Titel.
+          hints:
+            - Sagt jedes Diagramm, was es zeigt?
+            - Sieh dir das Säulendiagramm an.
+            - Es hat keinen Titel. Gib ihm »Wie hat es gefallen?«.
+        - chart: { type: column, axis_titles: true }
+          label: Die Achsen der Säulen hatten keine Titel.
+          hints:
+            - Weiß man bei jeder Achse, was ihre Zahlen bedeuten?
+            - Sieh dir die Achsen des Säulendiagramms an.
+            - Beide Achsen haben keinen Titel. Gib ihnen »Programmpunkt« und »Sterne im Mittel«.
+        - text_numbers: 'B4:B7'
+          label: In B5 stand der Betrag als Text.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Fehlt im Kreis ein Stück?
+            - Sieh dir den Eintritt in den Tierpark an.
+            - In B5 steht »6,50 €« als Text, links in der Zelle. Tipp nur `6,5`; dann kommt sein Stück in den Kreis.
+        - formulas: ['B8']
+          label: In B8 stand die Summe getippt.
+          hints:
+            - Diese Falle ist vom ersten Blatt. Klick auf die Summe.
+            - Rechnet B8, oder steht dort eine Zahl?
+            - In B8 steht die Zahl 27,78. Schreib `=SUMME(B4:B7)`.
+    solution: |
+      Die fünf Fallen: der Kreis mit der Summe als Stück, die Säulen ohne
+      Titel und ohne Achsentitel, in B5 ein Betrag als Text und in B8 eine
+      getippte Summe.
