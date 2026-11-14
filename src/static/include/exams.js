@@ -24,14 +24,24 @@ function exam_title(entry) {
     return (entry.filename || 'Leistungsüberprüfung').replace(/\.(tar\.gz|tgz|tar)$/i, '');
 }
 
+// the teacher's groups that someone taking part in the exam is in, with
+// how many of them, in the order of the groups
+function participant_groups(entry) {
+    const taking = new Set(entry.emails || []);
+    return user_group_order.map((g) => [g, (user_groups[g] || []).filter((e) => taking.has(e)).length])
+        .filter(([, n]) => n > 0);
+}
+
 function refresh_test_archives() {
     if (!document.getElementById('table_my_test_archives')) return;
     api_call('/api/get_my_test_archives', {}, function(data) {
         const tbody = $('#table_my_test_archives tbody').empty();
         if (!data.success) return;
         // this class's exams, and those uploaded before exams belonged to a
-        // class (in the profile), to be given to one
-        exam_entries = data.entries.filter((e) => e.group === exam_group || !e.group)
+        // class (in the profile), to be given to one: in the classes their
+        // participants are in (in every class while nobody takes part)
+        exam_entries = data.entries.filter((e) => e.group === exam_group ||
+                (!e.group && (!(e.emails || []).length || participant_groups(e).some(([g]) => g === exam_group))))
             .sort((a, b) => (!a.group) - (!b.group) || (b.ts || 0) - (a.ts || 0));
         if (exam_entries.length === 0) {
             tbody.append(`<tr><td colspan='6' class='text-body-secondary'>Noch keine für diese Klasse. Lade oben ein Paket hoch; alle in der Klasse nehmen dann teil.</td></tr>`);
@@ -45,7 +55,10 @@ function refresh_test_archives() {
                 .append($("<div class='small text-body-secondary'>").text(`${uploaded ? 'hochgeladen am ' + uploaded + ', ' : ''}${entry.size}`))
                 .appendTo(row);
             if (!entry.group) {
-                const assign = $(`<button type='button' class='btn btn-link btn-sm px-0 exam-assign'><i class='bi bi-box-arrow-in-down-right'></i>Noch keiner Klasse zugeordnet: dieser zuordnen</button>`);
+                const from = participant_groups(entry).map(([g, n]) => `${g} (${n})`).join(', ');
+                name_cell.append($("<div class='small text-body-secondary exam-unassigned'>")
+                    .text(`Noch keiner Klasse zugeordnet${from ? '. Teilnehmende aus: ' + from : ''}`));
+                const assign = $(`<button type='button' class='btn btn-link btn-sm px-0 exam-assign'><i class='bi bi-box-arrow-in-down-right'></i>Dieser Klasse zuordnen</button>`);
                 assign.on('click', () => api_call('/api/test_assign_group', { tag: entry.tag, group: exam_group }, d => { if (d.success) refresh_test_archives(); }));
                 name_cell.append($('<div>').append(assign));
             }

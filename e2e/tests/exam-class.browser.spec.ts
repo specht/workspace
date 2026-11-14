@@ -74,3 +74,26 @@ test('an exam uploaded for a class: its students take part, one taken out and ba
     if (tag) await page.request.post('/api/delete_test', { data: { tag } });
   }
 });
+
+// An exam uploaded in the profile before exams belonged to a class: shown
+// only in the classes its participants are in, which it names.
+test('an exam without a class shows in the class of its participants', async ({ page }, testInfo) => {
+  await loginAsE2eUser(page, TEACHER, testInfo);
+  await page.goto('/klasse?tab=pruefungen');
+  const group = await page.locator('select.class-group-choice').inputValue();
+  const members = await page.locator('#class-panel-lernende tr[data-email]').evaluateAll(
+    (rows) => rows.map((r) => r.getAttribute('data-email')!));
+  test.skip(members.length < 1, 'the class needs a student');
+  const legacy = (filename: string, emails: string[]) => ({
+    tag: filename, running: false, size: '1 kB', filename, ts: 0, count: emails.length, emails,
+  });
+  await page.route('**/api/get_my_test_archives', (route) => route.fulfill({
+    json: { success: true, entries: [legacy('hier.tar.gz', [members[0]]), legacy('woanders.tar.gz', ['nobody@example.com'])] },
+  }));
+  await page.reload();
+  const rows = page.locator('#table_my_test_archives tbody tr');
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toContainText('hier');
+  await expect(rows.first().locator('.exam-unassigned')).toHaveText(`Noch keiner Klasse zugeordnet. Teilnehmende aus: ${group} (1)`);
+  await expect(rows.first().locator('.exam-assign')).toHaveText('Dieser Klasse zuordnen');
+});

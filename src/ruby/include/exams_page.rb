@@ -148,8 +148,11 @@ class Main < Sinatra::Base
         neo4j_query(<<~END_OF_STRING, {:email => @session_user[:email]}).each do |row|
             MATCH (u:User {email: $email})<-[:BELONGS_TO]->(t:Test)-[:USES]->(f:File)
             OPTIONAL MATCH (t)<-[:TAKES]-(u2:User)
-            RETURN t, f, COUNT(u2);
+            RETURN t, f, COUNT(u2), COLLECT(u2.email) AS emails;
         END_OF_STRING
+            # who takes part in one uploaded before exams belonged to a
+            # class: shown in the classes they are in (exams.js)
+            emails = row['t'][:group] ? nil : row['emails']
             entries << {
                 tag: row['t'][:tag],
                 running: row['t'][:running],
@@ -158,7 +161,8 @@ class Main < Sinatra::Base
                 ts: row['t'][:ts],
                 group: row['t'][:group],
                 count: row['COUNT(u2)'],
-            }
+                emails: emails,
+            }.compact
         end
         respond(:entries => entries)
     end

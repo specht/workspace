@@ -250,8 +250,9 @@ Lehrkräfte und ohne Testkonten (außer in einer Testgruppe; `exam_students`).
 Im Dialog »Teilnehmende« steht die Klasse oben und offen; dort nimmt man
 Einzelne heraus, und aus den anderen Gruppen darunter fügt man Einzelne hinzu.
 Pakete, die früher im Profil hochgeladen wurden, haben noch keine Klasse: Sie
-stehen in jeder Klasse der Lehrkraft mit »dieser zuordnen«
-(`/api/test_assign_group`), wer teilnimmt, bleibt dabei.
+stehen in den Klassen der Lehrkraft, in denen jemand der Teilnehmenden ist
+(solange niemand teilnimmt, in jeder), mit den Klassen der Teilnehmenden und
+»Dieser Klasse zuordnen« (`/api/test_assign_group`); wer teilnimmt, bleibt dabei.
 
 ## Vor dem Einsatz prüfen
 
