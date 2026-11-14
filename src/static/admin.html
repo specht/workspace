@@ -239,6 +239,8 @@
                 if (info.name && info.email) who.append($('<div class="small text-body-secondary">').text(info.email));
                 row.append(who, $('<td>').text(info.group || '–'), $(`<td class='num td_cpu'>`), $(`<td class='num td_ram'>`), $(`<td class='num td_pid'>`), $(`<td class='num td_disk'>`));
                 const actions = $(`<td class='text-end text-nowrap'>`).appendTo(row);
+                // what keeps it busy (program and file of each process)
+                actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-workspace-processes me-1' title='Prozesse' aria-label='Prozesse'><i class='bi bi-list-ul'></i></button>`).attr('data-tag', tag).attr('data-name', info.name || info.email || tag));
                 if (info.email && info.email !== my_email) {
                     actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-open-workspace-as-admin me-1' title='Workspace öffnen' aria-label='Workspace öffnen'><i class='bi bi-code-slash'></i></button>`).attr('data-email', info.email));
                     actions.append($(`<button class='btn btn-sm btn-outline-secondary btn-icon bu-impersonate me-1' title='Nachahmen' aria-label='Nachahmen'><i class='bi bi-person-vcard'></i></button>`).attr('data-email', info.email));
@@ -399,6 +401,30 @@
         $('#running_more').on('click', function () { show_all = !show_all; $(this).prop('hidden', true); });
         // Stopping someone's Workspace (a runaway program): the processes end,
         // the files stay; with a reason the person sees.
+        // What keeps a Workspace busy: its busiest processes right now
+        // (WorkspaceProcesses), read again on »Neu lesen«
+        function processes_html(data) {
+            const esc = (t) => $('<span>').text(t).html();
+            const mb = (b) => (b / 1024 / 1024).toFixed(b < 10 * 1024 * 1024 ? 1 : 0).replace('.', ',') + ' MB';
+            const time = (s) => s < 60 ? `${s} s` : s < 3600 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1).replace('.', ',')} h`;
+            if (!data.processes || !data.processes.length) return '<p>Keine Prozesse gefunden; vielleicht läuft der Workspace nicht mehr.</p>';
+            const rows = data.processes.map((p) => `<tr><td>${esc(p.label)}</td><td class='text-end'>${p.cpu.toFixed(1).replace('.', ',')} %</td>` +
+                `<td class='text-end'>${mb(p.rss)}</td><td class='text-end'>${time(p.seconds)}</td></tr>`).join('');
+            return `<p class='small text-body-secondary'>Gerade eben, über eine halbe Sekunde gemessen; 100 % ist ein ganzer Kern. Jeder Prozess mit seinem Programm und der Datei, die es ausführt.</p>` +
+                `<div class='table-responsive'><table class='table table-sm'><thead><tr><th>Prozess</th><th class='text-end'>CPU</th><th class='text-end'>RAM</th><th class='text-end'>läuft seit</th></tr></thead>` +
+                `<tbody>${rows}</tbody></table></div>` + (data.total > data.processes.length ? `<p class='small text-body-secondary mb-0'>und ${data.total - data.processes.length} weitere</p>` : '');
+        }
+        $(document).on('click', '.bu-workspace-processes', function () {
+            const button = $(this);
+            const load = () => api_call('/api/admin/workspace_processes', { tag: button.data('tag') }, function (data) {
+                if (data.success === false) return;
+                $('#__template_modal .modal-body').html(processes_html(data));
+            }, { no_please_wait: true });
+            showTemplateModal(`Prozesse von ${$('<span>').text(button.data('name')).html()}`, '<p>Einen Moment …</p>',
+                "<i class='bi bi-arrow-clockwise'></i>Neu lesen", 'btn-outline-secondary', 'Schließen', 'btn-primary', () => { load(); return false; });
+            load();
+        });
+
         $(document).on('click', '.bu-stop-workspace', function (e) {
             let button = $(e.target).closest('button');
             admin_action_dialog({ title: `Workspace von ${button.data('name')} stoppen`, confirm: 'Stoppen', icon: 'bi-stop-circle', danger: true,

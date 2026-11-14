@@ -673,6 +673,15 @@ ihrem Profil. Noten gehören nie hierher. Für Admins gilt dasselbe (auch auf
 zusätzlich steht jeder Zugriff der Administration ein Jahr lang in
 `/internal/admin-access.jsonl`. Nur das eigene Testkonto braucht keinen Satz.
 
+Auf `/admin` zeigt »Prozesse« bei einem laufenden Workspace, was ihn gerade
+beschäftigt (`WorkspaceProcesses`, `/api/admin/workspace_processes`): je
+Prozess Programm und Datei (»python3 schleife.py«), ohne weitere Argumente,
+mit CPU über eine halbe Sekunde, Speicher und Laufzeit; die Überwachung des
+Workspace (s6) bleibt weg. Dafür fragt der Workspace keinen Grund und gibt
+keinen Hinweis (Entscheidung des Maintainers, 14. November 2026): Es ist
+weniger als ein Blick in den Workspace, gespeichert wird nichts, und wer den
+Workspace danach stoppt, gibt dort einen Grund an.
+
 ## Testkonto
 
 Jede Lehrkraft hat genau ein Testkonto, `adresse+test@domain`, ob mit `+`,

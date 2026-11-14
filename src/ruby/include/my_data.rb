@@ -134,6 +134,18 @@ class Main < Sinatra::Base
 
     # A Workspace that runs away (»Betrieb«): the processes end, the files
     # stay; the person reads why and can start it again at once.
+    # What keeps a running Workspace busy, for »Laufende Workspaces«: the
+    # busiest processes by program and file (WorkspaceProcesses); no reason
+    # asked and no notice, as decided for this view
+    post '/api/admin/workspace_processes' do
+        admins_only!
+        data = parse_request_data(:required_keys => [:tag], :max_value_lengths => { :tag => 32 })
+        tag = data[:tag].to_s
+        halt 400 unless tag.match?(/\A[a-z0-9]{8,32}\z/)
+        list = workspace_runtime.processes(tag)
+        respond(:processes => list.first(12), :total => list.size)
+    end
+
     post '/api/admin/stop_workspace' do
         admins_only!
         data = parse_request_data(:required_keys => [:email, :reason], :optional_keys => [:notify], :types => { :notify => Object })
