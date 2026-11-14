@@ -84,12 +84,13 @@ module TestWorkspaceExtensions
             TestWorkspacePackage.validate_git_layout!(dir)
             TestWorkspacePackage.vscode_config(dir)
             setup = TestWorkspacePackage.setup_commands(dir)
+            allow = TestWorkspacePackage.network_allow(dir)
             config = TestWorkspacePackage.load_config(dir)
             roots = requested(config)
             resolved = {}
             visiting = {}
             roots.each { |entry| resolve!(entry['id'], entry['version'], resolved, visiting, cache: cache) }
-            {'version' => 1, 'extensions' => resolved.values, 'setup' => setup}
+            {'version' => 1, 'extensions' => resolved.values, 'setup' => setup, 'network' => {'allow' => allow}}
         end
     end
 
@@ -226,6 +227,23 @@ module TestWorkspaceExtensions
         ensure
             File.unlink(tmp.path) if File.exist?(tmp.path)
         end
+    end
+
+    # What an exam may reach outside the students' network, from its
+    # manifest (network.allow at upload): [{'host', 'ports'}]; none for
+    # exams uploaded before, and for any doubt
+    def self.network_allow(tag:, manifests: MANIFESTS)
+        return [] unless TAG.match?(tag.to_s)
+        path = File.join(manifests, "#{tag}.json")
+        return [] unless File.file?(path)
+        allow = (JSON.parse(File.read(path))['network'] || {})['allow']
+        return [] unless allow.is_a?(Array)
+        allow.select do |e|
+            e.is_a?(Hash) && e['host'].to_s.match?(TestWorkspacePackage::HOST_NAME) &&
+                e['ports'].is_a?(Array) && e['ports'].all? { |p| p.is_a?(Integer) && p.between?(1, 65_535) }
+        end
+    rescue JSON::ParserError
+        []
     end
 
     def self.stage!(tag:, workspace_path:, cache: CACHE, manifests: MANIFESTS)

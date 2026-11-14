@@ -102,8 +102,20 @@ module WorkspaceRuntime
         # Passwords never stand in the command, which a failed start writes
         # to the log: the command names them (-e MYSQL_PASSWORD), and docker
         # takes their values from its own environment (env).
+        # An exam Workspace (test_mode) has a MAC address of its own prefix:
+        # peer_firewall drops what such an address sends out of the
+        # students' network, from its first packet on (no gap until the
+        # firewall notices the container). exam_allow: [name, ip, port] it
+        # may reach all the same (network.allow), as a label for the
+        # firewall and the names as entries in /etc/hosts.
+        EXAM_MAC_PREFIX = '02:68:73'
+
+        def self.exam_mac
+            ([EXAM_MAC_PREFIX] + SecureRandom.random_bytes(3).bytes.map { |b| format('%02x', b) }).join(':')
+        end
+
         def start_workspace(fs_tag:, workspace_login:, database_environment:,
-            host_data_path:, test_mode:, timeout: nil, extra_environment: {})
+            host_data_path:, test_mode:, timeout: nil, extra_environment: {}, exam_allow: [])
             secrets = {
                 'MYSQL_PASSWORD' => database_environment['MYSQL_PASSWORD'].to_s,
                 'NEO4J_PASSWORD' => database_environment['NEO4J_PASSWORD'].to_s,
@@ -117,6 +129,12 @@ module WorkspaceRuntime
                     extra += hosts.flat_map { |host, ip| ['--add-host', "#{host}:#{ip}"] }
                 rescue StandardError => e
                     STDERR.puts "Exam Workspace #{fs_tag}: database addresses unknown (#{e.message})"
+                end
+                extra += ['--mac-address', DirectDocker.exam_mac, '--label', 'hackschule.workspace.exam=true']
+                unless exam_allow.empty?
+                    extra += ['--label', "hackschule.workspace.exam.allow=#{exam_allow.map { |_, ip, port| "#{ip}:#{port}" }.uniq.join(',')}"]
+                    extra += exam_allow.map { |host, ip, _| [host, ip] }.uniq(&:first)
+                        .reject { |host, ip| host == ip }.flat_map { |host, ip| ['--add-host', "#{host}:#{ip}"] }
                 end
             end
             # an argument list, joined with every value escaped: nothing in a

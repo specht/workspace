@@ -551,6 +551,7 @@ class Main < Sinatra::Base
     require './include/login_page.rb'
     require './include/login_sessions_page.rb'
     require './include/authenticator_page.rb'
+    require './include/exam_builder_page.rb'
     require './include/look_ins_page.rb'
     require './include/my_data.rb'
     require './include/nginx_config.rb'
@@ -1327,12 +1328,18 @@ class Main < Sinatra::Base
         end
 
         git.call('init', '-b', 'main') if git_mode == 'fresh'
-        git.call('config', '--local', 'user.name', display_name)
-        git.call('config', '--local', 'user.email', email)
-        git.call('config', '--local', 'commit.gpgSign', 'false')
+        # repositories in subfolders (a Git task) too; the recovery
+        # repository of fresh leaves them out instead of committing them as
+        # embedded repositories
+        nested = TestWorkspacePackage.nested_repositories(workspace_path)
+        ['', *nested.map { |rel| "#{rel}/" }].each do |prefix|
+            git.call('-C', "/workspace/#{prefix}", 'config', '--local', 'user.name', display_name)
+            git.call('-C', "/workspace/#{prefix}", 'config', '--local', 'user.email', email)
+            git.call('-C', "/workspace/#{prefix}", 'config', '--local', 'commit.gpgSign', 'false')
+        end
 
         with_user_files(container_name, '.git/info/exclude') do
-            TestWorkspacePackage.write_git_exclude(workspace_path)
+            TestWorkspacePackage.write_git_exclude(workspace_path, :extra => git_mode == 'fresh' ? nested.map { |rel| "/#{rel}/" } : [])
         end
 
         if git_mode == 'fresh'

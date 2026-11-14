@@ -7,66 +7,18 @@ require_relative 'zip_stream'
 class Main < Sinatra::Base
     # How to make a package, under the upload (folded)
     EXAM_PACKAGE_HELP = <<~'END_OF_HTML'.freeze
-                                <details class="mb-3">
-                                    <summary>Workspace-Paket erstellen</summary>
-                                    <p class="mt-2">
-                                        Der Inhalt des Archivs wird direkt nach <code>/workspace</code> entpackt. Standardmäßig wird daraus ein neues
-                                        lokales Git-Repository mit dem Commit <code>Ausgangszustand</code>. Für Git-Aufgaben kann ein vorhandenes
-                                        Repository stattdessen vollständig erhalten oder Git ganz dem Prüfling überlassen werden.
-                                    </p>
-                                    <p>
-                                        Öffne ein Terminal <em>im Aufgabenordner</em> und packe den gesamten Inhalt
-                                        einschließlich versteckter Dateien und Verzeichnisse in das gleichnamige Archiv
-                                        im Elternverzeichnis:
-                                    </p>
-                                    <pre>tar -czvf "../$(basename "$PWD").tar.gz" .</pre>
-                                    <p>
-                                        Auch <code>.git</code> wird mitgepackt. Ist es vorhanden, wähle
-                                        <code>git.mode: preserve</code>; bei <code>fresh</code> und <code>none</code>
-                                        ist ein mitgeliefertes <code>.git</code> nicht zulässig.
-                                        Keine privaten Schlüssel, Zugangsdaten oder Cache-Ordner mitpacken.
-                                    </p>
-                                    <p>
-                                        Optional steuert <code>.workspace/config.yaml</code> die Prüfungsfarbe, die Druckausgabe und zusätzliche
-                                        VS-Code-Einstellungen:
-                                    </p>
-                                    <pre>workspace_package: 1
-
-        exam:
-          color: blue
-
-        git:
-          mode: fresh
-
-        extensions:
-          - Dart-Code.dart-code
-
-        print:
-          exclude:
-            - "tests/**"
-            - "**/test_runner.*"
-
-        vscode_config: {}</pre>
-                                    <p>
-                                        <code>git.mode</code> ist standardmäßig <code>fresh</code>. Mit <code>preserve</code> bleibt ein mitgeliefertes
-                                        <code>.git</code>-Verzeichnis samt Historie, Branches und Index erhalten; <code>none</code> nimmt überhaupt keine
-                                        Git-Einrichtung vor. Name und E-Mail-Adresse werden bei <code>fresh</code> und <code>preserve</code> repository-lokal gesetzt.
-                                        Über <code>extensions</code> deklarierte Erweiterungen werden beim Upload geprüft und heruntergeladen;
-                                        in Prüfungs-Workspaces werden sie ohne Netzwerkzugriff installiert. Optional: <code>id</code> und <code>version</code> angeben.
-                                    </p>
-                                    <p>
-                                        <code>exam.color</code> wählt das vollständige VS-Code-Farbschema <code>Tomorrow Night Blue</code>
-                                        oder <code>Red</code>, auch für Editor und Willkommensseite. Ohne <code>print.include</code> werden alle
-                                        UTF-8-Textdateien rekursiv berücksichtigt; mit <code>print.exclude</code> lassen sich Hilfsdateien
-                                        wie Test-Runner auslassen. Versteckte Verzeichnisse wie <code>.cache</code> werden auf jeder Ebene
-                                        automatisch von der Druckausgabe ausgeschlossen.
-                                    </p>
-                                    <p class="mb-0">
-                                        Wichtig: Packe den <em>Inhalt</em> des Arbeitsverzeichnisses einschließlich <code>.workspace</code>, nicht
-                                        ein zusätzliches übergeordnetes Verzeichnis. Ein vorhandenes <code>.git</code> ist nur bei
-                                        <code>git.mode: preserve</code> zulässig.
-                                    </p>
-                                </details>
+        <details class="mb-3">
+            <summary>Ein eigenes Paket hochladen</summary>
+            <p class="mt-2">
+                Ein Paket ist ein Archiv <code>.tar.gz</code> mit dem Inhalt, den die Klasse bekommt, ohne einen Ordner darum herum.
+                Im Terminal, im Ordner der Aufgabe:
+            </p>
+            <pre>tar -czf "../$(basename "$PWD").tar.gz" .</pre>
+            <p class="mb-0">
+                Farbe, Git, Drucken, Erweiterungen und Befehle beim Start stehen in <code>.workspace/config.yaml</code>;
+                was dort stehen kann: <a href="/lehrmaterial-leistungsueberpruefung#9-ein-eigenes-paket-bauen">Ein eigenes Paket bauen</a>.
+            </p>
+        </details>
     END_OF_HTML
 
     # The students of a class who take its exams by themselves: its members
@@ -79,16 +31,11 @@ class Main < Sinatra::Base
         end
     end
 
-    post '/api/upload_test_archive' do
-        assert(teacher_logged_in?)
-        # uploaded on the class page: the exam belongs to that class, and
-        # everyone in it takes part (one by one changed in the dialog)
-        group = params['group'].to_s
-        group = nil if group.empty?
-        halt 403 if group && !class_groups.include?(group)
-        entry = params['file']
-        filename = entry['filename']
-        blob = entry['tempfile'].read
+    # An exam from a package's bytes, uploaded or built from a folder
+    # (exam_builder_page.rb): checked and its extensions fetched before it
+    # shows; for a class (group), everyone in it takes part. The number of
+    # them; raises the package's errors (ConfigError, Error).
+    def create_exam(blob, filename, group)
         sha1 = Digest::SHA1.hexdigest(blob)
         tag = RandomTag.generate(24)
         debug "Got a file called #{filename} with #{blob.size} bytes."
@@ -129,18 +76,36 @@ class Main < Sinatra::Base
             END_OF_STRING
             Main.refresh_nginx_config() unless students.empty?
         end
-        respond(:success => true, :yay => 'sure', :count => students.size)
-    rescue TestWorkspaceExtensions::Error, TestWorkspacePackage::ConfigError => e
-        STDERR.puts "Exam upload rejected: #{e.class}: #{e.message}"
-        status 422
-        content_type :json
-        JSON.generate(:success => false, :error => e.message)
-    rescue StandardError => e
-        STDERR.puts "Exam upload failed: #{e.class}: #{e.message}"
+        students.size
+    end
+
+    # the package's errors as the dialog shows them
+    def exam_error_response(e)
+        if e.is_a?(TestWorkspaceExtensions::Error) || e.is_a?(TestWorkspacePackage::ConfigError) || (defined?(ExamBuilder) && e.is_a?(ExamBuilder::Refused))
+            STDERR.puts "Exam package rejected: #{e.class}: #{e.message}"
+            status 422
+            content_type :json
+            return JSON.generate(:success => false, :error => e.message)
+        end
+        STDERR.puts "Exam package failed: #{e.class}: #{e.message}"
         STDERR.puts Array(e.backtrace).first(25).join("\n")
         status 500
         content_type :json
         JSON.generate(:success => false, :error => 'Interner Fehler beim Vorbereiten des Prüfungspakets. Bitte Server-Log prüfen.')
+    end
+
+    post '/api/upload_test_archive' do
+        assert(teacher_logged_in?)
+        # uploaded on the class page: the exam belongs to that class, and
+        # everyone in it takes part (one by one changed in the dialog)
+        group = params['group'].to_s
+        group = nil if group.empty?
+        halt 403 if group && !class_groups.include?(group)
+        entry = params['file']
+        count = create_exam(entry['tempfile'].read, entry['filename'], group)
+        respond(:success => true, :yay => 'sure', :count => count)
+    rescue StandardError => e
+        exam_error_response(e)
     end
     post '/api/get_my_test_archives' do
         assert(teacher_logged_in?)
@@ -237,12 +202,15 @@ class Main < Sinatra::Base
         elsif own_test_group
             '<strong>Erst ausprobieren?</strong> Lade die Leistungsüberprüfung zuerst in deiner ' \
                 "<a href='/klasse?group=#{CGI.escape(own_test_group)}&amp;tab=pruefungen'>Testgruppe</a> hoch, dort nimmt dein Testkonto teil. " \
-                "Starte sie, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how}"
+                "Starte sie, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how} " \
+                'Kennt deine Klasse den Ablauf noch nicht, hilft vielleicht ein kurzer Probelauf mit einer kleinen Leistungsüberprüfung von dir, bevor es zählt.'
         end
         "<div class='class-exams'>" \
-            "<div class='class-exams-head'><p class='mb-0'>Lädst du hier ein Paket hoch, nehmen alle aus der Klasse #{h.(group)} an der Leistungsüberprüfung teil. " \
-            'Einzelne nimmst du unter <em>Teilnehmende</em> heraus oder fügst sie aus anderen Gruppen hinzu.</p>' \
-            "<button id='bu_upload_test_archive' class='btn btn-primary'><i class='bi bi-upload'></i>Leistungsüberprüfung hochladen</button></div>" \
+            "<div class='class-exams-head'><p class='mb-0'>Eine Leistungsüberprüfung stellst du aus einem Ordner deines Workspace bereit oder lädst ein fertiges Paket hoch. " \
+            "Alle aus der Klasse #{h.(group)} nehmen teil; Einzelne nimmst du unter <em>Teilnehmende</em> heraus oder fügst sie aus anderen Gruppen hinzu. " \
+            "Wie das geht: <a href='/lehrmaterial-leistungsueberpruefung'>Leistungsüberprüfungen vorbereiten</a>.</p>" \
+            "<div class='class-exams-actions'><button id='bu_exam_builder' class='btn btn-primary'><i class='bi bi-folder2-open'></i>Aus deinem Workspace</button>" \
+            "<button id='bu_upload_test_archive' class='btn btn-outline-secondary'><i class='bi bi-upload'></i>Paket hochladen</button></div></div>" \
             "#{tip ? "<div class='hint class-exams-tip'>#{tip}</div>" : ''}" \
             "<div id='test_archive_upload_status' class='small mb-2' role='status' aria-live='polite'></div>" \
             "#{EXAM_PACKAGE_HELP}" \
@@ -256,6 +224,7 @@ class Main < Sinatra::Base
             "<div class='modal-footer'><span class='small text-body-secondary me-auto'>Jede Änderung wird sofort gespeichert.</span>" \
             "<button type='button' class='btn btn-primary' data-bs-dismiss='modal'><i class='bi bi-check-lg'></i>Fertig</button></div>" \
             '</div></div></div>' \
+            "#{exam_builder_modal_html(group)}" \
             "<script>window.EXAMS = #{JSON.generate(data).gsub('</', '<\/')};</script>" \
             "<script src='/include/exams.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script></div>"
     end

@@ -356,6 +356,20 @@ class Main < Sinatra::Base
 
             # STDERR.puts ">>> Workspace login is #{workspace_login}, database login is #{database_login}"
 
+            # an exam reaches nothing outside the students' network but what
+            # its package allows (network.allow, locked in the manifest):
+            # the names resolved here, entries in /etc/hosts, the addresses
+            # let through by peer_firewall
+            exam_allow = []
+            if test_tag
+                TestWorkspaceExtensions.network_allow(:tag => test_tag).each do |entry|
+                    ips = entry['host'].match?(/\A\d+\.\d+\.\d+\.\d+\z/) ? [entry['host']] :
+                        (Addrinfo.getaddrinfo(entry['host'], nil, Socket::AF_INET, Socket::SOCK_STREAM).map(&:ip_address).uniq rescue [])
+                    STDERR.puts "Exam Workspace #{container_name}: no address for #{entry['host']}" if ips.empty?
+                    ips.first(4).each { |ip| entry['ports'].each { |port| exam_allow << [entry['host'], ip, port] } }
+                end
+            end
+
             with_timing("start_server #{container_name}: docker run") do
                 workspace_runtime.start_workspace(
                     :fs_tag => container_name,
@@ -368,6 +382,7 @@ class Main < Sinatra::Base
                         .merge(Main.screenshot_account?(email) ? { 'HACKSCHULE_NO_WALKTHROUGH' => '1' } : {}),
                     :host_data_path => PATH_TO_HOST_DATA,
                     :test_mode => !test_tag.nil?,
+                    :exam_allow => exam_allow,
                     :timeout => shell_timeout(:docker_run),
                 )
             end

@@ -35,6 +35,19 @@ class TestWorkspaceExtensionsTest < Minitest::Test
         File.binwrite(path, out)
     end
 
+    # what an exam may reach comes from its manifest only, checked again
+    def test_network_allow_from_the_manifest
+        Dir.mktmpdir do |manifests|
+            tag = 'a' * 24
+            assert_equal [], TestWorkspaceExtensions.network_allow(tag: tag, manifests: manifests)
+            TestWorkspaceExtensions.publish!({ 'version' => 1, 'extensions' => [], 'network' => { 'allow' => [
+                { 'host' => 'api.schule.de', 'ports' => [443] }, { 'host' => 'bad host', 'ports' => [1] }, { 'host' => 'x.de', 'ports' => [0] },
+            ] } }, tag: tag, manifests: manifests)
+            assert_equal [{ 'host' => 'api.schule.de', 'ports' => [443] }], TestWorkspaceExtensions.network_allow(tag: tag, manifests: manifests)
+            assert_equal [], TestWorkspaceExtensions.network_allow(tag: '../x', manifests: manifests)
+        end
+    end
+
     def test_http_stream_handles_grouped_chunks
         response = Object.new
         def response.read_body

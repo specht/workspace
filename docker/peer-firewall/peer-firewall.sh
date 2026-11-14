@@ -26,6 +26,21 @@ NFT_TABLE="hackschule_workspace"
 # start); and only what someone else starts is dropped: Asterisk's own
 # registration and what the provider sends back over it pass, whichever
 # address it uses. Unset (no trunk): no rule.
+# Exam Workspaces (docs/test-workspace-packages.md, »Netz«): the backend
+# gives each a MAC address starting with EXAM_MAC_PREFIX, and everything
+# such an address sends to the host, so out of the students' network (the
+# internet, the host's own ports), is dropped: a static rule, in the table
+# from its first install on, so there is no moment between the start of an
+# exam Workspace and this helper noticing it. Students cannot change the
+# address (no NET_ADMIN, no NET_RAW). The only exceptions are what the
+# exam's package allows (network.allow), written by the backend into the
+# label EXAM_ALLOW_LABEL as ip:port,ip:port; they may arrive a few seconds
+# late, never too early. Answers on connections someone else opened (nginx
+# to code-server) pass.
+EXAM_LABEL="${EXAM_LABEL:-hackschule.workspace.exam}"
+EXAM_ALLOW_LABEL="${EXAM_ALLOW_LABEL:-hackschule.workspace.exam.allow}"
+EXAM_MAC_PREFIX="${EXAM_MAC_PREFIX:-02:68:73:00:00:00}"
+
 SIP_TRUNK_HOST="${SIP_TRUNK_HOST:-}"
 SIP_PORT="${SIP_PORT:-5060}"
 SIP_RESOLVE_INTERVAL="${SIP_RESOLVE_INTERVAL:-300}"
@@ -106,6 +121,29 @@ EOF_RULES
     cat <<EOF_RULES
     }
 
+    set exam_allowed {
+        type ether_addr . ipv4_addr . inet_service
+EOF_RULES
+    if [ -n "$exam_allowed_elements" ]; then
+        printf '        elements = { %s }\n' "$exam_allowed_elements"
+    fi
+    cat <<EOF_RULES
+    }
+
+    # what an exam Workspace sends to the host (frames to the bridge
+    # itself, which the host then routes on): only answers and what its
+    # package allows
+    chain exam_egress {
+        type filter hook input priority filter - 1; policy accept;
+        ether saddr & ff:ff:ff:00:00:00 == ${EXAM_MAC_PREFIX} jump exam_check
+    }
+
+    chain exam_check {
+        ct state established,related accept
+        ether saddr . ip daddr . tcp dport @exam_allowed accept
+        meta protocol { ip, ip6 } counter drop
+    }
+
     chain peer_filter {
         type filter hook forward priority filter - 1; policy accept;
 
@@ -177,6 +215,39 @@ discover_network_state() {
     infrastructure_elements="$(ips_with_label "$INFRASTRUCTURE_LABEL")" || return 1
     case_server_elements="$(ips_with_label "$CASE_SERVER_LABEL")" || return 1
     phone_elements="$(ips_with_label "$PHONE_LABEL")" || return 1
+    exam_allowed_elements="$(exam_allowed)" || return 1
+}
+
+# The exceptions of the exam Workspaces: mac . ip . port for each ip:port
+# in their allow label, separated by commas
+exam_allowed() {
+    elements=''
+    container_ids="$(
+        docker_api '/containers/json' \
+            | jq -r --arg label_name "$EXAM_LABEL" --arg allow "$EXAM_ALLOW_LABEL" \
+                '.[] | select(.Labels[$label_name] == "true" and (.Labels[$allow] // "") != "") | .Id'
+    )" || return 1
+
+    for container_id in $container_ids; do
+        container_json="$(docker_api "/containers/${container_id}/json")" || return 1
+        found="$(
+            printf '%s' "$container_json" \
+                | jq -r --arg network "$WORKSPACE_NETWORK" --arg allow "$EXAM_ALLOW_LABEL" '
+                    (.NetworkSettings.Networks[$network].MacAddress // "") as $mac
+                    | select($mac | test("^[0-9a-f]{2}(:[0-9a-f]{2}){5}$"))
+                    | .Config.Labels[$allow] | split(",")[]
+                    | select(test("^[0-9]{1,3}(\\.[0-9]{1,3}){3}:[0-9]{1,5}$"))
+                    | split(":") | "\($mac) . \(.[0]) . \(.[1])"' \
+                | paste -sd, - | sed 's/,/, /g'
+        )"
+        [ -n "$found" ] || continue
+        if [ -n "$elements" ]; then
+            elements="${elements}, ${found}"
+        else
+            elements="$found"
+        fi
+    done
+    printf '%s' "$elements"
 }
 
 # The addresses on the workspace network of all running containers with the
@@ -224,6 +295,10 @@ apply_network_state() {
         printf 'flush set bridge %s phone_services\n' "$NFT_TABLE"
         if [ -n "$phone_elements" ]; then
             printf 'add element bridge %s phone_services { %s }\n' "$NFT_TABLE" "$phone_elements"
+        fi
+        printf 'flush set bridge %s exam_allowed\n' "$NFT_TABLE"
+        if [ -n "$exam_allowed_elements" ]; then
+            printf 'add element bridge %s exam_allowed { %s }\n' "$NFT_TABLE" "$exam_allowed_elements"
         fi
     } | nft -f -
 }
@@ -312,9 +387,9 @@ done
 # The first installed table already contains the subnet and infrastructure
 # sets, so there is no fail-open initialization window.
 install_ruleset
-last_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}"
+last_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}|${exam_allowed_elements}"
 log "protecting ${WORKSPACE_NETWORK}; peer TCP ports: ${PEER_TCP_PORTS}; peer UDP disabled"
-log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}; phone: ${phone_elements:-none}"
+log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}; phone: ${phone_elements:-none}; exam exceptions: ${exam_allowed_elements:-none}"
 apply_sip_guard
 sip_checked="$(date +%s)"
 
@@ -329,7 +404,7 @@ while :; do
     fi
 
     if discover_network_state; then
-        current_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}"
+        current_state="${subnet_elements}|${infrastructure_elements}|${case_server_elements}|${phone_elements}|${exam_allowed_elements}"
 
         if ! nft list table bridge "$NFT_TABLE" >/dev/null 2>&1; then
             log 'firewall table disappeared; restoring it'
@@ -337,7 +412,7 @@ while :; do
             last_state="$current_state"
         elif [ "$current_state" != "$last_state" ]; then
             apply_network_state
-            log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}; phone: ${phone_elements:-none}"
+            log "active subnets: ${subnet_elements}; infrastructure: ${infrastructure_elements:-none}; case servers: ${case_server_elements:-none}; phone: ${phone_elements:-none}; exam exceptions: ${exam_allowed_elements:-none}"
             last_state="$current_state"
         fi
     else

@@ -11,11 +11,49 @@ module TestWorkspacePackage
     DEFAULT_GIT_MODE = 'fresh'
     GIT_MODES = ['fresh', 'preserve', 'none'].freeze
 
-    # Built-in VS Code themes cover the editor, welcome page, panels and chrome.
+    # exam.look: »theme« (the default, as before) colours everything with a
+    # built-in VS Code theme, editor, welcome page and panels included;
+    # »frame« colours the frame around the editor (title bar, the strip on
+    # the left, the tabs, the status bar) in a signal colour seen from the
+    # back of the room, and the editor keeps a normal dark theme, easy to
+    # read for an hour and a half. Two groups side by side (A and B) can
+    # have two colours.
+    EXAM_LOOKS = ['theme', 'frame'].freeze
+    DEFAULT_EXAM_LOOK = 'theme'
     EXAM_COLOR_THEMES = {
         'blue' => 'Tomorrow Night Blue',
         'red' => 'Red',
     }.freeze
+    # the frame's colour and the text on it
+    EXAM_FRAME_COLORS = {
+        'yellow' => ['#ffd60a', '#1b1b1b'],
+        'orange' => ['#ff7a00', '#1b1b1b'],
+        'magenta' => ['#d6007a', '#ffffff'],
+        'green' => ['#119c4a', '#ffffff'],
+        'blue' => ['#1f6feb', '#ffffff'],
+        'red' => ['#d42a2a', '#ffffff'],
+    }.freeze
+    FRAME_EDITOR_THEME = 'Default Dark Modern'
+
+    def self.frame_customizations(color)
+        bg, fg = EXAM_FRAME_COLORS.fetch(color)
+        dim = "#{fg}b3"
+        {
+            'titleBar.activeBackground' => bg, 'titleBar.activeForeground' => fg,
+            'titleBar.inactiveBackground' => bg, 'titleBar.inactiveForeground' => dim,
+            'titleBar.border' => bg,
+            'activityBar.background' => bg, 'activityBar.foreground' => fg,
+            'activityBar.inactiveForeground' => dim, 'activityBar.activeBorder' => fg,
+            'activityBar.border' => bg,
+            'activityBarBadge.background' => fg, 'activityBarBadge.foreground' => bg,
+            'editorGroupHeader.tabsBackground' => bg, 'editorGroupHeader.tabsBorder' => bg,
+            'tab.inactiveBackground' => bg, 'tab.inactiveForeground' => fg, 'tab.border' => bg,
+            'statusBar.background' => bg, 'statusBar.foreground' => fg,
+            'statusBar.noFolderBackground' => bg, 'statusBar.debuggingBackground' => bg,
+            'statusBar.debuggingForeground' => fg, 'statusBar.border' => bg,
+            'statusBarItem.remoteBackground' => bg, 'statusBarItem.remoteForeground' => fg,
+        }
+    end
 
     INTERNAL_GIT_EXCLUDES = [
         '.workspace/',
@@ -156,6 +194,59 @@ module TestWorkspacePackage
         mode
     end
 
+    # network.allow: what an exam Workspace may reach outside the students'
+    # network, which it otherwise cannot (no DNS, and peer_firewall drops
+    # everything else that leaves it): a service the class examines during
+    # the exam. Each entry a name or IPv4 address, with :port (without, 80
+    # and 443); at most MAX_ALLOWED. Read at upload and locked in the
+    # manifest (TestWorkspaceExtensions), never from the student's copy.
+    MAX_ALLOWED = 10
+    HOST_NAME = /\A(?=.{1,253}\z)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\z/
+
+    def self.network_allow(workspace_path)
+        network = load_config(workspace_path)['network'] || {}
+        raise ConfigError, 'network muss ein YAML-Objekt enthalten.' unless network.is_a?(Hash)
+        unknown = network.keys - ['allow']
+        raise ConfigError, "Unbekannte network-Optionen: #{unknown.join(', ')}" unless unknown.empty?
+
+        entries = network['allow'] || []
+        unless entries.is_a?(Array) && entries.size <= MAX_ALLOWED
+            raise ConfigError, "network.allow muss eine Liste von höchstens #{MAX_ALLOWED} Einträgen sein."
+        end
+        entries.map do |entry|
+            host, port = entry.to_s.strip.downcase.split(':', 2)
+            ports = port.nil? ? [80, 443] : [port.to_i]
+            unless host.to_s.match?(HOST_NAME) && (port.nil? || (port.match?(/\A\d{1,5}\z/) && ports.first.between?(1, 65_535)))
+                raise ConfigError, "network.allow: #{entry.inspect} ist kein Name oder keine IPv4-Adresse mit optionalem :Port."
+            end
+            { 'host' => host, 'ports' => ports }
+        end
+    end
+
+    # Repositories in subfolders (a .git folder below the top), part of a
+    # Git task: the recovery repository of fresh leaves them out, and with
+    # fresh and preserve they get the person's name and address too
+    # (initialize_test_git). Not through links, not into hidden folders,
+    # at most MAX_NESTED_REPOSITORIES, at most six levels deep.
+    MAX_NESTED_REPOSITORIES = 20
+
+    def self.nested_repositories(workspace_path)
+        root = File.expand_path(workspace_path)
+        found = []
+        Find.find(root) do |path|
+            next if path == root
+            Find.prune if File.symlink?(path) || !File.directory?(path)
+            rel = path.delete_prefix("#{root}/")
+            Find.prune if File.basename(path).start_with?('.') || rel.count('/') >= 6
+            git = File.join(path, '.git')
+            if File.directory?(git) && !File.symlink?(git)
+                found << rel
+                break if found.size >= MAX_NESTED_REPOSITORIES
+            end
+        end
+        found.sort
+    end
+
     def self.vscode_config(workspace_path)
         config = load_config(workspace_path)
         package_settings = config['vscode_config'] || {}
@@ -166,9 +257,17 @@ module TestWorkspacePackage
         exam_config = config['exam'] || {}
         raise ConfigError, 'exam muss ein YAML-Objekt enthalten.' unless exam_config.is_a?(Hash)
 
+        look = (exam_config['look'] || DEFAULT_EXAM_LOOK).to_s
+        unless EXAM_LOOKS.include?(look)
+            raise ConfigError, "Unbekanntes exam.look #{look.inspect}; erlaubt sind theme und frame."
+        end
         color = (exam_config['color'] || DEFAULT_EXAM_COLOR).to_s
-        unless EXAM_COLOR_THEMES.key?(color)
-            raise ConfigError, "Unbekannte exam.color-Farbe #{color.inspect}; erlaubt sind blue und red."
+        if look == 'theme' && !EXAM_COLOR_THEMES.key?(color)
+            hint = EXAM_FRAME_COLORS.key?(color) ? " #{color} gibt es als Rahmen: exam.look: frame." : ''
+            raise ConfigError, "Unbekannte exam.color-Farbe #{color.inspect}; erlaubt sind blue und red.#{hint}"
+        end
+        if look == 'frame' && !EXAM_FRAME_COLORS.key?(color)
+            raise ConfigError, "Unbekannte exam.color-Farbe #{color.inspect} für den Rahmen; erlaubt sind #{EXAM_FRAME_COLORS.keys.join(', ')}."
         end
 
         package_customizations = package_settings['workbench.colorCustomizations']
@@ -177,12 +276,19 @@ module TestWorkspacePackage
         end
 
         result = package_settings.dup
-        # An exam's own theme wins over the regular Workspace's persisted theme.
-        result['workbench.colorTheme'] = EXAM_COLOR_THEMES[color]
         result['window.autoDetectColorScheme'] = false
-        # Clear old exam-specific accent overrides instead of carrying them
-        # into the complete built-in theme. Keep explicitly supplied overrides.
-        result['workbench.colorCustomizations'] = package_customizations || {}
+        if look == 'theme'
+            # An exam's own theme wins over the regular Workspace's persisted theme.
+            result['workbench.colorTheme'] = EXAM_COLOR_THEMES[color]
+            # Clear old exam-specific accent overrides instead of carrying them
+            # into the complete built-in theme. Keep explicitly supplied overrides.
+            result['workbench.colorCustomizations'] = package_customizations || {}
+        else
+            # the frame over a dark editor; a package's own theme and
+            # colours win
+            result['workbench.colorTheme'] = package_settings['workbench.colorTheme'] || FRAME_EDITOR_THEME
+            result['workbench.colorCustomizations'] = frame_customizations(color).merge(package_customizations || {})
+        end
         result
     end
 
@@ -220,7 +326,7 @@ module TestWorkspacePackage
     # Written as root into the exam workspace, so only through UserFiles: a
     # link in .git (the package or the student may have put one there) is
     # refused instead of followed.
-    def self.write_git_exclude(workspace_path)
+    def self.write_git_exclude(workspace_path, extra: [])
         rel = '.git/info/exclude'
         existing = UserFiles.read(workspace_path, rel) || ''
         marker = '# Hackschule exam workspace'
@@ -231,6 +337,7 @@ module TestWorkspacePackage
         text << "\n" unless existing.empty? || existing.end_with?("\n")
         text << "#{marker}\n"
         INTERNAL_GIT_EXCLUDES.each { |entry| text << "#{entry}\n" }
+        extra.each { |entry| text << "#{entry}\n" }
         UserFiles.write(workspace_path, rel, text, mode: :append)
         path
     end

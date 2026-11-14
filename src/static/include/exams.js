@@ -44,7 +44,7 @@ function refresh_test_archives() {
                 (!e.group && (!(e.emails || []).length || participant_groups(e).some(([g]) => g === exam_group))))
             .sort((a, b) => (!a.group) - (!b.group) || (b.ts || 0) - (a.ts || 0));
         if (exam_entries.length === 0) {
-            tbody.append(`<tr><td colspan='6' class='text-body-secondary'>Noch keine für diese Klasse. Lade oben ein Paket hoch; alle in der Klasse nehmen dann teil.</td></tr>`);
+            tbody.append(`<tr><td colspan='6' class='text-body-secondary'>Noch keine für diese Klasse. Stell oben eine bereit; alle in der Klasse nehmen dann teil.</td></tr>`);
             return;
         }
         for (let entry of exam_entries) {
@@ -295,8 +295,203 @@ function upload_test_archive() {
     fileInput.click();
 }
 
+// »Aus deinem Workspace« (exam_builder_page.rb): a folder of the teacher's
+// Workspace, its files as a tree to tick (what goes into the package, what
+// goes into the printout), the colour and the look, Git; the server packs
+// it and it becomes this class's exam. What is hidden, a build folder or a
+// Git history starts unticked; a link cannot be ticked.
+const EB_REASONS = { hidden: 'versteckt', artifact: 'Build-Ordner', link: 'Link, geht nicht', git: 'Git-Verlauf' };
+let eb_entries = [];
+
+async function eb_post(url, body) {
+    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let data = {};
+    try { data = await response.json(); } catch (e) { }
+    if (!response.ok || data.error) throw new Error(data.error || 'Das ging nicht; versuch es noch einmal.');
+    return data;
+}
+
+function eb_size(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(bytes < 10240 ? 1 : 0).replace('.', ',')} kB`;
+    return `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} MB`;
+}
+
+// a row's own checkbox controls everything below an opened folder
+function eb_children(path) {
+    return $('#eb_tree .eb-item').filter((_, el) => el.dataset.path.startsWith(path + '/'));
+}
+
+// an opened folder: ticked when all below it are, half when some are
+function eb_sync_folders() {
+    $($('#eb_tree .eb-item[data-open]').get().reverse()).each((_, el) => {
+        $(el).toggleClass('eb-out', !eb_children(el.dataset.path).find('.eb-take:checked').length);
+        for (const kind of ['take', 'print']) {
+            const own = $(el).find(`.eb-${kind}`)[0];
+            const below = eb_children(el.dataset.path).filter((_, c) => !c.dataset.open).find(`.eb-${kind}:not(:disabled)`).get();
+            const on = below.filter((b) => b.checked).length;
+            own.checked = below.length > 0 && on === below.length;
+            own.indeterminate = on > 0 && on < below.length;
+        }
+    });
+}
+
+function eb_update() {
+    eb_sync_folders();
+    let files = 0, bytes = 0, folders = 0, left = 0;
+    $('#eb_tree .eb-item:not([data-open])').each((_, el) => {
+        const take = $(el).find('.eb-take')[0];
+        $(el).toggleClass('eb-out', !take.checked);
+        if (!take.checked) { left += 1; return; }
+        if (el.dataset.folder) folders += 1; else { files += 1; bytes += parseInt(el.dataset.size || '0', 10); }
+    });
+    const parts = [`${files} ${files === 1 ? 'Datei' : 'Dateien'}, ${eb_size(bytes)}`];
+    if (folders) parts.push(`dazu ${folders === 1 ? 'ein ganzer Ordner' : folders + ' ganze Ordner'}`);
+    if (left) parts.push(`${left} nicht angekreuzt`);
+    $('#eb_summary').text(`Im Paket: ${parts.join('; ')}.`);
+    // Git: a history at the top kept means the class works with it
+    const git_at = $('#eb_tree .eb-item[data-reason="git"]').filter((_, el) => $(el).find('.eb-take')[0].checked).map((_, el) => el.dataset.path).get();
+    const top = git_at.includes('.git');
+    $('input[name=eb_git]').prop('disabled', top);
+    const note = $('#eb_git_note');
+    if (git_at.length === 0) note.prop('hidden', true);
+    else {
+        const nested = git_at.filter((p) => p !== '.git').map((p) => p.replace(/\/\.git$/, '/'));
+        let text = top ? 'Der Git-Verlauf des Ordners geht mit, und die Klasse arbeitet damit; ein neues Repository legt der Workspace nicht an.' : '';
+        if (nested.length) text += `${text ? ' ' : ''}Der Git-Verlauf in ${nested.join(', ')} geht mit; die Klasse arbeitet dort damit${top ? '' : ', und das Repository zum Wiederherstellen lässt diesen Ordner aus'}.`;
+        note.text(text).prop('hidden', false);
+    }
+    $('#bu_eb_build').prop('disabled', files + folders === 0);
+}
+
+function eb_preview() {
+    const color = $('input[name=eb_color]:checked').val();
+    const look = $('input[name=eb_look]:checked').val();
+    const theme = look === 'theme';
+    $('input[name=eb_color]').each((_, el) => {
+        const allowed = !theme || ['blue', 'red'].includes(el.value);
+        el.disabled = !allowed;
+        $(el).closest('.eb-swatch').toggleClass('eb-off', !allowed);
+    });
+    if (theme && !['blue', 'red'].includes(color)) { $('input[name=eb_color][value=blue]').prop('checked', true); return eb_preview(); }
+    const swatch = $('input[name=eb_color]:checked').closest('.eb-swatch')[0];
+    const preview = $('#eb_preview')[0];
+    preview.dataset.look = look;
+    preview.dataset.color = color;
+    // the whole theme brings its own colours (default.css)
+    if (theme) preview.style.removeProperty('--eb-c');
+    else preview.style.setProperty('--eb-c', swatch.style.getPropertyValue('--eb-c'));
+}
+
+function eb_render(data) {
+    eb_entries = data.entries;
+    const tree = $('#eb_tree').empty();
+    $(`<div class='eb-head'><span>Datei</span><span>Größe</span><span>Im Paket</span><span>Drucken</span></div>`).appendTo(tree);
+    for (const e of eb_entries) {
+        const depth = e.p.split('/').length - 1;
+        const name = e.p.split('/').pop();
+        const opened = e.d && !e.r;
+        const row = $(`<div class='eb-item'></div>`).attr('data-path', e.p).css('--eb-depth', depth);
+        if (opened) row.attr('data-open', '1');
+        if (e.d) row.attr('data-folder', '1');
+        if (e.r) row.attr('data-reason', e.r);
+        if (e.s != null) row.attr('data-size', e.s);
+        const label = $(`<span class='eb-name'><i class='bi ${e.d ? 'bi-folder2' : 'bi-file-earmark'}' aria-hidden='true'></i></span>`);
+        label.append($('<span>').text(name + (e.d ? '/' : '')));
+        if (e.r) label.append($(`<span class='eb-why'>`).text(EB_REASONS[e.r] || e.r));
+        row.append(label);
+        row.append($(`<span class='eb-size'>`).text(e.s != null ? eb_size(e.s) : ''));
+        const take = $(`<input type='checkbox' class='form-check-input eb-take'>`).attr('aria-label', `${e.p} ins Paket`)
+            .prop('checked', !e.r).prop('disabled', e.r === 'link');
+        const print = $(`<input type='checkbox' class='form-check-input eb-print'>`).attr('aria-label', `${e.p} drucken`)
+            .prop('checked', !e.np).prop('disabled', e.r === 'link' || e.r === 'git');
+        if (e.r === 'git') print.prop('checked', false);
+        row.append($('<span class=eb-check>').append(take), $('<span class=eb-check>').append(print));
+        take.on('change', function () {
+            if (opened) eb_children(e.p).find('.eb-take:not(:disabled)').prop('checked', this.checked);
+            eb_update();
+        });
+        print.on('change', function () {
+            if (opened) eb_children(e.p).find('.eb-print').filter((_, c) => !$(c).closest('[data-reason=git]').length).prop('checked', this.checked);
+            eb_update();
+        });
+        tree.append(row);
+    }
+    if (data.truncated) tree.append(`<div class='eb-more small text-body-secondary'>Der Ordner hat mehr Einträge, als hier Platz haben; nur die ersten stehen in der Liste.</div>`);
+    const c = data.config || {};
+    $(`input[name=eb_look][value=${c.look === 'theme' || (c.color && !c.look) ? 'theme' : 'frame'}]`).prop('checked', true);
+    $(`input[name=eb_color][value=${c.color || 'yellow'}]`).prop('checked', true);
+    if (!$('input[name=eb_color]:checked').length) $('input[name=eb_color][value=yellow]').prop('checked', true);
+    $(`input[name=eb_git][value=${c.git === 'none' ? 'none' : 'fresh'}]`).prop('checked', true);
+    const kept = (c.kept || []);
+    $('#eb_kept').prop('hidden', !c.present).html(c.present ? `Den Ordner beschreibt schon eine <code>.workspace/config.yaml</code>; ihre Farbe, Git und das Drucken stehen oben.${kept.length ? ' Diese Angaben daraus bleiben, wie sie sind: ' + kept.map((k) => `<code>${$('<span>').text(k).html()}</code>`).join(', ') + '.' : ''}` : '');
+    eb_preview();
+    eb_update();
+}
+
+async function eb_load_folder() {
+    const folder = $('#eb_folder').val();
+    $('#eb_name').val(folder);
+    $('#eb_status').removeClass('text-danger text-success').text('');
+    $('#eb_tree').html(`<div class='p-2 text-body-secondary'><i class='bi bi-arrow-repeat bi-spin'></i> Ordner lesen …</div>`);
+    try {
+        eb_render(await eb_post('/api/exam_builder/tree', { folder }));
+    } catch (error) {
+        $('#eb_tree').empty();
+        $('#eb_status').addClass('text-danger').text(error.message);
+    }
+}
+
+async function open_exam_builder() {
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('exam_builder_modal'));
+    $('#eb_status').removeClass('text-danger text-success').text('');
+    modal.show();
+    let folders = [];
+    try {
+        folders = (await eb_post('/api/exam_builder/folders', {})).folders || [];
+    } catch (error) {
+        $('#eb_status').addClass('text-danger').text(error.message);
+    }
+    $('#eb_empty').prop('hidden', folders.length > 0);
+    $('#eb_body, #bu_eb_build').prop('hidden', folders.length === 0);
+    $('#eb_folder').empty().prop('disabled', folders.length === 0);
+    for (const f of folders) $('#eb_folder').append($('<option>').val(f).text(f));
+    if (folders.length) eb_load_folder();
+}
+
+async function build_exam() {
+    const files = [], print_exclude = [];
+    $('#eb_tree .eb-item:not([data-open])').each((_, el) => {
+        if (!$(el).find('.eb-take')[0].checked) return;
+        files.push(el.dataset.path);
+        if (!$(el).find('.eb-print')[0].checked && el.dataset.reason !== 'git') print_exclude.push(el.dataset.path);
+    });
+    const button = $('#bu_eb_build');
+    button.prop('disabled', true).find('.bi').addClass('bi-spin');
+    $('#eb_status').removeClass('text-danger text-success').text('Paket packen und prüfen …');
+    try {
+        const data = await eb_post('/api/exam_builder/build', {
+            folder: $('#eb_folder').val(), group: exam_group, name: $('#eb_name').val().trim(), files, print_exclude,
+            color: $('input[name=eb_color]:checked').val(), look: $('input[name=eb_look]:checked').val(),
+            git: $('input[name=eb_git]:checked').val(),
+        });
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('exam_builder_modal')).hide();
+        $('#test_archive_upload_status').removeClass('text-danger').addClass('text-success')
+            .text(`Leistungsüberprüfung bereitgestellt (${data.files} ${data.files === 1 ? 'Datei' : 'Dateien'}); ${data.count === 1 ? 'eine Person nimmt' : `${data.count} Personen nehmen`} teil. Sieh sie dir mit »Workspace« unter Vorschau an.`);
+        refresh_test_archives();
+    } catch (error) {
+        $('#eb_status').addClass('text-danger').text(error.message);
+    } finally {
+        button.prop('disabled', false).find('.bi').removeClass('bi-spin');
+    }
+}
+
 $(function () {
     $('#bu_upload_test_archive').on('click', upload_test_archive);
+    $('#bu_exam_builder').on('click', open_exam_builder);
+    $('#eb_folder').on('change', eb_load_folder);
+    $(document).on('change', 'input[name=eb_color], input[name=eb_look]', eb_preview);
+    $('#bu_eb_build').on('click', build_exam);
     refresh_test_archives();
 });
 })();

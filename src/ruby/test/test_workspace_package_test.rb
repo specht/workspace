@@ -94,7 +94,7 @@ class TestWorkspacePackageTest < Minitest::Test
             File.write(File.join(dir, '.workspace', 'config.yaml'), <<~YAML)
                 workspace_package: 1
                 exam:
-                  color: green
+                  color: purple
             YAML
 
             error = assert_raises(TestWorkspacePackage::ConfigError) do
@@ -104,6 +104,83 @@ class TestWorkspacePackageTest < Minitest::Test
         end
     end
 
+
+    def write_config(dir, yaml)
+        FileUtils.mkdir_p(File.join(dir, '.workspace'))
+        File.write(File.join(dir, '.workspace', 'config.yaml'), yaml)
+    end
+
+    # the signal frame: the frame in the colour, a dark editor, the
+    # package's own colours win
+    def test_frame_look_colours_the_frame_and_keeps_a_dark_editor
+        Dir.mktmpdir do |dir|
+            write_config(dir, <<~YAML)
+                workspace_package: 1
+                exam:
+                  color: yellow
+                  look: frame
+                vscode_config:
+                  workbench.colorCustomizations:
+                    statusBar.background: "#000000"
+            YAML
+            config = TestWorkspacePackage.vscode_config(dir)
+            assert_equal 'Default Dark Modern', config['workbench.colorTheme']
+            colors = config['workbench.colorCustomizations']
+            assert_equal '#ffd60a', colors['activityBar.background']
+            assert_equal '#ffd60a', colors['editorGroupHeader.tabsBackground']
+            assert_equal '#1b1b1b', colors['activityBar.foreground']
+            assert_equal '#000000', colors['statusBar.background']
+            refute colors.key?('editor.background')
+        end
+    end
+
+    def test_whole_theme_only_in_blue_and_red_and_unknown_looks_rejected
+        Dir.mktmpdir do |dir|
+            write_config(dir, "workspace_package: 1\nexam:\n  color: yellow\n")
+            error = assert_raises(TestWorkspacePackage::ConfigError) { TestWorkspacePackage.vscode_config(dir) }
+            assert_includes error.message, 'exam.look: frame'
+            write_config(dir, "workspace_package: 1\nexam:\n  color: teal\n  look: frame\n")
+            error = assert_raises(TestWorkspacePackage::ConfigError) { TestWorkspacePackage.vscode_config(dir) }
+            assert_includes error.message, 'yellow, orange'
+            write_config(dir, "workspace_package: 1\nexam:\n  look: neon\n")
+            error = assert_raises(TestWorkspacePackage::ConfigError) { TestWorkspacePackage.vscode_config(dir) }
+            assert_includes error.message, 'theme und frame'
+        end
+    end
+
+    # a repository in a subfolder (a Git task): found, through no link,
+    # not in hidden folders; the recovery repository leaves it out
+    def test_nested_repositories_are_found_and_excluded_from_recovery
+        Dir.mktmpdir do |dir|
+            FileUtils.mkdir_p(File.join(dir, 'projekt', '.git'))
+            FileUtils.mkdir_p(File.join(dir, 'a', 'b', 'repo', '.git'))
+            FileUtils.mkdir_p(File.join(dir, '.cache', 'x', '.git'))
+            Dir.mktmpdir do |outside|
+                FileUtils.mkdir_p(File.join(outside, 'r', '.git'))
+                File.symlink(File.join(outside, 'r'), File.join(dir, 'link'))
+                assert_equal ['a/b/repo', 'projekt'], TestWorkspacePackage.nested_repositories(dir)
+            end
+            FileUtils.mkdir_p(File.join(dir, '.git', 'info'))
+            TestWorkspacePackage.write_git_exclude(dir, :extra => ['/projekt/'])
+            assert_includes File.read(File.join(dir, '.git', 'info', 'exclude')).lines.map(&:chomp), '/projekt/'
+        end
+    end
+
+    # network.allow: names and IPv4 addresses with an optional port
+    def test_network_allow_is_validated
+        Dir.mktmpdir do |dir|
+            assert_equal [], TestWorkspacePackage.network_allow(dir)
+            write_config(dir, "network:\n  allow:\n    - api.schule.de\n    - 192.0.2.7:8080\n")
+            assert_equal [{ 'host' => 'api.schule.de', 'ports' => [80, 443] }, { 'host' => '192.0.2.7', 'ports' => [8080] }],
+                         TestWorkspacePackage.network_allow(dir)
+            ['- "http://x.de"', '- "a.de:0"', '- "a.de:99999"', '- "-a.de"', '- "a b"'].each do |bad|
+                write_config(dir, "network:\n  allow:\n    #{bad}\n")
+                assert_raises(TestWorkspacePackage::ConfigError, bad) { TestWorkspacePackage.network_allow(dir) }
+            end
+            write_config(dir, "network:\n  open: true\n")
+            assert_raises(TestWorkspacePackage::ConfigError) { TestWorkspacePackage.network_allow(dir) }
+        end
+    end
 
     def test_git_mode_defaults_to_fresh
         Dir.mktmpdir do |dir|

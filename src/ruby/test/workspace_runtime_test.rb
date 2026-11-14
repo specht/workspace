@@ -115,6 +115,31 @@ class WorkspaceRuntimeTest < Minitest::Test
         assert_equal 60, options[:timeout]
     end
 
+    # An exam Workspace: the MAC address of its prefix (peer_firewall drops
+    # what it sends out of the students' network), the label, and what its
+    # package allows as a label and as names; a normal one has none of it
+    def test_exam_workspace_is_marked_for_the_firewall
+        @capture_outputs = [JSON.generate([{ 'Containers' => {} }])]
+        @runtime.start_workspace(:fs_tag => 'abcdefghijklmnop', :workspace_login => 'x', :database_environment => {},
+                                 :host_data_path => '/srv', :test_mode => true,
+                                 :exam_allow => [['api.schule.de', '192.0.2.7', 443], ['api.schule.de', '192.0.2.7', 80], ['198.51.100.2', '198.51.100.2', 8080]])
+        args = Shellwords.split(@oks.first[0])
+        mac = args[args.index('--mac-address') + 1]
+        assert_match(/\A02:68:73(:[0-9a-f]{2}){3}\z/, mac)
+        assert_option args, '--label', 'hackschule.workspace.exam=true'
+        assert_option args, '--label', 'hackschule.workspace.exam.allow=192.0.2.7:443,192.0.2.7:80,198.51.100.2:8080'
+        assert_option args, '--add-host', 'api.schule.de:192.0.2.7'
+        refute_includes args, '198.51.100.2:198.51.100.2'
+        refute_equal mac, WorkspaceRuntime::DirectDocker.exam_mac
+
+        @oks.clear
+        @runtime.start_workspace(:fs_tag => 'abcdefghijklmnop', :workspace_login => 'x', :database_environment => {},
+                                 :host_data_path => '/srv', :test_mode => false)
+        args = Shellwords.split(@oks.first[0])
+        refute_includes args, '--mac-address'
+        refute_includes args, 'hackschule.workspace.exam=true'
+    end
+
     # A failed start writes the command to the log (Main.shell_capture): the
     # passwords go to docker through its environment, the command only
     # names them.
