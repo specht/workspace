@@ -698,6 +698,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1938 -->
+<!-- part: brinch-hansen -->
+### Per Brinch Hansen
+
+<div class='person'>
+<p><strong>Per Brinch Hansen</strong> (1938–2007), dänisch-amerikanischer Informatiker, zuletzt Professor an der Syracuse University. Am dänischen Institut Regnecentralen schrieb er bis 1969 für den Rechner RC 4000 einen kleinen Kern, auf dem man Betriebssysteme für ganz verschiedene Zwecke aufbauen konnte; die Mikrokerne von heute gehen auf ihn zurück.</p>
+<p>Mit Tony Hoare entwickelte er Anfang der 1970er Jahre den Monitor. In seiner Sprache Concurrent Pascal, der ersten für nebenläufige Programme, gab es Monitore zum ersten Mal. In Java ist jedes Objekt ein Monitor, sobald seine Methoden <code>synchronized</code> sind.</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1939 -->
 <!-- part: bayer-mccreight -->
 ### Rudolf Bayer und Edward M. McCreight

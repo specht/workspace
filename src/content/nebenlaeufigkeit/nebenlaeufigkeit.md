@@ -360,6 +360,8 @@ public synchronized void put(int x) throws InterruptedException {
     notifyAll();
 }
 ```
+
+_person(brinch-hansen)
 <!-- /language -->
 <!-- language: dart -->
 Ein Isolate ist in Dart ein eigener Arbeiter mit eigenem Speicher. Isolates teilen keine Variablen; sie schicken einander nur Nachrichten. Darum kann zwischen ihnen auch keine Erhöhung verloren gehen. Und anders als `async`-Code laufen mehrere Isolates wirklich gleichzeitig, auf mehreren Kernen.
@@ -402,6 +404,11 @@ _task(arbeit-weitergeben)
 _person(hoare)
 
 Java hat so einen Puffer schon: `ArrayBlockingQueue` aus `java.util.concurrent`. Seine Methoden `put` und `take` warten genauso, wenn er voll oder leer ist. Im Alltag nimmst du ihn statt eines eigenen Monitors.
+
+<div class='book'>
+<i class='bi bi-book'></i>
+<p><strong>Java Concurrency in Practice</strong>, Brian Goetz mit Tim Peierls, Joshua Bloch, Joseph Bowbeer, David Holmes und Doug Lea, Addison-Wesley, 2006. Geschrieben von dem Team, das <code>java.util.concurrent</code> für Java 5 gebaut hat: wie Threads sicher zusammenarbeiten, mit Locks, Monitoren und Puffern wie <code>ArrayBlockingQueue</code>, und welche Fehler dabei passieren. Das Buch hat eine <a href='https://jcip.net/'>eigene Seite</a> mit dem Inhaltsverzeichnis und einem Probekapitel; es gibt es beim <a href='https://www.informit.com/store/java-concurrency-in-practice-9780321349606'>Verlag</a>.</p>
+</div>
 <!-- /language -->
 <!-- language: dart -->
 Zwischen zwei Teilen eines Dart-Programms, die nacheinander Werte liefern und verarbeiten, liegt oft ein **Stream**. Ein `StreamController` ist sein Anfang: `controller.add(x)` legt einen Wert hinein, `controller.close()` sagt, dass keiner mehr kommt. Am anderen Ende holt `await for (final x in controller.stream)` die Werte der Reihe nach ab und wartet, solange keiner da ist.

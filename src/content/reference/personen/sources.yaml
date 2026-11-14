@@ -4314,3 +4314,27 @@ brignull:
     sources:
       - url: https://www.deceptive.design/types
         quote: "Preselection … Trick wording … Fake urgency: The user is pressured into completing an action because they are presented with a fake time limitation."
+
+brinch-hansen:
+  - text: Per Brinch Hansen (1938–2007), dänisch-amerikanischer Informatiker, zuletzt Professor an der Syracuse University.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Per_Brinch_Hansen
+        quote: "Danish-American computer scientist … 13 November 1938 … Frederiksberg, Denmark … 31 July 2007 … Syracuse, New York … in 1987 he joined the faculty as a Distinguished Professor"
+  - text: Am dänischen Institut Regnecentralen schrieb er bis 1969 für den Rechner RC 4000 einen kleinen Kern, auf dem man Betriebssysteme für ganz verschiedene Zwecke aufbauen konnte; die Mikrokerne von heute gehen auf ihn zurück.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Per_Brinch_Hansen
+        quote: "Regnecentralen, then a research institution under The Danish Academy of Technical Sciences … a small kernel providing the mechanisms upon which operating systems for different purposes could be built … By the spring of 1969, a well-documented, reliable version of the RC 4000 multiprogramming system was running … Modern microkernel architectures trace their roots to the extensible nucleus architecture of the RC 4000."
+  - text: Mit Tony Hoare entwickelte er Anfang der 1970er Jahre den Monitor.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Monitor_(synchronization)
+        quote: "Brinch Hansen and Hoare developed the monitor concept in the early 1970s"
+  - text: In seiner Sprache Concurrent Pascal, der ersten für nebenläufige Programme, gab es Monitore zum ersten Mal.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Per_Brinch_Hansen
+        quote: "Concurrent Pascal was the first concurrent programming language"
+      - url: https://en.wikipedia.org/wiki/Monitor_(synchronization)
+        quote: "Brinch Hansen created the first implementation of monitors, in Concurrent Pascal."
+  - text: In Java ist jedes Objekt ein Monitor, sobald seine Methoden synchronized sind.
+    sources:
+      - url: https://en.wikipedia.org/wiki/Monitor_(synchronization)
+        quote: "In the Java language, each object may be used as a monitor. Methods requiring mutual exclusion must be explicitly marked with the synchronized keyword."
