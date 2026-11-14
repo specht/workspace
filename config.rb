@@ -226,7 +226,7 @@ docker_compose[:services][:neo4j] = {
 }
 
 docker_compose[:services][:phpmyadmin] = {
-    :image => 'phpmyadmin/phpmyadmin:5.2.3',
+    :image => 'phpmyadmin/phpmyadmin:5.2.3@sha256:42a200db07b4e70fbf32c594ad4521cf16399b8e54bbb5adceae98e7566dfbeb',
     :restart => 'always',
     :depends_on => [:mysql],
     :environment => {
