@@ -48,3 +48,28 @@ test('group administrator keeps the class page, not the admin page', async ({ pa
   const response = await page.request.get('/admin');
   expect(response.status()).toBe(403);
 });
+
+// The guides at the foot of a teacher's start page, and »Neu hier?« at the
+// top until dismissed (in this browser); students see neither (November 2026).
+test('teachers find the guides on the start page', async ({ page, browser }, testInfo) => {
+  await loginAsE2eUser(page, 'e2e-materials-teacher@example.com', testInfo);
+  await page.goto('/');
+  await page.evaluate(() => localStorage.removeItem('hackschule-teacher-guides-hint-hidden'));
+  await page.reload();
+  const hint = page.locator('.teacher-guides-hint');
+  await expect(hint).toBeVisible();
+  await expect(page.locator('#fuer-lehrkraefte a.tutorial_card3[href="/lehrmaterial-einstieg"]')).toBeAttached();
+  await expect(page.locator('#fuer-lehrkraefte a.tutorial_card3')).toHaveCount(6);
+  await page.screenshot({ path: testInfo.outputPath('start-top.png') });
+  await page.locator('#fuer-lehrkraefte').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: process.env.E2E_SHOT || testInfo.outputPath('start-guides.png') });
+  await hint.locator('.teacher-guides-hint-close').click();
+  await page.reload();
+  await expect(hint).toBeHidden();
+  await expect(page.locator('#fuer-lehrkraefte')).toBeAttached();
+  const s = await (await browser.newContext()).newPage();
+  await loginAsE2eUser(s, 'e2e-0@example.com', testInfo);
+  await s.goto('/');
+  await expect(s.locator('.teacher-guides-hint, #fuer-lehrkraefte')).toHaveCount(0);
+  await s.context().close();
+});

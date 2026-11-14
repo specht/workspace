@@ -1,5 +1,5 @@
 <div class='meta'>
-image: git-uebersicht.webp 0 50
+image: git-uebersicht.webp:0:50
 </div>
 
 <div

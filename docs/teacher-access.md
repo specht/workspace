@@ -746,7 +746,11 @@ erste Doppelstunde, das Testkonto) und der Klassenseite
 Git-Repositorys der Klasse (`lehrmaterial-git`) und die
 Leistungsüberprüfungen (`lehrmaterial-leistungsueberpruefung`); **Schule und
 Datenschutz** (`lehrmaterial-datenschutz`). Ein neues Thema bekommt eine
-eigene Seite und einen Eintrag dort. Wer keine Lehrkraft ist, bekommt unter
+eigene Seite und einen Eintrag dort. Auf der Startseite einer Lehrkraft
+stehen dieselben Karten ganz unten als ein Abschnitt »Für Lehrkräfte«
+(`teacher_guides_html`), und oben weist ein »Neu hier?« darauf hin, bis die
+Lehrkraft ihn ausblendet (in diesem Browser, `teacher_guides_hint`;
+Entscheidung des Maintainers, 14. November 2026). Wer keine Lehrkraft ist, bekommt unter
 `/lehrmaterial` und `/lehrmaterial-…` eine 403. Die Klassenseite weist mit
 »Neu hier?« auf den Einstieg hin, bis die Lehrkraft den Hinweis ausblendet
 (in diesem Browser); die Links »Einstieg für Lehrkräfte« und »Anleitungen«
