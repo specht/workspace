@@ -19082,21 +19082,6 @@ form.phone-manage-dirty {
     flex-wrap: wrap;
     gap: 0.5rem;
 }
-/* the teacher's look at an exam as the class sees it (/pruefung-ansehen) */
-.exam-try-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem 1rem;
-    margin: 1rem 0 2rem;
-    padding: 0.8rem 1rem;
-    border-left: 4px solid var(--bs-primary);
-    border-radius: 0.375rem;
-    background: var(--bs-tertiary-bg);
-}
-.exam-try-bar > div:nth-child(2) { flex: 1 1 24rem; }
-.exam-try-bar > .bi { font-size: 1.3rem; color: var(--bs-primary); }
-.exam-try-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 /* the exam tab while a folder is dragged over it */
 .class-exams.eb-tab-over {
     outline: 2px dashed var(--bs-primary);

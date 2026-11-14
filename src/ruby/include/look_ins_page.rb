@@ -114,6 +114,9 @@ class Main < Sinatra::Base
     end
     def look_in_bar_html
         return '' unless user_logged_in?
+        # a teacher's look at an exam as the class sees it (/pruefung-ansehen):
+        # the same bar as when imitating someone
+        return @exam_try_bar if @exam_try_bar
 
         if @impersonated_by
             name = (@@invitations[@session_user[:email]] || {})[:name] || @session_user[:email]

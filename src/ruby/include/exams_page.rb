@@ -351,12 +351,12 @@ class Main < Sinatra::Base
         back = "/klasse?#{group.empty? ? '' : "group=#{CGI.escape(group)}&"}tab=pruefungen"
         me = (@@invitations[@session_user[:email]] || {})[:name] || @session_user[:email]
         running_tests = [{ :tag => tag, :teacher => me }]
-        @exam_try_page = "<div class='container'><div class='exam-try-bar' role='note'><i class='bi bi-eye' aria-hidden='true'></i>" \
-            "<div><strong>Vorschau von »#{h.(title)}«:</strong> So sieht die Startseite für alle aus, die teilnehmen, solange die Leistungsüberprüfung läuft. " \
-            'Der Knopf öffnet deine Vorschau, getrennt von den Workspaces der Klasse; öffnest du sie wieder, geht es dort weiter.</div>' \
-            "<div class='exam-try-actions'><button type='button' class='btn btn-sm btn-outline-secondary bu-exam-demo' id='bu_exam_try_fresh' data-tag='#{h.(tag)}'>" \
-            "<i class='bi bi-arrow-counterclockwise'></i>Von vorn beginnen</button>" \
-            "<a class='btn btn-sm btn-primary' href='#{h.(back)}'><i class='bi bi-arrow-left'></i>Zurück zur Klasse</a></div></div>" +
+        @exam_try_bar = "<div class='look-in-bar look-in-bar-impersonating'><div class='container look-in-bar-inner'><i class='bi bi-eye' aria-hidden='true'></i>" \
+            "<span>Du siehst die Startseite wie die Klasse während <strong>»#{h.(title)}«</strong>. Der Knopf öffnet deine Vorschau; öffnest du sie wieder, geht es dort weiter.</span>" \
+            "<button type='button' class='btn btn-sm btn-light bu-exam-demo' id='bu_exam_try_fresh' data-tag='#{h.(tag)}'>" \
+            "<i class='bi bi-arrow-counterclockwise' aria-hidden='true'></i>Von vorn beginnen</button>" \
+            "<a class='btn btn-sm btn-light' href='#{h.(back)}'><i class='bi bi-arrow-return-left' aria-hidden='true'></i>Zurück zur Klasse</a></div></div>"
+        @exam_try_page = "<div class='container'>" +
             running_tests_html(running_tests, :demo => true) + '</div>' +
             "<script>(function () {\n" \
             "  function open(button, fresh) {\n" \

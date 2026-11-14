@@ -77,7 +77,7 @@ test('an exam uploaded for a class: its students take part, one taken out and ba
     await page.route('**/w/e2etryboot/', (route) => route.fulfill({ status: 502, body: '' }));
     await row.getByRole('link', { name: /ausprobieren$/ }).click();
     await expect(page).toHaveURL(/\/pruefung-ansehen\?tag=/);
-    await expect(page.locator('.exam-try-bar')).toContainText('So sieht die Startseite für alle aus');
+    await expect(page.locator('.look-in-bar')).toContainText('Du siehst die Startseite wie die Klasse');
     await expect(page.locator('.menu').first()).toBeHidden();
     const launch = page.locator('.bu-launch-test-demo');
     await expect(launch).toContainText('Leistungsüberprüfung bei');
