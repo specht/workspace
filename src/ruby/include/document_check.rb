@@ -580,6 +580,9 @@ module DocumentCheck
         end
         split = free.each_cons(2).filter_map do |a, b|
             next if starts.include?(lead.(b)) || lead.(b).empty?
+            # a line of a typed table of contents (»Montag: Anreise … 2«)
+            # ends without a full stop, and so does the one before it
+            next if b['text'].to_s.match?(TYPED_TOC_LINE)
             next if a['plain'].to_s.strip.match?(/[.!?:;…»«"“)]\z/)
 
             b
