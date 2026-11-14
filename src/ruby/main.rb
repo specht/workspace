@@ -3284,39 +3284,7 @@ class Main < Sinatra::Base
         end
     end
 
-    # merged: { :label, :icon, :description }: all sections of the catalog
-    # as one section of cards (the guides for teachers at the foot of the
-    # start page, teacher_guides_html)
-    # At the foot of a teacher's start page: the guides for teachers as one
-    # section of cards (the catalog of /lehrmaterial); students never see it.
-    def teacher_guides_html
-        return '' unless teacher_account_logged_in? && my_running_tests.empty?
-
-        "<div class='teacher-guides' id='fuer-lehrkraefte'>" +
-            print_content_overview(:teaching, :merged => {
-                :label => 'Für Lehrkräfte', :icon => '/images/memo.png',
-                :description => "Anleitungen für den Unterricht mit dem Workspace, jede für sich zu lesen; alle auch unter <a href='/lehrmaterial'>Für Lehrkräfte</a>. Nur Lehrkräfte sehen diesen Teil.",
-            }) + '</div>'
-    end
-
-    # At the top of a teacher's start page, until dismissed (in this
-    # browser, like »Neu hier?« on the class page): where the guides are.
-    def teacher_guides_hint
-        return '' unless teacher_account_logged_in? && my_running_tests.empty?
-
-        "<div class='class-welcome teacher-guides-hint' hidden><i class='bi bi-signpost-split' aria-hidden='true'></i>" \
-            "<div><strong>Neu hier?</strong> Die Anleitungen für Lehrkräfte stehen <a href='#fuer-lehrkraefte'>unten auf dieser Seite</a>: " \
-            "die erste Stunde und dein Testkonto im <a href='/lehrmaterial-einstieg'>Einstieg</a>, die Klassenseite, Git, " \
-            "Leistungsüberprüfungen und Datenschutz. Du findest sie auch unter <a href='/lehrmaterial'>Für Lehrkräfte</a>.</div>" \
-            "<button type='button' class='btn btn-sm btn-outline-secondary teacher-guides-hint-close'>Ausblenden</button></div>" \
-            "<script>(function () { const box = document.querySelector('.teacher-guides-hint'); let hidden = false;" \
-            " try { hidden = localStorage.getItem('hackschule-teacher-guides-hint-hidden') === '1'; } catch (e) {}" \
-            " if (!hidden) box.hidden = false;" \
-            " box.querySelector('.teacher-guides-hint-close').addEventListener('click', function () {" \
-            " box.hidden = true; try { localStorage.setItem('hackschule-teacher-guides-hint-hidden', '1'); } catch (e) {} }); })();</script>"
-    end
-
-    def print_content_overview(catalog = :student, merged: nil)
+    def print_content_overview(catalog = :student)
         Main.refresh_content_catalog if DEVELOPMENT
         assert([:student, :teaching, :reference].include?(catalog))
         assert(teacher_account_logged_in?) if catalog == :teaching
@@ -3347,9 +3315,8 @@ class Main < Sinatra::Base
                 catalog_pins = user_logged_in? ? pins_for_groups((my_groups + own_class_groups).uniq).map { |p| p[:slug] }.to_set : Set.new
                 # the band at the foot of the cards (card_usage): admins, teachers, students
                 usage = catalog == :student ? card_usage : nil
-                shown_sections = section_order.map { |key| @@sections[key] }
-                shown_sections = [merged.merge(:entries => shown_sections.flat_map { |x| x[:entries] })] if merged
-                shown_sections.each do |section|
+                section_order.each do |section_key|
+                    section = @@sections[section_key]
                     # hidden: true in sections.yaml: the pages exist, the
                     # catalog does not show them.
                     next if section[:hidden]

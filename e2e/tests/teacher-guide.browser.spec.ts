@@ -1,6 +1,6 @@
-// »Neu hier?« on the class page leads to the guide for teachers (and names
-// the Lehrplan); once hidden it stays hidden, the links next to the heading
-// stay.
+// »Neu hier?« on the class page leads to the Einstieg and names the button
+// »Anleitungen für Lehrkräfte«; once hidden it stays hidden, the button and
+// the Lehrplan next to the heading stay.
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
@@ -13,8 +13,8 @@ test('new teachers find the guide from the class page; students do not get it', 
   await page.evaluate(() => localStorage.removeItem('hackschule-class-welcome-hidden'));
   await page.reload();
   await expect(page.locator('.class-welcome')).toBeVisible();
-  // the box links the guide and the Lehrplan
-  await expect(page.locator('.class-welcome').getByRole('link', { name: 'Lehrplan' })).toHaveAttribute('href', '/lehrplan');
+  // the box links the Einstieg and the guides
+  await expect(page.locator('.class-welcome').getByRole('link', { name: 'Anleitungen für Lehrkräfte' })).toHaveAttribute('href', '/lehrmaterial');
   await page.locator('.class-welcome').getByRole('link', { name: 'Einstieg für Lehrkräfte' }).click();
   await expect(page.getByRole('heading', { name: 'Einstieg für Lehrkräfte', level: 1 })).toBeVisible();
   for (const img of await page.locator('img').all()) { await img.scrollIntoViewIfNeeded(); }
@@ -23,7 +23,7 @@ test('new teachers find the guide from the class page; students do not get it', 
   await page.locator('.class-welcome-close').click();
   await page.reload();
   await expect(page.locator('.class-welcome')).toBeHidden();
-  await expect(page.locator('.class-help-link[href="/lehrmaterial-einstieg"]')).toBeVisible();
+  await expect(page.locator('.class-guides-button[href="/lehrmaterial"]')).toBeVisible();
   await expect(page.locator('.class-help-link[href="/lehrplan"]')).toBeVisible();
   // Students do not get the guide.
   const s = await (await browser.newContext()).newPage();

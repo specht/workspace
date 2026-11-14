@@ -5176,11 +5176,18 @@ ul.task-teacher-list .task-teacher-answer {
     gap: 0.3em 1em;
 }
 
-/* the links beside the title together at its right end */
+/* the guides for teachers (a button) and the Lehrplan beside the title,
+   together at its right end */
 .class-help-links {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.3em 1.2em;
+    align-self: center;
+}
+
+.class-guides-button .bi {
+    margin-right: 0.4em;
 }
 
 .class-help-link .bi {
