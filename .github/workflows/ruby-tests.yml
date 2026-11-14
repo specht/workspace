@@ -39,6 +39,12 @@ jobs:
           gem install --no-document chunky_png --version 1.4.0
           bundle config set frozen true
           bundle install
+      - name: RuboCop, Lint only
+        # possible bugs, not style (src/ruby/.rubocop.yml says which Lint
+        # cops are off and why)
+        if: matrix.part == 'quick'
+        working-directory: src/ruby
+        run: bundle exec rubocop --lint --format github
       - name: Run every test file
         working-directory: src/ruby
         run: |

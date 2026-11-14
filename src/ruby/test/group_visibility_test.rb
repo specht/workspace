@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'set'
 require_relative '../include/group_visibility'
 
 class GroupVisibilityTest < Minitest::Test

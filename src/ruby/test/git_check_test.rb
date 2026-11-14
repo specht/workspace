@@ -103,7 +103,7 @@ class GitCheckTest < Minitest::Test
             # A plain folder inside a repository is not a repository of its own.
             FileUtils.mkdir_p(File.join(work, 'structures'))
             inner = run.(File.join(work, 'structures'))
-            ok, problem, message = GitCheck.evaluate('work/structures', EXPECT, inner, root: tmp)
+            _, problem, message = GitCheck.evaluate('work/structures', EXPECT, inner, root: tmp)
             assert_equal :not_git, problem
             assert_includes message, 'Ordner im Repository `work`'
             system(env, 'git', '-C', work, 'add', '-A')

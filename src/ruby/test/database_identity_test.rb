@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'thread'
 require_relative '../include/database_identity'
 
 class FakeIdentityNeo4j

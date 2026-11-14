@@ -1,7 +1,6 @@
 require 'base64'
 require 'digest'
 require 'fileutils'
-require 'set'
 require_relative 'user_files'
 
 # TIC-80 in the browser works on an in-memory filesystem; the real files are

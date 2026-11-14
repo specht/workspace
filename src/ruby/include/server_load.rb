@@ -293,7 +293,7 @@ module ServerLoad
         io << '</div>'
         last = samples.reverse.find { |s| s[:root_total] || s[:user_total] }
         if last
-            io << "<p class='mt-3'>Festplatten um #{Time.at(last[:ts]).strftime('%-H:%M')} Uhr: System #{pair_tip([last[:root_used], last[:root_total]]) if last[:root_total]}, "                   "Workspaces #{pair_tip([last[:user_used], last[:user_total]]) if last[:user_total]}.</p>"
+            io << "<p class='mt-3'>Festplatten um #{Time.at(last[:ts]).strftime('%-H:%M')} Uhr: System #{pair_tip([last[:root_used], last[:root_total]]) if last[:root_total]}, " + "Workspaces #{pair_tip([last[:user_used], last[:user_total]]) if last[:user_total]}.</p>"
         end
         io << '</div>'
     end

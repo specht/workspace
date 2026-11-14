@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'set'
 require 'stringio'
 require_relative '../migrate_mysql_auth'
 

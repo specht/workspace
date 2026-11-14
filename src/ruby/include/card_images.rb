@@ -1,5 +1,5 @@
 require 'cgi'
-require 'set'
+require 'fileutils'
 
 # Small variants of the pictures on the overview cards. A card shows its
 # picture at about 130 px (phone) to 420 px (desktop), the catalog has about
@@ -112,7 +112,7 @@ module CardImages
                 true
             else
                 STDERR.puts "CardImages: scaling #{source} to #{width} px failed"
-                File.delete(temporary) if File.exist?(temporary)
+                FileUtils.rm_f(temporary)
                 false
             end
         rescue SystemCallError => e

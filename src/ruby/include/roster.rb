@@ -1,4 +1,3 @@
-require 'set'
 require_relative 'teacher_roles'
 
 # Who is invited, to which groups, and who teaches them: the »roster«, from

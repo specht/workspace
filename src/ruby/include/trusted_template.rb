@@ -16,7 +16,7 @@ module TrustedTemplate
             if code.start_with?('<')
                 output << '&#35;{' << code << '}'
             else
-                output << (eval(code, context).to_s || '')
+                output << eval(code, context).to_s
             end
             offset = index + length
         end

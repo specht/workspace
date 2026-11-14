@@ -1,0 +1,37 @@
+# RuboCop for the Ruby code under src/ruby (the site, the scripts, the tests).
+# CI runs only the Lint cops (`rubocop --lint`): possible bugs, not style.
+# The rest describes the house style for anyone who runs RuboCop in full;
+# the code does not follow every default and need not.
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: false
+
+# four spaces, hash rockets (:key => value), as everywhere in the code
+Layout/IndentationWidth:
+  Width: 4
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+# Lint cops that flag patterns the code uses on purpose (each looked at,
+# 14 November 2026): operators and blocks without parentheses, the
+# uniform signatures of the rule methods (unused arguments), `rescue nil`
+# where failing is fine, `return` inside `begin`, `#{…}` in single quotes
+# as markers of TrustedTemplate or as text shown to students, a subclass
+# rescued beside its parent, `return` from inside a loop, sorted Dir[]
+Lint/AmbiguousOperatorPrecedence: { Enabled: false }
+Lint/AmbiguousBlockAssociation: { Enabled: false }
+Lint/AmbiguousRange: { Enabled: false }
+Lint/UnusedMethodArgument: { Enabled: false }
+Lint/UnusedBlockArgument: { Enabled: false }
+Lint/SuppressedException: { Enabled: false }
+Lint/EmptyBlock: { Enabled: false }
+Lint/NoReturnInBeginEndBlocks: { Enabled: false }
+Lint/InterpolationCheck: { Enabled: false }
+Lint/ShadowedException: { Enabled: false }
+Lint/NonLocalExitFromIterator: { Enabled: false }
+Lint/DuplicateBranch: { Enabled: false }
+Lint/FloatComparison: { Enabled: false }
+Lint/ConstantDefinitionInBlock: { Enabled: false }
+Lint/RedundantDirGlobSort: { Enabled: false }
+Lint/IncompatibleIoSelectWithFiberScheduler: { Enabled: false }

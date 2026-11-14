@@ -88,7 +88,7 @@ class TestsCheckTest < Minitest::Test
             assert_includes message, 'nicht übersetzen (Zeile 2)', language
             refute_includes message, 'HsV', language
         end
-        status, message, = TestsCheck.check({}, check('java'), "boolean even(int n) {\n    return true;\n}\n", ->(**_) { raise 'must not run' })
+        _, message, = TestsCheck.check({}, check('java'), "boolean even(int n) {\n    return true;\n}\n", ->(**_) { raise 'must not run' })
         assert_includes message, 'nicht die Funktion `even` selbst'
     end
 

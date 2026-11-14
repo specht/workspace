@@ -77,7 +77,7 @@ module Totp
     end
 
     def self.key(salt)
-        OpenSSL::Digest::SHA256.digest("totp-secret:#{salt}")
+        OpenSSL::Digest.digest('SHA256', "totp-secret:#{salt}")
     end
 
     # Encrypted for the database: »v1:« and Base64 of nonce, tag and text

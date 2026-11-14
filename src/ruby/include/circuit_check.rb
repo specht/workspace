@@ -1,4 +1,3 @@
-require 'set'
 
 # A circuit built in the Logik-Werkstatt (check type circuit, docs/aufgaben.md):
 # the editor on the page (circuit_editor.js) sends the circuit as a netlist,

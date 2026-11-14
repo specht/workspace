@@ -1,4 +1,3 @@
-require 'set'
 
 # Names made from a person's e-mail address: the Linux user in a Workspace
 # and the MySQL and Neo4j login (DatabaseIdentity). Letters a person

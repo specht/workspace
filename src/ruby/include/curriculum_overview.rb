@@ -1,7 +1,6 @@
 require 'cgi'
 require_relative 'curriculum'
 require_relative 'page_kinds'
-require 'set'
 
 # The page /lehrplan, public (a guest chooses the state with ?land=): for every name of the plan
 # (Curriculum, the teacher's state; docs/lehrplan.md) the activities whose

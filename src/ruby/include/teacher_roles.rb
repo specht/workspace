@@ -1,4 +1,3 @@
-require 'set'
 
 # Teaching-material access is independent from group-administrator privileges.
 # The '+' markers retain their existing administrative meaning; '*' only marks

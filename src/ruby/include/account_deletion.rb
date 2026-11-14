@@ -1,6 +1,5 @@
 require 'digest'
 require 'json'
-require 'set'
 
 # Deleting an account with everything that belongs to it (Datenschutzerklärung,
 # »Speicherdauer«; docs/datenschutz.md, Löschkonzept). Plain Ruby, tested on

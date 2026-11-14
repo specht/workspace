@@ -1,5 +1,4 @@
 require 'cgi'
-require 'set'
 require 'uri'
 require 'pathname'
 require_relative 'workspace_files'

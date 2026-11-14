@@ -105,7 +105,7 @@ module TcpConsole
 
     # The port as a number, or nil.
     def self.port(value)
-        number = Integer(value.to_s, 10) rescue nil
+        number = Integer(value.to_s, 10, :exception => false)
         number && number.between?(1, 65535) ? number : nil
     end
 

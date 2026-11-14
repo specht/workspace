@@ -1,4 +1,3 @@
-require 'set'
 
 # A small, forgiving HTML reader for checking students' pages
 # (docs/aufgaben.md, check type html).

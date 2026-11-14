@@ -1,6 +1,5 @@
 require 'bigdecimal'
 require 'cgi'
-require 'set'
 
 # Check type sql (docs/aufgaben.md): the student writes a SELECT query; the
 # server runs it in the student's own MySQL database, logged in as the

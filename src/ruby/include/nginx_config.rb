@@ -120,10 +120,6 @@ class Main < Sinatra::Base
             }
         end
 
-        emails_and_server_tags = []
-
-        # STDERR.puts "Got #{emails_and_server_tags.size} emails and server tags: #{emails_and_server_tags.to_yaml}"
-
         STDERR.puts ">>> Fetching users..."
         users = []
         # Here's an ugly hack: for some reason, after a day, this results in

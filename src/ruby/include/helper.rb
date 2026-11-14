@@ -2,7 +2,7 @@ require "neo4j_bolt"
 require "sinatra/base"
 require './include/constraints.rb'
 
-def debug(message, index = 0)
+def debug(message)
     index = 0
     begin
         while index < caller_locations.size - 1 && ["transaction", "neo4j_query", "neo4j_query_expect_one"].include?(caller_locations[index].base_label)
@@ -98,7 +98,7 @@ class Main < Sinatra::Base
 
     def test_request_parameter(data, key, options)
         type = ((options[:types] || {})[key]) || String
-        assert(data[key.to_s].is_a?(type), "#{key.to_s} is a #{type} (it's a #{data[key.to_s].class})")
+        assert(data[key.to_s].is_a?(type), "#{key} is a #{type} (it's a #{data[key.to_s].class})")
         if type == String
             assert(data[key.to_s].size <= (options[:max_value_lengths][key] || options[:max_string_length]), "too_much_data")
         end

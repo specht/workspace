@@ -1,7 +1,6 @@
 require 'cgi'
 require 'digest'
 require 'json'
-require 'set'
 require 'yaml'
 require_relative 'content_parts'
 require_relative 'curriculum'

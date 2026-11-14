@@ -78,9 +78,9 @@ class PipCheckTest < Minitest::Test
         assert_equal :wrong, status
         assert_equal 'Hier in Zeile 3 läuft Pip gegen die Wand.', message
         assert_equal :wall, replay[:ended]
-        status, message, = PipCheck.check({}, check('ruby'), "move\ntake\n", RUN)
+        _, message, = PipCheck.check({}, check('ruby'), "move\ntake\n", RUN)
         assert_equal 'Hier in Zeile 2 greift Pip ins Leere: Hier liegt kein Funkenstein.', message
-        status, message, = PipCheck.check({}, check('ruby'), "move\nmove\n", RUN)
+        _, message, = PipCheck.check({}, check('ruby'), "move\nmove\n", RUN)
         assert_equal 'Hier liegt am Ende noch ein Funkenstein da.', message
         # a name Pip does not know: said plainly, with what Pip knows here
         status, message, = PipCheck.check({}, check('javascript'), "move();\njump();\n", RUN)
@@ -88,9 +88,9 @@ class PipCheckTest < Minitest::Test
         assert_equal 'Hier kennt Pip `jump` nicht (Zeile 2). Ist es anders geschrieben, oder fehlt eine eigene Funktion? ' \
                      'In diesem Kapitel versteht Pip `move`, `turnLeft`, `take` und `say`.', message
         # in a loop the error's own line counts, not the last of the way there (»from …«)
-        status, message, = PipCheck.check({}, check('ruby'), "2.times do\n  forward\nend\n", RUN)
+        _, message, = PipCheck.check({}, check('ruby'), "2.times do\n  forward\nend\n", RUN)
         assert_includes message, 'Hier kennt Pip `forward` nicht (Zeile 2).'
-        status, message, = PipCheck.check({}, check('ruby'), "move\nx = nil + 1\n", RUN)
+        _, message, = PipCheck.check({}, check('ruby'), "move\nx = nil + 1\n", RUN)
         assert_includes message, "Hier bricht dein Plan ab (Zeile 2): `undefined method '+' for nil"
         refute_includes message, 'from '
     end
@@ -100,21 +100,21 @@ class PipCheckTest < Minitest::Test
     def test_dart_and_java_name_their_lines
         needs_docker
         { 'dart' => '  ', 'java' => '    ' }.each do |language, i|
-            status, message, _, replay = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}turnLeft();\n#{i}move();\n}\n", RUN)
+            _, message, _, replay = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}turnLeft();\n#{i}move();\n}\n", RUN)
             assert_equal 'Hier in Zeile 4 läuft Pip gegen die Wand.', message, language
             assert_equal :wall, replay[:ended]
-            status, message, = PipCheck.check({}, check(language), "move();\nturnLeft();\nmove();\n", RUN)
+            _, message, = PipCheck.check({}, check(language), "move();\nturnLeft();\nmove();\n", RUN)
             assert_equal 'Hier in Zeile 3 läuft Pip gegen die Wand.', message, "#{language} without main"
-            status, message, = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}jump();\n}\n", RUN)
+            _, message, = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}jump();\n}\n", RUN)
             assert_includes message, 'Pip kennt `jump` nicht.', language
-            status, message, read = PipCheck.check({}, check(language), "void main() {\n#{i}move()\n}\n", RUN)
+            _, message, read = PipCheck.check({}, check(language), "void main() {\n#{i}move()\n}\n", RUN)
             assert_includes message, 'ließ sich nicht übersetzen (Zeile 2)', language
             assert_includes read, 'Zeile 2', language
             refute_includes read, 'HsPip'
             crash = language == 'dart' ? 'final x = [1][3];' : 'int x = 1 / 0;'
-            status, message, = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}#{crash}\n}\n", RUN)
+            _, message, = PipCheck.check({}, check(language), "void main() {\n#{i}move();\n#{i}#{crash}\n}\n", RUN)
             assert_includes message, 'Hier bricht dein Plan ab (Zeile 3)', language
-            status, message, = PipCheck.check({}, check(language), "void walk() {\n#{i}move();\n}\nwalk();\n", RUN)
+            _, message, = PipCheck.check({}, check(language), "void walk() {\n#{i}move();\n}\nwalk();\n", RUN)
             assert_includes message, 'kein `void main() { … }`', language
         end
     end
@@ -168,7 +168,7 @@ class PipCheckTest < Minitest::Test
             wrong = plan.sub('3', '1')
             _, message, = PipCheck.check({}, c, wrong, RUN, :selected => 1)
             assert_equal "In Karte 2 schaut Pip nach `#{calls[language]}` nach links statt nach rechts.", message, language
-            status, message, = PipCheck.check({}, c, wrong, RUN)
+            _, message, = PipCheck.check({}, c, wrong, RUN)
             assert_equal "In Karte 1 schaut Pip nach `#{calls[language]}` nach oben statt nach unten.", message, language
         end
     end
@@ -184,7 +184,7 @@ class PipCheckTest < Minitest::Test
             status, message, = PipCheck.check({}, c, follower, RUN, :seed => seed)
             assert_equal :correct, status, "seed #{seed}: #{message}"
         end
-        status, message, = PipCheck.check({}, c, "move()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\n", RUN)
+        _, message, = PipCheck.check({}, c, "move()\nmove()\nturn_left()\nturn_left()\nturn_left()\nmove()\n", RUN)
         assert_includes message, 'In Karte 2'
         counting = { 'type' => 'pip', 'language' => 'ruby', 'commands' => %w[move take on_stone front_clear],
                      'maps' => [{ 'map' => "######\n#Po.o#\n######" }], 'goal' => { 'say' => 'stones' } }

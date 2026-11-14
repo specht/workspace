@@ -990,7 +990,7 @@ class Main < Sinatra::Base
                         writer.write(Marshal.dump([parsed_content, parsed_content_paths, entries]))
                         writer.close
                         exit!(0)
-                    rescue Exception => e
+                    rescue Exception => e # rubocop:disable Lint/RescueException -- the forked worker ends on anything, never returns into the server
                         STDERR.puts "Rendering content in a worker failed: #{e.class}: #{e.message}"
                         exit!(1)
                     end

@@ -143,7 +143,7 @@ module TestWorkspaceExtensions
                         tmp.close
                         File.rename(tmp.path, dest)
                     ensure
-                        File.unlink(tmp.path) if File.exist?(tmp.path)
+                        FileUtils.rm_f(tmp.path)
                     end
                 end
                 resolved[key] = {'id' => actual_id, 'version' => version, 'sha256' => sha}
@@ -225,7 +225,7 @@ module TestWorkspaceExtensions
             tmp.close
             File.rename(tmp.path, dest)
         ensure
-            File.unlink(tmp.path) if File.exist?(tmp.path)
+            FileUtils.rm_f(tmp.path)
         end
     end
 

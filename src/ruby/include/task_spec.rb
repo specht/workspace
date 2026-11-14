@@ -1,6 +1,5 @@
 require 'digest'
 require 'json'
-require 'set'
 require 'yaml'
 require_relative 'own_functions'
 require_relative 'sql_check'

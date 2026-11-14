@@ -66,7 +66,7 @@ module JavascriptCheck
                 const caller = String(new Error().stack).split('\\n')[2] || '';
                 if (caller.includes(full)) {
                     const error = new Error(name);
-                    error.name = '#{'KataForbidden'}';
+                    error.name = 'KataForbidden';
                     throw error;
                 }
                 return original.apply(this, args);

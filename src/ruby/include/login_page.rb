@@ -453,7 +453,7 @@ class Main < Sinatra::Base
             halt 404, { :error => 'no_invitation_found' }.to_json
         end
 
-        user = ensure_user_account(email)
+        ensure_user_account(email)
         # an account with an Authenticator app (authenticator_page.rb): no
         # e-mail, the page asks for the app's code; with mail: true (»Code
         # per E-Mail schicken«) the e-mail as for everyone

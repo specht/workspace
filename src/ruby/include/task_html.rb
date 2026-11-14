@@ -1,6 +1,5 @@
 require 'nokogiri'
 require 'redcarpet'
-require 'set'
 require_relative 'external_links'
 require_relative 'code_highlight'
 

@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'set'
 require_relative '../include/roster'
 require_relative 'support/legacy_invitations'
 

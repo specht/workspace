@@ -1,5 +1,4 @@
 require 'json'
-require 'set'
 
 # The ether of »Datenübertragung per Funk« (/radio, /ether): one public room
 # for the whole installation, as in the original cable simulator. Everyone

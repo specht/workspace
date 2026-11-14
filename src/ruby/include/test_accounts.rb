@@ -1,4 +1,3 @@
-require 'set'
 require_relative 'look_in'
 
 # Every teacher has exactly one test account, adresse+test@domain, alone in

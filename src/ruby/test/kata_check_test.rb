@@ -177,7 +177,7 @@ class KataCheckTest < Minitest::Test
         status, message, = KataCheck.check(task(check), check, "function gcd(a, b) {\n  return a +\n", RUN)
         assert_equal :wrong, status
         assert_match(/\AIn deinem Code \(Zeile \d\) ist ein Syntaxfehler/, message)
-        status, message, = KataCheck.check(task(check), check, "function gcd(a, b) {\n  return resutl;\n}\n", RUN)
+        _, message, = KataCheck.check(task(check), check, "function gcd(a, b) {\n  return resutl;\n}\n", RUN)
         assert_includes message, '`resutl` kennt JavaScript an dieser Stelle nicht.'
         # arrays are compared by content; forbidden methods fail from the code only
         lists = { 'type' => 'function', 'language' => 'javascript', 'forbid' => ['Array.prototype.sort', 'Math.max'],
@@ -191,7 +191,7 @@ class KataCheckTest < Minitest::Test
                                            'reference' => '(function g(x, y) { return y ? g(y, x % y) : x; })(a, b)' })
         assert_equal :correct, KataCheck.check(task(random), random, right, RUN, :seed => 7).first
         feedback = [{ 'when' => { 'same_as' => "const gcd = (a, b) => Math.min(a, b);\n" }, 'say' => 'Die kleinere Zahl ist nur manchmal ein Teiler.' }]
-        status, message, = KataCheck.check(task(check).merge('feedback' => feedback), check, "function gcd(a, b) { return a < b ? a : b; }\n", RUN)
+        _, message, = KataCheck.check(task(check).merge('feedback' => feedback), check, "function gcd(a, b) { return a < b ? a : b; }\n", RUN)
         assert_equal 'Die kleinere Zahl ist nur manchmal ein Teiler.', message
         ran = KataCheck.run_program('javascript', "console.log('Hallo');\nconsole.log(nichts.length);\n", RUN)
         assert_equal :error, ran[:status]

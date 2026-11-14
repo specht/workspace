@@ -59,7 +59,7 @@ class AnaglyphViewerTest < Minitest::Test
         assert_equal({ 's' => 'a' * 32 }, AnaglyphViewer.verify_scene_token(token, :secret => 'k', :now => 1000))
         assert_nil AnaglyphViewer.verify_scene_token(token, :secret => 'other', :now => 1000)
         assert_nil AnaglyphViewer.verify_scene_token(token, :secret => 'k', :now => 1000 + SubmissionView::LIFETIME + 1)
-        payload, expires, sig = token.split('.')
+        _, expires, sig = token.split('.')
         forged = Base64.urlsafe_encode64(JSON.generate({ 'e' => 'x@y', 'f' => 'a.ini' }), padding: false)
         assert_nil AnaglyphViewer.verify_scene_token("#{forged}.#{expires}.#{sig}", :secret => 'k', :now => 1000)
         view = SubmissionView.token('a' * 32, :secret => 'k', :now => 1000)

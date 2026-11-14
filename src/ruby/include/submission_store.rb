@@ -1,7 +1,6 @@
 require 'digest'
 require 'fileutils'
 require 'rubygems/package'
-require 'set'
 require 'stringio'
 require 'zlib'
 require_relative 'workspace_files'

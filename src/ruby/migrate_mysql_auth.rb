@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'open3'
-require 'set'
 require_relative 'include/database_identity'
 require_relative 'include/database_provisioning'
 require_relative 'include/workspace_credentials'

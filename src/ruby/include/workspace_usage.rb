@@ -1,4 +1,3 @@
-require 'set'
 
 # Running Workspaces for /statistik (docs/datenschutz.md, »Nutzung ohne
 # Namen«): every few minutes the server sees which Workspaces run. For the

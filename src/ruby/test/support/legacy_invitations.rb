@@ -1,4 +1,3 @@
-require 'set'
 require_relative '../../include/teacher_roles'
 
 module LegacyInvitations

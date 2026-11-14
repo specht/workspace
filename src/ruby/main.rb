@@ -90,7 +90,6 @@ require './include/cypher_lexer.rb'
 require './include/code_highlight.rb'
 require 'securerandom'
 require 'shellwords'
-require 'set'
 require 'sinatra/base'
 require 'sinatra/cookies'
 
@@ -136,7 +135,7 @@ def assert(condition, message = 'assertion failed')
     raise message unless condition
 end
 
-def debug(message, index = 0)
+def debug(message)
     index = 0
     begin
         while index < caller_locations.size - 1 && ['transaction', 'neo4j_query', 'neo4j_query_expect_one'].include?(caller_locations[index].base_label)
@@ -202,7 +201,6 @@ def deliver_mail(plain_text = nil, attachments: [], &block)
         built
     end
     mail ||= Mail.new do
-        charset = 'UTF-8'
         message = self.instance_eval(&block)
         if plain_text.nil?
             html_part do
@@ -3660,7 +3658,6 @@ class Main < Sinatra::Base
             end
 
             ws.on(:message) do |msg|
-                client_id = request.env['HTTP_SEC_WEBSOCKET_KEY']
                 begin
                     request = {}
                     unless msg.data.empty?
@@ -3774,7 +3771,7 @@ class Main < Sinatra::Base
         assert(MODULE_ORDER.include?(key))
         assert(key != :git || GitServer.enabled?)
 
-        flag = @session_user["show_#{key}".to_sym] == true
+        flag = @session_user[:"show_#{key}"] == true
         new_flag = !flag
 
         email = @session_user[:email]
@@ -3996,7 +3993,7 @@ class Main < Sinatra::Base
 
     def print_module_button(key)
         assert(user_logged_in?)
-        active = @session_user["show_#{key}".to_sym]
+        active = @session_user[:"show_#{key}"]
         "<button class='btn btn-md #{active ? 'btn-success' : 'btn-outline-secondary'} bu-toggle-module' data-module='#{key}'><i class='bi #{active ? 'bi-check-lg' : 'bi-x-lg'}'></i>#{MODULE_LABELS[key]} im Menü #{active ? '' : 'nicht'} anzeigen</button>"
     end
 

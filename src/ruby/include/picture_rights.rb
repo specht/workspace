@@ -1,6 +1,5 @@
 require 'cgi'
 require 'erb'
-require 'set'
 require 'yaml'
 
 # The page /picture-rights: every picture on the site that is someone else's

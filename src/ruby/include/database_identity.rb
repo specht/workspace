@@ -1,5 +1,4 @@
 require 'digest'
-require 'set'
 require_relative 'login_names'
 
 module DatabaseIdentity

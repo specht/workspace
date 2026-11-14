@@ -1,5 +1,4 @@
 require 'cgi'
-require 'set'
 
 # The band at the foot of a catalog card, a Kata set or a language tile
 # (Main#usage_html), in three kinds:

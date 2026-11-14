@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'set'
 require 'date'
 require_relative '../include/look_in'
 

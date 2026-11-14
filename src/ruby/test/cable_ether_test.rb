@@ -203,7 +203,6 @@ class CableEtherTest < Minitest::Test
     def test_holding_lamps_is_rate_limited_but_letting_go_is_not
         connect(:ada)
         send_as(:ada, { :t => 'tune', :f => 600 })
-        sent = 0
         200.times do
             send_as(:ada, { :t => 'lamp', :i => 1, :on => true })
             send_as(:ada, { :t => 'lamp', :i => 1, :on => false })
