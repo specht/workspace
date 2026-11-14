@@ -1245,14 +1245,17 @@
                 head.appendChild(chip);
             }
             // a point met: what is right now (the label, »Keine leeren
-            // Absätze«); a point open: what is wrong now, the first sentence
-            // of its message (»5 leere Absätze machen Abstand, …«), the
-            // reason and the way below it
-            const parts = !item.ok && item.message ? firstSentence(item.message) : null;
+            // Absätze«); a point open: what is wrong now, as short (its
+            // problem, »Leere Absätze machen Abstand«, DocumentProblems),
+            // the whole message below it; without one, the first sentence
+            // of the message, which is short then
+            const parts = !item.ok && item.message
+                ? (item.problem ? [null, item.message] : firstSentence(item.message)) : null;
             head.appendChild(el('span', 'visually-hidden', item.ok ? 'Erfüllt: ' : 'Noch nicht: '));
             if (parts) {
                 const problem = el('span', 'document-problem');
-                problem.innerHTML = parts[0];
+                if (item.problem) problem.textContent = item.problem;
+                else problem.innerHTML = parts[0];
                 head.appendChild(problem);
             } else {
                 head.appendChild(document.createTextNode(item.label));

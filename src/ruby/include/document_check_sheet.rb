@@ -140,6 +140,7 @@ module DocumentCheck
 
         item.ok = false
         item.marks = typed.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'keine Formel') }
+        item.problem = typed.size == 1 ? "#{typed.first} ohne Formel" : "#{typed.size} Zellen ohne Formel"
         first = cell(sheet, typed.first)
         item.message = "#{typed.size == 1 ? "In #{typed.first} steht" : "In #{typed.size} Zellen, zum Beispiel #{typed.first}, steht"} " \
             "#{first ? "eine getippte #{first['type'] == 'text' ? 'Angabe' : 'Zahl'} (#{q(shown(first))})" : 'nichts'}, keine Formel. " \
@@ -159,6 +160,7 @@ module DocumentCheck
         item.ok = false
         item.marks = wrong.keys.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'falsches Ergebnis') }
         n, v = wrong.first
+        item.problem = wrong.size == 1 ? "Falsches Ergebnis in #{n}" : "#{wrong.size} falsche Ergebnisse"
         have = cell(sheet, n)
         item.message = "In #{n} steht #{have ? q(shown(have)) : 'nichts'}, richtig wäre #{wanted(v)}." +
             (have && have['formula'] ? " Die Formel dort: #{q(german_formula(have['formula']))}." : '')
@@ -179,6 +181,7 @@ module DocumentCheck
         item.marks = wrong.keys.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'rechnet nicht mit') }
         n, v = wrong.first || expect.first
         got = (probe['shown'] || {})[n]
+        item.problem = "#{n} rechnet nicht mit"
         item.message = "#{n} rechnet nicht mit: Nachdem ich #{changes} geändert habe, müsste dort #{wanted(v)} stehen, " \
             "es steht aber #{got.to_s.empty? ? 'nichts' : q(got)} da. Rechnet die Zelle mit einer getippten Zahl statt mit der Zelle?"
         item
@@ -200,6 +203,7 @@ module DocumentCheck
         n, f = wrong.first
         have = cell(sheet, n)
         name = FUNCTION_NAMES[f.to_s.upcase] || f
+        item.problem = wrong.size == 1 ? "#{n} ohne #{name}" : "#{wrong.size} Zellen ohne #{name}"
         item.message = "#{n} rechnet noch nicht mit #{name}#{have && have['formula'] ? ", dort steht #{q(german_formula(have['formula']))}" : ''}. " \
             "Eine Funktion wie =#{name}(B2:B9) rechnet einen ganzen Bereich auf einmal und bleibt richtig, wenn eine Zeile dazukommt."
         item
@@ -220,6 +224,7 @@ module DocumentCheck
         item.ok = false
         item.marks = loose.map { |n| cell_mark(model, rule['sheet'].to_i, n, "ohne $#{col}$#{row}") }
         have = cell(sheet, loose.first)
+        item.problem = loose.size == 1 ? "#{loose.first} ohne $#{col}$#{row}" : "#{loose.size} Zellen ohne $#{col}$#{row}"
         item.message = "#{loose.first} rechnet nicht fest mit #{ref}#{have && have['formula'] ? ", dort steht #{q(german_formula(have['formula']))}" : ''}: Beim Kopieren rutscht der Bezug mit. " \
             "Schreib $#{col}$#{row}: Das $ hält Spalte und Zeile fest, wenn du die Formel nach unten ziehst."
         item
@@ -245,6 +250,7 @@ module DocumentCheck
         item.ok = false
         item.marks = changed.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'geändert') }
         a = cell(theirs, changed.first)
+        item.problem = changed.size == 1 ? "#{changed.first} geändert" : "#{changed.size} Zellen der Vorlage geändert"
         item.message = "In #{changed.first} stand in der Vorlage #{a ? q(shown(a)) : 'nichts'}#{changed.size > 1 ? " (und in #{changed.size - 1} weiteren Zellen etwas anderes)" : ''}. " \
             'Hier änderst du, wie die Tabelle rechnet und aussieht, nicht ihre Daten.'
         item
@@ -282,6 +288,11 @@ module DocumentCheck
         item.marks = wrong.map { |n, _| cell_mark(model, rule['sheet'].to_i, n, 'Zahlenformat') }
         n, kind = wrong.first
         want = kind.is_a?(Hash) ? "eine Zahl mit #{kind['decimals']} Nachkommastellen" : "#{FORMAT_NAMES[kind] || kind}"
+        item.problem = if kind.is_a?(Hash)
+            wrong.size == 1 ? "#{n} mit anderen Nachkommastellen" : "#{wrong.size} Zellen mit anderen Nachkommastellen"
+        else
+            wrong.size == 1 ? "#{n} nicht als #{FORMAT_NAMES[kind] || kind}" : "#{wrong.size} Zellen nicht als #{FORMAT_NAMES[kind] || kind}"
+        end
         item.message = "#{wrong.size == 1 ? n : "#{wrong.size} Zellen, zum Beispiel #{n},"} #{wrong.size == 1 ? 'zeigt' : 'zeigen'} " \
             "#{q(shown(cell(sheet, n)))}, soll aber als #{want} formatiert sein. Das Format änderst du, nicht die Zahl: Die Zahl bleibt, wie sie ist, nur ihr Aussehen ändert sich."
         item
@@ -299,6 +310,7 @@ module DocumentCheck
 
         item.ok = false
         item.marks = found.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'Text') }
+        item.problem = found.size == 1 ? "Zahl als Text in #{found.first}" : "#{found.size} Zahlen als Text"
         item.message = "#{found.size == 1 ? "In #{found.first} steht" : "In #{found.size} Zellen, zum Beispiel #{found.first}, steht"} " \
             "#{q(cell(sheet, found.first)['text'])} als Text, nicht als Zahl: Mit ihr rechnet keine Formel, und SUMME lässt sie aus. " \
             'Tipp nur die Zahl und gib der Zelle ein Format, etwa Währung.'
@@ -314,6 +326,7 @@ module DocumentCheck
 
         item.ok = false
         item.marks = plain.map { |n| cell_mark(model, rule['sheet'].to_i, n, 'nicht fett') }
+        item.problem = plain.size == 1 ? "#{plain.first} nicht fett" : "#{plain.size} Zellen nicht fett"
         item.message = "#{plain.first} ist nicht fett. Die Zeile der Überschriften hebt sich ab, damit man sieht, was in jeder Spalte steht."
         item
     end
@@ -345,6 +358,7 @@ module DocumentCheck
         return item if bad.nil? && same
 
         item.ok = false
+        item.problem = same ? "Nicht nach Spalte #{spec['by']} sortiert" : 'Zeilen auseinandergerissen'
         if !same
             item.message = 'Die Zeilen sind nicht mehr dieselben wie in der Vorlage: Beim Sortieren ist eine Spalte allein mitgewandert. ' \
                 'Markier die ganze Tabelle, bevor du sortierst, oder sortier über die Daten, dann bleiben die Zeilen zusammen.'
@@ -360,6 +374,7 @@ module DocumentCheck
     def self.rule_autofilter(rule, _body, _starter, _all = nil, model = nil)
         on = (sheet_of(model, rule)['autofilter'] || {})['on']
         item = Item.new(:rule => 'autofilter', :label => 'Ein Filter über der Tabelle', :ok => on, :marks => [])
+        item.problem = 'Noch kein Filter' unless on
         item.message = 'Die Tabelle hat noch keinen Filter. Mit ihm zeigst du nur die Zeilen, die du gerade brauchst, ohne eine zu löschen.' unless on
         item
     end
@@ -371,6 +386,7 @@ module DocumentCheck
         covered = (sheet_of(model, rule)['conditional'] || []).flat_map { |f| f['ranges'].flat_map { |r| cells_of(r) rescue [] } }
         ok = (want & covered).size >= [want.size / 2, 1].max
         item = Item.new(:rule => 'conditional', :label => "Bedingte Formatierung in #{range}", :ok => ok, :marks => [])
+        item.problem = "Keine bedingte Formatierung in #{range}" unless ok
         item.message = "#{range} hat noch keine bedingte Formatierung. Mit ihr färbt das Programm eine Zelle selbst, je nachdem, was in ihr steht." unless ok
         item
     end
@@ -382,6 +398,7 @@ module DocumentCheck
         charts = (model['sheets'] || []).flat_map { |s| s['charts'] || [] }
         item = Item.new(:rule => 'chart', :label => "Ein #{CHART_NAMES[kind] || kind} mit Titel#{spec['axis_titles'] ? ' und Achsentiteln' : ''}", :ok => false, :marks => [])
         if charts.empty?
+            item.problem = 'Noch kein Diagramm'
             item.message = "Die Tabelle hat noch kein Diagramm. Markier die Daten, dann Einfügen › Diagramm, und wähl ein #{CHART_NAMES[kind] || kind}."
             return item
         end
@@ -398,7 +415,15 @@ module DocumentCheck
             problems << "es zeigt nicht die Daten aus #{spec['range']}" unless (want - have).empty?
         end
         item.ok = problems.empty?
-        item.message = "Dein Diagramm: #{problems.join(', ')}." unless item.ok
+        unless item.ok
+            first = problems.first
+            item.problem = if first.start_with?('es ist ein') then 'Ein anderes Diagramm'
+                           elsif first.include?('keinen Titel') && first.start_with?('es') then 'Das Diagramm hat keinen Titel'
+                           elsif first.include?('Achse') then 'Eine Achse ohne Titel'
+                           else 'Das Diagramm zeigt andere Daten'
+                           end
+            item.message = "Dein Diagramm: #{problems.join(', ')}."
+        end
         item
     end
 
@@ -411,6 +436,7 @@ module DocumentCheck
 
         item.marks = bad.map { |c| cell_mark(model, rule.is_a?(Hash) ? rule['sheet'].to_i : 0, c['cell'], c['shown']) }
         c = bad.first
+        item.problem = bad.size == 1 ? "#{c['cell']} zeigt #{c['shown']}" : "#{bad.size} Formeln mit Fehler"
         item.message = "#{c['cell']} zeigt #{q(c['shown'])}: Die Formel #{q(german_formula(c['formula']))} kann nicht rechnen. " \
             '#DIV/0! teilt durch null oder eine leere Zelle, #WERT! rechnet mit einem Text, #NAME? kennt einen Namen nicht ' \
             '(ein Tippfehler in der Funktion?), #BEZUG! zeigt auf eine gelöschte Zelle.'

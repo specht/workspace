@@ -1,4 +1,5 @@
 require_relative 'document_dates'
+require_relative 'document_problems'
 require_relative 'document_check_sheet'
 require_relative 'document_check_slides'
 require 'cgi'
@@ -106,7 +107,9 @@ module DocumentCheck
 
     # number: the open points' numbers, 1, 2, … in the order of the
     # checklist; every place of a point carries its point's number
-    Item = Struct.new(:rule, :label, :ok, :message, :marks, :number, :hints, keyword_init: true)
+    # problem: the short line of an open point (DocumentProblems), where
+    # the rule knows it exactly
+    Item = Struct.new(:rule, :label, :ok, :message, :marks, :number, :hints, :problem, keyword_init: true)
 
     # Problems with a check's definition in tasks.yaml (TaskSpec).
     def self.spec_errors(check)
@@ -284,7 +287,11 @@ module DocumentCheck
             end
             item = send("rule_#{name}", rule.is_a?(Hash) ? rule : {}, scope, starter, paragraphs, model)
             item.label = rule['label'] if rule.is_a?(Hash) && rule['label']
-            item.message = rule['say'] if rule.is_a?(Hash) && rule['say'] && !item.ok
+            if rule.is_a?(Hash) && rule['say'] && !item.ok
+                item.message = rule['say']
+                item.problem = nil
+            end
+            item.problem = rule['problem'] if rule.is_a?(Hash) && rule['problem'] && !item.ok
             item.hints = rule['hints'] if traps && rule.is_a?(Hash) && rule['hints']
             item
         end
@@ -327,7 +334,8 @@ module DocumentCheck
         {
             :items => items.map do |i|
                 next { :trap => true, :ok => false, :hints => i.hints, :marks => [] } if i.hints && !i.ok
-                { :label => i.label, :ok => i.ok, :message => i.message, :marks => i.marks, :n => i.number, :trap => i.hints ? true : nil }.compact
+                { :label => i.label, :ok => i.ok, :problem => DocumentProblems.line(i), :message => i.message, :marks => i.marks, :n => i.number,
+                  :trap => i.hints ? true : nil }.compact
             end,
             :traps => items.any?(&:hints) ? true : nil,
             :pages => (model['pages'] || []).each_with_index.map do |pg, i|
