@@ -8,7 +8,7 @@ Lernende bringen die Liste der Zahlungen aller 27 Familien in Ordnung: nach Fami
 <li><b>15 Minuten:</b> filtern, ablesen, wie viele noch zahlen müssen, die Vermutung zur SUMME unter dem Filter, den Filter zurücknehmen.</li>
 <li><b>10 Minuten:</b> bedingte Formatierung, prüfen, bis alles erfüllt ist.</li>
 <li><b>5 Minuten:</b> der Versuch mit Kayas Zahlung; Gespräch über die Person Hollerith: Was zählt eine Maschine, die Menschen zählt?</li>
-<li><b>Für Schnelle:</b> mit <code>=TEILERGEBNIS(9;E4:E30)</code> eine Summe, die nur die sichtbaren Zeilen zählt, und ausprobieren, was der Filter mit ihr macht.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -31,3 +31,23 @@ Lernende bringen die Liste der Zahlungen aller 27 Familien in Ordnung: nach Fami
 <li>E4 bis E30 haben eine bedingte Formatierung. Welche Farbe sie gibt, prüft der Workspace nicht; auf dem gezeichneten Blatt ist sie zu sehen.</li>
 </ul></td></tr>
 </table>
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Zahlungen besteht, bekommt auf der Karte einen Vorschlag: nach drei oder
+mehr Prüfungen »Noch eine Runde«, nach einer oder zwei die »Fünf Fallen«.
+Bei der bedingten Formatierung sieht die Prüfung nach, ob sie genau die
+Beträge über 0 färbt: »größer oder gleich 0« (alles rot) oder »größer als
+100« fallen auf.
+
+- **Noch eine Runde:** die Ausleihe der Klassenbücherei, nach dem Tag; nach
+  dem Namen sortieren, filtern, wem noch Bücher fehlen färben.
+- **Zwei Handgriffe:** nach zwei Spalten sortieren (Offen absteigend, dann
+  Familie) und `=TEILERGEBNIS(9;E4:E30)`, die Summe nur der Zeilen, die der
+  Filter zeigt.
+- **Fünf Fallen:** die Zahlungen für den Wandertag. Kaya steht vor Jansen,
+  die Liste hat keinen Filter, die Farbe kommt erst über 9 € (Çelik fehlen 8 €),
+  bei Kaya ist der offene Betrag getippt (vom ersten Blatt), und ein Soll hat
+  kein Format Währung (vom zweiten). Die Prüfung zählt nur und zeigt jede
+  Falle erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.

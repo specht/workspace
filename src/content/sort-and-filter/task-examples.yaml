@@ -15,3 +15,23 @@ examples:
         say: eine Spalte allein
       - document: stufen/nur-sortiert.xlsx
         say: noch keinen Filter
+  runde:
+    pass:
+      - document: stufen/buecherei.xlsx
+    fail:
+      - document: ../../static/sort-and-filter/05 Buecherei.xlsx
+        say: aufsteigend sortiert
+  handgriffe:
+    pass:
+      - document: stufen/offen.xlsx
+    fail:
+      - document: ../../static/sort-and-filter/05 Offen.xlsx
+        say: E33 rechnet noch nicht mit TEILERGEBNIS
+  fallen:
+    pass:
+      - document: stufen/wandertag.xlsx
+    fail:
+      - document: ../../static/sort-and-filter/05 Wandertag.xlsx
+        say: 0 von 5 Fallen gefunden
+      - document: stufen/wandertag-vier.xlsx
+        say: 4 von 5 Fallen gefunden

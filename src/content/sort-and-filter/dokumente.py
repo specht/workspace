@@ -40,26 +40,65 @@ def german(name):
     return name.replace('Ç', 'C').replace('ą', 'a').replace('ı', 'i').replace('ß', 'ss').lower()
 
 
-def serial(day):
-    return (datetime.date(YEAR, 3, day) - datetime.date(1899, 12, 30)).days
+def serial(day, month=3):
+    return (datetime.date(YEAR, month, day) - datetime.date(1899, 12, 30)).days
 
 
-def table(calc, path, order='entered', names_only=False, filtered=False, coloured=False, probe=False):
+# »Noch eine Runde«: the library's books, lent in April (day, name, books
+# lent, books back or None), in the order lent
+BOOKS = [
+    (6, 'Okafor', 2, 2), (6, 'Brandt', 1, 1), (7, 'Yıldız', 3, 1), (8, 'Fuchs', 2, 2), (8, 'Çakır', 1, 1),
+    (12, 'Albrecht', 2, 2), (13, 'Nguyen', 1, None), (13, 'Krause', 2, 2), (14, 'Wolff', 1, 1), (15, 'Dąbek', 2, 1),
+    (19, 'Petersen', 1, 1), (20, 'Hahn', 3, 3), (21, 'Seidel', 1, None), (22, 'Ivanov', 2, 2),
+]
+
+# »Fünf Fallen«: the payments for the hiking day, 18 € each, sorted by
+# family but with one row out of place, no filter, the colour only above
+# 100 (cents: the condition misses a family), one result typed, one amount
+# without its currency format
+HIKE = [
+    (3, 'Arslan', 18, 18), (3, 'Becker', 18, 18), (4, 'Çelik', 18, 10), (4, 'Dąbrowski', 18, 18), (5, 'Engel', 18, 18),
+    (6, 'Fischer', 18, 18), (6, 'Groß', 18, None), (7, 'Hoang', 18, 18), (7, 'Ivanova', 18, 18), (10, 'Jansen', 18, 18),
+    (10, 'Kaya', 18, 18), (11, 'Lehmann', 18, 8), (11, 'Müller', 18, 18), (12, 'Nowak', 18, 18),
+]
+
+
+def table(calc, path, order='entered', names_only=False, filtered=False, coloured=False, probe=False,
+          rows=PAYMENTS, title='Zahlungen für die Klassenfahrt', heads=('Datum', 'Familie', 'Soll', 'Gezahlt', 'Offen'),
+          total='Noch offen', condition=('GREATER', '0'), swap=None, cells=None, plain=None, month=3, more=None, money=True):
+    """order: 'entered', 'family' or 'open' (the most open first, then by
+    family); swap: two indexes of rows to change places after sorting (one
+    row out of order); cells: a cell's own content; plain: cells without the
+    currency format; more: [label, formula] two rows below the total;
+    money: amounts as currency (else plain numbers)"""
     doc = calc.new()
-    rows = list(PAYMENTS)
+    first, last = FIRST, FIRST + len(rows) - 1
+    rows = list(rows)
     if order == 'family':
         rows.sort(key=lambda p: german(p[1]))
-    put(doc, 'A1', [['Zahlungen für die Klassenfahrt'], [], ['Datum', 'Familie', 'Soll', 'Gezahlt', 'Offen']])
-    names = sorted((p[1] for p in PAYMENTS), key=german) if names_only else None
+    elif order == 'open':
+        rows.sort(key=lambda p: (-(p[2] - (p[3] or 0)), german(p[1])))
+    if swap:
+        i, j = swap
+        rows[i], rows[j] = rows[j], rows[i]
+    put(doc, 'A1', [[title], [], list(heads)])
+    names = sorted((p[1] for p in rows), key=german) if names_only else None
     for i, (day, family, owed, paid) in enumerate(rows):
-        r = FIRST + i
-        put(doc, f'A{r}', [[serial(day) if day else None, names[i] if names else family, owed, paid, f'=C{r}-D{r}']])
-    put(doc, f'A{LAST + 2}', [[None, 'Noch offen', None, None, f'=SUM(E{FIRST}:E{LAST})']])
-    bold(doc, f'A1, A3:E3, B{LAST + 2}:E{LAST + 2}')
-    fmt(doc, f'C{FIRST}:E{LAST + 2}', CURRENCY)
-    fmt(doc, f'A{FIRST}:A{LAST}', 'TT.MM.JJJJ')
+        r = first + i
+        put(doc, f'A{r}', [[serial(day, month) if day else None, names[i] if names else family, owed, paid, f'=C{r}-D{r}']])
+    put(doc, f'A{last + 2}', [[None, total, None, None, f'=SUM(E{first}:E{last})']])
+    if more:
+        put(doc, f'A{last + 3}', [[None, more[0], None, None, more[1]]])
+    for name, value in (cells or {}).items():
+        put(doc, name, [[value]])
+    bold(doc, f'A1, A3:E3, B{last + 2}:E{last + 3 if more else last + 2}')
+    fmt(doc, f'C{first}:E{last + 3 if more else last + 2}', CURRENCY if money else '0')
+    if plain:
+        fmt(doc, plain, '0')
+    fmt(doc, f'A{first}:A{last}', 'TT.MM.JJJJ')
     widths(doc, [2.8, 3.6, 2.6, 2.6, 2.6])
     sh = sheet_of(doc)
+    LAST = last  # noqa: N806 (the rest below as before)
     if filtered:
         area = sh.getCellRangeByName(f'A3:E{LAST}')
         db = doc.DatabaseRanges
@@ -67,7 +106,7 @@ def table(calc, path, order='entered', names_only=False, filtered=False, coloure
         db.getByName('Zahlungen').AutoFilter = True
     if coloured:
         entries = sh.getCellRangeByName(f'E{FIRST}:E{LAST}').ConditionalFormat
-        entries.addNew((prop('Operator', uno_operator('GREATER')), prop('Formula1', '0'), prop('StyleName', 'Bad')))
+        entries.addNew((prop('Operator', uno_operator(condition[0])), prop('Formula1', condition[1]), prop('StyleName', 'Bad')))
         sh.getCellRangeByName(f'E{FIRST}:E{LAST}').ConditionalFormat = entries
     if probe:
         # does SUM leave out the rows a filter hides? (the page's prediction)
@@ -112,6 +151,22 @@ if __name__ == '__main__':
         table(calc, os.path.join(stufen, 'nur-sortiert.xlsx'), 'family')
         table(calc, os.path.join(stufen, '_probe.xlsx'), 'family', probe=True)
         os.remove(os.path.join(stufen, '_probe.xlsx'))
+        # Üben und knobeln
+        books = dict(rows=BOOKS, title='Ausleihe der Klassenbücherei', heads=('Ausgeliehen', 'Name', 'Bücher', 'Zurück', 'Fehlen'),
+                     total='Fehlen noch', month=4, money=False)
+        table(calc, os.path.join(STATIC, '05 Buecherei.xlsx'), **books)
+        table(calc, os.path.join(stufen, 'buecherei.xlsx'), 'family', filtered=True, coloured=True, **books)
+        more = ['Sichtbar offen', f'=SUBTOTAL(9;E{FIRST}:E{LAST})']
+        table(calc, os.path.join(STATIC, '05 Offen.xlsx'), 'family', filtered=True, coloured=True, more=['Sichtbar offen', None])
+        table(calc, os.path.join(stufen, 'offen.xlsx'), 'open', filtered=True, coloured=True, more=more)
+        hike = dict(rows=HIKE, title='Zahlungen für den Wandertag', month=5)
+        hike_last = FIRST + len(HIKE) - 1
+        table(calc, os.path.join(STATIC, '05 Wandertag.xlsx'), 'family', coloured=True, condition=('GREATER', '9'), swap=(9, 10),
+              cells={'E13': 0}, plain='C8', **hike)
+        table(calc, os.path.join(stufen, 'wandertag.xlsx'), 'family', filtered=True, coloured=True, **hike)
+        # four traps fixed, one row still out of place
+        table(calc, os.path.join(stufen, 'wandertag-vier.xlsx'), 'family', filtered=True, coloured=True, swap=(9, 10), **hike)
+        print('hike open:', sum(o - (p or 0) for _, _, o, p in HIKE), 'rows', FIRST, hike_last)
         calc.picture(starter, os.path.join(HERE, 'bilder', 'zahlungen.svg'))
         calc.picture(os.path.join(stufen, 'zahlungen.xlsx'), os.path.join(HERE, 'bilder', 'zahlungen-fertig.svg'))
         calc.picture(os.path.join(stufen, 'nur-namen.xlsx'), os.path.join(HERE, 'bilder', 'nur-namen.svg'))

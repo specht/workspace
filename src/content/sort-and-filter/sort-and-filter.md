@@ -167,3 +167,40 @@ _task(zahlungen)
 <strong>Ausprobieren:</strong> Trag bei Familie Kaya in Spalte D eine Zahlung von 245 ein. Achte auf die Farbe in Spalte E und auf die Summe darunter. Lösch die Zahlung danach wieder.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Tabellen für alle, die mehr wollen: eine zum Üben, eine mit zwei neuen
+Handgriffen und eine zum Suchen.
+
+### Noch eine Runde
+
+Die Ausleihe der Klassenbücherei steht so da, wie die Bücher ausgeliehen
+wurden: nach dem Tag. In Spalte E rechnet die Tabelle, wie viele Bücher noch
+fehlen. Bring die Liste in Ordnung wie die Zahlungen, diesmal ohne oben
+nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+Beim Sortieren kannst du mehr als eine Spalte angeben: Zuerst wird nach der
+ersten sortiert, und wo zwei Zeilen dort gleich sind, entscheidet die zweite.
+So steht oben, wer am meisten offen hat, und alle, die nichts mehr zahlen,
+stehen darunter nach dem Alphabet.
+
+SUMME zählt jede Zelle ihres Bereichs, auch die, die ein Filter gerade
+ausblendet. Nur die sichtbaren Zeilen zählt **TEILERGEBNIS**: Vor dem Bereich
+steht eine Zahl, die sagt, was gerechnet wird; die 9 heißt »Summe«.
+
+_task(handgriffe)
+
+### Fünf Fallen
+
+Die Zahlungen für den Wandertag sehen fertig aus. Fünf Stellen sind trotzdem
+falsch gebaut: drei von der Art wie auf diesem Blatt, je eine vom ersten und
+zweiten. Die Prüfung sagt dir nur, wie viele du gefunden hast, und jede Falle
+hat ihre eigenen Tipps.
+
+_task(fallen)

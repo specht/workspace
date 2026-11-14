@@ -91,6 +91,10 @@ tasks:
 
   - id: zahlungen
     title: Die Zahlungen in Ordnung
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
@@ -102,7 +106,7 @@ tasks:
         - { sorted: { range: 'A4:E30', by: B, order: asc } }
         - { formulas: ['E4:E30', 'E32'] }
         - autofilter
-        - { conditional: 'E4:E30' }
+        - { conditional: 'E4:E30', positive: true }
         - no_errors
     hint:
       - Sortiere die ganze Tabelle nach der Familie, von A bis Z. Klick dazu in die Tabelle, statt eine Spalte zu markieren.
@@ -123,3 +127,111 @@ tasks:
         - "Klick in eine Zelle der Tabelle, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, nach Familie, aufsteigend."
         - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *AutoFilter*."
         - "Markiere E4 bis E30, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…*: *ist größer als* `0`, die Vorlage *Schlecht*."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Die Ausleihe der Klassenbücherei steht in der Reihenfolge, in der die
+      Bücher ausgeliehen wurden. Sortier sie nach dem Namen, setz einen Filter
+      und färb, wem noch Bücher fehlen, mit einer bedingten Formatierung.
+    check:
+      type: document
+      file: sort-and-filter/05 Buecherei.xlsx
+      rules:
+        - { sorted: { range: 'A4:E17', by: B, order: asc } }
+        - { formulas: ['E4:E17', 'E19'] }
+        - autofilter
+        - { conditional: 'E4:E17', positive: true }
+        - no_errors
+    hint:
+      - Klick in eine Zelle der Liste und sortiere nach dem Namen, von A bis Z; die Zeilen bleiben zusammen.
+      - Setz einen Filter auf die Liste.
+      - Gib E4 bis E17 eine bedingte Formatierung für Zahlen größer als 0.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Sortier die Zahlungen so, dass oben steht, wer am meisten offen hat,
+      und bei gleichem Betrag nach der Familie. Schreib dann in E33, was
+      noch offen ist, nur über die Zeilen, die der Filter gerade zeigt.
+    check:
+      type: document
+      file: sort-and-filter/05 Offen.xlsx
+      rules:
+        - { sorted: { range: 'A4:E30', by: E, order: desc, then: B } }
+        - { formulas: ['E4:E30', 'E32', 'E33'] }
+        - { functions: { E33: SUBTOTAL } }
+        - { ranges: { E33: 'E4:E30' } }
+        - autofilter
+        - no_errors
+    hint:
+      - Beim Sortieren gibt es mehr als einen Sortierschlüssel. Der erste ist die Spalte Offen, absteigend; der zweite die Familie, aufsteigend.
+      - SUMME zählt auch, was ein Filter ausblendet. Nur die sichtbaren Zeilen zählt TEILERGEBNIS, mit einer 9 für »Summe« vor dem Bereich.
+      - "Probier es aus: Filter in Spalte E nur die Beträge über 0 und vergleich E32 und E33."
+    libreoffice:
+      hint:
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*: *Sortierschlüssel 1* Offen, *Absteigend*; *Sortierschlüssel 2* Familie, *Aufsteigend*."
+        - "In E33 kommt `=TEILERGEBNIS(9;E4:E30)`."
+        - "Am Pfeil im Kopf von Spalte E wählst du *Standardfilter…* oder hakst die 0,00 € ab; dann zeigen E32 und E33 Verschiedenes, sobald etwas ausgeblendet ist."
+    word:
+      hint:
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*: *Sortieren nach* Offen, *Nach Größe (absteigend)*; *Ebene hinzufügen*, *Dann nach* Familie, *A bis Z*."
+        - "In E33 kommt `=TEILERGEBNIS(9;E4:E30)`."
+        - "Am Pfeil im Kopf von Spalte E hakst du die 0,00 € ab; dann zeigen E32 und E33 Verschiedenes."
+    nextcloud:
+      hint:
+        - "*Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*: zuerst nach Offen, absteigend, dann nach Familie, aufsteigend."
+        - "In E33 kommt `=TEILERGEBNIS(9;E4:E30)`."
+        - "Am Pfeil im Kopf von Spalte E hakst du die 0,00 € ab; dann zeigen E32 und E33 Verschiedenes."
+
+  - id: fallen
+    title: Fünf Fallen
+    extra: true
+    prompt: |
+      Die Zahlungen für den Wandertag sehen fertig aus. Fünf Stellen sind
+      trotzdem falsch gebaut: drei von der Art wie auf diesem Blatt, je eine
+      vom ersten und zweiten. Die Prüfung sagt dir nur, wie viele du gefunden
+      hast; zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: sort-and-filter/05 Wandertag.xlsx
+      traps: true
+      rules:
+        - no_errors
+        - sorted: { range: 'A4:E17', by: B, order: asc }
+          label: Kaya stand vor Jansen.
+          hints:
+            - Lies die Familien von oben nach unten. Stimmt das Alphabet überall?
+            - Sieh dir die Zeilen 13 und 14 an.
+            - Kaya steht vor Jansen. Sortier die ganze Liste noch einmal nach der Familie.
+        - autofilter: true
+          label: Die Liste hatte keinen Filter.
+          hints:
+            - Lässt sich die Liste nach einer Spalte filtern?
+            - Im Kopf der Spalten fehlt etwas.
+            - Es gibt keinen Filter. Klick in die Liste und setz einen.
+        - conditional: 'E4:E17'
+          positive: true
+          label: Die Farbe kam erst über 9 €; Çelik fehlten 8 €.
+          hints:
+            - Ist jeder Betrag gefärbt, der noch offen ist?
+            - Sieh dir die Familie Çelik an und die Bedingung der Formatierung.
+            - Die Bedingung heißt »größer als 9«. Ändere sie auf »größer als 0«.
+        - formulas: ['E4:E17']
+          label: In Spalte E stand eine getippte 0.
+          hints:
+            - Diese Falle ist vom ersten Blatt. Klick nacheinander auf die Beträge in Spalte E.
+            - Sieh dir die Familie Kaya an.
+            - Bei Kaya steht in Spalte E die Zahl 0, keine Formel. Schreib wie in den anderen Zeilen Soll minus Gezahlt.
+        - number_format: { 'C4:C17': currency }
+          label: C8 hatte kein Format Währung.
+          hints:
+            - Diese Falle ist vom zweiten Blatt. Sehen alle Beträge in Spalte C gleich aus?
+            - Sieh dir die Familie Engel an.
+            - C8 zeigt 18 ohne Euro. Gib der Zelle das Format Währung wie den anderen.
+    solution: |
+      Die fünf Fallen: Kaya stand vor Jansen, die Liste hatte keinen Filter,
+      die Farbe kam erst über 9 €, bei Kaya stand eine getippte 0, und C8
+      hatte kein Format Währung.

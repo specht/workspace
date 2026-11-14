@@ -401,12 +401,24 @@ module DocumentCheck
         c1, r1 = cell_index(first)
         c2, r2 = cell_index(last)
         by = cell_index("#{spec['by']}1").first
+        # then: a second column for rows equal in the first, ascending
+        second = spec['then'] ? cell_index("#{spec['then']}1").first : nil
         desc = spec['order'] == 'desc'
-        item = Item.new(:rule => 'sorted', :label => "Sortiert nach Spalte #{spec['by']}, #{desc ? 'absteigend' : 'aufsteigend'}", :ok => true, :marks => [])
-        key = ->(s, r) { c = cell(s, cell_name(by, r)); c.nil? ? nil : (c['type'] == 'text' ? sort_key(c['text']) : c['value'].to_f) }
+        label = "Sortiert nach Spalte #{spec['by']}, #{desc ? 'absteigend' : 'aufsteigend'}#{second ? ", dann nach #{spec['then']}" : ''}"
+        item = Item.new(:rule => 'sorted', :label => label, :ok => true, :marks => [])
+        key_at = ->(s, col, r) { c = cell(s, cell_name(col, r)); c.nil? ? nil : (c['type'] == 'text' ? sort_key(c['text']) : c['value'].to_f) }
+        key = ->(s, r) { key_at.(s, by, r) }
         rows = (r1..r2).to_a
         values = rows.map { |r| key.(sheet, r) }
-        bad = values.each_cons(2).each_with_index.find { |(a, b), _| !a.nil? && !b.nil? && a.class == b.class && (desc ? a < b : a > b) }
+        seconds = second ? rows.map { |r| key_at.(sheet, second, r) } : []
+        bad = values.each_cons(2).each_with_index.find do |(a, b), i|
+            next false if a.nil? || b.nil? || a.class != b.class
+            next true if desc ? a < b : a > b
+            next false unless second && a == b
+
+            x, y = seconds[i], seconds[i + 1]
+            !x.nil? && !y.nil? && x.class == y.class && x > y
+        end
         # a row by its contents: numbers by value (a date formatted since is
         # the same row), texts as they are
         row_text = lambda do |s, r|
@@ -426,8 +438,14 @@ module DocumentCheck
         else
             r = rows[bad[1] + 1]
             item.marks = [cell_mark(model, rule['sheet'].to_i, cell_name(by, r), 'nicht sortiert')]
-            item.message = "#{cell_name(by, r)} (#{q(shown(cell(sheet, cell_name(by, r))))}) steht nach #{q(shown(cell(sheet, cell_name(by, rows[bad[1]]))))}; " \
-                "nach Spalte #{spec['by']} #{desc ? 'absteigend' : 'aufsteigend'} sortiert käme es davor."
+            item.problem = "Zeile #{r} nicht in der Reihenfolge"
+            item.message = if second && values[bad[1]] == values[bad[1] + 1]
+                "#{cell_name(second, r)} (#{q(shown(cell(sheet, cell_name(second, r))))}) steht nach #{q(shown(cell(sheet, cell_name(second, rows[bad[1]]))))}; " \
+                    "bei gleichem Wert in Spalte #{spec['by']} kommt es nach Spalte #{spec['then']} davor. Sortier mit einem zweiten Schlüssel."
+            else
+                "#{cell_name(by, r)} (#{q(shown(cell(sheet, cell_name(by, r))))}) steht nach #{q(shown(cell(sheet, cell_name(by, rows[bad[1]]))))}; " \
+                    "nach Spalte #{spec['by']} #{desc ? 'absteigend' : 'aufsteigend'} sortiert käme es davor."
+            end
         end
         item
     end
@@ -440,16 +458,78 @@ module DocumentCheck
         item
     end
 
-    # a conditional format on (part of) these cells
+    # a conditional format on (part of) these cells; positive: true, it
+    # colours exactly the cells above 0 (as far as its condition can be
+    # worked out here: a comparison with a number; a formula or a colour
+    # scale counts as right)
     def self.rule_conditional(rule, _body, _starter, _all = nil, model = nil)
         range = rule['conditional'].to_s
         want = cells_of(range)
-        covered = (sheet_of(model, rule)['conditional'] || []).flat_map { |f| f['ranges'].flat_map { |r| cells_of(r) rescue [] } }
+        sheet = sheet_of(model, rule)
+        formats = sheet['conditional'] || []
+        covered = formats.flat_map { |f| f['ranges'].flat_map { |r| cells_of(r) rescue [] } }
         ok = (want & covered).size >= [want.size / 2, 1].max
         item = Item.new(:rule => 'conditional', :label => "Bedingte Formatierung in #{range}", :ok => ok, :marks => [])
-        item.problem = "Keine bedingte Formatierung in #{range}" unless ok
-        item.message = "#{range} hat noch keine bedingte Formatierung. Mit ihr färbt das Programm eine Zelle selbst, je nachdem, was in ihr steht." unless ok
+        unless ok
+            item.problem = "Keine bedingte Formatierung in #{range}"
+            item.message = "#{range} hat noch keine bedingte Formatierung. Mit ihr färbt das Programm eine Zelle selbst, je nachdem, was in ihr steht."
+            return item
+        end
+        return item unless rule['positive']
+
+        wrong = want.filter_map do |n|
+            value = (cell(sheet, n) || {})['value']
+            next if value.nil?
+
+            coloured = coloured?(formats, n, value.to_f)
+            next if coloured.nil? || coloured == (value.to_f > 0.005)
+
+            [n, coloured]
+        end
+        return item if wrong.empty?
+
+        item.ok = false
+        item.marks = wrong.map { |n, c| cell_mark(model, rule['sheet'].to_i, n, c ? 'gefärbt, obwohl 0' : 'nicht gefärbt') }
+        n, c = wrong.first
+        shown_value = shown(cell(sheet, n))
+        item.problem = c ? "#{n} gefärbt, obwohl nichts offen ist" : "#{n} nicht gefärbt, obwohl etwas offen ist"
+        item.message = (c ? "Die bedingte Formatierung färbt auch #{n} (#{q(shown_value)}), wo nichts mehr offen ist." :
+                            "Die bedingte Formatierung färbt #{n} (#{q(shown_value)}) nicht, wo noch etwas offen ist.") +
+            ' Gefärbt werden sollen genau die Beträge über 0: die Bedingung »größer als 0«.'
         item
+    end
+
+    # Whether a cell's conditional formats colour it at this value: true,
+    # false, or nil when a condition cannot be worked out here
+    # (com.sun.star.sheet.ConditionFormatOperator: 0 =, 1 <, 2 >, 3 <=,
+    # 4 >=, 5 <>, 6 between, 7 not between; entry type 0 a condition)
+    def self.coloured?(formats, name, value)
+        entries = formats.select { |f| f['ranges'].any? { |r| (cells_of(r) rescue []).include?(name) } }.flat_map { |f| f['entries'] || [] }
+        return false if entries.empty?
+
+        results = entries.map do |e|
+            next nil unless e['type'].to_i.zero? && e.key?('operator')
+
+            a = e['formula1'].to_s.tr(',', '.')
+            b = e['formula2'].to_s.tr(',', '.')
+            next nil unless a.match?(/\A-?\d+(\.\d+)?\z/)
+
+            x = a.to_f
+            y = b.match?(/\A-?\d+(\.\d+)?\z/) ? b.to_f : x
+            case e['operator'].to_i
+            when 0 then value == x
+            when 1 then value < x
+            when 2 then value > x
+            when 3 then value <= x
+            when 4 then value >= x
+            when 5 then value != x
+            when 6 then value.between?([x, y].min, [x, y].max)
+            when 7 then !value.between?([x, y].min, [x, y].max)
+            end
+        end
+        return nil if results.include?(nil)
+
+        results.any?
     end
 
     # a chart of this kind, with a title (and axis titles), showing this range

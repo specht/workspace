@@ -2033,8 +2033,10 @@ check:
     - { text_numbers: 'B4:D9' }        # keine Zahl als Text getippt (»12,50 €«, »EUR 12,50«)
     - { bold_cells: 'A3:D3' }
     - { sorted: { range: 'A4:D30', by: B, order: desc } }   # sortiert, und noch dieselben Zeilen wie in der Vorlage
+    - { sorted: { range: 'A4:E30', by: E, order: desc, then: B } }   # bei gleichem Wert in E nach B, aufsteigend
     - autofilter                       # ein Filter über der Tabelle
     - { conditional: 'E4:E30' }        # eine bedingte Formatierung dort
+    - { conditional: 'E4:E30', positive: true }   # und sie färbt genau die Zellen über 0 (Vergleich mit einer Zahl; eine Formel gilt als richtig)
     - { chart: { type: column, title: true, axis_titles: true, range: 'A3:B8' } }
     - no_errors                        # keine Formel zeigt #DIV/0!, #NAME? …
 ```
