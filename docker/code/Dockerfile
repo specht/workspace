@@ -8,7 +8,7 @@
 # consumes it, which avoids unnecessary BuildKit cache invalidation.
 # ====================================================================
 
-ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.140.0@sha256:c84b35f6238af058e3543e2e9c0532c4d3d3902ef11effea3ed90e4ec293d46d
+ARG CODE_SERVER_IMAGE=linuxserver/code-server:4.145.2@sha256:29f84131fa023c006fcfea9afbf0a5f9959c1a0532cf865d8dc8dae69e3c4a17
 # Pin the toolchain build environment independently of the code-server release.
 # Keep it compatible with the target code-server distribution (notably glibc).
 # Updating CODE_SERVER_IMAGE alone must not rebuild TeX/Emscripten.
@@ -48,14 +48,14 @@ ARG DOTNET_VERSION=10.0
 ARG POWERSHELL_VERSION=7.6.4
 # from the release's hashes.sha256
 ARG POWERSHELL_SHA256=e5688e0569568d48051c49d3e93504cde47af709cdaaabd9a8892bc676b3bdf3
-ARG RUBY_VERSION=3.4.10
+ARG RUBY_VERSION=3.4.12
 ARG RUBY_API_VERSION=3.4.0
 ARG NEO4J_BOLT_VERSION=0.5.1
 ARG MYSQL_CONNECTOR_PYTHON_VERSION=26.7.0
 ARG PYTEST_VERSION=9.1.1
 ARG NUMPY_VERSION=2.5.4
 ARG PILLOW_VERSION=13.0.0
-ARG RUBY_SHA256=6f32ad662baafc228d12030dbcd284f83b034dd4337b300dc84ac74d11a1eb68
+ARG RUBY_SHA256=db6c147940d7ad0b706823d42c8e6713c36dec70a1f83f635f1d3a7f0599ec90
 
 ARG HACKSCHULE_SIDEBAR_INIT_VERSION=0.2.0
 ARG HACKSCHULE_CHECKPOINTS_VERSION=0.6.1
