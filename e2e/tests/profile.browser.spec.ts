@@ -273,6 +273,21 @@ test('the teacher section points to the exams on the class page, which shows the
     name: 'Frischen Workspace öffnen',
   }).click();
   await expect.poll(() => demoStartRequests).toBe(1);
+  // a failed start gives the button back
+  await expect(testButton).toBeEnabled();
+  await expect(testButton.locator('.bi')).not.toHaveClass(/bi-spin/);
+
+  // a start that worked: spinning while the Workspace still boots (502)
+  await page.unroute('**/api/start_test_demo');
+  await page.route('**/api/start_test_demo', route => route.fulfill({
+    json: { success: true, status: 'started', server_tag: 'e2edemoboot' },
+  }));
+  await page.route('**/w/e2edemoboot/', route => route.fulfill({ status: 502, body: '' }));
+  await testButton.click();
+  await testDemoModal.getByRole('button', { name: 'Frischen Workspace öffnen' }).click();
+  await page.waitForResponse('**/w/e2edemoboot/');
+  await expect(testButton.locator('.bi')).toHaveClass(/bi-spin/);
+  await expect(testButton).toBeDisabled();
 });
 test('showing a tool in the menu does not reload the profile', async ({
   page,

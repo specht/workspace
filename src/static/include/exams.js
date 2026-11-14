@@ -73,7 +73,7 @@ function refresh_test_archives() {
             // Two buttons side by side, not a btn-group: its overlapping
             // borders look doubled at some zoom levels.
             const preview = $(`<div class='d-flex gap-1' role='group' aria-label='Vorschau'>`);
-            const bu_demo = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-box-arrow-up-right'></i>Workspace</button>`).appendTo(preview);
+            const bu_demo = $(`<button type='button' class='btn btn-sm btn-outline-secondary bu-exam-demo'><i class='bi bi-box-arrow-up-right'></i>Workspace</button>`).appendTo(preview);
             const bu_demo_pdf = $(`<button type='button' class='btn btn-sm btn-outline-secondary'><i class='bi bi-printer'></i>Druckansicht</button>`).appendTo(preview);
             $('<td>').append(preview).appendTo(row);
             bu_demo.on('click', function() {
@@ -85,12 +85,15 @@ function refresh_test_archives() {
                     "<i class='bi bi-x-lg'></i>Abbrechen", 'btn-outline-secondary', function() {
                         bu_demo.prop('disabled', true);
                         bu_demo.find('.bi').addClass('bi-spin');
+                        // spinning until the Workspace answers: check_server_online
+                        // stops it (.bu-exam-demo) when it opens the tab
                         api_call('/api/start_test_demo', { tag: entry.tag }, function(data2) {
-                            bu_demo.prop('disabled', false);
-                            bu_demo.find('.bi').removeClass('bi-spin');
                             if (data2.success && data2.status !== 'failed') {
                                 check_server_tag_update(data2.server_tag);
                                 check_server_online(data2.server_tag);
+                            } else {
+                                bu_demo.prop('disabled', false);
+                                bu_demo.find('.bi').removeClass('bi-spin');
                             }
                         });
                     });
