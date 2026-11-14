@@ -24,6 +24,7 @@ import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
+from docx_german import german  # noqa: E402
 sys.path.insert(0, os.path.join(HERE, '..', 'pictures-in-text'))
 from page_picture import page_picture as draw_page  # noqa: E402
 
@@ -260,6 +261,7 @@ def folder(path, title_page=False, total=False, no_parts=False):
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.shared import Cm, Pt
     doc = Document()
+    german(doc)
     doc.core_properties.title = FOLDER_TITLE
     section = doc.sections[0]
     section.page_height, section.page_width = Cm(29.7), Cm(21.0)

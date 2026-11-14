@@ -29,6 +29,7 @@ from docx.shared import Pt, Cm, RGBColor
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
 from page_picture import page_picture as draw_page  # noqa: E402
+from docx_german import german  # noqa: E402
 STATIC = os.path.join(HERE, '..', '..', 'static', 'pages-and-contents')
 STARTER = '07 Reisebericht.docx'
 sys.path.insert(0, os.path.join(HERE, '..', '..', 'office'))
@@ -77,6 +78,7 @@ PAGE_BOTTOM = 29.7 - 2.0
 
 def base():
     doc = Document()
+    german(doc)
     section = doc.sections[0]
     section.page_width, section.page_height = Cm(21), Cm(29.7)
     section.left_margin = section.right_margin = Cm(2.5)
