@@ -193,7 +193,7 @@ test('profile remains usable at a narrow viewport', async ({
   });
 });
 
-test('teacher profile shows the permission-protected teacher section', async ({
+test('the teacher section points to the exams on the class page, which shows them', async ({
   page,
 }, testInfo) => {
   await loginAsE2eUser(page, E2E_TEACHER_EMAIL, testInfo);
@@ -232,8 +232,17 @@ test('teacher profile shows the permission-protected teacher section', async ({
       exact: true,
     }),
   ).toBeVisible();
+  // the exams moved to the class page; the profile points there
+  await expect(page.locator('#profile-for-teachers a[href="/klasse?tab=pruefungen"]')).toBeVisible();
+  await expect(page.locator('#bu_upload_test_archive')).toHaveCount(0);
+  await expect(
+    page.locator('.autotoc-secondary a[href="#for-teachers"]'),
+  ).toHaveCount(1);
 
+  await page.goto('/klasse?tab=pruefungen');
   await expect(page.locator('#bu_upload_test_archive')).toBeVisible();
+  // uploaded before exams belonged to a class: offered to this one
+  await expect(page.locator('.exam-assign')).toBeVisible();
   await expect(
     page.getByRole('columnheader', { name: 'Vorschau', exact: true }),
   ).toBeVisible();
@@ -264,10 +273,6 @@ test('teacher profile shows the permission-protected teacher section', async ({
     name: 'Frischen Workspace öffnen',
   }).click();
   await expect.poll(() => demoStartRequests).toBe(1);
-
-  await expect(
-    page.locator('.autotoc-secondary a[href="#for-teachers"]'),
-  ).toHaveCount(1);
 });
 test('showing a tool in the menu does not reload the profile', async ({
   page,

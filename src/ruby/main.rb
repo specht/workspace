@@ -2640,6 +2640,7 @@ class Main < Sinatra::Base
         ['ueberblick', 'Überblick', 'bi-bar-chart-steps'],
         ['lernende', 'Lernende', 'bi-people'],
         ['startseite', 'Startseite', 'bi-pin-angle'],
+        ['pruefungen', 'Leistungsüberprüfungen', 'bi-clipboard-check'],
         ['einstellungen', 'Einstellungen', 'bi-sliders'],
     ].freeze
 
@@ -2723,6 +2724,7 @@ class Main < Sinatra::Base
         io << panel.('ueberblick', class_overview_html(group))
         io << panel.('lernende', class_people_html(group))
         io << panel.('startseite', class_pins_html(group))
+        io << panel.('pruefungen', class_exams_html(group))
         io << panel.('einstellungen', class_settings_html(group))
         io
     end

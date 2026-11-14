@@ -1,11 +1,91 @@
 require_relative 'zip_stream'
-# Leistungsüberprüfungen (exams): a teacher uploads a Workspace package,
-# assigns students, starts and stops the exam and its demo, and gets the
-# results as a PDF; docs/test-workspace-packages.md. Moved out of main.rb,
-# which loads it.
+# Leistungsüberprüfungen (exams), on the class page (tab »Leistungs-
+# überprüfungen«, class_exams_html, exams.js): a teacher uploads a Workspace
+# package for a class, and everyone in it takes part (one by one changed),
+# starts and stops the exam and its demo, and gets the results as a PDF;
+# docs/test-workspace-packages.md. Moved out of main.rb, which loads it.
 class Main < Sinatra::Base
+    # How to make a package, under the upload (folded)
+    EXAM_PACKAGE_HELP = <<~'END_OF_HTML'.freeze
+                                <details class="mb-3">
+                                    <summary>Workspace-Paket erstellen</summary>
+                                    <p class="mt-2">
+                                        Der Inhalt des Archivs wird direkt nach <code>/workspace</code> entpackt. Standardmäßig wird daraus ein neues
+                                        lokales Git-Repository mit dem Commit <code>Ausgangszustand</code>. Für Git-Aufgaben kann ein vorhandenes
+                                        Repository stattdessen vollständig erhalten oder Git ganz dem Prüfling überlassen werden.
+                                    </p>
+                                    <p>
+                                        Öffne ein Terminal <em>im Aufgabenordner</em> und packe den gesamten Inhalt
+                                        einschließlich versteckter Dateien und Verzeichnisse in das gleichnamige Archiv
+                                        im Elternverzeichnis:
+                                    </p>
+                                    <pre>tar -czvf "../$(basename "$PWD").tar.gz" .</pre>
+                                    <p>
+                                        Auch <code>.git</code> wird mitgepackt. Ist es vorhanden, wähle
+                                        <code>git.mode: preserve</code>; bei <code>fresh</code> und <code>none</code>
+                                        ist ein mitgeliefertes <code>.git</code> nicht zulässig.
+                                        Keine privaten Schlüssel, Zugangsdaten oder Cache-Ordner mitpacken.
+                                    </p>
+                                    <p>
+                                        Optional steuert <code>.workspace/config.yaml</code> die Prüfungsfarbe, die Druckausgabe und zusätzliche
+                                        VS-Code-Einstellungen:
+                                    </p>
+                                    <pre>workspace_package: 1
+
+        exam:
+          color: blue
+
+        git:
+          mode: fresh
+
+        extensions:
+          - Dart-Code.dart-code
+
+        print:
+          exclude:
+            - "tests/**"
+            - "**/test_runner.*"
+
+        vscode_config: {}</pre>
+                                    <p>
+                                        <code>git.mode</code> ist standardmäßig <code>fresh</code>. Mit <code>preserve</code> bleibt ein mitgeliefertes
+                                        <code>.git</code>-Verzeichnis samt Historie, Branches und Index erhalten; <code>none</code> nimmt überhaupt keine
+                                        Git-Einrichtung vor. Name und E-Mail-Adresse werden bei <code>fresh</code> und <code>preserve</code> repository-lokal gesetzt.
+                                        Über <code>extensions</code> deklarierte Erweiterungen werden beim Upload geprüft und heruntergeladen;
+                                        in Prüfungs-Workspaces werden sie ohne Netzwerkzugriff installiert. Optional: <code>id</code> und <code>version</code> angeben.
+                                    </p>
+                                    <p>
+                                        <code>exam.color</code> wählt das vollständige VS-Code-Farbschema <code>Tomorrow Night Blue</code>
+                                        oder <code>Red</code>, auch für Editor und Willkommensseite. Ohne <code>print.include</code> werden alle
+                                        UTF-8-Textdateien rekursiv berücksichtigt; mit <code>print.exclude</code> lassen sich Hilfsdateien
+                                        wie Test-Runner auslassen. Versteckte Verzeichnisse wie <code>.cache</code> werden auf jeder Ebene
+                                        automatisch von der Druckausgabe ausgeschlossen.
+                                    </p>
+                                    <p class="mb-0">
+                                        Wichtig: Packe den <em>Inhalt</em> des Arbeitsverzeichnisses einschließlich <code>.workspace</code>, nicht
+                                        ein zusätzliches übergeordnetes Verzeichnis. Ein vorhandenes <code>.git</code> ist nur bei
+                                        <code>git.mode: preserve</code> zulässig.
+                                    </p>
+                                </details>
+    END_OF_HTML
+
+    # The students of a class who take its exams by themselves: its members
+    # without teachers and oneself; test accounts only in a test group (a
+    # teacher tries an exam with one there)
+    def exam_students(group)
+        test_group = @@test_groups.include?(group)
+        (@@group_members[group] || []).reject do |email|
+            email == @session_user[:email] || @@teachers.key?(email) || (!test_group && @@test_accounts.key?(email))
+        end
+    end
+
     post '/api/upload_test_archive' do
         assert(teacher_logged_in?)
+        # uploaded on the class page: the exam belongs to that class, and
+        # everyone in it takes part (one by one changed in the dialog)
+        group = params['group'].to_s
+        group = nil if group.empty?
+        halt 403 if group && !class_groups.include?(group)
         entry = params['file']
         filename = entry['filename']
         blob = entry['tempfile'].read
@@ -37,7 +117,19 @@ class Main < Sinatra::Base
             SET t.ts = $ts
             RETURN f.sha1;
         END_OF_STRING
-        respond(:success => true, :yay => 'sure')
+        students = group ? exam_students(group) : []
+        if group
+            neo4j_query(<<~END_OF_STRING, {:tag => tag, :group => group, :emails => students})
+                MATCH (t:Test {tag: $tag})
+                SET t.group = $group
+                WITH t
+                UNWIND $emails AS email
+                MERGE (s:User {email: email})
+                MERGE (s)-[:TAKES]->(t);
+            END_OF_STRING
+            Main.refresh_nginx_config() unless students.empty?
+        end
+        respond(:success => true, :yay => 'sure', :count => students.size)
     rescue TestWorkspaceExtensions::Error, TestWorkspacePackage::ConfigError => e
         STDERR.puts "Exam upload rejected: #{e.class}: #{e.message}"
         status 422
@@ -64,6 +156,7 @@ class Main < Sinatra::Base
                 size: bytes_to_str(row['f'][:size]),
                 filename: row['t'][:filename],
                 ts: row['t'][:ts],
+                group: row['t'][:group],
                 count: row['COUNT(u2)'],
             }
         end
@@ -107,6 +200,48 @@ class Main < Sinatra::Base
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
     end
+    # An exam uploaded before exams belonged to a class (in the profile)
+    # given to one; who takes part stays as it is
+    post '/api/test_assign_group' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag, :group])
+        require_test_owner!(data[:tag])
+        halt 403 unless class_groups.include?(data[:group])
+        neo4j_query('MATCH (t:Test {tag: $tag}) SET t.group = $group;', :tag => data[:tag], :group => data[:group])
+        respond(:ok => true)
+    end
+
+    # The tab »Leistungsüberprüfungen« of the class page (exams.js): the
+    # upload, how to make a package, the table, the dialog of who takes part
+    def class_exams_html(group)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        me = @session_user[:email]
+        school = (school_of_teacher(me) || {})[:name] ||
+                 (admin_logged_in? ? (neo4j_query('MATCH (s:School) WHERE s.home = true RETURN s.name AS name;').first || {})['name'] : nil)
+        data = {
+            :group => group, :order => my_user_group_order, :groups => my_user_groups,
+            :names => my_invitations, :schools => school_names_of_groups.slice(*my_user_group_order), :mySchool => school,
+        }
+        "<div class='class-exams'>" \
+            "<div class='class-exams-head'><p class='mb-0'>Lädst du hier ein Paket hoch, nehmen alle aus der Klasse #{h.(group)} an der Leistungsüberprüfung teil. " \
+            'Einzelne nimmst du unter <em>Teilnehmende</em> heraus oder fügst sie aus anderen Gruppen hinzu.</p>' \
+            "<button id='bu_upload_test_archive' class='btn btn-primary'><i class='bi bi-upload'></i>Leistungsüberprüfung hochladen</button></div>" \
+            "<div id='test_archive_upload_status' class='small mb-2' role='status' aria-live='polite'></div>" \
+            "#{EXAM_PACKAGE_HELP}" \
+            "<div class='table-responsive mt-3'><table class='table table-sm align-middle exam-table' id='table_my_test_archives'><thead><tr>" \
+            '<th>Leistungsüberprüfung</th><th>Teilnehmende</th><th>Status</th><th>Vorschau</th><th>Ergebnisse</th>' \
+            "<th><span class='visually-hidden'>Löschen</span></th></tr></thead><tbody></tbody></table></div>" \
+            "<div class='modal' id='test_modal' tabindex='-1' role='dialog' aria-labelledby='test_modal_title' aria-hidden='true' style='z-index: 200000;'>" \
+            "<div class='modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered' role='document'><div class='modal-content'>" \
+            "<div class='modal-header'><h5 class='modal-title' id='test_modal_title'>Teilnehmende</h5></div>" \
+            "<div class='modal-body'><div id='test_modal_users_here'></div></div>" \
+            "<div class='modal-footer'><span class='small text-body-secondary me-auto'>Jede Änderung wird sofort gespeichert.</span>" \
+            "<button type='button' class='btn btn-primary' data-bs-dismiss='modal'><i class='bi bi-check-lg'></i>Fertig</button></div>" \
+            '</div></div></div>' \
+            "<script>window.EXAMS = #{JSON.generate(data).gsub('</', '<\/')};</script>" \
+            "<script src='/include/exams.js?#{CACHE_BUSTER}#{DEVELOPMENT ? Time.now.to_i : nil}'></script></div>"
+    end
+
     post '/api/get_assigned_users_for_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])

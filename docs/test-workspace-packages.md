@@ -241,9 +241,21 @@ Workspace-eigene Dateien werden bei `fresh` und `preserve` über
 `.git/info/exclude` ausgeblendet, ohne die vom Lehrer bereitgestellte
 `.gitignore` zu verändern.
 
+## Klasse und Teilnehmende
+
+Hochgeladen wird ein Paket auf der Klassenseite, im Reiter
+»Leistungsüberprüfungen« (`class_exams_html`, `exams.js`). Es gehört dann zu
+dieser Klasse (`Test.group`), und alle aus der Klasse nehmen teil, ohne
+Lehrkräfte und ohne Testkonten (außer in einer Testgruppe; `exam_students`).
+Im Dialog »Teilnehmende« steht die Klasse oben und offen; dort nimmt man
+Einzelne heraus, und aus den anderen Gruppen darunter fügt man Einzelne hinzu.
+Pakete, die früher im Profil hochgeladen wurden, haben noch keine Klasse: Sie
+stehen in jeder Klasse der Lehrkraft mit »dieser zuordnen«
+(`/api/test_assign_group`), wer teilnimmt, bleibt dabei.
+
 ## Vor dem Einsatz prüfen
 
-Im Profil der Lehrkraft gibt es für jedes hochgeladene Paket eine
+Auf der Klassenseite, im Reiter »Leistungsüberprüfungen« der Klasse, gibt es für jedes hochgeladene Paket eine
 Workspace-Vorschau und eine Druckansicht der Vorschau. Es empfiehlt sich,
 beides vor der Leistungsüberprüfung einmal zu öffnen.
 

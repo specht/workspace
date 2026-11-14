@@ -75,7 +75,7 @@ test('the results of an exam download as one ZIP, a folder per person', async ({
     expect(written.exitCode, written.stderr).toBe(0);
 
     // the dialog links the download
-    await teacher.goto('/profil');
+    await teacher.goto('/klasse?tab=pruefungen');
     const row = teacher.locator('tr', { hasText: name });
     await row.getByRole('button', { name: 'Ergebnisse', exact: true }).click();
     await expect(teacher.locator('#test_results_zip')).toHaveAttribute('href', `/api/zip_for_test/${tag}`);

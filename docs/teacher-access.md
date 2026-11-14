@@ -680,8 +680,8 @@ mit `*` oder als Admin, allein in einer eigenen **Testgruppe (Name)**. Nur
 sie sieht diese Gruppe; sie steht in der Gruppenauswahl der Klassenseite
 zuletzt, und auch Admins sehen die Testgruppen der anderen nicht. Damit
 probiert sie aus, was Lernende sehen: Aufgaben, Abgaben, die Galerie,
-Leistungsüberprüfungen; im Profil kann sie das Testkonto einer eigenen
-Leistungsüberprüfung zuweisen. »Nachahmen« braucht dort keinen Satz.
+Leistungsüberprüfungen; eine Leistungsüberprüfung, die sie in der Testgruppe
+hochlädt, schreibt das Testkonto von selbst als Teilnehmer ein. »Nachahmen« braucht dort keinen Satz.
 
 **Testkonto zurücksetzen** (Klassenseite, Reiter »Lernende« der Testgruppe)
 leert den Workspace des Testkontos und seine Workspaces in

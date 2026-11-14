@@ -18737,3 +18737,84 @@ form.phone-manage-dirty {
 .authenticator-on i {
     margin-right: 0.35em;
 }
+
+/* Leistungsüberprüfungen on the class page (exams.js): the selection of who
+   takes an exam, and the table */
+.exam-people-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: -1rem;
+    z-index: 1;
+    margin: -1rem -1rem 0.75rem;
+    padding: 1rem;
+    background: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+.exam-people-count {
+    white-space: nowrap;
+    font-weight: 600;
+}
+.exam-people-group {
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+    padding: 0.4rem 0;
+}
+.exam-people-group > summary {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+.exam-people-group > summary::-webkit-details-marker {
+    display: none;
+}
+.exam-people-group > summary::before {
+    content: '\F285';   /* bi-chevron-right */
+    font-family: 'bootstrap-icons';
+    font-weight: normal;
+    font-size: 0.8em;
+    transition: transform 0.15s;
+}
+.exam-people-group[open] > summary::before {
+    transform: rotate(90deg);
+}
+.exam-people-group-actions {
+    margin-left: auto;
+    font-weight: normal;
+}
+.exam-people-group-actions .btn {
+    padding: 0 0.4rem;
+}
+.exam-people-school {
+    margin: 1rem 0 0.2rem;
+    color: var(--bs-secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.78rem;
+}
+.exam-people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 0.2rem 1rem;
+    padding: 0.5rem 0 0.4rem 1.2rem;
+}
+.exam-people-grid .form-check-label {
+    overflow-wrap: anywhere;
+}
+.exam-table td:first-child {
+    min-width: 12rem;
+}
+.class-exams-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-bottom: 0.75rem;
+}
+.class-exams-head p {
+    flex: 1 1 28rem;
+    max-width: 46rem;
+}
