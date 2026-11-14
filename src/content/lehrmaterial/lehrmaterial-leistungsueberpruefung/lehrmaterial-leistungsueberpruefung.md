@@ -28,7 +28,7 @@ Beendest du die Leistungsüberprüfung, kommen alle beim nächsten Öffnen wiede
 
 ## Den Ordner vorbereiten
 
-Leg einen Ordner an, in deinem Workspace oder auf deinem Rechner, etwa `loops-exam`, mit allem, was die Klasse zu Beginn haben soll:
+Leg auf deinem Rechner einen Ordner an, etwa `loops-exam`, mit allem, was die Klasse zu Beginn haben soll:
 
 ```text
 loops-exam/
@@ -44,7 +44,7 @@ Die Aufgabe steht am besten in einer Datei wie `AUFGABE.md`; sag der Klasse, das
 
 ## Anlegen
 
-Öffne **Klassen**, wähl oben die Klasse und dann den Reiter **Leistungsüberprüfungen**. Klick auf **Neue Leistungsüberprüfung**. Oben wählst du einen Ordner deines Workspace, oder du ziehst einen Ordner, eine ZIP- oder eine .tar.gz-Datei von deinem Rechner in das Feld darunter (oder wählst sie mit **Ordner wählen** und **Archiv wählen**).
+Öffne **Klassen**, wähl oben die Klasse und dann den Reiter **Leistungsüberprüfungen**. Zieh den Ordner von deinem Rechner auf den Reiter, oder klick auf **Neue Leistungsüberprüfung** und zieh ihn in das Feld oben (oder wähl ihn mit **Ordner wählen**). Eine ZIP- oder .tar.gz-Datei mit dem Ordner geht ebenso, und liegt der Ordner in deinem Workspace, wählst du ihn darunter bei **Oder aus deinem Workspace**.
 
 <img class='full full-shadow shot' src='aus-dem-workspace.webp' alt='Der Dialog »Neue Leistungsüberprüfung«: oben der Ordner und der Name, darunter die Dateien des Ordners mit je einem Haken für »Im Paket« und »Drucken«; der Ordner __pycache__ ist als Build-Ordner nicht angekreuzt, die Tests werden nicht gedruckt.'>
 

@@ -206,7 +206,8 @@ class Main < Sinatra::Base
                 'Kennt deine Klasse den Ablauf noch nicht, hilft vielleicht ein kurzer Probelauf mit einer kleinen Leistungsüberprüfung von dir, bevor es zählt.'
         end
         "<div class='class-exams'>" \
-            "<div class='class-exams-head'><p class='mb-0'>Eine Leistungsüberprüfung legst du aus einem Ordner an, aus deinem Workspace oder von deinem Rechner, oder du lädst ein fertiges Paket hoch. " \
+            "<div class='class-exams-head'><p class='mb-0'>Für eine Leistungsüberprüfung ziehst du ihren Ordner von deinem Rechner hierher, mit der Aufgabe und allem, " \
+            "was die Klasse zu Beginn bekommt; ein Ordner aus deinem Workspace oder ein fertiges Paket geht auch. " \
             "Alle aus der Klasse #{h.(group)} nehmen teil, sobald du sie startest; Einzelne nimmst du unter <em>Teilnehmende</em> heraus oder fügst sie aus anderen Gruppen hinzu. " \
             "Wie das geht: <a href='/lehrmaterial-leistungsueberpruefung'>Leistungsüberprüfungen vorbereiten</a>.</p>" \
             "<div class='class-exams-actions'><button id='bu_exam_builder' class='btn btn-primary'><i class='bi bi-plus-lg'></i>Neue Leistungsüberprüfung</button>" \

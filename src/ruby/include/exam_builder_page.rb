@@ -29,16 +29,15 @@ class Main < Sinatra::Base
             "<div class='modal-header'><h5 class='modal-title' id='exam_builder_title'>Neue Leistungsüberprüfung</h5>" \
             "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Schließen'></button></div>" \
             "<div class='modal-body exam-builder'>" \
-            "<div class='eb-row'><label class='eb-field'><span>Ordner</span><select id='eb_folder' class='form-select'></select></label>" \
-            "<label class='eb-field'><span>Name der Leistungsüberprüfung</span><input type='text' id='eb_name' class='form-control' maxlength='120'></label></div>" \
-            "<div class='eb-drop' id='eb_drop'><i class='bi bi-box-arrow-in-down' aria-hidden='true'></i>" \
-            "<div><span class='eb-drop-text'>Oder von deinem Rechner: Zieh einen Ordner, eine ZIP- oder eine .tar.gz-Datei hierher.</span> " \
-            "<button type='button' id='bu_eb_pick_folder' class='btn btn-link btn-sm p-0 align-baseline'>Ordner wählen</button> oder " \
-            "<button type='button' id='bu_eb_pick_archive' class='btn btn-link btn-sm p-0 align-baseline'>Archiv wählen</button></div>" \
+            "<div class='eb-drop' id='eb_drop'><i class='bi bi-box-arrow-in-down eb-drop-icon' aria-hidden='true'></i>" \
+            "<div class='eb-drop-main'><strong id='eb_drop_title'>Zieh den Ordner der Leistungsüberprüfung hierher</strong>" \
+            "<span class='eb-drop-text'>von deinem Rechner, oder eine ZIP- oder .tar.gz-Datei mit ihm</span></div>" \
+            "<div class='eb-drop-buttons'><button type='button' id='bu_eb_pick_folder' class='btn btn-sm btn-outline-primary'><i class='bi bi-folder2-open'></i>Ordner wählen</button>" \
+            "<button type='button' id='bu_eb_pick_archive' class='btn btn-sm btn-outline-secondary'><i class='bi bi-file-earmark-zip'></i>Archiv wählen</button></div>" \
             "<input type='file' id='eb_pick_folder' webkitdirectory multiple hidden>" \
             "<input type='file' id='eb_pick_archive' accept='.zip,.tar.gz,.tgz,.tar.bz2,.tar' hidden></div>" \
-            "<p id='eb_empty' class='eb-empty' hidden>In deinem Workspace gibt es noch keinen Ordner. Zieh einen Ordner von deinem Rechner hierher, " \
-            'oder leg im Workspace einen an, mit allem, was die Klasse zu Beginn haben soll: der Aufgabe, Vorlagen, Daten.</p>' \
+            "<div class='eb-row'><label class='eb-field' id='eb_folder_field'><span>Oder aus deinem Workspace</span><select id='eb_folder' class='form-select'></select></label>" \
+            "<label class='eb-field'><span>Name der Leistungsüberprüfung</span><input type='text' id='eb_name' class='form-control' maxlength='120'></label></div>" \
             "<div id='eb_shared' class='alert alert-warning eb-shared' role='alert' hidden><i class='bi bi-exclamation-triangle' aria-hidden='true'></i>" \
                 '<div><strong>Dein Workspace ist geteilt.</strong> Wer den Link hat, kann alles darin lesen, auch diesen Ordner mit der Leistungsüberprüfung. ' \
                 "<button type='button' id='bu_eb_unshare' class='btn btn-sm btn-warning ms-1'><i class='bi bi-x-lg'></i>Teilen beenden</button></div></div>" \
@@ -138,7 +137,8 @@ class Main < Sinatra::Base
         respond(:entries => tree[:entries], :truncated => tree[:truncated],
                 # a shared Workspace opens to anyone with the link, this
                 # folder too: the dialog says so and offers to end it
-                :shared => !@session_user[:share_tag].nil?,
+                # (a folder from the computer is not in the Workspace)
+                :shared => !data[:draft] && !@session_user[:share_tag].nil?,
                 # an extension for the language of the files (Dart)
                 :offers => ExamBuilder.offers(tree[:entries].reject { |e| e[:d] }.map { |e| e[:p] }, existing),
                 :config => {

@@ -447,7 +447,6 @@ let eb_source = null;
 async function eb_load(source) {
     eb_source = source;
     $('#eb_name').val(source.folder || source.name || '');
-    $('#eb_empty').prop('hidden', true);
     $('#eb_body, #bu_eb_build').prop('hidden', false);
     $('#eb_status').removeClass('text-danger text-success').text('');
     $('#eb_tree').html(`<div class='p-2 text-body-secondary'><i class='bi bi-arrow-repeat bi-spin'></i> Ordner lesen …</div>`);
@@ -522,8 +521,8 @@ async function eb_drop(files) {
             source = { draft, name };
         }
         status.text('');
-        $('#eb_folder option.eb-draft').remove();
-        $('#eb_folder').prop('disabled', false).append($("<option class='eb-draft'>").val('').text(`Von deinem Rechner: ${source.name || 'Dateien'}`)).val('');
+        $('#eb_folder').val('');
+        $('#eb_drop_title').text(`Von deinem Rechner: ${source.name || 'Dateien'}. Ein anderer Ordner? Zieh ihn hierher`);
         await eb_load(source);
     } catch (error) {
         status.addClass('text-danger').text(error.message);
@@ -540,12 +539,15 @@ async function open_exam_builder() {
     } catch (error) {
         $('#eb_status').addClass('text-danger').text(error.message);
     }
+    // the folder from the computer comes first; a folder of the Workspace
+    // only when chosen
     eb_source = null;
-    $('#eb_empty').prop('hidden', folders.length > 0);
-    $('#eb_body, #bu_eb_build').prop('hidden', folders.length === 0);
-    $('#eb_folder').empty().prop('disabled', folders.length === 0);
+    $('#eb_body, #bu_eb_build').prop('hidden', true);
+    $('#eb_name').val('');
+    $('#eb_drop_title').text('Zieh den Ordner der Leistungsüberprüfung hierher');
+    $('#eb_folder_field').prop('hidden', folders.length === 0);
+    $('#eb_folder').empty().append($('<option>').val('').text('Ordner wählen …'));
     for (const f of folders) $('#eb_folder').append($('<option>').val(f).text(f));
-    if (folders.length) eb_load_folder();
 }
 
 async function build_exam() {
@@ -591,6 +593,21 @@ $(function () {
         let files = [];
         for (const entry of items) files = files.concat(await eb_entry_files(entry, ''));
         if (files.length) eb_drop(files);
+    });
+    // a folder dropped anywhere on the tab opens the dialog with it
+    const tab = $('.class-exams');
+    tab.on('dragover', (e) => { if (!$('#exam_builder_modal').hasClass('show')) { e.preventDefault(); tab.addClass('eb-tab-over'); } });
+    tab.on('dragleave', (e) => { if (!tab[0].contains(e.relatedTarget)) tab.removeClass('eb-tab-over'); });
+    tab.on('drop', async (e) => {
+        if ($('#exam_builder_modal').hasClass('show')) return;
+        e.preventDefault();
+        tab.removeClass('eb-tab-over');
+        const items = Array.from(e.originalEvent.dataTransfer.items || []).map((i) => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+        let files = [];
+        for (const entry of items) files = files.concat(await eb_entry_files(entry, ''));
+        if (!files.length) return;
+        await open_exam_builder();
+        eb_drop(files);
     });
     $('#bu_eb_pick_folder').on('click', () => $('#eb_pick_folder').val('').trigger('click'));
     $('#bu_eb_pick_archive').on('click', () => $('#eb_pick_archive').val('').trigger('click'));

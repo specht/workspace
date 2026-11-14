@@ -36,6 +36,8 @@ test('an exam from a folder of the Workspace: what is ticked, the printout, the 
     await page.request.post('/api/share_server', { data: {} });
     await page.goto('/klasse?tab=pruefungen');
     await page.locator('#bu_exam_builder').click();
+    // the warning once a folder of the Workspace is chosen
+    await page.locator('#eb_folder').selectOption(FOLDER);
     await expect(page.locator('#eb_shared')).toBeVisible();
     await page.locator('#bu_eb_unshare').click();
     await expect(page.locator('#eb_shared')).toBeHidden();
@@ -119,7 +121,7 @@ test('an exam from a folder or a ZIP of the computer, with the Dart extension', 
       if (how === 'folder') await page.locator('#eb_pick_folder').setInputFiles(folder);
       else await page.locator('#eb_pick_archive').setInputFiles(archive);
       await expect(modal.locator('.eb-item[data-path="linked_list.dart"]')).toBeVisible({ timeout: 30_000 });
-      await expect(page.locator('#eb_folder option:checked')).toHaveText('Von deinem Rechner: workspace-180');
+      await expect(page.locator('#eb_drop_title')).toContainText('Von deinem Rechner: workspace-180');
       await expect(page.locator('#eb_name')).toHaveValue('workspace-180');
       // the dart extension offered and ticked; README left out of the printout
       await expect(page.locator('#eb_ext_set')).toBeVisible();
