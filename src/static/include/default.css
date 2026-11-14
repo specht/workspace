@@ -7022,6 +7022,7 @@ html[data-bs-theme="dark"] .usage-charts {
 .usage-page > .usage-bar {
     flex: none;
     width: 5px;
+    height: 5px;
 }
 .usage-level-1 { background: var(--usage-1); }
 .usage-level-2 { background: var(--usage-2); }
