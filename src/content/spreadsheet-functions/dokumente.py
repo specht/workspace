@@ -54,27 +54,33 @@ def stars(n, total, lo, hi, seed):
     return values
 
 
-def columns():
+def columns(parts=PARTS, seed=7):
     out = {}
-    for k, (col, (_, n, total, lo, hi, empty)) in enumerate(PARTS.items()):
-        given = iter(stars(n, total, lo, hi, 7 + k))
+    for k, (col, (_, n, total, lo, hi, empty)) in enumerate(parts.items()):
+        given = iter(stars(n, total, lo, hi, seed + k))
         out[col] = {r: (None if r in empty else next(given)) for r in range(FIRST, LAST + 1)}
     return out
 
 
-def table(calc, path, summary=None):
+def table(calc, path, summary=None, parts=PARTS, seed=7, title='Umfrage nach der Klassenfahrt (1 bis 5 Sterne)',
+          labels=SUMMARY, more=None, cells=None, plain=''):
     """summary: None (labels only), 'functions', 'typed' (means worked out
-    with the empty cells as 0) or 'short' (the ranges end at row 25)"""
+    with the empty cells as 0) or 'short' (the ranges end at row 25);
+    labels: the summary's rows; more: formulas below the summary, one
+    pattern per row ({c} the column); cells: a cell's own content; plain:
+    cells with a format without decimals"""
     doc = calc.new()
-    data = columns()
-    put(doc, 'A1', [['Umfrage nach der Klassenfahrt (1 bis 5 Sterne)'], [],
-                    ['Antwort'] + [PARTS[c][0] for c in PARTS]])
+    data = columns(parts, seed)
+    put(doc, 'A1', [[title], [], ['Antwort'] + [parts[c][0] for c in parts]])
     for r in range(FIRST, LAST + 1):
-        put(doc, f'A{r}', [[r - FIRST + 1] + [data[c][r] for c in PARTS]])
-    for i, label in enumerate(SUMMARY):
+        put(doc, f'A{r}', [[r - FIRST + 1] + [data[c][r] for c in parts]])
+    for i, label in enumerate(labels):
         put(doc, f'A{S0 + i}', [[label]])
+    for c in parts:
+        for i, f in enumerate(more or []):
+            put(doc, f'{c}{S0 + len(SUMMARY) + i}', [[f.format(c=c)]])
     if summary:
-        for c in PARTS:
+        for c in parts:
             for i, f in enumerate(FUNCS):
                 formula = f.format(c=c)
                 if summary == 'short':
@@ -84,9 +90,46 @@ def table(calc, path, summary=None):
                     formula = round(sum(given) / ANSWERS, 1)
                 put(doc, f'{c}{S0 + i}', [[formula]])
         fmt(doc, f'B{S0 + 1}:E{S0 + 1}', '0,0')
-    bold(doc, f'A1, A3:E3, A{S0}:A{S0 + len(SUMMARY) - 1}')
+    for name, value in (cells or {}).items():
+        put(doc, name, [[value]])
+    if plain:
+        fmt(doc, plain, '0')
+    if more:
+        fmt(doc, f'B{S0 + len(SUMMARY) + 1}:E{S0 + len(SUMMARY) + 1}', '0,0')
+    bold(doc, f'A1, A3:E3, A{S0}:A{S0 + len(labels) - 1}')
     widths(doc, [4.7, 3.0, 3.0, 3.2, 3.7])
     calc.save(doc, path)
+
+
+# »Noch eine Runde«: the survey after the sports day
+SPORTS = {
+    'B': ('Sprint', 25, 101, 2, 5, [9, 22]),
+    'C': ('Weitsprung', 26, 88, 1, 5, [17]),
+    'D': ('Staffel', 27, 121, 3, 5, []),
+    'E': ('Ballwurf', 23, 74, 1, 5, [6, 13, 24, 29]),
+}
+# »Fünf Fallen«: the survey after the hiking day; D7 a 0 where an answer
+# was left out, C33's mean ending at row 25, D35 MAX where MIN belongs,
+# B36 asking the wrong way round, E32 the count typed (a trap of the first
+# sheet)
+HIKE = {
+    'B': ('Tierpark', 27, 113, 2, 5, []),
+    'C': ('Picknick', 26, 107, 2, 5, [12]),
+    'D': ('Führung', 25, 71, 1, 4, [7, 21]),
+    'E': ('Wanderung', 24, 84, 1, 5, [10, 18, 27]),
+}
+HIKE_TRAPS = {'D7': 0, 'C33': '=AVERAGE(C4:C25)', 'D35': '=MAX(D4:D30)', 'B36': '=IF(B33<4;"ja";"nein")', 'E32': 24}
+MORE = ['=COUNTIF({c}4:{c}30;5)', '=ROUND({c}33;1)']
+MORE_LABELS = SUMMARY + ['Fünf Sterne', 'Mittelwert gerundet']
+
+
+def report(name, parts, seed):
+    data = columns(parts, seed)
+    for c, (title, *_rest) in parts.items():
+        given = [v for v in data[c].values() if v is not None]
+        print(name, c, title, 'n', len(given), 'mean', round(sum(given) / len(given), 4), 'min', min(given), 'max', max(given),
+              'fives', given.count(5), 'rounded', round(sum(given) / len(given) + 1e-9, 1),
+              'empty', [r for r, v in data[c].items() if v is None])
 
 
 if __name__ == '__main__':
@@ -104,6 +147,20 @@ if __name__ == '__main__':
         table(calc, os.path.join(stufen, 'umfrage.xlsx'), 'functions')
         table(calc, os.path.join(stufen, 'getippt.xlsx'), 'typed')
         table(calc, os.path.join(stufen, 'zu-kurz.xlsx'), 'short')
+        # Üben und knobeln
+        sports = dict(parts=SPORTS, seed=31, title='Umfrage nach dem Sportfest (1 bis 5 Sterne)')
+        table(calc, os.path.join(STATIC, '04 Sportfest.xlsx'), **sports)
+        table(calc, os.path.join(stufen, 'sportfest.xlsx'), 'functions', **sports)
+        table(calc, os.path.join(STATIC, '04 Sterne.xlsx'), 'functions', labels=MORE_LABELS)
+        table(calc, os.path.join(stufen, 'sterne.xlsx'), 'functions', labels=MORE_LABELS, more=MORE)
+        hike = dict(parts=HIKE, seed=53, title='Umfrage nach dem Wandertag (1 bis 5 Sterne)')
+        table(calc, os.path.join(STATIC, '04 Wandertag.xlsx'), 'functions', cells=HIKE_TRAPS, **hike)
+        table(calc, os.path.join(stufen, 'wandertag.xlsx'), 'functions', **hike)
+        # four traps fixed, the count still typed
+        table(calc, os.path.join(stufen, 'wandertag-vier.xlsx'), 'functions', cells={'E32': 24}, **hike)
         calc.picture(starter, os.path.join(HERE, 'bilder', 'umfrage.svg'))
         calc.picture(os.path.join(stufen, 'umfrage.xlsx'), os.path.join(HERE, 'bilder', 'umfrage-fertig.svg'))
-    print('written: static/spreadsheet-functions/04 Umfrage.xlsx, stufen/*.xlsx, bilder/*.svg')
+    report('main', PARTS, 7)
+    report('sports', SPORTS, 31)
+    report('hike', HIKE, 53)
+    print('written: static/spreadsheet-functions/04 *.xlsx, stufen/*.xlsx, bilder/*.svg')

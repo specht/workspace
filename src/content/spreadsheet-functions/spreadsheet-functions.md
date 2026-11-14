@@ -132,3 +132,42 @@ _task(umfrage)
 <strong>Ausprobieren:</strong> Trag in E15, wo bei der Jugendherberge eine Antwort fehlt, 5 Sterne ein. Achte auf E32, E33 und E36. Lösch die 5 danach wieder.
 </div>
 <!-- /after -->
+
+<!-- extra -->
+## Üben und knobeln
+
+Drei Tabellen für alle, die mehr wollen: eine zum Üben, eine mit zwei neuen
+Handgriffen und eine zum Suchen.
+
+### Noch eine Runde
+
+Nach dem Sportfest hat die 7b wieder gefragt: Wie hat dir der Sprint
+gefallen, der Weitsprung, die Staffel, der Ballwurf? Werte die Umfrage aus wie
+die nach der Fahrt, diesmal ohne oben nachzusehen.
+
+_task(runde)
+
+### Zwei Handgriffe
+
+**ZÄHLENWENN** zählt nur die Zellen eines Bereichs, die etwas Bestimmtes
+enthalten: `=ZÄHLENWENN(B4:B30;5)` zählt, wie oft fünf Sterne gegeben wurden.
+Ihre zwei Teile trennt ein Semikolon, wie bei WENN.
+
+**RUNDEN** rundet eine Zahl auf so viele Nachkommastellen, wie du sagst:
+`=RUNDEN(B33;1)` macht aus 4,4231 die Zahl 4,4. Anders als ein Zahlenformat
+ändert RUNDEN die Zahl selbst, und wer mit dem Ergebnis weiterrechnet,
+rechnet mit der gerundeten Zahl.
+
+In der Vorlage steht die Auswertung der Fahrt schon; darunter sind zwei
+Zeilen frei.
+
+_task(handgriffe)
+
+### Fünf Fallen
+
+Die Auswertung der Umfrage nach dem Wandertag sieht fertig aus. Fünf Stellen
+sind trotzdem falsch gebaut: vier von der Art wie auf diesem Blatt, eine vom
+ersten. Die Prüfung sagt dir nur, wie viele du gefunden hast, und jede Falle
+hat ihre eigenen Tipps.
+
+_task(fallen)

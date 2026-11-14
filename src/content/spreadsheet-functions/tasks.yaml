@@ -69,6 +69,10 @@ tasks:
 
   - id: umfrage
     title: Die Umfrage ausgewertet
+    # passed after many checks: another round; after one or two: the traps
+    next:
+      practice: runde
+      challenge: fallen
     prompt: |
       Prüfe deine Tabelle. Die Prüfung markiert auf deiner Seite jede Zelle,
       an der noch etwas fehlt. Speichere in LibreOffice oder Excel, bevor du
@@ -80,6 +84,7 @@ tasks:
         - { same_data: ['A1:E30'] }
         - { formulas: ['B32:E36'] }
         - { functions: { 'B32:E32': COUNT, 'B33:E33': AVERAGE, 'B34:E34': MAX, 'B35:E35': MIN, 'B36:E36': IF } }
+        - { ranges: { B32: 'B4:B30', C32: 'C4:C30', D32: 'D4:D30', E32: 'E4:E30', B33: 'B4:B30', C33: 'C4:C30', D33: 'D4:D30', E33: 'E4:E30', B34: 'B4:B30', C34: 'C4:C30', D34: 'D4:D30', E34: 'E4:E30', B35: 'B4:B30', C35: 'C4:C30', D35: 'D4:D30', E35: 'E4:E30' } }
         - { values: { B32: 26, C32: 27, D32: 24, E32: 25, B33: 4.4231, C33: 3.5926, D33: 2.5833, E33: 3.96, D34: 4, C35: 1, B36: ja, E36: nein } }
         - { number_format: { 'B33:E33': { decimals: 1 } } }
         - { recalc: { set: { E15: 5, B4: 1 }, expect: { E32: 26, E33: 4, E36: ja, B33: 4.3077, B35: 1 } } }
@@ -103,3 +108,113 @@ tasks:
         - "In B32 tippst du `=ANZAHL(B4:B30)`, darunter `=MITTELWERT(B4:B30)`, `=MAX(B4:B30)`, `=MIN(B4:B30)` und in B36 `=WENN(B33>=4;\"ja\";\"nein\")`."
         - "Markiere B32 bis B36 und zieh das kleine Quadrat unten rechts bis Spalte E."
         - "Markiere B33 bis E33, Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Zellen formatieren…* <i class='bi bi-chevron-right' aria-hidden='true'></i> Kategorie *Zahl*, *Nachkommastellen* 1."
+
+  - id: runde
+    title: Noch eine Runde
+    extra: true
+    prompt: |
+      Werte die Umfrage nach dem Sportfest aus wie die nach der Fahrt:
+      Antworten, Mittelwert mit einer Nachkommastelle, bester und
+      schlechtester Wert und WENN, ob es im Mittel mindestens vier Sterne
+      gab.
+    check:
+      type: document
+      file: spreadsheet-functions/04 Sportfest.xlsx
+      rules:
+        - { same_data: ['A1:E30'] }
+        - { formulas: ['B32:E36'] }
+        - { functions: { 'B32:E32': COUNT, 'B33:E33': AVERAGE, 'B34:E34': MAX, 'B35:E35': MIN, 'B36:E36': IF } }
+        - { ranges: { B32: 'B4:B30', C32: 'C4:C30', D32: 'D4:D30', E32: 'E4:E30', B33: 'B4:B30', C33: 'C4:C30', D33: 'D4:D30', E33: 'E4:E30', B34: 'B4:B30', C34: 'C4:C30', D34: 'D4:D30', E34: 'E4:E30', B35: 'B4:B30', C35: 'C4:C30', D35: 'D4:D30', E35: 'E4:E30' } }
+        - { values: { B32: 25, C32: 26, D32: 27, E32: 23, B33: 4.04, C33: 3.3846, D33: 4.4815, E33: 3.2174, D34: 5, C35: 1, B36: ja, C36: nein, D36: ja, E36: nein } }
+        - { number_format: { 'B33:E33': { decimals: 1 } } }
+        - { recalc: { set: { E6: 5, B9: 1 }, expect: { E32: 24, E33: 3.2917, B32: 26, B36: nein } } }
+        - no_errors
+    hint:
+      - Unter jede Spalte kommen ANZAHL, MITTELWERT, MAX und MIN über ihre Antworten, Zeile 4 bis 30.
+      - Schreib die fünf Formeln in Spalte B und zieh sie zusammen nach rechts bis Spalte E.
+      - In Zeile 36 entscheidet WENN, ob der Mittelwert darüber mindestens 4 ist; die Mittelwerte bekommen eine Nachkommastelle.
+
+  - id: handgriffe
+    title: Zwei Handgriffe
+    extra: true
+    prompt: |
+      Zähl in Zeile 37, wie viele fünf Sterne gegeben haben, mit
+      ZÄHLENWENN. Und schreib in Zeile 38 den Mittelwert, auf eine
+      Nachkommastelle gerundet, mit RUNDEN.
+    check:
+      type: document
+      file: spreadsheet-functions/04 Sterne.xlsx
+      rules:
+        - { same_data: ['A1:E30'] }
+        - { functions: { 'B37:E37': COUNTIF, 'B38:E38': ROUND } }
+        - { values: { B37: 14, C37: 9, D37: 0, E37: 9, B38: 4.4, C38: 3.6, D38: 2.6, E38: 4 } }
+        - { recalc: { set: { E15: 1, B11: 5 }, expect: { E38: 3.8, B37: 15 } } }
+        - no_errors
+    hint:
+      - ZÄHLENWENN hat zwei Teile, den Bereich und was gezählt wird, getrennt durch ein Semikolon.
+      - RUNDEN hat zwei Teile, die Zahl und wie viele Nachkommastellen bleiben. Die Zahl darf eine Zelle sein, etwa der Mittelwert darüber.
+      - Vergleich E33 und E38 bei der Jugendherberge. Was würde WENN sagen, wenn es mit E38 rechnete?
+    libreoffice:
+      hint:
+        - "In B37 kommt `=ZÄHLENWENN(B4:B30;5)`; zieh die Formel bis E37."
+        - "In B38 kommt `=RUNDEN(B33;1)`; zieh sie bis E38."
+        - "E33 zeigt 4,0 und rechnet mit 3,96; E38 ist wirklich 4. RUNDEN ändert die Zahl, ein Zahlenformat nur, wie sie aussieht."
+    word:
+      hint:
+        - "In B37 kommt `=ZÄHLENWENN(B4:B30;5)`; zieh die Formel bis E37."
+        - "In B38 kommt `=RUNDEN(B33;1)`; zieh sie bis E38."
+        - "E33 zeigt 4,0 und rechnet mit 3,96; E38 ist wirklich 4. RUNDEN ändert die Zahl, ein Zahlenformat nur, wie sie aussieht."
+    nextcloud:
+      hint:
+        - "In B37 kommt `=ZÄHLENWENN(B4:B30;5)`; zieh die Formel bis E37."
+        - "In B38 kommt `=RUNDEN(B33;1)`; zieh sie bis E38."
+        - "E33 zeigt 4,0 und rechnet mit 3,96; E38 ist wirklich 4. RUNDEN ändert die Zahl, ein Zahlenformat nur, wie sie aussieht."
+
+  - id: fallen
+    title: Fünf Fallen
+    extra: true
+    prompt: |
+      Die Auswertung der Umfrage nach dem Wandertag sieht fertig aus. Fünf
+      Stellen sind trotzdem falsch gebaut: vier von der Art wie auf diesem
+      Blatt, eine vom ersten. Die Prüfung sagt dir nur, wie viele du gefunden
+      hast; zu jeder Falle gibt es Tipps, einen nach dem anderen.
+    check:
+      type: document
+      file: spreadsheet-functions/04 Wandertag.xlsx
+      traps: true
+      rules:
+        - { same_data: ['A1:E6', 'A8:E30', 'A7:C7', 'E7'] }
+        - values: { D7: '' }
+          label: In D7 stand eine 0, wo eine Antwort fehlte.
+          hints:
+            - Sieh dir die Antworten an. Hat wirklich jemand 0 Sterne gegeben?
+            - Sieh dir die Antworten zur Führung an.
+            - In D7 steht eine 0; dort hat jemand die Frage ausgelassen. Lösch die 0, dann zählen ANZAHL und MITTELWERT richtig.
+        - ranges: { C33: 'C4:C30' }
+          label: Der Mittelwert in C33 ließ die letzten Antworten aus.
+          hints:
+            - Klick nacheinander auf die Mittelwerte und sieh dir ihre Bereiche an.
+            - Sieh dir den Mittelwert zum Picknick an.
+            - C33 rechnet über C4:C25. Ändere den Bereich auf C4:C30.
+        - functions: { D35: MIN }
+          label: In D35 stand MAX statt MIN.
+          hints:
+            - Passt jede Funktion zu ihrer Zeile?
+            - Sieh dir den schlechtesten Wert der Führung an.
+            - D35 rechnet mit MAX. Der schlechteste Wert ist die kleinste Zahl, MIN.
+        - values: { B36: ja }
+          label: B36 fragte andersherum, ob der Mittelwert kleiner als 4 ist.
+          hints:
+            - Passt jedes »ja« und »nein« zu dem Mittelwert darüber?
+            - Sieh dir den Tierpark an.
+            - In B36 steht `=WENN(B33<4;"ja";"nein")`. Richtig ist `>=`.
+        - formulas: ['E32']
+          label: In E32 stand die Zahl der Antworten getippt.
+          hints:
+            - Diese Falle ist vom ersten Blatt. Klick auf die Zahlen der Antworten in Zeile 32.
+            - Sieh dir die Wanderung an.
+            - In E32 steht die Zahl 24, keine Formel. Schreib `=ANZAHL(E4:E30)`.
+    solution: |
+      Die fünf Fallen: eine 0 in D7, wo eine Antwort fehlte, ein Mittelwert
+      in C33 nur bis Zeile 25, MAX statt MIN in D35, ein WENN in B36 mit <
+      statt >=, und in E32 eine getippte Zahl.

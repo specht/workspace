@@ -8,7 +8,7 @@ Lernende werten die Umfrage nach der Klassenfahrt aus: 27 Antworten mit ein bis 
 <li><b>10 Minuten:</b> nach rechts ausfüllen, ANZAHL fürs Moormuseum ablesen, eine Nachkommastelle.</li>
 <li><b>15 Minuten:</b> WENN, die Vermutung zur Jugendherberge, prüfen, bis alles erfüllt ist.</li>
 <li><b>5 Minuten:</b> der Versuch mit der nachgetragenen Antwort; Gespräch: Ist eine Umfrage ohne Namen wirklich anonym, wenn nur 27 Kinder mitmachen?</li>
-<li><b>Für Schnelle:</b> in Zeile 37 mit <code>=ZÄHLENWENN(B4:B30;5)</code> zählen, wie viele fünf Sterne gaben.</li>
+<li><b>Für Schnelle und zum Üben:</b> die Extras am Ende der Seite (siehe unten).</li>
 </ul></td></tr>
 <tr><th>Vorführen</th><td>
 <p>Bevor die Klasse anfängt, lohnt es sich, die wichtigsten Handgriffe einmal am Beamer zu zeigen, in dem Programm, mit dem die Klasse arbeitet. Hier stehen sie für das Programm, das oben auf der Seite gewählt ist.</p>
@@ -25,8 +25,28 @@ Lernende werten die Umfrage nach der Klassenfahrt aus: 27 Antworten mit ein bis 
 </td></tr>
 <tr><th>Dateien</th><td>Die Vorlage <code>04 Umfrage.xlsx</code> kommt von der Seite; LibreOffice, Excel und Nextcloud Office öffnen und speichern sie. Speichern als <code>.ods</code> geht auch. Die Antworten sind ausgedacht; ausgelassene Fragen stehen als leere Zellen darin (Kletterwald eine, Moormuseum drei, Jugendherberge zwei).</td></tr>
 <tr><th>Prüfung</th><td><ul>
-<li>Die Antworten sind unverändert; B32 bis E36 rechnen mit Formeln: Zeile 32 mit ANZAHL, 33 mit MITTELWERT, 34 mit MAX, 35 mit MIN, 36 mit WENN.</li>
+<li>Die Antworten sind unverändert; B32 bis E36 rechnen mit Formeln: Zeile 32 mit ANZAHL, 33 mit MITTELWERT, 34 mit MAX, 35 mit MIN, 36 mit WENN; die Funktionen in Zeile 32 bis 35 über die ganze Spalte, Zeile 4 bis 30 (ein kürzerer Bereich wird mit den fehlenden Zellen genannt).</li>
 <li>Die Ergebnisse stimmen (Antworten 26, 27, 24, 25; Mittelwerte 4,4, 3,6, 2,6 und 4,0; »ja« nur beim Kletterwald); die Mittelwerte haben eine Nachkommastelle; keine Zelle zeigt einen Fehler.</li>
 <li>Rechnet mit: Die Prüfung trägt in ihrer Kopie in E15 fünf Sterne nach und setzt B4 auf einen Stern; dann muss die Jugendherberge 26 Antworten, den Mittelwert 4 und »ja« zeigen, der Kletterwald den schlechtesten Wert 1. Ein Bereich, der vor Zeile 30 endet, oder getippte Mittelwerte fallen dabei auf.</li>
 </ul></td></tr>
 </table>
+
+#### Extras für Schnelle und zum Üben
+
+Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die
+Umfrage besteht, bekommt auf der Karte einen Vorschlag: nach drei oder mehr
+Prüfungen »Noch eine Runde«, nach einer oder zwei die »Fünf Fallen«.
+
+- **Noch eine Runde:** die Umfrage nach dem Sportfest, gebaut wie die nach
+  der Fahrt; dieselben Punkte. Beim Sprint liegt der Mittelwert bei 4,04;
+  die Prüfung trägt eine Antwort nach und erwartet dann »nein«.
+- **Zwei Handgriffe:** unter der fertigen Auswertung der Fahrt ZÄHLENWENN
+  (wie viele fünf Sterne gaben) und RUNDEN (der Mittelwert auf eine
+  Nachkommastelle). Bei der Jugendherberge zeigt E33 4,0 und rechnet mit
+  3,96, E38 ist wirklich 4: der Unterschied zwischen Zahlenformat und RUNDEN,
+  den der letzte Tipp anspricht.
+- **Fünf Fallen:** die Auswertung der Umfrage nach dem Wandertag. Eine 0
+  steht, wo eine Antwort fehlt, ein Mittelwert endet bei Zeile 25, MAX steht
+  statt MIN, ein WENN fragt mit `<` statt `>=`, und eine Zahl der Antworten
+  ist getippt (vom ersten Blatt). Die Prüfung zählt nur und zeigt jede Falle
+  erst, wenn sie behoben ist; Tipps gibt es für jede einzeln.

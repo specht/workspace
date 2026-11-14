@@ -16,3 +16,25 @@ examples:
         say: MITTELWERT
       - document: stufen/zu-kurz.xlsx
         say: richtig wäre 26
+      - document: stufen/zu-kurz.xlsx
+        say: "B32 rechnet über B4:B25, die Zahlen stehen aber in B4:B30"
+  runde:
+    pass:
+      - document: stufen/sportfest.xlsx
+    fail:
+      - document: ../../static/spreadsheet-functions/04 Sportfest.xlsx
+        say: steht nichts, keine Formel
+  handgriffe:
+    pass:
+      - document: stufen/sterne.xlsx
+    fail:
+      - document: ../../static/spreadsheet-functions/04 Sterne.xlsx
+        say: B37 rechnet noch nicht mit ZÄHLENWENN
+  fallen:
+    pass:
+      - document: stufen/wandertag.xlsx
+    fail:
+      - document: ../../static/spreadsheet-functions/04 Wandertag.xlsx
+        say: 0 von 5 Fallen gefunden
+      - document: stufen/wandertag-vier.xlsx
+        say: 4 von 5 Fallen gefunden
