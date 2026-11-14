@@ -3,6 +3,8 @@ require 'open3'
 require 'tmpdir'
 require 'yaml'
 require_relative 'user_files'
+require_relative 'test_workspace_extensions'
+require 'fileutils'
 
 # A Leistungsüberprüfung from a folder of the teacher's own Workspace, with
 # no terminal and no upload (exam_builder_page.rb, the dialog in exams.js):
@@ -58,10 +60,13 @@ module ExamBuilder
         return 'git' if name == '.git' && stat.directory?
         return 'artifact' if stat.directory? && ARTIFACT_DIRS.include?(name)
         return 'artifact' if !stat.directory? && (ARTIFACT_FILES.include?(name) || ARTIFACT_SUFFIXES.include?(File.extname(name).downcase))
-        return 'hidden' if name.start_with?('.')
+        return 'hidden' if name.start_with?('.') && !KEEP_HIDDEN.include?(name)
 
         nil
     end
+
+    # hidden files that belong to a package, ticked like the others
+    KEEP_HIDDEN = %w[.gitignore .gitattributes .editorconfig].freeze
 
     # The tree, depth first, folders before files: {p: path, d: folder?,
     # s: size, r: reason}; a folder that starts unticked is not opened (it
@@ -167,8 +172,12 @@ module ExamBuilder
 
     # The config.yaml of the package: what was there (extensions, setup,
     # VS Code settings stay), the dialog's colour, look, Git and printing
-    def self.config_yaml(existing, color:, look:, git_mode:, print_exclude:)
+    def self.config_yaml(existing, color:, look:, git_mode:, print_exclude:, extensions: [])
         config = existing.dup
+        named = Array(existing['extensions'])
+        have = named.map { |e| (e.is_a?(Hash) ? e['id'] : e).to_s.downcase }
+        more = extensions.reject { |id| have.include?(id.downcase) }
+        config['extensions'] = named + more unless more.empty?
         config['workspace_package'] = 1
         config['exam'] = (existing['exam'].is_a?(Hash) ? existing['exam'] : {}).merge('color' => color, 'look' => look)
         config['git'] = (existing['git'].is_a?(Hash) ? existing['git'] : {}).merge('mode' => git_mode)
@@ -201,6 +210,104 @@ module ExamBuilder
             run!('gzip', '-n', archive)
             File.binread("#{archive}.gz")
         end
+    end
+
+    # ---- a folder or an archive dropped into the dialog
+
+    # Kept per teacher (by the folder of their Workspace) until the exam is
+    # made, at most a day; an id names one
+    DRAFTS = '/internal/exam-drafts'
+    DRAFT_ID = /\A[a-z0-9]{24}\z/
+    UNZIP = File.expand_path('../tools/unzip_safe.py', __dir__)
+    # what a Mac puts into a ZIP beside the folder
+    LITTER = %w[__MACOSX .DS_Store Thumbs.db].freeze
+
+    def self.draft_path(root, owner, id)
+        raise Refused, 'Diese Auswahl gibt es nicht mehr; zieh den Ordner noch einmal hierher.' unless id.to_s.match?(DRAFT_ID)
+
+        path = File.join(root, owner, id, 'files')
+        raise Refused, 'Diese Auswahl gibt es nicht mehr; zieh den Ordner noch einmal hierher.' unless File.directory?(path)
+
+        path
+    end
+
+    # drafts older than a day gone (with each new draft, and hourly:
+    # Main's background thread)
+    def self.expire_drafts(root, now: Time.now)
+        Dir.glob(File.join(root, '*', '*')).each do |d|
+            FileUtils.rm_rf(d) if File.directory?(d) && now - File.mtime(d) > 24 * 3600
+        end
+    end
+
+    # a fresh folder for a draft, older ones of anyone gone
+    def self.new_draft(root, owner, id, now: Time.now)
+        expire_drafts(root, :now => now)
+        path = File.join(root, owner, id, 'files')
+        FileUtils.mkdir_p(path)
+        path
+    end
+
+    # The files of a folder dropped or chosen in the browser, in batches
+    # (a request takes at most 128 files): [relative path, file to copy]
+    # each, the folder's own name already taken off by the browser
+    def self.stage_files(path, files)
+        raise Refused, 'Keine Datei angekommen.' if files.empty?
+
+        files.each do |rel, source|
+            rel = rel.to_s.tr('\\', '/').sub(%r{\A/+}, '')
+            next if rel.split('/').any? { |c| LITTER.include?(c) }
+            raise Refused, "Unzulässiger Pfad: #{rel.inspect}" unless !rel.empty? && rel.split('/').none? { |c| c.empty? || c == '.' || c == '..' }
+
+            target = File.join(path, rel)
+            FileUtils.mkdir_p(File.dirname(target))
+            FileUtils.cp(source, target)
+        end
+        count = Dir.glob(File.join(path, '**', '*'), File::FNM_DOTMATCH).count { |f| File.file?(f) }
+        raise Refused, "Mehr als #{MAX_FILES} Dateien." if count > MAX_FILES
+    end
+
+    # Extensions of VS Code the dialog offers when files of their language
+    # are in the package: an exam Workspace has no internet and only the
+    # extensions its package names (docker/code: none for a language).
+    # file ending => [id, name, what it does]
+    LANGUAGE_EXTENSIONS = {
+        '.dart' => ['Dart-Code.dart-code', 'Dart', 'hebt Dart hervor, zeigt Fehler schon beim Tippen und formatiert den Code'],
+    }.freeze
+
+    # what to offer for these paths: [{id, name, why, included}], included:
+    # a config.yaml there names it already
+    def self.offers(paths, existing)
+        named = Array(existing['extensions']).map { |e| (e.is_a?(Hash) ? e['id'] : e).to_s.downcase }
+        LANGUAGE_EXTENSIONS.select { |ending, _| paths.any? { |p| p.downcase.end_with?(ending) } }.map do |_, (id, name, why)|
+            { :id => id, :name => name, :why => why, :included => named.include?(id.downcase) }
+        end
+    end
+
+    # An archive (.zip, .tar.gz, .tgz, .tar.bz2, .tar) unpacked, after the
+    # same checks as an uploaded package (no links, no path out of the
+    # folder); a single folder at its top (a ZIP of a folder) becomes the
+    # draft itself. The name: that folder's, or the archive's without its
+    # ending.
+    def self.stage_archive(path, archive, filename)
+        base = File.basename(filename.to_s)
+        if base.match?(/\.zip\z/i)
+            out, status = Open3.capture2e('python3', '-I', UNZIP, archive, path)
+            raise Refused, out.strip.lines.first.to_s.strip unless status.success?
+        elsif base.match?(/\.(tar\.gz|tgz|tar\.bz2|tbz2?|tar)\z/i)
+            TestWorkspaceExtensions.validate_archive!(archive)
+            run!('tar', '-xf', archive, '-C', path, '--no-same-owner', '--no-same-permissions')
+        else
+            raise Refused, 'Das ist kein Archiv, das der Workspace kennt: ZIP oder .tar.gz.'
+        end
+        LITTER.each { |l| FileUtils.rm_rf(File.join(path, l)) }
+        inner = Dir.children(path)
+        if inner.size == 1 && File.lstat(File.join(path, inner.first)).directory? && inner.first != '.workspace'
+            top = File.join(path, inner.first)
+            Dir.children(top).each { |c| FileUtils.mv(File.join(top, c), File.join(path, c)) }
+            FileUtils.rmdir(top)
+            return inner.first
+        end
+        base.sub(/\.(zip|tar\.gz|tgz|tar\.bz2|tbz2?|tar)\z/i, '')
     end
 
     def self.run!(*command)

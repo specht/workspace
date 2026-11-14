@@ -18835,7 +18835,7 @@ form.phone-manage-dirty {
     flex-wrap: wrap;
     gap: 0.5rem;
 }
-/* the dialog »Aus deinem Workspace« (exam_builder_page.rb, exams.js) */
+/* the dialog »Neue Leistungsüberprüfung« (exam_builder_page.rb, exams.js) */
 .exam-builder .eb-row {
     display: flex;
     flex-wrap: wrap;
@@ -19053,6 +19053,30 @@ form.phone-manage-dirty {
 .exam-builder .eb-shared {
     display: flex;
     gap: 0.6rem;
+    align-items: baseline;
+}
+.exam-builder .eb-drop {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: -0.25rem 0 1rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 0.375rem;
+    color: var(--bs-secondary-color);
+}
+.exam-builder .eb-drop.eb-over {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary-bg-subtle);
+}
+.exam-builder .eb-exts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+.exam-builder .eb-ext {
+    display: flex;
+    gap: 0.5rem;
     align-items: baseline;
 }
 .exam-builder .eb-empty {

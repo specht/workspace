@@ -45,6 +45,8 @@ class ExamBuilderTest < Minitest::Test
         assert_equal 'artifact', tree['__pycache__'][:r]
         refute tree.key?('__pycache__/main.pyc'), 'a folder that starts unticked is not opened'
         assert_equal 'hidden', tree['.notes'][:r]
+        File.write(File.join(@dir, '.gitignore'), "*.pyc\n")
+        assert_nil ExamBuilder.tree(@dir)[:entries].find { |e| e[:p] == '.gitignore' }[:r], '.gitignore belongs to a package'
         assert_equal 'link', tree['link.txt'][:r]
         refute tree.key?('.workspace'), 'the dialog writes the config'
         assert_equal ['tests', '__pycache__'], tree.values.select { |e| e[:d] }.map { |e| e[:p] }.sort.reverse
@@ -99,5 +101,69 @@ class ExamBuilderTest < Minitest::Test
             assert_equal '#119c4a', TestWorkspacePackage.vscode_config(unpacked)['workbench.colorCustomizations']['statusBar.background']
             assert_equal ['AUFGABE.md', 'main.py'], TestWorkspacePackage.printable_files(unpacked).map(&:first)
         end
+    end
+
+    # ---- dropped from the computer
+
+    def test_files_from_a_folder_with_their_paths
+        Dir.mktmpdir do |draft|
+            src = File.join(@root, 'readme')
+            File.write(src, "x\n")
+            ExamBuilder.stage_files(draft, [['README.md', src], ['.workspace/config.yaml', src], ['__MACOSX/x', src]])
+            assert File.file?(File.join(draft, 'README.md'))
+            assert File.file?(File.join(draft, '.workspace/config.yaml'))
+            refute File.exist?(File.join(draft, '__MACOSX'))
+            assert_raises(ExamBuilder::Refused) { ExamBuilder.stage_files(draft, [['../x', src]]) }
+            assert_raises(ExamBuilder::Refused) { ExamBuilder.stage_files(draft, []) }
+        end
+    end
+
+    def zip(path, script)
+        system('python3', '-I', '-c', "import zipfile, sys\nz = zipfile.ZipFile(sys.argv[1], 'w')\n#{script}\nz.close()", path, exception: true)
+    end
+
+    def test_a_zip_of_a_folder_becomes_the_folder
+        Dir.mktmpdir do |draft|
+            archive = File.join(@root, 'k.zip')
+            zip(archive, "z.writestr('workspace-180/README.md', 'x')\nz.writestr('workspace-180/.workspace/config.yaml', 'workspace_package: 1')\nz.writestr('__MACOSX/._x', 'x')")
+            assert_equal 'workspace-180', ExamBuilder.stage_archive(draft, archive, 'Klausur.zip')
+            assert_equal ['.workspace', 'README.md'], Dir.children(draft).sort
+        end
+    end
+
+    def test_an_archive_with_a_link_or_a_path_out_is_refused
+        Dir.mktmpdir do |draft|
+            archive = File.join(@root, 'l.zip')
+            zip(archive, "i = zipfile.ZipInfo('link')\ni.external_attr = (0o120777 << 16)\nz.writestr(i, '/etc/passwd')")
+            error = assert_raises(ExamBuilder::Refused) { ExamBuilder.stage_archive(draft, archive, 'l.zip') }
+            assert_includes error.message, 'Links'
+            zip(archive, "z.writestr('../out.txt', 'x')")
+            assert_raises(ExamBuilder::Refused) { ExamBuilder.stage_archive(draft, archive, 'l.zip') }
+            assert_empty Dir.children(draft)
+            assert_raises(ExamBuilder::Refused) { ExamBuilder.stage_archive(draft, archive, 'l.docx') }
+        end
+    end
+
+    def test_a_tar_gz_is_unpacked
+        Dir.mktmpdir do |draft|
+            archive = File.join(@root, 'p.tar.gz')
+            system('tar', '-czf', archive, '-C', @dir, 'AUFGABE.md', 'main.py', exception: true)
+            assert_equal 'p', ExamBuilder.stage_archive(draft, archive, 'p.tar.gz')
+            assert_equal ['AUFGABE.md', 'main.py'], Dir.children(draft).sort
+        end
+    end
+
+    def test_the_dart_extension_is_offered_and_added
+        offers = ExamBuilder.offers(['linked_list.dart', 'README.md'], {})
+        assert_equal [{ :id => 'Dart-Code.dart-code', :name => 'Dart', :why => ExamBuilder::LANGUAGE_EXTENSIONS['.dart'][2], :included => false }], offers
+        assert ExamBuilder.offers(['a.dart'], { 'extensions' => ['dart-code.dart-code'] }).first[:included]
+        assert_empty ExamBuilder.offers(['main.py'], {})
+        yaml = YAML.safe_load(ExamBuilder.config_yaml({ 'extensions' => [{ 'id' => 'Dart-Code.dart-code', 'version' => '3.1' }] },
+                                                      :color => 'blue', :look => 'theme', :git_mode => 'fresh', :print_exclude => [],
+                                                      :extensions => ['Dart-Code.dart-code']))
+        assert_equal [{ 'id' => 'Dart-Code.dart-code', 'version' => '3.1' }], yaml['extensions'], 'already there, with its version'
+        yaml = YAML.safe_load(ExamBuilder.config_yaml({}, :color => 'blue', :look => 'theme', :git_mode => 'fresh', :print_exclude => [],
+                                                      :extensions => ['Dart-Code.dart-code']))
+        assert_equal ['Dart-Code.dart-code'], yaml['extensions']
     end
 end

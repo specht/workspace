@@ -914,6 +914,8 @@ class Main < Sinatra::Base
                 end
                 begin
                     Main.expire_shares!
+                    # folders dropped into the exam dialog and never used
+                    ExamBuilder.expire_drafts(ExamBuilder::DRAFTS)
                 rescue => e
                     STDERR.puts "Expiring share links failed: #{e.class}: #{e.message}"
                 end

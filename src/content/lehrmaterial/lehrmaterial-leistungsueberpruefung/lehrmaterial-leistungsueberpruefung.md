@@ -28,7 +28,7 @@ Beendest du die Leistungsüberprüfung, kommen alle beim nächsten Öffnen wiede
 
 ## Den Ordner vorbereiten
 
-Leg in deinem eigenen Workspace einen Ordner an, etwa `loops-exam`, mit allem, was die Klasse zu Beginn haben soll:
+Leg einen Ordner an, in deinem Workspace oder auf deinem Rechner, etwa `loops-exam`, mit allem, was die Klasse zu Beginn haben soll:
 
 ```text
 loops-exam/
@@ -40,18 +40,19 @@ loops-exam/
     └── test_average.py
 ```
 
-Die Aufgabe steht am besten in einer Datei wie `AUFGABE.md`; sag der Klasse, dass sie sie zuerst öffnen soll. Vorlagen, Daten und Tests sind, was deine Aufgabe braucht; an eine Sprache ist das Paket nicht gebunden. Probier die Aufgabe in deinem Workspace einmal selbst durch, bevor du die Leistungsüberprüfung anlegst.
+Die Aufgabe steht am besten in einer Datei wie `AUFGABE.md`; sag der Klasse, dass sie sie zuerst öffnen soll. Vorlagen, Daten und Tests sind, was deine Aufgabe braucht; an eine Sprache ist das Paket nicht gebunden. Probier die Aufgabe einmal selbst durch, bevor du die Leistungsüberprüfung anlegst.
 
 ## Anlegen
 
-Öffne **Klassen**, wähl oben die Klasse und dann den Reiter **Leistungsüberprüfungen**. Klick auf **Aus deinem Workspace**.
+Öffne **Klassen**, wähl oben die Klasse und dann den Reiter **Leistungsüberprüfungen**. Klick auf **Neue Leistungsüberprüfung**. Oben wählst du einen Ordner deines Workspace, oder du ziehst einen Ordner, eine ZIP- oder eine .tar.gz-Datei von deinem Rechner in das Feld darunter (oder wählst sie mit **Ordner wählen** und **Archiv wählen**).
 
-<img class='full full-shadow shot' src='aus-dem-workspace.webp' alt='Der Dialog »Leistungsüberprüfung aus deinem Workspace«: oben der Ordner und der Name, darunter die Dateien des Ordners mit je einem Haken für »Im Paket« und »Drucken«; der Ordner __pycache__ ist als Build-Ordner nicht angekreuzt, die Tests werden nicht gedruckt.'>
+<img class='full full-shadow shot' src='aus-dem-workspace.webp' alt='Der Dialog »Neue Leistungsüberprüfung«: oben der Ordner und der Name, darunter die Dateien des Ordners mit je einem Haken für »Im Paket« und »Drucken«; der Ordner __pycache__ ist als Build-Ordner nicht angekreuzt, die Tests werden nicht gedruckt.'>
 
 - **Ordner und Name:** Wähl den Ordner und gib der Leistungsüberprüfung einen Namen, etwa »Klassenarbeit Schleifen«; so steht sie in der Liste und auf den Ausdrucken.
 - **Im Paket:** Was angekreuzt ist, bekommt die Klasse. Versteckte Dateien (ihr Name beginnt mit einem Punkt), Build-Ordner wie `__pycache__` oder `node_modules` und Git-Verläufe sind zuerst nicht angekreuzt, damit nichts mitgeht, was beim Arbeiten entstanden ist. Brauchst du davon etwas, kreuz es an. Links gehen nicht in ein Paket.
 - **Drucken:** Was du hier abwählst, fehlt in der Druckansicht der Ergebnisse, etwa die Tests oder große Daten. Dateien, die die Klasse neu anlegt, kommen in die Druckansicht.
 - **Farbe:** Gelb, Orange, Magenta, Grün, Blau oder Rot als Rahmen; der Editor bleibt dunkel, gut zu lesen in einer Doppelstunde. Oder alles in Blau oder Rot.
+- **Erweiterungen:** Liegen Dateien in Dart im Ordner, bietet der Dialog die Erweiterung für Dart an, angekreuzt. Im Workspace der Leistungsüberprüfung gibt es kein Internet; eine Erweiterung ist dort nur, wenn sie mitgeht.
 - **Git:** Zum Wiederherstellen legt der Workspace ein Repository mit dem Commit »Ausgangszustand« an. Mit `git diff` sehen die Lernenden, was sie geändert haben, und mit `git restore` holen sie eine Datei zurück; mit Git arbeiten müssen sie dafür nicht. Ist Git selbst Teil der Aufgabe, wähl **Kein Repository**; dann legen die Lernenden es selbst an.
 
 <img class='full full-shadow shot' src='aus-dem-workspace-farbe.webp' alt='Der untere Teil des Dialogs: links die Farben Gelb, Orange, Magenta, Grün, Blau und Rot, Gelb gewählt, darunter »Rahmen in der Farbe, der Editor bleibt dunkel« und ein kleines Bild des Workspace mit gelbem Rahmen; rechts die Wahl für Git, »Zum Wiederherstellen« gewählt.'>
@@ -105,7 +106,8 @@ Bisher lagen die Aufgaben einer Klassenarbeit auf deinem Rechner, jetzt in deine
 - **Bis zum Start bleibt das Paket bei dir:** In den Workspace der Leistungsüberprüfung kommt es erst, wenn du auf **Starten** klickst, und nur zu denen, die teilnehmen.
 - **Andere Lehrkräfte nicht:** In den Workspace einer Lehrkraft kann keine andere Lehrkraft hineinsehen, auch nicht in einer gemeinsamen Gruppe.
 - **Die Administration der Installation schon:** Wer den Workspace betreibt, kann in jeden Workspace sehen, nennt dafür aber einen Grund, und du siehst, wer wann warum hineingesehen hat.
-- **Wer einen Link zu deinem Workspace hat:** Teilst du deinen Workspace (im Profil, **Workspace teilen**), kann jeder mit dem Link alles darin lesen, auch den Ordner der Leistungsüberprüfung. Der Dialog **Aus deinem Workspace** warnt dich dann und beendet das Teilen auf einen Klick.
+- **Wer einen Link zu deinem Workspace hat:** Teilst du deinen Workspace (im Profil, **Workspace teilen**), kann jeder mit dem Link alles darin lesen, auch den Ordner der Leistungsüberprüfung. Der Dialog **Neue Leistungsüberprüfung** warnt dich dann und beendet das Teilen auf einen Klick.
+- **Was du von deinem Rechner hochlädst,** liegt auf dem Server, bis die Leistungsüberprüfung angelegt ist, nur für dich; danach löscht der Workspace es, und was du nicht verwendest, nach einem Tag.
 
 Was nicht abgeschirmt ist:
 
@@ -171,4 +173,4 @@ extensions:
 
 Versteckte Ordner wie `.git` oder `.cache` werden nie gedruckt. Ein `.git` in einem Unterordner darf in jedem Paket liegen; das Repository zum Wiederherstellen lässt diesen Unterordner aus.
 
-Beim Hochladen prüft der Workspace das Paket; stimmt etwas nicht, sagt er, was. Liegt im Ordner deines Workspace schon eine `.workspace/config.yaml`, übernimmt der Dialog **Aus deinem Workspace** ihre Farbe, Git und das Drucken, und alle übrigen Angaben daraus (Erweiterungen, Befehle beim Start) bleiben, wie sie sind.
+Beim Hochladen prüft der Workspace das Paket; stimmt etwas nicht, sagt er, was. Liegt im Ordner schon eine `.workspace/config.yaml`, übernimmt der Dialog **Neue Leistungsüberprüfung** ihre Farbe, Git und das Drucken, und alle übrigen Angaben daraus (Erweiterungen, Befehle beim Start, Einstellungen von VS Code) bleiben, wie sie sind. Ein fertiges Paket kannst du deshalb auch in den Dialog ziehen, statt es mit **Paket hochladen** hochzuladen: Dann siehst du vorher, was hineingeht.

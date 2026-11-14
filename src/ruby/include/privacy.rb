@@ -341,6 +341,13 @@ module Privacy
                 :how_long => 'bis die Lehrkraft die Leistungsüberprüfung löscht, sonst ' + ACCOUNT_END,
             },
             {
+                :data => 'Entwürfe einer Leistungsüberprüfung: der Ordner oder das Archiv, das eine Lehrkraft von ihrem Rechner in den Dialog »Neue Leistungsüberprüfung« zieht',
+                :categories => [:content],
+                :purpose => 'eine Leistungsüberprüfung daraus anlegen',
+                :who => 'die Lehrkraft selbst',
+                :how_long => 'bis die Leistungsüberprüfung angelegt ist, sonst einen Tag',
+            },
+            {
                 :data => 'Hinweise, wer in Workspace oder Konto gesehen oder den Workspace gestoppt oder darin Platz geschaffen hat: wer, wann, mit welcher Begründung, welche Ordner gelöscht wurden',
                 :categories => [:traffic],
                 :purpose => 'Transparenz gegenüber der Person',

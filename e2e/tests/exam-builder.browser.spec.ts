@@ -1,10 +1,13 @@
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { expect, test } from './fixtures';
 import { loginAsE2eUser } from './workspace';
 
 // A Leistungsüberprüfung from a folder of the teacher's Workspace (the dialog
-// »Aus deinem Workspace«, exam_builder_page.rb, exams.js): the folder's files
+// »Neue Leistungsüberprüfung«, exam_builder_page.rb, exams.js): the folder's files
 // as a tree, a build folder and a Git history in a subfolder unticked, a link
 // that cannot be ticked; one file left out of the printout, a colour and the
 // frame; the package that is stored holds what was ticked and the
@@ -91,3 +94,53 @@ test('an exam from a folder of the Workspace: what is ticked, the printout, the 
     if (tag) await page.request.post('/api/delete_test', { data: { tag } });
   }
 });
+
+// A folder from the teacher's computer instead of the Workspace (chosen
+// with »Ordner wählen«), then a ZIP of it: the files in the tree, the Dart
+// extension offered for .dart files and in the package's config.yaml.
+test('an exam from a folder or a ZIP of the computer, with the Dart extension', async ({ page }, testInfo) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'exam-drop-'));
+  const folder = path.join(dir, 'workspace-180');
+  fs.mkdirSync(path.join(folder, '.workspace'), { recursive: true });
+  fs.writeFileSync(path.join(folder, 'README.md'), '# Klausur\n');
+  fs.writeFileSync(path.join(folder, 'linked_list.dart'), 'class LinkedList {}\n');
+  fs.writeFileSync(path.join(folder, 'linked_list_test.dart'), 'void main() {}\n');
+  fs.writeFileSync(path.join(folder, '.workspace', 'config.yaml'), 'workspace_package: 1\nprint:\n  exclude:\n    - "README.md"\n');
+  const archive = path.join(dir, 'Probeklausur.zip');
+  execFileSync('python3', ['-I', '-c', 'import zipfile,sys,os\nz=zipfile.ZipFile(sys.argv[1],"w")\nfor r,_,fs in os.walk(sys.argv[2]):\n  for f in fs:\n    p=os.path.join(r,f); z.write(p, os.path.relpath(p, os.path.dirname(sys.argv[2])))\nz.close()', archive, folder]);
+  const tags: string[] = [];
+  try {
+    await loginAsE2eUser(page, TEACHER, testInfo);
+    for (const [how, name] of [['folder', 'Klausur 180'], ['archive', 'Probeklausur']]) {
+      await page.goto('/klasse?tab=pruefungen');
+      await page.locator('#bu_exam_builder').click();
+      const modal = page.locator('#exam_builder_modal');
+      await expect(modal).toBeVisible();
+      if (how === 'folder') await page.locator('#eb_pick_folder').setInputFiles(folder);
+      else await page.locator('#eb_pick_archive').setInputFiles(archive);
+      await expect(modal.locator('.eb-item[data-path="linked_list.dart"]')).toBeVisible({ timeout: 30_000 });
+      await expect(page.locator('#eb_folder option:checked')).toHaveText('Von deinem Rechner: workspace-180');
+      await expect(page.locator('#eb_name')).toHaveValue('workspace-180');
+      // the dart extension offered and ticked; README left out of the printout
+      await expect(page.locator('#eb_ext_set')).toBeVisible();
+      await expect(modal.locator('input[name=eb_ext][value="Dart-Code.dart-code"]')).toBeChecked();
+      await expect(modal.locator('.eb-item[data-path="README.md"] .eb-print')).not.toBeChecked();
+      await page.locator('#eb_name').fill(name);
+      await page.locator('#bu_eb_build').click();
+      await expect(page.locator('#test_archive_upload_status')).toContainText('angelegt', { timeout: 120_000 });
+      const entry = (await (await page.request.post('/api/get_my_test_archives', { data: {} })).json()).entries
+        .find((e: any) => e.filename === `${name}.tar.gz`);
+      tags.push(entry.tag);
+      const stored = ruby('ls -t /internal/test_archives | head -1').trim();
+      const listed = ruby(`tar -tzf /internal/test_archives/${stored}`).split('\n').filter(Boolean).sort();
+      expect(listed).toEqual(['.workspace/', '.workspace/config.yaml', 'README.md', 'linked_list.dart', 'linked_list_test.dart']);
+      const config = ruby(`tar -xzOf /internal/test_archives/${stored} .workspace/config.yaml`);
+      expect(config).toContain('Dart-Code.dart-code');
+      expect(config).toContain('- README.md');
+    }
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+    for (const tag of tags) await page.request.post('/api/delete_test', { data: { tag } });
+  }
+});
+

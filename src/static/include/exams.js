@@ -295,7 +295,7 @@ function upload_test_archive() {
     fileInput.click();
 }
 
-// »Aus deinem Workspace« (exam_builder_page.rb): a folder of the teacher's
+// »Neue Leistungsüberprüfung« (exam_builder_page.rb): a folder of the teacher's
 // Workspace, its files as a tree to tick (what goes into the package, what
 // goes into the printout), the colour and the look, Git; the server packs
 // it and it becomes this class's exam. What is hidden, a build folder or a
@@ -426,20 +426,107 @@ function eb_render(data) {
     const kept = (c.kept || []);
     $('#eb_kept').prop('hidden', !c.present).html(c.present ? `Den Ordner beschreibt schon eine <code>.workspace/config.yaml</code>; ihre Farbe, Git und das Drucken stehen oben.${kept.length ? ' Diese Angaben daraus bleiben, wie sie sind: ' + kept.map((k) => `<code>${$('<span>').text(k).html()}</code>`).join(', ') + '.' : ''}` : '');
     $('#eb_shared').prop('hidden', !data.shared);
+    // an extension for the language of the files: ticked, or ticked and
+    // fixed when the config.yaml names it already
+    const exts = $('#eb_exts').empty();
+    for (const o of data.offers || []) {
+        const label = $(`<label class='eb-ext'><input type='checkbox' class='form-check-input' name='eb_ext'><span></span></label>`);
+        label.find('input').val(o.id).prop('checked', true).prop('disabled', !!o.included);
+        label.find('span').text(`${o.name}: ${o.why}${o.included ? ' (steht schon in der config.yaml)' : ''}`);
+        exts.append(label);
+    }
+    $('#eb_ext_set').prop('hidden', !(data.offers || []).length);
     eb_preview();
     eb_update();
 }
 
-async function eb_load_folder() {
-    const folder = $('#eb_folder').val();
-    $('#eb_name').val(folder);
+// where the files are: { folder } of the Workspace, or { draft, name }, a
+// folder or an archive from the teacher's computer (exam_builder_page.rb)
+let eb_source = null;
+
+async function eb_load(source) {
+    eb_source = source;
+    $('#eb_name').val(source.folder || source.name || '');
+    $('#eb_empty').prop('hidden', true);
+    $('#eb_body, #bu_eb_build').prop('hidden', false);
     $('#eb_status').removeClass('text-danger text-success').text('');
     $('#eb_tree').html(`<div class='p-2 text-body-secondary'><i class='bi bi-arrow-repeat bi-spin'></i> Ordner lesen …</div>`);
     try {
-        eb_render(await eb_post('/api/exam_builder/tree', { folder }));
+        eb_render(await eb_post('/api/exam_builder/tree', source.draft ? { draft: source.draft } : { folder: source.folder }));
     } catch (error) {
         $('#eb_tree').empty();
         $('#eb_status').addClass('text-danger').text(error.message);
+    }
+}
+
+function eb_load_folder() {
+    const folder = $('#eb_folder').val();
+    if (folder) eb_load({ folder });
+}
+
+// The files of a folder dropped from the computer, with their paths
+// (»workspace/README.md«), read entry by entry
+async function eb_entry_files(entry, prefix) {
+    if (entry.isFile) return [{ path: prefix + entry.name, file: await new Promise((ok, no) => entry.file(ok, no)) }];
+    const reader = entry.createReader();
+    let entries = [];
+    for (;;) {
+        const batch = await new Promise((ok, no) => reader.readEntries(ok, no));
+        if (!batch.length) break;
+        entries = entries.concat(batch);
+    }
+    let out = [];
+    for (const e of entries) out = out.concat(await eb_entry_files(e, prefix + entry.name + '/'));
+    return out;
+}
+
+const EB_ARCHIVE = /\.(zip|tar\.gz|tgz|tar\.bz2|tbz2?|tar)$/i;
+
+async function eb_send(form) {
+    const response = await fetch('/api/exam_builder/drop', { method: 'POST', body: form });
+    let data = {};
+    try { data = await response.json(); } catch (e) { }
+    if (!response.ok || data.error) throw new Error(data.error || 'Das Hochladen ging nicht; versuch es noch einmal.');
+    return data;
+}
+
+// Files from the computer to a draft: an archive at once, a folder in
+// batches (a request takes at most 128 files), its own name taken off the
+// paths and kept as the name
+async function eb_drop(files) {
+    const status = $('#eb_status').removeClass('text-danger text-success');
+    try {
+        let source;
+        if (files.length === 1 && EB_ARCHIVE.test(files[0].file.name) && !files[0].path.includes('/')) {
+            status.text('Archiv hochladen …');
+            const form = new FormData();
+            form.append('archive', files[0].file);
+            const data = await eb_send(form);
+            source = { draft: data.draft, name: data.name };
+        } else {
+            const tops = new Set(files.map((f) => f.path.split('/')[0]));
+            const strip = tops.size === 1 && files.every((f) => f.path.includes('/'));
+            const name = strip ? [...tops][0] : '';
+            let draft = null;
+            for (let i = 0; i < files.length; i += 100) {
+                status.text(`Dateien hochladen … ${Math.min(i + 100, files.length)} von ${files.length}`);
+                const form = new FormData();
+                for (const f of files.slice(i, i + 100)) {
+                    form.append('files[]', f.file);
+                    form.append('paths[]', strip ? f.path.split('/').slice(1).join('/') : f.path);
+                }
+                form.append('name', name);
+                if (draft) form.append('draft', draft);
+                draft = (await eb_send(form)).draft;
+            }
+            source = { draft, name };
+        }
+        status.text('');
+        $('#eb_folder option.eb-draft').remove();
+        $('#eb_folder').prop('disabled', false).append($("<option class='eb-draft'>").val('').text(`Von deinem Rechner: ${source.name || 'Dateien'}`)).val('');
+        await eb_load(source);
+    } catch (error) {
+        status.addClass('text-danger').text(error.message);
     }
 }
 
@@ -453,6 +540,7 @@ async function open_exam_builder() {
     } catch (error) {
         $('#eb_status').addClass('text-danger').text(error.message);
     }
+    eb_source = null;
     $('#eb_empty').prop('hidden', folders.length > 0);
     $('#eb_body, #bu_eb_build').prop('hidden', folders.length === 0);
     $('#eb_folder').empty().prop('disabled', folders.length === 0);
@@ -472,7 +560,9 @@ async function build_exam() {
     $('#eb_status').removeClass('text-danger text-success').text('Paket packen und prüfen …');
     try {
         const data = await eb_post('/api/exam_builder/build', {
-            folder: $('#eb_folder').val(), group: exam_group, name: $('#eb_name').val().trim(), files, print_exclude,
+            ...(eb_source.draft ? { draft: eb_source.draft } : { folder: eb_source.folder }),
+            extensions: $('input[name=eb_ext]:checked:not(:disabled)').map((_, el) => el.value).get(),
+            group: exam_group, name: $('#eb_name').val().trim(), files, print_exclude,
             color: $('input[name=eb_color]:checked').val(), look: $('input[name=eb_look]:checked').val(),
             git: $('input[name=eb_git]:checked').val(),
         });
@@ -491,6 +581,26 @@ $(function () {
     $('#bu_upload_test_archive').on('click', upload_test_archive);
     $('#bu_exam_builder').on('click', open_exam_builder);
     $('#eb_folder').on('change', eb_load_folder);
+    // from the computer: dropped, or chosen as a folder or an archive
+    const drop = $('#eb_drop');
+    drop.on('dragover', (e) => { e.preventDefault(); drop.addClass('eb-over'); });
+    drop.on('dragleave drop', () => drop.removeClass('eb-over'));
+    drop.on('drop', async (e) => {
+        e.preventDefault();
+        const items = Array.from(e.originalEvent.dataTransfer.items || []).map((i) => i.webkitGetAsEntry && i.webkitGetAsEntry()).filter(Boolean);
+        let files = [];
+        for (const entry of items) files = files.concat(await eb_entry_files(entry, ''));
+        if (files.length) eb_drop(files);
+    });
+    $('#bu_eb_pick_folder').on('click', () => $('#eb_pick_folder').val('').trigger('click'));
+    $('#bu_eb_pick_archive').on('click', () => $('#eb_pick_archive').val('').trigger('click'));
+    $('#eb_pick_folder').on('change', function () {
+        const files = Array.from(this.files).map((f) => ({ path: f.webkitRelativePath || f.name, file: f }));
+        if (files.length) eb_drop(files);
+    });
+    $('#eb_pick_archive').on('change', function () {
+        if (this.files[0]) eb_drop([{ path: this.files[0].name, file: this.files[0] }]);
+    });
     $(document).on('change', 'input[name=eb_color], input[name=eb_look]', eb_preview);
     $('#bu_eb_build').on('click', build_exam);
     // a shared Workspace: end the sharing from the dialog

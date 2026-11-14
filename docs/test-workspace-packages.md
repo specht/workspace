@@ -265,7 +265,7 @@ Workspace-eigene Dateien werden bei `fresh` und `preserve` über
 ## Aus einem Ordner des Workspace
 
 Statt ein Archiv hochzuladen, baut die Lehrkraft das Paket im Reiter mit
-»Aus deinem Workspace« aus einem Ordner oben in ihrem eigenen Workspace
+»Neue Leistungsüberprüfung« aus einem Ordner oben in ihrem eigenen Workspace
 (`exam_builder.rb`, `exam_builder_page.rb`, der Dialog in `exams.js`). Der
 Baum des Ordners wird als root gelesen, nur Namen und Größen, ohne einem Link
 zu folgen; versteckte Dateien, Build-Ordner (`ExamBuilder::ARTIFACT_DIRS` und
@@ -284,6 +284,33 @@ hineingetauscht wurde, reicht also nicht weiter als die Lehrkraft lesen kann,
 und die Prüfung des Pakets lehnt Links ab. Das Paket geht danach denselben Weg
 wie ein hochgeladenes (`create_exam` in `exams_page.rb`). Höchstens 10 000
 Dateien und 100 MB.
+
+### Vom Rechner der Lehrkraft
+
+Statt eines Ordners im Workspace nimmt der Dialog einen Ordner, eine ZIP- oder
+eine `.tar.gz`-Datei vom Rechner, gezogen oder gewählt
+(`/api/exam_builder/drop`). Was ankommt, liegt als Entwurf in
+`/internal/exam-drafts/<fs_tag>/<id>/files`, nur für diese Lehrkraft, bis die
+Leistungsüberprüfung angelegt ist; danach wird er gelöscht, und Entwürfe, die
+älter als ein Tag sind, löscht `ExamBuilder.expire_drafts` (mit jedem neuen
+Entwurf und alle zehn Minuten im Hintergrund). Ein Ordner kommt in Stücken zu
+höchstens 100 Dateien (Rack nimmt 128 Dateien je Anfrage); der Browser nimmt
+den Namen des Ordners selbst von den Pfaden ab und schickt ihn als Namen mit.
+Ein Archiv wird vor dem Auspacken geprüft wie ein hochgeladenes Paket: `.tar.gz`
+mit `TestWorkspaceExtensions.validate_archive!`, ZIP mit
+`src/ruby/tools/unzip_safe.py` (keine Links, kein Pfad aus dem Ordner, höchstens
+10 000 Dateien und 100 MB). Liegt oben im Archiv nur ein Ordner (eine ZIP eines
+Ordners), wird er selbst der Entwurf. Die Dateien eines Entwurfs schreibt die
+Seite selbst; gepackt wird er ohne `setpriv`.
+
+### Erweiterungen für die Sprache
+
+Liegen Dateien einer Sprache im Paket, für die `ExamBuilder::LANGUAGE_EXTENSIONS`
+eine Erweiterung kennt (bisher `.dart`: `Dart-Code.dart-code`), bietet der
+Dialog sie an, angekreuzt; nennt eine `config.yaml` sie schon, steht sie fest
+angekreuzt da. Angekreuzt kommt sie zu `extensions` dazu und wird beim
+Hochladen wie jede andere geladen. Weitere Sprachen kommen in die Tabelle, wenn
+ihre Erweiterung auf Open VSX mit ihren Abhängigkeiten geprüft ist.
 
 ## Netz
 
@@ -333,7 +360,7 @@ nicht erreichbar (`peer_firewall`), und gemountet sind nur ihre eigenen Ordner,
 kein `/user`. In den Workspace einer Lehrkraft sieht keine andere Lehrkraft
 (`LookIn.allowed?`), die Administration mit Grund, den die Lehrkraft sieht.
 Ein geteilter Workspace (`/api/share_server`) öffnet alles für jeden mit dem
-Link; der Dialog »Aus deinem Workspace« warnt dann und beendet das Teilen
+Link; der Dialog »Neue Leistungsüberprüfung« warnt dann und beendet das Teilen
 (`/api/unshare_server`). Das Paket kommt erst mit »Starten« in die Workspaces
 der Teilnehmenden (`/api/start_server` verlangt eine laufende Prüfung).
 

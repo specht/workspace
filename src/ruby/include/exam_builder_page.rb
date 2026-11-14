@@ -26,13 +26,19 @@ class Main < Sinatra::Base
         end.join
         "<div class='modal' id='exam_builder_modal' tabindex='-1' aria-labelledby='exam_builder_title' aria-hidden='true' style='z-index: 200000;'>" \
             "<div class='modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered'><div class='modal-content'>" \
-            "<div class='modal-header'><h5 class='modal-title' id='exam_builder_title'>Leistungsüberprüfung aus deinem Workspace</h5>" \
+            "<div class='modal-header'><h5 class='modal-title' id='exam_builder_title'>Neue Leistungsüberprüfung</h5>" \
             "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Schließen'></button></div>" \
             "<div class='modal-body exam-builder'>" \
-            "<div class='eb-row'><label class='eb-field'><span>Ordner in deinem Workspace</span><select id='eb_folder' class='form-select'></select></label>" \
+            "<div class='eb-row'><label class='eb-field'><span>Ordner</span><select id='eb_folder' class='form-select'></select></label>" \
             "<label class='eb-field'><span>Name der Leistungsüberprüfung</span><input type='text' id='eb_name' class='form-control' maxlength='120'></label></div>" \
-            "<p id='eb_empty' class='eb-empty' hidden>In deinem Workspace gibt es noch keinen Ordner. Leg dort einen an, etwa <code>klassenarbeit-schleifen</code>, " \
-            'mit allem, was die Klasse zu Beginn haben soll: der Aufgabe, Vorlagen, Daten.</p>' \
+            "<div class='eb-drop' id='eb_drop'><i class='bi bi-box-arrow-in-down' aria-hidden='true'></i>" \
+            "<div><span class='eb-drop-text'>Oder von deinem Rechner: Zieh einen Ordner, eine ZIP- oder eine .tar.gz-Datei hierher.</span> " \
+            "<button type='button' id='bu_eb_pick_folder' class='btn btn-link btn-sm p-0 align-baseline'>Ordner wählen</button> oder " \
+            "<button type='button' id='bu_eb_pick_archive' class='btn btn-link btn-sm p-0 align-baseline'>Archiv wählen</button></div>" \
+            "<input type='file' id='eb_pick_folder' webkitdirectory multiple hidden>" \
+            "<input type='file' id='eb_pick_archive' accept='.zip,.tar.gz,.tgz,.tar.bz2,.tar' hidden></div>" \
+            "<p id='eb_empty' class='eb-empty' hidden>In deinem Workspace gibt es noch keinen Ordner. Zieh einen Ordner von deinem Rechner hierher, " \
+            'oder leg im Workspace einen an, mit allem, was die Klasse zu Beginn haben soll: der Aufgabe, Vorlagen, Daten.</p>' \
             "<div id='eb_shared' class='alert alert-warning eb-shared' role='alert' hidden><i class='bi bi-exclamation-triangle' aria-hidden='true'></i>" \
                 '<div><strong>Dein Workspace ist geteilt.</strong> Wer den Link hat, kann alles darin lesen, auch diesen Ordner mit der Leistungsüberprüfung. ' \
                 "<button type='button' id='bu_eb_unshare' class='btn btn-sm btn-warning ms-1'><i class='bi bi-x-lg'></i>Teilen beenden</button></div></div>" \
@@ -57,6 +63,9 @@ class Main < Sinatra::Base
             "<label class='eb-git'><input type='radio' name='eb_git' value='none'><span>Kein Repository: Git ist Teil der Aufgabe" \
             "<small>Die Lernenden legen es selbst an (<code>git init</code>) und tragen Namen und Adresse selbst ein.</small></span></label>" \
             "<p id='eb_git_note' class='small eb-git-note' hidden></p></fieldset>" \
+            "<fieldset id='eb_ext_set' hidden><legend>Erweiterungen</legend><div id='eb_exts' class='eb-exts'></div>" \
+            "<p class='small text-body-secondary mb-0'>Im Workspace der Leistungsüberprüfung gibt es kein Internet; " \
+            'eine Erweiterung ist dort nur, wenn sie hier angekreuzt ist oder in der config.yaml steht.</p></fieldset>' \
             '</div>' \
             "<p id='eb_kept' class='small text-body-secondary mt-3 mb-0' hidden></p>" \
             '</div></div>' \
@@ -72,10 +81,51 @@ class Main < Sinatra::Base
         respond(:folders => ExamBuilder.folders(exam_builder_root))
     end
 
+    # where the files of the dialog are: a folder of the Workspace, or a
+    # folder or an archive dropped into it (a draft); [path, uid for tar]
+    # (a draft's files are the site's own, written by it)
+    def exam_builder_source(data)
+        if data[:draft]
+            [ExamBuilder.draft_path(ExamBuilder::DRAFTS, fs_tag_for_email(@session_user[:email]), data[:draft]), nil]
+        else
+            [ExamBuilder.folder_path(exam_builder_root, data[:folder]), WORKSPACE_UID]
+        end
+    end
+
+    # A folder (its files with their paths, in batches: the first starts a
+    # draft, the next ones name it) or an archive from the teacher's
+    # computer, kept as a draft for the dialog
+    post '/api/exam_builder/drop' do
+        assert(teacher_logged_in?)
+        owner = fs_tag_for_email(@session_user[:email])
+        more = params['draft'].to_s
+        id = more.empty? ? RandomTag.generate(24) : more
+        path = more.empty? ? ExamBuilder.new_draft(ExamBuilder::DRAFTS, owner, id) : ExamBuilder.draft_path(ExamBuilder::DRAFTS, owner, id)
+        begin
+            name = if params['archive'].is_a?(Hash)
+                ExamBuilder.stage_archive(path, params['archive']['tempfile'].path, params['archive']['filename'])
+            else
+                files = Array(params['files']).select { |f| f.is_a?(Hash) && f['tempfile'] }
+                paths = Array(params['paths'])
+                raise ExamBuilder::Refused, 'Keine Datei angekommen.' if files.empty? || paths.size != files.size
+
+                ExamBuilder.stage_files(path, paths.zip(files.map { |f| f['tempfile'].path }))
+                params['name'].to_s[0, 120]
+            end
+        rescue StandardError
+            FileUtils.rm_rf(File.dirname(path))
+            raise
+        end
+        STDERR.puts "#{@session_user[:email]} dropped files for an exam (#{Dir.glob(File.join(path, '**', '*'), File::FNM_DOTMATCH).count { |f| File.file?(f) }} files)"
+        respond(:draft => id, :name => name.to_s)
+    rescue StandardError => e
+        exam_error_response(e)
+    end
+
     post '/api/exam_builder/tree' do
         assert(teacher_logged_in?)
-        data = parse_request_data(:required_keys => [:folder], :max_value_lengths => { :folder => 255 })
-        path = ExamBuilder.folder_path(exam_builder_root, data[:folder])
+        data = parse_request_data(:optional_keys => [:folder, :draft], :max_value_lengths => { :folder => 255, :draft => 24 })
+        path, = exam_builder_source(data)
         tree = ExamBuilder.tree(path)
         existing = ExamBuilder.existing_config(path)
         exam = existing['exam'].is_a?(Hash) ? existing['exam'] : {}
@@ -89,6 +139,8 @@ class Main < Sinatra::Base
                 # a shared Workspace opens to anyone with the link, this
                 # folder too: the dialog says so and offers to end it
                 :shared => !@session_user[:share_tag].nil?,
+                # an extension for the language of the files (Dart)
+                :offers => ExamBuilder.offers(tree[:entries].reject { |e| e[:d] }.map { |e| e[:p] }, existing),
                 :config => {
                     :present => !existing.empty?,
                     :color => exam['color'], :look => exam['look'], :git => git['mode'],
@@ -103,14 +155,14 @@ class Main < Sinatra::Base
 
     post '/api/exam_builder/build' do
         assert(teacher_logged_in?)
-        data = parse_request_data(:required_keys => [:folder, :group, :name, :files, :color, :look, :git],
-                                  :optional_keys => [:print_exclude],
-                                  :types => { :files => Array, :print_exclude => Array },
+        data = parse_request_data(:required_keys => [:group, :name, :files, :color, :look, :git],
+                                  :optional_keys => [:print_exclude, :folder, :draft, :extensions],
+                                  :types => { :files => Array, :print_exclude => Array, :extensions => Array },
                                   :max_body_length => 1024 * 1024,
-                                  :max_value_lengths => { :folder => 255, :group => 255, :name => 120, :color => 20, :look => 20, :git => 20 })
+                                  :max_value_lengths => { :folder => 255, :draft => 24, :group => 255, :name => 120, :color => 20, :look => 20, :git => 20 })
         group = data[:group].to_s
         halt 403 unless class_groups.include?(group)
-        path = ExamBuilder.folder_path(exam_builder_root, data[:folder])
+        path, uid = exam_builder_source(data)
         chosen = data[:files].map(&:to_s)
         raise ExamBuilder::Refused, 'Wähle mindestens eine Datei aus.' if chosen.empty?
 
@@ -124,13 +176,18 @@ class Main < Sinatra::Base
         before = existing['print'].is_a?(Hash) ? Array(existing['print']['exclude']) : []
         unprinted = Array(data[:print_exclude]).map(&:to_s).select { |rel| ExamBuilder.safe_rel?(rel) }
         listed = ExamBuilder.tree(path)[:entries].map { |e| e[:p] }
+        allowed = ExamBuilder::LANGUAGE_EXTENSIONS.values.map(&:first)
+        extensions = Array(data[:extensions]).map(&:to_s).select { |id| allowed.include?(id) }
         config = ExamBuilder.config_yaml(existing, :color => data[:color].to_s, :look => data[:look].to_s, :git_mode => git_mode,
-                                         :print_exclude => ExamBuilder.print_patterns(path, unprinted, :before => before, :listed => listed))
-        blob = ExamBuilder.pack(path, files, config, :uid => WORKSPACE_UID, :gid => WORKSPACE_GID)
+                                         :print_exclude => ExamBuilder.print_patterns(path, unprinted, :before => before, :listed => listed),
+                                         :extensions => extensions)
+        blob = ExamBuilder.pack(path, files, config, :uid => uid, :gid => uid && WORKSPACE_GID)
         name = data[:name].to_s.gsub(%r{[/\\\x00-\x1f]}, ' ').squeeze(' ').strip
-        name = data[:folder].to_s if name.empty?
+        name = (data[:folder] || 'Leistungsüberprüfung').to_s if name.empty?
         count = create_exam(blob, "#{name}.tar.gz", group)
-        STDERR.puts "#{@session_user[:email]} built an exam for #{group} from a Workspace folder (#{files.size} files)"
+        # a draft has done its work
+        FileUtils.rm_rf(File.dirname(path)) if data[:draft]
+        STDERR.puts "#{@session_user[:email]} built an exam for #{group} from #{data[:draft] ? 'dropped files' : 'a Workspace folder'} (#{files.size} files)"
         respond(:count => count, :files => files.size)
     rescue StandardError => e
         exam_error_response(e)
