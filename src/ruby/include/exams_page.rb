@@ -222,10 +222,24 @@ class Main < Sinatra::Base
             :group => group, :order => my_user_group_order, :groups => my_user_groups,
             :names => my_invitations, :schools => school_names_of_groups.slice(*my_user_group_order), :mySchool => school,
         }
+        # trying it with the test account first: in a class, the way to the
+        # test group; in the test group, what to do there
+        how = 'Dein Testkonto öffnest du im Reiter <em>Lernende</em> der Testgruppe mit <em>Nachahmen</em> ' \
+              'oder in einem privaten Fenster mit <code>+test</code> vor dem @ deiner Adresse.'
+        own_test_group = @@test_group_of[me]
+        tip = if @@test_groups.include?(group)
+            '<strong>Deine Testgruppe:</strong> Hier nimmt dein Testkonto teil, eine Klasse merkt nichts davon. ' \
+                "Starte die Leistungsüberprüfung, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how}"
+        elsif own_test_group
+            '<strong>Erst ausprobieren?</strong> Lade die Leistungsüberprüfung zuerst in deiner ' \
+                "<a href='/klasse?group=#{CGI.escape(own_test_group)}&amp;tab=pruefungen'>Testgruppe</a> hoch, dort nimmt dein Testkonto teil. " \
+                "Starte sie, bearbeite sie als Testkonto und sieh dir die Ergebnisse an. #{how}"
+        end
         "<div class='class-exams'>" \
             "<div class='class-exams-head'><p class='mb-0'>Lädst du hier ein Paket hoch, nehmen alle aus der Klasse #{h.(group)} an der Leistungsüberprüfung teil. " \
             'Einzelne nimmst du unter <em>Teilnehmende</em> heraus oder fügst sie aus anderen Gruppen hinzu.</p>' \
             "<button id='bu_upload_test_archive' class='btn btn-primary'><i class='bi bi-upload'></i>Leistungsüberprüfung hochladen</button></div>" \
+            "#{tip ? "<div class='hint class-exams-tip'>#{tip}</div>" : ''}" \
             "<div id='test_archive_upload_status' class='small mb-2' role='status' aria-live='polite'></div>" \
             "#{EXAM_PACKAGE_HELP}" \
             "<div class='table-responsive mt-3'><table class='table table-sm align-middle exam-table' id='table_my_test_archives'><thead><tr>" \

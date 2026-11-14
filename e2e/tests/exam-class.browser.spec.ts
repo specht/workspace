@@ -31,6 +31,12 @@ test('an exam uploaded for a class: its students take part, one taken out and ba
   const members = await page.locator('#class-panel-lernende tr[data-email]').evaluateAll(
     (rows) => rows.map((r) => r.getAttribute('data-email')!));
   test.skip(members.length < 2, 'the class needs two students');
+  // the hint: try it in the test group first, where the test account takes part
+  const tip = page.locator('.class-exams-tip');
+  await expect(tip).toContainText('Erst ausprobieren?');
+  await tip.getByRole('link', { name: 'Testgruppe' }).click();
+  await expect(page.locator('.class-exams-tip')).toContainText('Hier nimmt dein Testkonto teil');
+  await page.goto(`/klasse?group=${encodeURIComponent(group)}&tab=pruefungen`);
 
   const archive = examPackage();
   const name = path.basename(archive);
