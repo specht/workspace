@@ -3,7 +3,7 @@
 # runs git-gate. The repositories are in /srv/git (data/git-repos), the
 # keys and the access list the backend writes in /etc/git-server
 # (data/git-server/config, read-only here), the host keys in /keys.
-FROM debian:bookworm-slim@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3
+FROM debian:trixie-slim@sha256:a72b4433de1cf7d6bae0c4cee74d0547f58601a643b3375f070c51600d63b6b2
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openssh-server git \

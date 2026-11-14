@@ -1,6 +1,10 @@
 # The case server of »Ein Krimi im Terminal« (docs/entwicklung.md, »Der
 # Fallserver«): one image per host, ROLE museum or alarmanlage. The files of
 # the case come from src/content/terminal-mystery/beispiele/make_case.rb.
+# Stays on bookworm (tried 14 November 2026): the alarm server's clue is a
+# login of »wartung« that `who` shows, written into /var/run/utmp with
+# utmpdump. Trixie has no utmpdump any more, and its `who` asks systemd's
+# logind instead of reading utmp, which a container does not have.
 FROM debian:bookworm-slim@sha256:99c0b25c46d0214d5a2091092e7908907dcaecd6a962cde0ac700acee222b6f3
 
 ARG ROLE
