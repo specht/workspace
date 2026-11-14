@@ -1,6 +1,9 @@
 # Beispiele für die Prüfungen in tasks.yaml (docs/aufgaben.md, »Beispiele
 # für die Prüfungen«): Der fertige Artikel muss die Prüfung bestehen; die
-# leere Vorlage und derselbe Artikel, eilig gebaut, scheitern. Als PDF
+# leere Vorlage und derselbe Artikel, eilig gebaut, scheitern, ebenso der
+# Artikel mit einem Tippfehler, mit dem Namen des Fotografen in der
+# Rechtschreibprüfung und ganz ohne sie; mit dem Namen in der Sprache
+# »Keine«, wie LibreOffice ihn speichert, besteht er. Als PDF
 # besteht der Artikel, die leere Vorlage nicht. Alle macht dokumente.py.
 format: 1
 activity: trip-newspaper
@@ -8,9 +11,16 @@ examples:
   artikel:
     pass:
       - document: stufen/artikel.docx
+      - document: stufen/rechtschreibung-keine.odt
     fail:
       - document: ../../static/trip-newspaper/10 Artikel.docx
         say: Wörter
+      - document: stufen/rechtschreibung-typo.docx
+        say: »geschaft« (vielleicht »geschafft«
+      - document: stufen/rechtschreibung-name.docx
+        say: »Sharp«
+      - document: stufen/rechtschreibung-all.docx
+        say: 221 von 221 Wörtern
       - document: stufen/artikel-eilig.docx
         say: Listenzeichen
       - document: stufen/artikel-eilig.docx

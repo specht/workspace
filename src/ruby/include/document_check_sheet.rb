@@ -36,10 +36,15 @@ module DocumentCheck
 
     # The probes the service runs with the upload: one for each recalc
     # rule, in their order.
+    # (and for a text whose task has the rule spelling: {'spell' => true},
+    # src/office/spelling.py)
     def self.probes(check)
-        Array(check['rules']).select { |r| r.is_a?(Hash) && r.key?('recalc') }.map do |r|
+        rules = Array(check['rules'])
+        out = rules.select { |r| r.is_a?(Hash) && r.key?('recalc') }.map do |r|
             { 'sheet' => r['sheet'].to_i, 'set' => r['recalc']['set'], 'read' => r['recalc']['expect'].keys }
         end
+        out << { 'spell' => true } if rules.any? { |r| r == 'spelling' || (r.is_a?(Hash) && r.key?('spelling')) }
+        out
     end
 
     # ---- cells

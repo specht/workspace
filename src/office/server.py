@@ -121,6 +121,11 @@ def read_portion(portion):
     item = {'type': kind}
     if kind == 'Text':
         item['text'] = portion.getString()
+        # set to no language (»Keine«): left out of the spell check
+        try:
+            item['unchecked'] = portion.CharLocale.Language == 'zxx'
+        except Exception:
+            pass
     elif kind == 'TextField':
         field = portion.TextField
         names = field.getSupportedServiceNames() if field else []
@@ -832,6 +837,12 @@ def analyze_pdf(data):
         shutil.rmtree(folder, ignore_errors=True)
 
 
+def wants_spelling(probes):
+    """a text's probes: [{'spell': true}] when its task has the rule
+    spelling (DocumentCheck.probes)"""
+    return any(isinstance(p, dict) and p.get('spell') for p in probes or [])
+
+
 def analyze(data, filename, probes=None):
     ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
     if ext == 'pdf':
@@ -879,6 +890,10 @@ def analyze(data, filename, probes=None):
             boxes = text_boxes(doc)
             collect_frames(boxes, styles, paragraphs, starts)
             tables = list(TABLES)
+            spelling = None
+            if wants_spelling(probes):
+                import spelling as speller
+                spelling = speller.check(OFFICE, paragraphs, speller.no_proof_words(source) if ext == 'docx' else set())
             pictures = read_pictures(doc, boxes)
             # the headings' and the title's always, to compare with the
             # starting file even where it does not use them yet
@@ -915,7 +930,8 @@ def analyze(data, filename, probes=None):
         out_pages = pdf_pages(pdf, folder, pages)
         return {'paragraphs': paragraphs, 'tables': tables, 'pictures': pictures, 'styles': styles_used,
                 'indexes': indexes, 'page_parts': page_parts, 'footer_boxes': footer_boxes, 'header_boxes': header_boxes, 'footnotes': footnotes,
-                'pages': out_pages, 'page_count': len(pages), 'margins': margins, 'columns': columns}
+                'pages': out_pages, 'page_count': len(pages), 'margins': margins, 'columns': columns,
+                'spelling': spelling}
     finally:
         shutil.rmtree(folder, ignore_errors=True)
 

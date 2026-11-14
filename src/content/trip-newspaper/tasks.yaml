@@ -18,6 +18,8 @@ tasks:
       file: trip-newspaper/10 Artikel.docx
       rules:
         - { words: 200 }
+        # the series' place, and the names of the licences in a photo's credit
+        - { spelling: true, allow: ['Kranich*', 'CC', 'BY', 'BY-SA', 'BY-NC', 'BY-ND', 'BY-NC-SA', 'BY-NC-ND', 'SA', 'NC', 'ND'] }
         - spaces
         - empty_paragraphs
         - line_breaks

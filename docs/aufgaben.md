@@ -2007,6 +2007,7 @@ check:
     - hyphenation         # dort die Silbentrennung eingeschaltet
     - first_line_indent   # ein Absatz nach einem Absatz Text mit Einzug der ersten Zeile (ab 0,3 cm)
     - { line_spacing: 1.0 }   # Zeilenabstand höchstens so viel (1.0: einzeilig)
+    - { spelling: true, allow: ['Kranich*', 'CC'] }   # jedes Wort im deutschen Wörterbuch von LibreOffice; ausgenommen, was auf die Sprache »Keine« gesetzt ist (Word: »Rechtschreibung und Grammatik nicht prüfen«), höchstens ein Zehntel des Textes; allow: bekannte Wörter, mit * auch als Anfang
 ```
 
 Eine **Tabelle** (`.xlsx`, `.ods`) prüft dieselbe Aufgabe, wenn `file:` eine

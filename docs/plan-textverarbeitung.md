@@ -332,9 +332,21 @@ built by hand; each is a page of a series of its own, about one lesson.
   layout is recomputed whenever a sheet is added.
 - **Every sheet to 45 minutes**, »Formatvorlagen« first (sheet 6 got the
   title and subtitle as styles and »Standard« for the body text).
-- **A spell check for sheet 10:** the student's own article without
-  unknown words (LibreOffice's spell checker with `hunspell-de-de`, now in
-  the image); names and places the class uses need a way to pass.
+- **The spell check of sheet 10** (built 14 November 2026, the rule
+  `spelling`, `src/office/spelling.py`): every word of the student's own
+  article in LibreOffice's German dictionary (`hunspell-de-de`), whatever
+  language the document sets; an unknown word marked with up to three
+  suggestions. Names and right words the dictionary lacks pass when set to
+  no language (the maintainer's choice of three: LibreOffice and Nextcloud
+  Office »Keine (Rechtschreibung nicht prüfen)«, kept per word in .odt and
+  .docx as zxx; Word's »Rechtschreibung und Grammatik nicht prüfen«,
+  `w:noProof`, which LibreOffice drops on import and the service reads from
+  the .docx), because both are stored in the file, unlike »Ignorieren« or
+  a word added to one computer's dictionary; more than a tenth of the text
+  so left out fails. `allow:` the series' words (»Kranich*«) and the CC
+  licences' names. Only for a task with the rule: the backend sends
+  `{'spell': true}` among the probes. Open: whether Word's »Ignorieren«
+  leaves anything in the file worth reading; grammar is not checked.
 - **The program's order:** LibreOffice, Word, Nextcloud Office everywhere
   (the maintainer, 12 November 2026: no promotion of Microsoft's software to
   children; Word stays before Nextcloud Office, a real app); with Word

@@ -35,6 +35,7 @@ einem Punkt nicht weiterweißt, steht er auf dem Blatt daneben.
 <thead><tr><th>Dein Artikel</th><th>Erklärt in</th></tr></thead>
 <tbody>
 <tr><td>mindestens 200 Wörter, eigener Text</td><td></td></tr>
+<tr><td>jedes Wort im Wörterbuch, Namen von der Rechtschreibprüfung ausgenommen</td><td>unten auf dieser Seite</td></tr>
 <tr><td>keine Leerzeichen hintereinander, keine leeren Absätze, keine Zeilenumbrüche von Hand</td><td><a href='/formatting-marks'>Was das Auge nicht sieht</a></td></tr>
 <tr><td>höchstens zwei Schriftarten, nichts unterstrichen, keine Großbuchstaben als Format</td><td><a href='/character-formatting'>Schrift mit Absicht</a></td></tr>
 <tr><td>eine Liste, wenn du eine brauchst, die das Programm führt</td><td><a href='/lists-and-tabs'>Listen und Tabstopps</a></td></tr>
@@ -59,6 +60,41 @@ Ersetze den Titel und die Zeile darunter durch deinen Artikel. Schreib zuerst
 den Text, dann gib den Zwischenüberschriften ihre Formatvorlagen, setz das Bild
 mit seiner Unterschrift und zuletzt die Seitenzahl. Prüf zwischendurch: Die
 Prüfung zeigt dir auf deiner Seite, was noch fehlt.
+
+## Rechtschreibung
+
+Die Prüfung liest deinen Artikel auch mit einem deutschen Wörterbuch, dem
+von LibreOffice: Es zieht in LibreOffice und Nextcloud Office die roten
+Wellenlinien unter die Wörter, die es nicht kennt. Findet die Prüfung ein
+solches Wort, markiert sie es und schlägt vor, was du gemeint haben könntest.
+Einen Tippfehler verbesserst du.
+
+Nicht jedes unbekannte Wort ist falsch. Die Namen deiner Mitschülerinnen und
+Mitschüler, eines Orts oder der Person, die ein Foto gemacht hat, stehen in
+keinem Wörterbuch. Solche Wörter nimmst du von der Rechtschreibprüfung aus.
+Das steht dann in deiner Datei, und die Prüfung sieht es. »Ignorieren« und
+»Zum Wörterbuch hinzufügen« sieht sie nicht: Das Wörterbuch, zu dem du ein
+Wort hinzufügst, gehört zu deinem Programm auf diesem Computer.
+
+<!-- language: word -->
+In Word markierst du das Wort und wählst im Register *Überprüfen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sprache* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Sprache für die Korrekturhilfen festlegen…*, dann setzt du das Häkchen bei
+*Rechtschreibung und Grammatik nicht prüfen*. Word hat ein anderes Wörterbuch
+als die Prüfung: Markiert sie ein Wort, das Word kennt, und es ist richtig,
+nimmst du es genauso aus.
+<!-- /language -->
+<!-- language: libreoffice -->
+In LibreOffice markierst du das Wort und wählst *Extras* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sprache* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Für Auswahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Keine (Rechtschreibung nicht prüfen)*.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office markierst du das Wort und wählst wie in LibreOffice
+*Extras* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sprache* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Für Auswahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Keine (Rechtschreibung nicht prüfen)*.
+<!-- /language -->
+
+Nimm nur aus, was so richtig ist: Ist mehr als ein Zehntel deines Textes
+ausgenommen, besteht die Prüfung nicht. Den Kranichsee und die Namen der
+Lizenzen in einer Quelle (CC BY-SA) kennt die Prüfung schon.
 
 ## Abgeben
 

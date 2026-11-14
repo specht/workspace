@@ -2,7 +2,9 @@
 # title and one line, the article is the student's own), an article built
 # as the series taught (the solution, task-examples.yaml) and the same
 # article put together in a hurry (a stage that must fail); the article and
-# the empty starting file exported as PDF (the check of the PDF). Run in the
+# the empty starting file exported as PDF (the check of the PDF); for the
+# spell check a typo, the photographer's name not left out, every word left
+# out (must fail) and the name set to »Keine« in LibreOffice (must pass). Run in the
 # office image:
 #
 #     src/scripts/office python3 src/content/trip-newspaper/dokumente.py
@@ -34,7 +36,7 @@ INTRO = ('Am Dienstag unserer Klassenfahrt ging es in den Kletterwald am Kranich
          'geklettert, und manche hatten vorher ziemlich Angst. Am Ende des Tages wollte niemand mehr nach Hause.')
 PARTS = [
     ('Die Einweisung', [
-        'Bevor es losging, hat uns eine Trainerin gezeigt, wie die Gurte sitzen und wie man sich sichert. Jeder '
+        'Vor dem Klettern hat uns eine Trainerin gezeigt, wie die Gurte sitzen und wie man sich sichert. Jeder '
         'hatte zwei Karabiner, und einer davon musste immer am Seil hängen. Das haben wir unten am Boden so lange '
         'geübt, bis es alle konnten.',
         'Diese drei Regeln galten den ganzen Tag:']),
@@ -47,6 +49,10 @@ PARTS = [
 ]
 RULES = ['Immer ein Karabiner am Seil.', 'Nie beide Karabiner zugleich lösen.', 'Auf einer Plattform höchstens drei Personen.']
 CAPTION = 'Ein Kranich, wie wir ihn vom Turm aus gesehen haben. Foto: Charles J. Sharp, CC BY-SA 4.0'
+# the photographer's name: not in the dictionary, so the finished article
+# leaves it out of the spell check (Word: »Rechtschreibung und Grammatik
+# nicht prüfen«, w:noProof)
+PHOTOGRAPHER = 'Charles J. Sharp'
 ALT = 'Ein grauer Kranich mit schwarz-weißem Hals und rotem Fleck auf dem Kopf steht in einer hohen Wiese.'
 OUTRO = ('Am Abend waren wir müde, aber stolz. Beim Abendessen hat jeder erzählt, welche Strecke er geschafft hat, '
          'und die Klassenleitung hat versprochen, dass wir im nächsten Jahr wiederkommen.')
@@ -131,13 +137,21 @@ def box_word(paragraph, shade=True):
         pr.insert_element_before(fill, *later[1:])
 
 
-def article(path, hurried=False, more=False, box=False, shade=True):
+def no_proof(run):
+    """»Rechtschreibung und Grammatik nicht prüfen«, as Word writes it"""
+    run._r.get_or_add_rPr().append(OxmlElement('w:noProof'))
+
+
+def article(path, hurried=False, more=False, box=False, shade=True, spelling=None):
     """hurried: the same article put together as at the start of the
     series: headings bold by hand, a list with typed dashes, the caption's
     number typed, no alt text, »Seite 1« typed in the footer, a double space;
     more: also an empty paragraph, a heading in capitals by format, a word
     underlined, a line ended by hand (»Ein Artikel in Eile«); box: the rules
-    in a box with a line around and (shade) a colour behind (»Ein Infokasten«)"""
+    in a box with a line around and (shade) a colour behind (»Ein Infokasten«).
+    spelling (stages that must fail): 'name', the photographer's name not
+    left out of the spell check; 'typo', »geschaft«; 'all', every word left
+    out"""
     doc = base(newspaper=not hurried)
     doc.add_paragraph(TITLE, style='Title')
     doc.add_paragraph(INTRO.replace('. Viele', '.  Viele') if hurried else INTRO)
@@ -180,7 +194,12 @@ def article(path, hurried=False, more=False, box=False, shade=True):
     else:
         c.add_run('Abbildung ')
         field(c, 'SEQ Abbildung \\* ARABIC', '1')
-        c.add_run(f': {CAPTION}')
+        before, after = CAPTION.split(PHOTOGRAPHER)
+        c.add_run(f': {before}')
+        name = c.add_run(PHOTOGRAPHER)
+        if spelling != 'name':
+            no_proof(name)
+        c.add_run(after)
     if more:
         # »stolz« underlined, a line ended by hand after »Abendessen«
         head, tail = OUTRO.split('stolz', 1)
@@ -199,7 +218,45 @@ def article(path, hurried=False, more=False, box=False, shade=True):
     else:
         footer.add_run('Seite ')
         field(footer, 'PAGE', '1')
+    if spelling == 'typo':
+        for para in doc.paragraphs:
+            for run in para.runs:
+                if 'geschafft' in run.text:
+                    run.text = run.text.replace('geschafft', 'geschaft', 1)
+                    break
+            else:
+                continue
+            break
+    if spelling == 'all':
+        for para in doc.paragraphs:
+            for run in para.runs:
+                no_proof(run)
     doc.save(path)
+
+
+def odt_with_name_unchecked(source, target):
+    """the article as LibreOffice saves it, the photographer's name set to
+    the language »Keine« (zxx), which LibreOffice keeps in the file"""
+    import shutil
+    import subprocess
+    import uno
+    sys.path.insert(0, os.path.join(HERE, '..', 'pictures-in-text'))
+    import dokumente as d
+    process, profile, desktop = d.office()
+    try:
+        doc = desktop.loadComponentFromURL(uno.systemPathToFileUrl(os.path.abspath(source)), '_blank', 0, (d.prop('Hidden', True),))
+        search = doc.createSearchDescriptor()
+        search.SearchString = PHOTOGRAPHER
+        found = doc.findFirst(search)
+        none = uno.createUnoStruct('com.sun.star.lang.Locale')
+        none.Language = 'zxx'
+        found.CharLocale = none
+        doc.storeToURL(uno.systemPathToFileUrl(os.path.abspath(target)), (d.prop('FilterName', 'writer8'),))
+        doc.close(True)
+    finally:
+        process.kill()
+        subprocess.run(['pkill', '-f', 'pipe,name=pictures_in_text'], capture_output=True)
+        shutil.rmtree(profile, ignore_errors=True)
 
 
 def to_pdf(docx, target):
@@ -285,6 +342,12 @@ if __name__ == '__main__':
     starter(os.path.join(STATIC, STARTER))
     article(os.path.join(HERE, 'stufen', 'artikel.docx'))
     article(os.path.join(HERE, 'stufen', 'artikel-eilig.docx'), hurried=True)
+    # the spell check: a typo, the name not left out, everything left out
+    # (must fail); as LibreOffice saves it with »Keine« (must pass)
+    for kind in ('typo', 'name', 'all'):
+        article(os.path.join(HERE, 'stufen', f'rechtschreibung-{kind}.docx'), spelling=kind)
+    odt_with_name_unchecked(os.path.join(HERE, 'stufen', 'rechtschreibung-name.docx'),
+                            os.path.join(HERE, 'stufen', 'rechtschreibung-keine.odt'))
     to_pdf(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'stufen', 'artikel.pdf'))
     to_pdf(os.path.join(STATIC, STARTER), os.path.join(HERE, 'stufen', 'vorlage.pdf'))
     draw_page(os.path.join(HERE, 'stufen', 'artikel.docx'), os.path.join(HERE, 'bilder', 'artikel.svg'),

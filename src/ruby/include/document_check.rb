@@ -81,7 +81,7 @@ require_relative 'office_client'
 # its hints one by one; once it holds, its label shows, ticked. Rules
 # without hints (text) are shown as usual.
 module DocumentCheck
-    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape title_page span box text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
+    RULES = %w[contains same_as scripts table_sorted crop order own_style landscape title_page span box text spaces empty_paragraphs line_breaks align gaps fonts size bold sparing no_underline no_caps list tabs table no_tabs alt_text ratio captions wrap headings levels no_direct style_changed page_breaks page_numbers toc words spelling heading_count picture_count typed_lists pdf pdf_fonts pdf_words header_text header_date footnotes styled plain_text columns margins justify hyphenation first_line_indent line_spacing].freeze + SHEET_RULES + SLIDE_RULES
     # a list marker typed by hand at the start of a paragraph
     TYPED_MARKER = /\A\s*(?:[-–•*·]|\d{1,2}[.)])\s/
     TYPED_TOC_LINE = /(?:\.{4,}|…{2,}|\t)\s*\d+\s*\z/
@@ -156,6 +156,7 @@ module DocumentCheck
                 when 'own_style' then %w[own_style example]
                 when 'landscape' then %w[landscape portrait]
                 when 'page_numbers' then %w[page_numbers total]
+                when 'spelling' then %w[spelling allow]
                 when 'span' then %w[span]
                 when 'box' then %w[box shade]
                 when 'table' then %w[table columns header]
@@ -1980,6 +1981,56 @@ module DocumentCheck
         count = (all || []).sum { |p| p['plain'].split(' ').count { |w| w.match?(/[[:alnum:]]/) } }
         item = Item.new(:rule => 'words', :label => "Mindestens #{want} Wörter", :ok => count >= want, :marks => [])
         item.message = "Dein Text hat #{count} #{count == 1 ? 'Wort' : 'Wörter'}; es sollen mindestens #{want} sein." unless item.ok
+        item
+    end
+
+    # Every word in the German dictionary (LibreOffice's, read by the
+    # service: src/office/spelling.py). A name or a word the dictionary does
+    # not know passes when the student sets its language to »Keine«
+    # (LibreOffice, Nextcloud Office) or »Rechtschreibung und Grammatik
+    # nicht prüfen« (Word): stored in the file, unlike »Ignorieren« or a
+    # word added to the dictionary of one computer. More than a tenth of
+    # the text left out that way fails. allow: words of the series
+    # (»Kranich*«: also as the start of a word, »Kranichsee«)
+    def self.rule_spelling(rule, _body, _starter, all = nil, model = nil)
+        item = Item.new(:rule => 'spelling', :label => 'Jedes Wort steht im Wörterbuch', :ok => true, :marks => [])
+        stats = (model || {})['spelling']
+        unless stats.is_a?(Hash)
+            item.ok = false
+            item.problem = 'Rechtschreibung nicht geprüft'
+            item.message = 'Die Rechtschreibung konnte ich diesmal nicht prüfen. Prüf noch einmal.'
+            return item
+        end
+        allow = Array(rule.is_a?(Hash) ? rule['allow'] : nil).map { |a| a.to_s.downcase }
+        allowed = lambda do |word|
+            w = word.downcase
+            allow.any? { |a| a.end_with?('*') ? w.start_with?(a.chomp('*')) : w == a }
+        end
+        found = Array(all).flat_map do |p|
+            Array(p['unknown']).reject { |_, _, word, _| allowed.call(word.to_s) }.map { |a, b, word, tips| [p, a, b, word, Array(tips)] }
+        end
+        words = stats['words'].to_i
+        unchecked = stats['unchecked'].to_i
+        if found.empty? && unchecked > [words / 10, 5].max
+            item.ok = false
+            item.problem = 'Zu viel ohne Rechtschreibprüfung'
+            item.message = "#{unchecked} von #{words} Wörtern hast du von der Rechtschreibprüfung ausgenommen. " \
+                'Nimm nur Namen und Wörter aus, die richtig sind und die das Wörterbuch nicht kennt; stell beim übrigen Text die Sprache wieder auf Deutsch.'
+            return item
+        end
+        return item if found.empty?
+
+        item.ok = false
+        item.marks = found.flat_map { |p, a, b, word, _| range_marks(p, a, b, "»#{word}« steht nicht im Wörterbuch") }
+        distinct = found.map { |f| f[3] }.uniq
+        item.problem = distinct.size == 1 ? "»#{q(distinct.first)}« steht nicht im Wörterbuch" : "#{distinct.size} Wörter nicht im Wörterbuch"
+        examples = found.uniq { |f| f[3] }.first(4).map do |_, _, _, word, tips|
+            "»#{q(word)}«#{tips.empty? ? '' : " (vielleicht #{tips.first(2).map { |t| "»#{q(t)}«" }.join(' oder ')})"}"
+        end
+        rest = distinct.size - examples.size
+        item.message = "#{distinct.size == 1 ? 'Dieses Wort kennt' : 'Diese Wörter kennt'} das Wörterbuch nicht: #{examples.join(', ')}" \
+            "#{rest.positive? ? " und #{rest} weitere" : ''}. Ist es ein Tippfehler, verbessere ihn. Ist es ein Name oder ein Wort, das so richtig ist, " \
+            'nimm es von der Rechtschreibprüfung aus, wie es auf der Seite steht: Dann prüft es weder dein Programm noch diese Prüfung.'
         item
     end
 

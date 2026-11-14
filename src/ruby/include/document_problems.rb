@@ -60,6 +60,7 @@ module DocumentProblems
         'page_numbers' => ->(i) { i.message.to_s.start_with?('Die Seitenzahl zählt schon') ? 'Die Seitenanzahl fehlt' : 'Seitenzahlen von Hand' },
         'toc' => ->(_) { 'Kein Inhaltsverzeichnis des Programms' },
         'words' => ->(_) { 'Zu wenige Wörter' },
+        'spelling' => ->(_) { 'Wörter nicht im Wörterbuch' },
         'pdf_fonts' => ->(_) { 'Schriften fehlen im PDF' },
         'pdf_words' => ->(_) { 'Zu wenige Wörter im PDF' },
         'header_text' => ->(i) { i.label.sub(/ in der Kopfzeile\z/, ' fehlt in der Kopfzeile') },

@@ -85,6 +85,22 @@ goes back to the families after the trip (sheet 7).
 The series has one card (`card_title: Tabellenkalkulation Schritt für
 Schritt` on sheet 1, the drawing `karte_tabellen` in office-drawings.py).
 
+**Üben und knobeln** (13 and 14 November 2026, every sheet): three extras at
+the end of each page, counting for no one. »Noch eine Runde« (the main
+task's skills on new data), »Zwei Handgriffe« (two things the page has
+not shown: TEILERGEBNIS, a second sort key, line and bar charts, rounding
+up with WENN when money is missing and a condition on text …) and »Fünf
+Fallen« (`traps: true`: a finished-looking table with five mistakes,
+from this sheet and the ones before, each with a label and three tips;
+the check counts only). The main task's `next:` offers »Noch eine Runde«
+after three or more checks and the traps after one or two. All files come
+from each sheet's `dokumente.py`, with stages that must pass and fail in
+`task-examples.yaml`. Before each set the sheet was looked through for
+shortcuts that passed: typed numbers inside formulas (`no_constants`),
+ranges one row short (`ranges`), a pie with the total as a slice (`chart`
+looks at the row below the data), a conditional format from 9 € on
+(`conditional` with `positive: true`).
+
 ## How the check reads a spreadsheet
 
 The office service (`src/office/sheet.py`) opens the workbook in Calc:
@@ -106,7 +122,9 @@ spreadsheet.
 
 Rules (docs/aufgaben.md, »document«): `formulas`, `values`, `recalc`,
 `functions`, `absolute`, `same_data`, `number_format`, `text_numbers`,
-`bold_cells`, `sorted`, `autofilter`, `conditional`, `chart`, `no_errors`.
+`bold_cells`, `sorted` (with `then:`), `autofilter`, `conditional` (with
+`positive:` or `shows:`/`other:`), `chart`, `no_errors`, `no_constants`,
+`ranges`.
 
 ## Decisions
 
@@ -133,8 +151,11 @@ Rules (docs/aufgaben.md, »document«): `formulas`, `values`, `recalc`,
 - Published on 12 November 2026, with the section Office restored for both
   series.
 - The drawn sheet shows a conditional format's colour only for conditions
-  on the cell's value against numbers; formulas as conditions, colour
-  scales and data bars are not drawn.
+  on the cell's value against numbers or text (and a formula of the form
+  G19="…"); other formulas as conditions, colour scales and data bars are
+  not drawn.
+- The extras have not met a class yet; whether »Fünf Fallen« fits after a
+  sheet's 45 minutes is to be seen.
 - Autofilter arrows are not drawn on the sheet.
 - Try a file saved by Excel (number formats, charts) once a class uses it.
 - Nextcloud Office: its menus as far as the pages name them are LibreOffice's;
