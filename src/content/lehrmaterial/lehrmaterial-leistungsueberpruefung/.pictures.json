@@ -1,0 +1,19 @@
+{
+  "script": "e2e/tests/exam-guide.pictures.ts",
+  "command": "cd e2e && HS_PICTURES=1 npx playwright test --project=pictures exam-guide",
+  "inputs": [
+    "e2e/tests/exam-guide.pictures.ts",
+    "src/ruby/include/exam_builder_page.rb",
+    "src/ruby/include/exam_builder.rb",
+    "src/ruby/include/exams_page.rb",
+    "src/ruby/include/test_workspace_package.rb",
+    "src/static/include/exams.js",
+    "src/static/include/default.css"
+  ],
+  "hash": "adc7cfe3d8df2da280a675d3b187a9e11b97f5d42c94a64fe4f185469b9fbd73",
+  "pictures": [
+    "aus-dem-workspace-farbe.webp",
+    "aus-dem-workspace.webp",
+    "workspace-rahmen.webp"
+  ]
+}

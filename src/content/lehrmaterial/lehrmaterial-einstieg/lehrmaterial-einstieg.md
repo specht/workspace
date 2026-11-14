@@ -214,7 +214,7 @@ Für dich gibt es ein **Testkonto**, genau eins: ein Konto wie das einer Schüle
 - **Abgaben und Galerie:** Gib als Testkonto eine Webseite oder eine Szene ab und sieh sie dir als Lehrkraft unter **Fortschritt** an, so wie du später die Abgaben der Klasse öffnest.
 - **Offene Antworten:** Schreib als Testkonto eine Reflexion. Unter derselben Aufgabe zeigt dir der Kasten »Für Lehrkräfte« mit **Antworten aus Testgruppe** genau, was du später von der Klasse siehst.
 - **Den Workspace:** Alles, was Lernende im Workspace tun, auch das, was dort schiefgehen kann, ohne dass ein echter Workspace einer Schülerin leidet.
-- **Leistungsüberprüfungen:** Wähl unter **Klassen** deine Testgruppe, lade im Reiter **Leistungsüberprüfungen** eine hoch; dein Testkonto nimmt dann von selbst teil. Starte sie, mach sie als Testkonto mit, beende sie und sieh dir die **Ergebnisse** an. So weißt du vorher, was die Klasse sieht und was am Ende bei dir ankommt.
+- **Leistungsüberprüfungen:** Wähl unter **Klassen** deine Testgruppe, stell im Reiter **Leistungsüberprüfungen** eine bereit; dein Testkonto nimmt dann von selbst teil. Starte sie, mach sie als Testkonto mit, beende sie und sieh dir die **Ergebnisse** an. So weißt du vorher, was die Klasse sieht und was am Ende bei dir ankommt.
 
 ### Zurücksetzen
 
@@ -261,4 +261,4 @@ Unterrichtest du an einer anderen Schule als der, die den Workspace betreibt, gi
 
 Bis dahin genügt für eine Schülerin oder einen Schüler ein schriftliches Einverständnis: Unter den Unterlagen gibt es den **Elternbrief mit Einverständniserklärung**. Du bewahrst die unterschriebenen Zettel auf und trägst im Reiter **Lernende** bei jeder Person das Datum ein; dafür bist du verantwortlich. Gesperrt wird niemand, solange das noch offen ist; die Gruppe zeigt aber, für wie viele es fehlt.
 
-Leistungsüberprüfungen bereitest du unter **Klassen** im Reiter **Leistungsüberprüfungen** vor: Lädst du dort ein Paket hoch, nehmen alle aus der Klasse teil, und einzelne nimmst du heraus oder fügst sie aus anderen Gruppen hinzu.
+Leistungsüberprüfungen bereitest du unter **Klassen** im Reiter **Leistungsüberprüfungen** vor: aus einem Ordner deines Workspace oder als fertiges Paket. Alle aus der Klasse nehmen teil, und einzelne nimmst du heraus oder fügst sie aus anderen Gruppen hinzu. Wie das geht, steht in [Leistungsüberprüfungen vorbereiten](/lehrmaterial-leistungsueberpruefung).

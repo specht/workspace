@@ -122,11 +122,21 @@ hochgeladen werden, damit neue Setup-Befehle in ihr festgeschrieben werden.
 
 ### Prüfungsfarbe
 
-`exam.color` kann `blue` oder `red` sein. Wenn die Angabe fehlt, wird `blue`
-verwendet. Die Einstellung wählt das integrierte VS-Code-Farbschema
-`Tomorrow Night Blue` bzw. `Red` für die gesamte Oberfläche einschließlich
-Editor, Willkommensseite und Panels. Änderungen gelten für neu erzeugte
-Prüfungs-Workspaces, nicht rückwirkend für bereits entpackte Prüfungen.
+`exam.look` wählt, was die Farbe färbt:
+
+- `theme` (ohne Angabe, wie bisher): das integrierte VS-Code-Farbschema
+  `Tomorrow Night Blue` bzw. `Red` für die gesamte Oberfläche einschließlich
+  Editor, Willkommensseite und Panels; `exam.color` ist `blue` (ohne Angabe)
+  oder `red`.
+- `frame`: ein Rahmen in einer Signalfarbe, die man von hinten im Raum sieht
+  (Titelleiste, Activity Bar, Reiterleiste, Statusleiste), um einen dunklen
+  Editor (`Default Dark Modern`); `exam.color` ist `yellow`, `orange`,
+  `magenta`, `green`, `blue` oder `red` (`EXAM_FRAME_COLORS` in
+  `test_workspace_package.rb`). Eigene `workbench.colorCustomizations` und ein
+  eigenes `workbench.colorTheme` unter `vscode_config` gehen vor.
+
+Änderungen gelten für neu erzeugte Prüfungs-Workspaces, nicht rückwirkend für
+bereits entpackte Prüfungen.
 
 ### Druckausgabe
 
@@ -237,9 +247,78 @@ Ein vorhandenes `.git` wird nie stillschweigend gelöscht. Bei `fresh` oder
 `git.mode: preserve`. Bei `preserve` ist ein fehlendes `.git` ebenfalls ein
 Fehler.
 
+### Repositorys in Unterordnern
+
+Ein `.git` in einem Unterordner (etwa `projekt/.git`, eine Git-Aufgabe in
+diesem Ordner) ist in jedem Modus erlaubt. Bei `fresh` und `preserve` bekommt
+jedes solche Repository wie das oberste `user.name`, `user.email` und
+`commit.gpgSign`, und das Repository zum Wiederherstellen von `fresh` trägt
+den Unterordner in `.git/info/exclude` ein, statt ihn als eingebettetes
+Repository zu committen (`TestWorkspacePackage.nested_repositories`, höchstens
+20, nicht durch Links, nicht in versteckte Ordner, höchstens sechs Ebenen tief;
+`initialize_test_git` in `main.rb`). Bei `none` richtet der Workspace nichts ein.
+
 Workspace-eigene Dateien werden bei `fresh` und `preserve` über
 `.git/info/exclude` ausgeblendet, ohne die vom Lehrer bereitgestellte
 `.gitignore` zu verändern.
+
+## Aus einem Ordner des Workspace
+
+Statt ein Archiv hochzuladen, baut die Lehrkraft das Paket im Reiter mit
+»Aus deinem Workspace« aus einem Ordner oben in ihrem eigenen Workspace
+(`exam_builder.rb`, `exam_builder_page.rb`, der Dialog in `exams.js`). Der
+Baum des Ordners wird als root gelesen, nur Namen und Größen, ohne einem Link
+zu folgen; versteckte Dateien, Build-Ordner (`ExamBuilder::ARTIFACT_DIRS` und
+Ähnliches) und Git-Verläufe beginnen nicht angekreuzt und werden nicht
+geöffnet (angekreuzt gehen sie ganz mit), Links lassen sich nicht ankreuzen.
+Je Eintrag gibt es ein Häkchen »Drucken«: Was abgewählt ist, wird zu
+`print.exclude` (ein Ordner als `ordner/**`, Sonderzeichen maskiert); Muster
+einer `config.yaml`, die schon im Ordner lag, bleiben, wenn sie zu keinem Pfad
+des Ordners passen (sie meinen Dateien, die die Klasse anlegt). Farbe, Rahmen
+und Git (`fresh` oder `none`; ein angekreuztes `.git` oben im Ordner heißt
+`preserve`) kommen aus dem Dialog; alle übrigen Angaben einer vorhandenen
+`config.yaml` (Erweiterungen, Setup, `vscode_config`, `print.include`) bleiben.
+Gepackt wird mit `tar` als Workspace-Benutzer (`setpriv`), mit einer Liste der
+Dateien und ohne Rekursion; ein Link, der nach dem Lesen des Baums
+hineingetauscht wurde, reicht also nicht weiter als die Lehrkraft lesen kann,
+und die Prüfung des Pakets lehnt Links ab. Das Paket geht danach denselben Weg
+wie ein hochgeladenes (`create_exam` in `exams_page.rb`). Höchstens 10 000
+Dateien und 100 MB.
+
+## Netz
+
+Ein Prüfungs-Workspace hängt am selben Netz wie jeder Workspace
+(`workspace_user`, eine Bridge mit NAT), kommt aber nicht hinaus:
+
+- Er bekommt ein leeres `/etc/resolv.conf` (`workspace_runtime.rb`): Namen
+  lösen sich nicht auf; die Datenbanken stehen als feste Einträge in
+  `/etc/hosts`.
+- Er bekommt eine MAC-Adresse mit dem Präfix `02:68:73`
+  (`WorkspaceRuntime::DirectDocker::EXAM_MAC_PREFIX`) und das Label
+  `hackschule.workspace.exam=true`. Die `peer_firewall` verwirft in ihrer
+  Bridge-Tabelle (Kette `exam_egress`, Hook `input`) jedes IP-Paket, das eine
+  solche Adresse an den Host schickt, also alles, was das Netz der Workspaces
+  verlässt: das Internet, auch über eine IP-Adresse, und die Ports des Hosts.
+  Die Regel ist statisch und steht von der ersten Installation der Tabelle an
+  darin; zwischen dem Start eines Prüfungs-Workspace und dem nächsten Abgleich
+  der Firewall gibt es keine Lücke. Antworten auf Verbindungen, die jemand
+  anderes geöffnet hat, gehen durch (`ct state established,related`), und
+  Verkehr innerhalb der Bridge (nginx zu code-server, die Datenbanken) läuft
+  nicht über diesen Hook. Die Adresse ändern können die Lernenden nicht (kein
+  `NET_ADMIN`, kein `NET_RAW`, `no-new-privileges`).
+- `network.allow` in `config.yaml` nennt Ausnahmen (Name oder IPv4-Adresse,
+  optional `:Port`, sonst 80 und 443, höchstens zehn). Sie werden beim Hochladen
+  geprüft und im Manifest festgehalten (`TestWorkspaceExtensions.network_allow`),
+  nie aus der Kopie der Lernenden gelesen, die `config.yaml` ändern könnten.
+  Beim Start löst das Backend die Namen auf, trägt sie mit `--add-host` ein und
+  schreibt `ip:port` in das Label `hackschule.workspace.exam.allow`; die
+  Firewall nimmt daraus `mac . ip . port` in die Menge `exam_allowed`. Eine
+  Ausnahme kommt also ein, zwei Sekunden nach dem Start, nie zu früh.
+
+Getestet: `workspace_runtime_test.rb` (MAC, Label, Namen), die Ausnahmen in
+`test_workspace_package_test.rb` und `test_workspace_extensions_test.rb`; die
+Regel selbst von Hand gegen die Bridge der Entwicklung (ein Container mit
+dieser MAC erreicht den Host nicht mehr, MySQL und Neo4j weiter).
 
 ## Klasse und Teilnehmende
 
