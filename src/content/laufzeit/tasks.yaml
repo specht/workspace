@@ -436,6 +436,26 @@ tasks:
 
         Welchen Wert hat `count` am Ende, wenn `n` gleich 1000 ist?
 
+  - id: woran-quadratisch
+    title: Woran man n² erkennt
+    prediction: true
+    prompt: Die erste Art mit ihrer Liste und die Zeile mit `count` wachsen beide mit n². Woran erkennt man so einen Aufwand im Code?
+    check:
+      type: choice
+      options:
+        - Für jedes Element geht es noch einmal durch viele der anderen.
+        - Im Code stehen zwei Schleifen über die Eingabe.
+        - In der Schleife wird bei jedem Element etwas nachgesehen.
+        - Die Schleife baut ein Ergebnis, das mit der Eingabe mitwächst.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Stehen zwei Schleifen hintereinander, läuft jede n-mal, zusammen 2n-mal, und doppelt so viel Eingabe heißt doppelt so viel Arbeit. Schau dir an, wie die beiden Schleifen um `count` zueinander stehen.
+      - when: { picked: 2 }
+        say: Die dritte Art sieht auch bei jedem Namen nach, in ihrer Menge, und braucht für doppelt so viele Namen nur doppelt so lange. Es kommt darauf an, wie viel das Nachsehen kostet.
+      - when: { picked: 3 }
+        say: Auch die Menge der dritten Art wächst mit jedem neuen Namen, und doch braucht sie für doppelt so viele Namen nur doppelt so lange.
+
   - id: hochrechnen
     title: Zehnmal so viel
     prediction: true

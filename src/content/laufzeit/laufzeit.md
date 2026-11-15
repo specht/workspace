@@ -224,6 +224,13 @@ schnell wie n², bis auf einen festen Faktor. Die Hälfte von n² ist auch
 O(n²), und O(n²) heißt immer: doppelt so viel Eingabe, viermal so viel
 Arbeit.
 
+_task(woran-quadratisch)
+
+<!-- after: woran-quadratisch -->
+Eine Schleife in einer Schleife macht n · n Schritte, auch wenn die innere
+versteckt ist wie das Nachsehen in der Liste der ersten Art. So erkennt man
+auch die anderen Arten von Aufwand:
+
 <!-- language: ruby, python -->
 <table class='table'>
 <tr><th>Aufwand</th><th>woran man ihn erkennt</th><th>Beispiel</th></tr>
@@ -248,6 +255,7 @@ Arbeit.
 <tr><td>O(n!)</td><td>jede Reihenfolge ausprobieren</td><td>die Rundfahrt unten</td></tr>
 </table>
 <!-- /language -->
+<!-- /after -->
 
 ### Wie schnell der Aufwand wächst
 
