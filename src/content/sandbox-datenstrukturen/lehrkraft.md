@@ -45,8 +45,8 @@ Eine mögliche Unterrichtsreihe:
 1. **Indizierter Speicher:** unsortierte Array-Liste, danach die unsortierte Linked List mit denselben Aufrufen. Einfügen, Entfernen, Zugriff und ihre Kosten.
 2. **Abstrakte Datentypen:** Stack und Queue als Verhalten formulieren und je zwei Implementierungen schreiben und testen; der Ring Buffer als Höhepunkt.
 3. **Sortierte Listen:** Was ändert sich am Einfügen, was an der Suche?
-4. **Bäume:** Suchbaum, Einfluss der Einfügereihenfolge auf die Höhe, AVL-Rotationen (die vier Fälle LL, RR, LR, RL) als Erweiterung.
-5. **Heap und Hashing:** Priority Queue und Hash Table als weitere Antworten auf die Frage, wie man schnell findet, was man sucht.
+4. **Bäume:** Suchbaum mit den Durchläufen `preorder`, `inorder`, `postorder` und `breadthFirst` (geprüft wie alles andere), Einfluss der Einfügereihenfolge auf die Höhe, AVL-Rotationen (die vier Fälle LL, RR, LR, RL) als Erweiterung.
+5. **Heap und Hashing:** der Min-Heap in einem Array und die Hash Table mit Verkettung als weitere Antworten auf die Frage, wie man schnell findet, was man sucht. Eine Priority Queue als eigene Übung hat die Sandbox noch nicht; der Min-Heap ist ihr Kern.
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Klassen und Objekte, Referenzen, Rekursion für die Bäume</td></tr>
