@@ -174,6 +174,26 @@ tasks:
         say: Denk an ein Telefonbuch. Stehen alle Adas darin irgendwo beieinander?
     solution: "Nein: `EXPLAIN` zeigt `type: ALL`. Ein Index über mehrere Spalten hilft nur, wenn die Suche mit seiner ersten Spalte anfängt, so wie ein Telefonbuch nur beim Nachnamen hilft."
 
+  - id: wann-index
+    title: Wann ein Index hilft
+    prediction: true
+    prompt: Du hast gesehen, bei welchen Suchen `by_phone` und `by_name` helfen und bei welchen nicht. Was haben die Suchen gemeinsam, bei denen sie helfen?
+    check:
+      type: choice
+      options:
+        - Sie fragen nach dem Anfang dessen, wonach der Index sortiert ist.
+        - Sie suchen in einer Spalte, die im Index vorkommt.
+        - Sie finden nur wenige Zeilen, sodass die Datenbank schnell fertig ist.
+        - Sie vergleichen mit `=` und nicht mit `LIKE`.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: "`first_name` kommt in `by_name` vor, und trotzdem liest `WHERE first_name = 'Ada'` alle Zeilen. Wo stehen die Adas im Index?"
+      - when: { picked: 2 }
+        say: "`LIKE '%500000'` findet eine einzige Zeile und liest trotzdem alle, `LIKE '0151 95%'` findet fast zehntausend und nutzt den Index."
+      - when: { picked: 3 }
+        say: "`LIKE '0151 95%'` nutzt den Index, `RIGHT(phone, 6) = '500000'` nicht, obwohl dort ein `=` steht."
+
   - id: kosten
     title: Nicht auf jede Spalte
     prompt: Wenn ein Index so viel schneller macht, warum legt man dann nicht auf jede Spalte einer Tabelle einen an?

@@ -346,6 +346,12 @@ _task(nur-vorname)
 <strong>Ausprobieren:</strong> Prüf deine Antwort mit <code>EXPLAIN SELECT * FROM person WHERE first_name = 'Ada'\G</code>. Ein sortiertes Verzeichnis kann auch beim Sortieren helfen. Vergleiche <code>EXPLAIN SELECT * FROM person ORDER BY last_name, first_name LIMIT 10\G</code> mit <code>EXPLAIN SELECT * FROM person ORDER BY first_name, last_name LIMIT 10\G</code>: Was steht jeweils bei <code>key</code>, bei <code>rows</code> und bei <code>Extra</code>?
 </div>
 
+_task(wann-index)
+
+<!-- after: wann-index -->
+Ein Index hilft nur, wenn die Suche nach dem Anfang dessen fragt, wonach er sortiert ist: nach dem Anfang der Nummer, nach dem Nachnamen oder nach Nachname und Vorname. Genauso hilft ein Telefonbuch bei allen, die Berger heißen, und bei allen, deren Name mit »Ber« anfängt, aber nicht bei einem Vornamen und nicht bei Namen, die auf »mann« enden.
+<!-- /after -->
+
 ### Was ein Index kostet
 
 Ein Index ist nicht umsonst. Er braucht Platz, und wie viel, zeigt `information_schema`, nachdem `ANALYZE TABLE` die Zahlen aufgefrischt hat:
