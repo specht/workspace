@@ -106,6 +106,26 @@ tasks:
           }
           ```
 
+  - id: zustand-rest
+    title: Was der Zustand weiß
+    prediction: true
+    prompt: Lies `11` (3), `100` (4), `101` (5) und `110` (6) von Hand durch den Automaten im Bild. Was sagt dir der Zustand, in dem er nach einer Ziffer ist, über die Ziffern bis dahin?
+    check:
+      type: choice
+      options:
+        - Den Rest beim Teilen der bisher gelesenen Zahl durch 3.
+        - Wie viele Ziffern er seit dem Start gelesen hat.
+        - Wie viele Einsen unter den bisher gelesenen Ziffern sind.
+        - Welche Ziffer er als letzte gelesen hat.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: '`100` und `101` haben beide drei Ziffern, aber der Automat endet einmal in q<sub>1</sub> und einmal in q<sub>2</sub>.'
+      - when: { picked: 2 }
+        say: '`11` und `101` haben beide zwei Einsen, aber der Automat endet einmal in q<sub>0</sub> und einmal in q<sub>2</sub>.'
+      - when: { picked: 3 }
+        say: '`100` und `110` enden beide auf 0, aber der Automat endet einmal in q<sub>1</sub> und einmal in q<sub>0</sub>.'
+
   - id: rest
     title: Wo endet 1011?
     prompt: |

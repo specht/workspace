@@ -170,15 +170,21 @@ Das Drehkreuz macht etwas. Viele Automaten beantworten stattdessen eine Frage ü
 
 Hier ist ein Automat, der Binärzahlen liest und annimmt, wenn sie durch 3 teilbar sind:
 
-<div class='automaton-drawing' role='img' aria-label='Drei Kreise q0, q1 und q2 für die Reste 0, 1 und 2; q0 ist der Start und hat einen doppelten Rand, weil dort Zahlen enden, die durch 3 teilbar sind. Von q0 führt 0 zurück zu q0 und 1 zu q1. Von q1 führt 1 zu q0 und 0 zu q2. Von q2 führt 0 zu q1 und 1 zurück zu q2.' data-states='q0 q1 q2' data-start='q0' data-accept='q0' data-transitions='q0 0 q0, q0 1 q1, q1 1 q0, q1 0 q2, q2 0 q1, q2 1 q2'></div>
+<div class='automaton-drawing' role='img' aria-label='Drei Kreise q0, q1 und q2; q0 ist der Start und hat einen doppelten Rand. Von q0 führt 0 zurück zu q0 und 1 zu q1. Von q1 führt 1 zu q0 und 0 zu q2. Von q2 führt 0 zu q1 und 1 zurück zu q2.' data-states='q0 q1 q2' data-start='q0' data-accept='q0' data-transitions='q0 0 q0, q0 1 q1, q1 1 q0, q1 0 q2, q2 0 q1, q2 1 q2'></div>
 
-Wie kann er das, ohne zu rechnen? Sein Zustand ist der **Rest**, der bisher beim Teilen durch 3 bleibt: In q<sub>0</sub> ist der Rest 0, in q<sub>1</sub> ist er 1, in q<sub>2</sub> ist er 2. Liest er von links eine weitere Ziffer, verdoppelt sich die Zahl, und die Ziffer kommt dazu: Aus `11` (3) wird mit einer `0` die `110` (6), mit einer `1` die `111` (7). Mit dem Rest passiert dasselbe: Aus Rest `r` wird mit der Ziffer `d` der Rest von `2 · r + d`, und der Automat geht in den Zustand mit diesem Rest als Index. Mehr als den Rest muss sich der Automat nicht merken. Für `110`:
+Wie kann er das, ohne zu rechnen? Lies ein paar Binärzahlen von Hand durch ihn und achte darauf, in welchem Zustand er nach jeder Ziffer ist und welchen Wert die Ziffern bis dahin haben.
+
+_task(zustand-rest)
+
+<!-- after: zustand-rest -->
+Sein Zustand ist der **Rest**, der bisher beim Teilen durch 3 bleibt: In q<sub>0</sub> ist der Rest 0, in q<sub>1</sub> ist er 1, in q<sub>2</sub> ist er 2. Liest er von links eine weitere Ziffer, verdoppelt sich die Zahl, und die Ziffer kommt dazu: Aus `11` (3) wird mit einer `0` die `110` (6), mit einer `1` die `111` (7). Mit dem Rest passiert dasselbe: Aus Rest `r` wird mit der Ziffer `d` der Rest von `2 · r + d`, und der Automat geht in den Zustand mit diesem Rest als Index. Mehr als den Rest muss sich der Automat nicht merken. Für `110`:
 
 <table class='table' style='width: auto;'>
 <tr><th>gelesen</th><td><code>1</code></td><td><code>11</code></td><td><code>110</code></td></tr>
 <tr><th>Wert</th><td>1</td><td>3</td><td>6</td></tr>
 <tr><th>Zustand</th><td>q<sub>1</sub></td><td>q<sub>0</sub></td><td>q<sub>0</sub></td></tr>
 </table>
+<!-- /after -->
 
 <!-- language: ruby -->
 Er endet in q<sub>0</sub>, also ist 6 durch 3 teilbar. Lege `divisible.rb` an:
