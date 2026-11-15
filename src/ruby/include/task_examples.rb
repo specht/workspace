@@ -3,6 +3,7 @@ require 'open3'
 require 'timeout'
 require 'tmpdir'
 require 'yaml'
+require_relative 'parsons'
 require_relative 'code_languages'
 require_relative 'task_check'
 require_relative 'task_spec'
@@ -152,7 +153,10 @@ module TaskExamples
             first = Array(check['expect']).first
             first.is_a?(String) && !first.include?('${') ? [['pass', { 'answer' => first }]] : []
         when 'function', 'pip', 'tests', 'turtle'
-            task['starter'].to_s.strip.empty? ? [] : [['fail', { 'answer' => task['starter'] }]]
+            cases = task['starter'].to_s.strip.empty? ? [] : [['fail', { 'answer' => task['starter'] }]]
+            # a Parsons puzzle: its lines in the right order must pass
+            cases << ['pass', { 'answer' => Parsons.code(task['parsons']) }] if task['parsons']
+            cases
         when 'circuit'
             # the editor's start: the switches and lamps, nothing between them
             [['fail', { 'answer' => CircuitCheck.starter(check) }]]
@@ -434,6 +438,8 @@ module TaskExamples
                 given = examples[task['id']] || {}
                 given = given[language] || {} if language
                 next if given['skip'] || (given['pass'].is_a?(Array) && !given['pass'].empty?)
+                # a Parsons puzzle passes with its own lines (automatic_cases)
+                next if variant['parsons']
                 "#{File.basename(dir)}/#{task['id']}#{language ? " (#{language})" : ''}"
             end
         end

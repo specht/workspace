@@ -8,7 +8,7 @@ Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in R
 </ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen und Verzweigungen, etwa aus den <a href='/kata-functions'>Katas: Erste Funktionen</a> und den <a href='/kata-decisions'>Katas: Verzweigungen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
-<li>Einstieg (4 Katas): Summe bis <code>n</code>, eine Zahlenreihe, Quadratzahlen, Countdown; der Startcode zeigt bei den ersten beiden, wo die Schleife hingehört.</li>
+<li>Einstieg (5 Karten): zuerst ein Parsons-Puzzle, gerade Zahlen zusammenzählen aus fertigen Zeilen (zwei davon gehören nicht dazu), dann Summe bis <code>n</code>, eine Zahlenreihe, Quadratzahlen, Countdown; der Startcode zeigt bei den ersten beiden Katas, wo die Schleife hingehört.</li>
 <li>Übung (4): Fakultät, Quersumme ohne Text, Fibonacci, Teiler zählen.</li>
 <li>Knobelei (3): Primzahlen, Euklids größter gemeinsamer Teiler, die Collatz-Folge.</li>
 <li>Extras (2): vollkommene Zahlen, alle Primzahlen bis eine Million in sechs Sekunden (das Sieb des Eratosthenes).</li>
@@ -26,7 +26,7 @@ Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in R
 
 #### Die Aufgaben
 
-- Einstieg: `sum_to`, `numbers`, `squares`, `countdown`.
+- Einstieg: das Puzzle `sum_even`, dann `sum_to`, `numbers`, `squares`, `countdown`.
 - Übung: `factorial`, `digit_sum`, `fibonacci`, `count_divisors`.
 - Knobelei: `prime`, `gcd`, `collatz_steps`.
 - Extras: `perfect_numbers`, `primes_up_to` mit Zeitgrenze.

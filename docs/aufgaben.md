@@ -276,6 +276,7 @@ tasks:
 | `file` | nein | Die Datei, in der gearbeitet wird, relativ zu `/workspace`; wird bei der Aufgabe angezeigt |
 | `hint` | nein | Hinweis, den man aufklappen kann; oder eine Liste von 2 bis 5 Tipps in Stufen (siehe »Tipps in Stufen«) |
 | `feedback` | nein | Eigene Rückmeldungen für typische Fehler |
+| `parsons`, `parsons_unused` | nein | Nur bei `function`: ein Parsons-Puzzle (»function«, »Parsons-Puzzles«): die Zeilen einer richtigen Lösung, eingerückt, und bis zu drei Zeilen, die nicht dazugehören |
 | `sentence_starters` | nein | Nur bei `reflection`: zwei bis vier kurze Satzanfänge ohne »…« (»Das liegt daran, dass«), als Knöpfe unter dem Textfeld; ein Klick setzt den Anfang an den Cursor. Ändern die Version nicht |
 | `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden. Was die Antwort verrät, steht auf der Seite zwischen `<!-- after: id -->` und `<!-- /after -->` und erscheint erst nach einer Antwort; nach einer anderen Aufgabe erst, wenn sie gelöst ist (didaktik.md) |
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
@@ -1099,6 +1100,36 @@ examples:
         - answer: "def gcd(a, b):\n    while b:\n        a, b = b, a % b\n    return a\n"
 ```
 
+
+#### Parsons-Puzzles
+
+Statt den Code zu tippen, setzen die Lernenden ihn aus fertigen Zeilen
+zusammen: `parsons` sind die Zeilen einer richtigen Lösung, so eingerückt,
+wie sie sein müssen (in Schritten von gleich vielen Leerzeichen, drei bis 20
+Zeilen); `parsons_unused` bis zu drei Zeilen, die richtig aussehen und nicht
+dazugehören, am besten ein typischer Fehler (`total += 1` statt
+`total += i`). Die Karte zeigt alle Zeilen sortiert und ohne Einrückung,
+damit die Seite die Lösung nicht enthält; `tasks.js` mischt sie für jede
+Person anders (immer gleich für dieselbe), und die Lernenden schieben sie
+mit Knöpfen oder mit der Maus hoch und runter, rücken sie ein und lassen weg,
+was nicht passt. Die Zeilen in ihrer Reihenfolge sind der Code, den die
+Prüfung bekommt; sie läuft wie bei jeder Kata. Ein Puzzle hat keinen
+`starter`. Jede Sprache braucht ihre eigenen Zeilen (eine Variante mit
+eigenem `check` ohne `parsons` lehnt `TaskSpec` ab). Als Beispiel, das
+bestehen muss, nimmt die Prüfung der Beispiele die Zeilen der Lösung von
+selbst (`TaskExamples.automatic_cases`).
+
+```yaml
+parsons:
+  - "def sum_even(n)"
+  - "  total = 0"
+  - "  (1..n).each do |i|"
+  - "    total += i if i.even?"
+  - "  end"
+  - "  total"
+  - "end"
+parsons_unused: ["      total += 1"]
+```
 ### pip
 
 Pip unter Funkelbach (katas.md, Abschnitt 2): Die Karte enthält einen

@@ -3,6 +3,7 @@ require 'cgi'
 require 'digest'
 require_relative 'task_check'
 require_relative 'hint_steps'
+require_relative 'parsons'
 
 # HTML of a task card on an activity page (docs/aufgaben.md, »Aufgaben auf
 # der Seite«). The card never contains what is checked against (expect,
@@ -179,9 +180,33 @@ module TaskCard
             when 'function', 'tests'
                 # A Kata: the code is written here; it starts with the task's
                 # starter. tests: the code is tests (TestsCheck).
-                io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
-                io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
-                io << "#{h.(task['starter'])}</textarea>"
+                if task['parsons']
+                    # A Parsons puzzle (Parsons): the lines sorted and without
+                    # indentation; tasks.js shuffles them per person, and the
+                    # ordered lines become the code in the hidden field
+                    unused = !Array(task['parsons_unused']).empty?
+                    io << "<div class='parsons' data-indent='#{Parsons.indent(task['parsons'])}' data-unused='#{unused}'>"
+                    io << "<p class='parsons-note'>Bring die Zeilen in die richtige Reihenfolge und rück sie ein, wo es nötig ist." \
+                          "#{unused ? ' Nicht jede Zeile gehört dazu: Was nicht passt, lässt du weg.' : ''} Ziehen geht auch.</p>"
+                    io << "<ol class='parsons-lines' aria-label='Zeilen des Programms'>"
+                    Parsons.shown(task['parsons'], task['parsons_unused']).each do |line|
+                        io << "<li class='parsons-line' data-text='#{h.(line)}' data-level='0' draggable='true'>" \
+                              "<code class='parsons-code'>#{h.(line)}</code><span class='parsons-buttons'>" \
+                              "<button type='button' class='parsons-move' data-move='up' aria-label='nach oben'><i class='bi bi-arrow-up' aria-hidden='true'></i></button>" \
+                              "<button type='button' class='parsons-move' data-move='down' aria-label='nach unten'><i class='bi bi-arrow-down' aria-hidden='true'></i></button>" \
+                              "<button type='button' class='parsons-move' data-move='left' aria-label='weniger einrücken'><i class='bi bi-arrow-bar-left' aria-hidden='true'></i></button>" \
+                              "<button type='button' class='parsons-move' data-move='right' aria-label='mehr einrücken'><i class='bi bi-arrow-bar-right' aria-hidden='true'></i></button>"
+                        io << "<button type='button' class='parsons-move' data-move='skip' aria-label='weglassen' aria-pressed='false'><i class='bi bi-x-lg' aria-hidden='true'></i></button>" if unused
+                        io << '</span></li>'
+                    end
+                    io << '</ol></div>'
+                    io << "<textarea class='form-control task-input task-code parsons-answer' name='answer' rows='6' hidden"
+                    io << " data-code-language='#{h.(check['language'])}' data-starter='' aria-labelledby='#{h.(field)}-title'></textarea>"
+                else
+                    io << "<textarea class='form-control task-input task-code' name='answer' rows='6' spellcheck='false' autocapitalize='off'"
+                    io << " data-code-language='#{h.(check['language'])}' data-starter='#{h.(task['starter'])}' aria-labelledby='#{h.(field)}-title'>"
+                    io << "#{h.(task['starter'])}</textarea>"
+                end
                 reads = if type == 'tests'
                     "Deine Tests laufen in einem eigenen kleinen Rechner, getrennt von deinem Workspace und ohne Internet: einmal mit einer richtigen Fassung von <code>#{h.(check['function'])}</code>, bei der alle bestehen müssen, und mit #{check['mutants'].size} fehlerhaften, von denen jede an mindestens einem Test scheitern muss. <kbd>Strg</kbd>+<kbd>Enter</kbd> führt aus."
                 else

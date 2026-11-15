@@ -76,7 +76,7 @@ module CodeLanguages
     # What a person's own switch stores as their choice for every page
     OWN_LANGUAGES = %w[ruby python].freeze
     DEFAULT = 'ruby'
-    VARIANT_KEYS = %w[prompt check hint solution feedback file starter].freeze
+    VARIANT_KEYS = %w[prompt check hint solution feedback file starter parsons parsons_unused].freeze
 
     START = /^[ \t]*<!--[ \t]*language:[ \t]*([a-z]+(?:[ \t,]+[a-z]+)*)[ \t]*-->[ \t]*$/
     FINISH = /^[ \t]*<!--[ \t]*\/language[ \t]*-->[ \t]*$/

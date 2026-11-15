@@ -363,6 +363,10 @@ _person(lovelace)
 
 ## Einstieg
 
+Zum Anfang schreibst du nichts selbst, sondern setzt ein Programm aus fertigen Zeilen zusammen. Achte auf die Reihenfolge und darauf, was in der Schleife steht und was danach kommt.
+
+_task(sum-even)
+
 _task(sum-to)
 
 _task(numbers)

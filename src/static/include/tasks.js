@@ -297,6 +297,7 @@
             try { codes = JSON.parse(answer || '{}') || {}; } catch (e) { codes = {}; }
             const code = codes[input.dataset.codeLanguage];
             input.value = typeof code === 'string' ? code : (input.dataset.starter || '');
+            if (card.querySelector('.parsons')) parsonsLoad(card, input.value);
             // what the server knows of this card, so that a later refresh
             // of its own functions can tell unsaved changes (loadStates)
             card.shownCode = input.value;
@@ -975,7 +976,8 @@
                 // a Kata's code in its editor, to read: colours and line
                 // numbers as when logged in (code_input.js)
                 const code = card.querySelector('.task-code');
-                if (code && window.CodeInput) {
+                if (card.querySelector('.parsons')) setupParsons(card);
+                else if (code && window.CodeInput) {
                     code.disabled = false;
                     code.readOnly = true;
                     CodeInput.attach(code);
@@ -1004,7 +1006,8 @@
             // SQL and a Kata's code: Enter makes a new line, Ctrl+Enter
             // (Cmd+Enter) checks.
             const sql = card.querySelector('.task-sql, .task-code');
-            if (sql && window.CodeInput) CodeInput.attach(sql);
+            if (card.querySelector('.parsons')) setupParsons(card);
+            else if (sql && window.CodeInput) CodeInput.attach(sql);
             const run = card.querySelector('.task-run');
             if (run) run.addEventListener('click', function () { kata(card, 'run', readAnswer(card)); });
             // the turtle: its runtime loads while the student is still reading
@@ -1086,6 +1089,7 @@
             button.innerHTML = "<i class='bi bi-box-arrow-in-down' aria-hidden='true'></i>Lösung einsetzen";
             button.addEventListener('click', () => {
                 editor.value = code;
+                if (card.querySelector('.parsons')) parsonsLoad(card, code);
                 editor.dispatchEvent(new Event('input', { bubbles: true }));
                 editor.focus({ preventScroll: true });
             });
@@ -1302,6 +1306,120 @@
         area.focus();
         area.dispatchEvent(new Event('input', { bubbles: true }));
     });
+
+    // Parsons puzzles (TaskCard, parsons.rb): the lines come sorted and
+    // without indentation; here they are shuffled per person (the same
+    // every time for one person and card), moved, indented and left out,
+    // and every change writes the code into the hidden field that »Prüfen«
+    // and »Ausführen« read.
+    function seededRandom(text) {
+        let h = 2166136261;
+        for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return function () {
+            h = (h + 0x6D2B79F5) | 0;
+            let t = Math.imul(h ^ (h >>> 15), 1 | h);
+            t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+    }
+
+    function parsonsLevel(li, level) {
+        li.dataset.level = String(Math.max(0, Math.min(8, level)));
+        li.style.setProperty('--level', li.dataset.level);
+    }
+
+    function parsonsSkip(li, on) {
+        li.classList.toggle('parsons-skipped', on);
+        const button = li.querySelector("[data-move='skip']");
+        if (button) button.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+
+    function parsonsSync(card) {
+        const box = card.querySelector('.parsons');
+        const unit = Number(box.dataset.indent) || 4;
+        const lines = Array.from(box.querySelectorAll('.parsons-line'))
+            .filter((li) => !li.classList.contains('parsons-skipped'))
+            .map((li) => ' '.repeat(unit * Number(li.dataset.level)) + li.dataset.text);
+        const area = card.querySelector('.parsons-answer');
+        area.value = lines.length ? lines.join('\n') + '\n' : '';
+        area.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    // Code back into the lines (the stored answer, »Lösung einsetzen«): each
+    // line of the code takes a line with the same text and its indentation;
+    // lines the code does not use are left out (or stay at the end).
+    function parsonsLoad(card, code) {
+        const box = card.querySelector('.parsons');
+        if (!box) return;
+        const list = box.querySelector('.parsons-lines');
+        const unit = Number(box.dataset.indent) || 4;
+        const rest = Array.from(list.children);
+        const placed = [];
+        String(code || '').split('\n').filter((line) => line.trim() !== '').forEach((line) => {
+            const i = rest.findIndex((li) => li.dataset.text === line.trim());
+            if (i < 0) return;
+            const li = rest.splice(i, 1)[0];
+            parsonsLevel(li, Math.round(line.match(/^ */)[0].length / unit));
+            parsonsSkip(li, false);
+            placed.push(li);
+        });
+        if (placed.length === 0) return; // nothing stored: the shuffled order stays
+        rest.forEach((li) => parsonsSkip(li, box.dataset.unused === 'true'));
+        placed.concat(rest).forEach((li) => list.appendChild(li));
+        parsonsSync(card);
+    }
+
+    function setupParsons(card) {
+        const box = card.querySelector('.parsons');
+        if (!box || box.dataset.ready) return;
+        box.dataset.ready = 'yes';
+        const list = box.querySelector('.parsons-lines');
+        const area = card.querySelector('.parsons-answer');
+        const items = Array.from(list.children);
+        const random = seededRandom((page.seed || '') + '\n' + card.dataset.task + '\n' + (area.dataset.codeLanguage || ''));
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+        items.forEach((li) => { parsonsLevel(li, 0); list.appendChild(li); });
+        parsonsSync(card);
+        list.addEventListener('click', function (e) {
+            const button = e.target.closest('.parsons-move');
+            if (!button || button.disabled) return;
+            const li = button.closest('.parsons-line');
+            const move = button.dataset.move;
+            if (move === 'up' && li.previousElementSibling) list.insertBefore(li, li.previousElementSibling);
+            if (move === 'down' && li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+            if (move === 'left') parsonsLevel(li, Number(li.dataset.level) - 1);
+            if (move === 'right') parsonsLevel(li, Number(li.dataset.level) + 1);
+            if (move === 'skip') parsonsSkip(li, !li.classList.contains('parsons-skipped'));
+            button.focus();
+            parsonsSync(card);
+        });
+        // dragging a line up or down
+        let dragged = null;
+        list.addEventListener('dragstart', function (e) {
+            dragged = e.target.closest('.parsons-line');
+            if (!dragged || card.classList.contains('task-logged-out')) { dragged = null; e.preventDefault(); return; }
+            dragged.classList.add('parsons-dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', dragged.dataset.text);
+        });
+        list.addEventListener('dragover', function (e) {
+            if (!dragged) return;
+            e.preventDefault();
+            const over = e.target.closest('.parsons-line');
+            if (!over || over === dragged) return;
+            const rect = over.getBoundingClientRect();
+            list.insertBefore(dragged, e.clientY < rect.top + rect.height / 2 ? over : over.nextElementSibling);
+        });
+        list.addEventListener('dragend', function () {
+            if (!dragged) return;
+            dragged.classList.remove('parsons-dragging');
+            dragged = null;
+            parsonsSync(card);
+        });
+    }
 
     // »Details« and »Lösung« under a result: open below on request.
     document.addEventListener('click', function (e) {

@@ -58,6 +58,17 @@ Fehler, nicht nur, dass etwas falsch ist (`say`, `feedback`). Diese
 Rückmeldungen sind die beste Hilfe, die der Workspace geben kann, weil sie auf
 das antworten, was jemand wirklich geschrieben hat.
 
+## Ordnen vor dem Schreiben
+
+Zwischen dem Lesen eines Programms und dem eigenen Schreiben liegt eine
+Stufe, die viele brauchen: ein Programm aus fertigen Zeilen zusammensetzen
+(Parsons-Puzzle; Parsons und Haden). Die Syntax ist schon richtig, gedacht
+wird über die Reihenfolge, die Einrückung und das, was in die Schleife
+gehört und was danach kommt; zwei Zeilen, die nicht dazugehören, sind
+typische Fehler, die man erkennen muss. Die Prüfung führt das Ergebnis aus
+wie jede Kata. Vorbild: »Gerade Zahlen zusammenzählen« am Anfang von »Katas:
+Schleifen«, vor der ersten Kata, die man selbst schreibt.
+
 ## Vermuten vor dem Ausprobieren
 
 Vor einem Ergebnis, das man vorhersagen kann, steht eine Vorhersage

@@ -2,6 +2,7 @@ require 'digest'
 require 'json'
 require 'yaml'
 require_relative 'own_functions'
+require_relative 'parsons'
 require_relative 'sql_check'
 require_relative 'cypher_check'
 require_relative 'er_check'
@@ -86,7 +87,7 @@ module TaskSpec
     # Check types that need the network; they are never used in exams.
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
-    TASK_KEYS = (%w[id title prompt check hint solution examples sentence_starters feedback prediction file exam starter level extra next] + CodeLanguages::LANGUAGES).freeze
+    TASK_KEYS = (%w[id title prompt check hint solution examples sentence_starters parsons parsons_unused feedback prediction file exam starter level extra next] + CodeLanguages::LANGUAGES).freeze
     # The levels of a Kata (docs/katas.md): 1 Einstieg, 2 Übung, 3 Knobelei.
     LEVELS = [1, 2, 3].freeze
 
@@ -233,6 +234,10 @@ module TaskSpec
             end
             extra = task[language].keys - CodeLanguages::VARIANT_KEYS
             errors << "#{language}: only #{CodeLanguages::VARIANT_KEYS.join(', ')} can differ, not #{extra.join(', ')}" unless extra.empty?
+            # a puzzle's lines are code: another language's check needs its own
+            if task.key?('parsons') && task[language].key?('check') && !task[language].key?('parsons')
+                errors << "#{language}: a Parsons puzzle needs its own parsons lines in #{CodeLanguages::NAMES[language]}"
+            end
         end
         return errors unless errors.empty?
 
@@ -278,6 +283,7 @@ module TaskSpec
                 errors << 'examples must be a list of answers in Markdown'
             end
         end
+        errors.concat(Parsons.errors(task))
         # Satzanfänge unter einer Reflexion (docs/aufgaben.md »choice, number,
         # reflection«): zwei bis vier kurze Anfänge, keine ganzen Sätze
         if task.key?('sentence_starters')

@@ -42,6 +42,211 @@ tasks:
       - when: { equals: 50 }
         say: "`50` ist `n` nach dem ersten Halbieren. Gefragt ist, wie oft halbiert wird, bis `n` nicht mehr größer als 1 ist."
 
+  - id: sum-even
+    title: "Gerade Zahlen zusammenzählen"
+    level: 1
+    prompt: |
+      Setz aus den Zeilen eine Funktion `sum_even(n)` zusammen, die alle geraden Zahlen von 1 bis `n` zusammenzählt: `sum_even(6)` ergibt `12`, denn 2 + 4 + 6 = 12.
+    parsons:
+      - "def sum_even(n)"
+      - "  total = 0"
+      - "  (1..n).each do |i|"
+      - "    if i.even?"
+      - "      total += i"
+      - "    end"
+      - "  end"
+      - "  total"
+      - "end"
+    parsons_unused:
+      - "  total = 1"
+      - "      total += 1"
+    check:
+      type: function
+      language: ruby
+      cases:
+        - { call: "sum_even(6)", expect: "12" }
+        - { call: "sum_even(1)", expect: "0" }
+        - { call: "sum_even(2)", expect: "2" }
+        - { call: "sum_even(0)", expect: "0" }
+      random:
+        count: 4
+        call: "sum_even(n)"
+        args: { n: 1..2000 }
+        reference: "(n / 2) * (n / 2 + 1)"
+    hint:
+      - Ganz oben steht die erste Zeile der Funktion, ganz unten ihr Ende. Was kommt dazwischen, und in welcher Reihenfolge braucht die Funktion es?
+      - Erst die Variable für die Summe, dann die Schleife, in ihr die Bedingung und in der Bedingung das Addieren. Was in einer Schleife oder Bedingung steht, ist eine Stufe weiter eingerückt. Zwei Zeilen gehören nicht dazu.
+    solution: |
+      ```ruby
+      def sum_even(n)
+        total = 0
+        (1..n).each do |i|
+          if i.even?
+            total += i
+          end
+        end
+        total
+      end
+      ```
+    python:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `sum_even(n)` zusammen, die alle geraden Zahlen von 1 bis `n` zusammenzählt: `sum_even(6)` ergibt `12`, denn 2 + 4 + 6 = 12.
+      parsons:
+        - "def sum_even(n):"
+        - "    total = 0"
+        - "    for i in range(1, n + 1):"
+        - "        if i % 2 == 0:"
+        - "            total += i"
+        - "    return total"
+      parsons_unused:
+        - "    total = 1"
+        - "            total += 1"
+      check:
+        type: function
+        language: python
+        cases:
+          - { call: "sum_even(6)", expect: "12" }
+          - { call: "sum_even(1)", expect: "0" }
+          - { call: "sum_even(2)", expect: "2" }
+          - { call: "sum_even(0)", expect: "0" }
+        random:
+          count: 4
+          call: "sum_even(n)"
+          args: { n: 1..2000 }
+          reference: "(n // 2) * (n // 2 + 1)"
+      solution: |
+        ```python
+        def sum_even(n):
+            total = 0
+            for i in range(1, n + 1):
+                if i % 2 == 0:
+                    total += i
+            return total
+        ```
+    javascript:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `sumEven(n)` zusammen, die alle geraden Zahlen von 1 bis `n` zusammenzählt: `sumEven(6)` ergibt `12`, denn 2 + 4 + 6 = 12.
+      parsons:
+        - "function sumEven(n) {"
+        - "  let total = 0;"
+        - "  for (let i = 1; i <= n; i++) {"
+        - "    if (i % 2 === 0) {"
+        - "      total += i;"
+        - "    }"
+        - "  }"
+        - "  return total;"
+        - "}"
+      parsons_unused:
+        - "  let total = 1;"
+        - "      total += 1;"
+      check:
+        type: function
+        language: javascript
+        cases:
+          - { call: "sumEven(6)", expect: "12" }
+          - { call: "sumEven(1)", expect: "0" }
+          - { call: "sumEven(2)", expect: "2" }
+          - { call: "sumEven(0)", expect: "0" }
+        random:
+          count: 4
+          call: "sumEven(n)"
+          args: { n: 1..2000 }
+          reference: "Math.floor(n / 2) * (Math.floor(n / 2) + 1)"
+      solution: |
+        ```javascript
+        function sumEven(n) {
+          let total = 0;
+          for (let i = 1; i <= n; i++) {
+            if (i % 2 === 0) {
+              total += i;
+            }
+          }
+          return total;
+        }
+        ```
+    dart:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `int sumEven(int n)` zusammen, die alle geraden Zahlen von 1 bis `n` zusammenzählt: `sumEven(6)` ergibt `12`, denn 2 + 4 + 6 = 12.
+      parsons:
+        - "int sumEven(int n) {"
+        - "  var total = 0;"
+        - "  for (var i = 1; i <= n; i++) {"
+        - "    if (i.isEven) {"
+        - "      total += i;"
+        - "    }"
+        - "  }"
+        - "  return total;"
+        - "}"
+      parsons_unused:
+        - "  var total = 1;"
+        - "      total += 1;"
+      check:
+        type: function
+        language: dart
+        random:
+          count: 4
+          call: "sumEven(n)"
+          args: { n: "1..2000" }
+          reference: "(n ~/ 2) * (n ~/ 2 + 1)"
+        cases:
+          - { call: "sumEven(6)", expect: "12" }
+          - { call: "sumEven(1)", expect: "0" }
+          - { call: "sumEven(2)", expect: "2" }
+          - { call: "sumEven(0)", expect: "0" }
+      solution: |
+        ```dart
+        int sumEven(int n) {
+          var total = 0;
+          for (var i = 1; i <= n; i++) {
+            if (i.isEven) {
+              total += i;
+            }
+          }
+          return total;
+        }
+        ```
+    java:
+      prompt: |
+        Setz aus den Zeilen eine Methode `int sumEven(int n)` zusammen, die alle geraden Zahlen von 1 bis `n` zusammenzählt: `sumEven(6)` ergibt `12`, denn 2 + 4 + 6 = 12.
+      parsons:
+        - "int sumEven(int n) {"
+        - "    int total = 0;"
+        - "    for (int i = 1; i <= n; i++) {"
+        - "        if (i % 2 == 0) {"
+        - "            total += i;"
+        - "        }"
+        - "    }"
+        - "    return total;"
+        - "}"
+      parsons_unused:
+        - "    int total = 1;"
+        - "            total += 1;"
+      check:
+        type: function
+        language: java
+        random:
+          count: 4
+          call: "sumEven(n)"
+          args: { n: "1..2000" }
+          reference: "(n / 2) * (n / 2 + 1)"
+        cases:
+          - { call: "sumEven(6)", expect: "12" }
+          - { call: "sumEven(1)", expect: "0" }
+          - { call: "sumEven(2)", expect: "2" }
+          - { call: "sumEven(0)", expect: "0" }
+      solution: |
+        ```java
+        int sumEven(int n) {
+            int total = 0;
+            for (int i = 1; i <= n; i++) {
+                if (i % 2 == 0) {
+                    total += i;
+                }
+            }
+            return total;
+        }
+        ```
+
   - id: sum-to
     title: "Von 1 bis n zusammenzählen"
     level: 1

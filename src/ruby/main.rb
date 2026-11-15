@@ -1885,6 +1885,9 @@ class Main < Sinatra::Base
         # moves them; the values stay the original option numbers).
         if user_logged_in?
             config[:order] = TaskCard.option_orders(@session_user[:email], tasks[:activity], tasks[:on_page], tasks[:by_id])
+            # Parsons puzzles: the lines in an order of their own for each
+            # person (tasks.js shuffles with it); a hash, not the address
+            config[:seed] = Digest::SHA256.hexdigest("parsons\n#{@session_user[:email]}")[0, 16]
             answers = open_answers_config(tasks, slug)
             config[:teacher] = answers if answers
             solutions = kata_solutions_config(tasks)

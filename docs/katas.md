@@ -210,6 +210,11 @@ compilers hot (`src/ruby/include/hot_compile.rb`):
   program first when it has code of its own, shows what it prints, then
   checks; at first there were two buttons, which confused.
 - **The level is a word with three bars**, not dots; Extras say »Extra«.
+- **Parsons puzzles** (`parsons`, docs/aufgaben.md »Parsons-Puzzles«): a
+  function card whose code is put together from given lines, shuffled per
+  person, with up to three lines that do not belong; the first card of
+  »Katas: Schleifen« is one, before students write code themselves (the
+  LAA concept: reading and ordering before writing).
 - **»Lösung einsetzen«** beside a Kata's buttons for teachers puts the
   solution into the editor; the solution is never in the card's HTML.
 - **Visitors** see a Kata's code read-only in the same editor, with colours
