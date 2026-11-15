@@ -27,7 +27,7 @@ tasks:
     prompt: Schreib `read_ways` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - read_ways('routenplaner-starter/data/test.tsv').size: 3
         - call: read_ways('routenplaner-starter/data/test.tsv').first[:name]
@@ -74,7 +74,7 @@ tasks:
       prompt: Schreib `read_ways` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'len(read_ways(''routenplaner-starter/data/test.tsv''))'
             expect: 3
@@ -147,7 +147,7 @@ tasks:
     prompt: Schreib `distance` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: (distance(13.3, 52.45, 13.3, 52.451) - 111.2).abs < 0.5
           expect: true
@@ -189,7 +189,7 @@ tasks:
       prompt: Schreib `distance` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'abs(distance(13.3, 52.45, 13.3, 52.451) - 111.2) < 0.5'
             expect: true
@@ -232,7 +232,7 @@ tasks:
     prompt: Schreib `build_graph` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:nodes].size: 5
         - call: build_graph(read_ways('routenplaner-starter/data/test.tsv'))[:nodes]['2']
@@ -276,7 +276,7 @@ tasks:
       prompt: Schreib `build_graph` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'len(build_graph(read_ways(''routenplaner-starter/data/test.tsv''))[''nodes''])'
             expect: 5
@@ -322,7 +322,7 @@ tasks:
     prompt: Schreib `path_to` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: path_to({ 'a' => nil, 'b' => 'a', 'c' => 'b' }, 'c')
           expect: "['a', 'b', 'c']"
@@ -364,7 +364,7 @@ tasks:
       prompt: Schreib `path_to` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'path_to({''a'': None, ''b'': ''a'', ''c'': ''b''}, ''c'')'
             expect: "['a', 'b', 'c']"
@@ -408,7 +408,7 @@ tasks:
     prompt: Schreib `breadth_first` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
           expect: "['11', '21', '22', '16']"
@@ -458,7 +458,7 @@ tasks:
       prompt: Schreib `breadth_first` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
             expect: "['11', '21', '22', '16']"
@@ -532,7 +532,7 @@ tasks:
     prompt: Schreib `dijkstra` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
           expect: "['11', '12', '13', '14', '15', '16']"
@@ -590,7 +590,7 @@ tasks:
       prompt: Schreib `dijkstra` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
             expect: "['11', '12', '13', '14', '15', '16']"
@@ -648,7 +648,7 @@ tasks:
     prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: h = MinHeap.new; [5, 3, 8, 1].each { |x| h.push(x, x.to_s) }; Array.new(4) { h.pop }
           expect: "[[1, '1'], [3, '3'], [5, '5'], [8, '8']]"
@@ -716,7 +716,7 @@ tasks:
       prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: '(lambda h: [h.push(x, str(x)) for x in [5, 3, 8, 1]] and [tuple(h.pop()) for _ in range(4)])(MinHeap())'
             expect: "[(1, '1'), (3, '3'), (5, '5'), (8, '8')]"
@@ -787,7 +787,7 @@ tasks:
       nächsten Knoten mit `pop` aus einem `MinHeap` holt.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
           expect: "['11', '12', '13', '14', '15', '16']"
@@ -825,7 +825,7 @@ tasks:
         `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap` holt.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
             expect: "['11', '12', '13', '14', '15', '16']"
@@ -862,7 +862,7 @@ tasks:
     prompt: Schreib `a_star` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
           expect: "['11', '12', '13', '14', '15', '16']"
@@ -921,7 +921,7 @@ tasks:
       prompt: Schreib `a_star` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
             expect: "['11', '12', '13', '14', '15', '16']"
@@ -982,7 +982,7 @@ tasks:
     prompt: Schreib `build_travel_graph` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: build_travel_graph(read_ways('routenplaner-starter/data/test.tsv'), 'foot')[:edges]['5'].map(&:first).sort
           expect: "['3', '4']"
@@ -1048,7 +1048,7 @@ tasks:
       prompt: Schreib `build_travel_graph` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'sorted(e[0] for e in build_travel_graph(read_ways(''routenplaner-starter/data/test.tsv''), ''foot'')[''edges''][''5''])'
             expect: "['3', '4']"
@@ -1115,7 +1115,7 @@ tasks:
     prompt: Schreib `tour_length` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 1, 2, 3, 4])
           expect: 52
@@ -1139,7 +1139,7 @@ tasks:
       prompt: Schreib `tour_length` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 1, 2, 3, 4])'
             expect: 52
@@ -1165,7 +1165,7 @@ tasks:
     prompt: Schreib `best_tour` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))
           expect: 30
@@ -1192,7 +1192,7 @@ tasks:
       prompt: Schreib `best_tour` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], best_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))'
             expect: 30
@@ -1221,7 +1221,7 @@ tasks:
     prompt: Schreib `nearest_tour` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: nearest_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]])
           expect: '[0, 3, 2, 1, 4]'
@@ -1242,7 +1242,7 @@ tasks:
       prompt: Schreib `nearest_tour` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'list(nearest_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))'
             expect: '[0, 3, 2, 1, 4]'
@@ -1265,7 +1265,7 @@ tasks:
     prompt: Schreib `improve_tour` in `routes.rb`.
     check:
       type: ruby
-      file: routenplaner-starter/routes.rb
+      file: routenplaner-starter/ruby/routes.rb
       cases:
         - call: tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]))
           expect: 30
@@ -1314,7 +1314,7 @@ tasks:
       prompt: Schreib `improve_tour` in `routes.py`.
       check:
         type: python
-        file: routenplaner-starter/routes.py
+        file: routenplaner-starter/python/routes.py
         cases:
           - call: 'tour_length([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], improve_tour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]))'
             expect: 30

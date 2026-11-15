@@ -119,7 +119,7 @@ let marks = []; // [[lon, lat, Farbe, Radius], …]
 let chosen = { start: null, goal: null }; // die gewählten Orte
 let lines = []; // [[[lon, lat], [lon, lat]], …] hervorgehoben
 let fitted = null; // was ganz zu sehen sein soll, bis jemand die Karte bewegt: [West, Süd, Ost, Nord, Zoom höchstens]
-let search = 'bfs'; // welche Suche aus routes.rb
+let search = 'bfs'; // welche Suche aus deinen Funktionen
 let mode = 'length'; // wie gereist wird: length (Meter), foot, bike, car (Sekunden)
 let tab = 'route'; // route oder tour
 let stops = []; // die Orte der Rundfahrt
@@ -417,7 +417,15 @@ async function showGraph(on) {
         graph = null;
         return draw();
     }
-    const answer = await (await fetch('graph.json')).json();
+    let answer;
+    try {
+        answer = await fetchAnswer('graph.json');
+    } catch (error) {
+        layer = 'map';
+        pressLayer?.(layer);
+        info.textContent = `Graph: ${error.message}. Mehr steht im Terminal.`;
+        return;
+    }
     if (answer.missing) {
         layer = 'map';
         pressLayer?.(layer);
@@ -694,9 +702,15 @@ function resized() {
 window.addEventListener('resize', resized);
 new ResizeObserver(() => resized()).observe(canvas, { box: 'device-pixel-content-box' });
 
-// Ein Klick: der Knoten dort und seine Nachbarn (build_graph in routes.rb)
+// Ein Klick: der Knoten dort und seine Nachbarn (build_graph in deinen Funktionen)
 async function clicked(lon, lat) {
-    const answer = await (await fetch(`neighbours?lon=${lon}&lat=${lat}`)).json();
+    let answer;
+    try {
+        answer = await fetchAnswer(`neighbours?lon=${lon}&lat=${lat}`);
+    } catch (error) {
+        info.textContent = `Knoten und Nachbarn: ${error.message}. Mehr steht im Terminal.`;
+        return;
+    }
     if (answer.missing) {
         info.textContent = `Für Knoten und Nachbarn fehlt noch ${answer.missing} in ${program()}.`;
         return;
@@ -760,7 +774,16 @@ function showChoice() {
 const SEARCH_NAMES = { bfs: 'Breitensuche', dijkstra: 'Dijkstra', astar: 'A*' };
 const MODE_NAMES = { length: 'Strecke', foot: 'zu Fuß', bike: 'mit dem Rad', car: 'mit dem Auto' };
 
-// Die Datei mit den Funktionen: routes.rb oder routes.py, je nach Server
+// Die Datei mit deinen Funktionen, je nach Sprache (ruby/routes.rb, dart/routes.dart, …)
+// Eine Antwort des Servers. Hat dein Programm einen Fehler, schickt der
+// Server ihn mit (error), und die Seite zeigt ihn an.
+async function fetchAnswer(url) {
+    const response = await fetch(url);
+    const answer = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(answer.error || `Fehler in ${program()}`);
+    return answer;
+}
+
 function program() {
     return data?.program || 'routes.rb';
 }
@@ -787,11 +810,9 @@ async function findRoute() {
     info.textContent = `${name} sucht …`;
     let answer;
     try {
-        const response = await fetch(`route?search=${search}&mode=${mode}&from=${start.lon},${start.lat}&to=${goal.lon},${goal.lat}`);
-        if (!response.ok) throw new Error(response.status);
-        answer = await response.json();
-    } catch {
-        if (ask === asked) info.textContent = `${name}: Fehler in ${program()}. Was schiefging, steht im Terminal.`;
+        answer = await fetchAnswer(`route?search=${search}&mode=${mode}&from=${start.lon},${start.lat}&to=${goal.lon},${goal.lat}`);
+    } catch (error) {
+        if (ask === asked) info.textContent = `${name}: ${error.message}. Mehr steht im Terminal.`;
         return;
     }
     if (ask !== asked) return; // inzwischen anders gewählt
@@ -1033,11 +1054,9 @@ async function findTour() {
     let answer;
     try {
         const points = stops.map((p) => `${p.lon},${p.lat}`).join(';');
-        const response = await fetch(`tour?search=${search}&mode=${mode}&method=${method}&stops=${points}`);
-        if (!response.ok) throw new Error(response.status);
-        answer = await response.json();
-    } catch {
-        if (ask === asked) info.textContent = `Rundfahrt: Fehler in ${program()}. Was schiefging, steht im Terminal.`;
+        answer = await fetchAnswer(`tour?search=${search}&mode=${mode}&method=${method}&stops=${points}`);
+    } catch (error) {
+        if (ask === asked) info.textContent = `Rundfahrt: ${error.message}. Mehr steht im Terminal.`;
         return;
     }
     if (ask !== asked) return;

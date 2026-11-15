@@ -6,22 +6,22 @@ activity: routenplaner
 examples:
   lesen:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   abstand:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # ohne den Cosinus: nach Osten zu weit
       - files:
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/routes.rb:
             text: |
               def distance(lon1, lat1, lon2, lat2)
                   Math.sqrt((lon2 - lon1)**2 + (lat2 - lat1)**2) * Math::PI / 180 * 6_371_000
@@ -29,12 +29,12 @@ examples:
         say: Cosinus
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/routes.py:
               text: |
                 import math
                 def distance(lon1, lat1, lon2, lat2):
@@ -42,23 +42,23 @@ examples:
           say: Cosinus
   graph:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   weg:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # vorwärts statt rückwärts: der Weg vom Ziel zum Start
       - files:
-          routenplaner-starter/solution.rb: loesung/routes-5.rb
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def path_to(previous, goal)
@@ -74,12 +74,12 @@ examples:
         say: unshift
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def path_to(previous, goal):
@@ -94,14 +94,14 @@ examples:
           say: insert
   breitensuche:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       # die Meter statt der Kanten: Dijkstra unter dem Namen der Breitensuche
       - files:
-          routenplaner-starter/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def breadth_first(graph, start, goal)
@@ -110,13 +110,13 @@ examples:
         say: Eichenweg
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
+            routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def breadth_first(graph, start, goal):
@@ -124,14 +124,14 @@ examples:
           say: Eichenweg
   dijkstra:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       # die Breitensuche unter dem Namen Dijkstra: zählt Kanten, nicht Meter
       - files:
-          routenplaner-starter/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def dijkstra(graph, start, goal)
@@ -140,13 +140,13 @@ examples:
         say: Lindenstraße
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
+            routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def dijkstra(graph, start, goal):
@@ -154,13 +154,13 @@ examples:
           say: Lindenstraße
   heap:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # ein sortiertes Array statt eines Heaps: richtig, aber langsam
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               class MinHeap
@@ -176,12 +176,12 @@ examples:
         say: Elternteil
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 class MinHeap:
@@ -197,15 +197,15 @@ examples:
           say: Elternteil
   dijkstra-heap:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
-      - files: { routenplaner-starter/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         say: MinHeap
       # der Heap ist fertig, dijkstra sucht noch in frontier
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def dijkstra(graph, start, goal)
@@ -233,9 +233,9 @@ examples:
         say: MinHeap
       # mit dem Heap, aber ohne done: b kommt zweimal dran
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def dijkstra(graph, start, goal)
@@ -264,14 +264,14 @@ examples:
         say: done
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/routes.py: loesung/routes-5.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes-5.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         # der Heap ist fertig, dijkstra sucht noch in frontier
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
+            routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
 
@@ -298,9 +298,9 @@ examples:
           say: MinHeap
         # mit dem Heap, aber ohne done: b kommt zweimal dran
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
+            routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
 
@@ -328,15 +328,15 @@ examples:
           say: done
   astern:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       # Dijkstra unter dem Namen A*: der richtige Weg, aber auch nach Norden gesucht
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
           routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def a_star(graph, start, goal)
@@ -345,14 +345,14 @@ examples:
         say: Schätzung
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
+            routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def a_star(graph, start, goal):
@@ -360,14 +360,14 @@ examples:
           say: Schätzung
   reisen:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       # ohne Einbahnstraßen
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def build_travel_graph(ways, mode)
@@ -393,18 +393,18 @@ examples:
         say: Einbahnstraße
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   rundfahrt:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # ohne den Weg zurück
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def tour_length(costs, order)
@@ -413,12 +413,12 @@ examples:
         say: zurück
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def tour_length(costs, order):
@@ -426,13 +426,13 @@ examples:
           say: zurück
   alle-reihenfolgen:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # der nächste Nachbar statt aller Reihenfolgen
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def best_tour(costs)
@@ -441,12 +441,12 @@ examples:
         say: kürzeste
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def best_tour(costs):
@@ -454,23 +454,23 @@ examples:
           say: kürzeste
   naechster-nachbar:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
   zwei-opt:
     pass:
-      - files: { routenplaner-starter/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/routes.rb: vorlage/routes.rb }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # nichts verbessert
       - files:
-          routenplaner-starter/solution.rb: loesung/routes.rb
-          routenplaner-starter/routes.rb:
+          routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def improve_tour(costs, order)
@@ -479,12 +479,12 @@ examples:
         say: 2-opt
     python:
       pass:
-        - files: { routenplaner-starter/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/routes.py: vorlage/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
-            routenplaner-starter/solution.py: loesung/routes.py
-            routenplaner-starter/routes.py:
+            routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def improve_tour(costs, order):

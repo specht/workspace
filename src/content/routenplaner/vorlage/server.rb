@@ -1,19 +1,30 @@
 # Der Server des Routenplaners: Er liefert die Karte an den Browser und fragt
-# deine Funktionen in routes.rb nach Nachbarn und Routen.
+# deine Funktionen nach Nachbarn und Routen. Gestartet wird er mit ./run.
 #
-#   ruby server.rb                 # Steglitz-Zehlendorf
-#   AREA=mitte ruby server.rb      # ein anderer Bezirk, oder AREA=berlin für ganz Berlin
-#   AREA=mitte,pankow ruby server.rb   # mehrere Bezirke zusammen
+#   ./run                      # die Sprache, deren Ordner du zuletzt geändert hast
+#   ./run dart                 # ruby, python, dart, javascript oder java
+#   AREA=mitte ./run           # ein anderer Bezirk, oder AREA=berlin für ganz Berlin
+#   AREA=mitte,pankow ./run    # mehrere Bezirke zusammen
 #
-# Nach jeder Änderung an routes.rb: mit Strg+C beenden und neu starten.
+# Deine Funktionen stehen im Ordner deiner Sprache (ruby/routes.rb,
+# python/routes.py, dart/routes.dart, javascript/routes.js, java/Routes.java).
+# Der Server startet sie als eigenes Programm, die Brücke (bridge.* im selben
+# Ordner), und fragt sie über eine Verbindung auf diesem Rechner. Änderst du
+# etwas im Ordner, startet er sie von selbst neu, sobald du speicherst.
 
+LANGUAGE_WANTED = ARGV.shift # vor Sinatra, das ARGV sonst selbst liest
+
+require 'fileutils'
 require 'json'
+require 'monitor'
 require 'open-uri'
+require 'open3'
 require 'sinatra'
+require 'socket'
+require 'tmpdir'
 require 'zlib'
 
 $stdout.sync = true # jede Meldung sofort, nicht erst am Ende
-require_relative 'routes'
 
 # Die zwölf Bezirke und ganz Berlin; was nicht in data/ liegt, lädt der
 # Server beim ersten Mal herunter
@@ -44,6 +55,174 @@ PLACES_FILE = data_file(AREA, '-places')
 if PARTS.size > 1
     File.write(FILE, PARTS.flat_map { |area| File.readlines(data_file(area)) }.uniq.join)
     File.write(PLACES_FILE, PARTS.flat_map { |area| File.readlines(data_file(area, '-places')) }.uniq.join)
+end
+
+# Die Sprachen: für jede die Datei mit deinen Funktionen und wie die Brücke
+# startet, im Ordner der Sprache
+LANGUAGES = {
+    'ruby' => ['ruby/routes.rb', %w[ruby bridge.rb]],
+    'python' => ['python/routes.py', %w[python3 -u bridge.py]],
+    'dart' => ['dart/routes.dart', %w[dart run bridge.dart]],
+    'javascript' => ['javascript/routes.js', %w[node bridge.js]],
+    'java' => ['java/Routes.java', %w[java Bridge]],
+}.freeze
+
+# Ohne Angabe die Sprache, deren Datei zuletzt geändert wurde; gleich alt
+# (gerade geklont): Ruby
+def chosen_language
+    if LANGUAGE_WANTED
+        abort "Keine Sprache #{LANGUAGE_WANTED}. Es gibt: #{LANGUAGES.keys.join(', ')}" unless LANGUAGES.key?(LANGUAGE_WANTED)
+        return LANGUAGE_WANTED
+    end
+    times = LANGUAGES.to_h { |name, (program, _)| [name, File.mtime(File.join(__dir__, program)).to_f] }
+    newest, time = times.max_by(&:last)
+    time - times.values.min < 1 ? 'ruby' : newest
+end
+
+LANGUAGE = chosen_language
+PROGRAM = LANGUAGES[LANGUAGE][0]
+
+# Die Brücke: deine Funktionen als eigenes Programm. Der Server schickt ihr
+# eine Frage als eine Zeile JSON und liest die Antwort als eine Zeile, über
+# eine Verbindung auf 127.0.0.1; was dein Programm ausgibt, erscheint im
+# Terminal. Ändert sich eine Datei im Ordner, startet sie neu (Java: erst
+# javac). Die Graphen, die sie gebaut hat, merkt sich der Server, bis sie
+# neu startet.
+class Bridge
+    attr_reader :failure
+
+    def initialize(language)
+        @language = language
+        @program, @command = LANGUAGES[language]
+        @folder = File.join(__dir__, language)
+        @listener = TCPServer.new('127.0.0.1', 0)
+        @lock = Monitor.new
+        @graphs = {}
+        @output = []
+    end
+
+    # Die Dateien im Ordner mit Zeit und Größe, ohne was beim Übersetzen entsteht
+    def fingerprint
+        Dir.glob('**/*', base: @folder).sort.filter_map do |name|
+            path = File.join(@folder, name)
+            next if !File.file?(path) || name.end_with?('.class', '.pyc') || name.start_with?('.dart_tool/')
+
+            [name, File.mtime(path).to_f, File.size(path)]
+        end
+    end
+
+    def changed? = @lock.synchronize { fingerprint != @print }
+
+    # Eine Frage an die Brücke; startet sie vorher, wenn nötig. Antwortet sie
+    # nicht (abgestürzt, zu lange), steht der Grund unter 'error'.
+    def ask(request, timeout: 300)
+        @lock.synchronize do
+            start unless running?
+            return { 'error' => @failure } if @failure
+
+            @socket.write("#{JSON.generate(request)}\n")
+            line = IO.select([@socket], nil, nil, timeout) ? @socket.gets : :late
+            if line.nil? || line == :late
+                why = line == :late ? "keine Antwort nach #{timeout} Sekunden" : 'beendet'
+                stop
+                return { 'error' => "#{@program}: #{why}. #{last_error}".strip }
+            end
+            JSON.parse(line)
+        end
+    end
+
+    # Der Graph für eine Art zu reisen ('length': build_graph), gebaut von
+    # deinen Funktionen: { 'graph' => … } oder 'missing' oder 'error'
+    def graph(mode)
+        @lock.synchronize do
+            start unless running?
+            return { 'graph' => @graphs[mode] } if @graphs[mode]
+
+            answer = ask({ 'op' => 'graph', 'mode' => mode, 'file' => FILE })
+            return answer unless answer['graph']
+
+            g = answer['graph']
+            @graphs[mode] = { nodes: g['nodes'] || {}, edges: g['edges'] || {}, fastest: g['fastest'] }
+            puts "Graph#{mode == 'length' ? '' : " #{MODES[mode]}"}: #{@graphs[mode][:nodes].size} Knoten"
+            { 'graph' => @graphs[mode] }
+        end
+    end
+
+    def running?
+        return false unless @print == fingerprint
+        return true if @failure # ein Fehler bleibt, bis sich eine Datei ändert
+
+        !@pid.nil? && Process.waitpid(@pid, Process::WNOHANG).nil?
+    rescue Errno::ECHILD
+        false
+    end
+
+    def start
+        again = !@print.nil?
+        stop
+        @print = fingerprint
+        @graphs.clear
+        @failure = nil
+        @output = []
+        puts again ? "#{@program} geändert, die Brücke startet neu …" : "Deine Funktionen: #{@program}"
+        command = @command
+        if @language == 'java'
+            build = File.join(Dir.tmpdir, "routenplaner-java-#{Process.pid}")
+            FileUtils.rm_rf(build)
+            FileUtils.mkdir_p(build)
+            out, status = Open3.capture2e('javac', '-encoding', 'UTF-8', '-d', build, *Dir[File.join(@folder, '*.java')].sort)
+            unless status.success?
+                puts out
+                @output = out.lines
+                return @failure = "#{@program} lässt sich nicht übersetzen. #{last_error}".strip
+            end
+            command = ['java', '-cp', build, 'Bridge']
+        end
+        reader, writer = IO.pipe
+        begin
+            @pid = Process.spawn({ 'ROUTES_PORT' => @listener.addr[1].to_s }, *command, chdir: @folder, out: writer, err: writer)
+        rescue SystemCallError => e
+            return @failure = "#{command.first} lässt sich nicht starten: #{e.message}"
+        ensure
+            writer.close
+        end
+        Thread.new do
+            reader.each_line do |line|
+                print line
+                @output << line
+                @output.shift while @output.size > 40
+            end
+        end
+        # warten, bis sie sich meldet, oder bis sie aufgibt (ein Fehler beim Laden)
+        deadline = Process.clock_gettime(Process::CLOCK_MONOTONIC) + 120
+        until IO.select([@listener], nil, nil, 0.2)
+            if Process.waitpid(@pid, Process::WNOHANG) || Process.clock_gettime(Process::CLOCK_MONOTONIC) > deadline
+                sleep 0.2 # die letzten Zeilen ihrer Ausgabe
+                @pid = nil
+                return @failure = "#{@program}: Fehler beim Start. #{last_error}".strip
+            end
+        end
+        @socket = @listener.accept
+        nil
+    end
+
+    def stop
+        @socket&.close rescue nil
+        @socket = nil
+        return unless @pid
+
+        Process.kill('TERM', @pid) rescue nil
+        20.times { break if (Process.waitpid(@pid, Process::WNOHANG) rescue true); sleep 0.05 }
+        Process.kill('KILL', @pid) rescue nil
+        Process.waitpid(@pid) rescue nil
+        @pid = nil
+    end
+
+    # Die Zeile der Ausgabe, die den Fehler am besten nennt
+    def last_error
+        lines = @output.map { |l| l.strip.gsub("#{__dir__}/", '') }.reject(&:empty?)
+        lines.find { |l| l.match?(/error|exception|fehler|cannot|undefined|not found/i) } || lines.last.to_s
+    end
 end
 
 set :port, 4567
@@ -78,20 +257,30 @@ if File.exist?(PLACES_FILE)
         PLACES << { kind: kind, name: name, lon: lon, lat: lat }
     end
 end
-MAP_JSON = JSON.generate(area: AREA, program: 'routes.rb', kinds: KINDS, names: NAMES, ways: MAP_WAYS, places: PLACES)
+MAP_JSON = JSON.generate(area: AREA, program: PROGRAM, kinds: KINDS, names: NAMES, ways: MAP_WAYS, places: PLACES)
 puts "#{AREA}: #{MAP_WAYS.size} Wege, #{PLACES.size} Orte"
 
-# Was routes.rb schon kann: der Graph, einmal beim Start gebaut
-def try
-    yield
-rescue NotImplementedError => e
-    puts "Noch nicht fertig: #{e.message}"
-    nil
+BRIDGE = Bridge.new(LANGUAGE)
+at_exit { BRIDGE.stop }
+
+# Was deine Funktionen schon können: der Graph, beim Start und nach jeder
+# Änderung gleich gebaut, damit die Karte nicht warten muss
+def warm_up
+    answer = BRIDGE.graph('length')
+    puts "Noch nicht fertig: #{answer['missing']}" if answer['missing']
+end
+Thread.new do
+    warm_up
+    loop do
+        sleep 1
+        warm_up if BRIDGE.changed?
+    end
 end
 
-WAYS = try { read_ways(FILE) }
-GRAPH = WAYS && try { build_graph(WAYS) }
-puts "Graph: #{GRAPH[:nodes].size} Knoten" if GRAPH
+# Ein Fehler deines Programms: an die Seite, die ihn anzeigt
+def failed(message)
+    halt 500, JSON.generate(error: message)
+end
 
 # Der Knoten eines Graphen, der einem Punkt am nächsten liegt. Ein Grad Länge
 # ist in Berlin nur gut 0,6-mal so lang wie ein Grad Breite.
@@ -103,16 +292,10 @@ end
 # Die Graphen für die Arten zu reisen (build_travel_graph), jeder erst gebaut,
 # wenn ihn jemand braucht; »length« ist der Graph aus build_graph, in Metern
 MODES = { 'length' => 'Strecke', 'foot' => 'zu Fuß', 'bike' => 'mit dem Rad', 'car' => 'mit dem Auto' }.freeze
-TRAVEL = {}
 
+# { 'graph' => … } oder was fehlt ('missing') oder schiefging ('error')
 def graph_for(mode)
-    return GRAPH if mode == 'length' || !MODES.key?(mode)
-
-    TRAVEL[mode] ||= begin
-        graph = build_travel_graph(WAYS, mode)
-        puts "Graph #{MODES[mode]}: #{graph[:nodes].size} Knoten"
-        graph
-    end
+    BRIDGE.graph(MODES.key?(mode) ? mode : 'length')
 end
 
 # Meter zwischen zwei Punkten, wie in distance, für die Länge eines Weges in
@@ -141,24 +324,30 @@ end
 # Ein Knoten und seine Nachbarn, mit Abstand: für einen Klick auf die Karte
 get '/neighbours' do
     content_type :json
-    return JSON.generate(missing: GRAPH ? nil : 'build_graph') unless GRAPH
+    answer = graph_for('length')
+    return JSON.generate(missing: answer['missing']) if answer['missing']
+    failed(answer['error']) if answer['error']
 
-    id = nearest(GRAPH, params['lon'].to_f, params['lat'].to_f)
-    JSON.generate(id: id, at: GRAPH[:nodes][id],
-                  neighbours: (GRAPH[:edges][id] || []).map { |other, metres| GRAPH[:nodes][other] + [metres] })
+    graph = answer['graph']
+    id = nearest(graph, params['lon'].to_f, params['lat'].to_f)
+    JSON.generate(id: id, at: graph[:nodes][id],
+                  neighbours: (graph[:edges][id] || []).filter_map { |other, metres| graph[:nodes][other] && graph[:nodes][other] + [metres] })
 end
 
 # Der ganze Graph, für die Ansicht »Graph«: die Knoten als Länge und Breite
 # hintereinander, die Kanten als Paare von Nummern der Knoten, jede nur einmal
 get '/graph.json' do
     content_type :json
-    return JSON.generate(missing: 'build_graph') unless GRAPH
+    answer = graph_for('length')
+    return JSON.generate(missing: answer['missing']) if answer['missing']
+    failed(answer['error']) if answer['error']
 
+    graph = answer['graph']
     index = {}
-    GRAPH[:nodes].each_key { |id| index[id] = index.size }
+    graph[:nodes].each_key { |id| index[id] = index.size }
     edges = []
     seen = {}
-    GRAPH[:edges].each do |id, neighbours|
+    graph[:edges].each do |id, neighbours|
         neighbours.each do |other, _metres|
             next unless index[id] && index[other]
 
@@ -169,7 +358,7 @@ get '/graph.json' do
             edges.push(a, b)
         end
     end
-    JSON.generate(nodes: GRAPH[:nodes].values.flatten, edges: edges)
+    JSON.generate(nodes: graph[:nodes].values.flatten, edges: edges)
 end
 
 # Die Suchen in routes.rb, wie die Seite sie nennt
@@ -208,16 +397,38 @@ def clock = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
 # Der Graph und die Suche, die eine Anfrage will, oder was dafür noch fehlt
 def prepare(params)
-    return [nil, nil, 'build_graph'] unless GRAPH
-
     function, name = SEARCHES.fetch(params['search'], SEARCHES['bfs'])
     mode = MODES.key?(params['mode']) ? params['mode'] : 'length'
-    begin
-        graph = graph_for(mode)
-    rescue NotImplementedError
-        return [nil, nil, 'build_travel_graph']
-    end
-    [graph, [function, name, mode], nil]
+    answer = graph_for('length')
+    answer = graph_for(mode) if answer['graph'] && mode != 'length'
+    failed(answer['error']) if answer['error']
+    return [nil, nil, answer['missing']] if answer['missing']
+
+    [answer['graph'], [function, name, mode], nil]
+end
+
+# Eine Suche deiner Funktionen: { path:, visited:, took: } in Sekunden, gemessen
+# in der Brücke, ohne den Weg dorthin. Fehlt etwas: { missing: … }.
+def search(function, mode, start, goal, graph)
+    answer = BRIDGE.ask({ 'op' => 'search', 'fn' => function.to_s, 'mode' => mode, 'start' => start, 'goal' => goal })
+    return { missing: answer['missing'] } if answer['missing']
+    failed(answer['error']) if answer['error']
+
+    path = answer['path']
+    visited = answer['visited'] || []
+    unknown = [*path, *visited].find { |id| !graph[:nodes].key?(id) }
+    failed("#{function} gibt eine ID zurück, die nicht im Graphen ist: #{unknown.inspect}") if unknown
+
+    { path: path, visited: visited, took: answer['took'].to_f }
+end
+
+# Eine deiner Funktionen für die Rundfahrt mit ihren Werten
+def call_function(function, *args)
+    answer = BRIDGE.ask({ 'op' => 'call', 'fn' => function.to_s, 'args' => args })
+    throw :missing, answer['missing'] if answer['missing']
+    failed(answer['error']) if answer['error']
+
+    answer['result']
 end
 
 # Eine Route von einem Punkt zum anderen, gesucht mit deiner Funktion: der
@@ -229,16 +440,12 @@ get '/route' do
 
     start = nearest(graph, *params['from'].split(',').map(&:to_f))
     goal = nearest(graph, *params['to'].split(',').map(&:to_f))
-    began = clock
-    begin
-        result = send(function, graph, start, goal)
-    rescue NotImplementedError => e
-        return JSON.generate(missing: e.message)
-    end
+    result = search(function, mode, start, goal, graph)
+    return JSON.generate(missing: result[:missing]) if result[:missing]
 
-    took = clock - began
+    took = result[:took]
     path = result[:path]
-    visited = result[:visited] || []
+    visited = result[:visited]
     metres = path && metres_of(graph, path)
     cost = path && cost_of(graph, path)
     time = mode == 'length' ? '' : ", #{(cost / 60).round} min #{MODES[mode]}" if path
@@ -274,11 +481,10 @@ get '/tour' do
             stops.each_with_index.map do |b, j|
                 next 0 if i == j
 
-                begin
-                    path = send(function, graph, a, b)[:path]
-                rescue NotImplementedError => e
-                    return JSON.generate(missing: e.message)
-                end
+                result = search(function, mode, a, b, graph)
+                return JSON.generate(missing: result[:missing]) if result[:missing]
+
+                path = result[:path]
                 paths[[i, j]] = path
                 path ? cost_of(graph, path) : UNREACHABLE
             end
@@ -293,12 +499,14 @@ get '/tour' do
     return JSON.generate(error: 'Alle Reihenfolgen sind bei mehr als 9 Orten zu viele.') if method == :best_tour && stops.size > 9
 
     began = clock
-    begin
-        order = method == :improve_tour ? improve_tour(costs, nearest_tour(costs)) : send(method, costs)
-        total = tour_length(costs, order)
-    rescue NotImplementedError => e
-        return JSON.generate(missing: e.message)
+    order = total = nil
+    missing = catch(:missing) do
+        order = method == :improve_tour ? call_function(:improve_tour, costs, call_function(:nearest_tour, costs)) : call_function(method, costs)
+        total = call_function(:tour_length, costs, order)
+        nil
     end
+    return JSON.generate(missing: missing) if missing
+
     took = clock - began
     return JSON.generate(error: 'Einen der Orte erreicht die Suche nicht.') if total >= UNREACHABLE
 

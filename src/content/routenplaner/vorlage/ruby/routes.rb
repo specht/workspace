@@ -1,4 +1,4 @@
-# Ein Routenplaner: deine Funktionen. server.rb ruft sie auf und zeigt im
+# Ein Routenplaner: deine Funktionen. Der Server (./run ruby) fragt sie und zeigt im
 # Browser, was sie schon können.
 
 # Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile sind

@@ -1,4 +1,4 @@
-# Ein Routenplaner: deine Funktionen. server.py ruft sie auf und zeigt im
+# Ein Routenplaner: deine Funktionen. Der Server (./run python) fragt sie und zeigt im
 # Browser, was sie schon können.
 import math
 

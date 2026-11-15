@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Startet den Routenplaner: die Karte im Browser und deine Funktionen.
+#   ./run              die Sprache, deren Ordner du zuletzt geändert hast
+#   ./run dart         ruby, python, dart, javascript oder java
+#   AREA=mitte ./run   ein anderer Bezirk (siehe server.rb)
+set -euo pipefail
+cd "$(dirname "$(realpath "$0")")"
+
+# Der Server ist in Ruby geschrieben und braucht Sinatra; beim ersten Mal
+# installiert ./run es, danach geht es sofort los
+if ! ruby -e 'gem "sinatra"; gem "rackup"; gem "puma"' >/dev/null 2>&1; then
+  echo 'Einmal: Sinatra für den Server installieren …'
+  gem install --no-document sinatra rackup puma
+fi
+exec ruby server.rb "$@"

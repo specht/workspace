@@ -5,3 +5,8 @@ data/*.tsv
 !data/detour.tsv
 !data/steglitz-zehlendorf.tsv
 !data/steglitz-zehlendorf-places.tsv
+
+# was beim Übersetzen und Starten entsteht
+__pycache__/
+*.class
+.dart_tool/
