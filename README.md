@@ -154,7 +154,10 @@ Alle Felder und Prüfarten beschreibt [docs/aufgaben.md](docs/aufgaben.md).
 Aufgaben sind für Lernende ausgeschaltet, bis `credentials.rb` die Zeile
 `TASKS_ENABLED = true` enthält; Lehrkräfte sehen sie vorher als Vorschau.
 Welche Version installiert ist und was sich geändert hat, steht in
-[CHANGELOG.md](CHANGELOG.md).
+[CHANGELOG.md](CHANGELOG.md). Releases kommen am Anfang jedes Monats als Tag
+aus Jahr und Monat (`2026.12`); eine eigene Installation aktualisiert man auf
+das neueste Tag (`git fetch --tags && git checkout 2026.12`) und tut vorher,
+was der CHANGELOG mit »Handgriff:« nennt.
 
 ## Betrieb auf einem Server
 

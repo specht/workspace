@@ -156,17 +156,27 @@ often:
 - CHANGELOG: a short German line under »Unreleased« only for what an
   operator of another installation must know (new or changed values in
   `credentials.rb`, migrations or steps on update, features that start
-  switched off, changes to what is stored); not every change.
+  switched off, changes to what is stored); not every change. A line that
+  needs a step on update starts with »Handgriff:«.
 
 ## Git
 
-- Work on a branch; commit in coherent pieces. Merge into `main` and push only
-  when the maintainer asks for it.
+- Each feature gets a branch of its own from `main`; commit in coherent
+  pieces. A feature goes into `main` only when it is complete and tested
+  (its Ruby tests, its e2e, a look on the development site), and only when
+  the maintainer asks; then it is deployed, so `main` is what runs on
+  workspace.hackschule.de. An urgent fix (security, something broken in
+  production) gets a branch of its own and goes into `main` and production
+  at once. The development site shows the branch that is checked out: while
+  the maintainer still reviews one live, ask before switching to another.
 - No real names of people in commits, docs, tests or plans: name the role;
   real names and addresses belong in `credentials.rb` only.
-- Releases are tags `vX.Y.Z` on `main` (Semantic Versioning as in the
-  CHANGELOG header), made when the maintainer asks: »Unreleased« becomes the
-  version's section, a fresh »Unreleased« goes on top.
+- Releases are monthly (CHANGELOG header): on the 1st, `main` gets a tag of
+  year and month (`2026.12`), »Unreleased« becomes that month's section and a
+  fresh »Unreleased« goes on top; a fix other installations need within the
+  month gets `2026.12.1`. Made when the maintainer asks; the first session
+  of a month offers it. Lines that need a step on update start with
+  »Handgriff:«.
 - Other repositories (starter templates such as `specht/raylib-starter`, the
   2D Game Studio) get a patch for `git am`, checked with `git apply --check`;
   never commit or push there directly. Exceptions the maintainer allowed:

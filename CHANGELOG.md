@@ -1,63 +1,61 @@
 # Changelog
 
 Was Betreibende einer eigenen Installation wissen müssen, je Release.
-Andere Schulen mit eigener Installation folgen getaggten Releases
-(`v1.0.0`, …) statt `main`; die Einzelheiten jeder Änderung stehen in der
-Git-Historie.
+Andere Schulen mit eigener Installation folgen den Releases statt `main`;
+die Einzelheiten jeder Änderung stehen in der Git-Historie.
 
-Versionen folgen [Semantic Versioning](https://semver.org/lang/de/):
-
-- **Major** (`2.0.0`): Eine bestehende Installation braucht einen Handgriff
-  beim Update, zum Beispiel neue Pflichtwerte in der Konfiguration oder eine
-  Datenmigration, die nicht von selbst läuft.
-- **Minor** (`1.1.0`): Neue Funktionen und Inhalte; Update ohne Handgriff.
-  Neue Funktionen sind zunächst abgeschaltet.
-- **Patch** (`1.0.1`): Fehlerkorrekturen.
+Releases kommen jeden Monat: Am 1. bekommt `main` ein Tag aus Jahr und Monat
+(`2026.12`), und »Unreleased« wird zum Abschnitt dieses Monats. In `main`
+kommt eine Funktion erst, wenn sie fertig und getestet ist; was dort steht,
+läuft auch auf workspace.hackschule.de. Braucht eine Installation eine
+Korrektur noch im selben Monat, kommt ein Tag mit Zähler dazu (`2026.12.1`).
+Das erste Release war `v1.0.0` (21. Oktober 2026).
 
 Ein Eintrag ist eine kurze Zeile zu dem, was beim Update zu tun oder zu
 wissen ist: neue oder geänderte Werte in `credentials.rb`, Migrationen und
 Handgriffe, Funktionen, die zunächst abgeschaltet sind, Änderungen daran,
-was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
+was gespeichert wird. Muss man beim Update selbst etwas tun, beginnt die
+Zeile mit **Handgriff:**. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
-- Neo4j 2026.10.2 (beide Server) und MySQL 8.4.13: Beim ersten Start heben beide ihre Daten auf die neue Version; zurück zur alten geht es danach nur aus einer Sicherung. Vor dem Update sichern. Das Telefonspiel läuft mit Asterisk 22 (Alpine 3.24).
+- **Handgriff:** Neo4j 2026.10.2 (beide Server) und MySQL 8.4.13: Beim ersten Start heben beide ihre Daten auf die neue Version; zurück zur alten geht es danach nur aus einer Sicherung. Vor dem Update sichern. Das Telefonspiel läuft mit Asterisk 22 (Alpine 3.24).
 - Leistungsüberprüfungen: Der Dialog (jetzt »Neue Leistungsüberprüfung«) nimmt auch einen Ordner, eine ZIP- oder eine .tar.gz-Datei vom eigenen Rechner. Was ankommt, liegt bis zum Anlegen in `data/internal/exam-drafts` und wird danach gelöscht, sonst nach einem Tag. Für Dateien in Dart bietet er die Erweiterung für Dart an.
 - Leistungsüberprüfungen aus einem Ordner des eigenen Workspace (»Aus deinem Workspace« im Reiter der Klasse): Dateien ankreuzen, was gedruckt wird, Farbe und Git wählen; das Paket hochladen geht weiter. Neu in `.workspace/config.yaml`: `exam.look: frame` (ein Rahmen in `yellow`, `orange`, `magenta`, `green`, `blue` oder `red` um einen dunklen Editor); ohne Angabe bleibt alles wie bisher. Repositorys in Unterordnern bekommen Namen und Adresse, das Repository zum Wiederherstellen lässt sie aus. Anleitung für Lehrkräfte: `/lehrmaterial-leistungsueberpruefung`.
-- Workspaces von Leistungsüberprüfungen kommen nicht mehr ins Internet, auch nicht über eine IP-Adresse (bisher fehlte nur DNS); erreichbar bleiben die Datenbanken und, was ein Paket in `network.allow` nennt. Das macht die `peer_firewall`: nach dem Update `./config.rb build peer_firewall && ./config.rb up -d peer_firewall`, sonst bleiben sie wie bisher nur ohne DNS.
+- **Handgriff:** Workspaces von Leistungsüberprüfungen kommen nicht mehr ins Internet, auch nicht über eine IP-Adresse (bisher fehlte nur DNS); erreichbar bleiben die Datenbanken und, was ein Paket in `network.allow` nennt. Das macht die `peer_firewall`: nach dem Update `./config.rb build peer_firewall && ./config.rb up -d peer_firewall`, sonst bleiben sie wie bisher nur ohne DNS.
 - Leistungsüberprüfungen stehen jetzt auf der Klassenseite (Reiter »Leistungsüberprüfungen«), nicht mehr im Profil: Ein dort hochgeladenes Paket gehört zur Klasse (`Test.group`), alle aus der Klasse nehmen teil, Einzelne werden herausgenommen oder hinzugefügt. Ältere Pakete ohne Klasse stehen in den Klassen ihrer Teilnehmenden und lassen sich einer zuordnen.
-- Anmelden mit einer Authenticator-App: Im Profil kann jede Person eine App einrichten (QR-Code, ein Code zur Bestätigung) und meldet sich danach mit dem Code aus der App an, ohne E-Mail; der Code per E-Mail geht weiterhin. Gespeichert wird ein geheimer Schlüssel je Person (`User.totp_secret`, verschlüsselt mit einem Schlüssel aus `LOGIN_CODE_SALT`, dazu `totp_since`, `totp_last_step`), in der Datenschutzerklärung eingetragen. Wer `LOGIN_CODE_SALT` ändert, macht die eingerichteten Apps unbrauchbar; die Anmeldung per E-Mail geht dann weiter. Nach dem Update `./config.rb restart ruby`.
-- Telefonspiel: Spiele rufen andere Spiele an und warten auf ihre Antwort (`call`, `answer`), mit Ziffern hinter der Nummer als Durchwahl, auch von einem echten Telefon aus; `clear_keys` vergisst wartende Tasten. Jedes Spiel klingelt, bis es etwas sagt (Freiton, dann das Abnehmen); legt ein gerufenes vorher auf, ist besetzt. Der Sprachdienst spricht das kurze ü deutlicher (vorher klang es wie e); Sätze mit ü werden neu erzeugt. Nummern sind präfixfrei: Keine darf der Anfang einer anderen sein; neue werden mit Begründung abgelehnt, alte Überschneidungen zeigt /telefon-freigabe. Nach dem Update `./config.rb restart phone_line phone_runner ruby`; damit `call` und `answer` auch im Workspace (`telefon`) gehen, das Workspace-Image neu bauen und hochladen.
-- Telefonspiele: Lernende können mehrere Spiele in Ordnern unter `/workspace/telefon` einreichen (je Spiel sein Ordner). Beim Einreichen prüft der Workspace, ob das Programm überhaupt startet (Ruby, Python, JavaScript). Bricht ein veröffentlichtes Spiel bei einem Anruf mit einem Fehler ab, hört der Anrufer das und kommt zurück ins Telefonbuch; das Spiel wird aus dem Telefonbuch genommen (Stand `broken`, die Nummer bleibt reserviert), die Person, die es geschrieben hat, bekommt eine E-Mail mit der Fehlermeldung, die auch in der Aktivität steht (`PhoneGame.last_error`, in der Datenschutzerklärung eingetragen). Nach dem Update `./config.rb restart phone_line phone_runner ruby`.
-- Telefonspiel, die echte Leitung: SIP (UDP 5060) nimmt der Server nur noch von den Adressen des Anbieters an (`PHONE_SIP_SERVER`, alle fünf Minuten neu aufgelöst); Bots, die Nebenstellen und Passwörter durchprobieren, erreichen Asterisk nicht mehr. Das hält `peer_firewall` aufrecht. Nach dem Update `./config.rb build peer_firewall && ./config.rb up -d peer_firewall`.
-- Telefonspiel: `/statistik` zeigt die Anrufe je Tag und je Spielnummer, am Telefon und im Browser, und wie jedes Spiel gerade steht, ohne Anrufende. `phone_line` und `phone_runner` schreiben je Anruf eine Zeile nach `internal/phone-calls` (Stunde, Leitung, Dauer, erreichte Spiele), die Website zählt sie alle fünf Minuten zu Zahlen je Stunde zusammen (`PhoneHour`, `PhoneGameHour`, 400 Tage) und löscht die Zeilen; in der Datenschutzerklärung eingetragen. Nach dem Update `./config.rb up -d phone_line phone_runner && ./config.rb restart ruby`.
+- **Handgriff:** Anmelden mit einer Authenticator-App: Im Profil kann jede Person eine App einrichten (QR-Code, ein Code zur Bestätigung) und meldet sich danach mit dem Code aus der App an, ohne E-Mail; der Code per E-Mail geht weiterhin. Gespeichert wird ein geheimer Schlüssel je Person (`User.totp_secret`, verschlüsselt mit einem Schlüssel aus `LOGIN_CODE_SALT`, dazu `totp_since`, `totp_last_step`), in der Datenschutzerklärung eingetragen. Wer `LOGIN_CODE_SALT` ändert, macht die eingerichteten Apps unbrauchbar; die Anmeldung per E-Mail geht dann weiter. Nach dem Update `./config.rb restart ruby`.
+- **Handgriff:** Telefonspiel: Spiele rufen andere Spiele an und warten auf ihre Antwort (`call`, `answer`), mit Ziffern hinter der Nummer als Durchwahl, auch von einem echten Telefon aus; `clear_keys` vergisst wartende Tasten. Jedes Spiel klingelt, bis es etwas sagt (Freiton, dann das Abnehmen); legt ein gerufenes vorher auf, ist besetzt. Der Sprachdienst spricht das kurze ü deutlicher (vorher klang es wie e); Sätze mit ü werden neu erzeugt. Nummern sind präfixfrei: Keine darf der Anfang einer anderen sein; neue werden mit Begründung abgelehnt, alte Überschneidungen zeigt /telefon-freigabe. Nach dem Update `./config.rb restart phone_line phone_runner ruby`; damit `call` und `answer` auch im Workspace (`telefon`) gehen, das Workspace-Image neu bauen und hochladen.
+- **Handgriff:** Telefonspiele: Lernende können mehrere Spiele in Ordnern unter `/workspace/telefon` einreichen (je Spiel sein Ordner). Beim Einreichen prüft der Workspace, ob das Programm überhaupt startet (Ruby, Python, JavaScript). Bricht ein veröffentlichtes Spiel bei einem Anruf mit einem Fehler ab, hört der Anrufer das und kommt zurück ins Telefonbuch; das Spiel wird aus dem Telefonbuch genommen (Stand `broken`, die Nummer bleibt reserviert), die Person, die es geschrieben hat, bekommt eine E-Mail mit der Fehlermeldung, die auch in der Aktivität steht (`PhoneGame.last_error`, in der Datenschutzerklärung eingetragen). Nach dem Update `./config.rb restart phone_line phone_runner ruby`.
+- **Handgriff:** Telefonspiel, die echte Leitung: SIP (UDP 5060) nimmt der Server nur noch von den Adressen des Anbieters an (`PHONE_SIP_SERVER`, alle fünf Minuten neu aufgelöst); Bots, die Nebenstellen und Passwörter durchprobieren, erreichen Asterisk nicht mehr. Das hält `peer_firewall` aufrecht. Nach dem Update `./config.rb build peer_firewall && ./config.rb up -d peer_firewall`.
+- **Handgriff:** Telefonspiel: `/statistik` zeigt die Anrufe je Tag und je Spielnummer, am Telefon und im Browser, und wie jedes Spiel gerade steht, ohne Anrufende. `phone_line` und `phone_runner` schreiben je Anruf eine Zeile nach `internal/phone-calls` (Stunde, Leitung, Dauer, erreichte Spiele), die Website zählt sie alle fünf Minuten zu Zahlen je Stunde zusammen (`PhoneHour`, `PhoneGameHour`, 400 Tage) und löscht die Zeilen; in der Datenschutzerklärung eingetragen. Nach dem Update `./config.rb up -d phone_line phone_runner && ./config.rb restart ruby`.
 - Neo4j der Lernenden: Eine eigene Neo4j-Datenbank bekommt nur noch, wer Neo4j im Profil einschaltet (und jeder Workspace einer Leistungsüberprüfung); bisher legte jeder Start eines Workspace sie für alle an. Bestehende Datenbanken bleiben; Ausschalten blendet nur den Knopf im Menü aus. Die Datenschutzerklärung sagt es (`privacy.rb`).
-- Neo4j der Lernenden: höchstens 1000 Datenbanken statt 100 (`dbms.max_databases`); bei mehr als 98 Personen bekamen die nächsten keine Datenbank mehr (»The limit of databases is reached«). Nach dem Update `./config.rb up -d neo4j`.
-- Office: Der Dienst `office` liest jetzt auch tiefgestellte Zeichen (CO₂), für die neue Regel `scripts`, und sagt, welche Absatzvorlagen ein Dokument selbst angelegt hat, für die neue Regel `own_style`, und wo die Kopfzeile auf jeder Seite steht (`header_boxes`), für die neue Regel `title_page`, und in wie vielen Spalten jeder Absatz steht, für die neue Regel `span`, und Rahmen und Farbe der Absätze, für die neue Regel `box`. Nach dem Update `./config.rb restart office`.
-- Nextcloud der Schule: Auf der Klassenseite (»Einstellungen«) kann eine Lehrkraft die Adresse der Nextcloud ihrer Schule eintragen; der Workspace fragt dort `status.php` ab und speichert die Adresse nur, wenn eine Nextcloud antwortet (`GroupSetting.nextcloud`). Die Karten im Abschnitt Office nehmen dann statt einer Datei auch einen Link zum Teilen (`…/s/<Token>`); jede Prüfung holt das Dokument vom Ruby-Dienst aus über `…/s/<Token>/download`, nur von dieser Adresse, nur über https und Port 443, nie von einer privaten Adresse, höchstens 10 MB. Der Ruby-Dienst braucht dafür Verbindungen nach außen. Gespeichert wird der Link mit der zuletzt geprüften Fassung (im selben Archiv, geht mit »Ergebnis löschen« und dem Konto; `privacy.rb`). Nach dem Update `./config.rb restart ruby`.
+- **Handgriff:** Neo4j der Lernenden: höchstens 1000 Datenbanken statt 100 (`dbms.max_databases`); bei mehr als 98 Personen bekamen die nächsten keine Datenbank mehr (»The limit of databases is reached«). Nach dem Update `./config.rb up -d neo4j`.
+- **Handgriff:** Office: Der Dienst `office` liest jetzt auch tiefgestellte Zeichen (CO₂), für die neue Regel `scripts`, und sagt, welche Absatzvorlagen ein Dokument selbst angelegt hat, für die neue Regel `own_style`, und wo die Kopfzeile auf jeder Seite steht (`header_boxes`), für die neue Regel `title_page`, und in wie vielen Spalten jeder Absatz steht, für die neue Regel `span`, und Rahmen und Farbe der Absätze, für die neue Regel `box`. Nach dem Update `./config.rb restart office`.
+- **Handgriff:** Nextcloud der Schule: Auf der Klassenseite (»Einstellungen«) kann eine Lehrkraft die Adresse der Nextcloud ihrer Schule eintragen; der Workspace fragt dort `status.php` ab und speichert die Adresse nur, wenn eine Nextcloud antwortet (`GroupSetting.nextcloud`). Die Karten im Abschnitt Office nehmen dann statt einer Datei auch einen Link zum Teilen (`…/s/<Token>`); jede Prüfung holt das Dokument vom Ruby-Dienst aus über `…/s/<Token>/download`, nur von dieser Adresse, nur über https und Port 443, nie von einer privaten Adresse, höchstens 10 MB. Der Ruby-Dienst braucht dafür Verbindungen nach außen. Gespeichert wird der Link mit der zuletzt geprüften Fassung (im selben Archiv, geht mit »Ergebnis löschen« und dem Konto; `privacy.rb`). Nach dem Update `./config.rb restart ruby`.
 
 - Telefonspiel, die echte Leitung: Mit `PHONE_SIP_SERVER`, `PHONE_SIP_USER` und `PHONE_SIP_PASSWORD` in `credentials.rb` kommen die Dienste `phone_asterisk` (nimmt Anrufe an, ruft nie selbst an, nimmt nichts auf) und `phone_runner` (das Menü des Telefonbuchs und die veröffentlichten Spiele) dazu; die Konfiguration schreibt `config.rb` nach `internal/phone-asterisk`, das ARI-Passwort einmal nach `internal/phone-ari-password`. Offen sein müssen UDP 5060 und 10000–10099 (Docker veröffentlicht sie); die öffentliche Adresse für den Ton ist die von `WEBSITE_HOST`, sonst `PHONE_PUBLIC_ADDRESS`. Mit einem SIP-Zugang darf sich nur eine Installation anmelden. Danach `./config.rb build phone_asterisk phone_runner && ./config.rb up -d && ./config.rb restart ruby`. `PHONE_NUMBER` (etwa `'030/22 908 772'`), `PHONE_DIRECT_DIAL` und `PHONE_PROVIDER` zeigen die Nummer im Telefonbuch und nennen den Anbieter in der Datenschutzerklärung.
 
-- Telefonspiel: Die Telefonanlage ruft nie selbst an (keine Module zum Wählen, Weiterleiten oder für Anrufdateien; der Runner fragt ARI nie nach einem Anruf), und Anrufe werden nicht aufgezeichnet, nur die Tasten zählen. Die Telefonanlage schaltet die Stimme der Anrufenden stumm, ihre Module zum Aufnehmen, Mithören und für Anruflisten sind aus (`src/phone/asterisk/modules.conf`, `cdr.conf`), ihre Ordner dafür sind im Image nicht beschreibbar. Neu in `credentials.rb`: der SIP-Zugang (`PHONE_SIP_SERVER`, `PHONE_SIP_USER`, `PHONE_SIP_PASSWORD`; `src/phone/test/trunk-digits.sh` prüft damit, ob der Anbieter angehängte Ziffern weiterreicht) und `PHONE_PROVIDER`, der Name des Anbieters für die Datenschutzerklärung. Nach dem Update `docker build -t phone-asterisk docker/phone-asterisk`.
+- **Handgriff:** Telefonspiel: Die Telefonanlage ruft nie selbst an (keine Module zum Wählen, Weiterleiten oder für Anrufdateien; der Runner fragt ARI nie nach einem Anruf), und Anrufe werden nicht aufgezeichnet, nur die Tasten zählen. Die Telefonanlage schaltet die Stimme der Anrufenden stumm, ihre Module zum Aufnehmen, Mithören und für Anruflisten sind aus (`src/phone/asterisk/modules.conf`, `cdr.conf`), ihre Ordner dafür sind im Image nicht beschreibbar. Neu in `credentials.rb`: der SIP-Zugang (`PHONE_SIP_SERVER`, `PHONE_SIP_USER`, `PHONE_SIP_PASSWORD`; `src/phone/test/trunk-digits.sh` prüft damit, ob der Anbieter angehängte Ziffern weiterreicht) und `PHONE_PROVIDER`, der Name des Anbieters für die Datenschutzerklärung. Nach dem Update `docker build -t phone-asterisk docker/phone-asterisk`.
 
-- Telefonspiel: `transfer '123'` leitet einen Anruf an ein anderes veröffentlichtes Spiel weiter, auch beim Ausprobieren im Workspace (das Telefon dort setzt den Anruf an der Leitung des Telefonbuchs fort). Nach dem Update `./config.rb up -d phone_line` (neuer Wert `PHONE_SITE_HOST`, aus `WEBSITE_HOST`); im Workspace erst mit einem neu gebauten Workspace-Image (`./build-image.sh`, auf einem Server mit wenig Platz `./upload-image.sh`).
+- **Handgriff:** Telefonspiel: `transfer '123'` leitet einen Anruf an ein anderes veröffentlichtes Spiel weiter, auch beim Ausprobieren im Workspace (das Telefon dort setzt den Anruf an der Leitung des Telefonbuchs fort). Nach dem Update `./config.rb up -d phone_line` (neuer Wert `PHONE_SITE_HOST`, aus `WEBSITE_HOST`); im Workspace erst mit einem neu gebauten Workspace-Image (`./build-image.sh`, auf einem Server mit wenig Platz `./upload-image.sh`).
 
-- Neuer Dienst `office` (LibreOffice ohne Fenster, `docker/office`, `src/office`) für die Aufgaben mit hochgeladenem Dokument im neuen Abschnitt Office: Nach dem Update `./config.rb build office && ./config.rb up -d office ruby` (der Ruby-Dienst kommt ins neue Netz `office`). Das Image holt beim Bauen Microsofts Core-Fonts (`ttf-mscorefonts-installer`, Debian contrib). Gespeichert werden je Aufgabe eine Zeile, welche Punkte offen sind, und die zuletzt geprüfte Fassung des Dokuments als Abgabe der Person (zum Weiterarbeiten, für die Lehrkraft der Gruppe); sie wird von der nächsten Prüfung ersetzt und geht mit »Ergebnis löschen« und dem Konto (`privacy.rb`). Im Abschnitt Office stehen zwei Reihen: zehn Blätter zur Textverarbeitung und sieben zur Tabellenkalkulation (Dateien .xlsx und .ods). Der Dienst liest auch ein exportiertes PDF (`accept: pdf`, mit poppler, ohne LibreOffice); gespeichert wird dann das zuletzt geprüfte PDF wie sonst das Dokument. Wer `office` schon laufen hat: nach dem Update `./config.rb build office && ./config.rb up -d office && ./config.rb restart ruby` (das Image hat jetzt die deutsche Silbentrennung `hyphen-de`, das deutsche Wörterbuch `hunspell-de-de`, für Tabellen LibreOffice Calc und die deutsche Oberfläche `libreoffice-l10n-de`, damit eine Tabelle »245,00 €« und »#WERT!« zeigt wie die Programme der Klasse). Ein `restart office` allein nimmt das neue Image nicht, erst `up -d office`.
-- »Betrieb« auf `/admin` prüft einmal am Tag, ob der Sprachdienst noch von YouTube laden kann (fünf Sekunden eines Videos, mit `PHONE_YOUTUBE_COOKIES`); misslingt es, bekommt die Administration einmal am Tag eine Mail. Gespeichert wird nur das letzte Ergebnis in `data/internal/youtube-check.json`. Nach dem Update `./config.rb restart phone_speech`.
+- **Handgriff:** Neuer Dienst `office` (LibreOffice ohne Fenster, `docker/office`, `src/office`) für die Aufgaben mit hochgeladenem Dokument im neuen Abschnitt Office: Nach dem Update `./config.rb build office && ./config.rb up -d office ruby` (der Ruby-Dienst kommt ins neue Netz `office`). Das Image holt beim Bauen Microsofts Core-Fonts (`ttf-mscorefonts-installer`, Debian contrib). Gespeichert werden je Aufgabe eine Zeile, welche Punkte offen sind, und die zuletzt geprüfte Fassung des Dokuments als Abgabe der Person (zum Weiterarbeiten, für die Lehrkraft der Gruppe); sie wird von der nächsten Prüfung ersetzt und geht mit »Ergebnis löschen« und dem Konto (`privacy.rb`). Im Abschnitt Office stehen zwei Reihen: zehn Blätter zur Textverarbeitung und sieben zur Tabellenkalkulation (Dateien .xlsx und .ods). Der Dienst liest auch ein exportiertes PDF (`accept: pdf`, mit poppler, ohne LibreOffice); gespeichert wird dann das zuletzt geprüfte PDF wie sonst das Dokument. Wer `office` schon laufen hat: nach dem Update `./config.rb build office && ./config.rb up -d office && ./config.rb restart ruby` (das Image hat jetzt die deutsche Silbentrennung `hyphen-de`, das deutsche Wörterbuch `hunspell-de-de`, für Tabellen LibreOffice Calc und die deutsche Oberfläche `libreoffice-l10n-de`, damit eine Tabelle »245,00 €« und »#WERT!« zeigt wie die Programme der Klasse). Ein `restart office` allein nimmt das neue Image nicht, erst `up -d office`.
+- **Handgriff:** »Betrieb« auf `/admin` prüft einmal am Tag, ob der Sprachdienst noch von YouTube laden kann (fünf Sekunden eines Videos, mit `PHONE_YOUTUBE_COOKIES`); misslingt es, bekommt die Administration einmal am Tag eine Mail. Gespeichert wird nur das letzte Ergebnis in `data/internal/youtube-check.json`. Nach dem Update `./config.rb restart phone_speech`.
 
 - Lesezeichen im Inhaltsverzeichnis links: Angemeldete Personen können Überschriften einer Seite markieren. Gespeichert werden Seite, Überschrift und Zeitpunkt (`Bookmark`-Knoten in Neo4j, am Konto); sie stehen im Export des Kontos, werden mit ihm gelöscht und in der Datenschutzerklärung genannt.
-- Neues Workspace-Image: ffmpeg (mit ffprobe), numpy und Pillow für Ton, Bilder und Video in Python, etwa 250 MB mehr. Nach dem Update `./build-image.sh` (oder das Image hochladen, wie gewohnt).
-- Telefonspiel: Musik aus sehr langen YouTube-Videos (mehr als 80 MB Ton) schlug fehl; jetzt holt der Sprachdienst davon nur das Stück, das das Spiel spielt. Nach dem Update `./config.rb restart phone_speech`.
+- **Handgriff:** Neues Workspace-Image: ffmpeg (mit ffprobe), numpy und Pillow für Ton, Bilder und Video in Python, etwa 250 MB mehr. Nach dem Update `./build-image.sh` (oder das Image hochladen, wie gewohnt).
+- **Handgriff:** Telefonspiel: Musik aus sehr langen YouTube-Videos (mehr als 80 MB Ton) schlug fehl; jetzt holt der Sprachdienst davon nur das Stück, das das Spiel spielt. Nach dem Update `./config.rb restart phone_speech`.
 - Etikettendrucker für den Tag der offenen Tür (`docs/etiketten.md`): zunächst aus; unter »Administration«, »Etikettendrucker« für einige Stunden einschalten. Besucher malen auf `/etiketten` (QR-Code, ohne Konto), ein Ruby-Skript auf einem Laptop mit dem ZPL-Drucker am USB holt die Etiketten ab. Gespeichert wird nur das Bild, zwei Tage lang (in der Datenschutzerklärung eingetragen).
 - Die Auslastung des Servers (Prozessoren, Arbeitsspeicher, Festplatten) wird alle fünf Minuten gemessen und auf `/statistik` gezeigt: je Stunde dauerhaft, jede Messung 90 Tage.
 - Telefonspiele veröffentlichen: Lernende reichen ihr Spiel in »Ein Spiel am Telefon« ein, jede Einreichung schickt eine E-Mail an alle `ADMIN_USERS` mit einem Link zur Freigabe (`/telefon-freigabe`); veröffentlichte Spiele stehen im öffentlichen Telefonbuch (`/telefonbuch`, Knopf im Menü). Gespeichert wird eine Kopie jedes eingereichten Spiels in `data/internal/phone-games` (in der Datenschutzerklärung eingetragen, mit dem Konto gelöscht).
-- Neuer Dienst `phone_line` (das Telefon im Telefonbuch, auf dem Besuchende veröffentlichte Spiele anrufen) und ein internes Docker-Netz `phone` ohne Internet, in dem er mit `phone_speech` und nginx spricht: nach dem Update `./config.rb build phone_line && ./config.rb up -d`. Jeder Anruf läuft dort als unprivilegierter Nutzer mit Grenzen für Rechenzeit, Speicher und Prozesse, höchstens 10 Anrufe zugleich (`PHONE_LINES` in `config.rb`) und einer je Besucher; gespeichert wird nichts.
-- Telefonspiele können eigene Aufnahmen abspielen (`play 'eingang.mp3'`); bei der Freigabe schreibt der Sprachdienst sie mit Whisper ab, auf dem Server. Nach dem Update `./config.rb build phone_speech && ./config.rb up -d` (das Image ist etwa 0,5 GB größer) und ein neues Workspace-Image; die Datenschutzerklärung nennt die Aufnahmen und ihre Abschrift.
+- **Handgriff:** Neuer Dienst `phone_line` (das Telefon im Telefonbuch, auf dem Besuchende veröffentlichte Spiele anrufen) und ein internes Docker-Netz `phone` ohne Internet, in dem er mit `phone_speech` und nginx spricht: nach dem Update `./config.rb build phone_line && ./config.rb up -d`. Jeder Anruf läuft dort als unprivilegierter Nutzer mit Grenzen für Rechenzeit, Speicher und Prozesse, höchstens 10 Anrufe zugleich (`PHONE_LINES` in `config.rb`) und einer je Besucher; gespeichert wird nichts.
+- **Handgriff:** Telefonspiele können eigene Aufnahmen abspielen (`play 'eingang.mp3'`); bei der Freigabe schreibt der Sprachdienst sie mit Whisper ab, auf dem Server. Nach dem Update `./config.rb build phone_speech && ./config.rb up -d` (das Image ist etwa 0,5 GB größer) und ein neues Workspace-Image; die Datenschutzerklärung nennt die Aufnahmen und ihre Abschrift.
 - `/statistik` zeigt, wie viele Workspaces laufen: Der Server zählt alle fünf Minuten und speichert je Stunde nur zwei Zahlen (`WorkspaceHour`, 400 Tage), nicht wer; die Zählung beginnt mit dem Update.
-- Der Sprachdienst `phone_speech` darf jetzt 4 statt 2 Prozessoren nutzen (vier Threads je Worker, fast doppelt so schnell); `src/scripts/measure-speech.sh` misst, was auf dem eigenen Server am schnellsten ist. Nach dem Update `./config.rb up -d`.
+- **Handgriff:** Der Sprachdienst `phone_speech` darf jetzt 4 statt 2 Prozessoren nutzen (vier Threads je Worker, fast doppelt so schnell); `src/scripts/measure-speech.sh` misst, was auf dem eigenen Server am schnellsten ist. Nach dem Update `./config.rb up -d`.
 - Neuer, freiwilliger Wert `PHONE_YOUTUBE_COOKIES` in `credentials.rb`: der Pfad einer `cookies.txt` eines eigenen Google-Kontos, für Server, die YouTube um eine Anmeldung bittet (»Sign in to confirm you're not a bot«); Anleitung in `docs/plan-telefonspiel.md`, »Musik von YouTube«. Danach `./config.rb up -d`.
 - Neue, freiwillige Werte in `credentials.rb` für das Telefonspiel: `PHONE_NUMBER` (die Nummer) und `PHONE_DIRECT_DIAL` (ob der Anbieter drei angehängte Ziffern weiterreicht). Ohne `PHONE_NUMBER` sagt die Aktivität »Ein Spiel am Telefon«, dass an einer echten Nummer gearbeitet wird.
-- Neuer Dienst `phone_speech` (der Sprachdienst des Telefonspiels, läuft immer): nach dem Update `./config.rb build phone_speech peer_firewall && ./config.rb up -d`; der Befehl `telefon` braucht ein neu gebautes Workspace-Image. Der Dienst speichert gesprochene Sätze und Musik in `data/phone-cache` (90 Tage nach dem letzten Abspielen gelöscht, in der Datenschutzerklärung eingetragen), holt Musik von YouTube und hält yt-dlp über PyPI aktuell.
+- **Handgriff:** Neuer Dienst `phone_speech` (der Sprachdienst des Telefonspiels, läuft immer): nach dem Update `./config.rb build phone_speech peer_firewall && ./config.rb up -d`; der Befehl `telefon` braucht ein neu gebautes Workspace-Image. Der Dienst speichert gesprochene Sätze und Musik in `data/phone-cache` (90 Tage nach dem letzten Abspielen gelöscht, in der Datenschutzerklärung eingetragen), holt Musik von YouTube und hält yt-dlp über PyPI aktuell.
 - Die Entwicklungsumgebung läuft jetzt auf Port 8030 statt 8025 (`DEV_NGINX_PORT` in `config.rb`), der Neo4j-Browser auf 8031 statt 8021 (`DEV_NEO4J_PORT`): in einer eigenen `credentials.rb` `WEBSITE_HOST` für die Entwicklung auf `workspace.test:8030` ändern und `./config.rb up -d` ausführen.
 - Der Server holt beim Start einmal zwei Dateien von `specht/workspace-files` nach `/dl/gaussian-splatting` (zusammen
   etwa 100 MB, die Gasse und ein Klassenzimmer für den Viewer der Aktivität »Gaussian Splatting«);
@@ -78,13 +76,13 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
 - Java und Dart in den Katas, bei Pip und »Tests schreiben« übersetzt je ein Container, der geladen bleibt
   (`hs_code_compile_*`, zusammen bis zu 1 GB Arbeitsspeicher, 2 CPUs): Prüfungen antworten in etwa einer halben Sekunde
   statt in ein bis zwei. Ausschalten mit `HOT_COMPILE = false` in `credentials.rb`.
-- Das Workspace-Image enthält `pytest` für die Tests in Python (»Testen«): Nach dem Update das Image neu bauen
+- **Handgriff:** Das Workspace-Image enthält `pytest` für die Tests in Python (»Testen«): Nach dem Update das Image neu bauen
   (`./build-image.sh`).
-- Der Ruby-Dienst braucht `node`: Seiten zeichnen ER-Diagramme mit `_include_er` aus dem Modell, mit dem Kern der
+- **Handgriff:** Der Ruby-Dienst braucht `node`: Seiten zeichnen ER-Diagramme mit `_include_er` aus dem Modell, mit dem Kern der
   ER-Werkstatt. Nach dem Update `./config.rb build ruby && ./config.rb up -d ruby`.
-- Die ER-Werkstatt 0.4.0 kennt Minimum und Maximum, `relationship has_copy: movie (0,n) : (1,1) copy`, mit Kreis und
+- **Handgriff:** Die ER-Werkstatt 0.4.0 kennt Minimum und Maximum, `relationship has_copy: movie (0,n) : (1,1) copy`, mit Kreis und
   Strich im Krähenfuß: Nach dem Update das Image neu bauen (`./build-image.sh`).
-- Das Workspace-Image enthält die LaTeX-Pakete `pgfplots` und `csquotes` und `glslangValidator`, mit dem die Aufgaben
+- **Handgriff:** Das Workspace-Image enthält die LaTeX-Pakete `pgfplots` und `csquotes` und `glslangValidator`, mit dem die Aufgaben
   zu GLSL-Shadern prüfen, ob sie sich übersetzen lassen: Nach dem Update das Image neu bauen (`./build-image.sh`).
 - Aufgaben mit Code in der Karte speichern zusätzlich den letzten Code, der die Prüfung bestanden hat
   (`TaskState.correct_answer`), und bei späteren Aufgaben, welche Fassung der eigenen Funktionen sie beim Speichern
@@ -92,16 +90,16 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   jemand schon geschrieben hat, statt sie vorzugeben. Beides steht im Export des Kontos und in der Datenschutzerklärung.
 - Der Workspace steht unter der AGPL-3.0-or-later (`LICENSE`): Wer eine geänderte Fassung betreibt, macht den
   geänderten Quellcode den Nutzerinnen und Nutzern zugänglich.
-- Sitzungen speichern nur noch den SHA-256 der Kennung im Cookie. Beim ersten Start nach dem Update rechnet der
+- **Handgriff:** Sitzungen speichern nur noch den SHA-256 der Kennung im Cookie. Beim ersten Start nach dem Update rechnet der
   Ruby-Dienst die bestehenden Sitzungen um, bevor er Anfragen annimmt; niemand wird abgemeldet. Nach einem Zurückgehen
   auf eine ältere Version sind alle abgemeldet. Sicherungen von vor dem Update enthalten die Kennungen noch.
-- Die zurückgestellte Aktivität »Feuerwerk aus Partikeln« (`feuerwerk`) ist entfernt; `/feuerwerk` führt zur Startseite.
+- **Handgriff:** Die zurückgestellte Aktivität »Feuerwerk aus Partikeln« (`feuerwerk`) ist entfernt; `/feuerwerk` führt zur Startseite.
   Beim ersten Start nach dem Update löscht der Ruby-Dienst, was Lernende dazu gespeichert und abgegeben haben
   (Ergebnisse, Versuche, Abgaben).
-- Das Workspace-Image enthält SWI-Prolog, `hyperfine` und die Erweiterung »Better Prolog Syntax« (für »Logisch
+- **Handgriff:** Das Workspace-Image enthält SWI-Prolog, `hyperfine` und die Erweiterung »Better Prolog Syntax« (für »Logisch
   programmieren mit Prolog« und »Wie lange dauert das?«): Nach dem Update das Image neu bauen (`./build-image.sh`). Der Ruby-Dienst braucht SWI-Prolog für die
   Beispiele der neuen Prüfart `prolog`: `./config.rb build ruby && ./config.rb up -d ruby`.
-- Die Turtle-Grafik führt Ruby und Python im Browser aus: Nach dem Update einmal `./fetch-turtle-runtimes.sh`
+- **Handgriff:** Die Turtle-Grafik führt Ruby und Python im Browser aus: Nach dem Update einmal `./fetch-turtle-runtimes.sh`
   ausführen (lädt Pyodide und ruby.wasm in festen Versionen nach `src/static/include/turtle/runtime`, nicht in git).
   nginx liefert sie vorkomprimiert und lange gecacht aus (`gzip_static`); die Konfiguration schreibt der Ruby-Dienst
   beim Start selbst.
@@ -117,7 +115,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   Wochen lang gar nichts). Gespeichert wird es als `ActivityFeedback`
   am Konto der Lehrkraft (gelöscht mit dem Konto), die Administration liest es unter `/rueckmeldungen`; die
   Datenschutzerklärung und das Verzeichnis nennen es.
-- Traefik und die Peer-Firewall haben keinen Docker-Socket mehr, sondern einen Wächter, der nur lesen lässt
+- **Handgriff:** Traefik und die Peer-Firewall haben keinen Docker-Socket mehr, sondern einen Wächter, der nur lesen lässt
   (`GUARD_MODE=readonly`). Nach dem Update: `./config.rb build peer_firewall && ./config.rb up -d` und in
   `docker/traefik` `docker compose up -d` (startet `traefik-docker-guard` und Traefik neu). Traefik läuft dafür aus
   `docker/traefik` des Workspace, nicht aus einer Kopie der Datei (der Wächter braucht `docker/docker-guard`):
@@ -130,7 +128,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   Datenschutzerklärung sagt dann, dass Entscheidungen und Vereinbarungen noch ausstehen, welche Rechtsgrundlage
   vorgesehen ist (`SCHOOL_LAW`) und bis wann sie vorliegen sollen (`TRANSITION_DEADLINE`), statt »noch nicht
   eingetragen«.
-- Das Workspace-Image neu bauen (`./build-image.sh`): Flutter, das Android-SDK und der Gradle-Cache sind heraus
+- **Handgriff:** Das Workspace-Image neu bauen (`./build-image.sh`): Flutter, das Android-SDK und der Gradle-Cache sind heraus
   (rund 8 GB kleiner), Dart bleibt als eigenes SDK; Go kommt in Version 1.27.3 von go.dev statt aus Ubuntu
   (`GOTOOLCHAIN=local`); `man` funktioniert wieder (englische Seiten); Dart, Go, .NET und PowerShell melden keine
   Nutzungsdaten. `./upload-image.sh` braucht auf dem Rechner, der hochlädt, jetzt `socat` und auf dem Server keine
@@ -176,10 +174,10 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   festen Namen.
 - Tipps in Stufen: Welche Tipps einer Aufgabe aufgeklappt wurden, merkt sich nur der Browser (lokaler Speicher),
   für jedes Konto getrennt; der Server speichert davon nichts; die Datenschutzerklärung nennt es bei »Cookies und Speicher im Browser«.
-- Die Neo4j-Datenbank der Anwendung liegt jetzt in einem eigenen Docker-Netz, das nur der
+- **Handgriff:** Die Neo4j-Datenbank der Anwendung liegt jetzt in einem eigenen Docker-Netz, das nur der
   Ruby-Container mit ihr teilt. Nach dem Update `./config.rb up -d`, damit `neo4japp` und
   `ruby` neu angelegt werden.
-- Der Docker-Wächter (`docker_guard`) startet Container nur noch mit Grenzen für CPU, Speicher
+- **Handgriff:** Der Docker-Wächter (`docker_guard`) startet Container nur noch mit Grenzen für CPU, Speicher
   (ohne Swap) und Prozesse, höchstens so viel wie ein Workspace (4 CPUs, 4 GB, 256 Prozesse;
   anders mit `GUARD_MAX_CPUS`, `GUARD_MAX_MEMORY`, `GUARD_MAX_PIDS`). Nach dem Update
   `./config.rb up -d`, damit er die neuen Regeln liest.
@@ -193,7 +191,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   ganzen Liste im Anhang an die Adressen in `ADMIN_USERS` (Betreff »Löschliste des Workspace …:
   aufbewahren«; die neueste genügt). Sie hilft, wenn der Server verloren geht oder eine Sicherung
   die Datei überschreibt: docs/datenschutz.md, »Löschen«.
-- Fallserver: neu bauen (die Alarmanlage startete nach einem Neustart des Containers immer wieder
+- **Handgriff:** Fallserver: neu bauen (die Alarmanlage startete nach einem Neustart des Containers immer wieder
   neu, die Eingabeaufforderung ist farbig). Mit `CASE_SERVER = true` nach dem Update
   `./config.rb build case_museum case_alarm` und `./config.rb up -d case_museum case_alarm`.
 - Je Sitzung speichert der Workspace jetzt den Tag der Anmeldung, den Tag der letzten Nutzung
@@ -232,7 +230,7 @@ was gespeichert wird. Nicht jede Änderung bekommt einen Eintrag.
   SSH-Schlüssel. Die Datenschutzerklärung nennt beides, sobald es eingeschaltet ist.
 - `git pull` mit Commits auf beiden Seiten brach im Workspace ab (Git 2.43); das einmalige Einrichten im Handbuch
   »Git-Server« setzt jetzt `pull.rebase false`. Wer es schon eingerichtet hat, liest den Hinweis bei »Wenn Git den Push ablehnt«.
-- Neue UML-Werkstatt `hackschule-uml-0.1.0.vsix` (Klassendiagramme in `.uml`-Dateien): das Workspace-Image
+- **Handgriff:** Neue UML-Werkstatt `hackschule-uml-0.1.0.vsix` (Klassendiagramme in `.uml`-Dateien): das Workspace-Image
   neu bauen (`build-image.sh`). Die Prüfung `classes` bringt den Kern selbst mit und läuft auch ohne sie.
 
 ## 1.0.0 (21. Oktober 2026)
