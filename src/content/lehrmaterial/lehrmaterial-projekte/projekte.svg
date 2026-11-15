@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <style id='embedded-fonts'>@font-face{font-family:'IBM Plex Sans';font-weight:400;font-style:normal;src:url(data:font/woff2;base64,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) format('woff2')}@font-face{font-family:'IBM Plex Sans';font-weight:600;font-style:normal;src:url(data:font/woff2;base64,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) format('woff2')}</style>
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <g transform="translate(0 -90)">
+  <!-- der Weg: von links unten nach rechts oben, in Schleifen -->
+  <path d="M 70 820 C 250 820 270 560 400 560 C 560 560 520 740 700 740 C 880 740 820 430 1000 430 C 1180 430 1110 640 1290 600 C 1430 570 1440 330 1520 250"
+        fill="none" stroke="#f3f4f6" stroke-width="34" stroke-linecap="round"/>
+  <path d="M 70 820 C 250 820 270 560 400 560 C 560 560 520 740 700 740 C 880 740 820 430 1000 430 C 1180 430 1110 640 1290 600 C 1430 570 1440 330 1520 250"
+        fill="none" stroke="#d1d5db" stroke-width="4" stroke-dasharray="2 22" stroke-linecap="round"/>
+
+  <!-- 1: die Idee auf Papier -->
+  <g transform="translate(400 560)">
+    <circle r="92" fill="#c98500"/>
+    <rect x="-36" y="-48" width="72" height="96" rx="6" fill="#ffffff"/>
+    <path d="M -22 -24 H 22 M -22 -6 H 22 M -22 12 H 10" stroke="#b45309" stroke-width="7" stroke-linecap="round"/>
+    <text y="148" text-anchor="middle" font-family="'IBM Plex Sans', sans-serif" font-size="46" font-weight="600" fill="#1f2937">Idee</text>
+  </g>
+  <!-- 2: eine erste Fassung läuft -->
+  <g transform="translate(700 740)">
+    <circle r="92" fill="#16a34a"/>
+    <path d="M -24 -40 L 42 0 L -24 40 Z" fill="#ffffff" stroke="#ffffff" stroke-width="10" stroke-linejoin="round"/>
+    <text y="-118" text-anchor="middle" font-family="'IBM Plex Sans', sans-serif" font-size="46" font-weight="600" fill="#1f2937">läuft</text>
+  </g>
+  <!-- 3: vorgeführt -->
+  <g transform="translate(1000 430)">
+    <circle r="92" fill="#12959f"/>
+    <path d="M -54 0 C -30 -36 30 -36 54 0 C 30 36 -30 36 -54 0 Z" fill="#ffffff"/>
+    <circle r="20" fill="#12959f"/>
+    <circle cx="7" cy="-7" r="6" fill="#ffffff"/>
+    <text y="148" text-anchor="middle" font-family="'IBM Plex Sans', sans-serif" font-size="46" font-weight="600" fill="#1f2937">vorgeführt</text>
+  </g>
+  <!-- 4: abgegeben -->
+  <g transform="translate(1290 600)">
+    <circle r="92" fill="#0d60ae"/>
+    <path d="M -26 48 V -48" stroke="#ffffff" stroke-width="10" stroke-linecap="round"/>
+    <path d="M -22 -46 C 0 -58 16 -34 40 -44 V 4 C 16 14 0 -10 -22 2 Z" fill="#ffffff"/>
+    <text y="148" text-anchor="middle" font-family="'IBM Plex Sans', sans-serif" font-size="46" font-weight="600" fill="#1f2937">abgegeben</text>
+  </g>
+  </g>
+</svg>

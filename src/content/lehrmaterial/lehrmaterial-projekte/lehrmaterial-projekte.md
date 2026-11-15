@@ -1,3 +1,8 @@
+<div class='meta'>
+image: projekte.webp
+image_alt: "Ein Weg mit vier Stationen: Idee, läuft, vorgeführt, abgegeben"
+</div>
+
 <div
     class="autotoc-secondary-trigger"
     data-title="Auf dieser Seite"

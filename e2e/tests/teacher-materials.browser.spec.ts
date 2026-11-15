@@ -16,12 +16,12 @@ test('designated teacher finds the guides as cards on /lehrmaterial', async ({ p
   await page.goto('/lehrmaterial');
   expect(new URL(page.url()).pathname).toBe('/lehrmaterial');
   await expect(page.getByRole('heading', { name: 'Für Lehrkräfte', level: 1 })).toBeVisible();
-  for (const slug of ['einstieg', 'klassenseite', 'lehrplan', 'git', 'leistungsueberpruefung', 'datenschutz']) {
+  for (const slug of ['einstieg', 'klassenseite', 'lehrplan', 'git', 'projekte', 'leistungsueberpruefung', 'datenschutz']) {
     await expect(page.locator(`a.tutorial_card3[href="/lehrmaterial-${slug}"]`)).toBeVisible();
   }
   const broken: string[] = [];
   page.on('response', (r) => { if (r.status() >= 400 && /\.(webp|png|jpg)/.test(r.url())) broken.push(r.status() + ' ' + r.url()); });
-  for (const slug of ['klassenseite', 'lehrplan', 'git', 'datenschutz']) {
+  for (const slug of ['klassenseite', 'lehrplan', 'git', 'projekte', 'datenschutz']) {
     await page.goto(`/lehrmaterial-${slug}`);
     for (const img of await page.locator('img').all()) { await img.scrollIntoViewIfNeeded(); }
   }
