@@ -4,10 +4,10 @@ Diese Seite begleitet die Data Structures Sandbox, ersetzt sie aber nicht. Sie i
 
 <table class='table'>
 <tr><th>Ziele</th><td>Die Lernenden können danach<ul>
-<li>mit einem SSH-Schlüssel ein Repository klonen, eigene Änderungen committen und pushen,</li>
-<li>Stack und Queue unterscheiden und vorhersagen, welches Element zuletzt herauskommt,</li>
-<li>erklären, warum Einfügen in ein Array Platz machen kostet, und welche Rotation einen AVL-Baum wieder ins Gleichgewicht bringt,</li>
-<li>an einer Hash Table begründen, wie die Wahl der Hashfunktion Buckets verschenkt.</li>
+<li>Stack, Queue und Liste über ihr Verhalten beschreiben (LIFO, FIFO, Zugriff über den Index) und jede einmal in einem Array und einmal mit verketteten Knoten implementieren, die Queue auch als Ring Buffer,</li>
+<li>vorhersagen und begründen, was Einfügen, Entfernen und Zugriff in einem Array und in einer Linked List kosten: Verschieben gegen Durchlaufen,</li>
+<li>einen binären Suchbaum mit Einfügen, Suchen, Entfernen und den Durchläufen <code>preorder</code>, <code>inorder</code>, <code>postorder</code> und <code>breadthFirst</code> schreiben und erklären, wie AVL-Rotationen ihn ausgeglichen halten,</li>
+<li>einen Min-Heap in einem Array und eine Hash Table mit Verkettung implementieren und begründen, wie Hashfunktion und Zahl der Buckets die Kollisionen bestimmen.</li>
 </ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten (Schlüssel und Name, wenn es ein Klassen-Repository gibt), Vorlage klonen, App starten, ein Datentyp in mehreren Speicherformen.</li>

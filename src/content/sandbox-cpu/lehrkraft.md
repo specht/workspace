@@ -4,9 +4,10 @@ Diese Seite begleitet die CPU Sandbox, ersetzt sie aber nicht. Sie ist für alle
 
 <table class='table'>
 <tr><th>Ziele</th><td>Die Lernenden können danach<ul>
-<li>mit einem SSH-Schlüssel ein Repository klonen, eigene Änderungen committen und pushen,</li>
-<li>an einem Befehl erklären, was er mit Registern, Flags und Speicher macht, und vorhersagen, was danach in einem Register steht,</li>
-<li>begründen, was mit einer Zahl passiert, die nicht in ein Byte passt.</li>
+<li>an einem Befehl der MiniCPU erklären, was er mit Registern, Flags und Speicher macht, und vorhersagen, wie viele Takte er braucht und was danach in Registern und Flags steht, auch wenn ein Byte überläuft,</li>
+<li>kleine Programme in Assembler schreiben, die mit Sprüngen und Schleifen rechnen, Speicher lesen und schreiben und auf den Bildschirm zeichnen, etwa das Maximum, eine Multiplikation oder ein Schachbrett,</li>
+<li>erklären, wie Unterprogramme Rücksprungadressen und Argumente auf dem Stack ablegen, auch bei einer Rekursion wie den Türmen von Hanoi,</li>
+<li>dieselbe Aufgabe in Assembler und in C lösen und beide Lösungen nach Bytes und Takten vergleichen.</li>
 </ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten (Schlüssel und Name, wenn es ein Klassen-Repository gibt), Vorlage klonen, App starten, die drei Ausbaustufen der Befehlssprache.</li>

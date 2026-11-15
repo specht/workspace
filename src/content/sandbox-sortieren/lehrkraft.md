@@ -4,10 +4,10 @@ Diese Seite begleitet die Sorting Sandbox, ersetzt sie aber nicht. Sie ist für 
 
 <table class='table'>
 <tr><th>Ziele</th><td>Die Lernenden können danach<ul>
-<li>mit einem SSH-Schlüssel ein Repository klonen, eigene Änderungen committen und pushen,</li>
-<li>einen Sortieralgorithmus schreiben und an seinem Ablauf vorhersagen, wie oft er tauscht,</li>
-<li>die Arbeit zweier Verfahren messen und vorhersagen, wie sie bei doppelt so vielen Elementen wächst,</li>
-<li>erklären, was ein stabiles Sortierverfahren ist.</li>
+<li>einen Sortieralgorithmus schreiben und Schritt für Schritt an seinen Lese-, Schreib- und Vergleichsoperationen verfolgen, von Bubble Sort über Insertion Sort und Selection Sort bis zu Merge Sort mit einer zweiten Liste,</li>
+<li>vorhersagen, welcher Algorithmus auf welcher Eingabe (zufällig, sortiert, umgekehrt, fast sortiert, wenige verschiedene Werte) weniger Arbeit hat, und es im Race prüfen,</li>
+<li>den Aufwand für wachsende Listen messen und mit <i>n</i>, <i>n</i> log <i>n</i> und <i>n</i>² vergleichen, um eine Vermutung über sein Wachstum zu belegen,</li>
+<li>Korrektheit, Stabilität und Aufwand als drei Gütekriterien unterscheiden und an einem Gegenbeispiel zeigen, warum ein Verfahren nicht stabil ist.</li>
 </ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten (Schlüssel und Name, wenn es ein Klassen-Repository gibt), Vorlage klonen, App starten, Explore.</li>
