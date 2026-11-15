@@ -12,6 +12,13 @@ Lernende erkunden das Netz mit Kommandozeilenwerkzeugen: die eigene Adresse, Ent
 <li><b>2. Doppelstunde:</b> »Im eigenen Netz«: die MAC-Adresse mit <code>ip link</code>, der Frame, ARP, zu zweit <code>ping</code> und <code>ip neigh</code>, die Routing-Tabelle mit <code>ip route</code>, Switches, WLAN und was ein Router mit Frame und Paket tut. Danach die Schichten, Ports und der Handshake mit <code>curl -w</code> gemessen.</li>
 <li><b>3. Doppelstunde:</b> <code>netcat</code> allein und zu zweit, HTTP von Hand bei <code>info.cern.ch</code>, dann <code>wget</code>, <code>curl</code> und <code>jq</code>. Das ASCII-Kino passt ans Ende oder in eine Pause.</li>
 </ul></td></tr>
+<tr><th>Ohne Rechner</th><td><ul>
+<li><b>Vor »Pakete, Ports und Verbindungen«, 15 bis 20 Minuten, die ganze Klasse an ihren Plätzen:</b> Eine Person schreibt einen Satz aus acht Wörtern auf acht Zettel, ein Wort je Zettel, und auf jeden Absender und Empfänger als Sitzplatz (»Reihe 1, Platz 2«). Die Zettel gehen von Hand zu Hand; jede Person reicht nur an einen Nachbarn weiter, in Richtung des Empfängers. Du bist das Netz, das nichts verspricht: Du nimmst unterwegs einen Zettel heraus und schickst einen anderen auf einen Umweg. Am Ziel lässt sich der Satz nicht zusammensetzen.</li>
+<li><b>Zweite Runde:</b> Die Klasse erfindet Regeln, bis der Satz trotzdem vollständig und in der richtigen Reihenfolge ankommt. Oft entstehen Nummern (»3 von 8«) und Zettel zurück an den Absender, die sagen, was angekommen ist.</li>
+<li><b>Was sichtbar wird:</b> Wer weiterreicht, liest nur die Adresse, nicht das Wort. Nummern, Bestätigungen und neues Senden erledigen allein Absender und Empfänger; das Netz dazwischen bleibt, wie es war.</li>
+<li><b>Zurück zur Seite:</b> die Tabelle in <a href='#schichten'>»Schichten«</a>: Das Weiterreichen ist IP, die Regeln der zweiten Runde sind TCP. <a href='#der-handshake'>»Der Handshake«</a> ist die Verabredung, bevor der erste Zettel losgeht.</li>
+<li><b>Vorbild:</b> »Network Protocols« bei <a href='https://classic.csunplugged.org/activities/network-protocols/'>Classic CS Unplugged</a>.</li>
+</ul></td></tr>
 <tr><th>Ports</th><td>Zwischen zwei Workspaces ist nur Port 1234 frei, für <code>netcat</code> zu zweit, dazu <code>ping</code>. Allein, mit <code>localhost</code>, geht jeder Port. Nach außen gehen Verbindungen ins Internet, auch an Port 80 (<code>info.cern.ch</code>).</td></tr>
 <tr><th>Im eigenen Netz</th><td><ul>
 <li>Alle Workspaces hängen an einer Linux-Bridge auf dem Server, einem Switch aus Software; ARP geht zwischen ihnen ungehindert, darum sehen Lernende nach einem <code>ping</code> die MAC-Adresse der anderen Person in <code>ip neigh</code>.</li>
