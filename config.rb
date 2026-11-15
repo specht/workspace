@@ -463,6 +463,11 @@ if defined?(PHONE_SIP_SERVER) && defined?(PHONE_SIP_USER) && defined?(PHONE_SIP_
         retry_interval = 30
         forbidden_retry_interval = 300
         expiration = 300
+        ; a call is the trunk's only when it names this registration's line;
+        ; no identify by address: after a restart the provider still rings
+        ; the registrations of the containers before (up to expiration), and
+        ; answering those too put two streams into one call (it stuttered,
+        ; 15 November 2026)
         line = yes
         endpoint = trunk
 
@@ -491,11 +496,6 @@ if defined?(PHONE_SIP_SERVER) && defined?(PHONE_SIP_USER) && defined?(PHONE_SIP_
         force_rport = yes
         rewrite_contact = yes
         dtmf_mode = rfc4733
-
-        [trunk]
-        type = identify
-        endpoint = trunk
-        match = #{PHONE_SIP_SERVER}
     CONF
     FileUtils.chmod(0o644, Dir[File.join(phone_conf, '*')])
     docker_compose[:services][:phone_asterisk] = {
