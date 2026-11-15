@@ -190,7 +190,8 @@ module TaskCard
                           "#{unused ? ' Nicht jede Zeile gehört dazu: Was nicht passt, lässt du weg.' : ''} Ziehen geht auch.</p>"
                     io << "<ol class='parsons-lines' aria-label='Zeilen des Programms'>"
                     Parsons.shown(task['parsons'], task['parsons_unused']).each do |line|
-                        io << "<li class='parsons-line' data-text='#{h.(line)}' data-level='0' draggable='true'>" \
+                        io << "<li class='parsons-line' data-text='#{h.(line)}' data-level='0'>" \
+                              "<span class='parsons-grip' aria-hidden='true'><i class='bi bi-grip-vertical'></i></span>" \
                               "<code class='parsons-code'>#{h.(line)}</code><span class='parsons-buttons'>" \
                               "<button type='button' class='parsons-move' data-move='up' aria-label='nach oben'><i class='bi bi-arrow-up' aria-hidden='true'></i></button>" \
                               "<button type='button' class='parsons-move' data-move='down' aria-label='nach unten'><i class='bi bi-arrow-down' aria-hidden='true'></i></button>" \

@@ -1111,8 +1111,10 @@ dazugehören, am besten ein typischer Fehler (`total += 1` statt
 `total += i`). Die Karte zeigt alle Zeilen sortiert und ohne Einrückung,
 damit die Seite die Lösung nicht enthält; `tasks.js` mischt sie für jede
 Person anders (immer gleich für dieselbe), und die Lernenden schieben sie
-mit Knöpfen oder mit der Maus hoch und runter, rücken sie ein und lassen weg,
-was nicht passt. Die Zeilen in ihrer Reihenfolge sind der Code, den die
+mit Knöpfen hoch und runter oder ziehen sie (Pointer Events: mit der Maus an
+der ganzen Zeile, mit dem Finger am Griff links, damit die Seite beim Wischen
+über die Zeilen weiter scrollt; seitwärts ziehen rückt ein), rücken sie ein
+und lassen weg, was nicht passt. Die Zeilen in ihrer Reihenfolge sind der Code, den die
 Prüfung bekommt; sie läuft wie bei jeder Kata. Ein Puzzle hat keinen
 `starter`. Jede Sprache braucht ihre eigenen Zeilen (eine Variante mit
 eigenem `check` ohne `parsons` lehnt `TaskSpec` ab). Als Beispiel, das

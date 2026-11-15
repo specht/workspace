@@ -54,3 +54,62 @@ test('a Parsons puzzle is ordered, indented, checked and kept', async ({ page, e
   await expect(lines.nth(solution.length)).toHaveClass(/parsons-skipped/);
   await page.request.post('/api/task/delete', { data: { task: 'kata-loops/sum-even' } });
 });
+
+// Dragging with the mouse moves a line; dragging it to the right indents it.
+// With a finger (real touch events, as on a phone) only the grip drags.
+test('Parsons lines can be dragged with the mouse and with a finger', async ({ browser, e2eEmail }, testInfo) => {
+  test.setTimeout(120_000);
+  const texts = (card) => card.locator('.parsons-line').evaluateAll((items) => items.map((li) => (li as HTMLElement).dataset.text));
+
+  const page = await (await browser.newContext()).newPage();
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.request.post('/api/task/delete', { data: { task: 'kata-loops/sum-even' } });
+  await page.goto('/kata-loops');
+  const card = page.locator('.task-card[data-task="kata-loops/sum-even"]:visible');
+  const lines = card.locator('.parsons-line');
+  await lines.nth(4).scrollIntoViewIfNeeded();
+  const first = (await texts(card))[0];
+  // the first line, taken by its text, dragged below the fourth and one step to the right
+  const from = (await lines.nth(0).locator('.parsons-code').boundingBox())!;
+  const to = (await lines.nth(3).boundingBox())!;
+  await page.mouse.move(from.x + 10, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(from.x + 30, to.y + to.height * 0.8, { steps: 8 });
+  await page.mouse.move(from.x + 10 + 34, to.y + to.height * 0.8, { steps: 4 });
+  await page.mouse.up();
+  const after = await texts(card);
+  expect(after.indexOf(first)).toBe(3);
+  await expect(lines.nth(3)).toHaveAttribute('data-level', '1');
+  expect(await card.locator('.parsons-answer').inputValue()).toContain(`\n${' '.repeat(Number(await card.locator('.parsons').getAttribute('data-indent')))}${first}\n`);
+  await page.context().close();
+
+  const phone = await (await browser.newContext({ viewport: { width: 400, height: 900 }, hasTouch: true, isMobile: true })).newPage();
+  await loginAsE2eUser(phone, e2eEmail, testInfo);
+  await phone.goto('/kata-loops');
+  const pcard = phone.locator('.task-card[data-task="kata-loops/sum-even"]:visible');
+  await pcard.scrollIntoViewIfNeeded();
+  const plines = pcard.locator('.parsons-line');
+  const cdp = await phone.context().newCDPSession(phone);
+  const touch = async (type: string, x: number, y: number) =>
+    cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+  const swipe = async (x: number, y1: number, y2: number) => {
+    await touch('touchStart', x, y1);
+    for (let i = 1; i <= 8; i++) await touch('touchMove', x, y1 + (y2 - y1) * i / 8);
+    await touch('touchEnd', x, y2);
+  };
+  // from the code: the page scrolls, the order stays
+  const order = await texts(pcard);
+  const code = (await plines.nth(0).locator('.parsons-code').boundingBox())!;
+  const below = (await plines.nth(3).boundingBox())!;
+  await swipe(code.x + 20, code.y + code.height / 2, below.y + below.height * 0.8);
+  expect(await texts(pcard)).toEqual(order);
+  // from the grip: the line moves (measured once the page has stopped scrolling)
+  await phone.waitForTimeout(1000);
+  await plines.nth(4).scrollIntoViewIfNeeded();
+  await phone.waitForTimeout(500);
+  const grip = (await plines.nth(0).locator('.parsons-grip').boundingBox())!;
+  const target = (await plines.nth(3).boundingBox())!;
+  await swipe(grip.x + grip.width / 2, grip.y + grip.height / 2, target.y + target.height * 0.8);
+  expect((await texts(pcard)).indexOf(order[0])).toBe(3);
+  await phone.context().close();
+});

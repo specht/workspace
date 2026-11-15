@@ -1396,29 +1396,41 @@
             button.focus();
             parsonsSync(card);
         });
-        // dragging a line up or down
-        let dragged = null;
-        list.addEventListener('dragstart', function (e) {
-            dragged = e.target.closest('.parsons-line');
-            if (!dragged || card.classList.contains('task-logged-out')) { dragged = null; e.preventDefault(); return; }
-            dragged.classList.add('parsons-dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', dragged.dataset.text);
-        });
-        list.addEventListener('dragover', function (e) {
-            if (!dragged) return;
+        // Dragging, with mouse, finger or pen (Pointer Events): up and down
+        // moves the line, sideways indents it, one step per indentation.
+        // With a finger only from the grip, so that the page still scrolls
+        // when someone swipes over the lines; with a mouse from anywhere on
+        // the line except its buttons.
+        let drag = null;
+        list.addEventListener('pointerdown', function (e) {
+            const li = e.target.closest('.parsons-line');
+            if (!li || e.target.closest('.parsons-move') || card.classList.contains('task-logged-out')) return;
+            if (e.pointerType !== 'mouse' && !e.target.closest('.parsons-grip')) return;
+            if (e.button !== undefined && e.button > 0) return;
             e.preventDefault();
-            const over = e.target.closest('.parsons-line');
-            if (!over || over === dragged) return;
-            const rect = over.getBoundingClientRect();
-            list.insertBefore(dragged, e.clientY < rect.top + rect.height / 2 ? over : over.nextElementSibling);
+            // one step of indentation, as wide as in the CSS (narrower on a phone)
+            const step = (parseFloat(getComputedStyle(li).fontSize) || 16) * (window.matchMedia('(max-width: 500px)').matches ? 1.2 : 2);
+            drag = { li: li, x: e.clientX, level: Number(li.dataset.level), step: step, id: e.pointerId };
+            li.classList.add('parsons-dragging');
+            try { li.setPointerCapture(e.pointerId); } catch (error) { /* a synthetic event */ }
         });
-        list.addEventListener('dragend', function () {
-            if (!dragged) return;
-            dragged.classList.remove('parsons-dragging');
-            dragged = null;
+        window.addEventListener('pointermove', function (e) {
+            if (!drag || e.pointerId !== drag.id) return;
+            e.preventDefault();
+            // the line goes before the first other line whose middle is below the pointer
+            const others = Array.from(list.children).filter((li) => li !== drag.li);
+            const below = others.find((li) => { const r = li.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; });
+            if (below !== drag.li.nextElementSibling || (!below && list.lastElementChild !== drag.li)) list.insertBefore(drag.li, below || null);
+            parsonsLevel(drag.li, drag.level + Math.round((e.clientX - drag.x) / drag.step));
+        }, { passive: false });
+        const drop = function (e) {
+            if (!drag || e.pointerId !== drag.id) return;
+            drag.li.classList.remove('parsons-dragging');
+            drag = null;
             parsonsSync(card);
-        });
+        };
+        window.addEventListener('pointerup', drop);
+        window.addEventListener('pointercancel', drop);
     }
 
     // »Details« and »Lösung« under a result: open below on request.
