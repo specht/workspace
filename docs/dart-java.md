@@ -24,6 +24,11 @@ at a time (a class ranks its languages under »Sprachen der Klasse«).
   (`laufzeit`); »Supermarkt« in all five. Their code tasks use the check
   types `java` and `dart` (docs/aufgaben.md, »java, dart«), which compile the
   student's file in their Workspace.
+- **Routenplaner** (`routenplaner`): Ruby, Python, Dart, JavaScript and
+  Java, the languages of the data structures sandbox, through one server in
+  Ruby and a bridge per language (docs/plan-routenplaner-sprachen.md); the
+  new three up to Dijkstra so far, the cards with the check types `dart`,
+  `javascript` and `java`.
 - **Handbuch:** »Dart und Java nebeneinander« (`reference/dart-java`), and
   Dart and Java columns in »Pseudocode und Struktogramme«.
 - **Language choice:** a class ranks any of the five; a person's own switch

@@ -2,8 +2,8 @@
 image: teaser.webp
 image_alt: "Ein Stadtplan von Steglitz mit farbigen Straßen und einer Route vom Botanischen Garten zum Gymnasium Steglitz"
 kind: projekt
-language: Ruby / Python
-languages: [ruby, python]
+language: Ruby / Python / Dart / JavaScript / Java
+languages: [ruby, python, dart, javascript, java]
 duration: 6 Doppelstunden
 curriculum: "Oberstufe: Algorithmen und Datenstrukturen (Graphen, Breitensuche, Dijkstra, Heap, A*)"
 topics: [graphen, datenstrukturen]
@@ -35,28 +35,22 @@ _include(workspace#repository-klonen)
 
 ### Den Server starten
 
+Der Routenplaner läuft im Browser. Die Seite mit der Karte bekommt er von einem kleinen Server, der deine Funktionen fragt, was sie schon können. Die schreibst du in einer von fünf Sprachen: Ruby, Python, Dart, JavaScript oder Java. Jede hat in der Vorlage einen eigenen Ordner, und gestartet wird alles mit `./run` und dem Namen deiner Sprache:
+
 <!-- language: ruby -->
-Der Routenplaner läuft im Browser. Die Seite mit der Karte bekommt er von einem kleinen Server in Ruby, der mit [Sinatra](https://sinatrarb.com/) gebaut ist. Sinatra installierst du einmal, es bleibt in deinem Workspace:
-
 ```bash
-gem install sinatra rackup puma
+./run ruby
 ```
 
-Dann startest du den Server:
-
-```bash
-ruby server.rb
-```
+Deine Funktionen schreibst du in `ruby/routes.rb`.
 
 <!-- tutorial-screenshot
 # Die Vorlage so, wie das Klonen sie anlegt (Dateien aus vorlage/, also
-# ohne das Repository auf GitHub), den Ordner öffnen, Sinatra installieren
-# und den Server starten
+# ohne das Repository auf GitHub), den Ordner öffnen und den Server mit
+# ./run starten, das beim ersten Mal Sinatra installiert
 show-left-sidebar
+write-file: run <- file:vorlage/run
 write-file: server.rb <- file:vorlage/server.rb
-write-file: routes.rb <- file:vorlage/routes.rb
-write-file: server.py <- file:vorlage/server.py
-write-file: routes.py <- file:vorlage/routes.py
 write-file: README.md <- file:vorlage/README.md
 write-file: public/index.html <- file:vorlage/public/index.html
 write-file: public/map.css <- file:vorlage/public/map.css
@@ -65,6 +59,18 @@ write-file: data/steglitz-zehlendorf.tsv <- file:vorlage/data/steglitz-zehlendor
 write-file: data/steglitz-zehlendorf-places.tsv <- file:vorlage/data/steglitz-zehlendorf-places.tsv
 write-file: data/test.tsv <- file:vorlage/data/test.tsv
 write-file: data/detour.tsv <- file:vorlage/data/detour.tsv
+write-file: ruby/routes.rb <- file:vorlage/ruby/routes.rb
+write-file: ruby/bridge.rb <- file:vorlage/ruby/bridge.rb
+write-file: python/routes.py <- file:vorlage/python/routes.py
+write-file: python/bridge.py <- file:vorlage/python/bridge.py
+write-file: dart/routes.dart <- file:vorlage/dart/routes.dart
+write-file: dart/graph.dart <- file:vorlage/dart/graph.dart
+write-file: dart/bridge.dart <- file:vorlage/dart/bridge.dart
+write-file: javascript/routes.js <- file:vorlage/javascript/routes.js
+write-file: javascript/bridge.js <- file:vorlage/javascript/bridge.js
+write-file: java/Routes.java <- file:vorlage/java/Routes.java
+write-file: java/Types.java <- file:vorlage/java/Types.java
+write-file: java/Bridge.java <- file:vorlage/java/Bridge.java
 press: Control+K
 press: Control+O
 wait-for-input-value: /workspace/
@@ -72,59 +78,123 @@ type: routenplaner-starter
 press: Enter
 wait-for-input-value: /workspace/routenplaner-starter/
 press: Enter
-wait-for-text: routes.rb
-open-file: routes.rb
+wait-for-text: ruby
+open-file: ruby/routes.rb
 close-tab: Welcome
 hide-left-sidebar
 terminal-open
 terminal-maximize
-terminal-run: gem install sinatra rackup puma
+terminal-run: chmod +x run
+# Sinatra vorweg, was ./run sonst beim ersten Start tut (das Warten passt
+# nicht in wait-for-text)
+terminal-run: gem install --no-document sinatra rackup puma
 terminal-wait-for-prompt: 180
 terminal-run: clear
-terminal-run: ruby server.rb
-wait-for-text: Beenden mit Strg+C
+terminal-run: ./run ruby
+wait-for-text: Noch nicht fertig: read_ways
 check-task-fails: lesen
 check-task-fails: abstand
 check-task-fails: graph
 crop-terminal-lines: auto
 -->
-<img class='full' src='server.webp' alt='Im Terminal läuft server.rb: steglitz-zehlendorf: 45181 Wege, 126 Orte, »Noch nicht fertig: read_ways«, die Adresse der Karte zum Anklicken, und Sinatra hat auf Port 4567 begonnen.'>
+<img class='full' src='server.webp' alt='Im Terminal läuft ./run ruby: steglitz-zehlendorf: 45181 Wege, 126 Orte, die Adresse der Karte zum Anklicken, »Deine Funktionen: ruby/routes.rb« und »Noch nicht fertig: read_ways«.'>
 <!-- /language -->
 <!-- language: python -->
-Der Routenplaner läuft im Browser. Die Seite mit der Karte bekommt er von einem kleinen Server in Python, der mit [Flask](https://flask.palletsprojects.com/) gebaut ist. Flask installierst du einmal, es bleibt in deinem Workspace:
-
 ```bash
-pip install flask
+./run python
 ```
 
-Dann startest du den Server:
-
-```bash
-python3 server.py
-```
+Deine Funktionen schreibst du in `python/routes.py`.
 
 <!-- tutorial-screenshot
-# Derselbe Ordner in Python: der Server in Ruby hält an, Flask kommt dazu,
-# und server.py startet (er liefert dieselbe Karte für die Bilder danach)
+# Derselbe Ordner in Python: der Server hält an und startet mit python/routes.py
 terminal-open
 terminal-maximize
 press: Control+C
 terminal-wait-for-prompt
 terminal-run: clear
-terminal-run: pip install flask
-terminal-wait-for-prompt: 180
-terminal-run: clear
-terminal-run: python3 server.py
-wait-for-text: Beenden mit Strg+C
+terminal-run: ./run python
+wait-for-text: Noch nicht fertig: read_ways
 check-task-fails: lesen python
 check-task-fails: abstand python
 check-task-fails: graph python
 crop-terminal-lines: auto
 -->
-<img class='full' src='server-python.webp' alt='Im Terminal läuft server.py: steglitz-zehlendorf: 45181 Wege, 126 Orte, »Noch nicht fertig: read_ways« und die Adresse der Karte zum Anklicken.'>
+<img class='full' src='server-python.webp' alt='Im Terminal läuft ./run python: steglitz-zehlendorf: 45181 Wege, 126 Orte, die Adresse der Karte zum Anklicken, »Deine Funktionen: python/routes.py« und »Noch nicht fertig: read_ways«.'>
+<!-- /language -->
+<!-- language: dart -->
+```bash
+./run dart
+```
+
+Deine Funktionen schreibst du in `dart/routes.dart`.
+
+<!-- tutorial-screenshot
+# Derselbe Ordner in Dart: der Server hält an und startet mit dart/routes.dart
+terminal-open
+terminal-maximize
+press: Control+C
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: ./run dart
+wait-for-text: Noch nicht fertig: readWays
+check-task-fails: lesen dart
+check-task-fails: abstand dart
+check-task-fails: graph dart
+crop-terminal-lines: auto
+-->
+<img class='full' src='server-dart.webp' alt='Im Terminal läuft ./run dart: steglitz-zehlendorf: 45181 Wege, 126 Orte, die Adresse der Karte zum Anklicken, »Deine Funktionen: dart/routes.dart« und »Noch nicht fertig: readWays«.'>
+<!-- /language -->
+<!-- language: javascript -->
+```bash
+./run javascript
+```
+
+Deine Funktionen schreibst du in `javascript/routes.js`.
+
+<!-- tutorial-screenshot
+# Derselbe Ordner in JavaScript: der Server hält an und startet mit javascript/routes.js
+terminal-open
+terminal-maximize
+press: Control+C
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: ./run javascript
+wait-for-text: Noch nicht fertig: readWays
+check-task-fails: lesen javascript
+check-task-fails: abstand javascript
+check-task-fails: graph javascript
+crop-terminal-lines: auto
+-->
+<img class='full' src='server-javascript.webp' alt='Im Terminal läuft ./run javascript: steglitz-zehlendorf: 45181 Wege, 126 Orte, die Adresse der Karte zum Anklicken, »Deine Funktionen: javascript/routes.js« und »Noch nicht fertig: readWays«.'>
+<!-- /language -->
+<!-- language: java -->
+```bash
+./run java
+```
+
+Deine Funktionen schreibst du in `java/Routes.java`.
+
+<!-- tutorial-screenshot
+# Derselbe Ordner in Java: der Server hält an und startet mit java/Routes.java
+terminal-open
+terminal-maximize
+press: Control+C
+terminal-wait-for-prompt
+terminal-run: clear
+terminal-run: ./run java
+wait-for-text: Noch nicht fertig: readWays
+check-task-fails: lesen java
+check-task-fails: abstand java
+check-task-fails: graph java
+crop-terminal-lines: auto
+-->
+<img class='full' src='server-java.webp' alt='Im Terminal läuft ./run java: steglitz-zehlendorf: 45181 Wege, 126 Orte, die Adresse der Karte zum Anklicken, »Deine Funktionen: java/Routes.java« und »Noch nicht fertig: readWays«.'>
 <!-- /language -->
 
-Der Server sagt, was er gefunden hat: 45 181 Wege in Steglitz-Zehlendorf und 126 Orte. Dass `read_ways` noch nicht fertig ist, stimmt: Das schreibst du gleich selbst. Der Server läuft so lange, bis du ihn mit <kbd>Strg</kbd><kbd>C</kbd> anhältst.
+Beim ersten Start installiert `./run` noch [Sinatra](https://sinatrarb.com/), mit dem der Server in Ruby gebaut ist; danach geht es gleich los. Der Server sagt, was er gefunden hat: 45 181 Wege in Steglitz-Zehlendorf und 126 Orte. Dass das Lesen der Wege noch nicht fertig ist, stimmt: Das schreibst du gleich selbst.
+
+Neu starten musst du den Server nicht, wenn du etwas änderst: Sobald du eine Datei im Ordner deiner Sprache speicherst, startet er deine Funktionen neu. Hat dein Programm einen Fehler, steht er im Terminal und auf der Karte. Der Server läuft so lange, bis du ihn mit <kbd>Strg</kbd><kbd>C</kbd> anhältst.
 
 Darunter steht die Adresse der Karte, `http://127.0.0.1:4567`. Klicke mit gedrückter <kbd>Strg</kbd>-Taste darauf: Visual Studio Code leitet den Port 4567 an eine Adresse weiter, die dein Browser erreicht, und öffnet sie.
 
@@ -140,8 +210,10 @@ Ziehen verschiebt die Karte, das Mausrad und die Knöpfe rechts oben zoomen, ein
 Die Vorlage hat die Karte von Steglitz-Zehlendorf. Jeden anderen Bezirk lädt der Server beim ersten Start selbst herunter, wenn du ihn so startest:
 
 ```bash
-AREA=mitte ruby server.rb
+AREA=mitte ./run ruby
 ```
+
+Statt `ruby` steht dort der Name deiner Sprache.
 
 Die Namen der Bezirke: `charlottenburg-wilmersdorf`, `friedrichshain-kreuzberg`, `lichtenberg`, `marzahn-hellersdorf`, `mitte`, `neukoelln`, `pankow`, `reinickendorf`, `spandau`, `steglitz-zehlendorf`, `tempelhof-schoeneberg`, `treptow-koepenick`. Ganz Berlin heißt `berlin`, aber damit warte lieber, bis deine Suche schnell ist.
 
@@ -195,6 +267,39 @@ Jetzt liest dein Programm die Datei. `read_ways` in `routes.py` soll für jeden 
 
 `for line in open(path, encoding='utf-8')` geht die Zeilen durch, `line.rstrip('\n')` nimmt den Zeilenumbruch weg, `split('\t')` teilt eine Zeile an den Tabulatoren. Die Punkte teilst du an den Leerzeichen; `items[0::2]` sind dann die IDs, `items[1::2]` die Lagen, und `zip` nimmt beide zusammen. `float` macht aus `'13.326700'` die Zahl 13.3267.
 <!-- /language -->
+<!-- language: dart -->
+Jetzt liest dein Programm die Datei. `readWays` in `dart/routes.dart` soll für jeden Weg ein `Way` zurückgeben, mit der Art, der Einbahnstraße, dem Namen und den Punkten. Jeder Punkt ist ein `Point` aus ID, Länge und Breite; beide Klassen stehen in `graph.dart`:
+
+<!-- page-code: own -->
+```dart
+Way('residential', '', 'Schloßstraße',
+    [Point('26735834', 13.3267, 52.4567), Point('26735901', 13.3253, 52.4577)])
+```
+
+`File(path).readAsLinesSync()` aus `dart:io` gibt die Zeilen, `split('\t')` teilt eine Zeile an den Tabulatoren. Die Punkte teilst du an den Leerzeichen und nimmst je zwei Teile zusammen, ID und Lage, mit einer Schleife, die in Zweierschritten zählt. `double.parse` macht aus `'13.326700'` die Zahl 13.3267.
+<!-- /language -->
+<!-- language: javascript -->
+Jetzt liest dein Programm die Datei. `readWays` in `javascript/routes.js` soll für jeden Weg ein Objekt zurückgeben, mit der Art, der Einbahnstraße, dem Namen und den Punkten. Ein Punkt ist ein Array aus ID, Länge und Breite:
+
+<!-- page-code: own -->
+```javascript
+{ kind: 'residential', oneway: '', name: 'Schloßstraße',
+  points: [['26735834', 13.3267, 52.4567], ['26735901', 13.3253, 52.4577]] }
+```
+
+`fs.readFileSync(path, 'utf8').split('\n')` gibt die Zeilen; die letzte ist leer, weil die Datei mit einem Zeilenumbruch endet. `split('\t')` teilt eine Zeile an den Tabulatoren. Die Punkte teilst du an den Leerzeichen und nimmst je zwei Teile zusammen, ID und Lage, mit einer Schleife, die in Zweierschritten zählt. `Number` macht aus `'13.326700'` die Zahl 13.3267.
+<!-- /language -->
+<!-- language: java -->
+Jetzt liest dein Programm die Datei. `readWays` in `java/Routes.java` soll für jeden Weg einen `Way` zurückgeben, mit der Art, der Einbahnstraße, dem Namen und den Punkten. Jeder Punkt ist ein `Point` aus ID, Länge und Breite; beide Records stehen in `Types.java`:
+
+<!-- page-code: own -->
+```java
+new Way("residential", "", "Schloßstraße",
+        List.of(new Point("26735834", 13.3267, 52.4567), new Point("26735901", 13.3253, 52.4577)))
+```
+
+`Files.readAllLines(Path.of(path))` gibt die Zeilen, `split("\t")` teilt eine Zeile an den Tabulatoren; ein leerer Name bleibt dabei als leerer Text stehen. Die Punkte teilst du an den Leerzeichen und nimmst je zwei Teile zusammen, ID und Lage, mit einer Schleife, die in Zweierschritten zählt. `Double.parseDouble` macht aus `"13.326700"` die Zahl 13.3267.
+<!-- /language -->
 
 Ausprobieren kannst du `read_ways` mit der kleinen Testkarte `data/test.tsv`: drei Wege, fünf Punkte.
 
@@ -218,7 +323,7 @@ Auf den paar Kilometern einer Stadt ist die Erde fast flach. Du rechnest beide U
 
 $$d = \sqrt{(\Delta\text{Länge} \cdot \cos(\text{Breite}))^2 + (\Delta\text{Breite})^2} \cdot \frac{\pi}{180} \cdot 6\,371\,000\ \text{m}$$
 
-Die Winkel sind dabei im Bogenmaß: Der Cosinus (`Math.cos` in Ruby, `math.cos` in Python) und die Umrechnung mit \\(\pi / 180\\) erwarten keine Grad. Als Breite nimmst du die Mitte zwischen den beiden Punkten.
+Die Winkel sind dabei im Bogenmaß: Der Cosinus (`Math.cos` in Ruby, JavaScript und Java, `math.cos` in Python, `cos` aus `dart:math` in Dart) und die Umrechnung mit \\(\pi / 180\\) erwarten keine Grad. Als Breite nimmst du die Mitte zwischen den beiden Punkten.
 
 _task(abstand)
 
@@ -250,18 +355,51 @@ _person(euler)
 
 `zip(points, points[1:])` gibt immer zwei aufeinanderfolgende Punkte eines Weges. `edges.setdefault(id, [])` gibt die Liste der Nachbarn von `id` und legt sie an, wenn es sie noch nicht gibt.
 <!-- /language -->
+<!-- language: dart -->
+`buildGraph` bekommt die Wege und gibt einen `Graph` zurück: in `nodes` für jede ID ihren `Point`, in `edges` für jede ID die Kanten zu ihren Nachbarn, jede ein `Edge` mit dem Nachbarn und dem Abstand in Metern. Kanten gelten erst einmal in beide Richtungen; um Einbahnstraßen kümmerst du dich später:
+
+<!-- page-code: own -->
+```dart
+graph.nodes['2']  // Point('2', 13.301, 52.45)
+graph.edges['2']  // [Edge('1', 67.8), Edge('3', 67.8), Edge('4', 111.2)]
+```
+
+Zwei aufeinanderfolgende Punkte eines Weges sind `way.points[i]` und `way.points[i + 1]`. `graph.edges.putIfAbsent(id, () => [])` gibt die Liste der Kanten von `id` und legt sie an, wenn es sie noch nicht gibt.
+<!-- /language -->
+<!-- language: javascript -->
+`buildGraph` bekommt die Wege und gibt ein Objekt mit zwei Objekten zurück: `nodes` mit der Lage jedes Punktes, `edges` mit seinen Nachbarn und dem Abstand zu jedem. Kanten gelten erst einmal in beide Richtungen; um Einbahnstraßen kümmerst du dich später:
+
+<!-- page-code: own -->
+```javascript
+{ nodes: { '2': [13.301, 52.45], … },
+  edges: { '2': [['1', 67.8], ['3', 67.8], ['4', 111.2]], … } }
+```
+
+Zwei aufeinanderfolgende Punkte eines Weges sind `way.points[i]` und `way.points[i + 1]`. `(edges[id] ??= []).push(…)` legt die Liste der Nachbarn von `id` an, wenn es sie noch nicht gibt, und hängt etwas an.
+<!-- /language -->
+<!-- language: java -->
+`buildGraph` bekommt die Wege und gibt einen `Graph` zurück: in `nodes` für jede ID ihren `Point`, in `edges` für jede ID die Kanten zu ihren Nachbarn, jede ein `Edge` mit dem Nachbarn und dem Abstand in Metern. Kanten gelten erst einmal in beide Richtungen; um Einbahnstraßen kümmerst du dich später:
+
+<!-- page-code: own -->
+```java
+graph.nodes.get("2")  // Point[id=2, lon=13.301, lat=52.45]
+graph.edges.get("2")  // [Edge[to=1, cost=67.8], Edge[to=3, cost=67.8], Edge[to=4, cost=111.2]]
+```
+
+Zwei aufeinanderfolgende Punkte eines Weges sind `way.points().get(i)` und `way.points().get(i + 1)`. `graph.edges.computeIfAbsent(id, k -> new ArrayList<>())` gibt die Liste der Kanten von `id` und legt sie an, wenn es sie noch nicht gibt.
+<!-- /language -->
 
 _uses(graph)
 
 _task(graph)
 
-Halte den Server mit <kbd>Strg</kbd><kbd>C</kbd> an und starte ihn neu. Er baut jetzt mit deinen Funktionen den Graphen von Steglitz-Zehlendorf. Wähle auf der Seite unter »Ansicht« den »Graph«: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
+Speichere deine Datei: Der Server startet deine Funktionen neu und baut mit ihnen jetzt den Graphen von Steglitz-Zehlendorf. Wähle auf der Seite unter »Ansicht« den »Graph«: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
 
 <!-- tutorial-step
 # Die Lösung der ersten drei Schritte, der Server neu gestartet (im
 # Workspace; das Bild danach ist die Vorschau)
-write-file: routes.rb <- file:loesung/routes-3.rb
-write-file: routes.py <- file:loesung/routes-3.py
+write-file: ruby/routes.rb <- file:loesung/routes-3.rb
+write-file: python/routes.py <- file:loesung/routes-3.py
 check-task: lesen
 check-task: abstand
 check-task: graph
@@ -272,8 +410,8 @@ terminal-open
 press: Control+C
 terminal-wait-for-prompt
 terminal-run: clear
-terminal-run: ruby server.rb
-# »Graph:« schreibt erst der neue Server, mit dem Graphen aus routes.rb
+terminal-run: ./run ruby
+# »Graph:« schreibt erst der neue Server, mit dem Graphen aus ruby/routes.rb
 wait-for-text: Graph:
 wait-for-text: Beenden mit Strg+C
 sleep: 2
@@ -322,10 +460,40 @@ Damit die Suche am Ende den Weg kennt, merkt sie sich für jeden gefundenen Knot
 previous = {'11': None, '12': '11', '21': '11', '13': '12', …}
 ```
 <!-- /language -->
+<!-- language: dart -->
+`Queue` aus `dart:collection` hält ihre Elemente in einem Ring Buffer: `queue.removeFirst()` nimmt den ersten Knoten heraus, ohne die anderen zu verschieben, `queue.add(node)` stellt einen hinten an. Mit einer Liste und `removeAt(0)` rückte jedes Mal die ganze Liste nach vorne, bei 141 000 Knoten viel zu langsam.
+
+Damit die Suche am Ende den Weg kennt, merkt sie sich für jeden gefundenen Knoten, von welchem aus sie ihn gefunden hat: seinen **Vorgänger**. In `previous` steht für den Start `null`, für jeden anderen gefundenen Knoten sein Vorgänger:
+
+<!-- page-code: own -->
+```dart
+final previous = <String, String?>{'11': null, '12': '11', '21': '11', '13': '12', …};
+```
+<!-- /language -->
+<!-- language: javascript -->
+`queue.push(node)` stellt einen Knoten hinten an. Vorne herausnehmen ginge mit `queue.shift()`, aber das schiebt jedes Mal das ganze Array nach vorne, bei 141 000 Knoten viel zu langsam; schneller merkst du dir in `head`, welcher Knoten als Nächstes dran ist, und zählst weiter: `const node = queue[head++]`. So arbeitet auch eine Queue im Ring Buffer.
+
+Damit die Suche am Ende den Weg kennt, merkt sie sich für jeden gefundenen Knoten, von welchem aus sie ihn gefunden hat: seinen **Vorgänger**. In `previous`, einer `Map`, steht für den Start `null`, für jeden anderen gefundenen Knoten sein Vorgänger:
+
+<!-- page-code: own -->
+```javascript
+const previous = new Map([['11', null], ['12', '11'], ['21', '11'], ['13', '12'], …]);
+```
+<!-- /language -->
+<!-- language: java -->
+`ArrayDeque` hält ihre Elemente in einem Ring Buffer: `queue.poll()` nimmt den ersten Knoten heraus, ohne die anderen zu verschieben, `queue.add(node)` stellt einen hinten an. Eine `ArrayList` mit `remove(0)` schöbe jedes Mal die ganze Liste nach vorne, bei 141 000 Knoten viel zu langsam.
+
+Damit die Suche am Ende den Weg kennt, merkt sie sich für jeden gefundenen Knoten, von welchem aus sie ihn gefunden hat: seinen **Vorgänger**. In `previous` steht für den Start `null`, für jeden anderen gefundenen Knoten sein Vorgänger:
+
+<!-- page-code: own -->
+```java
+previous.get("12")  // "11"; previous ist {11=null, 12=11, 21=11, 13=12, …}
+```
+<!-- /language -->
 
 So weiß die Suche auch, welche Knoten sie schon kennt: Ein Nachbar, der schon in `previous` steht, kommt nicht noch einmal in die Queue.
 
-Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht `path_to`. Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: `path.unshift(node)` in Ruby, `path.insert(0, node)` in Python.
+Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht `path_to` (in Dart, JavaScript und Java `pathTo`). Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: `path.unshift(node)` in Ruby und JavaScript, `path.insert(0, node)` in Python und Dart, `path.addFirst(node)` mit einer `LinkedList` in Java.
 
 _task(weg)
 
@@ -345,8 +513,8 @@ _task(breitensuche)
 <!-- tutorial-step
 # Die Lösung bis zur Breitensuche und zu Dijkstra, der Server neu gestartet
 write-file: data/detour.tsv <- file:vorlage/data/detour.tsv
-write-file: routes.rb <- file:loesung/routes-5.rb
-write-file: routes.py <- file:loesung/routes-5.py
+write-file: ruby/routes.rb <- file:loesung/routes-5.rb
+write-file: python/routes.py <- file:loesung/routes-5.py
 check-task: weg
 check-task: breitensuche
 check-task: dijkstra
@@ -357,13 +525,13 @@ terminal-open
 press: Control+C
 terminal-wait-for-prompt
 terminal-run: clear
-terminal-run: ruby server.rb
+terminal-run: ./run ruby
 wait-for-text: Graph:
 wait-for-text: Beenden mit Strg+C
 sleep: 2
 -->
 
-Starte den Server neu, wähle einen Start und ein Ziel und lass die Breitensuche suchen. Die Seite zeigt erst die Suche, jeden besuchten Knoten als Punkt, von Gelb (früh besucht) bis Rot (spät), und dann den Weg, den sie gefunden hat:
+Speichere, wähle einen Start und ein Ziel und lass die Breitensuche suchen. Die Seite zeigt erst die Suche, jeden besuchten Knoten als Punkt, von Gelb (früh besucht) bis Rot (spät), und dann den Weg, den sie gefunden hat:
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
@@ -407,12 +575,21 @@ Warum stimmt der Abstand, wenn ein Knoten dran ist? Alle anderen in `frontier` s
 <!-- language: python -->
 `min(frontier, key=frontier.get)` gibt den Knoten mit dem kleinsten Abstand, `frontier.pop(node)` nimmt ihn heraus und gibt seinen Abstand. Am Ende baut `path_to` den Weg, genau wie bei der Breitensuche.
 <!-- /language -->
+<!-- language: dart -->
+Den Knoten mit dem kleinsten Abstand findest du mit einer Schleife über `frontier.keys`; `frontier.remove(node)` nimmt ihn heraus und gibt seinen Abstand. Am Ende baut `pathTo` den Weg, genau wie bei der Breitensuche.
+<!-- /language -->
+<!-- language: javascript -->
+`frontier` ist hier eine Map aus IDs und Abständen. Den Knoten mit dem kleinsten Abstand findest du mit einer Schleife über ihre Einträge (`for (const [id, m] of frontier)`); `frontier.get(node)` gibt seinen Abstand, `frontier.delete(node)` nimmt ihn heraus. Am Ende baut `pathTo` den Weg, genau wie bei der Breitensuche.
+<!-- /language -->
+<!-- language: java -->
+Den Knoten mit dem kleinsten Abstand findest du mit einer Schleife über `frontier.keySet()`; `frontier.remove(node)` nimmt ihn heraus und gibt seinen Abstand. Am Ende baut `pathTo` den Weg, genau wie bei der Breitensuche.
+<!-- /language -->
 
 _uses(dijkstra)
 
 _task(dijkstra)
 
-Starte den Server neu und suche denselben Weg noch einmal, jetzt mit »Dijkstra«:
+Speichere und suche denselben Weg noch einmal, jetzt mit »Dijkstra«:
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
@@ -638,12 +815,12 @@ while not heap.empty():
 
 _task(dijkstra-heap)
 
-Prüfe `dijkstra` mit der Aufgabe darüber, starte dann den Server neu und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber statt ein paar Sekunden noch knapp eine.
+Prüfe `dijkstra` mit der Aufgabe darüber, speichere und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber statt ein paar Sekunden noch knapp eine.
 
 <!-- tutorial-step
 # Die Lösung aller Schritte, der Server neu gestartet
-write-file: routes.rb <- file:loesung/routes.rb
-write-file: routes.py <- file:loesung/routes.py
+write-file: ruby/routes.rb <- file:loesung/routes.rb
+write-file: python/routes.py <- file:loesung/routes.py
 check-task: heap
 check-task: dijkstra
 check-task: heap python
@@ -652,7 +829,7 @@ terminal-open
 press: Control+C
 terminal-wait-for-prompt
 terminal-run: clear
-terminal-run: ruby server.rb
+terminal-run: ./run ruby
 wait-for-text: Graph:
 wait-for-text: Beenden mit Strg+C
 sleep: 2
@@ -701,16 +878,11 @@ check-task: astern python
 
 Wie viel A* spart, zeigt ein Weg quer durch die Stadt, zum Brandenburger Tor. Dafür braucht der Server drei Bezirke: Steglitz-Zehlendorf, Tempelhof-Schöneberg und Mitte. Halte ihn an und starte ihn so:
 
-<!-- language: ruby -->
 ```bash
-AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ruby server.rb
+AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ./run ruby
 ```
-<!-- /language -->
-<!-- language: python -->
-```bash
-AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte python3 server.py
-```
-<!-- /language -->
+
+Statt `ruby` steht dort wieder der Name deiner Sprache.
 
 Die beiden anderen Bezirke lädt er beim ersten Mal herunter. Der Graph hat dann fast 400 000 Knoten; das Lesen dauert ein paar Sekunden länger.
 
@@ -720,7 +892,7 @@ terminal-open
 press: Control+C
 terminal-wait-for-prompt
 terminal-run: clear
-terminal-run: AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ruby server.rb
+terminal-run: AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ./run ruby
 sleep: 20
 wait-for-text: Graph:
 wait-for-text: Beenden mit Strg+C
@@ -783,7 +955,7 @@ Dazu gehört in den Graphen noch `fastest`, das größte Tempo der Tabelle in Me
 
 _task(reisen)
 
-Dijkstra und A* musst du sonst nicht ändern: Sie zählen zusammen, was an den Kanten steht, ob Meter oder Sekunden. Starte den Server neu. Über den Suchen auf der Seite wählst du jetzt, wie gereist wird:
+Dijkstra und A* musst du sonst nicht ändern: Sie zählen zusammen, was an den Kanten steht, ob Meter oder Sekunden. Speichere. Über den Suchen auf der Seite wählst du jetzt, wie gereist wird:
 
 <!-- tutorial-step
 check-task: reisen
@@ -822,7 +994,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar | car
 Schau dir an, wie viele Knoten A* mit dem Auto besucht: Zu Fuß ist es ein Zehntel dessen, was Dijkstra besucht, mit dem Auto fast die Hälfte. Die Schätzung rechnet mit 90 km/h, dem Tempo auf der Autobahn, aber in der Stadt kommt man viel langsamer voran. Je weiter die Schätzung unter dem wirklichen Weg liegt, desto weniger hilft sie.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Setz in <code>SPEEDS</code> beim Auto das Tempo für <code>motorway</code> von 90 auf 250 und starte den Server neu. Besucht A* mit dem Auto jetzt mehr oder weniger Knoten als vorher, und warum? Ändert sich der Weg? Stell die 90 danach wieder her.
+<strong>Ausprobieren:</strong> Setz in <code>SPEEDS</code> beim Auto das Tempo für <code>motorway</code> von 90 auf 250 und speichere. Besucht A* mit dem Auto jetzt mehr oder weniger Knoten als vorher, und warum? Ändert sich der Weg? Stell die 90 danach wieder her.
 </div>
 
 ## Eine Rundfahrt

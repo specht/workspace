@@ -1,4 +1,4 @@
-Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMap, in Ruby (Sinatra) oder Python (Flask), je nach Einstellung der Klasse: Sie bauen aus den Straßen einen Graphen, schreiben die Suchen selbst, Breitensuche, Dijkstra, einen Heap und A*, und planen zu Fuß, mit dem Rad, mit dem Auto und eine Rundfahrt durch mehrere Orte. Eine Seite im Browser zeigt bei jeder Suche, welche Knoten ihr Code in welcher Reihenfolge besucht hat.
+Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMap, in Ruby, Python, Dart, JavaScript oder Java, je nach Einstellung der Klasse: Sie bauen aus den Straßen einen Graphen, schreiben die Suchen selbst, Breitensuche, Dijkstra, einen Heap und A*, und planen zu Fuß, mit dem Rad, mit dem Auto und eine Rundfahrt durch mehrere Orte. Eine Seite im Browser zeigt bei jeder Suche, welche Knoten ihr Code in welcher Reihenfolge besucht hat.
 
 <table class='table'>
 <tr><th>Ziele</th><td>Die Lernenden können danach<ul>
@@ -7,9 +7,14 @@ Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMa
 <li>begründen, warum die Breitensuche einen Weg mit wenigen Kanten findet, der lang sein kann, und Dijkstra den kürzesten,</li>
 <li>erklären, warum ein Heap Dijkstra schneller macht und warum für eine Rundfahrt durch viele Orte nur noch Näherungen wie der nächste Nachbar und 2-opt helfen.</li>
 </ul></td></tr>
+<tr><th>Sprachen</th><td><ul>
+<li>Die Funktionen schreiben die Lernenden in Ruby, Python, Dart, JavaScript oder Java, den Sprachen der Data Structures Sandbox: Eine Gruppe, die dort ihre Datenstrukturen in Dart gebaut hat, bleibt bei Dart. Die Klassen aus der Sandbox laufen hier nicht unverändert (sie speichern nur ganze Zahlen über die Speicher-Objekte der Sandbox), aber die Sprache und ihre Eigenheiten kommen mit.</li>
+<li>Der Server ist immer derselbe, in Ruby; die Lernenden ändern ihn nicht. Er startet die Funktionen der gewählten Sprache als eigenes Programm (eine Brücke je Sprache in der Vorlage) und startet sie neu, sobald eine Datei im Ordner der Sprache gespeichert wird.</li>
+<li>Dart, JavaScript und Java gibt es bis Dijkstra; Heap, A*, die Arten zu reisen und die Rundfahrt stehen dort noch in Ruby und Python.</li>
+</ul></td></tr>
 <tr><th>Dauer</th><td>Etwa drei Doppelstunden für die ersten fünf Schritte und drei für den Rest; die Schritte 6 bis 9 eignen sich auch für schnelle Gruppen oder ein Projekt.</td></tr>
 <tr><th>Ablauf</th><td><ul>
-<li><b>Einrichten:</b> Klonen, Sinatra (<code>gem install sinatra rackup puma</code>) oder Flask (<code>pip install flask</code>) installieren, einmal pro Workspace, den Server starten (<code>ruby server.rb</code> oder <code>python3 server.py</code>) und die Karte im Browser öffnen: Der Server schreibt ihre Adresse ins Terminal, ein Klick mit Strg öffnet sie. Die Vorlage hat beide Sprachen nebeneinander; die Seite im Browser ist dieselbe.</li>
+<li><b>Einrichten:</b> Klonen, den Server mit <code>./run</code> und der Sprache starten (<code>./run dart</code>; beim ersten Mal installiert <code>./run</code> Sinatra, einmal pro Workspace) und die Karte im Browser öffnen: Der Server schreibt ihre Adresse ins Terminal, ein Klick mit Strg öffnet sie. Die Vorlage hat alle fünf Sprachen nebeneinander, jede in ihrem Ordner; die Seite im Browser ist dieselbe.</li>
 <li><b>Der Graph:</b> Das Programm liest die Wege, rechnet Abstände aus Koordinaten und baut den Graphen; die Ansicht »Graph« macht ihn auf der Karte sichtbar.</li>
 <li><b>Die Suchen:</b> Breitensuche und Dijkstra schreiben die Lernenden selbst, die Seite zeigt bei jeder Suche, in welcher Reihenfolge sie die Knoten besucht hat. Daran sieht man den Unterschied: Die Breitensuche breitet sich nach Kanten aus, Dijkstra in Metern, wie Ringe um den Start. Danach ein Heap; Dijkstra bauen die Lernenden selbst auf ihn um (ein Kasten »Jetzt bist du dran« mit Tipps in Stufen). »Dijkstra mit dem Heap« ruft <code>dijkstra</code> mit den Wegen von <code>detour.tsv</code> und einem kleinen Graphen auf, in dem ein Knoten zweimal in den Heap kommt, und sieht nach, dass der zweite übersprungen wird und dass <code>dijkstra</code> überhaupt <code>MinHeap#pop</code> aufruft; die Fassung mit <code>frontier</code> besteht sie nicht. Dann A*.</li>
 <li><b>Unterwegs:</b> zu Fuß, mit dem Rad und mit dem Auto (Einbahnstraßen, Minuten statt Meter).</li>
@@ -17,7 +22,7 @@ Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMa
 </ul></td></tr>
 <tr><th>Gebiete</th><td><ul>
 <li>Die Vorlage hat Steglitz-Zehlendorf (45 181 Wege).</li>
-<li>Jeden anderen der zwölf Bezirke lädt <code>server.rb</code> mit <code>AREA=mitte</code> (und so weiter) beim ersten Start aus <code>specht/workspace-files</code>.</li>
+<li>Jeden anderen der zwölf Bezirke lädt der Server mit <code>AREA=mitte ./run dart</code> (und so weiter) beim ersten Start aus <code>specht/workspace-files</code>.</li>
 <li>Ganz Berlin (<code>AREA=berlin</code>, 464 000 Wege) braucht etwa 25 Sekunden zum Start und gut 1,5 GB Speicher und ist erst mit schnellen Suchen sinnvoll.</li>
 </ul></td></tr>
 <tr><th>Datenschutz</th><td>Start und Ziel sind öffentliche Orte, Sehenswürdigkeiten, Plätze und Schulen (die Schulen aus dem Schulverzeichnis Berlins, nur Name und Lage); die Karte hat kein Feld für Adressen. Bitte keine Aufgabe »dein Weg nach Hause« stellen.</td></tr>
@@ -37,8 +42,8 @@ Jede Aufgabe, in der eine Funktion entsteht, hat zwei oder drei Tipps: ein Beisp
 
 #### Stolpersteine
 
-- Nach jeder Änderung an `routes.rb` muss der Server neu starten (<kbd>Strg</kbd><kbd>C</kbd>, dann `ruby server.rb`).
-- Ein Fehler in einer Suche steht im Terminal, die Seite sagt nur, dass etwas schiefging.
+- Neu starten muss niemand: Der Server startet die Funktionen nach dem Speichern selbst neu. Ein Fehler (ein Tippfehler, der sich nicht übersetzen lässt, eine Exception in einer Suche) steht im Terminal mit der Zeile und auf der Karte mit seiner ersten Zeile.
+- In Dart, JavaScript und Java braucht die Breitensuche eine schnelle Queue: `Queue` aus `dart:collection`, `ArrayDeque` in Java, in JavaScript ein Index statt `shift()`. Mit `removeAt(0)` oder `shift()` rückt bei jedem Knoten das ganze Array nach vorne, und die Suche über 141 000 Knoten dauert Minuten. Ein guter Anlass, an die Queue als Ring Buffer aus der Sandbox zu erinnern.
 - `Math.cos` rechnet im Bogenmaß; wer Grad hineingibt, bekommt nach Osten falsche Abstände, und die Prüfung sagt das.
 
 #### Eigene Projekte
