@@ -15,6 +15,11 @@ Huffman-Codes zum Selberbauen, in Ruby oder Python: Lernende kommen vom Morsecod
 <li><b>2. Doppelstunde:</b> <code>code_table</code>, <code>encode</code>, <code>decode</code>, Messen an der Spezifikation von GIF und dem Foto, kanonische Codes.</li>
 <li><b>Für Schnelle:</b> die Bits in echte Bytes packen.</li>
 </ul></td></tr>
+<tr><th>Ohne Rechner</th><td><ul>
+<li><b>Vor »Die Idee«, 15 Minuten, zu dritt, mit Papier und Stift:</b> Jede Gruppe erfindet für die vier Buchstaben von MISSISSIPPI Codes aus 0 und 1, mit denen das Wort möglichst wenige Bits braucht, und schreibt das Wort als Bitfolge ohne Lücken auf einen Zettel. Eine Nachbargruppe bekommt Zettel und Codetabelle und liest das Wort zurück.</li>
+<li><b>Was sichtbar wird:</b> Kurze Codes für häufige Buchstaben sparen Bits. Ohne Pausen zwischen den Buchstaben lässt sich eine Bitfolge aber oft auf zwei Arten lesen; eindeutig ist sie nur, wenn kein Code der Anfang eines anderen ist.</li>
+<li><b>Zurück zur Seite:</b> <a href='#kurze-codes-für-häufige-zeichen'>»Kurze Codes für häufige Zeichen«</a> gibt dem Problem seinen Namen, präfixfrei. In <a href='#der-baum'>»Der Baum«</a> steht <code>MISSISSIPPI</code> in der Zeitlupe, die am Ende die Bits zusammenzählt: Jede Gruppe vergleicht ihre Zahl mit der des Baums.</li>
+</ul></td></tr>
 <tr><th>Dateien</th><td>Alles in <code>/workspace/huffman</code>: <code>huffman.rb</code>, dazu <code>spec-gif89a.txt</code> und <code>44-baseline.jpg</code>, die die Lernenden mit <code>wget</code> laden. Auf der Seite steht nur das Gerüst mit leeren Methoden; die Regeln und Hinweise zu Ruby stehen im Text.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Vier Aufgaben laden <code>huffman/huffman.rb</code> im Workspace der Lernenden, als Gast, der nichts verändern kann, und rufen die Methoden auf. Der Workspace muss laufen.</li>
