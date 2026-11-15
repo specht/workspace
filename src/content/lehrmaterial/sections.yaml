@@ -16,10 +16,12 @@
   icon: /images/memo.png
   description: |
     Eine Aktivität zu deinem Lehrplan finden, mit der Klasse in einem
-    gemeinsamen Git-Repository arbeiten, Leistungsüberprüfungen vorbereiten.
+    gemeinsamen Git-Repository arbeiten, eigene Projekte mit Meilensteinen
+    und Kriterien begleiten, Leistungsüberprüfungen vorbereiten.
   entries:
     - lehrmaterial-lehrplan
     - lehrmaterial-git
+    - lehrmaterial-projekte
     - lehrmaterial-leistungsueberpruefung
 - key: lehrmaterial-schule
   label: Schule und Datenschutz
