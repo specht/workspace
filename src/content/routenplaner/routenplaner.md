@@ -659,7 +659,7 @@ hook: route Gymnasium Steglitz | Pfaueninsel | dijkstra
 <!-- /tutorial-scope -->
 </div>
 
-Die Breitensuche macht gut 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: ein paar Sekunden statt Bruchteilen davon. Beide besuchen fast den ganzen Bezirk, der Unterschied ist die Suche nach dem kleinsten Abstand: Sie geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.
+Die Breitensuche macht gut 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: Er braucht ein Vielfaches der Breitensuche, in Ruby ein paar Sekunden statt Bruchteilen davon. Beide besuchen fast den ganzen Bezirk, der Unterschied ist die Suche nach dem kleinsten Abstand: Sie geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.
 
 ### Eine Priority Queue
 
@@ -1065,7 +1065,7 @@ while (!heap.isEmpty()) {
 
 _task(dijkstra-heap)
 
-Prüfe `dijkstra` mit der Aufgabe darüber, speichere und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber statt ein paar Sekunden noch knapp eine.
+Prüfe `dijkstra` mit der Aufgabe darüber, speichere und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber in einem Bruchteil der Zeit, in Ruby knapp eine Sekunde statt ein paar.
 
 <!-- tutorial-step
 # Die Lösung aller Schritte, der Server neu gestartet

@@ -9,6 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Bridge {
+    // Die leeren Methoden der Vorlage melden sich mit ihrem Namen; jede andere
+    // UnsupportedOperationException (etwa List.of(…) verändert) ist ein Fehler
+    static final Set<String> STUBS = Set.of("readWays", "distance", "buildGraph", "pathTo", "breadthFirst",
+        "dijkstra", "aStar", "buildTravelGraph", "tourLength", "bestTour", "nearestTour", "improveTour",
+        "MinHeap.push", "MinHeap.pop");
     static final Map<String, List<Way>> ways = new HashMap<>();   // Datei -> Wege
     static final Map<String, Graph> graphs = new HashMap<>();     // Art zu reisen -> Graph
 
@@ -21,9 +26,14 @@ public class Bridge {
                 String reply;
                 try {
                     reply = answer((Map<?, ?>) new Json(line).value());
-                } catch (UnsupportedOperationException e) {
-                    reply = "{\"missing\":" + Json.write(String.valueOf(e.getMessage())) + "}";
                 } catch (Throwable e) {
+                    if (e instanceof UnsupportedOperationException && STUBS.contains(e.getMessage())) {
+                        // the starter's empty method: what the map names as missing
+                        reply = "{\"missing\":" + Json.write(e.getMessage()) + "}";
+                        out.write(reply + "\n");
+                        out.flush();
+                        continue;
+                    }
                     System.err.println(e);
                     Arrays.stream(e.getStackTrace()).filter(f -> !"Bridge.java".equals(f.getFileName())).limit(8)
                         .forEach(f -> System.err.println("    at " + f));
