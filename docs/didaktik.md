@@ -112,6 +112,15 @@ Karte; sie gehört dorthin, wo die Seite einen Begriff einführt, mit dem sie
 weiterarbeitet. Vorbild: »Was jeder Baum verrät« im Rechner für Ausdrücke,
 nach dem Baum zum Durchklicken.
 
+## Satzanfänge
+
+Eine Begründung zu schreiben ist für viele schwerer, als sie zu wissen.
+Darum hat eine Reflexion, die nach einem Grund fragt, Satzanfänge unter dem
+Textfeld (»Das liegt daran, dass«, »Für einen NEA spricht, dass«): Sie geben
+die Form eines Arguments vor, nicht seinen Inhalt, und ein Klick setzt sie
+ein. Wer sie nicht braucht, schreibt einfach los (sprachsensibler
+Unterricht; docs/aufgaben.md, »choice, number, reflection«).
+
 ## Tipps in Stufen
 
 Eine Aufgabe, an der man hängen bleiben kann, hat Tipps in Stufen statt eines

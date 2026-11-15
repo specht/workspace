@@ -440,6 +440,7 @@ tasks:
 
   - id: warum-z-buffer
     title: Der Z-Buffer in eigenen Worten
+    sentence_starters: ["Ohne Z-Buffer", "Mit Z-Buffer"]
     prompt: |
       Erkläre in eigenen Worten, warum der Würfel ohne Z-Buffer falsch aussah
       und wie der Z-Buffer das löst.

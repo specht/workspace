@@ -397,6 +397,7 @@ tasks:
 
   - id: warum-reihenfolge
     title: Addieren und Mischen
+    sentence_starters: ["Im 2D-Bild war es egal, weil", "In der 3D-Szene dagegen"]
     prompt: |
       Erkläre in eigenen Worten, warum die Reihenfolge der Splats in deinem
       2D-Bild egal war und in der 3D-Szene nicht.

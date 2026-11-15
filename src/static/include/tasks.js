@@ -1288,6 +1288,21 @@
         if (e.target.classList.contains('task-teacher-group') && e.target.value) chooseTeacherView('group', e.target.value);
     });
 
+    // Satzanfänge unter einer Reflexion: der Anfang kommt an die Stelle des
+    // Cursors (nach einem Leerzeichen, wenn davor schon etwas steht), der
+    // Cursor dahinter, damit man gleich weiterschreibt.
+    document.addEventListener('click', function (e) {
+        const button = e.target.closest('.task-starter');
+        if (!button) return;
+        const area = button.closest('[data-type]')?.querySelector('textarea.task-input');
+        if (!area) return;
+        const before = area.value.slice(0, area.selectionStart);
+        const text = (before && !/\s$/.test(before) ? ' ' : '') + button.dataset.text + ' ';
+        area.setRangeText(text, area.selectionStart, area.selectionEnd, 'end');
+        area.focus();
+        area.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
     // »Details« and »Lösung« under a result: open below on request.
     document.addEventListener('click', function (e) {
         const toggle = e.target.closest('.task-more-toggle');

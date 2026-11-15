@@ -54,6 +54,7 @@ tasks:
 
   - id: weiche-schatten
     title: Weiche Schatten
+    sentence_starters: ["Das Programm rechnet das direkte Licht", "Bei einer großen Leuchte"]
     prompt: |
       Erkläre in eigenen Worten, warum eine große Leuchte weichere Schatten
       wirft als eine kleine. Benutze dabei, wie das Programm das direkte

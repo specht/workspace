@@ -196,6 +196,7 @@ tasks:
 
   - id: kosten
     title: Nicht auf jede Spalte
+    sentence_starters: ["Dagegen spricht, dass", "Darum lohnt sich ein Index nur, wenn"]
     prompt: Wenn ein Index so viel schneller macht, warum legt man dann nicht auf jede Spalte einer Tabelle einen an?
     check:
       type: reflection

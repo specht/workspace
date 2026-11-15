@@ -2528,6 +2528,7 @@ tasks:
 
   - id: spieltest
     title: Was beim Spieltest auffiel
+    sentence_starters: ["Hängen geblieben ist sie oder er bei", "Deshalb ändere ich"]
     prompt: |
       Jemand aus deiner Klasse hat dein Spiel gespielt, ohne deinen `WALKTHROUGH` zu kennen. Wo ist sie oder er hängen geblieben, und was änderst du deshalb an deiner Welt oder an deinen Klassen?
     check:

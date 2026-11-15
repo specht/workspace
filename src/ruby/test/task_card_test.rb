@@ -93,6 +93,17 @@ class TaskCardTest < Minitest::Test
         refute_includes html, '<label class=\'form-check-label\' for=\'task-tcpip-ttl-drei-0\'><p>'
     end
 
+    # Satzanfänge unter einer Reflexion: Knöpfe, die den Anfang einsetzen
+    def test_sentence_starters_under_a_reflection
+        task = { 'id' => 'warum', 'title' => 'Warum?', 'prompt' => 'Begründe.', 'check' => { 'type' => 'reflection' },
+                 'sentence_starters' => ['Ich vermute, dass', "Das liegt an <b>"] }
+        html = TaskCard.html(task, activity: 'x', number: 1, render: RENDER)
+        assert_includes html, "class='task-starters'"
+        assert_includes html, "data-text='Ich vermute, dass'"
+        assert_includes html, 'Das liegt an &lt;b&gt; …'
+        refute_includes TaskCard.html(task.merge('sentence_starters' => nil), activity: 'x', number: 1, render: RENDER), 'task-starters'
+    end
+
     def test_multiple_choice_uses_checkboxes
         task = { 'id' => 'm', 'title' => 'M', 'prompt' => 'P',
                  'check' => { 'type' => 'choice', 'options' => %w[a b c], 'correct' => [0, 1] } }

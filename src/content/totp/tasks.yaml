@@ -423,6 +423,7 @@ tasks:
 
   - id: wovor
     title: Wovor schützt der zweite Faktor?
+    sentence_starters: ["Bei einem Datenleck", "Bei einem gestohlenen Handy", "Bei einer gefälschten Anmeldeseite"]
     prompt: |
       Wovor schützt dich ein zweiter Faktor, und wovor nicht? Denk an ein
       Passwort, das in einem Datenleck auftaucht, an ein gestohlenes Handy

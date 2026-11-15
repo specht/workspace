@@ -474,6 +474,7 @@ tasks:
 
   - id: reihenfolge
     title: Wer unten steht
+    sentence_starters: ["Unten landen zum Beispiel", "Das liegt daran, dass", "Ändern würde ich"]
     prompt: |
       Deine Suchmaschine ordnet nach eingehenden Links. Beschreib zwei Arten
       von Seiten, die dabei unten landen, obwohl sie gute Antworten haben

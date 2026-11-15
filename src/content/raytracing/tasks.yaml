@@ -513,6 +513,7 @@ tasks:
 
   - id: cover
     title: Was stimmt hier nicht?
+    sentence_starters: ["Auf dem ersten Cover", "Das kann nicht stimmen, weil"]
     prompt: |
       Sieh dir die drei Cover genau an und vergleiche sie mit deinem
       Raytracer: mit den Spiegel- und Glaskugeln, den Schatten, dem Licht und

@@ -302,6 +302,7 @@ tasks:
 
   - id: vergleich
     title: MySQL oder Neo4j?
+    sentence_starters: ["Lieber in MySQL frage ich", "Lieber in Neo4j frage ich", "Der Grund ist, dass"]
     prompt: |
       Du hast dieselben Filmdaten in MySQL und in Neo4j abgefragt. Nenne eine
       Frage, die du lieber in MySQL stellst, und eine, die du lieber in Neo4j

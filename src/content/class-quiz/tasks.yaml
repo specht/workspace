@@ -179,6 +179,7 @@ tasks:
 
   - id: review
     title: Ein Commit von jemand anderem
+    sentence_starters: ["Der Commit ist von", "Geändert hat er", "Anders würde ich"]
     prompt: |
       Such dir mit `git log` einen Commit, den jemand anderes für eine Aufgabe
       aus `TODO.md` gemacht hat, und lies ihn mit `git show`. Wessen Commit

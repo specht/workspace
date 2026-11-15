@@ -94,6 +94,15 @@ module TaskCard
                 io << "<textarea class='form-control task-input' name='answer' rows='4' aria-labelledby='#{h.(field)}-title'"
                 io << " placeholder='#{h.(check['placeholder'])}'" if check['placeholder']
                 io << '></textarea>'
+                # Satzanfänge: ein Klick schreibt den Anfang an die Stelle des
+                # Cursors (tasks.js), ausgewählt wird nichts
+                if task['sentence_starters']
+                    io << "<div class='task-starters'><span class='task-starters-label'>Satzanfänge:</span>"
+                    task['sentence_starters'].each do |starter|
+                        io << "<button type='button' class='btn btn-sm btn-outline-secondary task-starter' data-text='#{h.(starter)}'>#{h.(starter)} …</button>"
+                    end
+                    io << '</div>'
+                end
                 if check['min_words']
                     io << "<div class='task-words'>Mindestens #{check['min_words'].to_i} Wörter. Nur du und deine Lehrkraft können die Antwort lesen.</div>"
                 end

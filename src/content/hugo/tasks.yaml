@@ -152,6 +152,7 @@ tasks:
 
   - id: generator
     title: Von Hand oder mit Hugo?
+    sentence_starters: ["Hugo würde ich nehmen für", "Direkt in HTML schreibe ich lieber", "Das zeigt sich daran, dass"]
     prompt: |
       Für welche Website würdest du Hugo nehmen, und wann schreibst du die
       Seiten lieber direkt in HTML? Begründe mit dem, was du hier gebaut hast.

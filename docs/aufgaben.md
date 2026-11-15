@@ -276,6 +276,7 @@ tasks:
 | `file` | nein | Die Datei, in der gearbeitet wird, relativ zu `/workspace`; wird bei der Aufgabe angezeigt |
 | `hint` | nein | Hinweis, den man aufklappen kann; oder eine Liste von 2 bis 5 Tipps in Stufen (siehe »Tipps in Stufen«) |
 | `feedback` | nein | Eigene Rückmeldungen für typische Fehler |
+| `sentence_starters` | nein | Nur bei `reflection`: zwei bis vier kurze Satzanfänge ohne »…« (»Das liegt daran, dass«), als Knöpfe unter dem Textfeld; ein Klick setzt den Anfang an den Cursor. Ändern die Version nicht |
 | `prediction` | nein | `true`: Vorhersage; nur der erste Versuch zählt fürs Klassenboard, danach darf ausprobiert werden. Was die Antwort verrät, steht auf der Seite zwischen `<!-- after: id -->` und `<!-- /after -->` und erscheint erst nach einer Antwort; nach einer anderen Aufgabe erst, wenn sie gelöst ist (didaktik.md) |
 | `solution` | nein | Lösung; nur Lehrkräfte sehen sie |
 | `examples` | nein | Nur bei `reflection`: eine Liste von Beispielantworten in Markdown, die nur Lehrkräfte unter der Aufgabe sehen (siehe »Antworten unter offenen Aufgaben«) |
@@ -451,6 +452,16 @@ aus und gib hier die Zahl ein …«, ohne ihn auszuführen und ohne dass es als
 falscher Versuch zählt. So wird auch `head -n 5 … | wc -l` nicht als 5
 gelesen. Soll ein Befehl die Antwort sein, ist `command` die richtige Art
 (unten).
+
+Eine Reflexion, die nach einem Grund, einem Vergleich oder einer
+Beobachtung fragt, bekommt zwei bis vier Satzanfänge (`sentence_starters`),
+die die Form vorgeben, nicht den Inhalt: »Dagegen spricht, dass«, nicht
+»Jeder Index kostet«. Sie stehen als Knöpfe unter dem Textfeld, und ein Klick
+schreibt den Anfang an den Cursor (`tasks.js`); niemand muss sie benutzen.
+
+```yaml
+sentence_starters: ["Dagegen spricht, dass", "Darum lohnt sich ein Index nur, wenn"]
+```
 
 Eine Reflexion hat keine Lösung, aber Beispielantworten: zwei kurze, gute
 Antworten, wie sie eine Schülerin oder ein Schüler geben könnte, mit den

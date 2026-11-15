@@ -85,6 +85,7 @@ tasks:
 
   - id: verteilt
     title: Warum so umständlich?
+    sentence_starters: ["Ein einziger Server müsste", "Verteilt hat den Vorteil, dass"]
     prompt: Warum gibt es nicht einen einzigen großen Server, der alle Namen der Welt kennt?
     check:
       type: reflection

@@ -434,6 +434,7 @@ tasks:
 
   - id: verantwortung
     title: Wer entscheidet hier?
+    sentence_starters: ["Ich rate dem Laden,", "Meine Zahlen zeigen, dass", "Verantwortlich ist"]
     prompt: |
       Der Laden will das Programm einsetzen. Was rätst du ihm? Geh dabei auf
       deine Zahlen ein und darauf, wer verantwortlich ist, wenn das Programm

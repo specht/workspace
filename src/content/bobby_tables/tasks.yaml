@@ -25,6 +25,7 @@ tasks:
 
   - id: abfrage
     title: Die Abfrage
+    sentence_starters: ["Nach WHERE steht", "Eine Zeile kommt zurück, wenn"]
     prompt: |
       Erläutere die SQL-Abfrage, die das Programm schickt: Was steht nach
       `WHERE`, und wann liefert sie eine Zeile zurück?
@@ -73,6 +74,7 @@ tasks:
 
   - id: admin
     title: Als admin, ohne Passwort
+    sentence_starters: ["Als Login gebe ich ein:", "Die Abfrage liefert eine Zeile, weil"]
     prompt: |
       Finde eine Eingabe, mit der du dich als `admin` anmeldest, ohne das
       Passwort zu kennen. Schreib auf, welche SQL-Abfrage dabei entsteht und
@@ -96,6 +98,7 @@ tasks:
 
   - id: union
     title: Eine zweite Abfrage
+    sentence_starters: ["Ich beobachte, dass", "Das kommt daher, dass"]
     prompt: |
       Melde dich mit diesem Login und einem leeren Passwort an:
       `mallory' UNION SELECT address FROM users WHERE LOGIN='mallory' ORDER BY login ASC #`.
@@ -169,6 +172,7 @@ tasks:
 
   - id: behoben
     title: Noch einmal versuchen
+    sentence_starters: ["Jetzt passiert", "Das liegt daran, dass"]
     prompt: |
       Wiederhole die drei Versuche mit dem geänderten Programm: als `admin`
       ohne Passwort, die Adresse von Mallory, das Passwort des

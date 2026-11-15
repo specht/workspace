@@ -227,6 +227,7 @@ tasks:
 
   - id: word-oder-latex
     title: Word oder LaTeX?
+    sentence_starters: ["Ich würde lieber", "Aufgefallen ist mir, dass", "Außerdem"]
     prompt: |
       Würdest du deine nächste Facharbeit oder dein nächstes Protokoll lieber
       in einem Textprogramm wie Word schreiben oder in LaTeX? Begründe mit

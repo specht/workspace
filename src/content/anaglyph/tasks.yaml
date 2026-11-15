@@ -106,6 +106,7 @@ tasks:
 
   - id: reihenfolge-erklaeren
     title: In eigenen Worten
+    sentence_starters: ["Wenn ich erst skaliere,", "Andersherum", "Der Unterschied liegt darin, dass"]
     prompt: |
       Was passiert mit einem Würfel, den du erst skalierst und dann
       verschiebst, und was, wenn du es andersherum machst? Erkläre den

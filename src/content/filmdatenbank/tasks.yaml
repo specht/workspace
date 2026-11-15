@@ -418,6 +418,7 @@ tasks:
 
   - id: neue-frage
     title: Was fehlt dem Modell?
+    sentence_starters: ["Meine Frage ist:", "Dafür bräuchte das Modell"]
     prompt: |
       Denk dir eine Frage an die Filmdatenbank aus, die dieses Modell nicht
       beantworten kann, zum Beispiel für eine Videothek oder ein Kino. Was

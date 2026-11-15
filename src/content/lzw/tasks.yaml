@@ -388,6 +388,7 @@ tasks:
 
   - id: warum
     title: Warum größer?
+    sentence_starters: ["Das JPEG wird größer, weil", "Viel spart LZW bei einer Datei, in der"]
     prompt: |
       Warum wird das JPEG mit LZW größer statt kleiner? Erkläre es in
       eigenen Worten. Was müsste in einer Datei stehen, damit LZW viel spart?

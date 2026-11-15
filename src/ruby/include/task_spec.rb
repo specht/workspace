@@ -86,7 +86,7 @@ module TaskSpec
     # Check types that need the network; they are never used in exams.
     NEEDS_NETWORK = %w[measure].to_set.freeze
 
-    TASK_KEYS = (%w[id title prompt check hint solution examples feedback prediction file exam starter level extra next] + CodeLanguages::LANGUAGES).freeze
+    TASK_KEYS = (%w[id title prompt check hint solution examples sentence_starters feedback prediction file exam starter level extra next] + CodeLanguages::LANGUAGES).freeze
     # The levels of a Kata (docs/katas.md): 1 Einstieg, 2 Übung, 3 Knobelei.
     LEVELS = [1, 2, 3].freeze
 
@@ -276,6 +276,18 @@ module TaskSpec
                 errors << 'examples only work with reflection; other checks have a solution'
             elsif !string_list?(task['examples'])
                 errors << 'examples must be a list of answers in Markdown'
+            end
+        end
+        # Satzanfänge unter einer Reflexion (docs/aufgaben.md »choice, number,
+        # reflection«): zwei bis vier kurze Anfänge, keine ganzen Sätze
+        if task.key?('sentence_starters')
+            starters = task['sentence_starters']
+            if type != 'reflection'
+                errors << 'sentence_starters only work with reflection'
+            elsif !string_list?(starters) || !starters.size.between?(2, 4)
+                errors << 'sentence_starters must be two to four texts'
+            elsif (long = starters.find { |x| x.size > 40 || x.include?('…') })
+                errors << "a sentence starter is the beginning of a sentence, short and without »…«: #{long}"
             end
         end
         if task['prediction'] && !%w[choice number answer].include?(type)

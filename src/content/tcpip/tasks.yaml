@@ -125,6 +125,7 @@ tasks:
 
   - id: traceroute-erklaeren
     title: In eigenen Worten
+    sentence_starters: ["Zuerst schickt traceroute", "Danach", "So erfährt es"]
     prompt: Erkläre in zwei oder drei Sätzen, wie `traceroute` die Router auf dem Weg herausfindet.
     check:
       type: reflection

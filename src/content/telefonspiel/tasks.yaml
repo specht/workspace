@@ -479,6 +479,7 @@ tasks:
 
   - id: spieltest
     title: Spieltest
+    sentence_starters: ["Gezögert hat die Person bei", "Erwartet hatte ich, dass", "Danach habe ich geändert:"]
     prompt: Wer hat dein Spiel gespielt? Wo hat die Person gezögert oder etwas anderes gedrückt, als du erwartet hast, und was hast du danach geändert?
     check:
       type: reflection

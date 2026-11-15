@@ -669,6 +669,7 @@ tasks:
 
   - id: nea-oder-dea
     title: NEA oder DEA?
+    sentence_starters: ["Für einen NEA spricht, dass", "Für einen DEA spricht, dass", "Beim Ausführen"]
     prompt: |
       Du hast jetzt beides gebaut. Was spricht für einen NEA, was für einen
       DEA? Denk an das Schreiben und an das Ausführen.

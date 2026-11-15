@@ -29,6 +29,7 @@ tasks:
 
   - id: weniger-lampen
     title: Weniger Lampen
+    sentence_starters: ["Mit weniger Lampen", "Angepasst haben wir", "Gekostet hat das"]
     prompt: >-
       Was hat sich an eurer Übertragung geändert, als Lampen weggefallen
       sind? Wie habt ihr euer Protokoll angepasst, und was hat es gekostet?

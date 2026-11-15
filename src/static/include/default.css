@@ -6462,6 +6462,20 @@ body.cl-dragging-page * {
     margin-right: 0.4em;
 }
 
+/* Satzanfänge unter einer Reflexion (TaskCard, tasks.js) */
+.task-starters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em;
+    margin-top: 0.5em;
+}
+
+.task-starters-label {
+    color: var(--bs-secondary-color);
+    font-size: 0.9em;
+}
+
 .cb-answer-text {
     white-space: pre-wrap;
 }

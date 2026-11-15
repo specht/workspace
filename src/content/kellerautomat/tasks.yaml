@@ -448,6 +448,7 @@ tasks:
 
   - id: grammatik
     title: Wo steckt ein Stack?
+    sentence_starters: ["Der Compiler legt auf den Stack", "Einen Stack braucht er, weil"]
     prompt: |
       Ein Compiler prüft, ob in deinem Programm jedes `if` sein `end` hat (in
       Ruby) oder jede Klammer ihr Gegenstück. Beschreib in ein paar Sätzen, warum

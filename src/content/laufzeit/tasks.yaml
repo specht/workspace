@@ -1130,6 +1130,7 @@ tasks:
 
   - id: grenze
     title: Wo es aufhört
+    sentence_starters: ["Ab etwa", "Ich würde raten,", "Das liegt daran, dass"]
     prompt: |
       Probier `rundfahrt` mit 8, 9, 10 und 11 Orten aus. Ab wie vielen Orten würdest du nicht mehr warten wollen, und was würdest du jemandem raten, der eine Rundfahrt zu allen 36 Sehenswürdigkeiten Berlins planen will?
     check:

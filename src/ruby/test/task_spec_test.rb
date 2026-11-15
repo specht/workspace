@@ -66,6 +66,14 @@ class TaskSpecTest < Minitest::Test
 
     # Example answers are for open tasks only: teachers see them under the
     # card, the page never contains them.
+    def test_sentence_starters_only_for_reflection_two_to_four_short
+        reflection = { 'type' => 'reflection', 'min_words' => 10 }
+        assert_empty errors_for(reflection, 'sentence_starters' => ['Ich vermute, dass', 'Das liegt daran, dass'])
+        assert errors_for({ 'type' => 'answer', 'expect' => '42' }, 'sentence_starters' => %w[a b]).any? { |e| e.include?('only work with reflection') }
+        assert errors_for(reflection, 'sentence_starters' => ['Ich vermute, dass']).any? { |e| e.include?('two to four') }
+        assert errors_for(reflection, 'sentence_starters' => ['Ich vermute …, weil …', 'Das liegt daran']).any? { |e| e.include?('without »…«') }
+    end
+
     def test_examples_only_for_reflection
         reflection = { 'type' => 'reflection', 'min_words' => 10 }
         assert_empty errors_for(reflection, 'examples' => ['Eine Antwort.', 'Noch eine.'])
