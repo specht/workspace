@@ -20,6 +20,11 @@ Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMa
 <li><b>Unterwegs:</b> zu Fuß, mit dem Rad und mit dem Auto (Einbahnstraßen, Minuten statt Meter).</li>
 <li><b>Die Rundfahrt:</b> alle Reihenfolgen, nächster Nachbar, 2-opt.</li>
 </ul></td></tr>
+<tr><th>Ohne Rechner</th><td><ul>
+<li><b>Vor »Kürzeste Wege«, 20 Minuten, zu viert:</b> ein Blatt mit einem kleinen Straßennetz, zehn bis zwölf Kreuzungen mit Buchstaben, ohne Längen, Start und Ziel markiert, dazu Haftzettel. Am Tischrand klebt eine Reihe Haftzettel, die Queue: Vorn nimmt die Gruppe einen weg, hinten klebt sie neue an; zu Beginn steht dort nur der Start. Für den vordersten Zettel bekommt jeder Nachbar, der noch keinen Zettel auf der Karte hat, einen (»gefunden von …«) und kommt hinten in die Queue. Ist das Ziel vorn, folgt die Gruppe den Zetteln auf der Karte vom Ziel zurück zum Start.</li>
+<li><b>Was sichtbar wird:</b> Die Suche breitet sich in Wellen um den Start aus, ohne die Karte als Ganzes zu sehen; den Weg kennt sie erst am Ende, rückwärts über die Vorgänger.</li>
+<li><b>Zurück zur Seite:</b> <a href='#breitensuche'>»Breitensuche«</a> hat dieselben vier Schritte: Die Zettel auf der Karte sind <code>previous</code>, der Weg zurück ist <code>path_to</code>, und die Seite im Browser zeigt die besuchten Knoten in der Reihenfolge, in der die Gruppe ihre Zettel vorn weggenommen hat. Längen kommen erst nach der Frage »Wenige Kanten, langer Weg« an die Straßen, für <a href='#dijkstra'>»Dijkstra«</a>.</li>
+</ul></td></tr>
 <tr><th>Gebiete</th><td><ul>
 <li>Die Vorlage hat Steglitz-Zehlendorf (45 181 Wege).</li>
 <li>Jeden anderen der zwölf Bezirke lädt der Server mit <code>AREA=mitte ./run dart</code> (und so weiter) beim ersten Start aus <code>specht/workspace-files</code>.</li>
