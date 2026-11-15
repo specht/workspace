@@ -22,6 +22,26 @@ tasks:
         say: Die Zahl kommt vor das Zeichen, so wie »4 × A«.
     solution: '`4A3B2C1D`: vier A, drei B, zwei C, ein D. Aus 10 Zeichen werden 8; bei so kurzen Läufen lohnt es sich kaum.'
 
+  - id: wann-kleiner
+    title: Wann es kleiner wird
+    prediction: true
+    prompt: Das Bild im Editor hat 256 Pixel, also 256 Bytes. Wann braucht es mit Lauflängen weniger?
+    check:
+      type: choice
+      options:
+        - Wenn seine Läufe im Mittel länger als zwei Pixel sind.
+        - Wenn es nur wenige Farben hat.
+        - Wenn mehr als die Hälfte seiner Pixel dieselbe Farbe haben.
+        - Wenn in jeder Zeile jede Farbe nur einmal vorkommt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Ein Schachbrett hat nur zwei Farben. Mal eins in den Editor und sieh dir die Größe darunter an.
+      - when: { picked: 2 }
+        say: Mal eine Zeile als Weiß, Weiß, Schwarz, Weiß, Weiß, Schwarz und so weiter. Zwei Drittel ihrer Pixel sind weiß, und wie viele Bytes braucht sie?
+      - when: { picked: 3 }
+        say: In der Diskette kommt Blau in vielen Zeilen mehrmals vor, und sie wird trotzdem viel kleiner.
+
   - id: rle
     title: Lauflängen als Text
     prompt: |

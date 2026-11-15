@@ -99,9 +99,15 @@ Hier ist die Diskette aus dem [GIF-Labor](/gif), 16 × 16 Pixel in 4 Farben. Neb
 </div>
 <p class='rle-sum' id='rle-sum'></p>
 
-Jeder Lauf braucht zwei Bytes, eins für die Länge und eins für die Farbe. Die Diskette hat lange, ruhige Zeilen und wird viel kleiner. Mal ein Schachbrett hinein, und es wird größer als das Bild selbst: Jedes Pixel ist dann ein eigener Lauf und braucht zwei Bytes statt einem.
+Jeder Lauf braucht zwei Bytes, eins für die Länge und eins für die Farbe. Mal etwas anderes hinein, etwa ein Schachbrett oder breite Streifen, und achte darauf, wie viele Läufe eine Zeile hat und wie sich die Größe unter dem Bild ändert.
 
 _task(von-hand)
+
+_task(wann-kleiner)
+
+<!-- after: wann-kleiner -->
+Die Diskette hat lange, ruhige Zeilen und wird viel kleiner. Ein Schachbrett wird größer als das Bild selbst: Jedes Pixel ist dann ein eigener Lauf und braucht zwei Bytes statt einem. Kleiner wird ein Bild also nur, wenn seine Läufe im Mittel länger als zwei Pixel sind, denn jeder Lauf kostet zwei Bytes.
+<!-- /after -->
 
 ## Einrichten
 
