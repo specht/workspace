@@ -406,6 +406,18 @@ check-task: graph
 check-task: lesen python
 check-task: abstand python
 check-task: graph python
+write-file: dart/routes.dart <- file:loesung/dart/routes.dart
+write-file: javascript/routes.js <- file:loesung/javascript/routes.js
+write-file: java/Routes.java <- file:loesung/java/Routes.java
+check-task: lesen dart
+check-task: abstand dart
+check-task: graph dart
+check-task: lesen javascript
+check-task: abstand javascript
+check-task: graph javascript
+check-task: lesen java
+check-task: abstand java
+check-task: graph java
 terminal-open
 press: Control+C
 terminal-wait-for-prompt
@@ -521,6 +533,15 @@ check-task: dijkstra
 check-task: weg python
 check-task: breitensuche python
 check-task: dijkstra python
+check-task: weg dart
+check-task: breitensuche dart
+check-task: dijkstra dart
+check-task: weg javascript
+check-task: breitensuche javascript
+check-task: dijkstra javascript
+check-task: weg java
+check-task: breitensuche java
+check-task: dijkstra java
 terminal-open
 press: Control+C
 terminal-wait-for-prompt
