@@ -680,6 +680,51 @@ In `routes.py` gibt es die Klasse `MinHeap` schon, mit der Liste `self.items` f�
 <!-- /language -->
 <!-- language: dart -->
 In `routes.dart` gibt es die Klasse `MinHeap` schon, mit der Liste `items` für Paare aus Priorität und Wert, als Record `(double, String)`: `items[0].$1` ist die Priorität des Eintrags an Index 0, `items[0].$2` sein Wert. Es fehlen `push` und `pop`. Den Index des Elternteils gibt `(i - 1) ~/ 2`, die Division ohne Rest. Das Paket `collection` hat eine fertige `PriorityQueue`; hier baust du den Heap selbst, damit du siehst, wie er arbeitet.
+
+<div class='hint'>
+<strong>Einen Heap aus der Data Structures Sandbox mitbringen:</strong> Wer dort schon einen Heap gebaut hat, muss hier keinen neuen schreiben. Das geht auch mit einem aus dem gemeinsamen Repository der Klasse, wenn du in einem Kommentar dazuschreibst, von wem er ist.
+</div>
+
+1. Kopiere `my_array_heap.dart` in den Ordner `dart`.
+2. Ändere seine erste Zeile in `import 'heap_sandbox.dart';`. Die Datei `heap_sandbox.dart` liegt schon dort, mit `HeapMemory` wie in der Sandbox.
+3. Schreib in `routes.dart` unter die anderen `import`-Zeilen `import 'my_array_heap.dart';` und ersetze die Klasse `MinHeap` durch diese:
+
+```dart
+// Der Heap aus der Data Structures Sandbox als MinHeap. Er speichert nur
+// ganze Zahlen, also kommt jedes Paar als eine Zahl hinein: die Priorität in
+// Tausendsteln, mal 2^24, plus eine laufende Nummer. Eine kleinere Priorität
+// gibt eine kleinere Zahl, so ordnet der Heap richtig; die genaue Priorität
+// und den Wert jeder Nummer merkt sich der MinHeap in zwei Listen.
+class MinHeap {
+  static const _slots = 1 << 24; // so viele Nummern, bevor sie sich wiederholen
+  final _heap = MyArrayHeap();
+  final _priorities = <double>[];
+  final _values = <String>[];
+
+  bool get isEmpty => _heap.isEmpty();
+
+  int get length => _heap.memory.length;
+
+  void push(double priority, String value) {
+    _heap.insert((priority * 1000).round() * _slots + _values.length % _slots);
+    _priorities.add(priority);
+    _values.add(value);
+  }
+
+  (double, String)? pop() {
+    final key = _heap.removeMin();
+    if (key == null) return null;
+    return (_priorities[key % _slots], _values[key % _slots]);
+  }
+
+  // was im Heap steht, als Paare, in der Reihenfolge seines Arrays
+  List<(double, String)> get items => [
+        for (final key in _heap.memory.copy()) (_priorities[key % _slots], _values[key % _slots]),
+      ];
+}
+```
+
+Der Heap aus der Sandbox speichert nur ganze Zahlen. Darum packt `MinHeap` jedes Paar in eine Zahl: die Priorität in Tausendsteln, mal 2<sup>24</sup>, plus eine laufende Nummer. Eine kleinere Priorität gibt eine kleinere Zahl, also ordnet der Heap die Paare richtig, und die laufende Nummer sagt, welche genaue Priorität und welcher Wert dazugehören. Die Aufgabe darunter prüft diesen `MinHeap` wie jeden anderen; ein geliehener Heap, der falsch ordnet, fällt dort auf.
 <!-- /language -->
 <!-- language: javascript -->
 In `routes.js` gibt es die Klasse `MinHeap` schon, mit dem Array `this.items` für Paare `[Priorität, Wert]`. Es fehlen `push` und `pop`. Den Index des Elternteils gibt `Math.floor((i - 1) / 2)`: Ohne `Math.floor` wäre er eine Kommazahl.

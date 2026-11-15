@@ -390,8 +390,28 @@ examples:
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # ein Heap aus der Data Structures Sandbox, über den MinHeap, der Paare in Zahlen packt
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes-sandbox.dart, routenplaner-starter/dart/my_array_heap.dart: loesung/dart/my_array_heap.dart, routenplaner-starter/dart/heap_sandbox.dart: vorlage/dart/heap_sandbox.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
       fail:
         - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # ein Heap aus der Sandbox, der beim Einfügen nicht nach oben tauscht: Der MinHeap darüber ordnet dann falsch
+        - files:
+            routenplaner-starter/dart/routes.dart: loesung/dart/routes-sandbox.dart
+            routenplaner-starter/dart/heap_sandbox.dart: vorlage/dart/heap_sandbox.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/dart/my_array_heap.dart:
+              text: |
+                import 'heap_sandbox.dart';
+                class MyArrayHeap {
+                  final HeapMemory memory = HeapMemory();
+                  void insert(int value) => memory.add(value);
+                  int? removeMin() {
+                    if (memory.isEmpty) return null;
+                    memory.swap(0, memory.length - 1);
+                    return memory.removeLast();
+                  }
+                  bool isEmpty() => memory.isEmpty;
+                }
         # eine sortierte Liste statt eines Heaps: richtig, aber langsam
         - files:
             routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
@@ -608,6 +628,8 @@ examples:
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        # mit dem Heap aus der Sandbox
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes-sandbox.dart, routenplaner-starter/dart/my_array_heap.dart: loesung/dart/my_array_heap.dart, routenplaner-starter/dart/heap_sandbox.dart: vorlage/dart/heap_sandbox.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes-5.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
           say: MinHeap

@@ -48,6 +48,7 @@ Jede Aufgabe, in der eine Funktion entsteht, hat zwei oder drei Tipps: ein Beisp
 #### Stolpersteine
 
 - Neu starten muss niemand: Der Server startet die Funktionen nach dem Speichern selbst neu. Ein Fehler (ein Tippfehler, der sich nicht übersetzen lässt, eine Exception in einer Suche) steht im Terminal mit der Zeile und auf der Karte mit seiner ersten Zeile.
+- Einen Heap aus der Data Structures Sandbox (Dart) bringen Lernende mit: `my_array_heap.dart` in den Ordner `dart`, die erste Zeile auf `import 'heap_sandbox.dart';` geändert, dazu ein `MinHeap`, der Paare aus Priorität und Knoten in eine ganze Zahl packt (er steht auf der Seite unter dem Heap). Das geht auch mit einem Heap aus dem gemeinsamen Repository der Klasse. Die Aufgabe »Eine Priority Queue« prüft den Heap darunter wie jeden anderen: Ein geliehener Heap, der falsch ordnet, fällt dort auf, bevor Dijkstra auf der Karte falsche Wege findet.
 - In Dart, JavaScript und Java braucht die Breitensuche eine schnelle Queue: `Queue` aus `dart:collection`, `ArrayDeque` in Java, in JavaScript ein Index statt `shift()`. Mit `removeAt(0)` oder `shift()` rückt bei jedem Knoten das ganze Array nach vorne, und die Suche über 141 000 Knoten dauert Minuten. Ein guter Anlass, an die Queue als Ring Buffer aus der Sandbox zu erinnern.
 - `Math.cos` rechnet im Bogenmaß; wer Grad hineingibt, bekommt nach Osten falsche Abstände, und die Prüfung sagt das.
 
