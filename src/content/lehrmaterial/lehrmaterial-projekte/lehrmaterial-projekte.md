@@ -16,7 +16,7 @@ Viele Notizen für Lehrkräfte enden mit »Eigene Projekte«: Ideen, mit denen a
 
 Der Rahmen kommt aus der Projektmethode, wie sie in der Ausbildung von Lehrkräften gelehrt wird (etwa nach Karl Frey, »Die Projektmethode«): eine Projektskizze, die gemeinsam beschlossen wird, Fixpunkte, an denen die Gruppe innehält, und ein Abschluss, auf den sie zurückblickt. Hier ist er auf Programmierprojekte von drei bis fünf Doppelstunden zugeschnitten.
 
-In den Notizen nennt jede Idee, was an ihren Meilensteinen steht, und ihre Kriterien in einem Satz. Die Kriterien der Idee kommen zu den allgemeinen unten hinzu; sie ersetzen sie nicht.
+In den Notizen nennt jede Idee unter *Meilensteine* in ein paar Worten, was an den ersten drei Meilensteinen dasteht; der vierte ist immer die Abgabe mit der Selbsteinschätzung. Unter *Kriterien* sagt sie in einem Satz, woran man sieht, dass gerade diese Idee gelungen ist. Diese Kriterien kommen zu den allgemeinen unten hinzu; sie ersetzen sie nicht.
 
 ## Vier Meilensteine
 
@@ -31,6 +31,8 @@ Ein Meilenstein ist ein Termin mit einem Datum, den die Klasse zu Beginn erfähr
 </table>
 
 Ein verpasster Meilenstein ist kein Urteil, sondern ein Anlass zum Gespräch. Meist ist das Projekt zu groß; dann wird die kleinste Fassung kleiner, und das Kriterium »Was es kann« misst sich an der neuen Absprache. Halte fest, was ihr geändert habt, damit es bei der Abgabe noch gilt.
+
+Eine Idee für eine Doppelstunde braucht nicht alle vier Termine: Die Idee auf Papier ist nach zwanzig Minuten abgesprochen, die erste Fassung läuft zur Mitte, und gezeigt wird am Ende. Für eine Idee von einer Stunde nennen die Notizen nur zwei Zwischenstände.
 
 ## Kriterien, die von Anfang an feststehen
 
