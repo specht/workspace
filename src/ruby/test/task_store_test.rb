@@ -49,4 +49,24 @@ class TaskStoreTest < Minitest::Test
         assert_equal 'stale', TaskStore.public_state(stored, 'v2')[:status]
         assert_equal 'x', TaskStore.public_state(stored, 'v2')[:answer]
     end
+
+    # a prediction keeps its first answer, for the class board's count
+    def test_prediction_keeps_first_answer
+        s1 = TaskStore.next_state(nil, task: 't/p', version: 'v1', status: 'wrong', answer: '50', now: 100, prediction: true)
+        s2 = TaskStore.next_state(s1, task: 't/p', version: 'v1', status: 'correct', answer: '7', now: 200, prediction: true)
+        assert_equal '50', s2[:first_answer]
+        assert_equal '7', s2[:last_answer]
+        # a new version of the check: the next answer is the first again
+        s3 = TaskStore.next_state(s2, task: 't/p', version: 'v2', status: 'correct', answer: '7', now: 300, prediction: true)
+        assert_equal '7', s3[:first_answer]
+    end
+
+    def test_no_first_answer_unless_prediction_or_unknown
+        s = TaskStore.next_state(nil, task: 't/a', version: 'v1', status: 'wrong', answer: 'x', now: 100)
+        assert_nil s[:first_answer]
+        # tried before first answers were kept: the first is not known
+        old = { :version => 'v1', :attempts => 2, :status => 'wrong', :last_answer => '8' }
+        s = TaskStore.next_state(old, task: 't/p', version: 'v1', status: 'correct', answer: '7', now: 200, prediction: true)
+        assert_nil s[:first_answer]
+    end
 end

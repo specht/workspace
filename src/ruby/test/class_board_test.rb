@@ -224,4 +224,38 @@ class ClassBoardTest < Minitest::Test
         assert_includes html, "<td class='cb-summary'>1/4</td>"
         assert_includes ClassBoard.overview_html({ :activities => [], :rows => [] }, :link => ->(k) { k }), 'class-overview-empty'
     end
+
+    # What the class predicted first: counted together as the check reads
+    # them, the right one first, wrong ones with their feedback, no names
+    def test_predictions_count_first_answers
+        tasks = [{ :id => 'sevens', :title => 'Wie viele Siebener?', :type => 'number', :version => 'v1', :prediction => true }]
+        st = ->(first, answer, status: 'correct', version: 'v1') {
+            { :status => status, :attempts => 2, :last_answer => '7', :first_answer => answer, :version => version,
+              :first_status => first, :updated => 1 }
+        }
+        b = ClassBoard.build(MEMBERS, tasks, {
+            'ada@x' => { 'sevens' => st.('wrong', '50') },
+            'ben@x' => { 'sevens' => st.('wrong', '50,0') },
+            'tom@x' => { 'sevens' => st.('correct', '7') },
+            # its check changed since: not counted
+            'eve@x' => { 'sevens' => st.('wrong', '8', version: 'v0') },
+        })
+        judge = lambda do |_task, answer|
+            v = Float(answer.tr(',', '.'))
+            { :key => v, :label => v.round.to_s, :message => v == 7 ? nil : 'Die Schleife läuft 50-mal, aber `count` <wächst> nicht immer.' }
+        end
+        list = ClassBoard.predictions(b, 0, judge)
+        assert_equal [['7', true, 1], ['50', false, 2]], list.map { |g| [g[:label], g[:correct], g[:count]] }
+        assert_nil list[0][:message]
+        html = ClassBoard.html(b, :activity => 'kata-loops', :judge => judge)
+        assert_includes html, '3 Vermutungen, 2 zuerst falsch'
+        assert_includes html, '<code>count</code> &lt;wächst&gt;'
+        start = html.index('class-predictions')
+        part = html[start...html.index('</details>', start)]
+        MEMBERS.each { |m| refute_includes part, m[:name] }
+        # without a judge (the minute's refresh), no list
+        refute_includes ClassBoard.html(b, :activity => 'kata-loops'), 'class-predictions'
+        # a task that is no prediction has none
+        assert_empty ClassBoard.predictions(ClassBoard.build(MEMBERS, TASKS, {}), 0, judge)
+    end
 end

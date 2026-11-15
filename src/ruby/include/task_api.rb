@@ -807,13 +807,13 @@ class Main < Sinatra::Base
         END_OF_QUERY
         props = TaskStore.next_state(previous && previous['s'],
             :task => found[:key], :version => found[:version], :status => status,
-            :answer => answer, :now => now, :max => max)
+            :answer => answer, :now => now, :max => max, :prediction => found[:task]['prediction'] == true)
         neo4j_query(<<~END_OF_QUERY, props.merge(:email => email, :key => key))
             MATCH (u:User {email: $email})
             MERGE (s:TaskState {key: $key})
             MERGE (u)-[:HAS_TASK_STATE]->(s)
             SET s.task = $task, s.version = $version, s.status = $status,
-                s.last_answer = $last_answer, s.attempts = $attempts,
+                s.last_answer = $last_answer, s.first_answer = $first_answer, s.attempts = $attempts,
                 s.first_status = $first_status, s.first_correct = $first_correct,
                 s.updated = $updated
             CREATE (a:TaskAttempt {task: $task, version: $version, status: $status, ts: $updated})-[:BY]->(u);

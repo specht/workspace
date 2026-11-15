@@ -25,7 +25,7 @@ module ClassBoard
     LESSON_MIN = 2
     QUIET_AFTER = 10 * 60
 
-    Cell = Struct.new(:status, :attempts, :answer, :updated, :first_status, :stuck, keyword_init: true)
+    Cell = Struct.new(:status, :attempts, :answer, :updated, :first_status, :first_answer, :stuck, keyword_init: true)
 
     # members: [{ email:, name: }]
     # tasks:   [{ id:, title:, type:, version:, prediction: }] in page order
@@ -44,7 +44,7 @@ module ClassBoard
                 status = s[:version] == t[:version] ? s[:status].to_s : 'stale'
                 attempts = s[:attempts].to_i
                 Cell.new(:status => status, :attempts => attempts, :answer => s[:last_answer],
-                    :updated => s[:updated], :first_status => s[:first_status],
+                    :updated => s[:updated], :first_status => s[:first_status], :first_answer => s[:first_answer],
                     :stuck => status == 'wrong' && attempts >= STUCK_ATTEMPTS)
             end
             # extras (tasks with extra: true) count for nobody's »gelöst«
@@ -73,6 +73,62 @@ module ClassBoard
             }
         end
         { :rows => rows, :own => own, :extras => more, :summary => summary, :tasks => tasks }
+    end
+
+    # What the class predicted first on prediction task i (the members only,
+    # the current version, only states that kept their first answer,
+    # TaskStore.next_state): [{ label:, message:, correct:, count: }], the
+    # right answer first, then by count. judge: lambda(task, answer) ->
+    # { key:, label:, message: } or nil: the same answer written two ways
+    # (7 and 7,0) has one key, message is the feedback a wrong one gets.
+    # Counts only, no names.
+    def self.predictions(board, i, judge)
+        task = board[:tasks][i]
+        return [] unless task[:prediction]
+
+        groups = {}
+        board[:rows].each do |r|
+            c = r[:cells][i]
+            next if c.first_answer.nil? || %w[none stale].include?(c.status)
+
+            seen = judge.call(task, c.first_answer)
+            next if seen.nil?
+
+            correct = c.first_status == 'correct'
+            g = (groups[[correct, seen[:key]]] ||= { :label => seen[:label], :message => correct ? nil : seen[:message], :correct => correct, :count => 0 })
+            g[:count] += 1
+        end
+        groups.values.sort_by { |g| [g[:correct] ? 0 : 1, -g[:count], g[:label].to_s] }
+    end
+
+    # Code in backticks as <code>, the rest escaped (the feedback sentences).
+    def self.inline_code(text)
+        h(text).gsub(/`([^`]+)`/, '<code>\\1</code>')
+    end
+
+    # The list below the board for each prediction: what the class predicted
+    # first, how often, and what a wrong prediction is told.
+    def self.predictions_html(board, judge)
+        io = +''
+        board[:tasks].each_index do |i|
+            list = predictions(board, i, judge)
+            next if list.empty?
+
+            total = list.sum { |g| g[:count] }
+            wrong = list.reject { |g| g[:correct] }.sum { |g| g[:count] }
+            io << "<details class='class-answers class-predictions'><summary>#{i + 1}. #{h(board[:tasks][i][:title])}: " \
+                "#{total} #{total == 1 ? 'Vermutung' : 'Vermutungen'}, #{wrong} zuerst falsch</summary>"
+            io << "<p class='cb-predictions-note'>Die erste Antwort jeder Person, ohne Namen: Was viele zuerst vermuten, ist ein Thema für die Besprechung.</p><ul>"
+            list.each do |g|
+                mark = g[:correct] ? "<i class='bi bi-check-lg' aria-label='richtig'></i>" : "<i class='bi bi-x-lg' aria-label='falsch'></i>"
+                io << "<li class='cb-prediction cb-#{g[:correct] ? 'correct' : 'wrong'}'>#{mark}<span class='cb-prediction-count'>#{g[:count]}×</span> " \
+                    "<span class='cb-prediction-answer'>#{inline_code(g[:label])}</span>"
+                io << "<span class='cb-prediction-message'>#{inline_code(g[:message])}</span>" if g[:message]
+                io << '</li>'
+            end
+            io << '</ul></details>'
+        end
+        io
     end
 
     # The last time a row did anything on the activity (epoch seconds), or nil.
@@ -281,7 +337,8 @@ module ClassBoard
 
     # HTML of the board. submission_url: lambda(email, task_id) -> URL.
     # meeting: the id of the task the group's meeting point follows.
-    def self.html(board, activity:, submission_url: nil, meeting: nil, now: Time.now.to_i)
+    # judge: for the predictions' list (predictions), nil leaves it out.
+    def self.html(board, activity:, submission_url: nil, meeting: nil, now: Time.now.to_i, judge: nil)
         tasks = board[:tasks]
         meeting = tasks.index { |t| t[:id] == meeting } if meeting
         still = quiet(board[:rows], tasks, now)
@@ -322,6 +379,7 @@ module ClassBoard
             io << "<td class='cb-summary#{s[:often_wrong] ? ' cb-often-wrong' : ''}#{i == meeting ? ' cb-meeting' : ''}'>#{notes.map { |n| h(n) }.join('<br>')}</td>"
         end
         io << '<td></td><td></td></tr></tfoot></table></div>'
+        io << predictions_html(board, judge) if judge
         rows = board[:rows] + [board[:own], *board[:extras]].compact
 
         # What students wrote and handed in, per task.

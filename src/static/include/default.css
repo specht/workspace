@@ -6466,6 +6466,44 @@ body.cl-dragging-page * {
     white-space: pre-wrap;
 }
 
+/* What the class predicted first (ClassBoard.predictions_html): one line
+   per answer, the count in a column, the feedback below in grey. */
+.cb-predictions-note {
+    margin: 0.4em 0 0;
+    color: var(--bs-secondary-color);
+}
+
+.class-predictions ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.cb-prediction {
+    display: grid;
+    grid-template-columns: 1.4em 3em 1fr;
+    column-gap: 0.3em;
+    margin-bottom: 0.4em;
+}
+
+.cb-prediction .bi-check-lg {
+    color: var(--bs-success);
+}
+
+.cb-prediction .bi-x-lg {
+    color: var(--bs-danger);
+}
+
+.cb-prediction-count {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-weight: 600;
+}
+
+.cb-prediction-message {
+    grid-column: 3;
+    color: var(--bs-secondary-color);
+}
+
 .class-live-list li {
     margin-bottom: 0.6em;
 }

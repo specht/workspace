@@ -2670,7 +2670,11 @@ In Neo4j, nur für Antworten, die zählen:
 
 - `(:User)-[:HAS_TASK_STATE]->(:TaskState)` pro Person und Aufgabe: Aufgabe,
   Version der Prüfung, Status, letzte Eingabe, Zahl der Versuche, Status des
-  ersten Versuchs, Zeitpunkt der ersten richtigen Antwort, letzte Änderung.
+  ersten Versuchs, Zeitpunkt der ersten richtigen Antwort, letzte Änderung;
+  bei einer Vorhersage (`prediction: true`) auch die erste Eingabe, solange
+  die Version gilt: Die Klassenübersicht zählt darüber ohne Namen, was die
+  Klasse zuerst vermutet hat, und schreibt zu jeder falschen Vermutung die
+  Rückmeldung, die sie bekommt.
   Der Schlüssel ist ein Hash aus E-Mail-Adresse und Aufgabe.
 - `(:TaskAttempt)-[:BY]->(:User)` pro Versuch: Aufgabe, Version, Status und
   Zeitpunkt, ohne den Text der Antwort.

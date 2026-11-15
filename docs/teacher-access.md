@@ -560,6 +560,19 @@ Sie können weitermachen oder anderen helfen. Welche Tipps jemand aufgeklappt
 hat, zählt nicht mit; das sieht niemand (docs/didaktik.md, »Tipps in
 Stufen«).
 
+## Was die Klasse vermutet hat
+
+Unter der Tabelle steht zu jeder Vorhersage (`prediction: true`) eine
+aufklappbare Liste: jede erste Antwort, wie oft sie kam, die richtige
+zuerst, zu jeder falschen die Rückmeldung, die sie bekommt (aus dem
+`feedback` der Aufgabe, in der ersten Sprache der Gruppe). Namen stehen
+dort nicht; wer was vermutet hat, zeigt die Liste nicht. Gezählt wird, was
+die Prüfung gleich liest (7 und 7,0, dieselben Optionen). Dafür behält
+der `TaskState` einer Vorhersage ihre erste Antwort (`first_answer`), nur
+für die geltende Version; Zustände von vor dieser Änderung zählen nicht
+mit. Die Regel steht in `ClassBoard.predictions`, die Lesart der Antwort
+in `prediction_judge` (main.rb).
+
 Der Reiter »Überblick« zeigt jede Person mit allen Aktivitäten der Gruppe:
 angeheftete zuerst, dann jede, an der jemand der Gruppe gearbeitet hat, in
 der Reihenfolge des Katalogs; je Zelle gelöst von allen (ohne Extras, wie

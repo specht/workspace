@@ -2528,6 +2528,43 @@ class Main < Sinatra::Base
         states
     end
 
+    # For the class board's list of predictions (ClassBoard.predictions): a
+    # first answer as the class page shows it, with the feedback a wrong one
+    # gets, from the task as tasks.yaml has it, in the group's first
+    # language. Answers are counted together when the check reads them the
+    # same: the options picked, the number, the text as compared.
+    def prediction_judge(activity_key, group)
+        language = (group_code_languages([group])[group] || []).first
+        lambda do |t, answer|
+            found = find_task("#{activity_key}/#{t[:id]}", language)
+            next nil unless found
+
+            task = found[:task]
+            check = task['check']
+            message = ->(result) { result.status == :wrong ? result.message : nil }
+            case check['type']
+            when 'choice'
+                picked = answer.to_s.split(',').map(&:strip).select { |x| x =~ /\A\d+\z/ }.map(&:to_i).uniq.sort
+                next nil if picked.empty? || picked.any? { |x| x >= check['options'].size }
+
+                { :key => picked.join(','), :label => picked.map { |x| check['options'][x].to_s }.join(' / '),
+                  :message => message.(TaskCheck.check_choice(task, check, answer, {})) }
+            when 'number'
+                value = TaskCheck.parse_number(answer)
+                next nil if value.nil?
+
+                label = value == value.round ? value.round.to_s : value.to_s.tr('.', ',')
+                { :key => value, :label => label, :message => message.(TaskCheck.check_number(task, check, answer, {})) }
+            else
+                text = TaskCheck.normalize_text(answer, check['case_sensitive'])
+                next nil if text.empty?
+
+                result = TaskCheck.variables_used(check).empty? ? TaskCheck.check_answer(task, check, answer, {}) : nil
+                { :key => text, :label => answer.to_s.strip, :message => result && message.(result) }
+            end
+        end
+    end
+
     # Pinned activities of a group, with controls to pin and unpin: a
     # heading with what pinning does, the pinned activities as a list (title,
     # kind, »Lösen«), and a search field to pin another.
@@ -3036,7 +3073,7 @@ class Main < Sinatra::Base
         point = meeting_points([group], activity_key)[group]
         io << "<div class='class-meeting-line' data-group='#{h.(group)}' data-activity='#{h.(activity_key)}' aria-live='polite'>" \
             "#{point ? MeetingPoint.status_html(MeetingPoint.status(tasks, point, members, states)) : ''}</div>"
-        io << ClassBoard.html(board, :activity => activity_key, :meeting => point,
+        io << ClassBoard.html(board, :activity => activity_key, :meeting => point, :judge => prediction_judge(activity_key, group),
             :submission_url => lambda { |email, id| "/api/task/submission/#{activity_key}/#{id}?email=#{CGI.escape(email)}" })
         io << class_scene_galleries_html(activity_key, tasks, members + (board[:own] ? [viewer] : []) + extras.select { |x| board[:extras].any? { |r| r[:email] == x[:email] } })
         io << class_kata_hand_ins_html(activity_key, tasks, members)
