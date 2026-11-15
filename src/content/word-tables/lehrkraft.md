@@ -1,6 +1,11 @@
 Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabelle um und machen die erste Zeile zur Kopfzeile, die sich auf jeder Seite wiederholt. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Text, der mit Tabstopps in Spalten steht, in eine Tabelle umwandeln,</li>
+<li>die erste Zeile einer Tabelle zur Kopfzeile machen, die sich auf jeder Seite wiederholt,</li>
+<li>begründen, wann eine Tabelle besser passt als Tabstopps, etwa bei einem Eintrag, der länger wird als seine Spalte.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/lists-and-tabs'>Listen und Tabstopps</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

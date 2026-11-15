@@ -3,6 +3,11 @@ Lernende bauen eine Präsentation in HTML mit shower.js für ein echtes Referat:
 Diese Aktivität lebt davon, dass die Lernenden etwas vortragen, das sie ohnehin vortragen müssen. Sie taugt deshalb auch für Referate in anderen Fächern.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Folien in HTML schreiben und mit eigenen CSS-Regeln gestalten,</li>
+<li>ein Bild mit einem Pfad relativ zur Seite einbinden und erklären, warum Umbenennen eine Datei nicht umwandelt,</li>
+<li>eine Präsentation so abgeben, dass alles, was sie braucht, im Ordner liegt.</li>
+</ul></td></tr>
 <tr><th>Art</th><td>Projekt, Texte &amp; Präsentationen</td></tr>
 <tr><th>Dauer</th><td>2 bis 3 Doppelstunden, dazu die Vorträge</td></tr>
 <tr><th>Vorher</th><td>nichts; wer schon einmal ein Repository geklont hat, ist schneller</td></tr>

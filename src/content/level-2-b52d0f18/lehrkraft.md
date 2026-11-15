@@ -1,6 +1,11 @@
 Lernende bauen ein Bad an ihr Level aus Level 0 und 1, Schritt für Schritt, mit einem Becken voll Wasser, und sehen im »Maschinenraum«, wie das Programm Wasser zeichnet. Das ist Level 2 einer Reihe aus vier Seiten.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Becken mit Wasser, Rand, Geländer und Säulen in einen Raum einbauen und aus den Höhen ausrechnen, wie tief das Wasser ist,</li>
+<li>erklären, wie Wasser gezeichnet wird, das es nicht gibt: eine Spiegelung mit einer zweiten Kamera, Fresnel und Wellen aus Rauschen,</li>
+<li>begründen, warum das Programm nur die Räume zeichnet, die man durch Türen sieht (Portale).</li>
+</ul></td></tr>
 <tr><th>Die Reihe</th><td>Im Katalog mit den anderen Leveln auf der Karte von <a href='/level-0-c1d8a2f7'>Level 0</a>; über der Seite steht die Reihe aller vier, und am Ende von Level 1 führt ein Link hierher.</td></tr>
 <tr><th>Voraussetzung</th><td>Der Klon der Vorlage mit den Räumen aus Level 0 und 1 (vor allem der Vorgang hinter dem Saal und der Schacht hinter dem krummen Gang).</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>

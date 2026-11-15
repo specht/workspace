@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes Assembler-Programm für x86-64 im Workspace: »Hello, World!« in `hello.asm` mit einem Systemaufruf, übersetzt mit `nasm` und gelinkt mit `ld`, lesen eine Fehlermeldung und ändern den Text, den das Programm ausgibt. Vorkenntnisse brauchen sie keine, aber wer schon in C geschrieben hat, sieht, was dort alles verborgen bleibt.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in Assembler für x86-64 schreiben, mit <code>nasm</code> übersetzen, mit <code>ld</code> linken und starten,</li>
+<li>erklären, wie das Programm mit einem Systemaufruf Text ausgibt und was in den Registern dafür steht,</li>
+<li>vorhersagen, was eine falsche Länge des Texts bewirkt, und das Programm einen anderen Text ausgeben lassen,</li>
+<li>eine Fehlermeldung von <code>nasm</code> lesen und den Fehler beheben.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Fünf Aufgaben:<ul>
 <li>Zwei lesen <code>/workspace</code>: ob <code>hello.asm</code> den Text <code>hello db 'Hello, World!'</code> und ein <code>syscall</code> enthält, und ob daneben das übersetzte, ausführbare <code>hello</code> liegt.</li>
 <li>»Die Fehlermeldung« verlangt, was <code>nasm</code> für <code>ray</code> meldet: <code>symbol `ray' not defined</code>.</li>

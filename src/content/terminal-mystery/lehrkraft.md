@@ -1,6 +1,12 @@
 Lernende lösen einen Kriminalfall, der sich nur im Terminal lösen lässt: Aus dem Stadtmuseum Bitstein ist die Goldene Diskette verschwunden, und die Akten sind zu groß zum Durchlesen. Jedes Kapitel bringt ein Werkzeug und setzt es sofort ein. Die Idee stammt aus »The Command Line Murders« von Noah Veltman; Fall, Stadt und Akten sind neu und auf Deutsch.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>in großen Textdateien mit <code>grep</code>, auch <code>grep -l</code> und <code>grep -i</code>, gezielt nach Hinweisen suchen,</li>
+<li>mit <code>head</code>, <code>tail</code> und Pipelines eine bestimmte Zeile oder einen Ausschnitt herausholen,</li>
+<li>Ergebnisse mehrerer Suchen verbinden, um eine Frage zu beantworten, etwa wer in beiden Listen steht,</li>
+<li>sich mit <code>ssh</code> auf einem anderen Rechner anmelden und Dateien mit <code>scp</code> holen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>»Dateien und Verzeichnisse« (<code>cd</code>, <code>ls</code>, <code>cat</code>, <code>less</code>) und von »Versionsverwaltung mit Git«, was ein Commit ist.</td></tr>
 <tr><th>Werkzeuge</th><td><code>wc -l</code>, <code>grep</code> mit <code>^</code>, <code>-i</code>, <code>-c</code> und <code>-l</code>, <code>head | tail</code> für eine bestimmte Zeile, eine Kette aus <code>grep</code>, <code>sort | uniq -d</code> für die Schnittmenge zweier Listen, <code>&gt;</code> und <code>&gt;&gt;</code> für Notizen und zum Schluss <code>git log --author</code> und <code>git show</code> in einem Repository, in dem ein Commit mit harmloser Nachricht zwei Zeilen löscht.</td></tr>
 <tr><th>Ablauf</th><td><ul>

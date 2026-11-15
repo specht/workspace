@@ -1,6 +1,12 @@
 Ein Labor zu Indizes, nach der [Einführung in SQL](/mysql): Lernende füllen ihre eigene Datenbank mit einem ausgedachten Telefonbuch von einer Million Einträgen, messen eine Suche, legen einen Index an und messen noch einmal; danach der B-Baum und wann ein Index nicht hilft. Für die Oberstufe; der B-Baum knüpft an Bäume als Datenstruktur an.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit <code>EXPLAIN</code> erkennen, ob eine Abfrage einen Index nutzt oder die ganze Tabelle liest, und den Unterschied messen,</li>
+<li>erklären, wie ein B-Baum aufgebaut ist, und abschätzen, wie viele Ebenen er für eine Million Einträge braucht,</li>
+<li>vorhersagen, welche Suche einen Index nutzt und welche nicht (<code>LIKE '%…'</code>, eine Funktion um die Spalte, nur die zweite Spalte eines Index über zwei Spalten),</li>
+<li>begründen, warum man nicht jede Spalte indiziert.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>
 <li>Telefonbuch anlegen und die erste Messung (20 Minuten)</li>
 <li><code>EXPLAIN</code> mit dem Full Table Scan und der erste Index (25 Minuten)</li>

@@ -1,6 +1,12 @@
 Objektorientierter Entwurf an einer Simulation: Lernende finden in einer kurzen Geschichte die Klassen, zeichnen sie als UML-Klassendiagramm in der UML-Werkstatt und programmieren sie dann, mit Kapselung, Zustand und Verhalten, einer Assoziation mit Multiplizitäten und Vererbung mit Polymorphie. Am Ende spielt das Programm einen Samstagvormittag an den Kassen nach und beantwortet die Frage der Geschichte: Die Expresskasse lohnt sich nicht. Ruby, Python, JavaScript, Dart oder Java; das Diagramm schreibt die Namen wie die Sprache.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>in einem Text Klassen, Attribute und Methoden finden und als UML-Klassendiagramm zeichnen,</li>
+<li>eine Klasse mit Kapselung, Konstruktor, Zustand und Verhalten nach dem Diagramm programmieren,</li>
+<li>eine Assoziation mit Multiplizitäten und Vererbung mit Polymorphie im Diagramm und im Code umsetzen,</li>
+<li>mit einer Simulation eine Frage beantworten und beurteilen, was das Modell weglässt.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Grundlagen in einer der fünf Sprachen: Funktionen oder Methoden, Verzweigungen, Listen, eine Schleife. Was eine Klasse ist, erklärt die Seite.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. JavaScript, Dart und Java wählen die Lernenden auf der Seite selbst; die Wahl gilt nur für Seiten, die sie anbieten, und ändert die Einstellung der Klasse nicht. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td><ul>

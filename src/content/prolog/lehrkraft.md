@@ -1,6 +1,12 @@
 Ein Projekt zur logischen Programmierung: Lernende schreiben in SWI-Prolog Fakten über die Musikerfamilie Bach und Regeln für Vater, Mutter, Großeltern, Geschwister und Vorfahren, stellen Anfragen und sehen in einem Schritt-für-Schritt-Bild, wie Prolog mit Unifikation und Backtracking sucht. Dann Listen als Kopf und Rest, mit einem <code>joined</code>, das auch rückwärts rechnet, und zum Schluss die zwölf Bezirke Berlins in vier Farben, bei denen die Reihenfolge der Bedingungen über die Laufzeit entscheidet. Extra: ein Sudoku mit <code>library(clpfd)</code>.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Fakten und Regeln in Prolog schreiben, etwa für Eltern, Großeltern, Geschwister und Vorfahren, und Anfragen dazu stellen,</li>
+<li>erklären, wie Prolog mit Unifikation und Backtracking eine Antwort sucht, und vorhersagen, was eine linke Rekursion anrichtet,</li>
+<li>mit Listen als Kopf und Rest rekursive Prädikate schreiben und vorhersagen, was eine Anfrage rückwärts liefert,</li>
+<li>begründen, warum die Reihenfolge der Bedingungen über die Laufzeit einer Suche entscheidet.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Rekursion (<a href='/kata-recursion'>Katas: Rekursion</a>). Die Sprache selbst ist für alle neu; wer <a href='/grammatiken'>Grammatiken</a> kennt, findet am Ende einen Ausblick auf Grammatiken in Prolog.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> SWI-Prolog starten, Fakten und Anfragen, die fehlenden Kinder eintragen, Regeln für Vater, Mutter und Großeltern, die Vorhersage zu den Geschwistern und die Regel dazu.</li>

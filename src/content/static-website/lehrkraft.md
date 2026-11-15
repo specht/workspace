@@ -3,6 +3,11 @@ Lernende bauen ihre erste eigene Webseite mit HTML und CSS: eine Seite mit Über
 Die Aufgaben lesen nur Dateien in `/workspace/website-test` und entscheiden selbst, ob etwas da ist: ob `index.html` sauber verschachtelt ist und eine Liste mit drei Punkten und einen Link hat, ob Bilder einen Alt-Text haben und unter ihrem Pfad wirklich existieren (mit Groß- und Kleinschreibung, wie der Live Server sie sieht), ob die Bilddatei zu ihrer Endung passt, ob `index.html` die `styles.css` wirklich einbindet und ob darin `main` mit Flexbox angeordnet ist und in einer Media Query untereinander rückt.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Seite mit Überschrift, Liste, Link und Bild in HTML schreiben, mit einem Alt-Text, der das Bild ersetzt,</li>
+<li>eine CSS-Regel lesen und schreiben: welche Elemente ihr Selektor trifft und was ihre Eigenschaften tun,</li>
+<li>ein Layout mit Flexbox bauen, das mit einer Media Query auf dem Handy untereinanderrückt, und vorhersagen, ab welcher Breite die Media Query gilt.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> das Projekt mit Live Server anlegen, Inhalt mit HTML.</li>
 <li><b>2. Doppelstunde:</b> Aussehen mit CSS, die Seite zur eigenen machen, veröffentlichen und abgeben; »Weiter ausprobieren« für Schnelle.</li>

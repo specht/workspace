@@ -1,6 +1,12 @@
 Lernende programmieren Gaussian Splatting in Python mit numpy: erst ein Gemälde aus 500 Splats, die durch Gradientenabstieg ihre Lage, Form und Farbe lernen, dann einen Renderer, der eine Szene aus 49.817 Splats im Raum mit einer Kamera abbildet, nach der Tiefe sortiert und von vorne nach hinten mischt. Am Ende drehen sie fertige Szenen in einem Viewer auf der Seite, der dasselbe auf der Grafikkarte tut.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Splat als gestreckte und gedrehte Glockenkurve beschreiben und daraus ein Bild berechnen,</li>
+<li>Gradientenabstieg erklären und vorhersagen, was eine zu große Lernrate tut,</li>
+<li>erklären, wie ein Splat im Raum über die Kamera zu einer Ellipse auf dem Bildschirm wird und warum die Splats von vorne nach hinten sortiert gemischt werden,</li>
+<li>begründen, warum Gaussian Splatting ohne Z-Buffer auskommt.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen und Listen in Python (die Katas bis <a href='/kata-lists'>Listen</a>); <a href='/webgl'>3D-Grafik mit WebGL</a> davor, denn Kamera, Perspektive, Matrizen und der Z-Buffer kommen dort vor und hier wieder; aus der Mathematik die e-Funktion, Sinus und Kosinus, Ableitungen und Matrizen, die man multipliziert. numpy ist neu und wird auf der Seite erklärt, so weit sie es braucht (<code>np.mgrid</code>, Rechnen mit ganzen Arrays, <code>[:, :, None]</code>, <code>@</code>, <code>np.argsort</code>).</td></tr>
 <tr><th>Sprache</th><td>Nur Python: Die Rechnungen auf ganzen Bildern brauchen numpy, in Ruby gäbe es nichts Vergleichbares, das in einer Stunde schnell genug ist. numpy und Pillow installieren die Lernenden selbst mit <code>pip install numpy pillow</code>; sie liegen dann in ihrem Workspace und bleiben nach einem Neustart.</td></tr>
 <tr><th>Ablauf</th><td><ul>

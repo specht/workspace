@@ -3,6 +3,12 @@ Lernende schreiben in der Sorting Sandbox Sortieralgorithmen (in Dart, Python, J
 Diese Seite begleitet die Sorting Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in einem Kurs.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit einem SSH-Schlüssel ein Repository klonen, eigene Änderungen committen und pushen,</li>
+<li>einen Sortieralgorithmus schreiben und an seinem Ablauf vorhersagen, wie oft er tauscht,</li>
+<li>die Arbeit zweier Verfahren messen und vorhersagen, wie sie bei doppelt so vielen Elementen wächst,</li>
+<li>erklären, was ein stabiles Sortierverfahren ist.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten (Schlüssel und Name, wenn es ein Klassen-Repository gibt), Vorlage klonen, App starten, Explore.</li>
 <li><b>Danach</b> je Doppelstunde ein Schritt der Reihe unter »Im Unterricht«. Am Ende jeder Stunde committen und pushen alle (»Committet und gepusht«).</li>

@@ -1,6 +1,12 @@
 Die ganze Klasse malt an einem Bild, live: Lernende schreiben einen Server in Ruby oder Python mit WebSockets in drei Schritten (Echo, Nachrichten an alle, die Pixelwand), dazu eine kleine Webseite mit `<canvas>`. Am Ende gibt eine Person (oder die Lehrkraft) Port 8000 frei, und alle malen gemeinsam. Ein letzter Abschnitt zeigt an einem Zähler, was Threads ohne Lock anrichten.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, was WebSockets gegenüber gewöhnlichen HTTP-Anfragen leisten und wie die Verbindung mit einem Handshake beginnt,</li>
+<li>einen Server schreiben, der eine Nachricht an alle verbundenen Clients schickt, und eine Seite mit <code>&lt;canvas&gt;</code>, die sie anzeigt,</li>
+<li>begründen, warum ein Server Nachrichten von Clients prüfen muss, und ihre Prüfung schreiben,</li>
+<li>an einem Zähler zeigen, was Threads ohne Lock anrichten, und es mit einem Lock verhindern.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>»Ein eigener Webserver«.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>

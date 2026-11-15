@@ -1,6 +1,11 @@
 Lernende ersetzen leere Absätze durch Seitenumbrüche und ein getipptes Inhaltsverzeichnis durch eines, das das Programm aus den Überschriften macht. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt, über alle sechs Seiten. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Seitenumbruch statt leerer Absätze setzen und erklären, warum leere Absätze verrutschen, wenn sich der Text ändert,</li>
+<li>ein Inhaltsverzeichnis aus den Überschriften erzeugen und aktualisieren lassen,</li>
+<li>begründen, warum ein getipptes Inhaltsverzeichnis nach einer Änderung falsche Seitenzahlen zeigt.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/paragraph-styles'>Formatvorlagen</a>: Das Inhaltsverzeichnis entsteht aus den Überschriften mit ihren Vorlagen.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

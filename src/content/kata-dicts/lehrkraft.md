@@ -1,6 +1,11 @@
 Lernende schreiben Funktionen mit Schlüsseln und Werten (Hash in Ruby, Dictionary in Python, Objekt in JavaScript, Map in Dart und Java) direkt in die Karten der Seite: nachschlagen, Strichlisten führen, gruppieren, umkehren und mit einem Dictionary schneller werden als mit einer Liste.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, wann ein Hash (Dictionary, Map) besser passt als eine Liste: Nachschlagen über einen Schlüssel statt über einen Index,</li>
+<li>eine Strichliste führen, Werte nach einem Schlüssel gruppieren und einen Hash umkehren,</li>
+<li>begründen, warum ein Hash bei 100 000 Zahlen viel schneller findet, ob eine Zahl schon vorkam, als eine Liste.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): im Telefonbuch nachschlagen, eine Strichliste, was ein Einkauf kostet (in Cent), wer so viele Punkte hat.</li>

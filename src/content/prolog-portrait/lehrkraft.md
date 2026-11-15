@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes Prolog-Programm im Workspace: »Hello, World!« in `prolog/hello.pl`, ausgeführt mit SWI-Prolog (`swipl`), lesen eine Fehlermeldung, sehen, dass Prolog mit `=` nicht rechnet, und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine; wer weitermachen will, findet in [»Logisch programmieren mit Prolog«](/prolog) eine ganze Aktivität.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in Prolog schreiben und mit <code>swipl</code> ausführen,</li>
+<li>eine Fehlermeldung über ein unbekanntes Prädikat lesen und den Fehler beheben,</li>
+<li>erklären, warum <code>X = 1 + 2</code> in Prolog nicht rechnet,</li>
+<li>Bubblesort in Prolog lesen, mit einer Sprache vergleichen, die sie kennen, und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Vier Aufgaben:<ul>
 <li>»Hello, World!« liest <code>/workspace/prolog/hello.pl</code>: ob dort <code>writeln('Hello, World!')</code> steht.</li>
 <li>»Was es nicht gibt« verlangt, was SWI-Prolog hinter <code>Unknown procedure:</code> meldet: <code>writln/1</code>, der Name mit der Zahl der Argumente.</li>

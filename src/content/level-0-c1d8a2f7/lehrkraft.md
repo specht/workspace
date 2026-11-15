@@ -1,6 +1,11 @@
 Lernende entwerfen eigene Backrooms, die endlosen gelben Räume einer Internet-Legende: Sie beschreiben Räume als Grundriss in Textdateien, verbinden sie über Türen zu einem Bauwerk, statten sie aus und gehen dann im Browser hindurch, am Rechner, auf dem Handy, mit Rot-Cyan-Brille oder in VR. Programmiert wird nicht; Vorkenntnisse braucht es keine.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Raum als Grundriss in einer Textdatei beschreiben und vorhersagen, wie er im Browser aussieht,</li>
+<li>Räume über Türen zu einem Bauwerk verbinden und eine Tür finden, die ins Nichts führt,</li>
+<li>einen Raum nach eigener Idee mit Licht, Möbeln, Wänden und Böden ausstatten.</li>
+</ul></td></tr>
 <tr><th>Die Reihe</th><td>Level 0 einer Reihe aus vier Seiten; jedes Level baut auf dem vorigen auf, und am Ende jeder Seite führt ein Link ins nächste:<ul>
 <li><a href='/level-1-7e3a91c4'>Level 1</a>: Rampen, Treppen, Stockwerke, Kollision</li>
 <li><a href='/level-2-b52d0f18'>Level 2</a>: Wasser, Portale</li>

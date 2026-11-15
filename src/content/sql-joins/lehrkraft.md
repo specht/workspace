@@ -1,6 +1,12 @@
 Die Fortsetzung der [Einführung in SQL](/mysql): Lernende laden die ganze Fassung der Länder der Welt, mit Grenzen, Währungen und Amtssprachen in sieben Tabellen, und kommen zu `GROUP BY`, `HAVING`, `JOIN`, einer Tabelle zweimal in einer Abfrage, `LEFT JOIN`, einer Tabelle zwischen zwei anderen (viele zu viele) und Entfernungen auf der Erde mit `ST_Distance_Sphere`. Danach passen die [Filmdatenbank](/filmdatenbank) und [SQL Injection](/bobby_tables).
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit <code>GROUP BY</code> und <code>HAVING</code> Zeilen zu Gruppen zusammenfassen und Gruppen filtern,</li>
+<li>Tabellen mit <code>JOIN</code> über ihre Schlüssel verbinden, auch dieselbe Tabelle zweimal in einer Abfrage,</li>
+<li>erklären, wann ein <code>LEFT JOIN</code> nötig ist, und vorhersagen, welche Zeilen ein gewöhnlicher <code>JOIN</code> weglässt,</li>
+<li>eine Beziehung viele zu viele über eine Tabelle dazwischen abfragen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code>, <code>LIMIT</code> und <code>COUNT</code> aus der Einführung; die Seite beginnt mit dem Ordner und dem Import, sie geht also auch in einem anderen Workspace oder nach einer Pause.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden.<ul>
 <li><b>1. Doppelstunde:</b> die ganze Fassung laden, <code>GROUP BY</code> und <code>HAVING</code>, der erste <code>JOIN</code>.</li>

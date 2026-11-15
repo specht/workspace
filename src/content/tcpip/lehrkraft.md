@@ -1,6 +1,12 @@
 Lernende erkunden das Netz mit Kommandozeilenwerkzeugen: die eigene Adresse, Entfernungen mit `ping` und `traceroute`, eine Schicht tiefer MAC-Adressen, ARP, Switches und Router im eigenen Netz, dann Schichten, Ports und der TCP-Handshake, eine eigene Verbindung mit `netcat` und HTTP von Hand. Die Seite ist die erste Hälfte von TCP → HTTP → Webserver: »Ein eigener Webserver« und »Daten aus dem Netz« setzen sie voraus. Programmierkenntnisse braucht sie nicht, nur das Terminal.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit <code>ifconfig</code>, <code>ping</code> und <code>traceroute</code> die eigene Adresse, Laufzeiten und den Weg der Pakete ermitteln und deuten,</li>
+<li>erklären, wie ARP zu einer IP-Adresse die MAC-Adresse findet und was Switch und Router mit Frame und Paket tun,</li>
+<li>die Schichten, Ports und den TCP-Handshake erklären und die Dauer des Handshakes messen,</li>
+<li>eine Verbindung mit <code>netcat</code> aufbauen und eine HTTP-Anfrage von Hand schreiben.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> <code>ifconfig</code>, private Adressen, <code>ping</code> zu Google, zu sich selbst und zu <code>rubiomonocoat.pe</code> (das Rätsel um den Standort), Canberra, <code>traceroute</code> und TTL.</li>
 <li><b>2. Doppelstunde:</b> »Im eigenen Netz«: die MAC-Adresse mit <code>ip link</code>, der Frame, ARP, zu zweit <code>ping</code> und <code>ip neigh</code>, die Routing-Tabelle mit <code>ip route</code>, Switches, WLAN und was ein Router mit Frame und Paket tut. Danach die Schichten, Ports und der Handshake mit <code>curl -w</code> gemessen.</li>

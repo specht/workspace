@@ -1,6 +1,11 @@
 Lernende bauen ihr Level aus Level 0 weiter, nach oben und nach unten: mit Rampen, Treppen, einem Dachboden und einer Tür hoch über einem Schacht. Im »Maschinenraum« sehen sie, wie das Programm Kollisionen erkennt. Das ist Level 1 einer Reihe aus vier Seiten.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Böden und Decken mit Höhen so angeben, dass Rampen, Treppen und ein Dachboden über anderen Räumen entstehen,</li>
+<li>aus den Höhen zweier Räume ausrechnen, wie dick der Boden dazwischen sein muss,</li>
+<li>an der eingeblendeten Kollision erklären, wie das Programm entscheidet, wo man gehen kann.</li>
+</ul></td></tr>
 <tr><th>Die Reihe</th><td>Im Katalog mit den anderen Leveln auf der Karte von <a href='/level-0-c1d8a2f7'>Level 0</a>; über der Seite steht die Reihe aller vier, und am Ende von Level 0 führt ein Link hierher.</td></tr>
 <tr><th>Voraussetzung</th><td>Der Klon der Vorlage mit den Räumen aus Level 0 (Kammer, Saal mit seinen Türen, Salon). Wer Level 0 nicht gemacht hat, kann die Räume von dort abschreiben; schneller ist es, Level 0 bis »Ein Salon« durchzugehen.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>

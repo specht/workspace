@@ -3,6 +3,12 @@ Lernende lernen im Terminal mit Dateien und Verzeichnissen umzugehen: sich umseh
 Die Aufgaben prüfen, was im Ordner `/workspace/working-with-files` entstanden ist, und fragen ein paar Zahlen ab, die man nur mit dem richtigen Befehl findet.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>sich im Terminal mit <code>pwd</code>, <code>ls</code> und <code>cd</code> bewegen und Pfade angeben, auch zu versteckten Dateien,</li>
+<li>Dateien anzeigen und mit <code>nano</code> oder <code>vim</code> bearbeiten,</li>
+<li>Texte mit <code>wc</code>, <code>grep</code> und Pipelines untersuchen,</li>
+<li>Archive entpacken und packen und Dateien kopieren, verschieben und löschen, und vorhersagen, was passiert, wenn das Ziel schon da ist.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> das Terminal, die Beispieldateien, sich umsehen (<code>pwd</code>, <code>ls</code>, Tab-Ergänzung), Dateien anzeigen.</li>
 <li><b>2. Doppelstunde:</b> Dateien anlegen und bearbeiten, Texte untersuchen mit <code>wc</code>, <code>grep</code>, Pipelines, <code>head</code> und <code>tail</code>.</li>

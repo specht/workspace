@@ -1,6 +1,12 @@
 Grammatiken zum Lesen und Programmieren, in Ruby oder Python: Lernende leiten Sätze aus einer Grammatik ab, lesen und übersetzen Syntaxdiagramme und EBNF, schreiben aus einer Grammatik für Ausdrücke einen Parser im rekursiven Abstieg, der Wörter annimmt oder ablehnt, und ordnen die Grammatiken in die Chomsky-Hierarchie ein.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Satz aus einer Grammatik ableiten und als Syntaxbaum zeichnen,</li>
+<li>Syntaxdiagramme lesen und in EBNF übersetzen,</li>
+<li>aus einer Grammatik einen Parser im rekursiven Abstieg schreiben, der Wörter annimmt oder ablehnt,</li>
+<li>an einer mehrdeutigen Grammatik zwei Bäume für ein Wort zeigen und Grammatiken in die Chomsky-Hierarchie einordnen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><ul>
 <li>»Kellerautomaten«: Klammern prüfen, der Stack.</li>
 <li>Funktionen mit Rückgabewert und Schleifen in Ruby oder Python; dass eine Funktion sich selbst aufrufen kann, erklärt die Seite an einem Beispiel.</li>

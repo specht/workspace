@@ -1,6 +1,11 @@
 Lernende funken zu zweit Wörter von einem Raum in den anderen, nur mit bis zu fünf Lampen, die jemand mit gehaltenen Knöpfen ein- und ausschaltet, auf einer Frequenz, die alle hören können. Vorher einigen sie sich auf ein Protokoll: wie Buchstaben zu Lichtzeichen werden, woran man Anfang und Ende erkennt, was bei Fehlern passiert. Während der Übertragungen nehmen Sie Lampen weg, und die Paare müssen ihr Protokoll anpassen, ohne sich zu treffen.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>zu zweit ein Protokoll entwerfen, das festlegt, wie Buchstaben zu Lichtzeichen werden und woran man Anfang, Ende und Fehler erkennt,</li>
+<li>ein Protokoll anpassen, wenn das Medium weniger hergibt, und begründen, warum es dann länger dauert,</li>
+<li>an der eigenen Übertragung erklären, was ein Protokoll lösen muss (Codierung, Takt, Anfang und Ende, Fehler, Bestätigung), und sie in Shannons Modell von Sender, Kanal und Empfänger einordnen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Keine; die Aktivität passt als Einstieg vor <a href='/tcpip'>TCP/IP</a>. Sie geht auf das Arbeitsblatt »Datenübertragung per Kabel« und den Cable Simulator der Hackschule zurück; aus dem Kabel ist ein Funkgerät geworden, weil eine Frequenz, die alle hören, das Mithören und Stören erklärt.</td></tr>
 <tr><th>Vorbereitung</th><td><ul>
 <li>Zwei Räume (oder ein Raum und der Flur).</li>

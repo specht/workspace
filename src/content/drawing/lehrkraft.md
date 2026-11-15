@@ -1,6 +1,12 @@
 Ein Einstieg in Grafikprogrammierung ohne Vorkenntnisse: Lernende zeichnen in Ruby Pixel für Pixel ein Bild, erst eine Wiese mit Regenbogen nach Anleitung, dann ein eigenes, und sehen jeden Befehl sofort auf der Zeichenfläche. Ruby wird nur so weit gebraucht, wie es die Befehle verlangen; Schleifen kommen erst beim Regenbogen und beim Himmel vor.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Pixel über seine Koordinaten setzen und sagen, wo (0, 0) liegt und wo die Ecke rechts unten,</li>
+<li>Flächen und Linien aus einfachen Befehlen zusammensetzen und eine Fläche mit Farbe füllen,</li>
+<li>mit einer Schleife viele ähnliche Linien zeichnen, etwa die Streifen eines Regenbogens,</li>
+<li>ein eigenes Bild planen, zeichnen und als Datei speichern.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten, der erste Pixel, die Wiese mit Regenbogen und das gespeicherte Bild.</li>
 <li><b>2. Doppelstunde:</b> das eigene Bild mit den Ideen am Ende der Seite, dann Abgabe.</li>

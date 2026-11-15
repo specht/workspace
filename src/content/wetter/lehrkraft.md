@@ -1,6 +1,12 @@
 Lernende fragen eine echte API, den freien Wetterdienst Open-Meteo: erst mit `curl` und `jq`, dann aus Ruby oder Python mit Fehlerbehandlung und Cache, zum Schluss mit `fetch` aus einer eigenen Webseite. Die Aktivität schließt an TCP/IP an und ist die Gegenseite zu »Ein eigener Webserver«: hier der Client, dort der Server.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine API mit <code>curl</code> abfragen und aus der JSON-Antwort mit <code>jq</code> die gesuchten Werte lesen,</li>
+<li>eine API aus einem Programm abfragen und Fehler wie einen Ort, den es nicht gibt, oder den Status 400 abfangen,</li>
+<li>begründen, warum ein Cache die API und das eigene Programm schont,</li>
+<li>eine API aus einer Webseite mit <code>fetch</code> abfragen und erklären, was CORS dabei prüft.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>TCP/IP; HTML aus »Statische Webseiten« hilft bei der Wetterseite. Python braucht nur die Standardbibliothek (<code>urllib.request</code>, <code>json</code>), nichts zu installieren.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>

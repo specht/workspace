@@ -1,6 +1,11 @@
 Lernende schreiben Fragment-Shader in GLSL, im Stil von Shadertoy (`mainImage`, `iResolution`, `iTime`, `iMouse`), und sehen sie im Browser über Live Server: von einem Farbverlauf über leuchtende Kreise, ein Kaleidoskop und Wolken bis zu einer 3D-Szene mit Raymarching und zu Fraktalen.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, dass ein Fragment-Shader für jedes Pixel einzeln und gleichzeitig ausgerechnet wird,</li>
+<li>Formen und Muster aus Koordinaten, Abständen und Funktionen wie <code>smoothstep</code> und <code>sin</code> beschreiben,</li>
+<li>Raymarching mit Abstandsfunktionen erklären und eine Szene daraus bauen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Keine; GLSL sieht aus wie C, und wer <a href='/pixelram'>Echtzeitgrafik mit C</a> oder den <a href='/raytracing'>Raytracer</a> kennt, erkennt vieles wieder. Aus der Mathematik helfen Vektoren, Sinus und Kosinus und der Satz des Pythagoras.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Vorlage klonen, Vorschau, was ein Shader bekommt, ein Kreis mit glattem Rand, Fehlermeldungen, leuchtende Kreise in Bewegung mit einer Kosinus-Palette.</li>

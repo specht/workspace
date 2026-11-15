@@ -1,6 +1,11 @@
 Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind, durch die Formatvorlagen »Überschrift 1« und »Überschrift 2«, geben Titel und Untertitel ihre Vorlagen, befreien kopierten Text von seiner Schrift und ändern Vorlagen einmal für alles: »Überschrift 1« für die Tage, »Standard« für den Text. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Überschriften und Text mit Formatvorlagen setzen statt sie von Hand fett, groß und farbig zu machen,</li>
+<li>eine Formatvorlage ändern und vorhersagen, welche Absätze sich dadurch ändern,</li>
+<li>begründen, warum Formatvorlagen die Übersicht der Überschriften und ein Inhaltsverzeichnis erst möglich machen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/pictures-in-text'>Bilder im Text</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

@@ -1,6 +1,12 @@
 Lernende schalten Gatter, Addierer, Flipflops und ein kleines Rechenwerk auf der Seite durch, sagen ihr Verhalten vorher und schreiben jede Schaltung danach als Funktion in Ruby oder Python, die ihre Eingänge nur durch Gatter schicken darf: von NICHT und UND aus NAND bis zu einem Rechenwerk mit `ADD`, `SUB`, `AND`, `OR`, `XOR` und den Flags der CPU Sandbox.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Wahrheitstabelle eines Gatters und einer kleinen Schaltung aufstellen und zwei Schaltungen mit De Morgan vergleichen,</li>
+<li>NICHT, UND, ODER und XOR nur aus NAND bauen,</li>
+<li>erklären, wie Halbaddierer, Volladdierer und ein Addierer für 4 Bit zusammenhängen, und vorhersagen, wann er überläuft,</li>
+<li>erklären, wie ein Flipflop ein Bit speichert und wie ein Rechenwerk mit einem Addierer subtrahiert.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Das Zweiersystem und Funktionen mit Listen, etwa aus den Katas »Bits und Zahlensysteme«; für das Subtrahieren hilft die Kata »Negative Zahlen in einem Byte« (Zweierkomplement). Die CPU Sandbox ist keine Voraussetzung: Die Seite führt zu ihr hin.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python, wie auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« eingestellt, ohne Einstellung Ruby. Eine Aufgabe, die in einer Sprache gelöst ist, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>

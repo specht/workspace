@@ -1,6 +1,12 @@
 Turingmaschinen zum Programmieren, in Ruby oder Python: Lernende lassen eine Maschine 1 zu einer Binärzahl zählen, sagen ihr Ergebnis voraus, bauen daraus eine, die 1 abzieht, und eine, die Strichlisten addiert, zählen die Schritte einer Maschine für a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> und denken das Halteproblem als Gedankenexperiment durch.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Turingmaschine aus Band, Kopf, Zustand und Regeln von Hand ausführen und vorhersagen, was danach auf dem Band steht,</li>
+<li>eine Turingmaschine für eine einfache Rechnung bauen, etwa minus 1 oder die Addition von Strichlisten,</li>
+<li>die Schritte einer Maschine zählen und abschätzen, wie sie mit der Länge der Eingabe wachsen,</li>
+<li>das Halteproblem als Widerspruch erklären.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>»Endliche Automaten«: Automaten als Tabelle in Ruby oder Python. »Kellerautomaten« hilft für die Frage, warum a<sup>n</sup>b<sup>n</sup>c<sup>n</sup> mehr braucht, ist aber keine Bedingung.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>

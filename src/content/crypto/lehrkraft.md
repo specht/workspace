@@ -1,6 +1,12 @@
 Lernende probieren die Bausteine der Kryptographie im Terminal aus, ohne zu programmieren: Hashes mit `sha256sum`, Passwort-Hashes mit Salz (`mkpasswd`), symmetrische Verschlüsselung mit `openssl enc`, asymmetrische mit `openssl pkeyutl` und Unterschriften mit `ssh-keygen -Y`. Die Seite ordnet alles den drei Zielen Unversehrtheit, Geheimhaltung und Echtheit zu und endet bei SSH, Git und HTTPS. Sie setzt TCP/IP voraus, wegen `netcat` im Partnerteil und weil sie an dessen Ende anknüpft (»was unverschlüsselt durchs Netz geht, kann jeder mitlesen«).
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Eigenschaften eines Hashes erklären und mit <code>sha256sum</code> prüfen, ob eine Datei verändert wurde,</li>
+<li>begründen, warum Passwörter mit Salz und einer absichtlich langsamen Hashfunktion gespeichert werden,</li>
+<li>symmetrische und asymmetrische Verschlüsselung unterscheiden und sagen, wann welche passt,</li>
+<li>eine Unterschrift prüfen und erklären, wie Hashes, Schlüssel und Unterschriften hinter SSH, Git und HTTPS zusammenarbeiten.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Hashes und ihre Eigenschaften, Prüfsummen, Passwörter speichern (Salz, absichtlich langsame Hashfunktionen), AES mit Passwort.</li>
 <li><b>2. Doppelstunde:</b> zwei Schlüssel mit RSA, der Partnerteil über Port 1234, Unterschriften mit Ed25519, Fingerabdrücke, SSH, Git und HTTPS.</li>

@@ -1,6 +1,12 @@
 Endliche Automaten zum Programmieren, in Ruby oder Python: Lernende bauen einen DEA als Tabelle (in Ruby ein Hash mit Arrays als Schlüsseln, in Python ein `dict` mit Tupeln), einen Akzeptor für »durch 3 teilbar«, ein Zahlenschloss, einen NEA und die Potenzmengenkonstruktion. Automatron (`/automatron`) dient zum Vergleichen.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen DEA als Zustandsdiagramm und als Tabelle aufschreiben und ein Wort von Hand durch ihn laufen lassen,</li>
+<li>einen Automaten für eine gegebene Sprache entwerfen, etwa Binärzahlen, die durch 3 teilbar sind, und einen fehlerhaften reparieren,</li>
+<li>einen NEA mit der Potenzmengenkonstruktion in einen DEA umwandeln und begründen, warum der DEA dabei explodieren kann,</li>
+<li>an einem Beispiel begründen, was ein endlicher Automat nicht kann, weil er nur endlich viel speichert.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python: Methoden oder Funktionen, Schleifen, Listen; Hash oder <code>dict</code> und Mengen erklärt die Seite, soweit sie gebraucht werden.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>

@@ -1,6 +1,11 @@
 Lernende bringen Pip an einem Monster vorbei, das nach jedem Schritt den kürzesten Weg zu Pip geht: zuerst mit gezählten Schritten und dem Licht der alten Lampen, dann mit einer eigenen Breitensuche auf der Karte, in Ruby, Python, JavaScript, Dart oder Java.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>vorhersagen, welchen Weg ein Verfolger geht, der immer den kürzesten Weg nimmt,</li>
+<li>die Breitensuche auf einer Karte von Hand ausführen und erklären, warum sie den kürzesten Weg findet,</li>
+<li>eine Karte als Liste von Zeilen lesen und Funktionen dafür schreiben: Nachbarn finden, Abstände messen und den kürzesten Weg zurückverfolgen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/pip-2'>Pip unter Funkelbach: Bellos Spur</a>, Listen und Dictionaries, etwa aus den <a href='/kata-lists'>Katas: Listen</a> und <a href='/kata-dicts'>Katas: Dictionaries</a>. Die Breitensuche steht im Handbuch unter <a href='/reference/graphen'>Graphen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Etwa zwei Doppelstunden, vier Kapitel.<ul>
 <li>Der Mampfer und Im Licht: eine Vorhersage (er geht den kürzeren Weg um den Felsen, nicht dorthin, wo Pip näher aussieht), dann Pläne, in denen jeder Schritt zählt, auch eine Drehung. Im Licht einer brennenden Lampe ist Pip sicher; zuletzt lockt Pip den Mampfer auf die eine Seite, um die andere zu schaffen.</li>

@@ -1,6 +1,11 @@
 Lernende programmieren in C Grafik direkt in den Bildschirmspeicher (PixelRAM), in zwei Teilen mit demselben Gedanken: Ein Bild ist eine Rechenvorschrift für jedes Pixel (Formeln, Wellen), und der Bildschirm ist Speicher, den man auch lesen kann: Im Spiel »Lichtspur« erkennen sie Zusammenstöße allein mit `get_pixel`.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Farbe eines Pixels als Formel aus seinen Koordinaten berechnen, etwa Kreiswellen aus dem Abstand vom Mittelpunkt,</li>
+<li>erklären, dass der Bildschirm Speicher ist, den man schreiben und lesen kann,</li>
+<li>in einem Spiel einen Zusammenstoß erkennen, indem man vor dem Zeichnen mit <code>get_pixel</code> nachsieht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Variablen, Schleifen, Bedingungen in irgendeiner Sprache; C wird unterwegs erklärt. Beim Spiel kommen <code>struct</code> und Zeiger dazu, nur so weit wie nötig.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten, das erste Pixel, alle Pixel aus einer Formel, Farbpaletten.</li>

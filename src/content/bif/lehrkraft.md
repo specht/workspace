@@ -3,6 +3,11 @@ Die Lernenden schreiben zuerst gemeinsam die kleine Geschichte »Nach Schulschlu
 Die Aufgaben lesen, was BIF selbst über die Geschichte herausgefunden hat: Die Erweiterung »BIF Authoring Tools« im Workspace analysiert sie bei jedem Speichern (das ist auch der Graph und die Liste unter »Problems«). Der Workspace führt dabei nichts aus. Er zählt Seiten, Entscheidungen, lokale Entscheidungen, Bedingungen, Skripte und Enden, prüft, ob jede Seite erreichbar ist und BIF keine Fehler meldet, und bei der eigenen Geschichte, ob `config.js` einen eigenen Ordner wählt.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine verzweigte Geschichte als Netz aus Seiten und Entscheidungen planen und schreiben,</li>
+<li>mit Variablen und Bedingungen festhalten, was schon passiert ist, und Seiten davon abhängig machen,</li>
+<li>einen Fehler in einer Geschichte finden und berichtigen.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Loslegen und Seiten mit Entscheidungen.</li>
 <li><b>2. Doppelstunde:</b> Variablen und Bedingungen, Fehler finden.</li>

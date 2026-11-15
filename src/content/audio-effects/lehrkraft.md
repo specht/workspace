@@ -1,6 +1,12 @@
 Lernende bauen in Python mit numpy die Effekte eines Tonstudios: Dezibel und einen Compressor, einen Equalizer, ein Echo, einen Chorus, Hall, eine andere Tonhöhe, Autotune und einen Vocoder. Bei jedem hören sie zuerst im Widget, was seine Regler tun, sagen etwas voraus und schreiben dann die Funktion selbst.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Lautstärken in Dezibel in einen Faktor umrechnen und erklären, was ein Compressor mit Threshold und Ratio aus einem Signal macht,</li>
+<li>vorhersagen, was ein Equalizer, ein Echo mit Rückkopplung oder ein Chorus mit einem Klang tut, und es an den Samples begründen,</li>
+<li>einen Effekt als Funktion über die Samples schreiben, etwa <code>gain</code> oder ein Echo,</li>
+<li>erklären, wie man die Tonhöhe eines Blocks findet und wie Autotune und ein Vocoder daraus eine andere Stimme machen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>»Audio komprimieren«: Samples als Zahlen, WAV-Dateien, Dezibel, die FFT.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten; Dezibel im Widget (der Faktor zu jedem dB auf einem Lineal, Übersteuern über 0 dB), die Vorhersage zu einer halb so hohen Schwingung, <code>gain</code> selbst; der Compressor im Widget (die Kennlinie mit Threshold, Ratio und Make-up Gain, daneben wie viele dB er gerade wegnimmt; die Attack und der Anschlag der Snare), die Vorhersage zu 4 : 1, <code>gain_db</code> selbst; die Schleife über die Samples ist gegeben; der Loudness War als Kasten zur Geschichte.</li>

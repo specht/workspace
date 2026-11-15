@@ -1,6 +1,10 @@
 Lernende lesen hier zum ersten Mal, was der Hackschule Workspace ist: eine Programmierumgebung im Browser mit Visual Studio Code, einem Terminal und vielen Sprachen, in der nichts installiert werden muss. Es gibt keine Aufgaben; die Seite eignet sich für die ersten Minuten der ersten Stunde, am besten zusammen am Beamer.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>sagen, was der Workspace ist: Visual Studio Code, ein Terminal und viele Sprachen im Browser, ohne etwas zu installieren,</li>
+<li>beschreiben, wie eine Aktivität abläuft: erst vermuten, dann ausprobieren, selbst schreiben und die Aufgabe nachsehen lassen.</li>
+</ul></td></tr>
 <tr><th>Danach</th><td><a href='/basics'>»Die Basics«</a> und <a href='/keyboard'>das Keyboard-Tutorial</a>, dann eine Aktivität der Klasse.</td></tr>
 <tr><th>Für Lehrkräfte</th><td>Das letzte Kapitel, »Was eine Aktivität ausmacht«, ist für Lehrkräfte und Gäste, die den Workspace kennenlernen; mit der Klasse kann es wegbleiben.</td></tr>
 <tr><th>Die Klasse</th><td>Gruppen, die Sprachen der Klasse und die Übersicht über Aufgaben und Abgaben stehen auf der <a href='/klasse'>Klassenseite</a>.</td></tr>

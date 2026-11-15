@@ -1,6 +1,11 @@
 Die Abgabe der Reihe: Lernende bauen die Abrechnung der Klassenfahrt selbst, aus einer Vorlage, in der noch nichts rechnet. Einnahmen und Ausgaben mit SUMME, der Rest, die Zahl der Kinder mit ANZAHL, die Rückzahlung pro Kind mit ABRUNDEN, eine Spalte mit festem Bezug darauf, WENN für Rück- oder Nachzahlung, Formate, die Liste nach Familien sortiert, ein Kreisdiagramm; zuletzt das Ganze als PDF. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Tabelle, in der noch nichts rechnet, selbst mit Formeln, festen Bezügen und Funktionen (SUMME, ANZAHL, ABRUNDEN, WENN) aufbauen,</li>
+<li>begründen, warum ein Betrag pro Kind abgerundet und nicht gerundet wird, wenn das Geld reichen muss,</li>
+<li>eine fertige Tabelle mit Formaten, Sortierung und einem Diagramm so aufbereiten, dass andere sie lesen können, und als PDF weitergeben.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die sechs Blätter davor, von <a href='/spreadsheet-cells'>Zellen, die rechnen</a> bis <a href='/spreadsheet-charts'>Diagramme</a>. Die Seite verlinkt zu jedem Punkt das Blatt, auf dem er erklärt ist.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> die Aufgabe und die Liste der Punkte; die Vermutung zum Runden.</li>

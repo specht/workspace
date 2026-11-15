@@ -1,6 +1,12 @@
 Lernende bauen mit Hugo eine kleine Website ohne fertiges Theme, ein Lexikon über die Planeten: Inhalte in Markdown mit Front Matter, ein eigenes Layout mit Navigation, eine Startseite, CSS, Schlagwörter und am Ende die fertigen HTML-Dateien in `public` zum Veröffentlichen. Die Aktivität schließt an »Statische Webseiten mit HTML & CSS« an und braucht sonst nur Markdown, das sie nebenbei zeigt.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, was ein Generator für statische Websites tut und welches Problem vieler gleicher Seiten er löst,</li>
+<li>Inhalte in Markdown mit Front Matter schreiben und einen Fehler in YAML finden, etwa einen Doppelpunkt zu viel,</li>
+<li>ein eigenes Layout schreiben, das für alle Seiten gilt, mit einer Navigation, die Hugo aus den Seiten baut,</li>
+<li>begründen, wann sich Hugo gegenüber Seiten von Hand lohnt.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> das Problem vieler gleicher Seiten, <code>hugo new site</code>, <code>hugo.yaml</code>, die erste Seite, das Layout aus <code>baseof.html</code> und <code>page.html</code>, mehr Seiten und die Navigation.</li>
 <li><b>2. Doppelstunde:</b> Startseite, CSS, Schlagwörter, <code>hugo</code> und <code>public</code>, Veröffentlichen, eigenes Thema.</li>

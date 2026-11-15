@@ -3,6 +3,11 @@ Lernende programmieren in der CPU Sandbox einen kleinen 8-Bit-Computer, erst in 
 Diese Seite begleitet die CPU Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in einem Kurs.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit einem SSH-Schlüssel ein Repository klonen, eigene Änderungen committen und pushen,</li>
+<li>an einem Befehl erklären, was er mit Registern, Flags und Speicher macht, und vorhersagen, was danach in einem Register steht,</li>
+<li>begründen, was mit einer Zahl passiert, die nicht in ein Byte passt.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten (Schlüssel und Name, wenn es ein Klassen-Repository gibt), Vorlage klonen, App starten, die drei Ausbaustufen der Befehlssprache.</li>
 <li><b>Danach</b> je Doppelstunde ein Schritt der Reihe unter »Im Unterricht«. Am Ende jeder Stunde committen und pushen alle (»Committet und gepusht«).</li>

@@ -1,6 +1,12 @@
 Lernende schreiben in Python mit numpy einen Encoder und einen Decoder für fraktale Bildkompression: Jeder Block eines Fotos wird durch einen größeren, ähnlichen Block desselben Fotos beschrieben, und der Decoder macht aus jedem beliebigen Startbild in wenigen Schritten wieder das Foto, erst in Graustufen, dann in Farbe wie bei JPEG. Am Ende messen sie in Dezibel, vergleichen mit JPEG und sehen, wo das Verfahren gut ist und warum es sich nicht durchgesetzt hat.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, warum eine Kopiermaschine aus Verkleinerungen aus jedem Startbild dasselbe Bild macht,</li>
+<li>für einen Block den besten größeren Partner mit Kontrast und Helligkeit nach der Methode der kleinsten Quadrate finden,</li>
+<li>einen Schritt des Decoders schreiben und begründen, warum <code>s</code> höchstens 1 sein darf,</li>
+<li>den Fehler eines Bilds in Dezibel messen und fraktale Kompression mit JPEG vergleichen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen und Listen in Python (die Katas bis <a href='/kata-lists'>Listen</a>). numpy ist neu und wird auf der Seite erklärt, so weit sie es braucht (Ausschnitte <code>a[y:y + 8, x:x + 8]</code>, <code>reshape</code> und <code>mean</code>, Rechnen mit ganzen Arrays, <code>@</code>, <code>argmin</code>). Hilfreich, aber nicht nötig: <a href='/jpeg'>JPEG</a> oder <a href='/gif'>GIF</a> davor, damit der Unterschied zu einem Format, das Farben speichert, greifbar ist; aus der Mathematik Mittelwert und Summenzeichen.</td></tr>
 <tr><th>Sprache</th><td>Nur Python: Die Suche über 18 408 Domain-Blöcke für jeden der 2400 Range-Blöcke braucht numpy. numpy und Pillow installieren die Lernenden selbst mit <code>pip install numpy pillow</code>.</td></tr>
 <tr><th>Ablauf</th><td><ul>

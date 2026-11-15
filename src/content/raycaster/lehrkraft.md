@@ -1,6 +1,12 @@
 Lernende schreiben in C mit PixelRAM einen Raycaster wie Wolfenstein 3D, Schritt für Schritt: von einer Karte aus Kästchen über Strahlen und Wände bis zu Texturen mit Licht, Böden und Decken.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Strahlen über eine Kamera-Ebene mit Vektoren erzeugen und mit der Grid-DDA von Kästchen zu Kästchen verfolgen,</li>
+<li>begründen, warum der direkte Abstand zu gebogenen Wänden führt (Fischauge) und der Abstand entlang der Blickrichtung zu geraden,</li>
+<li>aus dem Treffpunkt eines Strahls ausrechnen, welche Spalte einer Textur gezeichnet wird,</li>
+<li>erklären, wie eine Schattentabelle Licht mit 256 Farben möglich macht und wozu Mipmaps gegen das Flimmern dienen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die ersten Abschnitte von <a href='/pixelram'>Echtzeitgrafik mit C</a> bis »Ein Bild aus einer Formel«; aus der Mathematik Vektoren in der Ebene, Sinus und Kosinus und das Skalarprodukt.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> eine Karte aus Kästchen von oben, Bewegung mit der Zeit, Strahlen über eine Kamera-Ebene (Vektoren, keine Matrizen), erst in kleinen Schritten.</li>

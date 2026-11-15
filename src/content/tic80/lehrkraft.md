@@ -1,6 +1,12 @@
 Lernende bauen in TIC-80 ihr erstes eigenes Spiel, mit allem, was dazugehört: Code in Lua, Figuren, Töne. Nach einem gemeinsamen Spiel (eine Figur fängt fallende Sterne) entsteht ein eigenes. TIC-80 ist dafür ideal, weil seine Grenzen (240 × 136 Pixel, 16 Farben) Entscheidungen erzwingen und weil alles in einem Fenster liegt. Lua wird unterwegs erklärt; wer Variablen, `if` und Schleifen aus einer anderen Sprache kennt, kommt schnell voran.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, wie die Spielschleife in jedem Bild den Bildschirm löscht, den Zustand ändert und alles neu zeichnet,</li>
+<li>eine Figur über Koordinaten bewegen und vorhersagen, wie lange ein Stern bis zum Boden braucht,</li>
+<li>eine Kollision zwischen zwei Figuren erkennen und darauf reagieren,</li>
+<li>ein eigenes kleines Spiel planen und mit Figuren, Tönen und Regeln umsetzen.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> TIC-80 kennenlernen, das Beispielprogramm, Speichern im Workspace, der Bildschirm, die Figur.</li>
 <li><b>2. Doppelstunde:</b> ein fallender Stern, Fangen, eine eigene Figur.</li>

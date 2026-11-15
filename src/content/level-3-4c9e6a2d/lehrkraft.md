@@ -1,6 +1,11 @@
 Lernende hängen Lampen aus Modellen an die Wände ihres Levels, stellen Möbel hinein und holen weitere Modelle von Poly Haven. Dann sehen sie im »Maschinenraum«, wie das Licht gebacken wird, und veröffentlichen zum Schluss ihr Level. Das ist Level 3, das letzte einer Reihe aus vier Seiten.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Leuchten und Modelle in einen Raum setzen und weitere Modelle von Poly Haven einbinden,</li>
+<li>erklären, aus welchen Teilen das gebackene Licht besteht: direktes Licht mit weichen Schatten, zurückgeworfenes Licht (Bounce) und Kontaktschatten,</li>
+<li>vorhersagen, wie ein Raum ohne Bounce aussieht, und begründen, woher weiche Schatten kommen.</li>
+</ul></td></tr>
 <tr><th>Die Reihe</th><td>Im Katalog mit den anderen Leveln auf der Karte von <a href='/level-0-c1d8a2f7'>Level 0</a>; über der Seite steht die Reihe aller vier, und am Ende von Level 2 führt ein Link hierher.</td></tr>
 <tr><th>Voraussetzung</th><td>Der Klon der Vorlage mit den Räumen aus Level 0 bis 2; für die Bilder vom Licht vor allem der Saal mit seinen Säulen.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>

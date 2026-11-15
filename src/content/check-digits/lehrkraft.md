@@ -1,6 +1,12 @@
 Lernende rechnen die Prüfziffer eines Strichcodes (EAN-13) von Hand aus, lesen Struktogramme und übersetzen sie in kleine Funktionen. Dann planen sie selbst, mit Kommentaren in der Datei, die sie danach Schritt für Schritt durch Code ersetzen, prüfen erst Strichcodes und dann ISBNs und finden mit einem kleinen Programm heraus, welche Zahlendreher die Prüfziffer übersieht. Zum Schluss bekleben sie einen QR-Code auf der Seite, bis er unlesbar wird, sehen, wie er Fehler repariert statt sie nur zu finden, und programmieren ein Gitter mit Paritätsbits, das ein gekipptes Bit findet. Ruby, Python, Dart oder Java.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Prüfziffer eines Strichcodes und einer ISBN von Hand berechnen,</li>
+<li>ein Struktogramm lesen und in eine Funktion übersetzen, und selbst erst einen Plan in Kommentaren schreiben, dann den Code,</li>
+<li>mit einem Programm herausfinden, welche Fehler eine Prüfziffer übersieht, und begründen, warum,</li>
+<li>erklären, wie ein QR-Code Fehler repariert statt sie nur zu finden, und mit Paritätsbits ein gekipptes Bit finden.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen mit Parametern und Rückgabewert, Verzweigungen, eine Zählschleife, Listen mit Index; etwa nach den Katas zu Funktionen, Entscheidungen, Schleifen und Listen. Struktogramme und Pseudocode erklärt die Seite, ausführlicher das Handbuch unter <a href='/reference/struktogramme'>Pseudocode und Struktogramme</a>.</td></tr>
 <tr><th>Sprache</th><td>Die Sprache stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein: Ruby, Python, Dart oder Java. Pseudocode und Struktogramme sind für alle gleich. In Dart und Java heißen die Funktionen wie in der Sprache üblich (<code>checkDigit</code>, <code>isValidEan</code>); in Java stehen sie als <code>public static</code> in den Klassen <code>CheckDigits</code> und <code>ParityGrid</code> und bekommen Arrays statt Listen. Ausprobiert wird in Dart mit einem eigenen <code>main</code>, in Java mit <code>jshell</code>.</td></tr>
 <tr><th>Ablauf</th><td><ul>

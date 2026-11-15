@@ -1,6 +1,12 @@
 Lernende bauen einen Tracker: einen Webserver, der ein unsichtbares Bild ausliefert, das zwei kleine Websites in ihrem Workspace einbinden. Mit einem Cookie erkennt er dieselbe Kennung auf beiden Websites wieder und macht aus den Stichwörtern der gelesenen Seiten ein Profil. Danach geht es darum, was DSGVO und § 25 TDDDG dazu sagen. Ruby oder Python.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, was ein Server bei jedem Abruf sieht, auch bei einem unsichtbaren Bild, und was der <code>Referer</code> verrät,</li>
+<li>einen Header <code>Cookie</code> zerlegen und zeigen, wie ein Cookie dieselbe Kennung auf zwei Websites wiedererkennt,</li>
+<li>aus den Besuchen einer Kennung ein Profil berechnen und begründen, warum es auch ohne Namen etwas über eine Person verrät,</li>
+<li>an einem Cookie-Banner beurteilen, ob er nach DSGVO und § 25 TDDDG fair fragt.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/webserver'>Ein eigener Webserver</a>: Anfrage, Header, <code>respond</code>, Threads. Dazu Dictionaries, etwa nach den <a href='/kata-dicts'>Katas: Dictionaries</a>.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Einstellungen« ein. Die beiden Websites liefert in beiden Fällen Pythons eingebauter Webserver aus.</td></tr>
 <tr><th>Ablauf</th><td><ul>

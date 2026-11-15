@@ -3,6 +3,12 @@ Lernende üben Git im Terminal an zwei ausgedachten Personen: Erst arbeitet Alic
 Die Aufgaben folgen dem Weg durch das Tutorial: erst Alice allein, dann Alice und Bob mit einem gemeinsamen Remote im Ordner `git-tutorial/remote-repo`.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, was Arbeitsverzeichnis, Staging Area und Commit sind, und Änderungen gezielt committen,</li>
+<li>mit <code>git log</code>, <code>HEAD~2</code> und Tags zu einem früheren Stand springen und einen Fehler rückgängig machen,</li>
+<li>einen Branch anlegen, darin arbeiten und ihn zusammenführen, und begründen, wozu <code>.gitignore</code> dient,</li>
+<li>über ein Remote mit Push und Pull zusammenarbeiten und einen Merge-Konflikt an seinen Markierungen erkennen und auflösen.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> alleine arbeiten: Repository, Staging Area, Commits, Dateien umbenennen und ändern, Zeitreise.</li>
 <li><b>2. Doppelstunde:</b> Branches anlegen, Dateien ignorieren, Branches zusammenführen, die Eingabeaufforderung mit dem Branch.</li>

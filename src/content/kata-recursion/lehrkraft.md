@@ -1,6 +1,12 @@
 Lernende schreiben Funktionen, die sich selbst aufrufen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: mit einem Fall, in dem sie sofort fertig sind, und einem Aufruf mit etwas Kleinerem; von der Fakultät bis zu den Türmen von Hanoi und allen Reihenfolgen eines Textes.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine rekursive Funktion mit einem Fall, in dem sie sofort fertig ist, und einem Aufruf mit etwas Kleinerem schreiben,</li>
+<li>die Aufrufe einer rekursiven Funktion für eine kleine Eingabe von Hand nachverfolgen und ihr Ergebnis vorhersagen,</li>
+<li>die Türme von Hanoi und alle Reihenfolgen eines Textes rekursiv lösen,</li>
+<li>begründen, warum Fibonacci ohne Gedächtnis so langsam wird und eines hilft.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen und Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>; die Fakultät und Fibonacci aus den <a href='/kata-loops'>Katas: Schleifen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): Fakultät, die Summe einer Liste, ein Countdown als Liste, die Länge eines Textes ohne <code>length</code>, alle rekursiv.</li>

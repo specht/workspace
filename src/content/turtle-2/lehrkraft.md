@@ -1,6 +1,11 @@
 Rekursion zum Zuschauen: Lernende zeichnen mit der Schildkröte aus <a href='/turtle-1'>Turtle: Bilder aus Befehlen</a> Figuren, die aus kleineren Kopien ihrer selbst bestehen. Ein Baum, ein schöner Baum in Braun und Grün, ein schiefer und ein hängender Baum, ein Farnblatt, das Sierpiński-Dreieck, die Koch-Kurve, als Extra die Hilbert-Kurve und zum Schluss ein eigener Baum. Ruby, Python oder JavaScript.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>an einer Figur zeigen, wo sie aus kleineren Kopien ihrer selbst besteht, und sagen, wie eine Stufe aus der davor entsteht,</li>
+<li>eine rekursive Zeichenfunktion mit Abbruch bei einer kleinen Länge oder einer Tiefe von 0 schreiben, etwa einen Baum,</li>
+<li>erklären, warum die Schildkröte nach jedem Teilbaum wieder dort stehen muss, wo er anfing.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/turtle-1'>Turtle: Bilder aus Befehlen</a> (die Befehle, eigene Funktionen, Stift und Farbe) und <a href='/kata-recursion'>Katas: Rekursion</a> (eine Funktion, die sich selbst aufruft, mit einem Fall, der aufhört).</td></tr>
 <tr><th>Sprache</th><td>Ruby, Python, JavaScript, Dart oder Java. Die Sprachen stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript, Dart und Java können die Lernenden auf der Seite auch selbst wählen. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder. Dart und Java laufen auf dem Server und werden dort zuerst übersetzt, darum kommt die Antwort langsamer als in den anderen drei Sprachen (Zeile »Technik« in <a href='/turtle-1'>Turtle: Bilder aus Befehlen</a>).</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>

@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes C++-Programm im Workspace: »Hello, World!« in `hello.cpp` mit `cout`, übersetzt mit `g++`, lesen in einer Fehlermeldung Zeile und Spalte und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine; wer die Seite zu C kennt, sieht, was C++ dazubringt.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in C++ mit <code>cout</code> schreiben, mit <code>g++</code> übersetzen und starten,</li>
+<li>in einer Fehlermeldung Datei, Zeile und Spalte lesen und den Fehler beheben,</li>
+<li>vorhersagen, was mit einer Zahl passiert, die nicht in ein <code>int</code> passt,</li>
+<li>Bubblesort in C++ lesen, mit C oder einer anderen Sprache vergleichen, die sie kennen, und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Fünf Aufgaben:<ul>
 <li>Zwei lesen <code>/workspace</code>: ob <code>hello.cpp</code> <code>#include &lt;iostream&gt;</code> und <code>cout &lt;&lt; "Hello, World!"</code> enthält, und ob daneben das übersetzte, ausführbare <code>hello</code> liegt.</li>
 <li>»Wo der Fehler steht« fragt, was die 10 in <code>hello.cpp:4:10:</code> sagt: das Zeichen in Zeile 4, an dem der Fehler beginnt.</li>

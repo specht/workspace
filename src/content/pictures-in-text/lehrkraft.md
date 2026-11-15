@@ -1,6 +1,11 @@
 Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textumbruch rechts neben den Text, ersetzen getippte Bildunterschriften durch Beschriftungen mit gezählter Nummer und geben beiden Bildern einen Alternativtext. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein verzerrtes Bild an seinem Seitenverhältnis erkennen und in seine Form zurückbringen,</li>
+<li>ein Bild mit Textumbruch neben den Text stellen und ihm eine Beschriftung geben, die das Programm zählt,</li>
+<li>für ein Bild einen Alternativtext schreiben, der sagt, was jemand sehen würde, und begründen, für wen er gebraucht wird.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/word-tables'>Tabellen</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

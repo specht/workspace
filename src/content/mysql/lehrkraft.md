@@ -1,6 +1,12 @@
 Der Einstieg in Datenbanken: Lernende laden die Länder der Welt in ihre eigene MySQL-Datenbank und fragen sie mit SQL ab, in `mycli` im Terminal. Drei Tabellen (`country`, `city`, `continent`) reichen für `SELECT`, `WHERE`, `ORDER BY`, `LIMIT`, `COUNT`, `LIKE` und `DISTINCT`, dazu die Reihenfolge, in der die Datenbank eine Abfrage abarbeitet. Zum Schluss ändern sie die Daten mit `INSERT`, `UPDATE` und `DELETE`. Vorkenntnisse braucht es keine außer dem Terminal; [Mit Dateien arbeiten](/working-with-files) hilft. Weiter geht es mit [SQL: Gruppieren und Verbinden](/sql-joins), in derselben Datenbank.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Abfragen mit <code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code> und <code>LIMIT</code> schreiben, die eine Frage an die Daten beantworten,</li>
+<li>mit <code>COUNT</code>, <code>LIKE</code> und <code>DISTINCT</code> zählen, Text durchsuchen und doppelte Werte zusammenfassen,</li>
+<li>die Reihenfolge erklären, in der die Datenbank eine Abfrage abarbeitet,</li>
+<li>Daten mit <code>INSERT</code>, <code>UPDATE</code> und <code>DELETE</code> ändern und vorhersagen, was ein <code>UPDATE</code> ohne <code>WHERE</code> anrichtet.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Daten laden und erkunden, <code>SELECT</code>, <code>WHERE</code>, <code>ORDER BY</code> und <code>LIMIT</code>, jeweils mit ihren Aufgaben.</li>
 <li><b>2. Doppelstunde:</b> <code>COUNT</code>, <code>LIKE</code>, <code>DISTINCT</code> mit ihren Aufgaben, dann die Reihenfolge mit dem Query Stepper.</li>

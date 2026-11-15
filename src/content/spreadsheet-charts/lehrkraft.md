@@ -1,6 +1,11 @@
 Lernende machen aus zwei Tabellen der Klassenfahrt Diagramme für den Elternabend: ein Kreisdiagramm der Kosten eines Kindes, ein Säulendiagramm der Sterne aus der Umfrage, jedes mit Titel, das Säulendiagramm mit Achsentiteln. Dazu: welches Diagramm welche Frage beantwortet, und eine Achse, die nicht bei 0 anfängt, als Beispiel für ein Diagramm, das täuscht. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>zu einer Frage das passende Diagramm wählen: Kreisdiagramm für Anteile, Säulendiagramm für den Vergleich,</li>
+<li>ein Diagramm mit Titel und Achsentiteln erstellen,</li>
+<li>an einer Achse, die nicht bei 0 anfängt, erklären, wie ein Diagramm täuschen kann.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die ersten Blätter der Reihe; die Zahlen stammen aus <a href='/absolute-references'>Feste Bezüge</a> und <a href='/spreadsheet-functions'>Auswerten</a>, stehen hier aber schon fertig in der Vorlage.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

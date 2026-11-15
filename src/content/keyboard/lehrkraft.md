@@ -3,6 +3,11 @@ Lernende arbeiten das Keyboard-Tutorial durch, eine Erweiterung in Visual Studio
 Das Keyboard-Tutorial ist eine Erweiterung in Visual Studio Code; die Seite hier begleitet es. Sieben Aufgaben sind die Kapitel des Tutorials; dazu kommt vor »Text bearbeiten« die Vermutung »Kopieren ohne Markierung« (Visual Studio Code kopiert dann die ganze Zeile), deren Erklärung erst nach der Antwort erscheint.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ohne Maus im Text navigieren und markieren, Wort für Wort und Zeile für Zeile,</li>
+<li>mit Suchen und Ersetzen und mehreren Cursorn ein Wort an vielen Orten im Text auf einmal ändern,</li>
+<li>Zeilen auskommentieren, einrücken, verschieben und kopieren, ohne die Einrückung zu zerstören.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> die Kapitel »Die Tastatur«, »Navigieren im Dokument« und »Text markieren«. Als Einstieg in der ersten Stunde reichen diese drei.</li>
 <li><b>2. Doppelstunde:</b> »Text bearbeiten« und »Suchen und Ersetzen«.</li>

@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes Rust-Programm im Workspace: »Hello, world!« in `hello.rs`, übersetzt mit `rustc`, lesen eine Fehlermeldung, erleben, dass eine Variable ohne `mut` sich nicht ändern darf, und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in Rust schreiben, mit <code>rustc</code> übersetzen und starten,</li>
+<li>eine Fehlermeldung lesen und den Fehler beheben,</li>
+<li>vorhersagen, was ohne <code>mut</code> passiert, und erklären, warum Variablen in Rust sich sonst nicht ändern dürfen,</li>
+<li>Bubblesort in Rust lesen, mit einer Sprache vergleichen, die sie kennen, und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Fünf Aufgaben:<ul>
 <li>Zwei lesen <code>/workspace</code>: ob <code>hello.rs</code> <code>fn main()</code> und <code>println!("Hello, world!")</code> enthält, und ob daneben das übersetzte, ausführbare <code>hello</code> liegt.</li>
 <li>»Wofür rustc printn hält« verlangt das Wort in <code>cannot find … printn</code>: <code>macro</code>, wegen des Ausrufezeichens.</li>

@@ -1,6 +1,11 @@
 Lernende schreiben kleine Funktionen direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Werte bekommen, rechnen, ein Ergebnis zurückgeben. Ohne Terminal und Dateien; ein Knopf, **Ausführen**, zeigt, was der Code ausgibt, und ruft die Funktion mit festen und zufälligen Werten auf.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Funktion schreiben, die Werte bekommt, rechnet und ein Ergebnis zurückgibt,</li>
+<li>erklären, was der Unterschied zwischen dem Ausgeben und dem Zurückgeben eines Werts ist,</li>
+<li>vorhersagen, was ganzzahlige Division und Rest (<code>%</code>) ergeben, und damit Sekunden in eine Uhrzeit umrechnen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Keine Programmiererfahrung nötig; Variablen und Rechenzeichen werden gebraucht, aber nicht eigens erklärt.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): eine Zeile Arbeit, das Beispiel in der Aufgabe zeigt fast den Weg.</li>

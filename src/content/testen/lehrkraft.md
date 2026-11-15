@@ -1,6 +1,12 @@
 Lernende schreiben Tests mit dem Testwerkzeug ihrer Sprache für einen kleinen Notenrechner der Oberstufe und finden damit einen echten Fehler: Er rundet die Durchschnittsnote im Abitur, statt nach der Tabelle der KMK abzuschneiden. Dabei lernen sie Klassen von Eingaben und Grenzwerte, Tests, die einen Fehler erwarten, und zum Schluss testgetriebene Entwicklung (rot, grün, aufräumen) an der Zulassung zur Prüfung. Ruby mit minitest, Python mit pytest oder JavaScript mit <code>node --test</code>.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Tests mit dem Testwerkzeug der eigenen Sprache schreiben, auch einen, der einen Fehler erwartet,</li>
+<li>Klassen von Eingaben und ihre Grenzwerte bestimmen und dort testen,</li>
+<li>mit Tests einen Fehler finden, beheben und zeigen, dass er weg ist,</li>
+<li>testgetrieben entwickeln: erst ein Test, der rot ist, dann der Code, der ihn grün macht, dann aufräumen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Verzweigungen, Listen in einer der drei Sprachen. Was ein Testwerkzeug ist und wie man es startet, erklärt die Seite. In Ruby erbt die Testklasse von <code>Minitest::Test</code>; mehr über Klassen braucht es nicht.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. JavaScript wählen die Lernenden auf der Seite selbst; die Wahl gilt nur für Seiten, die sie anbieten. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td><ul>

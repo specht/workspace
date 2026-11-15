@@ -1,6 +1,12 @@
 Ein Projekt zu Aufwand und Laufzeit: Lernende zählen die verschiedenen Straßennamen Berlins auf drei Arten (eine Liste, Sortieren, eine Menge), messen, wie lange jede braucht, und zählen Schritte statt Sekunden. Sie sehen an einem Regler, wie schnell O(n²), O(2ⁿ) und O(n!) unbrauchbar werden, machen zwei langsame Programme schnell (Fibonacci mit Gedächtnis, ein Paar mit gegebener Summe mit einer Menge) und planen eine Rundfahrt zu Berlins Sehenswürdigkeiten, einmal mit allen Reihenfolgen und einmal immer zum nächsten Ort. Zum Schluss P und NP. Ruby, Python, Dart oder Java, mit echten Daten aus dem Datensatz des Routenplaners.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Laufzeit eines Programms messen und an der Messung ablesen, wie sie mit der Eingabe wächst,</li>
+<li>Schritte statt Sekunden zählen und den Aufwand in O-Notation angeben,</li>
+<li>begründen, warum eine Menge schneller findet als eine Liste, und ein langsames Programm damit oder mit einem Gedächtnis schnell machen,</li>
+<li>abschätzen, wie lange alle Reihenfolgen einer Rundfahrt dauern, und erklären, was P und NP unterscheidet.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Listen, Dictionaries und Mengen (<a href='/kata-dicts'>Katas: Dictionaries</a>), Rekursion (<a href='/kata-recursion'>Katas: Rekursion</a>, dort kommt Fibonacci vor). Der <a href='/routenplaner'>Routenplaner</a> ist keine Voraussetzung; wer ihn kennt, hat die Rundfahrt schon auf echten Straßen gesehen.</td></tr>
 <tr><th>Sprache</th><td>Ruby, Python, Dart oder Java stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td><ul>

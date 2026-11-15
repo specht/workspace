@@ -3,6 +3,12 @@ Lernende programmieren in der Data Structures Sandbox Listen, Stacks, Queues, B�
 Diese Seite begleitet die Data Structures Sandbox, ersetzt sie aber nicht. Sie ist für alle gedacht, die Git noch nicht kennen, zum Beispiel neue Lernende in Klasse 11.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit einem SSH-Schlüssel ein Repository klonen, eigene Änderungen committen und pushen,</li>
+<li>Stack und Queue unterscheiden und vorhersagen, welches Element zuletzt herauskommt,</li>
+<li>erklären, warum Einfügen in ein Array Platz machen kostet, und welche Rotation einen AVL-Baum wieder ins Gleichgewicht bringt,</li>
+<li>an einer Hash Table begründen, wie die Wahl der Hashfunktion Buckets verschenkt.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten (Schlüssel und Name, wenn es ein Klassen-Repository gibt), Vorlage klonen, App starten, ein Datentyp in mehreren Speicherformen.</li>
 <li><b>Danach</b> je Doppelstunde ein Schritt der Reihe unter »Im Unterricht«. Am Ende jeder Stunde committen und pushen alle (»Committet und gepusht«).</li>

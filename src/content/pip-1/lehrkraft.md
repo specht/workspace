@@ -1,6 +1,12 @@
 Lernende schreiben der Figur Pip einen Plan, Befehl für Befehl, in Ruby, Python, JavaScript, Dart oder Java, und schicken Pip damit durch die Stollen unter Funkelbach: zur Lampe, zu jedem Funkenstein, an Glibbern vorbei. Im ersten Kapitel klicken sie Pip zur Lampe und sehen den Plan dabei entstehen; danach läuft der Plan erst, wenn er fertig ist; die Karte der Stollen über dem Plan spielt den Lauf Schritt für Schritt ab und markiert die Zeile, bei der Pip gerade ist.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Plan aus Befehlen von Hand ausführen und vorhersagen, wo Pip danach steht und wohin Pip schaut,</li>
+<li>eine Befehlsfolge, die sich wiederholt, als Schleife schreiben, auch zwei Schleifen ineinander,</li>
+<li>mit <code>if</code> eine Entscheidung in einen Plan schreiben, der auf verschiedenen Karten funktioniert,</li>
+<li>einen Fehler in einem Plan anhand der Wiedergabe finden und berichtigen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Keine. Die Seite ist der Einstieg für eine Klasse, die noch nicht programmiert hat.</td></tr>
 <tr><th>Ablauf</th><td>Etwa zwei Doppelstunden, sechs Kapitel.<ul>
 <li>Der Eingang: Pip wird mit zwei Knöpfen zur Lampe geklickt, jeder Klick schreibt eine Zeile in den Plan daneben; so ist ein Plan zuerst die Liste dessen, was Pip getan hat. Pip schaut am Anfang nach unten, die erste Drehung nach links geht also auf dem Bildschirm nach rechts.</li>

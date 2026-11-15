@@ -1,6 +1,11 @@
 Lernende entwerfen eine Datenbank für Filme und ihre Mitwirkenden: ein ER-Modell, daraus Tabellen in MySQL, die echten Daten laden und mit SQL abfragen. Die Filmdatenbank löst die alte »Videothek« ab. Statt eines Diagramm-Editors mit Maus schreiben die Lernenden ihr ER-Modell als Text; die ER-Werkstatt (VS Code-Erweiterung im Workspace) zeichnet es als Chen-, Krähenfuß- und Tabellendiagramm und erzeugt das SQL. Ruby, ein Import-Skript und ein Programm mit Menüs braucht es nicht mehr.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>aus einem Datensatz ein ER-Modell mit Entitäten, Attributen und Beziehungen entwerfen und die Kardinalitäten begründen,</li>
+<li>aus einem ER-Modell Tabellen mit Primär- und Fremdschlüsseln machen, auch für eine Beziehung n:m mit Attributen,</li>
+<li>Abfragen mit <code>JOIN</code> über mehrere Beziehungen, mit <code>IS NULL</code> und <code>LEFT JOIN</code> schreiben.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> vom Datensatz zum Modell, mit der ER-Werkstatt (<code>film.er</code>).</li>
 <li><b>2. Doppelstunde:</b> vom Modell zur Datenbank (Tabellen anlegen, Daten laden) und der erste <code>JOIN</code>.</li>

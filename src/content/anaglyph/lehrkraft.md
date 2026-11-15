@@ -1,6 +1,11 @@
 Lernende bauen 3D-Szenen aus Kugeln, Würfeln und anderen Körpern, als Textdatei, und sehen sie mit einer Rot-Cyan-Brille räumlich im Anaglyph-Viewer: Körper platzieren, verschieben, drehen, skalieren und Transformationen kombinieren, Farben, dann größere Szenen mit Schleifen, Gruppen und eigenen Formen, und zum Schluss eine eigene Szene für die Galerie der Klasse. Programmiert wird in einer kleinen Beschreibungssprache, nicht in Ruby oder Python; Vorkenntnisse braucht es keine, nur etwas Vorstellungsvermögen im Raum.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Körper in einer Szene mit Koordinaten im Raum platzieren, verschieben, drehen und skalieren,</li>
+<li>vorhersagen, wo ein Körper landet, wenn Transformationen in verschiedener Reihenfolge kombiniert werden, und begründen, warum die Reihenfolge zählt,</li>
+<li>eine größere Szene mit Schleifen und Gruppen beschreiben statt jeden Körper einzeln.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Vorlage klonen, Vorschau starten, Körper platzieren und bewegen (bis zum Würfelstern).</li>
 <li><b>2. Doppelstunde:</b> Reihenfolge der Transformationen, Schleifen, Gruppen, das Sonnensystem.</li>

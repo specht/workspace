@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes Dart-Programm im Workspace: »Hello, World!« in `hello.dart`, gestartet mit `dart run`, lesen eine Fehlermeldung, sehen, wie Dart mit `null` umgeht, und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine; Dart ist die Sprache von Flutter und wird auf vielen Seiten des Workspace angeboten.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in Dart schreiben und mit <code>dart run</code> starten,</li>
+<li>eine Fehlermeldung lesen und den Fehler beheben,</li>
+<li>erklären, wie Dart mit <code>null</code> umgeht und was das <code>!</code> hinter einem Ausdruck bedeutet,</li>
+<li>Bubblesort in Dart lesen, mit einer Sprache vergleichen, die sie kennen, und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Fünf Aufgaben:<ul>
 <li>»Hello, World!« liest <code>/workspace/hello.dart</code>: ob dort <code>void main(</code> und <code>print('Hello, World!')</code> stehen.</li>
 <li>»Was Dart nicht findet« verlangt das Wort in <code>Method not found: 'prin'</code>: <code>Method</code>.</li>

@@ -1,6 +1,12 @@
 Lernende bauen ein Perzeptron, ein einzelnes künstliches Neuron, ohne Bibliotheken: Es unterscheidet Adélie- von Eselspinguinen an zwei Maßen des Schnabels und findet die Regel selbst, aus echten Messungen. Dann sehen sie, wo ein Neuron nicht weiterkommt (Zügelpinguine, XOR), und lassen dasselbe Neuron handgeschriebene Ziffern lesen. Ruby oder Python.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Entscheidung eines Perzeptrons mit Gewichten und Schwellenwert von Hand ausrechnen,</li>
+<li>die Lernregel erklären und anwenden: wie sich die Gewichte nach einem Fehler ändern,</li>
+<li>die gelernten Gewichte als Gerade deuten und begründen, warum ein einzelnes Neuron XOR nicht lernen kann,</li>
+<li>beurteilen, wie gut das Neuron bei Daten ist, die es nie gesehen hat.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen, Listen mit Index: etwa nach den <a href='/kata-lists'>Katas: Listen</a>. Gewichtete Summen erklärt die Seite.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Einstellungen« ein.</td></tr>
 <tr><th>Ablauf</th><td><ul>

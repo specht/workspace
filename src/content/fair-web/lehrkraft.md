@@ -1,6 +1,12 @@
 Lernende finden auf einer ausgedachten Website der Hacker-AG Barrieren und Tricks und bauen sie aus: erst für alle benutzbar, dann fair, dann im dritten Teil Phishing-Mails erkennen und einen eigenen Link-Prüfer schreiben. Am Ende steht eine Seite, die jede Prüfung besteht, und eine kurze Erklärung zur Barrierefreiheit. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Website mit Tastatur und Zoom benutzen, wie andere es tun, und ihre Barrieren beheben: Alt-Texte, beschriftete Felder, echte Knöpfe, Überschriften der Reihe nach,</li>
+<li>das Kontrastverhältnis zweier Farben berechnen und beurteilen, ob es reicht,</li>
+<li>Tricks wie einen Banner, der das Ablehnen versteckt, ein vorher angekreuztes Häkchen oder einen falschen Countdown erkennen und begründen, was daran unfair ist,</li>
+<li>an einem Link ablesen, wem seine Domain gehört, und eine Phishing-Mail an ihren Hinweisen erkennen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/static-website'>Statische Webseiten</a> (HTML, CSS, »Go Live«); für die Funktionen erste Schritte in Ruby oder Python (Strings, <code>if</code>, Listen). Der Teil Phishing kommt ohne die Seite der AG aus.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Eine Seite für alle: die Seite holen, mit Tastatur und Zoom benutzen, Bilder und Sprache, Formulare, Knöpfe und Links.</li>

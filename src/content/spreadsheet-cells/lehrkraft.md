@@ -1,6 +1,11 @@
 Lernende ersetzen in einer Tabelle der Kosten der Klassenfahrt getippte Ergebnisse durch Formeln: Anzahl mal Preis in jeder Zeile, nach unten ausgefüllt, der Gesamtbetrag mit SUMME. Die Prüfung ändert in ihrer Kopie einen Preis und rechnet neu; so sieht sie, ob die Tabelle wirklich rechnet. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Zelle über ihre Adresse finden und ansprechen,</li>
+<li>eine Formel schreiben, die mit den Werten anderer Zellen rechnet, sie nach unten ausfüllen und den Gesamtbetrag mit SUMME bilden,</li>
+<li>begründen, warum ein getipptes Ergebnis nach einer Änderung falsch ist und eine Formel nicht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Keine; die Reihe zur Textverarbeitung hilft beim Umgang mit Dateien und der Prüfung.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

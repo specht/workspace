@@ -1,6 +1,11 @@
 Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zentriert mit Leerzeichen, Abstand aus leeren Absätzen, Zeilen von Hand umbrochen. Am Ende ist sie mit Ausrichtung und Abstand gebaut, und die Prüfung zeigt ihnen auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Formatierungszeichen einblenden und daran erkennen, wo ein Dokument mit Leerzeichen, leeren Absätzen und Zeilenumbrüchen von Hand gebaut ist,</li>
+<li>Text mit der Ausrichtung zentrieren und Abstand mit dem Abstand vor und nach einem Absatz setzen statt mit leeren Absätzen,</li>
+<li>begründen, warum ein so gebautes Dokument ordentlich bleibt, wenn sich Schrift oder Text ändern.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Eine Textverarbeitung: LibreOffice Writer, Word oder Nextcloud Office. Dateien speichern und wiederfinden.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

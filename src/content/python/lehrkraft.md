@@ -1,6 +1,12 @@
 Lernende schreiben ihre ersten Python-Programme im Workspace: »Hello, World!« in der Python-Shell und als Datei `hello.py`, lesen eine Fehlermeldung, machen das Skript mit Shebang und `chmod +x` ausführbar und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in Python in der Shell und als Datei schreiben und ausführen,</li>
+<li>eine Fehlermeldung lesen und an ihrer Art erkennen, was falsch ist,</li>
+<li>ein Skript mit Shebang und <code>chmod +x</code> ausführbar machen und erklären, wozu beides da ist,</li>
+<li>Bubblesort in Python lesen, abzählen, wie oft es vergleicht, und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Sechs Aufgaben:<ul>
 <li>Zwei lesen <code>/workspace/hello.py</code>: ob dort <code>print("Hello, World!")</code> steht und, nach dem Shebang, ob die Datei ausführbar ist und mit <code>#!…python</code> anfängt.</li>
 <li>»Absteigend sortieren« lädt <code>/workspace/bubblesort.py</code> im Workspace, als Gast, der nichts verändern kann, und ruft <code>bubble_sort</code> mit drei Listen auf; das Programm darum herum läuft dabei nicht.</li>

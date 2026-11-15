@@ -1,6 +1,12 @@
 Lernende schreiben in C mit PixelRAM einen Raytracer, Schritt für Schritt: von einem Strahl je Pixel über Licht, Schatten, Spiegel und Glas bis zu Lack, Metall und matten Spiegeln. Gerechnet wird nur mit Vektoren (Addieren, Skalieren, Skalarprodukt, Kreuzprodukt), ohne Matrizen.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit Vektoren rechnen: addieren, skalieren, Skalarprodukt und Kreuzprodukt, und sagen, wofür jedes im Raytracer gebraucht wird,</li>
+<li>den Treffpunkt eines Strahls mit einer Kugel über eine quadratische Gleichung berechnen,</li>
+<li>erklären, wie Licht nach Lambert, Schatten, Spiegel und Glas aus weiteren Strahlen entstehen,</li>
+<li>begründen, warum viele zufällige Strahlen je Pixel und ihr Durchschnitt glatte Kanten und weiche Schatten ergeben.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die ersten Abschnitte von <a href='/pixelram'>Echtzeitgrafik mit C</a> bis »Ein Bild aus einer Formel«; aus der Mathematik der Satz des Pythagoras im Raum, quadratische Gleichungen und Sinus und Kosinus.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Vektoren, ein Strahl je Pixel, die erste Kugel mit der quadratischen Gleichung, glatte Kanten aus vielen zufälligen Strahlen je Pixel.</li>

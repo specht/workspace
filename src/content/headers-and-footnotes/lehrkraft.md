@@ -1,6 +1,11 @@
 Lernende bringen, was im Reisebericht von Hand oben und unten auf den Seiten steht, dorthin, wo es hingehört: den Namen des Berichts in die Kopfzeile, mit »Stand:« und dem Datum als Feld, die Seitenzahl als Feld in die Fußzeile, die zwei getippten Anmerkungen in Fußnoten des Programms. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Kopf- und Fußzeilen anlegen, die auf jeder Seite stehen, statt den Text von Hand auf jede Seite zu tippen,</li>
+<li>die Seitenzahl und das Datum als Feld einfügen und erklären, warum ein Feld sich selbst richtig hält,</li>
+<li>Anmerkungen als Fußnoten setzen, die das Programm nummeriert und auf der richtigen Seite hält.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/pages-and-contents'>Seiten und Verzeichnisse</a>: Die Vorlage ist der Bericht, wie ihn dieses Blatt hinterlässt, mit Seitenumbrüchen und Inhaltsverzeichnis; nur das getippte »Seite 1« in der Fußzeile ist noch da.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

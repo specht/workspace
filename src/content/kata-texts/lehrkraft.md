@@ -1,6 +1,11 @@
 Lernende schreiben Funktionen, die mit Texten arbeiten, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Zeichen der Reihe nach durchgehen, zählen, einen neuen Text bauen, mit den Nummern der Zeichen rechnen und zum Schluss wie Caesar und Vigenère verschlüsseln.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen String Zeichen für Zeichen durchgehen, dabei zählen und einen neuen String bauen,</li>
+<li>mit dem Index und den Nummern der Zeichen rechnen, etwa einen Kleinbuchstaben ohne <code>upcase</code> groß machen,</li>
+<li>die Caesar-Verschlüsselung von Hand ausführen und als Funktion schreiben.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Schleifen und Verzweigungen, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): einen Text umdrehen, Vokale zählen, Anfangsbuchstaben, Großbuchstaben aus den Nummern der Zeichen (ohne <code>upcase</code>).</li>

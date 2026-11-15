@@ -1,6 +1,12 @@
 Lernende bauen aus Muybridges Fotos von 1878 einen Film, lesen Videos mit Python und numpy Bild für Bild, lassen Bilder aus und zeigen das vorige länger, bis es ruckelt, bauen Halbbilder wie im alten Fernsehen und trennen Helligkeit von Farbe, um an der Farbe zu sparen. Die Seite wächst zu einem Weg über Farbe, Blöcke und Bewegungsschätzung bis zu H.264, AV1 und AV2; bis dahin steht sie nur in der Entwicklung im Katalog.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ausrechnen, was eine Sekunde Video unkomprimiert kostet, und begründen, wie Bilder pro Sekunde, Halbbilder und Chroma Subsampling daran sparen,</li>
+<li>Helligkeit von Farbe trennen (YCbCr) und erklären, warum man an der Farbe mehr sparen kann als an der Helligkeit,</li>
+<li>erklären, wie ein Codec Bilder aus ihren Nachbarn und aus dem vorigen Bild vorhersagt, mit Bewegungsschätzung und I-, P- und B-Frames,</li>
+<li>Artefakte wie Blöcke erkennen und die Qualität zweier Codecs bei derselben Bitrate vergleichen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Python mit numpy wie in <a href='/audio-compression'>Audio komprimieren</a> (Arrays, Ausschnitte mit <code>::</code>, <code>np.repeat</code>); <a href='/jpeg'>Eine JPEG-Datei decodieren</a> für Blöcke und die DCT, die später kurz wiederholt werden.</td></tr>
 <tr><th>Sprache</th><td>Nur Python, mit numpy, Pillow und ffmpeg aus dem Workspace-Image.</td></tr>
 <tr><th>Ablauf</th><td><ul>

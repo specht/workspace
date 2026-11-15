@@ -1,6 +1,12 @@
 Ein Einstieg ins Programmieren mit Bildern: Lernende steuern eine Schildkröte, die eine Linie hinter sich herzieht, mit einfachen Befehlen ohne Objekte (`forward 100`, `left 90`). Über Wiederholungen, eigene Funktionen mit Parametern, Stift und Farbe und eine Variable, die wächst, kommen sie zu Spiralen, Sternen, Kreisen und einem eigenen Bild. Rekursive Bäume und Kurven folgen in <a href='/turtle-2'>Turtle: Bäume und Kurven</a>, nach den <a href='/kata-recursion'>Katas: Rekursion</a>. Ruby, Python, JavaScript, Dart oder Java. Die Schildkröte geht auf Logo zurück (Seymour Papert, Wally Feurzeig, Cynthia Solomon, 1967).
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>vorhersagen, welche Figur eine Folge von Befehlen zeichnet, und begründen, um wie viel Grad sich die Schildkröte an einer Ecke dreht,</li>
+<li>eine Figur, die sich wiederholt, mit einer Schleife statt vieler gleicher Zeilen zeichnen,</li>
+<li>eigene Funktionen mit Parametern schreiben, etwa ein Vieleck mit beliebig vielen Ecken, und daraus größere Bilder bauen,</li>
+<li>mit einer Variablen, die in jeder Runde wächst, eine Spirale zeichnen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Keine. Neben <a href='/pip-1'>Pip: Hinab in die Stollen</a> ein zweiter Einstieg; wer Pip kennt, kennt Schleifen schon.</td></tr>
 <tr><th>Sprache</th><td>Die Sprachen stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript, Dart und Java können die Lernenden auf der Seite auch selbst wählen. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich »Eigene Befehle«.<ul>

@@ -1,6 +1,11 @@
 Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größen und fast überall fett benutzt hat: zwei Schriften, eine Größe für den Text, fett nur für Datum, Zeit und Ort. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Schrift, Größe und Hervorhebung eines Texts mit Absicht wählen: wenige Schriften, eine Größe für den Text, fett nur für das Wichtigste,</li>
+<li>direkte Formatierung löschen und einen Text neu setzen,</li>
+<li>begründen, warum ein Aushang mit vielen Schriften und viel Fettem schlechter zu lesen ist.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/formatting-marks'>Was das Auge nicht sieht</a>: Formatierungszeichen, Ausrichtung und Abstand. Eine Textverarbeitung: LibreOffice Writer, Word oder Nextcloud Office.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

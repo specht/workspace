@@ -1,6 +1,11 @@
 Lernende bauen eine Packliste mit getippten Strichen zu einer echten Liste um und stellen Preise, die mit Leerzeichen nach rechts geschoben sind, mit einem rechtsbündigen Tabstopp untereinander. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Aufzählung mit getippten Strichen in eine echte Liste umbauen,</li>
+<li>einen Tabstopp setzen, der Preise rechtsbündig untereinanderstellt, statt sie mit Leerzeichen zu schieben,</li>
+<li>erklären, warum Spalten aus Leerzeichen bei einer anderen Schrift auseinanderfallen und Tabstopps nicht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/formatting-marks'>Was das Auge nicht sieht</a> (Formatierungszeichen, Suchen und Ersetzen) und <a href='/character-formatting'>Schrift mit Absicht</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

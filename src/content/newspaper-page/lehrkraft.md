@@ -1,6 +1,11 @@
 Lernende setzen einen Artikel so, wie eine Zeitung aussieht: zwei Spalten, schmale Ränder, und in der Formatvorlage »Standard« Blocksatz, Silbentrennung, ein Einzug der ersten Zeile statt Abstand und einzeiliger Zeilenabstand. Die Vermutung zeigt, warum Blocksatz in schmalen Spalten Silbentrennung braucht. Die Prüfung zeigt auf ihrer eigenen Seite, was noch fehlt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Text in Spalten mit schmalen Rändern setzen,</li>
+<li>begründen, warum Blocksatz in einer schmalen Spalte Silbentrennung braucht,</li>
+<li>einen neuen Absatz mit einem Einzug der ersten Zeile statt mit Abstand kennzeichnen, in der Formatvorlage »Standard«.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/paragraph-styles'>Formatvorlagen</a> (»Standard« ändern) und die Ausrichtung aus <a href='/formatting-marks'>Was das Auge nicht sieht</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

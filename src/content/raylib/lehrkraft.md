@@ -1,6 +1,12 @@
 Ein 3D-Spiel, das auf die Lernenden reagiert: eine Welt aus Blöcken, durch die sie laufen, in der sie bauen und abbauen, mit Licht, Tag und Nacht. Anders als bei Anaglyph, wo eine Szene beschrieben und angezeigt wird, steht hier die Echtzeit im Mittelpunkt: eine Spielschleife, Eingaben, Bewegung pro Zeit, Kollision, ein Strahl zum Zielen und ein eigener Licht-Shader.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Welt aus Blöcken als Array beschreiben und Koordinaten im Raum mit drei Achsen lesen,</li>
+<li>die Blickrichtung aus zwei Winkeln berechnen und Bewegung pro Zeit mit <code>dt</code> statt pro Bild schreiben,</li>
+<li>Kollisionen eine Richtung nach der anderen prüfen und begründen, warum man so an einer Wand entlanggleitet, statt an ihr zu kleben,</li>
+<li>einen Strahl in kleinen Schritten verfolgen, um den Block zu finden, auf den man zielt, und die Helligkeit einer Fläche in einem Shader berechnen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>C auf dem Niveau von »Echtzeitgrafik mit C« (PixelRAM): Variablen, Schleifen, Funktionen, <code>#define</code>. Vektoren, Bogenmaß und das Skalarprodukt werden unterwegs erklärt; Sinus und Kosinus sollten aus dem Mathematikunterricht bekannt sein.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten, Koordinaten und Kamera, die Welt als Array mit Hügeln und Bäumen.</li>

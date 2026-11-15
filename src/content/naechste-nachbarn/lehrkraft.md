@@ -1,6 +1,12 @@
 Lernende schreiben ein Programm, das nach den k nächsten Nachbarn entscheidet, ohne Bibliotheken: erst für die Palmer-Pinguine mit allen drei Arten, dann für einen ausgedachten Fahrradverleih, der aus alten Entscheidungen lernen soll, wer eine Kaution zahlt. Dabei zählen sie selbst nach, dass das Programm die Ungerechtigkeit der alten Entscheidungen übernimmt und sogar verschärft, dass das Weglassen des Wohnorts sie verteilt statt beseitigt und dass ein harmloses Merkmal (die Entfernung zum Laden) für den Wohnort stehen kann. Ruby oder Python.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>den Abstand zweier Datenpunkte berechnen und mit den k nächsten Nachbarn von Hand eine Entscheidung treffen,</li>
+<li>messen, wie oft das Programm bei unbekannten Daten richtig liegt, und erklären, was ein zu großes k anrichtet,</li>
+<li>nachzählen und begründen, dass ein Programm die Ungerechtigkeit alter Entscheidungen übernimmt, auch wenn man ein Merkmal weglässt, weil ein anderes dafür stehen kann,</li>
+<li>beurteilen, wann ein Programm über Menschen entscheiden darf, mit Art. 22 DSGVO.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen, Listen mit Index: etwa nach den <a href='/kata-lists'>Katas: Listen</a>. Den Abstand erklärt die Seite mit dem Satz des Pythagoras. »Ein Neuron lernt« vorher ist hilfreich (dieselben Pinguine), aber nicht nötig.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Einstellungen« ein.</td></tr>
 <tr><th>Ablauf</th><td><ul>

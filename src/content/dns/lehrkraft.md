@@ -1,6 +1,11 @@
 Ein Labor zu DNS, nach [TCP/IP-Verbindungen](/tcpip): Lernende fragen mit `dig` nach der Adresse von hackschule.de, lesen die Antwort und gehen den Weg einer Frage selbst ab, von den Root-Servern bis zu dem Server, der die Adresse kennt. Nur Terminal, kein Programmieren.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit <code>dig</code> einen Namen nachschlagen und die Antwort lesen: Typ, Adresse, TTL und fragender Server,</li>
+<li>den Weg einer Frage von den Root-Servern bis zum zuständigen Server selbst abgehen und erklären, warum DNS so aufgebaut ist,</li>
+<li>erklären, warum eine zweite Frage schneller beantwortet wird, und beurteilen, was eine gefälschte Antwort anrichten kann.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>
 <li><code>dig</code>, die Antwort (Frage, Antwort, TTL, fragender Server) und die Typen <code>A</code>, <code>AAAA</code>, <code>MX</code>, <code>NS</code> und <code>TXT</code> (25 Minuten)</li>
 <li>die Hierarchie mit <code>dig @a.root-servers.net</code> und <code>dig +trace</code>: von den Root-Servern über die DENIC für <code>de</code> zu Cloudflare (30 Minuten)</li>

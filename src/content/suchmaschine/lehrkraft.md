@@ -1,6 +1,12 @@
 Lernende bauen eine Suchmaschine für eine kleine Website, das »Kleine Tierlexikon« mit elf Seiten: einen Crawler als Breitensuche über die Links, einen invertierten Index und zwei Rankings, erst nach der Anzahl der Wörter, dann nach den eingehenden Links. Eine Anzeige, die »Katze« achtzehnmal wiederholt, zeigt, warum das eine Ranking versagt, und führt zu PageRank und zur Frage, wer bestimmt, was gefunden wird. Ruby oder Python.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die drei Teile einer Suchmaschine benennen: Crawler, Index und Ranking,</li>
+<li>einen Crawler als Breitensuche mit einer Queue über die Links schreiben und vorhersagen, welche Seiten er findet,</li>
+<li>einen invertierten Index bauen und eine Suche mit mehreren Wörtern als Schnittmenge beantworten,</li>
+<li>begründen, warum ein Ranking nach der Anzahl der Wörter leicht zu täuschen ist und eines nach eingehenden Links schwerer, und beurteilen, wer bestimmt, was gefunden wird.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen, Listen und Dictionaries, etwa nach den <a href='/kata-lists'>Katas: Listen</a> und <a href='/kata-dicts'>Katas: Dictionaries</a>. HTTP und Breitensuche erklärt die Seite, so weit sie gebraucht werden.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Einstellungen« ein. Das Tierlexikon liefert in beiden Fällen Pythons eingebauter Webserver aus.</td></tr>
 <tr><th>Ablauf</th><td><ul>

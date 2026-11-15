@@ -1,6 +1,11 @@
 Lernende geben Funktionen weiter wie Zahlen, direkt in den Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Lambdas, eine Funktion, die eine Funktion baut, dann `map`, `filter` und `reduce` einzeln und als Kette. Zum Schluss schreiben sie eine Schleife als Kette um und lösen eine Aufgabe, bei der die Schleife klarer bleibt.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Funktion als Wert weitergeben, als Lambda schreiben und eine Funktion schreiben, die eine Funktion baut,</li>
+<li>vorhersagen, was <code>map</code>, <code>filter</code> und <code>reduce</code> aus einer Liste machen, auch aus einer leeren,</li>
+<li>eine Schleife als Kette aus <code>map</code>, <code>filter</code> und <code>reduce</code> umschreiben und begründen, wann die Schleife klarer bleibt.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Listen und Dictionaries, etwa aus den <a href='/kata-lists'>Katas: Listen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>. Die <a href='/kata-recursion'>Katas: Rekursion</a> helfen beim Startwert von <code>reduce</code> und beim Extra mit McCarthys <code>maplist</code>, sind aber nicht nötig.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich <code>filter</code>.<ul>
 <li>Funktionen als Werte (1 Vorhersage, 2 Katas): <code>twice</code> mit einem Lambda, eine Funktion <code>n</code>-mal anwenden, eine Funktion, die eine Funktion zum Multiplizieren baut (Closure). Dazu Alonzo Church und das λ.</li>

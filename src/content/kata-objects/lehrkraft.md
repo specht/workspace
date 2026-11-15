@@ -1,6 +1,12 @@
 Lernende schreiben Klassen und bauen daraus Objekte, direkt in den Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Attribute und Methoden, ein Objekt, das seine Regeln selbst durchsetzt, Objekte in Objekten, die eigene Textdarstellung, Vererbung mit überschriebenen Methoden und `super`. Die Seite zeigt jede Schreibweise zuerst an einem Beispiel, bevor eine Kata sie braucht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Klasse mit Attributen und Methoden schreiben und Objekte daraus bauen,</li>
+<li>vorhersagen, dass zwei Objekte derselben Klasse ihren Zustand getrennt halten,</li>
+<li>ein Objekt schreiben, das seine Regeln selbst durchsetzt (Kapselung), etwa ein Konto, das nicht ins Minus geht,</li>
+<li>eine Klasse von einer anderen erben lassen, eine Methode überschreiben und mit <code>super</code> die geerbte aufrufen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Listen und Dictionaries, etwa aus den <a href='/kata-lists'>Katas: Listen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>. Wie man Klassen aus einer Geschichte findet und als Klassendiagramm zeichnet, zeigt danach <a href='/supermarkt'>Klassen entwerfen: die Expresskasse</a>.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich der Textdarstellung.<ul>
 <li>Eine Klasse, viele Objekte (1 Vorhersage, 1 Kata): ein Zähler als Beispiel, die Vorhersage, dass zwei Zähler getrennt zählen, dann ein Rechteck mit Fläche und Umfang.</li>

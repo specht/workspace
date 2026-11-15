@@ -1,6 +1,11 @@
 Lernende schreiben Funktionen mit Entscheidungen direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: `if`, `elsif`/`elif` und `else`, Vergleiche, `and` und `or`, und Funktionen, die `true` oder `false` zurückgeben. Am Ende stehen FizzBuzz und die Frage, was für ein Dreieck drei Seiten ergeben.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Funktion mit <code>if</code>, <code>else</code> und mehreren Fällen schreiben, die auch an den Grenzen das Richtige tut,</li>
+<li>Bedingungen mit Vergleichen, <code>and</code>, <code>or</code> und <code>not</code> verknüpfen,</li>
+<li>vorhersagen, welcher Zweig bei einem gegebenen Wert läuft, und erklären, warum die Reihenfolge der Fälle zählt (FizzBuzz).</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen mit Parametern und Rückgabe, etwa aus den <a href='/kata-functions'>Katas: Erste Funktionen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): gerade, die größere Zahl ohne <code>max</code>, der Betrag ohne <code>abs</code>, volljährig.</li>

@@ -1,6 +1,11 @@
 Lernende bauen ihr erstes Projekt mit einem Frontend-Framework: Aus HTML, CSS und etwas JavaScript in einer Svelte-Komponente entsteht eine Stoppuhr für Zauberwürfel, die als Zustandsautomat modelliert ist. Am Ende steht eine statische Webseite, die ohne Svelte auf jedem Webserver läuft.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Anwendung als Zustandsautomat modellieren und in einer Svelte-Komponente umsetzen,</li>
+<li>erklären, was <code>$state</code> tut und was ohne es auf der Seite passiert,</li>
+<li>aus einem Svelte-Projekt eine statische Webseite bauen und begründen, warum sie ohne Svelte auf jedem Webserver läuft.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>HTML und CSS wie in <a href='/static-website'>Statische Webseiten mit HTML & CSS</a>. JavaScript wird unterwegs erklärt: Variablen, Funktionen, <code>if</code>, Event-Listener.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Projekt anlegen, Entwicklungsserver, Gerüst und Zustand.</li>

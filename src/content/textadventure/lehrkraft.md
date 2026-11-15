@@ -1,6 +1,12 @@
 Ein Projekt zur Objektorientierung: Lernende spielen zuerst ein kleines Textadventure auf der Seite, »Nachts in der Schule« (nach der letzten Stunde eingeschlafen, die Schule ist abgeschlossen), und bauen es dann nach, aus Räumen, Gegenständen, einer Spielerin und einem Spiel. Sie entwerfen die Klassen zuerst als Diagramm, kapseln die Tasche der Spielerin, lassen Schlüssel, Apfel und Taschenlampe von `Item` und einen dunklen Keller und ein Ziel von `Room` erben, und spielen die Schule dann mit ihren eigenen Klassen durch. Zum Schluss baut jede und jeder eine eigene Welt mit einem Lösungsweg, den die Prüfung durchspielt, und jemand aus der Klasse spielt sie. Ruby, Python, Dart oder Java.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>in einem Spieltext Klassen finden und ihre Beziehungen als Diagramm zeichnen,</li>
+<li>Objekte, die einander kennen, programmieren, etwa Räume mit Ausgängen und Gegenständen,</li>
+<li>die Daten eines Objekts kapseln und begründen, wer sie ändern darf,</li>
+<li>mit Vererbung und Polymorphie Unterklassen schreiben, die dieselbe Methode verschieden ausführen, etwa einen dunklen Raum.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Klassen und Objekte, Attribute, Methoden und Vererbung, etwa aus den <a href='/kata-objects'>Katas: Objekte</a>; Dictionaries und Listen. Klassendiagramme zeigt die Seite selbst, mit einem Link ins <a href='/reference/uml'>Handbuch</a>; wer <a href='/supermarkt'>Klassen entwerfen: die Expresskasse</a> kennt, ist schneller.</td></tr>
 <tr><th>Sprache</th><td>Die Sprache stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein: Ruby, Python, Dart oder Java. Lernende sehen dann jede Aufgabe in dieser Sprache, mit ihren eigenen Namen (in Dart <code>exitTo</code> und Getter wie <code>isDark</code>, in Java <code>getName()</code> und eine Datei je Klasse). Eine Aufgabe, in einer Sprache gelöst, gilt in jeder.</td></tr>
 <tr><th>Ablauf</th><td><ul>

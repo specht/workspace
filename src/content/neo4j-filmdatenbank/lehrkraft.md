@@ -1,6 +1,11 @@
 Lernende fragen dieselben Filmdaten wie in der »Filmdatenbank mit MySQL« als Graph ab, in Neo4j mit Cypher, und vergleichen die Abfragen mit SQL.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>dieselben Daten als Tabellen und als Graph modellieren und entscheiden, was ein Knoten, eine Beziehung oder eine Eigenschaft wird,</li>
+<li>Abfragen in Cypher mit <code>MATCH</code> und Mustern über mehrere Schritte schreiben, mit der richtigen Pfeilrichtung,</li>
+<li>eine Abfrage in Cypher mit derselben in SQL vergleichen und beurteilen, wann ein Graph die bessere Wahl ist.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die Aktivität setzt voraus, dass die Lernenden <code>JOIN</code> und <code>GROUP BY</code> kennen, denn die Vergleiche mit SQL tragen das Kapitel.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> vom Tabellenmodell zum Graphen, ein kleiner Graph von Hand mit <code>CREATE</code>, die Daten laden, erste Abfragen mit <code>MATCH</code>.</li>

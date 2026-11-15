@@ -1,6 +1,12 @@
 Lernende schreiben einen Webserver in Ruby oder Python, ohne Bibliothek, in sechs Schritten: zuhören, antworten, Pfade mit 404, Dateien ausliefern, Parameter und ein Zähler, ein Formular mit `POST`. Die Aktivität schließt an TCP/IP an und macht sichtbar, was Live Server, Sinatra oder nginx tun.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, woraus eine HTTP-Anfrage und eine HTTP-Antwort bestehen: Status-Line, Header, leere Zeile und Body,</li>
+<li>einen Webserver ohne Bibliothek schreiben, der Pfade unterscheidet, Dateien mit Content-Type ausliefert und 404 meldet,</li>
+<li>begründen, warum ein Pfad mit <code>..</code> gefährlich ist, und den Server dagegen absichern,</li>
+<li>ein Formular mit <code>POST</code> annehmen und erklären, warum ein Zähler, den zwei Anfragen zugleich erhöhen, einen Lock braucht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python (Variablen, Schleifen, Funktionen, Verzweigungen) und die Seite TCP/IP.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen. Die ausgelieferten Seiten in <code>public</code> sind in beiden Sprachen dieselben.</td></tr>
 <tr><th>Ablauf</th><td><ul>

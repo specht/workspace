@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes C-Programm im Workspace: »Hello, World!« in `hello.c`, übersetzt mit `gcc`, lesen eine Fehlermeldung, die nicht vom Compiler, sondern vom Linker kommt, und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in C schreiben, mit <code>gcc</code> übersetzen und starten,</li>
+<li>an einer Fehlermeldung erkennen, ob sie vom Compiler oder vom Linker kommt,</li>
+<li>vorhersagen, was mit einer Zahl passiert, die nicht in ein <code>int</code> passt,</li>
+<li>Bubblesort in C lesen, mit einer Sprache vergleichen, die sie kennen, und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Fünf Aufgaben:<ul>
 <li>Zwei lesen <code>/workspace</code>: ob <code>hello.c</code> <code>#include &lt;stdio.h&gt;</code> und <code>printf("Hello, World!")</code> enthält, und ob daneben das übersetzte, ausführbare <code>hello</code> liegt.</li>
 <li>»Wer gibt auf?« fragt nach dem Programm hinter <code>collect2: error:</code>: <code>ld</code>, der Linker. Ein Anlass zu zeigen, dass <code>gcc</code> mehrere Schritte nacheinander ausführt.</li>

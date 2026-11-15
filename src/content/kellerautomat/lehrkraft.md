@@ -1,6 +1,11 @@
 Kellerautomaten zum Programmieren, in Ruby oder Python: Lernende prüfen Klammern erst mit einem Zähler, dann mit einem Stack, bauen einen Kellerautomaten als Tabelle (wie die endlichen Automaten in »Endliche Automaten«), erweitern ihn um eckige Klammern, schreiben einen für a<sup>n</sup>b<sup>n</sup> und überlegen mit dem Schubfachprinzip, warum kein endlicher Automat a<sup>n</sup>b<sup>n</sup> prüft.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Klammern mit einem Zähler und mit einem Stack prüfen und begründen, warum für <code>([)]</code> ein Zähler nicht reicht,</li>
+<li>einen Kellerautomaten als Tabelle aufschreiben und ein Wort von Hand durch ihn laufen lassen,</li>
+<li>einen Kellerautomaten für a<sup>n</sup>b<sup>n</sup> bauen und mit dem Schubfachprinzip begründen, warum kein endlicher Automat diese Sprache prüft.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>»Endliche Automaten«: Automaten als Tabelle, Start- und akzeptierende Zustände, die Grenze am Ende. Listen oder Arrays in Ruby oder Python; den Stack erklärt die Seite und das Handbuch.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Eine Aufgabe, die Lernende in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Ablauf</th><td><ul>

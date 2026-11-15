@@ -1,6 +1,11 @@
 Ein GIF-Decoder in C, der mit PixelRAM zeichnet: Lernende lesen eine Datei Byte für Byte, Block für Block, setzen die Sub-blocks zusammen, lesen Codes mit wachsender Länge und entpacken sie mit LZW.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Binärdatei im Hexdump lesen und die Blöcke einer GIF-Datei der Reihe nach erkennen,</li>
+<li>Codes mit wachsender Länge aus einem Bitstrom lesen und mit LZW decodieren,</li>
+<li>in einem eigenen Decoder einen Fehler finden, bis das Bild richtig erscheint, und erklären, in welcher Reihenfolge Interlacing die Zeilen speichert.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Grundlagen in C (Schleifen, Arrays, Funktionen, <code>printf</code>) und die ersten Abschnitte von <a href='/pixelram'>Echtzeitgrafik mit C</a>: Palette, <code>set_pixel</code>, <code>make</code>. Zeiger kommen nur als <code>uint8_t *</code> für einen Speicher vor, <code>malloc</code> und <code>fopen</code> stehen fertig im Gerüst.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Vorbereitung, Hexdump der Diskette, die Blöcke bis zu den Bilddaten; am Ende meldet das Programm <code>Bild 16 x 16 bei (0, 0), 45 Bytes Daten</code>.</li>

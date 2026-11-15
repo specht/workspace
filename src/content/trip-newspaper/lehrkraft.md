@@ -1,6 +1,11 @@
 Lernende schreiben einen eigenen Artikel und bauen ihn mit allem, was die Reihe zur Textverarbeitung gezeigt hat. Die Prüfung sieht nach allen Punkten auf einmal; die zuletzt geprüfte Fassung ist die Abgabe. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen eigenen Text mit Formatvorlagen, Bildern mit Beschriftung und Alternativtext, Kopf- und Fußzeilen und Fußnoten sauber bauen,</li>
+<li>die Rechtschreibprüfung eines Programms nutzen und ihre Vorschläge beurteilen, statt sie blind zu übernehmen,</li>
+<li>ein Dokument als PDF weitergeben und sagen, wann PDF und wann die bearbeitbare Datei passt.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die Blätter der Reihe, zuletzt <a href='/newspaper-page'>Die Zeitungsseite</a>.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

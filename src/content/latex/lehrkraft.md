@@ -1,6 +1,12 @@
 Lernende schreiben in LaTeX eine kurze Facharbeit von der leeren Datei bis zum PDF, mit allem, was Schulen für Facharbeiten, Seminararbeiten und Protokolle verlangen: Titelseite, Inhaltsverzeichnis, nummerierte Kapitel, Formel, Abbildung, Tabelle, Diagramm, Quellen und Selbstständigkeitserklärung. Das Thema (Schwingungsdauer eines Fadenpendels) ist bewusst aus dem Physikunterricht bekannt, damit es um das Schreiben geht und nicht um den Inhalt. Vorkenntnisse braucht es keine.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Dokument in LaTeX mit Titelseite, Inhaltsverzeichnis und nummerierten Kapiteln schreiben und zu einem PDF übersetzen,</li>
+<li>Sonderzeichen wie <code>%</code> und <code>&amp;</code> richtig setzen,</li>
+<li>eine Formel, eine Abbildung, eine Tabelle und Quellen einfügen und im Text darauf verweisen,</li>
+<li>begründen, wann LaTeX und wann eine Textverarbeitung besser passt.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> LaTeX Workshop, das erste Dokument, Sonderzeichen, Gliederung mit Titelseite und Inhaltsverzeichnis.</li>
 <li><b>2. Doppelstunde:</b> Formel, Bild, Tabelle, Diagramm.</li>

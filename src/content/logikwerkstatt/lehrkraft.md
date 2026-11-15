@@ -1,6 +1,12 @@
 Lernende bauen Schaltungen selbst in einem Editor auf der Seite: vom Halbaddierer über einen Multiplexer und einen Vergleicher bis zum Addierer für 4 Bit aus eigenen Bausteinen und einem D-Flipflop. Jede Schaltung prüft der Server, indem er sie Zeile für Zeile durchrechnet.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Schaltung aus einer Wahrheitstabelle entwerfen und im Editor aufbauen,</li>
+<li>Schaltungen in Schichten aus eigenen Bausteinen bauen, etwa einen Addierer für 4 Bit aus Volladdierern,</li>
+<li>einen Multiplexer und einen Vergleicher erklären und vorhersagen, wann im Addierer der Übertrag zuletzt ankommt,</li>
+<li>erklären, wie ein D-Flipflop ein Bit speichert.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>»Vom Gatter zum Rechenwerk«: die Gatter und ihre Schaltzeichen, Halb- und Volladdierer, das RS-Flipflop. Programmieren müssen die Lernenden hier nicht.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> der Editor und der freie Editor oben, Halbaddierer (als Baustein <code>HA</code> gespeichert), XOR aus vier NAND, Multiplexer, Volladdierer aus zwei <code>HA</code> (als <code>VA</code> gespeichert).</li>

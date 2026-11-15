@@ -1,6 +1,11 @@
 Lernende bringen die Liste der Zahlungen aller 27 Familien in Ordnung: nach Familien sortiert, ohne dass eine Zeile auseinanderfällt, mit einem Filter für die Familien, die noch etwas zahlen müssen, und einer bedingten Formatierung, die offene Beträge rot hinterlegt. Die Prüfung vergleicht jede Zeile mit der Vorlage und erkennt so eine Spalte, die allein sortiert wurde. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Tabelle nach einer Spalte sortieren, ohne dass die Zeilen auseinanderfallen, und erkennen, wenn eine Spalte allein sortiert wurde,</li>
+<li>mit einem Filter nur die Zeilen zeigen, die eine Bedingung erfüllen,</li>
+<li>mit einer bedingten Formatierung Werte hervorheben, die eine Bedingung erfüllen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die ersten vier Blätter der Reihe, vor allem <a href='/spreadsheet-functions'>Auswerten</a> (leere Zellen in Funktionen).</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

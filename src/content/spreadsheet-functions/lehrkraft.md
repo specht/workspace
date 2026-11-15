@@ -1,6 +1,11 @@
 Lernende werten die Umfrage nach der Klassenfahrt aus: 27 Antworten mit ein bis fünf Sternen zu vier Programmpunkten, manche Fragen ausgelassen. Unter jede Spalte kommen ANZAHL, MITTELWERT, MAX und MIN, nach rechts ausgefüllt, und WENN entscheidet, ob ein Programmpunkt mindestens vier Sterne bekam. Zwei Stellen, an denen Lernende stolpern sollen: Eine leere Zelle ist keine 0, und der Mittelwert der Jugendherberge zeigt 4,0, ist aber 3,96, sodass WENN »nein« sagt. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Spalte mit ANZAHL, MITTELWERT, MAX und MIN auswerten,</li>
+<li>mit WENN aus einem Wert eine Entscheidung machen,</li>
+<li>erklären, warum eine leere Zelle keine 0 ist und warum ein Mittelwert, der als 4,0 angezeigt wird, kleiner als 4 sein kann.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/spreadsheet-cells'>Zellen, die rechnen</a> (SUMME, Ausfüllen), <a href='/number-formats'>Zahlen in Form</a> (das Format ändert nicht die Zahl) und <a href='/absolute-references'>Feste Bezüge</a> (Bezüge wandern beim Ausfüllen mit).</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

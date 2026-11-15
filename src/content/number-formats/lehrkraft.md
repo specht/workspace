@@ -1,6 +1,11 @@
 Lernende reparieren die Tabelle der Einzahlungen für die Klassenfahrt: Vier Beträge stehen als Text darin (aus E-Mails kopiert, mit Euro-Zeichen oder »EUR« davor), SUMME lässt sie ohne Meldung aus. Danach bekommen die Zellen Zahlenformate: Währung für die Beträge, Prozent für die Ermäßigung, Datum für die Spalte, in der nach dem Kopieren nur noch die Zahlen der Tage stehen. Der Kern: Das Format ändert, wie eine Zahl aussieht, nicht die Zahl. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erkennen, ob in einer Zelle eine Zahl oder ein Text steht, und Text, den SUMME auslässt, in eine Zahl verwandeln,</li>
+<li>Zahlenformate für Währung, Prozent und Datum setzen,</li>
+<li>erklären, dass ein Format nur ändert, wie eine Zahl aussieht, nicht die Zahl, auch bei einem Datum.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/spreadsheet-cells'>Zellen, die rechnen</a>: Zellen, Adressen, Formeln, SUMME.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

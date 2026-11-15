@@ -1,6 +1,11 @@
 Lernende schreiben Funktionen, die Listen bekommen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Elemente der Reihe nach durchgehen, mit dem Index arbeiten, eine neue Liste bauen, Doppelte entfernen und zwei sortierte Listen mischen, den Kern von Merge Sort.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Liste Element für Element durchgehen und dabei summieren, zählen oder das größte Element finden,</li>
+<li>mit dem Index arbeiten, um Elemente zu tauschen oder zu verschieben, und dabei den ersten und den letzten Index richtig treffen,</li>
+<li>zwei sortierte Listen zu einer sortierten mischen und erklären, warum das der Kern von Merge Sort ist.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Schleifen und Strings, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a> und den <a href='/kata-texts'>Katas: Strings</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): Summe, die größte Zahl, gerade Zahlen zählen, ist ein Element dabei.</li>

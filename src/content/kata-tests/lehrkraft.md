@@ -1,6 +1,11 @@
 Lernende schreiben Tests statt Funktionen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: Zeilen wie <code>assert_equal(erwartet, ergebnis)</code>, die mit einer richtigen Fassung bestehen und jede von mehreren fehlerhaften entlarven, so dass sie lernen, an den Rändern und bei den Ausnahmen zu suchen.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Tests als Behauptungen der Form »erwartet, ergebnis« schreiben, die eine richtige Funktion bestehen lässt,</li>
+<li>die Ränder und Ausnahmen einer Aufgabe finden, an denen eine fehlerhafte Funktion scheitert (0, die leere Liste, der erste und der letzte Index),</li>
+<li>begründen, warum ein Test, der nur das Erwartbare prüft, auch mit vielen fehlerhaften Fassungen besteht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die Funktionen, die getestet werden, kennen die Lernenden aus den Katas: gerade Zahlen und Schaltjahre aus den <a href='/kata-decisions'>Entscheidungen</a>, die Adresse und Caesar aus den <a href='/kata-texts'>Texten</a>, das Mischen aus den <a href='/kata-lists'>Listen</a>, die binäre Suche aus dem <a href='/kata-search'>Suchen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (3 Katas): Tests für gerade Zahlen, die größere von zwei Zahlen, den Betrag.</li>

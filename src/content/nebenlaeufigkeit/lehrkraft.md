@@ -1,6 +1,12 @@
 Lernende bringen zuerst ohne Code die Schritte zweier Threads selbst in eine Reihenfolge und sehen, wo eine Erhöhung verloren geht, wie ein Lock das verhindert und wie zwei Locks in verschiedener Reihenfolge einander blockieren. Danach dasselbe im Code, in Java oder in Dart (»Sprachen der Klasse«).
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>an zwei Threads Schritt für Schritt zeigen, wie eine Erhöhung verloren geht, und zählen, wie viele Reihenfolgen gut gehen,</li>
+<li>erklären, wie ein Lock das verhindert und wie zwei Locks in verschiedener Reihenfolge einen Deadlock erzeugen,</li>
+<li>vorhersagen, was ein nebenläufiges Programm ausgibt, und einen Zähler schreiben, der nichts verliert,</li>
+<li>begründen, warum eine feste Reihenfolge der Locks einen Deadlock verhindert, an den speisenden Philosophen.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> das Widget, ohne Code: die verlorene Erhöhung, wie viele der 20 Reihenfolgen gut gehen, drei Threads, wie viele Reihenfolgen mit einem Lock bleiben, ein Deadlock mit zwei Locks, die speisenden Philosophen und wie eine feste Reihenfolge der Gabeln sie rettet.</li>
 <li><b>2. Doppelstunde:</b> im Code: die Vorhersage »Was kommt heraus?«, der Zähler, der nichts verliert, die Vorhersage »Was passiert?« zum Deadlock, Locks in fester Reihenfolge (Java) oder ein Lock aus <code>Future</code>s (Dart); als Extra <code>AtomicInteger</code> (Java) oder der Besuchszähler in einer Datei (Dart).</li>

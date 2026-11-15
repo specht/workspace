@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes Smalltalk-Programm im Workspace: »Hello, World!« in `hello.st`, ausgeführt mit GNU Smalltalk (`gst`), lesen eine Meldung über eine Nachricht, die ein Objekt nicht versteht, und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine; die Seite zeigt eine Sprache, in der alles ein Objekt ist und alles eine Nachricht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm in Smalltalk schreiben und mit <code>gst</code> ausführen,</li>
+<li>eine Meldung über eine Nachricht, die ein Objekt nicht versteht, lesen und den Fehler beheben,</li>
+<li>vorhersagen, was <code>3 + 4 * 2</code> in Smalltalk ergibt, und begründen, warum dort kein Punkt vor Strich gilt,</li>
+<li>Bubblesort in Smalltalk lesen, mit einer Sprache vergleichen, die sie kennen, und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Vier Aufgaben:<ul>
 <li>»Hello, World!« liest <code>/workspace/hello.st</code>: ob dort <code>Transcript show: 'Hello, World!'</code> steht.</li>
 <li>»Eine Nachricht, die niemand versteht« verlangt die Nachricht hinter <code>did not understand</code>: <code>#sho:</code>.</li>

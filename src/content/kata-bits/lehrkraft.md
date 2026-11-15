@@ -1,6 +1,11 @@
 Lernende schreiben Funktionen, die Zahlen ins Zweier- und Sechzehnersystem und in jedes andere schreiben und zurücklesen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java, nur mit Teilen und Rest; dazu negative Zahlen im Zweierkomplement eines Bytes, schriftliches Addieren von Bits mit Übertrag und Überlauf, und römische Zahlen.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine Zahl durch Teilen mit Rest ins Zweier- oder Sechzehnersystem schreiben und von dort zurücklesen, von Hand und als Funktion,</li>
+<li>eine negative Zahl im Zweierkomplement eines Bytes darstellen und erklären, warum Umdrehen und 1 Addieren sie negiert,</li>
+<li>zwei Bitfolgen schriftlich mit Übertrag addieren und vorhersagen, wann ein Byte überläuft (200 + 100 ergibt 44).</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Schleifen, Strings und Dictionaries, etwa aus den <a href='/kata-loops'>Katas: Schleifen</a> und den <a href='/kata-dicts'>Katas: Dictionaries</a>.</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis zur Knobelei.<ul>
 <li>Einstieg (4 Katas): eine Zahl in Bits, Bits zurück in eine Zahl, ein einzelnes Bit, wie viele Bits eine Zahl braucht.</li>

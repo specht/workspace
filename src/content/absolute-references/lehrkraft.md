@@ -1,6 +1,11 @@
 Lernende rechnen aus, was ein Kind für die Klassenfahrt bezahlt: die Kosten jedes Postens geteilt durch die Zahl der Kinder in B2, dann weniger die Ermäßigung in B3. Die Formel des Elternteils, `=B6/B2`, nach unten ausgefüllt, teilt in C7 durch die Ermäßigung und weiter unten durch eine leere Zelle; mit `$B$2` bleibt der Bezug fest. Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>vorhersagen, wie sich die Bezüge einer Formel ändern, wenn man sie nach unten oder nach rechts ausfüllt,</li>
+<li>mit dem Dollarzeichen einen Bezug festhalten (<code>$B$2</code>) und begründen, wann das nötig ist,</li>
+<li>eine Formel schreiben, die jede Zeile mit einer festen Zelle verrechnet, etwa die Kosten geteilt durch die Zahl der Kinder.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/spreadsheet-cells'>Zellen, die rechnen</a> (Ausfüllen, der Weg, den sich eine Formel merkt) und <a href='/number-formats'>Zahlen in Form</a> (das Format Währung).</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>

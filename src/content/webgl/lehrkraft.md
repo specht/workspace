@@ -1,6 +1,12 @@
 Lernende programmieren 3D-Grafik mit WebGL2 ohne Bibliothek, in JavaScript und GLSL: ein Dreieck mit Farben je Ecke, einen Würfel mit eigenen Matrizen, den Z-Buffer, Licht aus Normalen eine Ukulele aus 8.912 Dreiecken, die sie mit der Maus drehen, als Drahtgitter und mit Flat Shading zeigen, mit Glanzlichtern nach Blinn-Phong, Farbe, Normal Map und Roughness Map, und am Ende einen Wecker mit Ambient Occlusion und Metallic Map, in dem sich ein Hotelzimmer spiegelt (Environment Map, Fresnel nach Schlick), mit Glas vor dem Zifferblatt, das zuletzt und gemischt gemalt wird. Modelle und Rundumbild sind aus Poly Haven (CC0).
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Schritte der Pipeline erklären, vom Vertex-Shader über die Rasterung bis zum Fragment-Shader,</li>
+<li>Punkte mit Matrizen drehen und perspektivisch abbilden, und die Matrizen selbst multiplizieren,</li>
+<li>erklären, wozu der Z-Buffer dient und warum Glas trotzdem zuletzt gemalt wird,</li>
+<li>die Helligkeit einer Fläche aus ihrer Normalen und der Richtung zum Licht berechnen, auch einen Glanz nach Blinn-Phong.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen und Arrays (die Katas bis <a href='/kata-lists'>Listen</a>, in einer beliebigen Sprache; die Seite erklärt das JavaScript, das sie braucht). <a href='/glsl'>Shader in GLSL</a> davor, denn dort lernen sie den Fragment-Shader kennen, und <a href='/raytracing'>Raytracing</a>, denn dort kommen Vektoren, Normalen und das Licht nach Lambert vor. Aus der Mathematik Sinus und Kosinus, Vektoren mit Skalar- und Kreuzprodukt (Handbuch <a href='/reference/vektoren'>Vektoren</a>); Matrizen erklärt die Seite, so weit sie gebraucht werden.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Einrichten (Ordner, Modelle und Texturen mit <code>wget</code>, Vorschau mit »Go Live«), die Pipeline, das erste Dreieck mit zwei Shadern in eigenen Dateien, wie die Farben zwischen den Ecken gemischt werden, Matrizen mit eigenem <code>multiply</code>.</li>

@@ -1,6 +1,12 @@
 Lernende schreiben ihr erstes Perl-Skript im Workspace: »Hello, World!« in `hello.pl` mit `use strict`, ausgeführt mit `perl`, finden einen Fehler über die Zeilennummer in der Meldung und probieren eine Primfaktorzerlegung und Bubblesort aus. Vorkenntnisse brauchen sie keine; die Seite erzählt, wie Perl als Werkzeug für Text das frühe Web mitgebaut hat.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Skript in Perl mit <code>use strict</code> schreiben und mit <code>perl</code> ausführen,</li>
+<li>einen Fehler über die Zeilennummer in der Meldung finden,</li>
+<li>vorhersagen, was Perl aus <code>"3" + "4"</code> macht, und mit einer Sprache vergleichen, die sie kennen,</li>
+<li>Bubblesort in Perl lesen und so ändern, dass es absteigend sortiert.</li>
+</ul></td></tr>
 <tr><th>Prüfung</th><td>Vier Aufgaben:<ul>
 <li>»Hello, World!« liest <code>/workspace/hello.pl</code>: ob dort <code>use strict;</code> und <code>print "Hello, World!"</code> stehen.</li>
 <li>»Wo ist der Fehler?« fragt nach der Zeile, die Perl nennt (4).</li>

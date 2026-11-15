@@ -1,6 +1,12 @@
 Lernende bauen ein Sprachmodell aus Wortpaaren: Sie zerlegen die Märchen der Brüder Grimm in Wörter, zählen in einem Dictionary von Dictionaries, welches Wort auf welches folgt, und lassen ihr Programm daraus Text schreiben, erst immer mit dem häufigsten Wort, dann gewürfelt nach der Häufigkeit, dann mit zwei Wörtern Kontext. Am Ende sehen sie, wie oft das Modell nur abschreibt und was es aus seinem Text übernimmt. Ruby oder Python.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Text in Wörter zerlegen und von Hand zählen, welches Wort auf welches folgt,</li>
+<li>ein Dictionary von Dictionaries mit Häufigkeiten bauen und daraus Text erzeugen, mit dem häufigsten Wort und gewürfelt nach der Häufigkeit,</li>
+<li>begründen, warum das Modell mit dem häufigsten Wort in einer Schleife hängen bleibt und warum mehr Kontext mehr abgeschriebenen Text ergibt,</li>
+<li>erklären, was ein Sprachmodell aus seinem Text übernimmt, auch Vorurteile, und was ein großes Sprachmodell anders macht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen, Schleifen, Listen mit Index, Dictionaries: etwa nach den <a href='/kata-dicts'>Katas: Dictionaries</a>. Zufallszahlen erklärt die Seite.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Einstellungen« ein.</td></tr>
 <tr><th>Ablauf</th><td><ul>

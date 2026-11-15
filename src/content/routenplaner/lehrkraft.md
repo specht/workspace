@@ -1,6 +1,12 @@
 Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMap, in Ruby (Sinatra) oder Python (Flask), je nach Einstellung der Klasse: Sie bauen aus den Straßen einen Graphen, schreiben die Suchen selbst, Breitensuche, Dijkstra, einen Heap und A*, und planen zu Fuß, mit dem Rad, mit dem Auto und eine Rundfahrt durch mehrere Orte. Eine Seite im Browser zeigt bei jeder Suche, welche Knoten ihr Code in welcher Reihenfolge besucht hat.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>aus Wegen mit Koordinaten einen Graphen bauen und Abstände auf der Erde berechnen,</li>
+<li>Breitensuche, Dijkstra und A* von Hand an einem kleinen Graphen ausführen und schreiben,</li>
+<li>begründen, warum die Breitensuche einen Weg mit wenigen Kanten findet, der lang sein kann, und Dijkstra den kürzesten,</li>
+<li>erklären, warum ein Heap Dijkstra schneller macht und warum für eine Rundfahrt durch viele Orte nur noch Näherungen wie der nächste Nachbar und 2-opt helfen.</li>
+</ul></td></tr>
 <tr><th>Dauer</th><td>Etwa drei Doppelstunden für die ersten fünf Schritte und drei für den Rest; die Schritte 6 bis 9 eignen sich auch für schnelle Gruppen oder ein Projekt.</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>Einrichten:</b> Klonen, Sinatra (<code>gem install sinatra rackup puma</code>) oder Flask (<code>pip install flask</code>) installieren, einmal pro Workspace, den Server starten (<code>ruby server.rb</code> oder <code>python3 server.py</code>) und die Karte im Browser öffnen: Der Server schreibt ihre Adresse ins Terminal, ein Klick mit Strg öffnet sie. Die Vorlage hat beide Sprachen nebeneinander; die Seite im Browser ist dieselbe.</li>

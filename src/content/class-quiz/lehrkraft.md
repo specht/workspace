@@ -1,6 +1,12 @@
 Lernende bauen als Klasse ein Quiz in einem gemeinsamen Git-Repository: Jede und jeder schreibt eine Runde Fragen und trägt sie in eine gemeinsame Liste ein. Dabei erleben sie einen abgelehnten Push und einen echten Merge-Konflikt, verteilen danach Aufgaben am Programm über eine Liste im Repository, erledigen eine davon in einem eigenen Branch und lesen einen Commit von jemand anderem. Ruby oder Python.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>in einem gemeinsamen Repository committen, pushen und einen abgelehnten Push mit <code>git pull</code> lösen,</li>
+<li>einen Merge-Konflikt lesen und auflösen,</li>
+<li>eine Aufgabe in einem eigenen Branch erledigen und zusammenführen,</li>
+<li>einen Commit von jemand anderem lesen und erklären, was er ändert.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die Grundlagen von Git aus <a href='/git'>Versionsverwaltung mit Git</a>: Repository, Commit, Branch. Programmieren nur für die Aufgaben aus <code>TODO.md</code>: kleine Änderungen an einem fertigen Programm.</td></tr>
 <tr><th>Sprache</th><td>Ruby oder Python stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein. Im Repository liegt das Quiz in beiden Sprachen, <code>quiz.rb</code> und <code>quiz.py</code>; die Runden sind für beide dieselben.</td></tr>
 <tr><th>Ablauf</th><td><ul>

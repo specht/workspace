@@ -1,6 +1,12 @@
 Lernende suchen mit `grep -E` in einem Logfile nach Fehlern und nach einem Programm, das die Website nach Lücken absucht, holen in Ruby oder Python mit Gruppen den Status aus jeder Zeile und prüfen Postleitzahlen, Daten und Benutzernamen. Am Ende verbinden sie Ausdrücke mit endlichen Automaten (Thompson-Konstruktion, Satz von Kleene) und sehen, warum kein Ausdruck Klammern prüfen kann.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>mit <code>grep -E</code> und Zeichenklassen, Wiederholungen, dem Punkt und Ankern bestimmte Zeilen in einem Logfile finden und zählen,</li>
+<li>in einem Programm mit Gruppen Teile einer Zeile herausholen,</li>
+<li>einen Ausdruck schreiben, der eine Eingabe wie eine Postleitzahl, ein Datum oder einen Benutzernamen genau prüft, und an Beispielen zeigen, was er annimmt und ablehnt,</li>
+<li>einen Ausdruck in einen endlichen Automaten übersetzen und begründen, warum kein Ausdruck Klammern prüfen kann.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/automata'>Endliche Automaten</a> (DEA, NEA, Fehlerzustand); im Terminal einen Befehl ausführen. Grundlagen in Ruby oder Python: Funktionen, Listen, Schleifen.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen. Die Ausdrücke selbst sind in beiden Sprachen gleich, nur die Anker heißen anders (<code>\A</code> und <code>\z</code> in Ruby, <code>re.fullmatch</code> in Python).</td></tr>
 <tr><th>Ablauf</th><td><ul>

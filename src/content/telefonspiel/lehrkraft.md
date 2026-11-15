@@ -1,6 +1,11 @@
 Lernende programmieren ein Spiel, das man anrufen kann, in Ruby, Python oder JavaScript: Es spricht mit der Stimme Thorsten, spielt Musik und verzweigt nach den Tasten des Telefons. Am Ende steht ein eigenes Abenteuer aus Szenen, das jemand aus der Klasse durchspielt und das, wenn die Lernenden es einreichen, im öffentlichen Telefonbuch steht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>ein Programm schreiben, das auf Eingaben wartet und nach ihnen verzweigt, auch wenn niemand etwas drückt,</li>
+<li>eine Geschichte erst als Karte aus Szenen planen und jede Szene als Funktion umsetzen,</li>
+<li>erklären, wie ein Telefon eine Taste an zwei Tönen erkennt, und drei Tasten aus einem Wasserfall ablesen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Verzweigungen mit <code>if</code> und <code>else</code> (<a href='/kata-decisions'>Katas: Verzweigungen</a>). Mehr braucht es nicht: Eigene Funktionen ohne Parameter führt die Seite an der Höhle ein, erst dieselben Zeilen ohne und dann in einer Funktion, die genauso klingt; das Spiel ist ein guter erster Grund, Funktionen zu schreiben.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in den anderen. In JavaScript (Node) holt die erste Zeile die Befehle mit <code>require('telefon')</code>, Stimmung und Ausschnitte stehen in geschweiften Klammern (<code>say('…', { mood: 'whisper' })</code>), und verglichen wird mit <code>===</code>: Mit <code>==</code> wäre <code>'1' == 1</code> wahr, darum fragt »Text oder Zahl?« dort nach <code>===</code>.</td></tr>
 <tr><th>Ablauf</th><td><ul>

@@ -1,6 +1,12 @@
 Ein Labor zu SQL Injection: Lernende schreiben ein kleines Anmeldeprogramm in Ruby oder Python, das die Eingabe in eine SQL-Abfrage klebt, finden die Lücke in ihrer eigenen Testdatenbank und schließen sie mit einem Prepared Statement.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>erklären, wie eine Eingabe, die in eine SQL-Abfrage geklebt wird, die Abfrage selbst verändert,</li>
+<li>an einem eigenen Programm eine SQL Injection vorführen, etwa eine Anmeldung ohne Passwort,</li>
+<li>eine Abfrage mit einem Prepared Statement schreiben und begründen, warum sie dann sicher ist,</li>
+<li>begründen, warum ein Zugang mit wenigen Rechten den Schaden begrenzt.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Die SQL-Einführung (<code>SELECT</code>, <code>WHERE</code>) und etwas Ruby oder Python zum Lesen des Programms.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby; Lernende können auf der Seite selbst umschalten.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde:<ul>

@@ -1,6 +1,11 @@
 Lernende schreiben Funktionen, die in Listen suchen, direkt in die Karten der Seite, in Ruby, Python, JavaScript, Dart oder Java: erst Element für Element, dann in sortierten Listen durch Halbieren (binäre Suche, Zahlenraten, die Wurzel), bis hunderttausend Suchen in hunderttausend Zahlen in Sekunden gelingen.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>eine lineare Suche schreiben, die den Index liefert oder nichts, wenn das Element fehlt,</li>
+<li>die binäre Suche von Hand an einer sortierten Liste ausführen und als Funktion schreiben, ohne am Rand einen Index zu verfehlen,</li>
+<li>begründen, warum Halbieren bei einer Million Elementen etwa 20 Schritte braucht und die lineare Suche bis zu einer Million.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Listen, etwa aus den <a href='/kata-lists'>Katas: Listen</a>; für »Nur anders sortiert?« die Strichliste aus den <a href='/kata-dicts'>Katas: Dictionaries</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
 <li>Einstieg (4 Katas): lineare Suche (der Index oder nichts), der Index der kleinsten Zahl, von hinten gesucht, die erste Zahl über einer Grenze.</li>

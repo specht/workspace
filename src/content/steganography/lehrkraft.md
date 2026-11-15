@@ -1,6 +1,11 @@
 Steganographie in Ruby oder Python: Lernende verstecken Text in den untersten Bits eines Fotos (LSB), entdecken ihn mit Bitebenen und dem Chi-Quadrat-Test von Westfeld und Pfitzmann wieder und schreiben zum Schluss ein Verfahren mit Farbklassen, das die Botschaft als eine große Zahl mit wechselnder Basis schreibt, mit Würfeln im RGB-Raum.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Bitebenen eines Fotos ansehen und Text in den untersten Bits verstecken und wiederfinden,</li>
+<li>ausrechnen, wie viel Text in ein Foto passt, und beurteilen, ab wann man die Botschaft sieht,</li>
+<li>erklären, wie der Chi-Quadrat-Test eine Botschaft im untersten Bit verrät, und begründen, warum ein Verfahren mit Farbklassen ihm entgeht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python und Zahlen im Zweiersystem; »Kryptographie im Terminal« ist ein guter Einstieg in das Gespräch über Verschlüsseln und Verstecken.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby.</td></tr>
 <tr><th>Bibliotheken</th><td>PNG lesen und schreiben ChunkyPNG (<code>gem install chunky_png</code>) und Pillow (<code>pip install pillow</code>); alles andere schreiben die Lernenden selbst, vom Bit bis zur Farbklasse.</td></tr>

@@ -1,6 +1,12 @@
 Lernende schreiben in C einen Decoder für Baseline-JPEG, der das Bild mit PixelRAM zeichnet: Segmente lesen, kanonische Huffman-Tabellen bauen, Bits mit Byte Stuffing lesen, DC- und AC-Koeffizienten decodieren, dequantisieren, iDCT, MCUs zusammensetzen, YCbCr in RGB umrechnen. Am Ende erscheint ein echtes Foto, Block für Block.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>die Segmente einer JPEG-Datei im Hexdump erkennen und sagen, wofür jedes da ist,</li>
+<li>aus einer Huffman-Tabelle die Codes bauen und Koeffizienten aus dem Bitstrom lesen, mit Byte Stuffing,</li>
+<li>die Schritte vom Koeffizienten zum Pixel erklären: Dequantisierung, Zick-Zack, iDCT, MCU und YCbCr in RGB,</li>
+<li>begründen, wo JPEG Information weglässt und warum man das kaum sieht.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><ul>
 <li>Grundlagen in C und die ersten Abschnitte von <a href='/pixelram'>Echtzeitgrafik mit C</a>; leichter wird es nach dem <a href='/gif'>GIF-Labor</a>, das denselben Aufbau hat und dieselbe Vorlage benutzt.</li>
 <li>Die drei Grundlagenseiten (<a href='/rgb' target='_blank' rel='noopener'>Farbräume</a>, <a href='/colorspace' target='_blank' rel='noopener'>Trennung von Helligkeit und Farbe</a>, <a href='/dct' target='_blank' rel='noopener'>DCT</a>) sollten vorher besprochen sein.</li>

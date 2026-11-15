@@ -1,6 +1,11 @@
 Der dritte Teil der Turtle-Grafik, nach <a href='/turtle-2'>Turtle: Bäume und Kurven</a>: Lernende zeichnen mit Farben aus Zahlen (dem Farbkreis und dem Mischen zweier Farben), merken sich Stellen mit `push` und `pop`, lassen den Zufall mitzeichnen und Pflanzen aus Wörtern wachsen (Lindenmayer-Systeme). Die Aufgaben mit einer Vorlage üben je eine dieser Ideen; die Aufgaben mit Zufall und die eigenen Bilder prüft niemand, jedes Bild ist dort richtig. Ruby, Python oder JavaScript.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>Farben aus Zahlen berechnen, im Farbkreis und als Mischung zweier Farben,</li>
+<li>vorhersagen, wo die Schildkröte nach <code>push</code> und <code>pop</code> steht, und damit einen Baum ohne Rückweg zeichnen,</li>
+<li>eine Regel eines Lindenmayer-Systems von Hand anwenden und das entstehende Wort mit der Schildkröte zeichnen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td><a href='/turtle-2'>Turtle: Bäume und Kurven</a> (ein rekursiver Baum). Für die Pflanzen aus Wörtern eine Schleife über die Buchstaben eines Strings und das Ersetzen in einem String (<a href='/kata-texts'>Katas: Strings</a>).</td></tr>
 <tr><th>Sprache</th><td>Ruby, Python, JavaScript, Dart oder Java. Die Sprachen stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein; JavaScript, Dart und Java können die Lernenden auf der Seite auch selbst wählen. Eine Aufgabe, in einer Sprache gelöst, gilt in jeder. Dart und Java laufen auf dem Server und werden dort zuerst übersetzt, darum kommt die Antwort langsamer als in den anderen drei Sprachen (Zeile »Technik« in <a href='/turtle-1'>Turtle: Bilder aus Befehlen</a>).</td></tr>
 <tr><th>Ablauf</th><td>Zwei Doppelstunden, die erste bis einschließlich »Zufall«.<ul>

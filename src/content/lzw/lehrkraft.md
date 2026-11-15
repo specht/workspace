@@ -1,6 +1,11 @@
 LZW zum Selberbauen, in Ruby oder Python: Lernende komprimieren einen Text von Hand und mit der Zeitlupe auf der Seite, schreiben `compress` und `decompress` und messen an echten Dateien, wie viel LZW spart, und wann gar nichts.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen kurzen Text von Hand mit LZW komprimieren und dabei das Wörterbuch aufschreiben,</li>
+<li><code>compress</code> und <code>decompress</code> schreiben, auch für den Sonderfall eines Codes, den es noch nicht gibt,</li>
+<li>messen und begründen, warum LZW bei Text viel spart und ein Foto größer machen kann.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python: Methoden oder Funktionen, Schleifen, Arrays oder Listen, Hashes oder <code>dict</code>. Bytes, <code>each_byte</code> und <code>pack('C*')</code> erklärt die Seite, soweit sie gebraucht werden.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Einordnung</th><td>Das <a href='/gif'>GIF-Labor</a> baut darauf auf: Dort steht dasselbe Verfahren Bit für Bit in einer Datei, mit Farben statt Bytes.</td></tr>
