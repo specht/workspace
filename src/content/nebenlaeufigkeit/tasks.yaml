@@ -94,6 +94,26 @@ tasks:
       goal: deadlock
     hint: Was geschieht, wenn jeder Philosoph zuerst seine erste Gabel nimmt?
 
+  - id: deadlock-regel
+    title: Was jeder Deadlock hat
+    prediction: true
+    prompt: Bei den Überweisungen und bei den Philosophen kam am Ende keiner mehr weiter. Was haben die beiden Deadlocks gemeinsam?
+    check:
+      type: choice
+      options:
+        - Jeder wartet auf den nächsten, im Kreis herum.
+        - Es gibt nicht genug Locks für alle Threads.
+        - Jeder Thread braucht mehr als einen Lock, um fertig zu werden.
+        - Die Threads ändern dieselbe gemeinsame Variable.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bei den Überweisungen gibt es so viele Locks wie Threads, zwei. Schau im Bild nach, wer bei den Philosophen auf wen wartet.
+      - when: { picked: 2 }
+        say: Das gilt auch für die Überweisungen, wenn beide erst `m` und dann `n` nehmen, und dann kommt immer eine durch.
+      - when: { picked: 3 }
+        say: Beim Zähler mit Lock ändern beide Threads `counter`, und trotzdem kommen beide durch.
+
   - id: philosophen-reihenfolge
     title: Ein Philosoph greift anders
     prediction: true

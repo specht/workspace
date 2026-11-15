@@ -113,6 +113,12 @@ _task(philosophen)
 Jeder hält seine erste Gabel, und die zweite hält sein Nachbar. Die Pfeile, wer auf wen wartet, laufen einmal um den Tisch: Keiner kann essen, also legt auch keiner eine Gabel zurück.
 <!-- /after -->
 
+_task(deadlock-regel)
+
+<!-- after: deadlock-regel -->
+Ein Deadlock entsteht, wenn Threads im Kreis aufeinander warten: Jeder hält einen Lock, den der nächste im Kreis braucht. Bei den Überweisungen ist der Kreis zwei lang, A wartet auf B und B auf A; bei den Philosophen ist er drei lang.
+<!-- /after -->
+
 Damit kein Deadlock entsteht, ändert C die Reihenfolge: Er nimmt erst `f1`, dann `f3`. A und B bleiben, wie sie sind.
 
 _task(philosophen-reihenfolge)
