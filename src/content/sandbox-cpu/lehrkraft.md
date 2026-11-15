@@ -50,6 +50,20 @@ Die Beispiele bilden einen durchgehenden Weg in sieben Kapiteln; jedes endet mit
 6. **C** (`17-first-c.c`): dieselben Aufgaben noch einmal, der Preis der Abstraktion.
 7. **Projekte** (`18-cube.c` bis `26-landscape.c`): untersuchen, verändern, eigene Ideen umsetzen, vom Pong-Klon bis zur eigenen Landschaft.
 
+In der App prüft **Check** 16 Aufgaben selbst ([die Liste in `docs/tasks.md`](https://github.com/specht/cpu-sandbox/blob/main/docs/tasks.md#the-tasks)): sieben nach »Speicher und Bildschirm« (`add`, `length`, `maximum`, `fibonacci`, `multiply`, `sort`, `checkerboard`), zwei nach den Geräten (`countdown`, `digits`), zwei für die MiniCPU 8X (`average`, `reverse`), jede in Assembler oder C, und fünf nur in C (`factorial`, `gcd`, `primes`, `letters`, `line`). Die Beispiele zeigen die Befehle und Ideen, die eine Aufgabe braucht, lösen aber keine.
+
+**Cycles** neben den Schritt-Knöpfen zeigt einen Befehl Takt für Takt: Fetch, Decode, die weiteren Bytes, Speicher lesen oder schreiben, springen, dazu Adress- und Datenbus. Damit lässt sich die Vorhersage aus dem Kasten »Takte vorhersagen« an der Maschine selbst nachprüfen.
+
+#### Worüber sich ein Gespräch lohnt
+
+Aus dem [Leitfaden der Sandbox](https://github.com/specht/cpu-sandbox/blob/main/docs/teaching.md#worth-discussing):
+
+- Es gibt **einen** Speicher. Bildschirm und Stack sind nur Bereiche darin, und ein Schreiben an die falsche Adresse kann das Programm selbst verändern.
+- Ein Label ist die Adresse eines Bytes, keine Zeilennummer.
+- 8-Bit-Rechnen läuft über: 255 + 1 ergibt 0, und das Carry-Flag ist gesetzt; `-1` ist 255.
+- »Angehalten« und »läuft noch« sind zweierlei: Eine Endlosschleife braucht **Pause**.
+- Zeit kosten Takte, nicht Zeilen: dieselbe Schleife auf der 8S und auf der 8X vergleichen.
+
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>keine für den Einstieg; Binär- und Hexadezimalzahlen helfen, werden aber auch nebenbei gelernt</td></tr>
 <tr><th>Sprachen</th><td>Assembler für die MiniCPU, später MiniC (eine kleine Variante von C)</td></tr>

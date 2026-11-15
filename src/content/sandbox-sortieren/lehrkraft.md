@@ -53,8 +53,8 @@ Eine mögliche Unterrichtsreihe:
 
 1. **Lesen und verbessern:** Bubble Sort schrittweise erklären, dann beide Schleifen so weit wie möglich verkürzen und den Gewinn im Race sichtbar machen.
 2. **Selbst entwickeln:** Insertion Sort oder Selection Sort zunächst mit Spielkarten von Hand durchspielen, dann programmieren und mit **Check** prüfen.
-3. **Vergleichen:** Im Race Hypothesen für verschiedene Eingabeformen aufstellen und überprüfen. Insertion Sort auf einer sortierten Liste ist dabei jedes Mal ein kleines Erlebnis.
-4. **Messen:** Mit **Analyze** Wachstumsvermutungen belegen; Korrektheit, Stabilität und Aufwand als drei verschiedene Gütekriterien festhalten.
+3. **Vergleichen:** Im Race Hypothesen für verschiedene Eingabeformen aufstellen und überprüfen; es gibt fünf: zufällig, sortiert, umgekehrt, fast sortiert und mit wenigen verschiedenen Werten. Insertion Sort auf einer sortierten Liste ist dabei jedes Mal ein kleines Erlebnis.
+4. **Messen:** Mit **Analyze** Wachstumsvermutungen belegen; Korrektheit, Stabilität und Aufwand als drei verschiedene Gütekriterien festhalten. Analyze misst Listen von 32 bis 2048 Elementen und zeigt den Aufwand (Lesen, Schreiben und Vergleiche zusammen) auf Wunsch geteilt durch *n*, *n* log₂ *n* oder *n*²: Wird die Kurve bei einem dieser Teiler flach, wächst der Aufwand so.
 5. **Ausbauen:** Merge Sort mit `scratch`, Quick Sort, Heap Sort: Die Klasse sammelt ihre Verfahren, und Analyze wird zur gemeinsamen Rangliste.
 
 <table class='table'>

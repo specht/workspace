@@ -46,7 +46,7 @@ Eine mögliche Unterrichtsreihe:
 2. **Abstrakte Datentypen:** Stack und Queue als Verhalten formulieren und je zwei Implementierungen schreiben und testen; der Ring Buffer als Höhepunkt.
 3. **Sortierte Listen:** Was ändert sich am Einfügen, was an der Suche?
 4. **Bäume:** Suchbaum mit den Durchläufen `preorder`, `inorder`, `postorder` und `breadthFirst` (geprüft wie alles andere), Einfluss der Einfügereihenfolge auf die Höhe, AVL-Rotationen (die vier Fälle LL, RR, LR, RL) als Erweiterung.
-5. **Heap und Hashing:** der Min-Heap in einem Array und die Hash Table mit Verkettung als weitere Antworten auf die Frage, wie man schnell findet, was man sucht. Eine Priority Queue als eigene Übung hat die Sandbox noch nicht; der Min-Heap ist ihr Kern.
+5. **Heap und Hashing:** der Min-Heap in einem Array und die Hash Table mit Verkettung als weitere Antworten auf die Frage, wie man schnell findet, was man sucht. Eine Priority Queue als eigene Übung hat die Sandbox noch nicht; der Min-Heap ist ihr Kern. Zum Vergleich gibt es einen Min-Heap aus Knoten als Beispiel für die Klasse (`./new-structure example heap nodes --example`, [`docs/node-heap.md`](https://github.com/specht/data-structures-sandbox/blob/main/docs/node-heap.md)): dieselben Methoden, aber der Baum steckt in Referenzen statt in Indizes. Den Heap aus dem Array nehmen die Lernenden in den [Routenplaner](/routenplaner) mit, wo er Dijkstra auf der Karte von Steglitz-Zehlendorf schneller macht (in Dart; die Seite zeigt unter dem Heap, wie).
 
 <table class='table'>
 <tr><th>Voraussetzungen</th><td>Klassen und Objekte, Referenzen, Rekursion für die Bäume</td></tr>
