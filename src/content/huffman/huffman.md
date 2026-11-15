@@ -145,7 +145,7 @@ Im Morsecode ist E ein einziger kurzer Ton und Q ein langes Lang-lang-kurz-lang,
 
 Jedes Byte hat 8 Bits, ob es ein »e« ist, in einem deutschen Text etwa jeder sechste Buchstabe, oder ein »q«, das kaum vorkommt. Das ist bequem, aber verschwenderisch. Samuel Morse und Alfred Vail haben das schon in den 1830er Jahren besser gemacht: Im Morsecode ist E ein einziger kurzer Ton (·), T ein langer (−), und seltene Buchstaben wie Q (−−·−) sind lang. Im Mittel wird eine Nachricht so kürzer.
 
-Der Morsecode braucht dafür Pausen zwischen den Buchstaben: Ohne sie könnte ·· ein I sein oder zweimal E. Ein Computer soll ohne Pausen auskommen. Das geht, wenn kein Code der Anfang eines anderen ist. Dann heißt die Codetabelle **präfixfrei**: Wer Bit für Bit liest, weiß in dem Moment, in dem ein Code vollständig ist, dass er zu Ende ist.
+Der Morsecode braucht dafür Pausen zwischen den Buchstaben: Ohne sie könnte ·· ein I sein oder zweimal E. Ein Computer soll ohne Pausen auskommen. Mit der Tabelle unten geht das. Lies `0101100` Bit für Bit und achte darauf, an welchem Bit du jeweils sicher bist, dass ein Code zu Ende ist.
 
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table hf-table'>
@@ -160,7 +160,13 @@ Der Morsecode braucht dafür Pausen zwischen den Buchstaben: Ohne sie könnte ·
 </table>
 </div>
 
-Mit dieser Tabelle ist `0101100` eindeutig: `0` ist A, dann `10` ist B, `110` ist R, `0` ist A. Kein Code beginnt mit einem anderen, also gibt es keine zweite Möglichkeit.
+Mit dieser Tabelle ist `0101100` eindeutig: `0` ist A, dann `10` ist B, `110` ist R, `0` ist A.
+
+_task(ohne-pausen)
+
+<!-- after: ohne-pausen -->
+Kein Code der Tabelle ist der Anfang eines anderen, also gibt es keine zweite Möglichkeit. Eine solche Codetabelle heißt **präfixfrei**: Wer Bit für Bit liest, weiß in dem Moment, in dem ein Code vollständig ist, dass er zu Ende ist. Im Morsecode ist dagegen E (·) der Anfang von I (··), darum braucht er die Pausen.
+<!-- /after -->
 
 _task(praefix)
 

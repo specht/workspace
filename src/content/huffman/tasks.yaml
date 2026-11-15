@@ -6,6 +6,26 @@
 format: 1
 activity: huffman
 tasks:
+  - id: ohne-pausen
+    title: Ohne Pausen
+    prediction: true
+    prompt: Der Morsecode braucht Pausen, die Tabelle oben kommt ohne sie aus. Wann lässt sich eine Codetabelle ohne Pausen eindeutig lesen?
+    check:
+      type: choice
+      options:
+        - Wenn kein Code der Anfang eines anderen ist.
+        - Wenn alle Codes verschieden lang sind.
+        - Wenn kein Code zweimal vorkommt.
+        - Wenn häufige Zeichen kürzere Codes haben als seltene.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Im Morsecode ist E (·) kürzer als I (··), und trotzdem kann ·· ohne Pause beides sein. Verschiedene Längen reichen also nicht.
+      - when: { picked: 2 }
+        say: Auch im Morsecode hat jeder Buchstabe seinen eigenen Code, und ·· ist ohne Pause trotzdem ein I oder zweimal E.
+      - when: { picked: 3 }
+        say: Das macht der Morsecode auch, E ist ein einziger kurzer Ton. Es macht einen Text kürzer, aber ·· bleibt ohne Pause ein I oder zweimal E.
+
   - id: praefix
     title: Präfixfrei
     prompt: |
