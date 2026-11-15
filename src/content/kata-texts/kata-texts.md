@@ -137,6 +137,11 @@ Leerzeichen in ein Array, `String.join(" ", words)` verbindet die Wörter
 wieder.
 <!-- /language -->
 
+`result` sammelt den neuen Text, so wie `count` in den
+[Katas: Schleifen](/kata-loops) die Treffer zählt: `result` ist ein
+[Gatherer](/reference/variablen-rollen#gatherer) (Sammler). Sein Anfangswert
+ist der leere Text, denn der ändert nichts, wenn man etwas anhängt.
+
 Jedes Zeichen hat eine Nummer: `A` ist 65, `B` 66 und so weiter, `a` ist 97.
 Welche Nummer zu welchem Zeichen gehört, legt der Zeichensatz fest; die
 ersten 128 sind seit den 1960er Jahren dieselben (ASCII) und heute ein Teil

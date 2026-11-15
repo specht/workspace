@@ -1101,7 +1101,7 @@ tasks:
       - when: { same_as: "def longest_word(text)\n  best = ''\n  text.split.each do |word|\n    best = word if word.length >= best.length\n  end\n  best\nend\n" }
         say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
     hint:
-      - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+      - "Merk dir das bisher längste Wort in einer Variablen, einem Most-wanted Holder (Bester bisher), und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
       - "`word.length` ist die Länge eines Wortes."
     solution: |
       ```ruby
@@ -1136,7 +1136,7 @@ tasks:
         - when: { same_as: "def longest_word(text):\n    best = ''\n    for word in text.split():\n        if len(word) >= len(best):\n            best = word\n    return best\n" }
           say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
       hint:
-        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "Merk dir das bisher längste Wort in einer Variablen, einem Most-wanted Holder (Bester bisher), und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
         - "`len(word)` ist die Länge eines Wortes."
       solution: |
         ```python
@@ -1172,7 +1172,7 @@ tasks:
         - when: { same_as: "function longestWord(text) {\n  let best = '';\n  for (const word of text.split(' ')) {\n    if (word.length >= best.length) {\n      best = word;\n    }\n  }\n  return best;\n}\n" }
           say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
       hint:
-        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "Merk dir das bisher längste Wort in einer Variablen, einem Most-wanted Holder (Bester bisher), und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
         - "`word.length` ist die Länge eines Wortes."
       solution: |
         ```javascript
@@ -1206,7 +1206,7 @@ tasks:
         - when: { same_as: "String longestWord(String text) {\n  var best = '';\n  for (final word in text.split(' ')) {\n    if (word.length >= best.length) {\n      best = word;\n    }\n  }\n  return best;\n}\n" }
           say: "Bei `'ab cd'` gewinnt `'cd'`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
       hint:
-        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "Merk dir das bisher längste Wort in einer Variablen, einem Most-wanted Holder (Bester bisher), und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
         - "`word.length` ist die Länge eines Wortes."
       solution: |
         ```dart
@@ -1240,7 +1240,7 @@ tasks:
         - when: { same_as: "String longestWord(String text) {\n    String best = \"\";\n    for (String word : text.split(\" \")) {\n        if (word.length() >= best.length()) {\n            best = word;\n        }\n    }\n    return best;\n}\n" }
           say: "Bei `\"ab cd\"` gewinnt `\"cd\"`, weil `>=` auch ein gleich langes Wort nimmt. Nur ein längeres soll das bisher beste ersetzen."
       hint:
-        - "Merk dir das bisher längste Wort in einer Variablen und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
+        - "Merk dir das bisher längste Wort in einer Variablen, einem Most-wanted Holder (Bester bisher), und vergleich jedes Wort mit ihm, wie beim Maximum zweier Zahlen."
         - "`word.length()` ist die Länge eines Wortes."
       solution: |
         ```java
@@ -2351,7 +2351,7 @@ tasks:
     feedback:
       - when: { same_as: "def strong_password(password)\n  lower = upper = digit = false\n  password.each_char do |char|\n    lower = true if char >= 'a' && char <= 'z'\n    upper = true if char >= 'A' && char <= 'Z'\n    digit = true if char >= '0' && char <= '9'\n  end\n  password.length > 8 && lower && upper && digit\nend\n" }
         say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
-    hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+    hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einem One-way Flag (Einweg-Merker), ob sie schon vorkam; es springt beim ersten passenden Zeichen um und nie zurück. Geh das Passwort einmal durch."
     solution: |
       ```ruby
       def strong_password(password)
@@ -2393,7 +2393,7 @@ tasks:
       feedback:
         - when: { same_as: "def strong_password(password):\n    lower = upper = digit = False\n    for char in password:\n        if 'a' <= char <= 'z':\n            lower = True\n        if 'A' <= char <= 'Z':\n            upper = True\n        if '0' <= char <= '9':\n            digit = True\n    return len(password) > 8 and lower and upper and digit\n" }
           say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
-      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einem One-way Flag (Einweg-Merker), ob sie schon vorkam; es springt beim ersten passenden Zeichen um und nie zurück. Geh das Passwort einmal durch."
       solution: |
         ```python
         def strong_password(password):
@@ -2436,7 +2436,7 @@ tasks:
       feedback:
         - when: { same_as: "function strongPassword(password) {\n  let lower = false, upper = false, digit = false;\n  for (const char of password) {\n    if (char >= 'a' && char <= 'z') lower = true;\n    if (char >= 'A' && char <= 'Z') upper = true;\n    if (char >= '0' && char <= '9') digit = true;\n  }\n  return password.length > 8 && lower && upper && digit;\n}\n" }
           say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
-      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einem One-way Flag (Einweg-Merker), ob sie schon vorkam; es springt beim ersten passenden Zeichen um und nie zurück. Geh das Passwort einmal durch."
       solution: |
         ```javascript
         function strongPassword(password) {
@@ -2469,7 +2469,7 @@ tasks:
       feedback:
         - when: { same_as: "bool strongPassword(String password) {\n  var lower = false, upper = false, digit = false;\n  for (final code in password.codeUnits) {\n    if (code >= 97 && code <= 122) lower = true;\n    if (code >= 65 && code <= 90) upper = true;\n    if (code >= 48 && code <= 57) digit = true;\n  }\n  return password.length > 8 && lower && upper && digit;\n}\n" }
           say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
-      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch. Die Nummern: `a` bis `z` sind 97 bis 122, `A` bis `Z` 65 bis 90, `0` bis `9` 48 bis 57."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einem One-way Flag (Einweg-Merker), ob sie schon vorkam; es springt beim ersten passenden Zeichen um und nie zurück. Geh das Passwort einmal durch. Die Nummern: `a` bis `z` sind 97 bis 122, `A` bis `Z` 65 bis 90, `0` bis `9` 48 bis 57."
       solution: |
         ```dart
         bool strongPassword(String password) {
@@ -2502,7 +2502,7 @@ tasks:
       feedback:
         - when: { same_as: "boolean strongPassword(String password) {\n    boolean lower = false, upper = false, digit = false;\n    for (char c : password.toCharArray()) {\n        if (c >= 'a' && c <= 'z') lower = true;\n        if (c >= 'A' && c <= 'Z') upper = true;\n        if (c >= '0' && c <= '9') digit = true;\n    }\n    return password.length() > 8 && lower && upper && digit;\n}\n" }
           say: "Acht Zeichen reichen: Es heißt mindestens acht, also `>=`."
-      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einer Variablen, ob sie schon vorkam, und geh das Passwort einmal durch."
+      hint: "Drei Fragen auf einmal: Merk dir für jede Art von Zeichen in einem One-way Flag (Einweg-Merker), ob sie schon vorkam; es springt beim ersten passenden Zeichen um und nie zurück. Geh das Passwort einmal durch."
       solution: |
         ```java
         boolean strongPassword(String password) {

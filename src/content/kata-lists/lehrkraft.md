@@ -20,10 +20,10 @@ Lernende schreiben Funktionen, die Listen bekommen, direkt in die Karten der Sei
 #### Was schiefgeht
 
 - In Ruby ist das Letzte in der Funktion ihr Ergebnis: Endet sie mit der Schleife, kommt die Liste zurück statt der Summe. In Python und JavaScript fehlt das <code>return</code>. Die Rückmeldung nennt beides.
-- Das Maximum fängt bei 0 an und stimmt bei lauter negativen Zahlen nicht.
+- Das Maximum fängt bei 0 an und stimmt bei lauter negativen Zahlen nicht. Die Rückmeldung nennt <code>best</code> einen Most-wanted Holder, nach den <a href='/reference/variablen-rollen#most-wanted-holder'>Rollen von Variablen</a> im Handbuch: Er braucht einen Anfangswert, den jede Zahl schlagen kann.
 - <code>contains</code> gibt schon beim ersten Element <code>false</code> zurück, statt nach der Schleife.
 - Beim Rückwärtsgehen fehlt der Index 0, oder es fängt bei <code>length</code> statt <code>length - 1</code> an.
-- Beim Tauschen ist das erste Element schon überschrieben, wenn es nach hinten soll.
+- Beim Tauschen ist das erste Element schon überschrieben, wenn es nach hinten soll; die Rückmeldung schlägt einen Temporary vor, eine Variable für den alten Wert.
 - Beim Mischen bleibt der Rest der längeren Liste liegen.
 
 #### Die Aufgaben

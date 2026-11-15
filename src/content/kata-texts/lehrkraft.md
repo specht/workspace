@@ -25,6 +25,7 @@ Lernende schreiben Funktionen, die mit Texten arbeiten, direkt in die Karten der
 - Großbuchstaben durch »minus 32« auch für Satzzeichen und Leerzeichen.
 - Caesar ohne den Sprung von <code>z</code> zurück zu <code>a</code>; in JavaScript ist <code>-1 % 26</code> gleich <code>-1</code>, die Rückmeldung nennt es.
 - Anagramme mit einer Menge der Buchstaben: <code>'aab'</code> und <code>'abb'</code> wären dann gleich.
+- Beim längsten Wort ersetzt ein gleich langes das bisher längste (<code>>=</code> statt <code>></code>). Die Variable dafür ist ein Most-wanted Holder, und der Tipp nennt die Rolle wie das Handbuch unter <a href='/reference/variablen-rollen'>Rollen von Variablen</a>; der Text über den Katas nennt <code>result</code> einen Gatherer.
 
 #### Die Aufgaben
 

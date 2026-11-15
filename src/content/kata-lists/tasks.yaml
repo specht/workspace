@@ -219,7 +219,7 @@ tasks:
           say: "Die größte Zahl steht ganz hinten."
     feedback:
       - when: { same_as: "def list_max(numbers)\n  best = 0\n  numbers.each do |number|\n    best = number if number > best\n  end\n  best\nend\n" }
-        say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+        say: "`best` ist ein Most-wanted Holder (Bester bisher), und er braucht einen Anfangswert, den jede Zahl der Liste schlagen kann. Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
     hint:
       - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
       - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
@@ -258,7 +258,7 @@ tasks:
             say: "Die größte Zahl steht ganz hinten."
       feedback:
         - when: { same_as: "def list_max(numbers):\n    best = 0\n    for number in numbers:\n        if number > best:\n            best = number\n    return best\n" }
-          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+          say: "`best` ist ein Most-wanted Holder (Bester bisher), und er braucht einen Anfangswert, den jede Zahl der Liste schlagen kann. Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
       hint:
         - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
         - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
@@ -296,7 +296,7 @@ tasks:
             say: "Die größte Zahl steht ganz hinten."
       feedback:
         - when: { same_as: "function listMax(numbers) {\n  let best = 0;\n  for (const number of numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n" }
-          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+          say: "`best` ist ein Most-wanted Holder (Bester bisher), und er braucht einen Anfangswert, den jede Zahl der Liste schlagen kann. Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
       hint:
         - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
         - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
@@ -338,7 +338,7 @@ tasks:
             say: "Die größte Zahl steht ganz hinten."
       feedback:
         - when: { same_as: "int listMax(List<int> numbers) {\n  var best = 0;\n  for (final number in numbers) {\n    if (number > best) {\n      best = number;\n    }\n  }\n  return best;\n}\n" }
-          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+          say: "`best` ist ein Most-wanted Holder (Bester bisher), und er braucht einen Anfangswert, den jede Zahl der Liste schlagen kann. Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
       hint:
         - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
         - "Womit fängst du an? `numbers[0]` ist die Zahl mit dem Index 0, die erste."
@@ -380,7 +380,7 @@ tasks:
             say: "Die größte Zahl steht ganz hinten."
       feedback:
         - when: { same_as: "int listMax(List<Integer> numbers) {\n    int best = 0;\n    for (int number : numbers) {\n        if (number > best) {\n            best = number;\n        }\n    }\n    return best;\n}\n" }
-          say: "Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
+          say: "`best` ist ein Most-wanted Holder (Bester bisher), und er braucht einen Anfangswert, den jede Zahl der Liste schlagen kann. Fang mit der ersten Zahl der Liste an, nicht mit 0: Bei lauter negativen Zahlen ist 0 gar nicht dabei."
       hint:
         - "Merk dir die bisher größte Zahl in einer Variablen und vergleich jede Zahl mit ihr."
         - "Womit fängst du an? `numbers.get(0)` ist die Zahl mit dem Index 0, die erste."
@@ -998,7 +998,7 @@ tasks:
           expect: "[7, 6, 5]"
     feedback:
       - when: { same_as: "def swap_ends(items)\n  result = items.dup\n  result[0] = result[-1]\n  result[-1] = result[0]\n  result\nend\n" }
-        say: "Nach `result[0] = result[-1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+        say: "Nach `result[0] = result[-1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher in einem Temporary (Zwischenspeicher)."
     hint:
       - "`items.dup` ist eine Kopie der Liste. `items[-1]` ist das letzte Element."
       - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
@@ -1034,7 +1034,7 @@ tasks:
             expect: "[7, 6, 5]"
       feedback:
         - when: { same_as: "def swap_ends(items):\n    result = list(items)\n    if len(result) < 2:\n        return result\n    result[0] = result[-1]\n    result[-1] = result[0]\n    return result\n" }
-          say: "Nach `result[0] = result[-1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+          say: "Nach `result[0] = result[-1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher in einem Temporary (Zwischenspeicher)."
       hint:
         - "`list(items)` ist eine Kopie der Liste. `items[-1]` ist das letzte Element."
         - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
@@ -1072,7 +1072,7 @@ tasks:
             expect: "[7, 6, 5]"
       feedback:
         - when: { same_as: "function swapEnds(items) {\n  const result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = result[result.length - 1];\n  result[result.length - 1] = result[0];\n  return result;\n}\n" }
-          say: "Nach `result[0] = result[result.length - 1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+          say: "Nach `result[0] = result[result.length - 1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher in einem Temporary (Zwischenspeicher)."
       hint:
         - "`[...items]` ist eine Kopie der Liste. `items[items.length - 1]` ist das letzte Element."
         - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
@@ -1113,7 +1113,7 @@ tasks:
             expect: "[7, 6, 5]"
       feedback:
         - when: { same_as: "List<int> swapEnds(List<int> items) {\n  final result = [...items];\n  if (items.length < 2) {\n    return result;\n  }\n  result[0] = result[result.length - 1];\n  result[result.length - 1] = result[0];\n  return result;\n}\n" }
-          say: "Nach `result[0] = result[result.length - 1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+          say: "Nach `result[0] = result[result.length - 1]` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher in einem Temporary (Zwischenspeicher)."
       hint:
         - "`[...items]` ist eine Kopie der Liste. `items[items.length - 1]` ist das letzte Element."
         - "Wenn du `result[0]` überschreibst, ist der alte Wert weg. Woher nimmst du ihn für hinten?"
@@ -1154,7 +1154,7 @@ tasks:
             expect: "List.of(7, 6, 5)"
       feedback:
         - when: { same_as: "List<Integer> swapEnds(List<Integer> items) {\n    List<Integer> result = new ArrayList<>(items);\n    if (items.size() < 2) {\n        return result;\n    }\n    result.set(0, result.get(result.size() - 1));\n    result.set(result.size() - 1, result.get(0));\n    return result;\n}\n" }
-          say: "Nach `result.set(0, …)` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher."
+          say: "Nach `result.set(0, …)` ist das erste Element schon überschrieben, und hinten landet wieder das letzte. Nimm die Werte aus der alten Liste, oder merk dir einen vorher in einem Temporary (Zwischenspeicher)."
       hint:
         - "`new ArrayList<>(items)` ist eine Kopie der Liste, die sich ändern lässt. `items.get(items.size() - 1)` ist das letzte Element, `result.set(i, wert)` ersetzt das Element mit dem Index `i`."
         - "Wenn du das Element mit dem Index 0 ersetzt, ist der alte Wert weg. Woher nimmst du ihn für hinten?"

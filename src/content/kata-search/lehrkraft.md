@@ -19,7 +19,7 @@ Lernende schreiben Funktionen, die in Listen suchen, direkt in die Karten der Se
 
 #### Was schiefgeht
 
-- Die lineare Suche sucht weiter und merkt sich das letzte statt des ersten Vorkommens.
+- Die lineare Suche sucht weiter und merkt sich das letzte statt des ersten Vorkommens. Die Rückmeldung nennt die Variable einen Most-recent Holder, nach den <a href='/reference/variablen-rollen'>Rollen von Variablen</a> im Handbuch; der Tipp zur kleinsten Zahl nennt den Most-wanted Holder aus den Listen.
 - Beim Index der kleinsten Zahl gewinnt mit <code>&lt;=</code> die letzte von gleich kleinen.
 - Von hinten gezählt, kommt der Index 0 nicht mehr dran.
 - Die binäre Suche hört mit <code>low &lt; high</code> ein Feld zu früh auf und findet in <code>[4]</code> die 4 nicht.

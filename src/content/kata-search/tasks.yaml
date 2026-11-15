@@ -28,7 +28,7 @@ tasks:
           say: "Auch der letzte Index."
     feedback:
       - when: { same_as: "def linear_search(items, wanted)\n  result = nil\n  items.each_with_index do |item, i|\n    result = i if item == wanted\n  end\n  result\nend\n" }
-        say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht. Beim ersten bist du fertig: `return`."
+        say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht: Die Variable für das Ergebnis ist ein Most-recent Holder (Letzter Wert) und hält den Index, der zuletzt passte. Beim ersten bist du fertig: `return`."
     hint: "Wie `contains` aus den Listen, nur gibst du den Index zurück. `items.each_with_index do |item, i| … end` gibt dir beides."
     solution: |
       ```ruby
@@ -64,7 +64,7 @@ tasks:
             say: "Auch der letzte Index."
       feedback:
         - when: { same_as: "def linear_search(items, wanted):\n    result = None\n    for i in range(len(items)):\n        if items[i] == wanted:\n            result = i\n    return result\n" }
-          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht. Beim ersten bist du fertig: `return`."
+          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht: Die Variable für das Ergebnis ist ein Most-recent Holder (Letzter Wert) und hält den Index, der zuletzt passte. Beim ersten bist du fertig: `return`."
       hint: "Wie `contains` aus den Listen, nur gibst du den Index zurück. `for i in range(len(items)):` zählt die Indizes durch."
       solution: |
         ```python
@@ -99,7 +99,7 @@ tasks:
             say: "Auch der letzte Index."
       feedback:
         - when: { same_as: "function linearSearch(items, wanted) {\n  let result = null;\n  for (let i = 0; i < items.length; i++) {\n    if (items[i] === wanted) {\n      result = i;\n    }\n  }\n  return result;\n}\n" }
-          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht. Beim ersten bist du fertig: `return`."
+          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht: Die Variable für das Ergebnis ist ein Most-recent Holder (Letzter Wert) und hält den Index, der zuletzt passte. Beim ersten bist du fertig: `return`."
       hint: "Wie `contains` aus den Listen, nur gibst du den Index zurück. `for (let i = 0; i < items.length; i++)` zählt die Indizes durch."
       solution: |
         ```javascript
@@ -131,7 +131,7 @@ tasks:
           - { call: "linearSearch([1, 2, 3], 3)", expect: "2", say: "Auch der letzte Index." }
       feedback:
         - when: { same_as: "int? linearSearch(List<int> items, int wanted) {\n  int? result;\n  for (var i = 0; i < items.length; i++) {\n    if (items[i] == wanted) {\n      result = i;\n    }\n  }\n  return result;\n}\n" }
-          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht. Beim ersten bist du fertig: `return`."
+          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht: Die Variable für das Ergebnis ist ein Most-recent Holder (Letzter Wert) und hält den Index, der zuletzt passte. Beim ersten bist du fertig: `return`."
       hint: "Wie `contains` aus den Listen, nur gibst du den Index zurück. `for (var i = 0; i < items.length; i++)` zählt die Indizes durch."
       solution: |
         ```dart
@@ -163,7 +163,7 @@ tasks:
           - { call: "linearSearch(List.of(1, 2, 3), 3)", expect: "2", say: "Auch der letzte Index." }
       feedback:
         - when: { same_as: "Integer linearSearch(List<Integer> items, int wanted) {\n    Integer result = null;\n    for (int i = 0; i < items.size(); i++) {\n        if (items.get(i) == wanted) {\n            result = i;\n        }\n    }\n    return result;\n}\n" }
-          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht. Beim ersten bist du fertig: `return`."
+          say: "Dein Code merkt sich das letzte Vorkommen, weil er weitersucht: Die Variable für das Ergebnis ist ein Most-recent Holder (Letzter Wert) und hält den Index, der zuletzt passte. Beim ersten bist du fertig: `return`."
       hint: "Wie `contains` aus den Listen, nur gibst du den Index zurück. `for (int i = 0; i < items.size(); i++)` zählt die Indizes durch."
       solution: |
         ```java
@@ -205,7 +205,7 @@ tasks:
     feedback:
       - when: { same_as: "def min_index(numbers)\n  best = 0\n  (1...numbers.length).each do |i|\n    best = i if numbers[i] <= numbers[best]\n  end\n  best\nend\n" }
         say: "Bei gleich kleinen zählt die erste. Mit `<=` nimmt dein Code die letzte."
-    hint: "Wie die größte Zahl aus den Listen, nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
+    hint: "Wie die größte Zahl aus den Listen, wieder mit einem Most-wanted Holder (Bester bisher), nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
     solution: |
       ```ruby
       def min_index(numbers)
@@ -240,7 +240,7 @@ tasks:
       feedback:
         - when: { same_as: "def min_index(numbers):\n    best = 0\n    for i in range(1, len(numbers)):\n        if numbers[i] <= numbers[best]:\n            best = i\n    return best\n" }
           say: "Bei gleich kleinen zählt die erste. Mit `<=` nimmt dein Code die letzte."
-      hint: "Wie die größte Zahl aus den Listen, nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
+      hint: "Wie die größte Zahl aus den Listen, wieder mit einem Most-wanted Holder (Bester bisher), nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
       solution: |
         ```python
         def min_index(numbers):
@@ -276,7 +276,7 @@ tasks:
       feedback:
         - when: { same_as: "function minIndex(numbers) {\n  let best = 0;\n  for (let i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[best]) {\n      best = i;\n    }\n  }\n  return best;\n}\n" }
           say: "Bei gleich kleinen zählt die erste. Mit `<=` nimmt dein Code die letzte."
-      hint: "Wie die größte Zahl aus den Listen, nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
+      hint: "Wie die größte Zahl aus den Listen, wieder mit einem Most-wanted Holder (Bester bisher), nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
       solution: |
         ```javascript
         function minIndex(numbers) {
@@ -309,7 +309,7 @@ tasks:
       feedback:
         - when: { same_as: "int minIndex(List<int> numbers) {\n  var best = 0;\n  for (var i = 1; i < numbers.length; i++) {\n    if (numbers[i] <= numbers[best]) {\n      best = i;\n    }\n  }\n  return best;\n}\n" }
           say: "Bei gleich kleinen zählt die erste. Mit `<=` nimmt dein Code die letzte."
-      hint: "Wie die größte Zahl aus den Listen, nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
+      hint: "Wie die größte Zahl aus den Listen, wieder mit einem Most-wanted Holder (Bester bisher), nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers[i]` mit `numbers[best]`."
       solution: |
         ```dart
         int minIndex(List<int> numbers) {
@@ -342,7 +342,7 @@ tasks:
       feedback:
         - when: { same_as: "int minIndex(List<Integer> numbers) {\n    int best = 0;\n    for (int i = 1; i < numbers.size(); i++) {\n        if (numbers.get(i) <= numbers.get(best)) {\n            best = i;\n        }\n    }\n    return best;\n}\n" }
           say: "Bei gleich kleinen zählt die erste. Mit `<=` nimmt dein Code die letzte."
-      hint: "Wie die größte Zahl aus den Listen, nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers.get(i)` mit `numbers.get(best)`."
+      hint: "Wie die größte Zahl aus den Listen, wieder mit einem Most-wanted Holder (Bester bisher), nur merkst du dir den Index statt der Zahl: `best` fängt bei 0 an, und du vergleichst `numbers.get(i)` mit `numbers.get(best)`."
       solution: |
         ```java
         int minIndex(List<Integer> numbers) {
