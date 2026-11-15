@@ -52,6 +52,31 @@ function dijkstra(graph, start, goal) {
     throw notYet('dijkstra');
 }
 
+// Eine Priority Queue: push legt einen Wert mit einer Priorität hinein, pop
+// gibt das Paar [Priorität, Wert] mit der kleinsten Priorität zurück und
+// nimmt es heraus (null, wenn sie leer ist).
+class MinHeap {
+    constructor() {
+        this.items = []; // [Priorität, Wert], als binärer Heap
+    }
+
+    isEmpty() {
+        return this.items.length === 0;
+    }
+
+    get size() {
+        return this.items.length;
+    }
+
+    push(priority, value) {
+        throw notYet('MinHeap.push');
+    }
+
+    pop() {
+        throw notYet('MinHeap.pop');
+    }
+}
+
 // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
 // Gibt dasselbe zurück wie breadthFirst.
 function aStar(graph, start, goal) {
@@ -108,6 +133,6 @@ function improveTour(costs, order) {
 }
 
 module.exports = {
-    readWays, distance, buildGraph, pathTo, breadthFirst, dijkstra, aStar, SPEEDS,
+    readWays, distance, buildGraph, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
     buildTravelGraph, tourLength, bestTour, nearestTour, improveTour,
 };

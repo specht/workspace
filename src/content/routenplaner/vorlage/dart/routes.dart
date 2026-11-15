@@ -45,6 +45,25 @@ Search dijkstra(Graph graph, String start, String goal) {
   throw UnimplementedError('dijkstra');
 }
 
+// Eine Priority Queue: push legt einen Wert mit einer Priorität hinein, pop
+// gibt das Paar (Priorität, Wert) mit der kleinsten Priorität zurück und
+// nimmt es heraus (null, wenn sie leer ist).
+class MinHeap {
+  final items = <(double, String)>[]; // (Priorität, Wert), als binärer Heap
+
+  bool get isEmpty => items.isEmpty;
+
+  int get length => items.length;
+
+  void push(double priority, String value) {
+    throw UnimplementedError('MinHeap.push');
+  }
+
+  (double, String)? pop() {
+    throw UnimplementedError('MinHeap.pop');
+  }
+}
+
 // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
 // Gibt dasselbe zurück wie breadthFirst.
 Search aStar(Graph graph, String start, String goal) {

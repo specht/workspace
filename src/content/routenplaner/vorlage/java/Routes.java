@@ -44,6 +44,32 @@ public class Routes {
         throw new UnsupportedOperationException("dijkstra");
     }
 
+    // Eine Priority Queue: push legt einen Wert mit einer Priorität hinein,
+    // pop gibt das Paar (Priorität, Wert) mit der kleinsten Priorität zurück
+    // und nimmt es heraus (null, wenn sie leer ist).
+    static class MinHeap {
+        // ein Paar im Heap: die Priorität und der Wert, etwa die ID eines Knotens
+        record Entry(double priority, String value) {}
+
+        final List<Entry> items = new ArrayList<>(); // als binärer Heap
+
+        boolean isEmpty() {
+            return items.isEmpty();
+        }
+
+        int size() {
+            return items.size();
+        }
+
+        void push(double priority, String value) {
+            throw new UnsupportedOperationException("MinHeap.push");
+        }
+
+        Entry pop() {
+            throw new UnsupportedOperationException("MinHeap.pop");
+        }
+    }
+
     // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
     // Gibt dasselbe zurück wie breadthFirst.
     static Search aStar(Graph graph, String start, String goal) {
