@@ -1,6 +1,12 @@
 Lernende bauen einen Rechner, der Ausdrücke wie `2 + 3 * (4 - 1)` versteht, in Ruby oder Python: Sie zerlegen den Text in Tokens (mit einem Automaten wie in <a href='/automata'>»Endliche Automaten«</a>), bauen daraus mit rekursivem Abstieg einen Baum, in dem Punkt vor Strich und Klammern stehen, rechnen den Baum aus, melden Fehler verständlich und erweitern den Rechner um Potenzen (rechtsassoziativ) und Variablen. Ein Baum zum Durchklicken auf der Seite zeigt, in welcher Reihenfolge gerechnet wird.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Ausdruck mit Punkt vor Strich, Klammern und Potenzen von Hand als Baum zeichnen und auswerten,</li>
+<li>erklären, warum ein endlicher Automat Klammern nicht zählen kann und ein rekursiver Parser es kann,</li>
+<li>eine Grammatik in Funktionen übersetzen, die sich gegenseitig aufrufen (rekursiver Abstieg),</li>
+<li>begründen, warum <code>2 ^ 3 ^ 2</code> von rechts gerechnet wird, und das im eigenen Parser umsetzen.</li>
+</ul></td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> Punkt vor Strich, Einrichten, Zerlegen, warum ein Automat keine Klammern zählen kann.</li>
 <li><b>2. Doppelstunde:</b> der Baum, Ausrechnen, Fehler, Potenzen und Variablen.</li>

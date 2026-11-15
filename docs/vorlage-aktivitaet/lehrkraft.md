@@ -1,6 +1,9 @@
 Lernende … (ein, zwei Sätze: was sie tun und was am Ende dasteht). Lernende sehen die Notiz nicht.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>… (zwei bis vier Punkte, jeder beobachtbar: erklären, begründen, schreiben, vergleichen)</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>…</td></tr>
 <tr><th>Ablauf</th><td><ul>
 <li><b>1. Doppelstunde:</b> …</li>

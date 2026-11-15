@@ -1,6 +1,12 @@
 Huffman-Codes zum Selberbauen, in Ruby oder Python: Lernende kommen vom Morsecode über präfixfreie Codes zum Baum, schreiben `frequencies`, `build_tree`, `code_table`, `encode` und `decode`, vergleichen mit LZW und `gzip` und bauen zum Schluss kanonische Codes, wie JPEG sie im DHT-Segment speichert.
 
 <table class='table'>
+<tr><th>Ziele</th><td>Die Lernenden können danach<ul>
+<li>einen Huffman-Baum für einen kurzen Text von Hand bauen und daraus die Codes ablesen,</li>
+<li>erklären, warum ein präfixfreier Code ohne Trennzeichen eindeutig decodiert werden kann,</li>
+<li>begründen, wann Huffman viel spart und wann wenig (gleich häufige gegen sehr ungleich häufige Zeichen),</li>
+<li>die Methoden <code>frequencies</code>, <code>build_tree</code>, <code>encode</code> und <code>decode</code> schreiben und an einer echten Datei messen.</li>
+</ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Grundlagen in Ruby oder Python: Funktionen, Schleifen, Listen und Hashes oder <code>dict</code>. Eine Methode, die sich selbst aufruft, kommt in <code>code_table</code> vor; die Seite erklärt sie in zwei Sätzen, mehr Rekursion braucht es nicht.</td></tr>
 <tr><th>Sprache</th><td>Welche Sprache eine Klasse sieht, stellst du auf der <a href='/klasse'>Klassenseite</a> unter »Sprachen der Klasse« ein, ohne Einstellung ist es Ruby. Lernende können auf der Seite selbst umschalten; eine Aufgabe, die sie in einer Sprache gelöst haben, gilt auch in der anderen.</td></tr>
 <tr><th>Einordnung</th><td>Huffman passt vor <a href='/lzw'>LZW</a> oder danach; das <a href='/jpeg'>JPEG-Labor</a> baut darauf auf.</td></tr>

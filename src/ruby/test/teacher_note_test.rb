@@ -28,6 +28,22 @@ class TeacherNoteTest < Minitest::Test
         assert_empty vague, "The first paragraph of these teacher notes does not say what »Lernende« do:\n#{vague.join("\n")}"
     end
 
+    # The table opens with the goals (docs/checkliste.md »Für Lehrkräfte«):
+    # what students can do afterwards, two to four points, apart from the
+    # first paragraph about what they do on the page.
+    def test_the_table_opens_with_two_to_four_goals
+        wrong = activities.select { |slug| File.file?(File.join(CONTENT, slug, 'lehrkraft.md')) }.filter_map do |slug|
+            text = File.read(File.join(CONTENT, slug, 'lehrkraft.md'))
+            row = text[%r{<table[^>]*>\s*<tr><th>Ziele</th><td>(.*?)</td></tr>}m, 1]
+            next "#{slug}: no row »Ziele« first in the table" if row.nil?
+            next "#{slug}: »Die Lernenden können danach« missing" unless row.start_with?('Die Lernenden können danach')
+
+            points = row.scan('<li>').size
+            "#{slug}: #{points} goals, two to four wanted" unless points.between?(2, 4)
+        end
+        assert_empty wrong, "Teacher notes whose table does not open with the goals:\n#{wrong.join("\n")}"
+    end
+
     # The facts of a note are an HTML table, and Redcarpet leaves Markdown
     # inside HTML as it is: `code`, **bold** and [links](…) would show with
     # their backticks and brackets. In a cell they are <code>, <b> and <a>.

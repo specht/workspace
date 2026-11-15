@@ -748,6 +748,13 @@ Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
 - **Ein kurzer erster Absatz**, ein, zwei Sätze, der sagt, was die Lernenden
   tun: »Lernende bauen …, schreiben …, messen …«. Keine Aufzählung jeder
   Stufe; die steht im Ablauf.
+- **Die Ziele** als erste Zeile der Tabelle: »Die Lernenden können danach
+  …« mit zwei bis vier Punkten, die man beobachten kann (erklären,
+  begründen, schreiben, vergleichen, beurteilen, von Hand ausführen). Der
+  erste Absatz sagt, was sie tun; die Ziele sagen, was sie danach können,
+  auch ohne die Seite: nicht »bauen einen Rechner«, sondern »zerlegen einen
+  Ausdruck in einen Baum und begründen, warum Punkt vor Strich darin
+  steckt«.
 - **Eine Tabelle mit den Fakten**, je Zeile ein Stichwort: Voraussetzungen,
   Sprache (wo es mehrere gibt), Ablauf, Dateien, Prüfung, Abgabe, Lösung.
   Hat eine Zelle mehr als zwei Sätze, wird sie eine Liste; der Ablauf ist
