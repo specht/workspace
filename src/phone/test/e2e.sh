@@ -172,7 +172,17 @@ games=$(sed -n 's/.*"games": \(\[[^]]*\]\).*/\1/p' "$OUT/calls/telefon.jsonl" 2>
 if [ "$games" = '["123"] ["123"] [] [] ["124"] ["3228", "3228", "3228"] ' ]; then echo "ok    games of the calls: $games"; else echo "WRONG games of the calls: $games"; fail=1; fi
 if head -4 "$OUT/calls/telefon.jsonl" | grep -qv '^{"hour": [0-9]*, "line": "telefon", "seconds": [0-9]*, "games": \[[^]]*\]}$'; then echo "WRONG a call's line holds more"; fail=1; else echo "ok    nothing but hour, line, seconds, games"; fi
 if sed -n 5p "$OUT/calls/telefon.jsonl" | grep -q '"errors": \[{"game": "124", "text": ".*syntax error'; then echo "ok    the crash's error recorded for 124"; else echo "WRONG no error recorded for 124"; fail=1; fi
+# what the telephone heard on the first call (45 s): the menu, the game's
+# music and speech, at least 30 s of it and not silence (with ICE on,
+# Asterisk 20.15 and 22 dropped the runner's audio and the caller heard
+# nothing, while everything above still passed)
 heard=$(ls "$OUT"/out/*-dec.wav | head -1)
-seconds=$(docker run --rm -v "$OUT:/t" phone-testclient sh -c "sox /t/out/$(basename "$heard") -n stat 2>&1 | sed -n 's/^Length (seconds): *//p'")
-echo "heard ${seconds} s: $heard"
+stat=$(docker run --rm -v "$OUT:/t" phone-testclient sh -c "sox /t/out/$(basename "$heard") -n stat 2>&1")
+seconds=$(echo "$stat" | sed -n 's/^Length (seconds): *//p')
+peak=$(echo "$stat" | sed -n 's/^Maximum amplitude: *//p')
+if awk -v s="${seconds:-0}" -v p="${peak:-0}" 'BEGIN { exit !(s >= 30 && p >= 0.1) }'; then
+    echo "ok    heard ${seconds} s, peak ${peak}"
+else
+    echo "WRONG heard ${seconds:-0} s, peak ${peak:-0}: the caller hears silence"; fail=1
+fi
 exit $fail

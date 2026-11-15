@@ -389,8 +389,10 @@ class Runner:
             return None
 
     async def events(self):
-        url = ARI.replace('http', 'ws', 1) + f'/events?app={APP}&api_key={ARI_USER}:{ARI_PASSWORD}'
-        async with self.session.ws_connect(url, heartbeat=30) as ws:
+        # the password in the header, not in the address: aiohttp names the
+        # address in its errors, which the log keeps
+        url = ARI.replace('http', 'ws', 1) + f'/events?app={APP}'
+        async with self.session.ws_connect(url, heartbeat=30, auth=aiohttp.BasicAuth(ARI_USER, ARI_PASSWORD)) as ws:
             log('connected to Asterisk')
             async for message in ws:
                 event = json.loads(message.data)
@@ -421,7 +423,7 @@ class Runner:
                 try:
                     await self.events()
                 except (aiohttp.ClientError, OSError) as error:
-                    log('waiting for Asterisk:', error)
+                    log('waiting for Asterisk:', str(error).replace(ARI_PASSWORD, '…') if ARI_PASSWORD else error)
                 await asyncio.sleep(2)
 
 
