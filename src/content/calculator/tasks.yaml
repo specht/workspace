@@ -136,6 +136,26 @@ tasks:
               return tokens
           ```
 
+  - id: baum-regel
+    title: Was jeder Baum verrät
+    prediction: true
+    prompt: Du hast ein paar Bäume Knoten für Knoten ausgerechnet. Was gilt für jeden von ihnen?
+    check:
+      type: choice
+      options:
+        - Was weiter unten hängt, wird zuerst gerechnet.
+        - Gerechnet wird von links nach rechts, so wie man den Ausdruck liest.
+        - Das Rechenzeichen ganz oben kommt zuerst dran, dann die darunter.
+        - Ein `*` kommt immer vor einem `+` dran, egal wo es im Baum hängt.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: In `2 + 3 * 4` steht die 2 ganz links, aber das `+` kommt zuletzt dran. Schau, welcher Knoten im Baum als Erster lila umrandet ist.
+      - when: { picked: 2 }
+        say: Das `+` steht in `2 + 3 * 4` ganz oben und kommt zuletzt. Es braucht ja erst den Wert von `3 * 4`.
+      - when: { picked: 3 }
+        say: Rechne `(2 + 3) * 4` im Baum aus. Dort hängt das `*` oben und kommt nach dem `+`.
+
   - id: klammern
     title: Was ein Automat nicht kann
     prompt: Warum kann kein endlicher Automat für jeden Ausdruck entscheiden, ob seine Klammern zusammenpassen?

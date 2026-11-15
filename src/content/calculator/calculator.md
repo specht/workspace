@@ -101,7 +101,7 @@ _task(links-nach-rechts)
 Ein Rechner muss diese Regeln kennen. Er arbeitet dafür in drei Schritten:
 
 1. **Zerlegen:** Aus dem Text `12+3*(4-1)` werden **Tokens**, die kleinsten Stücke, die etwas bedeuten: die Zahl 12, das Zeichen `+`, die Zahl 3 und so weiter. Leerzeichen fallen dabei weg.
-2. **Einen Baum bauen:** Aus den Tokens wird ein Baum, an dem die Regeln schon abzulesen sind: Was zuerst gerechnet wird, hängt weiter unten.
+2. **Einen Baum bauen:** Aus den Tokens wird ein Baum, an dem die Regeln schon abzulesen sind.
 3. **Ausrechnen:** Den Baum von unten nach oben, Knoten für Knoten.
 
 So sieht der Baum für `2 + 3 * 4` aus. Das `*` hängt unter dem `+`, also wird es zuerst ausgerechnet:
@@ -280,7 +280,7 @@ _task(zerlegen)
 
 ## Ein Baum
 
-Den Ausdruck `2 + 3 * 4` schreibt der Rechner als Baum, in dem das, was zuerst gerechnet wird, weiter unten hängt: oben das `+`, links die 2, rechts ein `*` mit der 3 und der 4. Als Liste ist das
+Den Ausdruck `2 + 3 * 4` schreibt der Rechner als Baum: oben das `+`, links die 2, rechts ein `*` mit der 3 und der 4. Als Liste ist das
 
 ```text
 ["+", 2, ["*", 3, 4]]
@@ -288,7 +288,7 @@ Den Ausdruck `2 + 3 * 4` schreibt der Rechner als Baum, in dem das, was zuerst g
 
 Jeder Knoten ist entweder eine Zahl, ein **Blatt**, oder eine Liste aus dem Rechenzeichen und den beiden Teilbäumen links und rechts. Ein Minus vor einer Zahl oder einer Klammer ist ein Vorzeichen mit nur einem Teilbaum: `-(1 + 2)` ist `["neg", ["+", 1, 2]]`. Klammern tauchen im Baum gar nicht mehr auf, sie stecken in seiner Form: `(2 + 3) * 4` ist `["*", ["+", 2, 3], 4]`.
 
-Probier es aus, mit einem der Ausdrücke oben. Der Baum steht so, dass du den Ausdruck von links nach rechts lesen kannst. Mit den Pfeilen rechnest du ihn aus, einen Knoten nach dem anderen. Lila umrandet ist der Knoten, der als Nächstes drankommt: immer einer, unter dem nur noch Zahlen hängen.
+Probier es aus, mit einem der Ausdrücke oben. Der Baum steht so, dass du den Ausdruck von links nach rechts lesen kannst. Mit den Pfeilen rechnest du ihn aus, einen Knoten nach dem anderen. Lila umrandet ist der Knoten, der als Nächstes drankommt. Rechne mindestens `2 + 3 * 4` und `(2 + 3) * 4` aus und achte darauf, welcher Knoten jeweils als Erster drankommt und welcher als Letzter.
 
 <div class='calc-stepper' id='calc-stepper' data-stepper>
 <select class='form-select' id='calc-input' aria-label='Ausdruck für den Baum'><option selected value='2+3*(4-1)'>2 + 3 * (4 - 1)</option><option value='2+3*4'>2 + 3 * 4</option><option value='(2+3)*4'>(2 + 3) * 4</option><option value='12+3*(4-1)'>12 + 3 * (4 - 1)</option><option value='-(1+2)*4'>-(1 + 2) * 4</option><option value='10/4+1'>10 / 4 + 1</option></select>
@@ -302,6 +302,12 @@ Probier es aus, mit einem der Ausdrücke oben. Der Baum steht so, dass du den Au
 <div class='calc-say' aria-live='polite'></div>
 <div class='calc-tree' role='img' aria-label='Der Baum des Ausdrucks'></div>
 </div>
+
+_task(baum-regel)
+
+<!-- after: baum-regel -->
+Ein Knoten kommt erst dran, wenn alles unter ihm ausgerechnet ist: Als Nächstes ist immer einer an der Reihe, unter dem nur noch Zahlen hängen. Was zuerst gerechnet wird, hängt also weiter unten. Darum steht das `*` in `2 + 3 * 4` unter dem `+`, in `(2 + 3) * 4` aber darüber. Diese Regel ist das, was der Parser später herstellen muss: Er baut den Baum so, dass Punkt vor Strich und die Klammern in seiner Form stecken.
+<!-- /after -->
 
 ### Was ein Automat nicht kann
 

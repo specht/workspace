@@ -88,6 +88,30 @@ Wo etwas gerade läuft, schlägt ein Kasten `hint try` eine kleine Änderung vor
 und sagt, worauf man achten soll. Nichts wird geprüft, und die Seite geht mit
 dem unveränderten Code weiter.
 
+## Vom Beispiel zur Regel
+
+Eine Seite steigt gut ins Konkrete hinab: ein Beispiel, ein Bild, ein Widget
+zum Durchklicken. Gelernt ist der Begriff aber erst, wenn jemand das
+Allgemeine darin selbst sagen kann (Semantic Waves, Maton; in der
+Informatik Waite und Curzon). Darum endet ein Abschnitt, der einen Begriff
+oder eine Regel an Beispielen einführt, mit einer Karte, auf der die
+Lernenden die Regel selbst fassen, bevor die Seite sie ausspricht: meist
+eine Auswahl (`choice` mit `prediction: true`), die richtige Regel neben
+zwei, drei Verallgemeinerungen, die typisch falsch sind, jede mit einer
+Rückmeldung, die auf ein Beispiel zurückführt (die richtige ist nicht die
+längste oder die genaueste, sonst verrät die Form sie); seltener eine Reflexion in
+einem Satz. Die Regel der Seite steht danach zwischen `<!-- after: id -->`
+und `<!-- /after -->`, und davor nennt kein Satz, keine Überschrift und kein
+Widget sie. Der Satz vor dem Widget sagt, woran man beim Durchklicken achten
+soll, nicht, was dabei herauskommt.
+
+Weil die Karte eine Vorhersage ist, zählt ihr erster Versuch, und die
+Klassenseite zeigt unter dem Board, welche falsche Regel wie oft gewählt
+wurde: der Anfang der Besprechung. Nicht jedes Beispiel braucht eine solche
+Karte; sie gehört dorthin, wo die Seite einen Begriff einführt, mit dem sie
+weiterarbeitet. Vorbild: »Was jeder Baum verrät« im Rechner für Ausdrücke,
+nach dem Baum zum Durchklicken.
+
 ## Tipps in Stufen
 
 Eine Aufgabe, an der man hängen bleiben kann, hat Tipps in Stufen statt eines
@@ -167,5 +191,7 @@ Je eine Seite, an der man sieht, wie es gemeint ist:
 - Was eine Vorhersage verrät, wartet auf die Antwort (`<!-- after: … -->`):
   die Neo4j-Filmdatenbank, wo zwei Vorhersagen aneinanderhängen und die
   zweite Karte auf die erste wartet.
+- Die Regel selbst fassen, bevor die Seite sie nennt: »Was jeder Baum
+  verrät« im Rechner für Ausdrücke.
 - Katas: die Sets mit Pip (`pip-1` bis `pip-3`) und Tests schreiben, wo die
   Lernenden die Prüfung selbst schreiben.
