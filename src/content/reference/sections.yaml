@@ -227,6 +227,16 @@
   entries:
     - tic80
 
+- key: reference-variable-roles
+  label: Rollen von Variablen
+  icon: /images/bulb.png
+  description: |
+    Was eine Variable in einer Schleife tut: zählen, sammeln, sich das
+    Beste bisher merken, festhalten, ob etwas schon passiert ist. Die Rollen
+    mit Namen, woran man sie erkennt und wie man mit ihnen plant.
+  entries:
+    - variablen-rollen
+
 - key: reference-software
   label: Software entwerfen
   icon: /images/hammer-and-wrench.png
