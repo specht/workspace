@@ -28,6 +28,7 @@ require_relative 'pip_check'
 require_relative 'turtle_check'
 require_relative 'circuit_check'
 require_relative 'interleaving_check'
+require_relative 'trace_check'
 require_relative 'code_languages'
 
 # Format and validation of an activity's tasks.yaml (see docs/aufgaben.md).
@@ -79,6 +80,7 @@ module TaskSpec
         'turtle' => 'M8',
         'circuit' => 'M8',
         'interleaving' => 'M8',
+        'trace' => 'M8',
         'unit_tests' => 'M8',
         'phone' => 'M8',
         'document' => 'M9',
@@ -138,6 +140,7 @@ module TaskSpec
         'turtle' => [],
         'circuit' => [],
         'interleaving' => %w[problem],
+        'trace' => %w[cell equals],
         'unit_tests' => [],
         'phone' => [],
     }.freeze
@@ -696,6 +699,11 @@ module TaskSpec
             allowed += %w[language file correct mutants timeout]
             errors.concat(path_errors(check['file'], 'file'))
             errors.concat(UnitTestsCheck.spec_errors(check))
+        when 'trace'
+            # A trace table: the values of a loop's variables, pass by pass,
+            # compared cell by cell (TraceCheck)
+            allowed += TraceCheck::SPEC_KEYS
+            errors.concat(TraceCheck.spec_errors(check))
         when 'interleaving'
             # An order of steps from the widget (interleaving.js), run with
             # the widget's rules on the server (InterleavingCheck).

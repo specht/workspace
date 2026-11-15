@@ -282,6 +282,12 @@ der Schleife nichts an der Bedingung, hört sie nie auf: Dann bricht
 **Ausführen** nach einer Weile ab.
 <!-- /after -->
 
+Wer eine Schleife verstehen will, schreibt auf, was nach jedem Durchlauf in
+ihren Variablen steht, eine Zeile pro Durchlauf. So eine Tabelle heißt
+**Trace-Tabelle**.
+
+_task(trace-halving)
+
 ### Eine Liste füllen
 
 Eine Schleife kann auch eine Liste füllen. Die Liste fängt leer an, und jeder

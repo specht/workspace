@@ -109,6 +109,14 @@
         if (card.dataset.type === 'measure') {
             return JSON.stringify(Array.from(card.querySelectorAll('.task-measure-input')).map((input) => input.value));
         }
+        if (card.dataset.type === 'trace') {
+            // the whole table, given cells included, as a list of rows
+            return JSON.stringify(Array.from(card.querySelectorAll('.task-trace tbody tr')).map((tr) =>
+                Array.from(tr.querySelectorAll('td')).map((td) => {
+                    const input = td.querySelector('.task-trace-input');
+                    return input ? input.value : (td.dataset.value || '');
+                })));
+        }
         if (card.dataset.type === 'choice') {
             return Array.from(card.querySelectorAll('.form-check-input:checked'))
                 .map((input) => input.value).join(',');
@@ -272,6 +280,15 @@
                 select.value = parts[0];
             }
             showSubmission(card, answer || null);
+            return;
+        }
+        if (card.dataset.type === 'trace') {
+            let rows = [];
+            try { rows = JSON.parse(answer || '[]'); } catch (e) { rows = []; }
+            card.querySelectorAll('.task-trace-input').forEach((input) => {
+                const row = rows[Number(input.dataset.row)] || [];
+                input.value = row[Number(input.dataset.column)] || '';
+            });
             return;
         }
         if (card.dataset.type === 'measure') {
@@ -1050,7 +1067,7 @@
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';
-                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests', 'turtle', 'circuit', 'interleaving'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
+                else if (['answer', 'choice', 'number', 'reflection', 'measure', 'command', 'sql', 'cypher', 'function', 'pip', 'tests', 'turtle', 'circuit', 'interleaving', 'trace'].indexOf(card.dataset.type) < 0) del.textContent = 'Ergebnis löschen';
                 del.addEventListener('click', function () { remove(card); });
             }
             loadOptions(card);
@@ -1432,6 +1449,18 @@
         window.addEventListener('pointerup', drop);
         window.addEventListener('pointercancel', drop);
     }
+
+    // A trace table: Enter goes to the next field, row by row; in the last
+    // one it checks, as Enter does in any other answer.
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' || !e.target.classList || !e.target.classList.contains('task-trace-input')) return;
+        const fields = Array.from(e.target.closest('.task-trace').querySelectorAll('.task-trace-input'));
+        const next = fields[fields.indexOf(e.target) + 1];
+        if (!next) return;
+        e.preventDefault();
+        next.focus();
+        next.select();
+    });
 
     // »Details« and »Lösung« under a result: open below on request.
     document.addEventListener('click', function (e) {

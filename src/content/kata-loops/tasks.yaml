@@ -42,6 +42,31 @@ tasks:
       - when: { equals: 50 }
         say: "`50` ist `n` nach dem ersten Halbieren. Gefragt ist, wie oft halbiert wird, bis `n` nicht mehr größer als 1 ist."
 
+  - id: trace-halving
+    title: "Durchlauf für Durchlauf"
+    level: 1
+    prompt: |
+      Dieselbe Schleife, aber `n` fängt mit 37 an statt mit 100. Was steht nach jedem Durchlauf in `n` und `steps`? Eine Zeile pro Durchlauf; die erste steht schon da.
+    check:
+      type: trace
+      columns: [n, steps]
+      rows:
+        - [18, 1]
+        - [9, 2]
+        - [4, 3]
+        - [2, 4]
+        - [1, 5]
+      given: [[0, 0], [0, 1]]
+    feedback:
+      - when: { cell: [2, 0], equals: 4.5 }
+        say: "Beim Halbieren fällt der Rest weg: Aus 9 wird 4, nicht 4,5."
+      - when: { cell: [1, 0], equals: 9.5 }
+        say: "Halbiert wird der Wert aus der Zeile davor, 18, und der Rest fällt weg."
+    hint:
+      - Vor der Schleife ist `n` 37 und `steps` 0. Der erste Durchlauf halbiert `n` ohne Rest und zählt `steps` um 1 weiter; das ist die erste Zeile. Was macht der zweite mit den Werten aus der ersten?
+      - Nach jedem Durchlauf prüft die Schleife, ob `n` noch größer als 1 ist. Ist `n` bei 1, gibt es keinen weiteren Durchlauf, und die Tabelle ist voll.
+    solution: "`n` wird 18, 9, 4, 2 und 1, `steps` zählt von 1 bis 5. Bei `n = 1` gilt `n > 1` nicht mehr, und die Schleife hört auf: 37 kann man fünfmal halbieren."
+
   - id: sum-even
     title: "Gerade Zahlen zusammenzählen"
     level: 1

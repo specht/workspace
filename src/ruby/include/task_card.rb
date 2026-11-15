@@ -4,6 +4,7 @@ require 'digest'
 require_relative 'task_check'
 require_relative 'hint_steps'
 require_relative 'parsons'
+require_relative 'trace_check'
 
 # HTML of a task card on an activity page (docs/aufgaben.md, »Aufgaben auf
 # der Seite«). The card never contains what is checked against (expect,
@@ -261,6 +262,26 @@ module TaskCard
                 io << "<textarea class='task-input circuit-answer' name='answer' hidden aria-hidden='true' tabindex='-1'></textarea>"
                 steps = check['sequence'] ? 'stellt die Schalter Schritt für Schritt so, wie die Aufgabe es sagt' : "schaltet jede Zeile der Wahrheitstabelle ein, #{1 << check['inputs'].size} Zeilen"
                 reads = "Deine Schaltung geht als Text an den Server. Er #{steps}, lässt die Gatter Runde für Runde rechnen wie hier im Editor und vergleicht die Lampen. Ausgeführt wird dabei nichts."
+            when 'trace'
+                # A trace table (TraceCheck): a row per pass, a column per
+                # variable; given cells show their value, the others are fields
+                label = check['row_label'] || 'Durchlauf'
+                io << "<div class='task-trace-scroll'><table class='task-trace'><thead><tr><th scope='col'>#{h.(label)}</th>"
+                check['columns'].each { |c| io << "<th scope='col'><code>#{h.(c)}</code></th>" }
+                io << '</tr></thead><tbody>'
+                check['rows'].each_with_index do |row, r|
+                    io << "<tr><th scope='row'>#{r + 1}</th>"
+                    row.each_index do |c|
+                        if TraceCheck.given?(check, r, c)
+                            io << "<td class='task-trace-given' data-value='#{h.(row[c])}'><code>#{h.(row[c])}</code></td>"
+                        else
+                            io << "<td><input type='text' class='form-control task-trace-input' data-row='#{r}' data-column='#{c}' autocomplete='off' " \
+                                  "spellcheck='false' autocapitalize='off' aria-label='#{h.(label)} #{r + 1}, #{h.(check['columns'][c])}'></td>"
+                        end
+                    end
+                    io << '</tr>'
+                end
+                io << '</tbody></table></div>'
             when 'interleaving'
                 # The step-through widget (interleaving.js) with the task's
                 # threads; it keeps the order in the hidden field, which is

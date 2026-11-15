@@ -57,7 +57,7 @@ require_relative 'kata_runner'
 # interpreters, c checks with the local cc, command checks with the local sh.
 module TaskExamples
     FILE = 'task-examples.yaml'
-    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit interleaving turtle unit_tests phone document].freeze
+    FAST_TYPES = %w[files html css references ruby python prolog javascript c java dart command choice number answer function pip tests circuit interleaving trace turtle unit_tests phone document].freeze
     # Checks that need examples to be tested at all.
     NEEDS_EXAMPLES = %w[files html css references ruby python prolog javascript c java dart command function pip tests circuit interleaving turtle unit_tests phone document].freeze
     # answer with compare: regex needs examples as well (see missing).
@@ -157,6 +157,13 @@ module TaskExamples
             # a Parsons puzzle: its lines in the right order must pass
             cases << ['pass', { 'answer' => Parsons.code(task['parsons']) }] if task['parsons']
             cases
+        when 'trace'
+            # the table filled in correctly, and with its last cell changed
+            right = JSON.parse(TraceCheck.correct_answer(check))
+            changed = right.map(&:dup)
+            r, c = right.each_index.to_a.product(right.first.each_index.to_a).reverse.find { |rr, cc| !TraceCheck.given?(check, rr, cc) }
+            changed[r][c] = TraceCheck.normal(changed[r][c]).is_a?(Float) ? (TraceCheck.normal(changed[r][c]) + 1).to_s : "#{changed[r][c]}x"
+            [['pass', { 'answer' => JSON.generate(right) }], ['fail', { 'answer' => JSON.generate(changed) }]]
         when 'circuit'
             # the editor's start: the switches and lamps, nothing between them
             [['fail', { 'answer' => CircuitCheck.starter(check) }]]

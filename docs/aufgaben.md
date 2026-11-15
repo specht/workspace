@@ -1444,6 +1444,37 @@ bleibt gelöst, und die Karte zeigt keine Unterschiede. In `task-examples.yaml` 
 `answer:`; es läuft dort mit ruby, python3 und node auf dem Rechner, mit
 denselben Befehlen (`TurtleCheck.record`).
 
+### trace
+
+Eine Trace-Tabelle: Was steht nach jedem Durchlauf einer Schleife in ihren
+Variablen? Eine Zeile pro Durchlauf, eine Spalte pro Variable; der Code steht
+auf der Seite über der Karte (`TraceCheck`). Die Werte sind in jeder Sprache
+dieselben, darum braucht die Aufgabe keine Varianten.
+
+```yaml
+check:
+  type: trace
+  columns: [n, steps]        # die Variablen, wie der Code sie nennt
+  rows:                      # was nach jedem Durchlauf in ihnen steht
+    - [18, 1]
+    - [9, 2]
+    - [4, 3]
+  given: [[0, 0], [0, 1]]    # schon ausgefüllt: [Zeile, Spalte], ab 0
+  row_label: Durchlauf       # die Überschrift der ersten Spalte (Standard)
+feedback:
+  - when: { cell: [2, 0], equals: 4.5 }
+    say: "Beim Halbieren fällt der Rest weg: Aus 9 wird 4, nicht 4,5."
+```
+
+Eine Zahl zählt, wie man sie schreibt, mit Komma oder Punkt; alles andere
+(`true`, ein Text) wie geschrieben, ohne Anführungszeichen. Leere Felder
+zählen nicht als Versuch. Die Rückmeldung nennt das erste falsche Feld
+(»Durchlauf 3, `n` stimmt noch nicht«) und wie viele falsch sind, nie den
+richtigen Wert; ein typischer Fehler in einem Feld bekommt mit `cell` und
+`equals` einen eigenen Satz. <kbd>Enter</kbd> springt zum nächsten Feld, im
+letzten prüft es. Als Beispiele nimmt die Prüfung der Beispiele die richtige
+Tabelle und eine mit einem falschen Feld von selbst.
+
 ### interleaving
 
 Threads, die nebeneinander laufen, Schritt für Schritt (»Nebenläufigkeit«,

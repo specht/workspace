@@ -58,6 +58,18 @@ Fehler, nicht nur, dass etwas falsch ist (`say`, `feedback`). Diese
 Rückmeldungen sind die beste Hilfe, die der Workspace geben kann, weil sie auf
 das antworten, was jemand wirklich geschrieben hat.
 
+## Durchlauf für Durchlauf
+
+Wer eine Schleife schreiben soll, muss erst sehen, was sie tut: was nach
+jedem Durchlauf in ihren Variablen steht. Eine Trace-Tabelle (`trace`) macht
+das zur Aufgabe, Zeile für Zeile; die Rückmeldung nennt das erste falsche
+Feld, und ein typischer Fehler (der Rest, der beim Halbieren wegfällt) bekommt
+einen eigenen Satz. Sie fragt nach einem anderen Startwert als das Beispiel
+der Seite, damit der Text davor die Werte nicht verrät. Vorbild:
+»Durchlauf für Durchlauf« in »Katas: Schleifen«, nach der Vorhersage zu
+`while` (die Notional Machine aus der LAA-Ausbildung: eine Vorstellung davon,
+was der Rechner beim Ausführen tut).
+
 ## Ordnen vor dem Schreiben
 
 Zwischen dem Lesen eines Programms und dem eigenen Schreiben liegt eine

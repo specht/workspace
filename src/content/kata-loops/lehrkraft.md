@@ -8,6 +8,7 @@ Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in R
 </ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen und Verzweigungen, etwa aus den <a href='/kata-functions'>Katas: Erste Funktionen</a> und den <a href='/kata-decisions'>Katas: Verzweigungen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
+<li>Im Text: drei Vorhersagen und eine Trace-Tabelle, die die <code>while</code>-Schleife mit 37 statt 100 Durchlauf für Durchlauf aufschreibt (<code>n</code> und <code>steps</code>, die erste Zeile vorgegeben); 4,5 statt 4 bekommt einen eigenen Hinweis, dass der Rest wegfällt.</li>
 <li>Einstieg (5 Karten): zuerst ein Parsons-Puzzle, gerade Zahlen zusammenzählen aus fertigen Zeilen (zwei davon gehören nicht dazu), dann Summe bis <code>n</code>, eine Zahlenreihe, Quadratzahlen, Countdown; der Startcode zeigt bei den ersten beiden Katas, wo die Schleife hingehört.</li>
 <li>Übung (4): Fakultät, Quersumme ohne Text, Fibonacci, Teiler zählen.</li>
 <li>Knobelei (3): Primzahlen, Euklids größter gemeinsamer Teiler, die Collatz-Folge.</li>
