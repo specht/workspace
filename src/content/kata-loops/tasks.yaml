@@ -67,6 +67,29 @@ tasks:
       - Nach jedem Durchlauf prüft die Schleife, ob `n` noch größer als 1 ist. Ist `n` bei 1, gibt es keinen weiteren Durchlauf, und die Tabelle ist voll.
     solution: "`n` wird 18, 9, 4, 2 und 1, `steps` zählt von 1 bis 5. Bei `n = 1` gilt `n > 1` nicht mehr, und die Schleife hört auf: 37 kann man fünfmal halbieren."
 
+  - id: role-steps
+    title: "Welche Rolle?"
+    level: 1
+    prediction: true
+    prompt: |
+      In `sevens` ist `count` ein Gatherer und `i` ein Stepper. Welche Rolle spielt `steps` in der Schleife, die 100 halbiert?
+    check:
+      type: choice
+      options:
+        - "Gatherer, wie `count`: Beide zählen etwas."
+        - "Stepper: Die Werte von `steps` stehen fest, sobald die Schleife beginnt."
+        - "Fixed Value (Festwert): `steps` bekommt nur einmal einen Wert."
+        - "Most-recent Holder (Letzter Wert): `steps` hält das Ergebnis des letzten Halbierens."
+      correct: 1
+    feedback:
+      - when: { picked: 0 }
+        say: "`count` wird nur größer, wenn `i` durch 7 teilbar ist; wie oft, hängt von den Zahlen ab. Steht vor der Zeile, die `steps` weiterzählt, eine Bedingung?"
+      - when: { picked: 2 }
+        say: "Ein Fixed Value behält seinen ersten Wert. Schau in deine Trace-Tabelle: In der Spalte `steps` steht in jeder Zeile ein anderer Wert."
+      - when: { picked: 3 }
+        say: "Das Ergebnis des Halbierens kommt in `n`, nicht in `steps`. `steps` bekommt seinen neuen Wert nur aus seinem alten."
+    solution: "Ein Stepper: `steps` fängt bei 0 an und wird in jedem Durchlauf ohne Bedingung um 1 größer. Wer weiß, wie oft die Schleife läuft, kennt alle seine Werte. `count` zählt nur, wenn die Bedingung gilt, und ist darum ein Gatherer."
+
   - id: sum-even
     title: "Gerade Zahlen zusammenzählen"
     level: 1
@@ -907,7 +930,7 @@ tasks:
         reference: "(1..n).reduce(1, :*)"
     feedback:
       - when: { same_as: "def factorial(n)\n  product = 0\n  (1..n).each { |i| product *= i }\n  product\nend\n" }
-        say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+        say: "`product` ist ein Gatherer, und ein Gatherer fängt mit dem Wert an, der nichts ändert. Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
     hint:
       - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
       - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
@@ -944,7 +967,7 @@ tasks:
           reference: "math.factorial(n)"
       feedback:
         - when: { same_as: "def factorial(n):\n    product = 0\n    for i in range(1, n + 1):\n        product *= i\n    return product\n" }
-          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+          say: "`product` ist ein Gatherer, und ein Gatherer fängt mit dem Wert an, der nichts ändert. Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
       hint:
         - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
         - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
@@ -981,7 +1004,7 @@ tasks:
           reference: "(function f(k) { return k <= 1 ? 1 : k * f(k - 1); })(n)"
       feedback:
         - when: { same_as: "function factorial(n) {\n  let product = 0;\n  for (let i = 1; i <= n; i++) product *= i;\n  return product;\n}\n" }
-          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+          say: "`product` ist ein Gatherer, und ein Gatherer fängt mit dem Wert an, der nichts ändert. Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
       hint:
         - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
         - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
@@ -1016,7 +1039,7 @@ tasks:
           - { call: "factorial(10)", expect: "3628800" }
       feedback:
         - when: { same_as: "int factorial(int n) {\n  var product = 0;\n  for (var i = 1; i <= n; i++) product *= i;\n  return product;\n}\n" }
-          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+          say: "`product` ist ein Gatherer, und ein Gatherer fängt mit dem Wert an, der nichts ändert. Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
       hint:
         - "Rechne 4! von Hand und schreib jeden Zwischenwert auf: 1, 2, 6, 24."
         - "Wie bei der Summe, nur mit `*` statt `+`. Womit muss das Produkt anfangen?"
@@ -1053,7 +1076,7 @@ tasks:
           - { call: "factorial(10)", expect: "3628800" }
       feedback:
         - when: { same_as: "long factorial(int n) {\n    long product = 0;\n    for (int i = 1; i <= n; i++) product *= i;\n    return product;\n}\n" }
-          say: "Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
+          say: "`product` ist ein Gatherer, und ein Gatherer fängt mit dem Wert an, der nichts ändert. Ein Produkt, das bei 0 anfängt, bleibt 0, was auch immer du damit multiplizierst. Fang bei 1 an."
         - when: { same_as: "long factorial(int n) {\n    int product = 1;\n    for (int i = 1; i <= n; i++) product *= i;\n    return product;\n}\n" }
           say: "Ein `int` reicht nur bis 2 147 483 647; schon 13! ist größer, und dann rechnet ein `int` falsch weiter. Nimm für das Produkt ein `long`."
       hint:

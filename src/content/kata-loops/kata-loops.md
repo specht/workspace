@@ -132,6 +132,13 @@ _task(predict-sevens)
 <!-- after: predict-sevens -->
 Es erscheint `7`: 7, 14, 21, 28, 35, 42 und 49. Bei diesen Zahlen ist der Rest
 beim Teilen durch 7 gleich 0, und nur dann wird `count` größer.
+
+`count` und `i` ändern sich beide, aber auf verschiedene Art, und jede Art
+hat einen Namen: die **Rolle** der Variablen. `count` sammelt das Ergebnis;
+wie groß es am Ende ist, hängt von den Zahlen ab, die durch die Schleife
+kommen. So eine Variable ist ein **Gatherer** (Sammler). Die Werte von `i`
+stehen dagegen fest, sobald die Schleife beginnt, 1, 2, 3 bis `n`: `i` ist
+ein **Stepper** (Schrittwert).
 <!-- /after -->
 
 ### Herunterzählen
@@ -287,6 +294,18 @@ ihren Variablen steht, eine Zeile pro Durchlauf. So eine Tabelle heißt
 **Trace-Tabelle**.
 
 _task(trace-halving)
+
+_task(role-steps)
+
+<!-- after: role-steps -->
+`steps` ist ein Stepper, wie `i`: `steps` fängt bei 0 an und wird in jedem
+Durchlauf um 1 größer, ohne Bedingung. Wer weiß, wie oft die Schleife läuft,
+kennt alle seine Werte. `count` in `sevens` zählt auch in Schritten von 1,
+aber nur, wenn die Bedingung gilt; darum ist `count` ein Gatherer. Auch `n`
+ist ein Stepper, denn es wird jedes Mal halbiert: 100, 50, 25 und so weiter.
+Welche Rollen es noch gibt und woran man sie erkennt, steht im Handbuch unter
+[Rollen von Variablen](/reference/variablen-rollen).
+<!-- /after -->
 
 ### Eine Liste füllen
 

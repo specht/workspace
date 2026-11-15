@@ -8,7 +8,7 @@ Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in R
 </ul></td></tr>
 <tr><th>Voraussetzungen</th><td>Funktionen und Verzweigungen, etwa aus den <a href='/kata-functions'>Katas: Erste Funktionen</a> und den <a href='/kata-decisions'>Katas: Verzweigungen</a>.</td></tr>
 <tr><th>Ablauf</th><td>Eine Doppelstunde.<ul>
-<li>Im Text: drei Vorhersagen und eine Trace-Tabelle, die die <code>while</code>-Schleife mit 37 statt 100 Durchlauf für Durchlauf aufschreibt (<code>n</code> und <code>steps</code>, die erste Zeile vorgegeben); 4,5 statt 4 bekommt einen eigenen Hinweis, dass der Rest wegfällt.</li>
+<li>Im Text: drei Vorhersagen und eine Trace-Tabelle, die die <code>while</code>-Schleife mit 37 statt 100 Durchlauf für Durchlauf aufschreibt (<code>n</code> und <code>steps</code>, die erste Zeile vorgegeben); 4,5 statt 4 bekommt einen eigenen Hinweis, dass der Rest wegfällt. Danach eine Vorhersage zu den <a href='/reference/variablen-rollen'>Rollen von Variablen</a> (Jorma Sajaniemi): Nach <code>sevens</code> nennt die Seite <code>count</code> einen Gatherer und <code>i</code> einen Stepper, die Karte fragt nach <code>steps</code>.</li>
 <li>Einstieg (5 Karten): zuerst ein Parsons-Puzzle, gerade Zahlen zusammenzählen aus fertigen Zeilen (zwei davon gehören nicht dazu), dann Summe bis <code>n</code>, eine Zahlenreihe, Quadratzahlen, Countdown; der Startcode zeigt bei den ersten beiden Katas, wo die Schleife hingehört.</li>
 <li>Übung (4): Fakultät, Quersumme ohne Text, Fibonacci, Teiler zählen.</li>
 <li>Knobelei (3): Primzahlen, Euklids größter gemeinsamer Teiler, die Collatz-Folge.</li>
@@ -21,7 +21,8 @@ Lernende schreiben Funktionen mit Schleifen direkt in die Karten der Seite, in R
 #### Was schiefgeht
 
 - Die Grenzen der Schleife: `1...n` in Ruby und `range(1, n)` in Python hören vor `n` auf. Die Rückmeldungen zu `sum_to` und `count_divisors` nennen es.
-- Ein Produkt, das bei 0 anfängt (`factorial`), bleibt 0.
+- Ein Produkt, das bei 0 anfängt (`factorial`), bleibt 0. Die Rückmeldung nennt `product` einen Gatherer: Er fängt mit dem Wert an, der nichts ändert.
+- Jede Variable, die zählt, für einen Gatherer halten: Die Karte »Welche Rolle?« trennt den Zähler aller Durchläufe (`steps`, ein Stepper) vom Zähler, der nur unter einer Bedingung weiterzählt (`count`, ein Gatherer). Wer hier den Gatherer wählt, sieht in der Trace-Tabelle davor, dass `steps` in jeder Zeile weiterzählt.
 - `prime(1)` ergibt `true`, wenn die Schleife bei 1 nichts zu prüfen hat.
 - Eine `while`-Schleife, deren Bedingung nie falsch wird: Nach zehn Sekunden bricht die Prüfung ab und fragt nach einer Endlosschleife.
 
