@@ -6476,6 +6476,20 @@ body.cl-dragging-page * {
     font-size: 0.9em;
 }
 
+.task-starters .task-starter {
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 999px;
+    opacity: 1;
+}
+
+.task-starters .task-starter:hover,
+.task-starters .task-starter:focus-visible {
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+}
+
 .cb-answer-text {
     white-space: pre-wrap;
 }
