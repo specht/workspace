@@ -104,6 +104,26 @@ tasks:
         say: '`EPS` ist eine feste Zahl.'
     solution: 'Ein Strahl sieht nur, was genau auf seinem Weg liegt. Viele Strahlen durch zufällige Punkte im Pixel decken die ganze Fläche des Pixels ab, und ihr Durchschnitt nähert sich der Farbe, die der Pixel im Mittel zeigen soll: am Rand einer Kugel eine Mischung aus Kugel und Himmel. Dasselbe Prinzip macht später die Schatten weich.'
 
+  - id: flach-dunkler
+    title: Steil oder flach
+    prediction: true
+    prompt: In den drei Bildern fällt dasselbe Bündel Sonnenlicht verschieden steil auf den Boden. Was heißt das für eine einzelne Stelle des Bodens?
+    check:
+      type: choice
+      options:
+        - Je flacher das Licht fällt, desto weniger bekommt sie ab.
+        - Je flacher das Licht fällt, desto mehr bekommt sie ab, weil mehr Boden im Licht liegt.
+        - Sie bekommt gleich viel ab, solange sie überhaupt im Licht liegt.
+        - Das hängt nur davon ab, wie weit die Sonne entfernt ist.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Mehr Boden liegt im Licht, aber es sind dieselben drei Strahlen. Wie viel davon fällt bei flachem Licht auf ein kurzes Stück des orangen Streifens?
+      - when: { picked: 2 }
+        say: Auf jeden Streifen fallen drei Strahlen, aber die Streifen sind verschieden breit. Vergleich ein gleich langes Stück des schmalen und des breiten Streifens.
+      - when: { picked: 3 }
+        say: In den drei Bildern ändert sich nur die Richtung der Strahlen, und trotzdem werden die Streifen verschieden breit.
+
   - id: licht
     title: Dein Licht
     prompt: |

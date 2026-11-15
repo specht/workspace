@@ -464,15 +464,21 @@ _task(rauschen)
 
 ### Die Normale
 
-Eine Kugel wirkt rund, weil sie dort hell ist, wo die Sonne steil auf sie scheint, und dunkel, wo das Licht nur streift. Um das auszurechnen, braucht man an jedem Treffpunkt die Richtung, in die die Oberfläche dort zeigt: die **Normale**. Bei einer Kugel ist das einfach: Sie zeigt vom Mittelpunkt zum Treffpunkt. Geteilt durch den Radius hat sie die Länge 1.
+Eine Kugel wirkt rund, weil sie nicht überall gleich hell ist. Um auszurechnen, wie hell sie an einer Stelle ist, braucht man an jedem Treffpunkt die Richtung, in die die Oberfläche dort zeigt: die **Normale**. Bei einer Kugel ist das einfach: Sie zeigt vom Mittelpunkt zum Treffpunkt. Geteilt durch den Radius hat sie die Länge 1.
 
 <img class='drawing' style='width: 23em' src='normale.svg' alt='Ein Kreis, die Kugel, mit dem Mittelpunkt center. Von ihm führt eine gestrichelte Linie zu einem blauen Punkt point auf dem Rand; dort zeigt ein schwarzer Pfeil normal, Länge 1, in derselben Richtung nach außen. An vier anderen Stellen des Randes zeigen graue Pfeile ebenso senkrecht nach außen. Unten steht, wie das Programm sie rechnet: scale(sub(point, center), 1 / radius).'>
 
 ### Wie hell?
 
+Die drei Bilder zeigen dasselbe Bündel Sonnenlicht, das verschieden steil auf einen Boden fällt. Achte darauf, wie breit der orange Streifen jeweils ist, auf den die drei Strahlen fallen.
+
 <img class='drawing' style='width: 34.25em' src='licht.svg' alt='Drei Bilder nebeneinander: ein Boden mit einem Pfeil normal nach oben, darauf fallen jeweils drei parallele orange Sonnenstrahlen, senkrecht, schräg und flach; sie beginnen auf einer Linie quer zu ihrer Richtung und haben überall denselben Abstand. Unter dem Boden ein oranger Streifen, so breit wie die beleuchtete Fläche: senkrecht schmal (dot = 1), schräg breiter (dot ≈ 0.71), flach am breitesten (dot ≈ 0.34).'>
 
-Dasselbe Bündel Sonnenlicht verteilt sich auf eine umso größere Fläche, je flacher es einfällt. Jede Stelle bekommt dann weniger ab. Genau dieses Maß liefert das Skalarprodukt aus Normale und Richtung zur Sonne, `dot(normal, sun_dir)`: 1, wenn die Sonne senkrecht steht, 0, wenn sie streift, und negativ, wenn sie von hinten scheint; dann bekommt die Stelle gar kein Sonnenlicht.
+_task(flach-dunkler)
+
+<!-- after: flach-dunkler -->
+Dasselbe Bündel Sonnenlicht verteilt sich auf eine umso größere Fläche, je flacher es einfällt. Jede Stelle bekommt dann weniger ab. Darum ist eine Kugel dort hell, wo die Sonne steil auf sie scheint, und dunkel, wo das Licht nur streift. Genau dieses Maß liefert das Skalarprodukt aus Normale und Richtung zur Sonne, `dot(normal, sun_dir)`: 1, wenn die Sonne senkrecht steht, 0, wenn sie streift, und negativ, wenn sie von hinten scheint; dann bekommt die Stelle gar kein Sonnenlicht.
+<!-- /after -->
 
 Warum gerade das Skalarprodukt? Für zwei Pfeile der Länge 1 sagt es, wie weit der eine in die Richtung des anderen zeigt: Fällt man von der Spitze des einen das Lot auf den anderen, ist das Stück bis dorthin so lang wie `dot`. Zeigen beide in dieselbe Richtung, ist das ganze Stück 1 lang; stehen sie im rechten Winkel, bleibt nichts übrig; zeigt einer nach hinten, liegt das Stück auf der anderen Seite und zählt negativ.
 
