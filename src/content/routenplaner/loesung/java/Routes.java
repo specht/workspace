@@ -1,6 +1,6 @@
 // Ein Routenplaner: deine Methoden. Der Server (./run java) fragt sie und
 // zeigt im Browser, was sie schon können. Die Typen Point, Way, Edge, Graph
-// und Search stehen in Types.java.
+// und Search stehen in Types.java. (Die Lösung aller Schritte.)
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -85,34 +85,122 @@ public class Routes {
         return new Search(pathTo(previous, goal), visited);
     }
 
-    // Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadthFirst.
+    // Eine Priority Queue als binärer Heap: Was hineinkommt, hat eine
+    // Priorität, und pop gibt immer das mit der kleinsten zurück. Die Einträge
+    // stehen in einer Liste, als Baum: Die Kinder von i stehen bei 2i+1 und
+    // 2i+2, und kein Kind ist kleiner als sein Elternteil.
+    static class MinHeap {
+        // ein Paar im Heap: die Priorität und der Wert, etwa die ID eines Knotens
+        record Entry(double priority, String value) {}
+
+        final List<Entry> items = new ArrayList<>();
+
+        boolean isEmpty() {
+            return items.isEmpty();
+        }
+
+        int size() {
+            return items.size();
+        }
+
+        void push(double priority, String value) {
+            items.add(new Entry(priority, value));
+            int i = items.size() - 1;
+            // nach oben, solange das Elternteil größer ist
+            while (i > 0) {
+                int parent = (i - 1) / 2;
+                if (items.get(parent).priority() <= items.get(i).priority()) break;
+                Collections.swap(items, parent, i);
+                i = parent;
+            }
+        }
+
+        Entry pop() {
+            if (items.isEmpty()) return null;
+            Entry top = items.get(0);
+            Entry last = items.remove(items.size() - 1);
+            if (!items.isEmpty()) {
+                items.set(0, last);
+                int i = 0;
+                // nach unten, solange ein Kind kleiner ist
+                while (true) {
+                    int smallest = i;
+                    for (int child : new int[] {2 * i + 1, 2 * i + 2}) {
+                        if (child < items.size() && items.get(child).priority() < items.get(smallest).priority()) smallest = child;
+                    }
+                    if (smallest == i) break;
+                    Collections.swap(items, smallest, i);
+                    i = smallest;
+                }
+            }
+            return top;
+        }
+    }
+
+    // Dijkstra: der kürzeste Weg, mit einer Priority Queue. Ein Knoten kann
+    // mehrmals darin stehen, wenn er einen besseren Weg bekommt; der alte
+    // Eintrag ist dann veraltet und wird übersprungen.
     static Search dijkstra(Graph graph, String start, String goal) {
-        Map<String, Double> metres = new HashMap<>(Map.of(start, 0.0));
+        Map<String, Double> costs = new HashMap<>(Map.of(start, 0.0));
         Map<String, String> previous = new HashMap<>();
         previous.put(start, null);
-        Map<String, Double> frontier = new HashMap<>(Map.of(start, 0.0)); // gefunden, aber noch nicht fertig
+        Set<String> done = new HashSet<>();
+        MinHeap heap = new MinHeap();
+        heap.push(0, start);
         List<String> visited = new ArrayList<>();
-        while (!frontier.isEmpty()) {
-            String node = null;
-            for (String id : frontier.keySet()) if (node == null || frontier.get(id) < frontier.get(node)) node = id;
-            double soFar = frontier.remove(node);
+        while (!heap.isEmpty()) {
+            MinHeap.Entry entry = heap.pop();
+            String node = entry.value();
+            if (done.contains(node)) continue;
+            done.add(node);
             visited.add(node);
             if (node.equals(goal)) break;
             for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
-                double total = soFar + edge.cost();
-                if (metres.containsKey(edge.to()) && metres.get(edge.to()) <= total) continue;
-                metres.put(edge.to(), total);
+                double total = entry.priority() + edge.cost();
+                if (costs.containsKey(edge.to()) && costs.get(edge.to()) <= total) continue;
+                costs.put(edge.to(), total);
                 previous.put(edge.to(), node);
-                frontier.put(edge.to(), total);
+                heap.push(total, edge.to());
             }
         }
         return new Search(pathTo(previous, goal), visited);
     }
 
-    // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
-    // Gibt dasselbe zurück wie breadthFirst.
+    // A*: wie Dijkstra, aber die Priorität ist der Weg bis hier plus eine
+    // Schätzung für den Rest, die Luftlinie zum Ziel. Die Schätzung ist nie zu
+    // groß, darum findet A* trotzdem den kürzesten Weg. In einem Graphen mit
+    // Sekunden statt Metern teilt man die Luftlinie durch das größte Tempo.
     static Search aStar(Graph graph, String start, String goal) {
-        throw new UnsupportedOperationException("aStar");
+        Map<String, Double> costs = new HashMap<>(Map.of(start, 0.0));
+        Map<String, String> previous = new HashMap<>();
+        previous.put(start, null);
+        Set<String> done = new HashSet<>();
+        MinHeap heap = new MinHeap();
+        heap.push(estimate(graph, start, goal), start);
+        List<String> visited = new ArrayList<>();
+        while (!heap.isEmpty()) {
+            String node = heap.pop().value();
+            if (done.contains(node)) continue;
+            done.add(node);
+            visited.add(node);
+            if (node.equals(goal)) break;
+            for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+                double total = costs.get(node) + edge.cost();
+                if (costs.containsKey(edge.to()) && costs.get(edge.to()) <= total) continue;
+                costs.put(edge.to(), total);
+                previous.put(edge.to(), node);
+                heap.push(total + estimate(graph, edge.to(), goal), edge.to());
+            }
+        }
+        return new Search(pathTo(previous, goal), visited);
+    }
+
+    // die Schätzung für A*: die Luftlinie vom Knoten id zum Ziel, geteilt
+    // durch das größte Tempo (1 in einem Graphen mit Metern)
+    static double estimate(Graph graph, String id, String goal) {
+        Point point = graph.nodes.get(id), target = graph.nodes.get(goal);
+        if (point == null || target == null) return 0;
+        return distance(point.lon(), point.lat(), target.lon(), target.lat()) / graph.fastest;
     }
 
     // Wie schnell man auf welcher Art von Weg vorankommt, in km/h. Was in der
@@ -133,36 +221,99 @@ public class Routes {
             Map.entry("unclassified", 30), Map.entry("residential", 25), Map.entry("living_street", 7),
             Map.entry("service", 10), Map.entry("ferry", 10)));
 
-    // Der Graph für eine Art zu reisen ("foot", "bike", "car"): wie buildGraph,
-    // aber nur mit den Wegen, die man so benutzen darf, und mit Sekunden statt
-    // Metern als Kosten; in fastest das größte Tempo in Metern je Sekunde. Für
-    // das Auto gelten die Einbahnstraßen.
+    // Der Graph für eine Art zu reisen: nur die Wege, die man so benutzen
+    // darf, und als Kosten jeder Kante, wie viele Sekunden man für sie braucht.
+    // Für das Auto gelten die Einbahnstraßen. fastest: das größte Tempo, in
+    // Metern je Sekunde, für die Schätzung von A*.
     static Graph buildTravelGraph(List<Way> ways, String mode) {
-        throw new UnsupportedOperationException("buildTravelGraph");
+        Map<String, Integer> speeds = SPEEDS.get(mode);
+        Graph graph = new Graph();
+        for (Way way : ways) {
+            Integer speed = speeds.get(way.kind());
+            if (speed == null) continue;
+            double metresPerSecond = speed / 3.6;
+            boolean forward = !mode.equals("car") || !way.oneway().equals("-1");
+            boolean backward = !mode.equals("car") || way.oneway().isEmpty();
+            for (int i = 0; i + 1 < way.points().size(); i++) {
+                Point a = way.points().get(i), b = way.points().get(i + 1);
+                graph.nodes.put(a.id(), a);
+                graph.nodes.put(b.id(), b);
+                double seconds = distance(a.lon(), a.lat(), b.lon(), b.lat()) / metresPerSecond;
+                if (forward) graph.edges.computeIfAbsent(a.id(), id -> new ArrayList<>()).add(new Edge(b.id(), seconds));
+                if (backward) graph.edges.computeIfAbsent(b.id(), id -> new ArrayList<>()).add(new Edge(a.id(), seconds));
+            }
+        }
+        graph.fastest = Collections.max(speeds.values()) / 3.6;
+        return graph;
     }
 
-    // Eine Rundfahrt durch mehrere Orte: costs[i][j] sagt, wie weit es von
-    // Ort i zu Ort j ist. Eine Reihenfolge ist eine Liste von Nummern der
-    // Orte; sie beginnt bei 0 und kehrt am Ende zu ihrem Anfang zurück.
-
-    // Wie lang eine Rundfahrt in dieser Reihenfolge ist, mit dem Weg zurück
+    // Eine Rundfahrt: costs[i][j] sagt, wie weit es von Ort i zu Ort j ist.
+    // Eine Reihenfolge beginnt bei Ort 0 und kehrt am Ende zu ihm zurück.
     static double tourLength(double[][] costs, List<Integer> order) {
-        throw new UnsupportedOperationException("tourLength");
+        double total = 0;
+        for (int i = 0; i < order.size(); i++) total += costs[order.get(i)][order.get((i + 1) % order.size())];
+        return total;
     }
 
-    // Die beste Reihenfolge, durch Ausprobieren aller
+    // Alle Reihenfolgen ausprobieren: sicher die beste, aber bei n Orten sind
+    // es (n − 1)! viele
     static List<Integer> bestTour(double[][] costs) {
-        throw new UnsupportedOperationException("bestTour");
+        List<Integer> left = new ArrayList<>();
+        for (int i = 1; i < costs.length; i++) left.add(i);
+        return tryAll(costs, List.of(0), left);
     }
 
-    // Immer zum nächsten Ort, an dem die Rundfahrt noch nicht war
+    // Die kürzeste Rundfahrt, die mit order beginnt und danach die Orte in
+    // left besucht: jeden übrigen Ort einmal anhängen und mit dem Rest
+    // weiterprobieren; ist nichts mehr übrig, ist die Reihenfolge fertig.
+    static List<Integer> tryAll(double[][] costs, List<Integer> order, List<Integer> left) {
+        if (left.isEmpty()) return order;
+        List<Integer> best = null;
+        for (Integer next : left) {
+            List<Integer> longer = new ArrayList<>(order);
+            longer.add(next);
+            List<Integer> rest = new ArrayList<>(left);
+            rest.remove(next);
+            List<Integer> tour = tryAll(costs, longer, rest);
+            if (best == null || tourLength(costs, tour) < tourLength(costs, best)) best = tour;
+        }
+        return best;
+    }
+
+    // Immer zum nächsten Ort, an dem man noch nicht war: schnell, aber oft
+    // nicht die beste
     static List<Integer> nearestTour(double[][] costs) {
-        throw new UnsupportedOperationException("nearestTour");
+        List<Integer> order = new ArrayList<>(List.of(0));
+        List<Integer> left = new ArrayList<>();
+        for (int i = 1; i < costs.length; i++) left.add(i);
+        while (!left.isEmpty()) {
+            int from = order.getLast();
+            Integer nearest = left.get(0);
+            for (Integer i : left) if (costs[from][i] < costs[from][nearest]) nearest = i;
+            order.add(nearest);
+            left.remove(nearest);
+        }
+        return order;
     }
 
-    // Eine Reihenfolge mit 2-opt verbessern: ein Stück umdrehen, solange die
-    // Rundfahrt dadurch kürzer wird
+    // 2-opt: ein Stück der Rundfahrt umdrehen, wenn sie dadurch kürzer wird,
+    // und das so lange, bis kein Umdrehen mehr hilft
     static List<Integer> improveTour(double[][] costs, List<Integer> order) {
-        throw new UnsupportedOperationException("improveTour");
+        order = new ArrayList<>(order);
+        boolean better = true;
+        while (better) {
+            better = false;
+            for (int i = 1; i < order.size() - 1; i++) {
+                for (int j = i + 1; j < order.size(); j++) {
+                    List<Integer> turned = new ArrayList<>(order);
+                    Collections.reverse(turned.subList(i, j + 1));
+                    if (tourLength(costs, turned) < tourLength(costs, order) - 1e-9) {
+                        order = turned;
+                        better = true;
+                    }
+                }
+            }
+        }
+        return order;
     }
 }

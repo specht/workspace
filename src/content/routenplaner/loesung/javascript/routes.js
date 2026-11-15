@@ -1,5 +1,5 @@
 // Ein Routenplaner: deine Funktionen. Der Server (./run javascript) fragt sie
-// und zeigt im Browser, was sie schon können.
+// und zeigt im Browser, was sie schon können. (Die Lösung aller Schritte.)
 const fs = require('fs');
 
 // Was noch nicht fertig ist, meldet sich so: Die Karte sagt dann, was fehlt.
@@ -96,34 +96,118 @@ function breadthFirst(graph, start, goal) {
     return { path: pathTo(previous, goal), visited };
 }
 
-// Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadthFirst.
+// Eine Priority Queue als binärer Heap: Was hineinkommt, hat eine
+// Priorität, und pop gibt immer das mit der kleinsten zurück. Die Einträge
+// stehen in einem Array, als Baum: Die Kinder von i stehen bei 2i+1 und 2i+2,
+// und kein Kind ist kleiner als sein Elternteil.
+class MinHeap {
+    constructor() {
+        this.items = []; // [Priorität, Wert]
+    }
+
+    isEmpty() {
+        return this.items.length === 0;
+    }
+
+    get size() {
+        return this.items.length;
+    }
+
+    push(priority, value) {
+        const items = this.items;
+        items.push([priority, value]);
+        let i = items.length - 1;
+        // nach oben, solange das Elternteil größer ist
+        while (i > 0) {
+            const parent = Math.floor((i - 1) / 2);
+            if (items[parent][0] <= items[i][0]) break;
+            [items[parent], items[i]] = [items[i], items[parent]];
+            i = parent;
+        }
+    }
+
+    pop() {
+        const items = this.items;
+        if (items.length === 0) return null;
+        const top = items[0];
+        const last = items.pop();
+        if (items.length > 0) {
+            items[0] = last;
+            let i = 0;
+            // nach unten, solange ein Kind kleiner ist
+            while (true) {
+                let smallest = i;
+                for (const child of [2 * i + 1, 2 * i + 2]) {
+                    if (child < items.length && items[child][0] < items[smallest][0]) smallest = child;
+                }
+                if (smallest === i) break;
+                [items[smallest], items[i]] = [items[i], items[smallest]];
+                i = smallest;
+            }
+        }
+        return top;
+    }
+}
+
+// Dijkstra: der kürzeste Weg, mit einer Priority Queue. Ein Knoten kann
+// mehrmals darin stehen, wenn er einen besseren Weg bekommt; der alte
+// Eintrag ist dann veraltet und wird übersprungen.
 function dijkstra(graph, start, goal) {
-    const metres = new Map([[start, 0]]);
+    const costs = new Map([[start, 0]]);
     const previous = new Map([[start, null]]);
-    const frontier = new Map([[start, 0]]); // gefunden, aber noch nicht fertig
+    const done = new Set();
+    const heap = new MinHeap();
+    heap.push(0, start);
     const visited = [];
-    while (frontier.size > 0) {
-        let node = null;
-        for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
-        const soFar = frontier.get(node);
-        frontier.delete(node);
+    while (!heap.isEmpty()) {
+        const [soFar, node] = heap.pop();
+        if (done.has(node)) continue;
+        done.add(node);
         visited.push(node);
         if (node === goal) break;
         for (const [neighbour, length] of graph.edges[node] || []) {
             const total = soFar + length;
-            if (metres.has(neighbour) && metres.get(neighbour) <= total) continue;
-            metres.set(neighbour, total);
+            if (costs.has(neighbour) && costs.get(neighbour) <= total) continue;
+            costs.set(neighbour, total);
             previous.set(neighbour, node);
-            frontier.set(neighbour, total);
+            heap.push(total, neighbour);
         }
     }
     return { path: pathTo(previous, goal), visited };
 }
 
-// A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
-// Gibt dasselbe zurück wie breadthFirst.
+// A*: wie Dijkstra, aber die Priorität ist der Weg bis hier plus eine
+// Schätzung für den Rest, die Luftlinie zum Ziel. Die Schätzung ist nie zu
+// groß, darum findet A* trotzdem den kürzesten Weg. In einem Graphen mit
+// Sekunden statt Metern teilt man die Luftlinie durch das größte Tempo.
 function aStar(graph, start, goal) {
-    throw notYet('aStar');
+    const [goalLon, goalLat] = graph.nodes[goal] || [0, 0];
+    const fastest = graph.fastest || 1;
+    const estimate = (id) => {
+        const [lon, lat] = graph.nodes[id];
+        return distance(lon, lat, goalLon, goalLat) / fastest;
+    };
+    const costs = new Map([[start, 0]]);
+    const previous = new Map([[start, null]]);
+    const done = new Set();
+    const heap = new MinHeap();
+    heap.push(estimate(start), start);
+    const visited = [];
+    while (!heap.isEmpty()) {
+        const [, node] = heap.pop();
+        if (done.has(node)) continue;
+        done.add(node);
+        visited.push(node);
+        if (node === goal) break;
+        for (const [neighbour, length] of graph.edges[node] || []) {
+            const total = costs.get(node) + length;
+            if (costs.has(neighbour) && costs.get(neighbour) <= total) continue;
+            costs.set(neighbour, total);
+            previous.set(neighbour, node);
+            heap.push(total + estimate(neighbour), neighbour);
+        }
+    }
+    return { path: pathTo(previous, goal), visited };
 }
 
 // Wie schnell man auf welcher Art von Weg vorankommt, in km/h. Was in der
@@ -142,40 +226,98 @@ const SPEEDS = {
            living_street: 7, service: 10, ferry: 10 },
 };
 
-// Der Graph für eine Art zu reisen ('foot', 'bike', 'car'): wie buildGraph,
-// aber nur mit den Wegen, die man so benutzen darf, und mit Sekunden statt
-// Metern an den Kanten. Für das Auto gelten die Einbahnstraßen.
-//   { nodes: …, edges: …, fastest: das größte Tempo in Metern je Sekunde }
+// Der Graph für eine Art zu reisen: nur die Wege, die man so benutzen darf,
+// und als Länge jeder Kante, wie viele Sekunden man für sie braucht. Für das
+// Auto gelten die Einbahnstraßen. fastest: das größte Tempo, in Metern je
+// Sekunde, für die Schätzung von A*.
 function buildTravelGraph(ways, mode) {
-    throw notYet('buildTravelGraph');
+    const speeds = SPEEDS[mode];
+    const nodes = {};
+    const edges = {};
+    for (const way of ways) {
+        const speed = speeds[way.kind];
+        if (!speed) continue;
+        const metresPerSecond = speed / 3.6;
+        const forward = mode !== 'car' || way.oneway !== '-1';
+        const backward = mode !== 'car' || way.oneway === '';
+        for (let i = 0; i + 1 < way.points.length; i++) {
+            const [a, lon1, lat1] = way.points[i];
+            const [b, lon2, lat2] = way.points[i + 1];
+            nodes[a] = [lon1, lat1];
+            nodes[b] = [lon2, lat2];
+            const seconds = distance(lon1, lat1, lon2, lat2) / metresPerSecond;
+            if (forward) (edges[a] ??= []).push([b, seconds]);
+            if (backward) (edges[b] ??= []).push([a, seconds]);
+        }
+    }
+    return { nodes, edges, fastest: Math.max(...Object.values(speeds)) / 3.6 };
 }
 
-// Eine Rundfahrt durch mehrere Orte: costs[i][j] sagt, wie weit es von Ort i
-// zu Ort j ist. Eine Reihenfolge ist ein Array von Nummern der Orte; sie
-// beginnt bei 0 und kehrt am Ende zu ihrem Anfang zurück.
-
-// Wie lang eine Rundfahrt in dieser Reihenfolge ist, mit dem Weg zurück
+// Eine Rundfahrt: costs[i][j] sagt, wie weit es von Ort i zu Ort j ist. Eine
+// Reihenfolge beginnt bei Ort 0 und kehrt am Ende zu ihm zurück.
 function tourLength(costs, order) {
-    throw notYet('tourLength');
+    let total = 0;
+    for (let i = 0; i < order.length; i++) total += costs[order[i]][order[(i + 1) % order.length]];
+    return total;
 }
 
-// Die beste Reihenfolge, durch Ausprobieren aller
+// Alle Reihenfolgen ausprobieren: sicher die beste, aber bei n Orten sind es
+// (n − 1)! viele. tryAll hängt jeden übrigen Ort einmal an und probiert mit
+// dem Rest weiter; ist nichts mehr übrig, ist eine Reihenfolge fertig.
 function bestTour(costs) {
-    throw notYet('bestTour');
+    let best = [0];
+    let shortest = Infinity;
+    function tryAll(order, left) {
+        if (left.length === 0) {
+            const length = tourLength(costs, order);
+            if (length < shortest) {
+                shortest = length;
+                best = order;
+            }
+            return;
+        }
+        for (const next of left) tryAll([...order, next], left.filter((i) => i !== next));
+    }
+    tryAll([0], Array.from({ length: costs.length - 1 }, (_, i) => i + 1));
+    return best;
 }
 
-// Immer zum nächsten Ort, an dem die Rundfahrt noch nicht war
+// Immer zum nächsten Ort, an dem man noch nicht war: schnell, aber oft nicht
+// die beste
 function nearestTour(costs) {
-    throw notYet('nearestTour');
+    const order = [0];
+    const left = Array.from({ length: costs.length - 1 }, (_, i) => i + 1);
+    while (left.length > 0) {
+        const from = order.at(-1);
+        let nearest = left[0];
+        for (const i of left) if (costs[from][i] < costs[from][nearest]) nearest = i;
+        order.push(nearest);
+        left.splice(left.indexOf(nearest), 1);
+    }
+    return order;
 }
 
-// Eine Reihenfolge mit 2-opt verbessern: ein Stück umdrehen, solange die
-// Rundfahrt dadurch kürzer wird
+// 2-opt: ein Stück der Rundfahrt umdrehen, wenn sie dadurch kürzer wird, und
+// das so lange, bis kein Umdrehen mehr hilft
 function improveTour(costs, order) {
-    throw notYet('improveTour');
+    order = [...order];
+    let better = true;
+    while (better) {
+        better = false;
+        for (let i = 1; i < order.length - 1; i++) {
+            for (let j = i + 1; j < order.length; j++) {
+                const turned = [...order.slice(0, i), ...order.slice(i, j + 1).reverse(), ...order.slice(j + 1)];
+                if (tourLength(costs, turned) < tourLength(costs, order) - 1e-9) {
+                    order = turned;
+                    better = true;
+                }
+            }
+        }
+    }
+    return order;
 }
 
 module.exports = {
-    readWays, distance, buildGraph, pathTo, breadthFirst, dijkstra, aStar, SPEEDS,
+    readWays, distance, buildGraph, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
     buildTravelGraph, tourLength, bestTour, nearestTour, improveTour,
 };
