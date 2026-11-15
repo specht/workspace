@@ -15,6 +15,10 @@ test('repositories made on /repos: one of the group, and one of a student that s
   let ownUrl = '';
 
   try {
+    // the hidden test group is no group of the overview: not in the line
+    // that names the groups, not offered for a new repository
+    await expect(teacher.locator('.git-overview-role').first()).not.toContainText('Testgruppe');
+    await expect(teacher.locator('#git-new-group option', { hasText: 'Testgruppe' })).toHaveCount(0);
     // The teacher: a free repository of the group, with a README.md.
     await teacher.getByRole('button', { name: 'Neues Repository' }).first().click();
     await teacher.locator('#git-new-group').selectOption('E2E');

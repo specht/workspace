@@ -890,7 +890,11 @@ class Main < Sinatra::Base
         admin = admin_logged_in?
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         git_groups = Main.git_groups
-        groups = (admin ? git_groups.keys.sort_by(&:downcase) : teacher ? class_groups : my_groups).select { |g| git_groups.key?(g) }
+        # a teacher's groups without the hidden test group (as on /klasse:
+        # it stays only where it is all a teacher has)
+        taught = class_groups.reject { |g| @@test_groups.include?(g) }
+        taught = class_groups if taught.empty?
+        groups = (admin ? git_groups.keys.sort_by(&:downcase) : teacher ? taught : my_groups).select { |g| git_groups.key?(g) }
         teachers = nil
         if admin
             teachers = Hash.new { |hash, key| hash[key] = [] }
@@ -915,7 +919,7 @@ class Main < Sinatra::Base
               end
         page = +"<div class='container git-overview-page'><h1>Git-Repositorys</h1>"
         page << "<section class='git-overview-section'><div class='git-overview-head'><h2>Repositorys der Gruppen</h2>"
-        page << GitOverview.new_form_html(:groups => class_groups) if teacher && !class_groups.empty?
+        page << GitOverview.new_form_html(:groups => taught) if teacher && !taught.empty?
         page << "</div>#{why}#{GitOverview.html(rows, :admin => admin, :student => !teacher, :web_root => WEB_ROOT)}</section>"
         full = mine.size >= GitServer::PERSONAL_MAX ? "Du hast schon #{GitServer::PERSONAL_MAX} Repositorys." : nil
         page << "<section class='git-overview-section' id='meine'><div class='git-overview-head'><h2>Meine Repositorys</h2>"
