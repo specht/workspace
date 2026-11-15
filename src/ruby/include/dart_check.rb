@@ -15,7 +15,8 @@ require_relative 'call_check'
 #   check:
 #     type: dart
 #     file: bibliothek/library.dart
-#     setup: |                         # optional: Dart before the calls, helpers
+#     setup: |                         # optional: Dart before the calls, helpers;
+#                                      # its import lines go to the top
 #       Book faust() => Book('Faust', 'Goethe');
 #     cases:
 #       - Book('Faust', 'Goethe').title: "'Faust'"
@@ -64,13 +65,25 @@ module DartCheck
         '"' + text.to_s.gsub('\\') { '\\\\' }.gsub('$') { '\\$' }.gsub('"') { '\\"' }.gsub("\n", '\\n').gsub("\r", '\\r') + '"'
     end
 
+    # The lines of a setup that import a library (import 'dart:io';) and the
+    # rest: Dart wants imports at the top of the harness, before everything
+    # else of the setup.
+    def self.split_imports(setup)
+        return [[], setup] unless setup
+
+        imports, rest = setup.lines.partition { |line| line =~ /\A\s*import\s/ }
+        [imports.map(&:strip), rest.join.strip.empty? ? nil : rest.join]
+    end
+
     # The harness; [source, ranges, setup_lines] as JavaCheck.harness. The
     # file to import is __HS_FILE__, filled in by the script.
     def self.harness(cases, setup = nil)
+        imports, setup = split_imports(setup)
         source = +<<~DART
             import 'dart:async';
             import 'dart:convert';
             import '__HS_FILE__';
+            #{imports.join("\n")}
 
             final _results = <Map<String, Object?>>[];
 

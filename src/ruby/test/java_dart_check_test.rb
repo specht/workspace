@@ -72,6 +72,16 @@ class JavaDartCheckTest < Minitest::Test
         assert_includes source, "import '__HS_FILE__';"
     end
 
+    # import lines of a setup go to the top, where Dart wants them
+    def test_dart_setup_imports_at_the_top
+        setup = "import 'dart:io';\n\nString source() => File('a.dart').readAsStringSync();\n"
+        source, _, setup_lines = DartCheck.harness(DartCheck.cases(DART), setup)
+        assert_includes source, "import '__HS_FILE__';\nimport 'dart:io';\n"
+        assert_equal 1, source.scan("import 'dart:io';").size
+        assert_includes source.lines[setup_lines.first - 1..setup_lines.last - 1].join, 'String source()'
+        assert_operator source.index("import 'dart:io';"), :<, source.index('final _results')
+    end
+
     # Every case is async: a Future is awaited, a step may await, and the
     # cases run one after the other; a real run where Dart is installed
     def test_dart_cases_await_futures

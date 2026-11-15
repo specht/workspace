@@ -1719,7 +1719,15 @@ importiert) und läuft mit dem Dart des SDK (`DartCheck::DART`,
 Ein eigenes `main` läuft dabei nicht. In Dart ist jeder Fall `async`: Gibt
 ein Aufruf ein `Future` zurück, wartet die Prüfung darauf (auch auf ein
 erwartetes), ein Schritt darf `await` enthalten (`await deposit(5);
-balance`), und die Fälle laufen nacheinander.
+balance`), und die Fälle laufen nacheinander. Das `setup` steht in Java in der
+Testklasse, in Dart vor den Fällen; seine Zeilen mit `import` (`import
+'dart:io';`) setzt die Prüfung an den Anfang des Testprogramms, wo Dart sie
+verlangt. Java braucht dafür keine: Dort schreibt man den ganzen Namen
+(`java.nio.file.Files.readString(…)`). Wo sich ein Verhalten von außen nicht
+sehen lässt, liest ein `setup` so auch die Datei selbst: »Dijkstra mit dem
+Heap« im Routenplaner sieht in Dart und Java nach, ob `dijkstra` einen
+`MinHeap` anlegt und `pop` aufruft, weil sich `pop` dort nicht wie in Ruby,
+Python und JavaScript zur Laufzeit ersetzen lässt.
 
 ```yaml
 check:
