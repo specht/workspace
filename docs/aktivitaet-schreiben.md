@@ -775,9 +775,16 @@ Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
   was entsteht, was von der Seite wiederkommt (die DDA, die Kamera-Ebene,
   die Kapselung), wie groß sie ist (`(eine Doppelstunde)`, `(ein Projekt)`)
   und woran man sie ohne Prüfung bewertet: Vorführen, ein Spieltest, das
-  Erklären des eigenen Codes. Das Ergebnis ist offen, bei jeder und jedem
-  anders; keine Schritte, keine Bildschirmfotos, keine Lösung, nur der
-  Ausgangspunkt. Was die Idee braucht und auf der Seite nicht steht, sagt
+  Erklären des eigenen Codes. Am Ende jeder Idee stehen ihre
+  Meilensteine (`*Meilensteine:* die Karte auf Papier; ein Level, das sich
+  durchlaufen lässt; der Schalter öffnet die Wand im Spieltest.`) und in
+  einem Satz ihre Kriterien (`*Kriterien:* …`); die erste Zeile des
+  Abschnitts verlinkt die Anleitung [»Eigene Projekte
+  begleiten«](../src/content/lehrmaterial/lehrmaterial-projekte/lehrmaterial-projekte.md),
+  die erklärt, wie man ein Projekt damit begleitet. Das Ergebnis ist
+  offen, bei jeder und jedem anders; Meilensteine sagen, was dasteht,
+  nicht wie man dorthin kommt: keine Schritte, keine Bildschirmfotos,
+  keine Lösung, nur der Ausgangspunkt. Was die Idee braucht und auf der Seite nicht steht, sagt
   sie in einem Satz (eine Karte, die sich ändern lässt). Eine Stelle der
   Seite verlinkt sie mit dem Text ihrer Überschrift ohne Nummer,
   `[»Ein Planet«](#ein-planet)`, oder mit einer Aufgabe, `#aufgabe-march`:
@@ -790,8 +797,9 @@ Fließtext ([vorlage-aktivitaet/lehrkraft.md](vorlage-aktivitaet/lehrkraft.md)):
 
 Auf dem Handy steht das Stichwort einer Zeile über ihrem Text, und kurzer
 Code (`01-karte.c`) bricht nicht am Bindestrich um. `teacher_note_test.rb`
-prüft, dass es die Notiz gibt, dass ihr erster Absatz »Lernende« nennt und
-dass in ihrer Tabelle kein Markdown steht.
+prüft, dass es die Notiz gibt, dass ihr erster Absatz »Lernende« nennt,
+dass in ihrer Tabelle kein Markdown steht und dass »Eigene Projekte« die
+Anleitung verlinkt und jede Idee Meilensteine und Kriterien nennt.
 
 ## 6. Prüfen, bevor es live geht
 

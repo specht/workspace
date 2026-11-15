@@ -58,4 +58,25 @@ class TeacherNoteTest < Minitest::Test
         end
         assert_empty found, "Markdown inside the HTML table of a teacher note:\n#{found.join("\n")}"
     end
+
+    # »Eigene Projekte« (docs/checkliste.md »Für Lehrkräfte«) links to the
+    # guide on milestones and criteria, and every idea names its own
+    # milestones and criteria, so a teacher can run it as a project.
+    def test_own_projects_link_the_guide_and_name_milestones_and_criteria
+        wrong = Dir[File.join(CONTENT, '*', 'lehrkraft.md')].sort.flat_map do |path|
+            slug = File.basename(File.dirname(path))
+            section = File.read(path)[/^#### Eigene Projekte\n(.*?)(?=^#### |\z)/m, 1]
+            next [] if section.nil?
+
+            problems = []
+            problems << "#{slug}: no link to /lehrmaterial-projekte" unless section.include?('](/lehrmaterial-projekte)')
+            section.scan(/^- \*\*.*$/).each do |idea|
+                title = idea[/\*\*(.+?)\*\*/, 1]
+                problems << "#{slug}: »#{title}« without *Meilensteine:*" unless idea.include?('*Meilensteine:*')
+                problems << "#{slug}: »#{title}« without *Kriterien:*" unless idea.include?('*Kriterien:*')
+            end
+            problems
+        end
+        assert_empty wrong, "»Eigene Projekte« without the guide, milestones or criteria:\n#{wrong.join("\n")}"
+    end
 end
