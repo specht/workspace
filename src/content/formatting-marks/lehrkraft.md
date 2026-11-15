@@ -84,4 +84,6 @@ Prüfungen »Noch eine Runde«, nach einer oder zwei die »Sechs Fallen«.
 
 #### Eigene Projekte
 
-- **Ein Aushang für die Klasse** (eine Stunde): ein eigener Aushang, Überschrift zentriert, Abstand statt leerer Absätze, mit Formatierungszeichen kontrolliert. Bewertet: ob er mit größerer Schrift noch stimmt.
+Wie man ein Projekt mit Meilensteinen und Kriterien begleitet: [Eigene Projekte begleiten](/lehrmaterial-projekte).
+
+- **Ein Aushang für die Klasse** (eine Stunde): ein eigener Aushang, Überschrift zentriert, Abstand statt leerer Absätze, mit Formatierungszeichen kontrolliert. Bewertet: ob er mit größerer Schrift noch stimmt. *Meilensteine:* der Text des Aushangs; der formatierte Aushang, mit eingeschalteten Formatierungszeichen geprüft. *Kriterien:* Kein leerer Absatz und kein Leerzeichen dient als Abstand, die Überschrift ist zentriert formatiert, und mit größerer Schrift bleibt alles an seinem Platz.
