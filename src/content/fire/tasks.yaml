@@ -81,6 +81,26 @@ tasks:
       Abschnitte ganz sein Ziel. Das letzte Weiß ist (255, 255, 248); den
       Unterschied sieht man nicht.
 
+  - id: hitze-wandert
+    title: Wohin die Hitze wandert
+    prediction: true
+    prompt: Dein Programm wendet diesen Kernel gleich in jedem Bild wieder an. In welche Richtung wandert dabei die Hitze, und warum?
+    check:
+      type: choice
+      options:
+        - 'Nach oben: Jedes Pixel holt die Hälfte seiner Farbe von dem darunter.'
+        - 'Nach unten: Das doppelte Gewicht steht in der unteren Zeile.'
+        - 'Nach oben: Helles steigt im Bild nach oben, wie warme Luft.'
+        - 'Nirgendwohin: Der Ring wird nur weicher, wie beim Kernel mit neun Einsen.'
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Rechne ein schwarzes Pixel knapp über dem Ring, unter ihm ist es weiß. Welche Farbe bekommt es? Und ein Pixel knapp unter dem Ring, über dem es weiß ist?
+      - when: { picked: 2 }
+        say: Der Kernel rechnet nur mit Zahlen, von warmer Luft weiß er nichts. Woher holt ein Pixel hier seine neue Farbe?
+      - when: { picked: 3 }
+        say: Beim Kernel mit neun Einsen zählt jede Seite gleich. Hier zählt das Pixel darunter doppelt und das darüber gar nicht.
+
   - id: kernel-anwenden
     title: Der Kernel in zwei Schleifen
     prompt: |

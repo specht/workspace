@@ -405,6 +405,12 @@ Für das Feuer zählt ein Pixel nicht selbst mit, aber sein linker und sein rech
 <tr><td>1</td><td class='zero'>0</td><td>1</td></tr>
 <tr><td class='zero'>0</td><td>2</td><td class='zero'>0</td></tr>
 </table>
+</div>
+
+_task(hitze-wandert)
+
+<!-- after: hitze-wandert -->
+<div class='kernel-figure' style='max-width: 16em; margin: 1em auto'>
 <img src='kernel-feuer-1.webp' alt='Der Ring nach einem Schritt: oben mit einem gelben, unten mit einem dunkelroten Rand, das Weiß ist ein wenig nach oben gerutscht.'>
 </div>
 
@@ -426,6 +432,7 @@ Die neue Farbe eines Pixels kommt also zur Hälfte von dem Pixel darunter. Was u
 </div>
 
 Mit jedem Schritt wandert die Hitze im Mittel ein halbes Pixel nach oben: Das Gewicht 2 von unten ist die Hälfte der 4. Abkühlen tut sie dabei nur langsam. Ruby rundet beim Teilen von ganzen Zahlen ab, `125 / 4` ist 31, und so verliert die Hitze bei vielen Schritten ein klein wenig.
+<!-- /after -->
 
 ## Feueranimation
 
