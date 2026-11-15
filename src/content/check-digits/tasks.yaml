@@ -851,6 +851,26 @@ tasks:
         - when: { equals: 90 }
           say: Dann hält `isValidEan` jeden vertauschten Code für gültig. Prüft dein Programm den vertauschten Code oder den ursprünglichen?
 
+  - id: dreher-regel
+    title: Welche Dreher durchrutschen
+    prediction: true
+    prompt: Lass dein Programm auch die Paare ausgeben, die es zählt. Woran erkennt man einen Zahlendreher, den die Kasse nicht bemerkt?
+    check:
+      type: choice
+      options:
+        - Seine beiden Ziffern unterscheiden sich um 5.
+        - Eine seiner beiden Ziffern ist eine 0 oder eine 5.
+        - Seine beiden Ziffern ergeben zusammen eine ungerade Zahl.
+        - Die größere der beiden Ziffern steht vorn.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: In `16` und `27` steht weder eine 0 noch eine 5, und trotzdem bleiben sie unbemerkt. Den Dreher von `01` bemerkt die Kasse dagegen.
+      - when: { picked: 2 }
+        say: Das gilt für alle zehn Paare, aber auch für `12`, und den Dreher `21` bemerkt die Kasse. Was haben die zehn Paare, was `12` nicht hat?
+      - when: { picked: 3 }
+        say: In der Liste stehen `05` und `50`, also beide Reihenfolgen. Auf die Reihenfolge kommt es nicht an.
+
   - id: isbn-dreher
     title: Und bei Büchern?
     prediction: true

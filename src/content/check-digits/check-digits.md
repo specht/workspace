@@ -1076,7 +1076,9 @@ java Swaps.java
 
 _task(zahlendreher)
 
-<!-- after: zahlendreher -->
+_task(dreher-regel)
+
+<!-- after: dreher-regel -->
 Unbemerkt bleiben genau die Paare, deren Ziffern sich um 5 unterscheiden, etwa
 `05` und `50`. Beim Vertauschen tauschen die beiden Ziffern ihre Gewichte 1 und
 3; die Summe ändert sich dadurch um das Doppelte ihres Unterschieds. Ist der
