@@ -121,6 +121,168 @@ tasks:
                       # hier: das dict für diesen Weg an ways anhängen
               return ways
           ```
+    dart:
+      prompt: Schreib `readWays` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: readWays('routenplaner-starter/data/test.tsv').length
+            expect: 3
+          - call: readWays('routenplaner-starter/data/test.tsv').first.name
+            expect: "'Ahornweg'"
+            say: Der Name ist der dritte Teil der Zeile, nach Art und Einbahnstraße.
+          - call: readWays('routenplaner-starter/data/test.tsv')[1].kind
+            expect: "'footway'"
+          - call: readWays('routenplaner-starter/data/test.tsv')[2].oneway
+            expect: "'yes'"
+          - call: readWays('routenplaner-starter/data/test.tsv').first.points
+            expect: "[Point('1', 13.3, 52.45), Point('2', 13.301, 52.45), Point('3', 13.302, 52.45)]"
+            say: 'Jeder Punkt ist ein `Point` aus ID (ein String), Länge und Breite (Kommazahlen): `Point(''2'', 13.301, 52.45)`.'
+          - call: readWays('routenplaner-starter/data/test.tsv')[1].name
+            expect: "''"
+            say: Ein Weg ohne Namen hat den leeren String als Namen, zwei Tabulatoren hintereinander.
+      hint:
+        - |
+          Nimm dir eine Zeile aus `data/test.tsv` und teile sie von Hand: Was sind die
+          vier Teile zwischen den Tabulatoren? Wie zerfällt der letzte, die Punkte,
+          wenn du ihn an den Leerzeichen teilst, und welche zwei Teile gehören jeweils
+          zu einem Punkt?
+        - |
+          `File(path).readAsLinesSync()` gibt die Zeilen. Für jede Zeile:
+          `line.split('\t')` gibt Art, Einbahnstraße, Name und Punkte; zwei
+          Tabulatoren hintereinander ergeben den leeren Namen. Die Punkte teilst du an
+          den Leerzeichen und gehst sie in Zweierschritten durch: `items[i]` ist die
+          ID, `items[i + 1]` die Lage. Die Lage teilst du noch einmal am Komma, und
+          `double.parse` macht Zahlen daraus. Die Klassen `Point` und `Way` stehen in
+          `graph.dart`.
+        - |
+          Ein Gerüst; was hinter `// hier` fehlt, schreibst du:
+
+          ```dart
+          List<Way> readWays(String path) {
+            final ways = <Way>[];
+            for (final line in File(path).readAsLinesSync()) {
+              final parts = line.split('\t'); // Art, Einbahnstraße, Name, Punkte
+              final items = parts[3].split(' ');
+              final points = <Point>[];
+              for (var i = 0; i + 1 < items.length; i += 2) {
+                // hier: Länge und Breite aus items[i + 1], als Zahlen,
+                // und Point(items[i], lon, lat) an points anhängen
+              }
+              // hier: den Way für diese Zeile an ways anhängen
+            }
+            return ways;
+          }
+          ```
+    javascript:
+      prompt: Schreib `readWays` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: readWays('routenplaner-starter/data/test.tsv').length
+            expect: 3
+          - call: readWays('routenplaner-starter/data/test.tsv')[0].name
+            expect: "'Ahornweg'"
+            say: Der Name ist der dritte Teil der Zeile, nach Art und Einbahnstraße.
+          - call: readWays('routenplaner-starter/data/test.tsv')[1].kind
+            expect: "'footway'"
+          - call: readWays('routenplaner-starter/data/test.tsv')[2].oneway
+            expect: "'yes'"
+          - call: readWays('routenplaner-starter/data/test.tsv')[0].points
+            expect: "[['1', 13.3, 52.45], ['2', 13.301, 52.45], ['3', 13.302, 52.45]]"
+            say: 'Jeder Punkt ist ein Array aus ID (ein String), Länge und Breite (Kommazahlen): `[''2'', 13.301, 52.45]`.'
+          - call: readWays('routenplaner-starter/data/test.tsv')[1].name
+            expect: "''"
+            say: Ein Weg ohne Namen hat den leeren String als Namen, zwei Tabulatoren hintereinander.
+      hint:
+        - |
+          Nimm dir eine Zeile aus `data/test.tsv` und teile sie von Hand: Was sind die
+          vier Teile zwischen den Tabulatoren? Wie zerfällt der letzte, die Punkte,
+          wenn du ihn an den Leerzeichen teilst, und welche zwei Teile gehören jeweils
+          zu einem Punkt?
+        - |
+          `fs.readFileSync(path, 'utf8').split('\n')` gibt die Zeilen, am Ende eine
+          leere, die du überspringst. Für jede Zeile: `line.split('\t')` gibt Art,
+          Einbahnstraße, Name und Punkte; zwei Tabulatoren hintereinander ergeben den
+          leeren Namen. Die Punkte teilst du an den Leerzeichen und gehst sie in
+          Zweierschritten durch: `items[i]` ist die ID, `items[i + 1]` die Lage. Die
+          Lage teilst du noch einmal am Komma, und `Number` macht Zahlen daraus.
+        - |
+          Ein Gerüst; was hinter `// hier` fehlt, schreibst du:
+
+          ```javascript
+          function readWays(path) {
+              const ways = [];
+              for (const line of fs.readFileSync(path, 'utf8').split('\n')) {
+                  if (line === '') continue;
+                  const [kind, oneway, name, pointsText] = line.split('\t');
+                  const items = pointsText.split(' ');
+                  const points = [];
+                  for (let i = 0; i + 1 < items.length; i += 2) {
+                      // hier: Länge und Breite aus items[i + 1], als Zahlen,
+                      // und [items[i], lon, lat] an points anhängen
+                  }
+                  // hier: das Objekt für diesen Weg an ways anhängen
+              }
+              return ways;
+          }
+          ```
+    java:
+      prompt: Schreib `readWays` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.readWays("routenplaner-starter/data/test.tsv").size()
+            expect: 3
+          - call: Routes.readWays("routenplaner-starter/data/test.tsv").get(0).name()
+            expect: '"Ahornweg"'
+            say: Der Name ist der dritte Teil der Zeile, nach Art und Einbahnstraße.
+          - call: Routes.readWays("routenplaner-starter/data/test.tsv").get(1).kind()
+            expect: '"footway"'
+          - call: Routes.readWays("routenplaner-starter/data/test.tsv").get(2).oneway()
+            expect: '"yes"'
+          - call: Routes.readWays("routenplaner-starter/data/test.tsv").get(0).points()
+            expect: 'List.of(new Point("1", 13.3, 52.45), new Point("2", 13.301, 52.45), new Point("3", 13.302, 52.45))'
+            say: 'Jeder Punkt ist ein `Point` aus ID (ein String), Länge und Breite (Kommazahlen): `new Point("2", 13.301, 52.45)`.'
+          - call: Routes.readWays("routenplaner-starter/data/test.tsv").get(1).name()
+            expect: '""'
+            say: Ein Weg ohne Namen hat den leeren String als Namen, zwei Tabulatoren hintereinander.
+      hint:
+        - |
+          Nimm dir eine Zeile aus `data/test.tsv` und teile sie von Hand: Was sind die
+          vier Teile zwischen den Tabulatoren? Wie zerfällt der letzte, die Punkte,
+          wenn du ihn an den Leerzeichen teilst, und welche zwei Teile gehören jeweils
+          zu einem Punkt?
+        - |
+          `Files.readAllLines(Path.of(path))` gibt die Zeilen. Für jede Zeile:
+          `line.split("\t")` gibt Art, Einbahnstraße, Name und Punkte; zwei
+          Tabulatoren hintereinander ergeben den leeren Namen. Die Punkte teilst du an
+          den Leerzeichen und gehst sie in Zweierschritten durch: `items[i]` ist die
+          ID, `items[i + 1]` die Lage. Die Lage teilst du noch einmal am Komma, und
+          `Double.parseDouble` macht Zahlen daraus. Die Records `Point` und `Way`
+          stehen in `Types.java`.
+        - |
+          Ein Gerüst; was hinter `// hier` fehlt, schreibst du:
+
+          ```java
+          static List<Way> readWays(String path) throws IOException {
+              List<Way> ways = new ArrayList<>();
+              for (String line : Files.readAllLines(Path.of(path))) {
+                  String[] parts = line.split("\t"); // Art, Einbahnstraße, Name, Punkte
+                  String[] items = parts[3].split(" ");
+                  List<Point> points = new ArrayList<>();
+                  for (int i = 0; i + 1 < items.length; i += 2) {
+                      // hier: Länge und Breite aus items[i + 1], als Zahlen,
+                      // und new Point(items[i], lon, lat) an points anhängen
+                  }
+                  // hier: den Way für diese Zeile an ways anhängen
+              }
+              return ways;
+          }
+          ```
 
   - id: grad
     title: Ein Grad ist nicht gleich ein Grad
@@ -226,6 +388,133 @@ tasks:
               y = …   # der Unterschied der Breiten, im Bogenmaß
               return math.sqrt(x * x + y * y) * 6_371_000
           ```
+    dart:
+      prompt: Schreib `distance` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: (distance(13.3, 52.45, 13.3, 52.451) - 111.2).abs() < 0.5
+            expect: true
+            say: Ein Tausendstel Grad nach Norden sind überall gut 111 Meter.
+          - call: (distance(13.3, 52.45, 13.301, 52.45) - 67.8).abs() < 0.5
+            expect: true
+            say: Ein Tausendstel Grad nach Osten ist in Berlin nur knapp 68 Meter lang. Hast du die Länge mit dem Cosinus der Breite verkürzt? Das `cos` aus dart:math rechnet im Bogenmaß.
+          - call: (distance(13.3205, 52.4572, 13.3064, 52.4560) - 965).abs() < 3
+            expect: true
+            say: Vom Rathaus Steglitz zum Botanischen Garten sind es in Luftlinie gut 960 Meter.
+          - call: distance(13.3, 52.45, 13.3, 52.45)
+            expect: 0.0
+          - call: distance(13.3, 52.45, 13.301, 52.451) == distance(13.301, 52.451, 13.3, 52.45)
+            expect: true
+            say: Hin ist es so weit wie zurück.
+      hint:
+        - |
+          Rechne zwei Fälle von Hand: Ein Tausendstel Grad nach Norden, wie viele
+          Meter sind das mit 111 195 m pro Grad? Und ein Tausendstel Grad nach Osten
+          in Berlin, bei 52,45 Grad Breite: Der Cosinus von 52,45° ist etwa 0,61.
+        - |
+          Die Formel auf der Seite in drei Schritten: der Unterschied der Längen,
+          verkürzt mit dem Cosinus der mittleren Breite; der Unterschied der Breiten;
+          beide ins Bogenmaß (mal `pi / 180`). Dann Pythagoras, mal dem Erdradius
+          6 371 000 Meter. `pi`, `cos` und `sqrt` kommen aus `dart:math`. `cos`
+          erwartet Bogenmaß, also gehört die mittlere Breite vor dem Cosinus
+          ebenfalls umgerechnet.
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```dart
+          double distance(double lon1, double lat1, double lon2, double lat2) {
+            const radians = pi / 180;
+            final x = …; // der Unterschied der Längen, im Bogenmaß, mal cos der mittleren Breite
+            final y = …; // der Unterschied der Breiten, im Bogenmaß
+            return sqrt(x * x + y * y) * 6371000;
+          }
+          ```
+    javascript:
+      prompt: Schreib `distance` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: Math.abs(distance(13.3, 52.45, 13.3, 52.451) - 111.2) < 0.5
+            expect: true
+            say: Ein Tausendstel Grad nach Norden sind überall gut 111 Meter.
+          - call: Math.abs(distance(13.3, 52.45, 13.301, 52.45) - 67.8) < 0.5
+            expect: true
+            say: Ein Tausendstel Grad nach Osten ist in Berlin nur knapp 68 Meter lang. Hast du die Länge mit dem Cosinus der Breite verkürzt? Math.cos rechnet im Bogenmaß.
+          - call: Math.abs(distance(13.3205, 52.4572, 13.3064, 52.4560) - 965) < 3
+            expect: true
+            say: Vom Rathaus Steglitz zum Botanischen Garten sind es in Luftlinie gut 960 Meter.
+          - call: distance(13.3, 52.45, 13.3, 52.45)
+            expect: 0
+          - call: distance(13.3, 52.45, 13.301, 52.451) === distance(13.301, 52.451, 13.3, 52.45)
+            expect: true
+            say: Hin ist es so weit wie zurück.
+      hint:
+        - |
+          Rechne zwei Fälle von Hand: Ein Tausendstel Grad nach Norden, wie viele
+          Meter sind das mit 111 195 m pro Grad? Und ein Tausendstel Grad nach Osten
+          in Berlin, bei 52,45 Grad Breite: Der Cosinus von 52,45° ist etwa 0,61.
+        - |
+          Die Formel auf der Seite in drei Schritten: der Unterschied der Längen,
+          verkürzt mit dem Cosinus der mittleren Breite; der Unterschied der Breiten;
+          beide ins Bogenmaß (mal `Math.PI / 180`). Dann Pythagoras, mal dem
+          Erdradius 6 371 000 Meter. `Math.cos` erwartet Bogenmaß, also gehört die
+          mittlere Breite vor dem Cosinus ebenfalls umgerechnet.
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```javascript
+          function distance(lon1, lat1, lon2, lat2) {
+              const radians = Math.PI / 180;
+              const x = …; // der Unterschied der Längen, im Bogenmaß, mal cos der mittleren Breite
+              const y = …; // der Unterschied der Breiten, im Bogenmaß
+              return Math.sqrt(x * x + y * y) * 6_371_000;
+          }
+          ```
+    java:
+      prompt: Schreib `distance` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Math.abs(Routes.distance(13.3, 52.45, 13.3, 52.451) - 111.2) < 0.5
+            expect: true
+            say: Ein Tausendstel Grad nach Norden sind überall gut 111 Meter.
+          - call: Math.abs(Routes.distance(13.3, 52.45, 13.301, 52.45) - 67.8) < 0.5
+            expect: true
+            say: Ein Tausendstel Grad nach Osten ist in Berlin nur knapp 68 Meter lang. Hast du die Länge mit dem Cosinus der Breite verkürzt? Math.cos rechnet im Bogenmaß.
+          - call: Math.abs(Routes.distance(13.3205, 52.4572, 13.3064, 52.4560) - 965) < 3
+            expect: true
+            say: Vom Rathaus Steglitz zum Botanischen Garten sind es in Luftlinie gut 960 Meter.
+          - call: Routes.distance(13.3, 52.45, 13.3, 52.45)
+            expect: 0.0
+          - call: Routes.distance(13.3, 52.45, 13.301, 52.451) == Routes.distance(13.301, 52.451, 13.3, 52.45)
+            expect: true
+            say: Hin ist es so weit wie zurück.
+      hint:
+        - |
+          Rechne zwei Fälle von Hand: Ein Tausendstel Grad nach Norden, wie viele
+          Meter sind das mit 111 195 m pro Grad? Und ein Tausendstel Grad nach Osten
+          in Berlin, bei 52,45 Grad Breite: Der Cosinus von 52,45° ist etwa 0,61.
+        - |
+          Die Formel auf der Seite in drei Schritten: der Unterschied der Längen,
+          verkürzt mit dem Cosinus der mittleren Breite; der Unterschied der Breiten;
+          beide ins Bogenmaß (mal `Math.PI / 180`). Dann Pythagoras, mal dem
+          Erdradius 6 371 000 Meter. `Math.cos` erwartet Bogenmaß, also gehört die
+          mittlere Breite vor dem Cosinus ebenfalls umgerechnet.
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```java
+          static double distance(double lon1, double lat1, double lon2, double lat2) {
+              double radians = Math.PI / 180;
+              double x = …; // der Unterschied der Längen, im Bogenmaß, mal cos der mittleren Breite
+              double y = …; // der Unterschied der Breiten, im Bogenmaß
+              return Math.sqrt(x * x + y * y) * 6_371_000;
+          }
+          ```
 
   - id: graph
     title: Vom Weg zum Graphen
@@ -316,6 +605,150 @@ tasks:
                       ...
               return {'nodes': nodes, 'edges': edges}
           ```
+    dart:
+      prompt: Schreib `buildGraph` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: buildGraph(readWays('routenplaner-starter/data/test.tsv')).nodes.length
+            expect: 5
+          - call: buildGraph(readWays('routenplaner-starter/data/test.tsv')).nodes['2']
+            expect: "Point('2', 13.301, 52.45)"
+          - call: buildGraph(readWays('routenplaner-starter/data/test.tsv')).edges['2']!.map((e) => e.to).toList()..sort()
+            expect: "['1', '3', '4']"
+            say: Der Punkt 2 liegt am Ahornweg zwischen 1 und 3 und ist der Anfang des Fußwegs zu 4.
+          - call: buildGraph(readWays('routenplaner-starter/data/test.tsv')).edges['5']!.map((e) => e.to).toList()..sort()
+            expect: "['3', '4']"
+            say: Nachbarn sind nur Punkte, die auf einem Weg direkt aufeinander folgen, und das in beide Richtungen.
+          - call: (buildGraph(readWays('routenplaner-starter/data/test.tsv')).edges['1']!.first.cost - 67.8).abs() < 0.5
+            expect: true
+            say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
+      hint:
+        - |
+          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
+          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
+          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+        - |
+          Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen:
+          `way.points[i]` und `way.points[i + 1]`. Beide kommen unter ihrer ID in
+          `graph.nodes`. Den Abstand rechnet dein `distance` aus, und in `graph.edges`
+          kommen zwei Kanten: `Edge(b.id, metres)` in die Liste von a und
+          `Edge(a.id, metres)` in die Liste von b. `graph.edges.putIfAbsent(a.id, () => [])`
+          gibt die Liste von a und legt sie an, wenn es sie noch nicht gibt.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          Graph buildGraph(List<Way> ways) {
+            final graph = Graph();
+            for (final way in ways) {
+              for (var i = 0; i + 1 < way.points.length; i++) {
+                final a = way.points[i], b = way.points[i + 1];
+                // hier: a und b unter ihrer ID in graph.nodes
+                // hier: der Abstand, und die Kante in beide Richtungen in graph.edges
+              }
+            }
+            return graph;
+          }
+          ```
+    javascript:
+      prompt: Schreib `buildGraph` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: Object.keys(buildGraph(readWays('routenplaner-starter/data/test.tsv')).nodes).length
+            expect: 5
+          - call: buildGraph(readWays('routenplaner-starter/data/test.tsv')).nodes['2']
+            expect: '[13.301, 52.45]'
+          - call: buildGraph(readWays('routenplaner-starter/data/test.tsv')).edges['2'].map((edge) => edge[0]).sort()
+            expect: "['1', '3', '4']"
+            say: Der Punkt 2 liegt am Ahornweg zwischen 1 und 3 und ist der Anfang des Fußwegs zu 4.
+          - call: buildGraph(readWays('routenplaner-starter/data/test.tsv')).edges['5'].map((edge) => edge[0]).sort()
+            expect: "['3', '4']"
+            say: Nachbarn sind nur Punkte, die auf einem Weg direkt aufeinander folgen, und das in beide Richtungen.
+          - call: Math.abs(buildGraph(readWays('routenplaner-starter/data/test.tsv')).edges['1'][0][1] - 67.8) < 0.5
+            expect: true
+            say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
+      hint:
+        - |
+          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
+          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
+          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+        - |
+          Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen:
+          `way.points[i]` und `way.points[i + 1]`. Beide kommen mit ihrer Lage in
+          `nodes`. Den Abstand rechnet dein `distance` aus, und in `edges` kommen zwei
+          Einträge: b als Nachbar von a und a als Nachbar von b, jeweils mit den
+          Metern. `(edges[a] ??= []).push(…)` legt das Array der Nachbarn von a an,
+          wenn es noch keines gibt, und hängt an.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function buildGraph(ways) {
+              const nodes = {};
+              const edges = {};
+              for (const way of ways) {
+                  for (let i = 0; i + 1 < way.points.length; i++) {
+                      const [a, lon1, lat1] = way.points[i];
+                      const [b, lon2, lat2] = way.points[i + 1];
+                      // hier: a und b mit ihrer Lage in nodes
+                      // hier: der Abstand, und die Kante in beide Richtungen in edges
+                  }
+              }
+              return { nodes, edges };
+          }
+          ```
+    java:
+      prompt: Schreib `buildGraph` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")).nodes.size()
+            expect: 5
+          - call: Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")).nodes.get("2")
+            expect: 'new Point("2", 13.301, 52.45)'
+          - call: Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")).edges.get("2").stream().map(Edge::to).sorted().toList()
+            expect: 'List.of("1", "3", "4")'
+            say: Der Punkt 2 liegt am Ahornweg zwischen 1 und 3 und ist der Anfang des Fußwegs zu 4.
+          - call: Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")).edges.get("5").stream().map(Edge::to).sorted().toList()
+            expect: 'List.of("3", "4")'
+            say: Nachbarn sind nur Punkte, die auf einem Weg direkt aufeinander folgen, und das in beide Richtungen.
+          - call: Math.abs(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")).edges.get("1").get(0).cost() - 67.8) < 0.5
+            expect: true
+            say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Methode distance.
+      hint:
+        - |
+          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
+          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
+          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+        - |
+          Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen:
+          `way.points().get(i)` und `way.points().get(i + 1)`. Beide kommen unter
+          ihrer ID in `graph.nodes`. Den Abstand rechnet dein `distance` aus, und in
+          `graph.edges` kommen zwei Kanten: `new Edge(b.id(), metres)` in die Liste
+          von a und `new Edge(a.id(), metres)` in die Liste von b.
+          `graph.edges.computeIfAbsent(a.id(), id -> new ArrayList<>())` gibt die
+          Liste von a und legt sie an, wenn es sie noch nicht gibt.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static Graph buildGraph(List<Way> ways) {
+              Graph graph = new Graph();
+              for (Way way : ways) {
+                  for (int i = 0; i + 1 < way.points().size(); i++) {
+                      Point a = way.points().get(i), b = way.points().get(i + 1);
+                      // hier: a und b unter ihrer ID in graph.nodes
+                      // hier: der Abstand, und die Kante in beide Richtungen in graph.edges
+                  }
+              }
+              return graph;
+          }
+          ```
 
   - id: weg
     title: Der Weg zurück
@@ -401,6 +834,133 @@ tasks:
                   # hier: node vorne in den Weg, dann weiter zu seinem Vorgänger
                   ...
               return path
+          ```
+    dart:
+      prompt: Schreib `pathTo` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: "pathTo({'a': null, 'b': 'a', 'c': 'b'}, 'c')"
+            expect: "['a', 'b', 'c']"
+            say: Der Weg geht vom Start zum Ziel. Du findest ihn rückwärts, also kommt jeder Knoten vorne dazu (`insert(0, …)`).
+          - call: "pathTo({'a': null, 'b': 'a', 'c': 'a'}, 'c')"
+            expect: "['a', 'c']"
+          - call: "pathTo({'a': null}, 'a')"
+            expect: "['a']"
+            say: Ist das Ziel der Start, ist der Weg nur dieser eine Knoten.
+          - call: "pathTo({'a': null, 'b': 'a'}, 'x')"
+            expect: ~
+            say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+      hint:
+        - |
+          Mit `previous = {'a': null, 'b': 'a', 'c': 'b'}`: Von welchem Knoten aus hat
+          die Suche `c` gefunden? Und den davor? Schreib die Knoten in der Reihenfolge
+          auf, in der du sie so findest, und dreh sie dann um.
+        - |
+          Beginne beim Ziel und geh von Vorgänger zu Vorgänger, bis einer `null` ist:
+          Das war der Start. Jeden Knoten setzt du vorne in den Weg
+          (`path.insert(0, node)`), dann steht er am Ende vom Start zum Ziel da. Steht
+          das Ziel gar nicht in `previous` (`containsKey`), hat die Suche es nie
+          gefunden: Dann gibt es keinen Weg, `null`.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          List<String>? pathTo(Map<String, String?> previous, String goal) {
+            if (…) return null; // hier: hat die Suche das Ziel nicht gefunden?
+            final path = <String>[];
+            String? node = goal;
+            while (node != null) {
+              // hier: node vorne in den Weg, dann weiter zu seinem Vorgänger
+            }
+            return path;
+          }
+          ```
+    javascript:
+      prompt: Schreib `pathTo` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: "pathTo(new Map([['a', null], ['b', 'a'], ['c', 'b']]), 'c')"
+            expect: "['a', 'b', 'c']"
+            say: Der Weg geht vom Start zum Ziel. Du findest ihn rückwärts, also kommt jeder Knoten vorne dazu (`unshift`).
+          - call: "pathTo(new Map([['a', null], ['b', 'a'], ['c', 'a']]), 'c')"
+            expect: "['a', 'c']"
+          - call: "pathTo(new Map([['a', null]]), 'a')"
+            expect: "['a']"
+            say: Ist das Ziel der Start, ist der Weg nur dieser eine Knoten.
+          - call: "pathTo(new Map([['a', null], ['b', 'a']]), 'x')"
+            expect: ~
+            say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+      hint:
+        - |
+          Mit `previous = new Map([['a', null], ['b', 'a'], ['c', 'b']])`: Von welchem
+          Knoten aus hat die Suche `c` gefunden? Und den davor? Schreib die Knoten in
+          der Reihenfolge auf, in der du sie so findest, und dreh sie dann um.
+        - |
+          Beginne beim Ziel und geh von Vorgänger zu Vorgänger, bis einer `null` ist:
+          Das war der Start. `previous.get(node)` gibt den Vorgänger. Jeden Knoten
+          setzt du vorne in den Weg (`path.unshift(node)`), dann steht er am Ende vom
+          Start zum Ziel da. Steht das Ziel gar nicht in `previous` (`has`), hat die
+          Suche es nie gefunden: Dann gibt es keinen Weg, `null`.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function pathTo(previous, goal) {
+              if (…) return null; // hier: hat die Suche das Ziel nicht gefunden?
+              const path = [];
+              let node = goal;
+              while (node !== null) {
+                  // hier: node vorne in den Weg, dann weiter zu seinem Vorgänger
+              }
+              return path;
+          }
+          ```
+    java:
+      prompt: Schreib `pathTo` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: 'Map<String, String> previous = new HashMap<>(); previous.put("a", null); previous.put("b", "a"); previous.put("c", "b"); Routes.pathTo(previous, "c")'
+            expect: 'List.of("a", "b", "c")'
+            say: Der Weg geht vom Start zum Ziel. Du findest ihn rückwärts, also kommt jeder Knoten vorne dazu (`addFirst`).
+          - call: 'Map<String, String> previous = new HashMap<>(); previous.put("a", null); previous.put("b", "a"); previous.put("c", "a"); Routes.pathTo(previous, "c")'
+            expect: 'List.of("a", "c")'
+          - call: 'Map<String, String> previous = new HashMap<>(); previous.put("a", null); Routes.pathTo(previous, "a")'
+            expect: 'List.of("a")'
+            say: Ist das Ziel der Start, ist der Weg nur dieser eine Knoten.
+          - call: 'Map<String, String> previous = new HashMap<>(); previous.put("a", null); previous.put("b", "a"); Routes.pathTo(previous, "x")'
+            expect: ~
+            say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+      hint:
+        - |
+          Mit einer Map `previous`, in der a ohne Vorgänger steht (`null`), b mit
+          dem Vorgänger a und c mit dem Vorgänger b: Von welchem Knoten aus hat die
+          Suche `c` gefunden? Und den davor? Schreib die Knoten in der Reihenfolge
+          auf, in der du sie so findest, und dreh sie dann um.
+        - |
+          Beginne beim Ziel und geh von Vorgänger zu Vorgänger, bis einer `null` ist:
+          Das war der Start. `previous.get(node)` gibt den Vorgänger. Jeden Knoten
+          setzt du vorne in den Weg (`path.addFirst(node)`), dann steht er am Ende vom
+          Start zum Ziel da. Steht das Ziel gar nicht in `previous` (`containsKey`),
+          hat die Suche es nie gefunden: Dann gibt es keinen Weg, `null`.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static List<String> pathTo(Map<String, String> previous, String goal) {
+              if (…) return null; // hier: hat die Suche das Ziel nicht gefunden?
+              List<String> path = new ArrayList<>();
+              String node = goal;
+              while (node != null) {
+                  // hier: node vorne in den Weg, dann weiter zu seinem Vorgänger
+              }
+              return path;
+          }
           ```
 
   - id: breitensuche
@@ -504,6 +1064,173 @@ tasks:
                       # hier: einen neuen Nachbarn mit Vorgänger eintragen und hinten anstellen
                       ...
               return {'path': path_to(previous, goal), 'visited': visited}
+          ```
+    dart:
+      prompt: Schreib `breadthFirst` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '21', '22', '16']"
+            say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.first
+            expect: "'11'"
+            say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').visited.toList()..sort()
+            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+      hint:
+        - |
+          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
+          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
+          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
+          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
+          Schritt durchklicken.
+        - |
+          Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
+          Vorgänger), die Queue (am Anfang nur der Start) und `visited` (am Anfang
+          leer). Einen Nachbarn, der schon gefunden ist, erkennst du daran, dass er in
+          `previous` steht. Am Ende baut dein `pathTo` den Weg. Als Queue nimmst du
+          `Queue` aus `dart:collection`: `add` stellt hinten an, `removeFirst` nimmt
+          vorne heraus. Eine Liste mit `removeAt(0)` rückt dagegen jedes Mal alles
+          nach vorne, und bei den gut 141 000 Knoten von Steglitz-Zehlendorf kriecht
+          die Suche dann; `Queue` ist ein Ring Buffer, genau die Idee der Queue aus
+          der Data Structures Sandbox.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          Search breadthFirst(Graph graph, String start, String goal) {
+            final previous = <String, String?>{start: null};
+            final queue = Queue<String>()..add(start);
+            final visited = <String>[];
+            while (queue.isNotEmpty) {
+              final node = queue.removeFirst();
+              // hier: node in visited, und beim Ziel aufhören
+              for (final edge in graph.edges[node] ?? <Edge>[]) {
+                // hier: einen neuen Nachbarn (edge.to) mit Vorgänger eintragen und hinten anstellen
+              }
+            }
+            return Search(pathTo(previous, goal), visited);
+          }
+          ```
+    javascript:
+      prompt: Schreib `breadthFirst` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '21', '22', '16']"
+            say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited[0]
+            expect: "'11'"
+            say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
+          - call: '[...breadthFirst(buildGraph(readWays(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'').visited].sort()'
+            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+      hint:
+        - |
+          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
+          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
+          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
+          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
+          Schritt durchklicken.
+        - |
+          Die Suche merkt sich dreierlei: `previous` (eine Map, am Anfang nur der
+          Start, ohne Vorgänger), die Queue (ein Array, am Anfang nur der Start, dazu
+          `head = 0` für den Index des Knotens, der als Nächster dran ist) und
+          `visited` (am Anfang leer). Einen Nachbarn, der schon gefunden ist, erkennst
+          du daran, dass er in `previous` steht. Am Ende baut dein `pathTo` den Weg.
+          `queue.shift()` verschiebt bei jedem Aufruf das ganze Array, und bei den gut
+          141 000 Knoten von Steglitz-Zehlendorf kriecht die Suche dann; der Index
+          `head`, der nur vorrückt, ist genau die Idee des Ring Buffers, mit dem die
+          Queue in der Data Structures Sandbox arbeitet.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function breadthFirst(graph, start, goal) {
+              const previous = new Map([[start, null]]);
+              const queue = [start];
+              let head = 0;
+              const visited = [];
+              while (head < queue.length) {
+                  const node = queue[head++];
+                  // hier: node in visited, und beim Ziel aufhören
+                  for (const [neighbour] of graph.edges[node] || []) {
+                      // hier: einen neuen Nachbarn mit Vorgänger eintragen und hinten anstellen
+                  }
+              }
+              return { path: pathTo(previous, goal), visited };
+          }
+          ```
+    java:
+      prompt: Schreib `breadthFirst` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+            expect: 'List.of("11", "21", "22", "16")'
+            say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+            expect: 'List.of("11")'
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().get(0)
+            expect: '"11"'
+            say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").visited().stream().sorted().toList()
+            expect: 'List.of("11", "12", "13", "14", "15", "16", "21", "22")'
+            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+      hint:
+        - |
+          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
+          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
+          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
+          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
+          Schritt durchklicken.
+        - |
+          Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
+          Vorgänger), die Queue (am Anfang nur der Start) und `visited` (am Anfang
+          leer). Einen Nachbarn, der schon gefunden ist, erkennst du daran, dass er in
+          `previous` steht. Am Ende baut dein `pathTo` den Weg. Als Queue nimmst du
+          eine `ArrayDeque`: `add` stellt hinten an, `poll` nimmt vorne heraus. Eine
+          `ArrayList` mit `remove(0)` rückt dagegen jedes Mal alles nach vorne, und
+          bei den gut 141 000 Knoten von Steglitz-Zehlendorf kriecht die Suche dann;
+          `ArrayDeque` ist ein Ring Buffer, genau die Idee der Queue aus der Data
+          Structures Sandbox.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static Search breadthFirst(Graph graph, String start, String goal) {
+              Map<String, String> previous = new HashMap<>();
+              previous.put(start, null);
+              ArrayDeque<String> queue = new ArrayDeque<>(List.of(start));
+              List<String> visited = new ArrayList<>();
+              while (!queue.isEmpty()) {
+                  String node = queue.poll();
+                  // hier: node in visited, und beim Ziel aufhören
+                  for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+                      // hier: einen neuen Nachbarn (edge.to()) mit Vorgänger eintragen und hinten anstellen
+                  }
+              }
+              return new Search(pathTo(previous, goal), visited);
+          }
           ```
 
   - id: kanten
@@ -641,6 +1368,192 @@ tasks:
                       # Dann neuer Abstand, neuer Vorgänger, und neighbour in frontier
                       ...
               return {'path': path_to(previous, goal), 'visited': visited}
+          ```
+    dart:
+      prompt: Schreib `dijkstra` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.first
+            expect: "'11'"
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.last
+            expect: "'16'"
+            say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.contains('22')
+            expect: false
+            say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
+          Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
+          »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+        - |
+          Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
+          `frontier`, eine Map von Knoten zu Metern, und als Nächstes kommt der mit
+          den wenigsten Metern: Du gehst die Schlüssel durch und merkst dir den mit
+          dem kleinsten Wert. Und ein Nachbar wird nicht nur eingetragen, wenn er neu
+          ist, sondern auch, wenn der Weg über diesen Knoten kürzer ist als der bisher
+          beste, der in `metres` steht.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          Search dijkstra(Graph graph, String start, String goal) {
+            final metres = <String, double>{start: 0};
+            final previous = <String, String?>{start: null};
+            final frontier = <String, double>{start: 0};
+            final visited = <String>[];
+            while (frontier.isNotEmpty) {
+              var node = frontier.keys.first;
+              for (final id in frontier.keys) {
+                if (frontier[id]! < frontier[node]!) node = id;
+              }
+              final soFar = frontier.remove(node)!;
+              visited.add(node);
+              if (node == goal) break;
+
+              for (final edge in graph.edges[node] ?? <Edge>[]) {
+                final total = soFar + edge.cost;
+                // hier: ist edge.to neu, oder ist total kürzer als metres[edge.to]?
+                // Dann neuer Abstand, neuer Vorgänger, und edge.to in frontier
+              }
+            }
+            return Search(pathTo(previous, goal), visited);
+          }
+          ```
+    javascript:
+      prompt: Schreib `dijkstra` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited[0]
+            expect: "'11'"
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.at(-1)
+            expect: "'16'"
+            say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.includes('22')
+            expect: false
+            say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
+          Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
+          »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+        - |
+          Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
+          `frontier`, eine Map von Knoten zu Metern, und als Nächstes kommt der mit
+          den wenigsten Metern: Du gehst die Einträge durch und merkst dir den mit
+          dem kleinsten Wert. Und ein Nachbar wird nicht nur eingetragen, wenn er neu
+          ist, sondern auch, wenn der Weg über diesen Knoten kürzer ist als der bisher
+          beste, der in `metres` steht.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function dijkstra(graph, start, goal) {
+              const metres = new Map([[start, 0]]);
+              const previous = new Map([[start, null]]);
+              const frontier = new Map([[start, 0]]);
+              const visited = [];
+              while (frontier.size > 0) {
+                  let node = null;
+                  for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
+                  const soFar = frontier.get(node);
+                  frontier.delete(node);
+                  visited.push(node);
+                  if (node === goal) break;
+
+                  for (const [neighbour, length] of graph.edges[node] || []) {
+                      const total = soFar + length;
+                      // hier: ist neighbour neu, oder ist total kürzer als metres.get(neighbour)?
+                      // Dann neuer Abstand, neuer Vorgänger, und neighbour in frontier
+                  }
+              }
+              return { path: pathTo(previous, goal), visited };
+          }
+          ```
+    java:
+      prompt: Schreib `dijkstra` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+            expect: 'List.of("11", "12", "13", "14", "15", "16")'
+            say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+            expect: 'List.of("11")'
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().get(0)
+            expect: '"11"'
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().getLast()
+            expect: '"16"'
+            say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().contains("22")
+            expect: false
+            say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
+          Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
+          »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+        - |
+          Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
+          `frontier`, eine Map von Knoten zu Metern, und als Nächstes kommt der mit
+          den wenigsten Metern: Du gehst die Schlüssel durch und merkst dir den mit
+          dem kleinsten Wert. Und ein Nachbar wird nicht nur eingetragen, wenn er neu
+          ist, sondern auch, wenn der Weg über diesen Knoten kürzer ist als der bisher
+          beste, der in `metres` steht.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static Search dijkstra(Graph graph, String start, String goal) {
+              Map<String, Double> metres = new HashMap<>(Map.of(start, 0.0));
+              Map<String, String> previous = new HashMap<>();
+              previous.put(start, null);
+              Map<String, Double> frontier = new HashMap<>(Map.of(start, 0.0));
+              List<String> visited = new ArrayList<>();
+              while (!frontier.isEmpty()) {
+                  String node = null;
+                  for (String id : frontier.keySet()) {
+                      if (node == null || frontier.get(id) < frontier.get(node)) node = id;
+                  }
+                  double soFar = frontier.remove(node);
+                  visited.add(node);
+                  if (node.equals(goal)) break;
+
+                  for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+                      double total = soFar + edge.cost();
+                      // hier: ist edge.to() neu, oder ist total kürzer als metres.get(edge.to())?
+                      // Dann neuer Abstand, neuer Vorgänger, und edge.to() in frontier
+                  }
+              }
+              return new Search(pathTo(previous, goal), visited);
+          }
           ```
 
   - id: heap

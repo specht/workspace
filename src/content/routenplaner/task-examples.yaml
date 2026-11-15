@@ -14,6 +14,21 @@ examples:
         - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
         - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   abstand:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
@@ -40,6 +55,39 @@ examples:
                 def distance(lon1, lat1, lon2, lat2):
                     return math.sqrt((lon2 - lon1) ** 2 + (lat2 - lat1) ** 2) * math.pi / 180 * 6371000
           say: Cosinus
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # ohne den Cosinus: nach Osten zu weit
+        - files:
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'dart:math';
+                double distance(double lon1, double lat1, double lon2, double lat2) =>
+                    sqrt(pow(lon2 - lon1, 2) + pow(lat2 - lat1, 2)) * pi / 180 * 6371000;
+          say: Cosinus
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+        - files:
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                function distance(lon1, lat1, lon2, lat2) {
+                    return Math.sqrt((lon2 - lon1) ** 2 + (lat2 - lat1) ** 2) * Math.PI / 180 * 6371000;
+                }
+          say: Cosinus
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        # die Lösung, distance ohne den Cosinus
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/ohne-cosinus.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+          say: Cosinus
   graph:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
@@ -50,6 +98,21 @@ examples:
         - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
         - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   weg:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
@@ -92,6 +155,57 @@ examples:
                         node = previous[node]
                     return path
           say: insert
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # vorwärts statt rückwärts: der Weg vom Ziel zum Start
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide pathTo;
+                export 'solution.dart' hide pathTo;
+                List<String>? pathTo(Map<String, String?> previous, String goal) {
+                  if (!previous.containsKey(goal)) return null;
+                  final path = <String>[];
+                  String? node = goal;
+                  while (node != null) {
+                    path.add(node);
+                    node = previous[node];
+                  }
+                  return path;
+                }
+          say: insert(0
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+        - files:
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                function pathTo(previous, goal) {
+                    if (!previous.has(goal)) return null;
+                    const path = [];
+                    let node = goal;
+                    while (node !== null) {
+                        path.push(node);
+                        node = previous.get(node);
+                    }
+                    return path;
+                }
+          say: unshift
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        # die Lösung, pathTo vorwärts statt rückwärts
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/vorwaerts.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+          say: addFirst
   breitensuche:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -122,6 +236,45 @@ examples:
                 def breadth_first(graph, start, goal):
                     return dijkstra(graph, start, goal)
           say: Eichenweg
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        # die Meter statt der Kanten: Dijkstra unter dem Namen der Breitensuche
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide breadthFirst;
+                export 'solution.dart' hide breadthFirst;
+                Search breadthFirst(Graph graph, String start, String goal) => dijkstra(graph, start, goal);
+          say: Eichenweg
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { readWays, buildGraph, dijkstra } = require('./solution');
+                function breadthFirst(graph, start, goal) {
+                    return dijkstra(graph, start, goal);
+                }
+          say: Eichenweg
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        # die Lösung, breadthFirst ruft dijkstra auf
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/breitensuche-mit-metern.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+          say: Eichenweg
   dijkstra:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -151,6 +304,45 @@ examples:
                 from solution import *
                 def dijkstra(graph, start, goal):
                     return breadth_first(graph, start, goal)
+          say: Lindenstraße
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        # die Breitensuche unter dem Namen Dijkstra: zählt Kanten, nicht Meter
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide dijkstra;
+                export 'solution.dart' hide dijkstra;
+                Search dijkstra(Graph graph, String start, String goal) => breadthFirst(graph, start, goal);
+          say: Lindenstraße
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { readWays, buildGraph, breadthFirst } = require('./solution');
+                function dijkstra(graph, start, goal) {
+                    return breadthFirst(graph, start, goal);
+                }
+          say: Lindenstraße
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        # die Lösung, dijkstra ruft breadthFirst auf
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/dijkstra-mit-kanten.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
           say: Lindenstraße
   heap:
     pass:
