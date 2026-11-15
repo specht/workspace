@@ -614,10 +614,8 @@ _task(zuegelpinguin)
 <!-- after: zuegelpinguin -->
 Das Neuron hört nie auf, Fehler zu machen. Nach jeder Epoche verschiebt es die
 Gerade wieder, weil es einen Pinguin falsch einordnet, und dabei rutscht ein
-anderer auf die falsche Seite. Es gibt keine Gerade, die alle Adélie- und alle
-Zügelpinguine trennt: Ein Zügelpinguin hat einen Schnabel, wie ihn sonst nur
-Adéliepinguine haben. Ein Neuron kann nur trennen, was sich mit einer Geraden
-trennen lässt.
+anderer auf die falsche Seite. Ein Zügelpinguin hat einen Schnabel, wie ihn
+sonst nur Adéliepinguine haben.
 <!-- /after -->
 
 Das gilt auch für Aufgaben, bei denen es keinen einzigen Ausreißer gibt.
@@ -640,11 +638,17 @@ genau eine von zwei Eingaben 1 ist.
 Achte darauf, wie viele Fehler es in den letzten Epochen macht.
 </div>
 
-Die vier Punkte liegen an den Ecken eines Quadrats, die beiden mit der Antwort 1
-schräg gegenüber. Keine Gerade hat die beiden 1 auf der einen und die beiden 0
-auf der anderen Seite. Das bewiesen Marvin Minsky und Seymour Papert 1969 in
-ihrem Buch »Perceptrons«, und für viele Jahre glaubte kaum jemand mehr an
-lernende Neuronen.
+_task(was-trennbar)
+
+<!-- after: was-trennbar -->
+Ein Neuron kann nur trennen, was sich mit einer Geraden trennen lässt. Es gibt
+keine Gerade, die alle Adélie- und alle Zügelpinguine trennt. Bei XOR liegen die
+vier Punkte an den Ecken eines Quadrats, die beiden mit der Antwort 1 schräg
+gegenüber. Keine Gerade hat die beiden 1 auf der einen und die beiden 0 auf der
+anderen Seite. Das bewiesen Marvin Minsky und Seymour Papert 1969 in ihrem Buch
+»Perceptrons«, und für viele Jahre glaubte kaum jemand mehr an lernende
+Neuronen.
+<!-- /after -->
 
 Die Lösung kam später: mehrere Neuronen in **Schichten** hintereinander. Zwei
 Neuronen in einer ersten Schicht ziehen zwei Geraden, ein drittes dahinter

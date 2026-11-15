@@ -311,6 +311,26 @@ tasks:
       Es macht bis zur hundertsten Epoche Fehler, meist zwei. Keine Gerade
       trennt alle Adélie- von allen Zügelpinguinen.
 
+  - id: was-trennbar
+    title: Was ein Neuron lernen kann
+    prediction: true
+    prompt: Die Adélie- und Eselspinguine hat dein Neuron gelernt, die Adélie- und Zügelpinguine nicht, und XOR hat es auch nicht gelernt. Wann kann ein einzelnes Neuron alle Beispiele richtig einordnen?
+    check:
+      type: choice
+      options:
+        - Wenn eine Gerade die beiden Arten von Punkten trennt.
+        - Wenn es genug Epochen zum Lernen bekommt.
+        - Wenn unter den Beispielen kein einziger Ausreißer ist.
+        - Wenn es nur wenige Beispiele sind.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Bei den Zügelpinguinen hatte es 100 Epochen und machte in der letzten noch Fehler. Lass XOR 200 Epochen lang lernen und achte auf die letzten.
+      - when: { picked: 2 }
+        say: XOR hat keinen einzigen Ausreißer, und trotzdem kommt das Neuron dort in keiner Epoche ohne Fehler aus.
+      - when: { picked: 3 }
+        say: XOR hat nur vier Beispiele, und das Neuron lernt es nicht. Die 274 Pinguine hat es gelernt.
+
   - id: nullen-und-einsen
     title: Fremde Handschriften
     prediction: true
