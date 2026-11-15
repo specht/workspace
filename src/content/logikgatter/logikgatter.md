@@ -65,7 +65,13 @@ _task(de-morgan)
 <!-- after: de-morgan -->
 <div class='logic-circuit' data-circuit='de-morgan' data-title='Zwei Schaltungen, eine Wahrheitstabelle'></div>
 
-Beide Schaltungen liefern in jeder Zeile dasselbe: 1 nur dann, wenn `a` und `b` beide 0 sind. Das ist eine der beiden Regeln von De Morgan, nach dem Mathematiker Augustus De Morgan: nicht (a oder b) ist dasselbe wie (nicht a) und (nicht b), und ebenso ist nicht (a und b) dasselbe wie (nicht a) oder (nicht b). Mit ihnen wird aus einem ODER ein UND und umgekehrt, wenn man an den richtigen Stellen umdreht. Gleich brauchst du das.
+Beide Schaltungen liefern in jeder Zeile dasselbe: 1 nur dann, wenn `a` und `b` beide 0 sind.
+<!-- /after -->
+
+_task(de-morgan-und)
+
+<!-- after: de-morgan-und -->
+Das sind die beiden Regeln von De Morgan, nach dem Mathematiker Augustus De Morgan: nicht (a oder b) ist dasselbe wie (nicht a) und (nicht b), und ebenso ist nicht (a und b) dasselbe wie (nicht a) oder (nicht b). Mit ihnen wird aus einem ODER ein UND und umgekehrt, wenn man an den richtigen Stellen umdreht. Gleich brauchst du das.
 <!-- /after -->
 
 ### Rechnen mit wahr und falsch

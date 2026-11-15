@@ -33,6 +33,26 @@ tasks:
     solution: |
       Für alle vier: Beide liefern 1, wenn a und b beide 0 sind, und sonst 0.
 
+  - id: de-morgan-und
+    title: Und beim UND?
+    prediction: true
+    prompt: Jetzt mit einem UND. Was liefert in allen vier Zeilen dasselbe wie nicht (a und b)?
+    check:
+      type: choice
+      options:
+        - (nicht a) oder (nicht b)
+        - (nicht a) und (nicht b)
+        - a und (nicht b)
+        - a oder b
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Rechne die Zeile a = 1, b = 0. Was liefert nicht (a und b), was (nicht a) und (nicht b)?
+      - when: { picked: 2 }
+        say: Rechne die Zeile a = 0, b = 0. Was liefert nicht (a und b), was a und (nicht b)?
+      - when: { picked: 3 }
+        say: Rechne die Zeile a = 1, b = 1. Was liefert nicht (a und b), was a oder b?
+
   - id: nand-not-and
     title: "NICHT und UND aus NAND"
     level: 1
