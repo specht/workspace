@@ -41,6 +41,18 @@ Lesen; `kill` für Workspaces und `HUP` für nginx. Alles andere bekommt eine
 gehört sie in `docker_policy.rb` (mit Test) und danach
 `./config.rb restart docker_guard`.
 
+Alte Workspace-Images räumt der Wächter selbst weg (`GUARD_CLEAN_LABEL`,
+`DockerPolicy.old_images`): Lädt `upload-image.sh` oder `build-image.sh` ein
+neues Image, verliert das alte seinen Tag und bleibt, solange ein Container
+es benutzt. Einmal in der Stunde entfernt der Wächter jedes Image ohne Tag
+mit dem Label des Workspace-Images (`de.hackschule.file-capabilities`), mit
+einem einfachen `DELETE`, das Docker ablehnt, solange ein Container es
+benutzt, auch ein gestoppter; das Log sagt, welche gingen. Andere Images,
+Volumes und den Build-Cache rührt er nicht an. Der Ruby-Dienst selbst darf
+weiter keine Images auflisten oder löschen: Er könnte sonst das aktuelle
+Image löschen, während kein Workspace läuft. Auch in der Entwicklung räumt
+der Wächter die alten Images des eigenen Rechners weg.
+
 Wer nur zusieht, bekommt einen Wächter, der nur liest (`GUARD_MODE=readonly`,
 `DockerPolicy::READONLY`): `GET` auf Container, Netze, Ereignisse und Version,
 sonst nichts, auch keine Logs, kein `exec`, keine Images. Die Peer-Firewall

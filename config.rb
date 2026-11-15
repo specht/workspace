@@ -568,6 +568,8 @@ docker_compose[:services][:docker_guard] = {
         'GUARD_NETWORKS' => "#{PROJECT_NAME}_user,none",
         'GUARD_EXEC_CONTAINERS' => "#{PROJECT_NAME}_mysql_1,#{PROJECT_NAME}_neo4j_1",
         'GUARD_HUP_CONTAINERS' => "#{PROJECT_NAME}_nginx_1",
+        # every hour, old Workspace images no container uses (DockerPolicy.old_images)
+        'GUARD_CLEAN_LABEL' => 'de.hackschule.file-capabilities',
     },
     :network_mode => 'none',
     :restart => 'always',

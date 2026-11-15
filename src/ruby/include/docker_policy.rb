@@ -27,8 +27,10 @@ module DockerPolicy
     # may ask for; nil means a Workspace's (workspace_runtime.rb).
     # readonly (GUARD_MODE=readonly): a guard for those who only watch, the
     # peer firewall and Traefik: READONLY below and nothing else.
+    # clean_label (GUARD_CLEAN_LABEL): the guard itself removes, every hour,
+    # untagged images with this label that no container uses (old_images).
     Config = Struct.new(:images, :bind_prefix, :networks, :exec_containers, :hup_containers, :name_prefix,
-        :max_cpus, :max_memory, :max_pids, :readonly, keyword_init: true)
+        :max_cpus, :max_memory, :max_pids, :readonly, :clean_label, keyword_init: true)
     MAX_CPUS = 4
     MAX_MEMORY = 4 * 1024**3
     MAX_PIDS = 256
@@ -45,7 +47,8 @@ module DockerPolicy
             :max_cpus => env['GUARD_MAX_CPUS'].to_s.empty? ? nil : env['GUARD_MAX_CPUS'].to_f,
             :max_memory => env['GUARD_MAX_MEMORY'].to_s.empty? ? nil : env['GUARD_MAX_MEMORY'].to_i,
             :max_pids => env['GUARD_MAX_PIDS'].to_s.empty? ? nil : env['GUARD_MAX_PIDS'].to_i,
-            :readonly => env['GUARD_MODE'].to_s == 'readonly'
+            :readonly => env['GUARD_MODE'].to_s == 'readonly',
+            :clean_label => env['GUARD_CLEAN_LABEL'].to_s.empty? ? nil : env['GUARD_CLEAN_LABEL']
         )
     end
 
@@ -197,5 +200,25 @@ module DockerPolicy
         return false if config.bind_prefix.empty? || source.include?('..') || !source.start_with?('/')
 
         source.start_with?(config.bind_prefix.end_with?('/') ? config.bind_prefix : "#{config.bind_prefix}/")
+    end
+
+    # Old Workspace images (hs_code_server, and hs_code_tic80 built from
+    # it): after upload-image.sh or build-image.sh loads a new one, the old
+    # one loses its tag and stays as long as a container uses it, so
+    # Workspaces that were running keep theirs until they restart. At about
+    # 10 GB each they fill the disk. Not the backend: it may not remove
+    # images (it could remove the current one while no Workspace runs); the
+    # guard does it itself, every hour (guard.rb). From the answer of GET
+    # /images/json: the IDs of untagged images with the label. Each is then
+    # removed with a plain DELETE, which Docker refuses while a container
+    # (running or stopped) uses it. Nothing else: no tagged image, no
+    # image without the label, no volume, no build cache.
+    def self.old_images(list, label)
+        return [] if label.to_s.empty?
+
+        Array(list).select do |image|
+            tags = Array(image['RepoTags']) - ['<none>:<none>']
+            tags.empty? && (image['Labels'] || {}).key?(label) && image['Id'].to_s.match?(/\Asha256:[0-9a-f]{64}\z/)
+        end.map { |image| image['Id'] }
     end
 end

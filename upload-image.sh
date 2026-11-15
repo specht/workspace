@@ -44,8 +44,9 @@
 #      the layers of the one built here, started once (code-server
 #      --version), tagged as candidate too;
 #   6. cleaning up: the old image if no container uses it any more (running
-#      Workspaces keep it until they restart; the script says how to remove
-#      it later), the registry stopped and collected (the archive: the file,
+#      Workspaces keep it until they restart; then the Docker guard removes
+#      it within the hour, docs/entwicklung.md »Der Docker-Wächter«), the
+#      registry stopped and collected (the archive: the file,
 #      unless KEEP_REMOTE_FILE=1), and the note of the run.
 #
 # Run it again as often as needed: after an interruption it continues with
@@ -407,7 +408,7 @@ if [ -n "$old" ] && [ "$old" != "$(remote "docker image inspect --format '{{.Id}
     if [ -n "$users" ]; then
         warn "The old image ${old#sha256:} stays: these containers still use it"
         printf '%s\n' "$users" | sed 's/^/        /'
-        warn "Once they have restarted with the new image: ssh $host docker image rm $old"
+        warn "Once they have stopped, docker_guard removes it within the hour (or now: ssh $host docker image rm $old)"
     else
         remote "docker image rm $old"
         ok 'Old image removed'

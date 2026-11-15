@@ -19,6 +19,7 @@ Zeile mit **Handgriff:**. Nicht jede Änderung bekommt einen Eintrag.
 
 ## Unreleased
 
+- **Handgriff:** Alte Workspace-Images (ohne Tag, nach einem neuen Image noch von laufenden Workspaces benutzt) entfernt `docker_guard` jetzt selbst, einmal in der Stunde, sobald kein Container sie mehr benutzt; andere Images, Volumes und der Build-Cache bleiben. Nach dem Update `./config.rb up -d docker_guard`.
 - Klassenübersicht: Unter der Tabelle steht zu jeder Vorhersage, was die Klasse zuerst vermutet hat, ohne Namen: jede erste Antwort mit ihrer Zahl, zu jeder falschen die Rückmeldung, die sie bekommt. Dafür speichert der Workspace bei einer Vorhersage auch die erste Antwort (`TaskState.first_answer`, in der Datenschutzerklärung eingetragen); Antworten von vor dem Update zählen nicht mit.
 - **Handgriff:** Neo4j 2026.10.2 (beide Server) und MySQL 8.4.13: Beim ersten Start heben beide ihre Daten auf die neue Version; zurück zur alten geht es danach nur aus einer Sicherung. Vor dem Update sichern. Das Telefonspiel bleibt bei Asterisk 20 (jetzt auf Alpine 3.23, Asterisk 22 brachte bei echten Anrufen keinen Ton).
 - Leistungsüberprüfungen: Der Dialog (jetzt »Neue Leistungsüberprüfung«) nimmt auch einen Ordner, eine ZIP- oder eine .tar.gz-Datei vom eigenen Rechner. Was ankommt, liegt bis zum Anlegen in `data/internal/exam-drafts` und wird danach gelöscht, sonst nach einem Tag. Für Dateien in Dart bietet er die Erweiterung für Dart an.

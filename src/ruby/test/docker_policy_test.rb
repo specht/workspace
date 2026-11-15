@@ -132,4 +132,28 @@ class DockerPolicyTest < Minitest::Test
         assert DockerPolicy.config_from_env('GUARD_MODE' => 'readonly').readonly
         refute DockerPolicy.config_from_env({}).readonly
     end
+
+    # The guard removes old Workspace images itself: untagged, with the label
+    def test_old_images_are_untagged_and_labelled
+        label = 'de.hackschule.file-capabilities'
+        a = "sha256:#{'a' * 64}"
+        list = [
+            { 'Id' => a, 'RepoTags' => [], 'Labels' => { label => 'none' } },
+            { 'Id' => "sha256:#{'b' * 64}", 'RepoTags' => ['<none>:<none>'], 'Labels' => { label => 'none' } },
+            { 'Id' => "sha256:#{'c' * 64}", 'RepoTags' => ['hs_code_server:latest'], 'Labels' => { label => 'none' } },
+            { 'Id' => "sha256:#{'d' * 64}", 'RepoTags' => nil, 'Labels' => { 'other' => 'x' } },
+            { 'Id' => 'not-an-id', 'RepoTags' => [], 'Labels' => { label => 'none' } },
+        ]
+        assert_equal [a, "sha256:#{'b' * 64}"], DockerPolicy.old_images(list, label)
+        assert_empty DockerPolicy.old_images(list, nil)
+        assert_equal label, DockerPolicy.config_from_env('GUARD_CLEAN_LABEL' => label).clean_label
+        assert_nil DockerPolicy.config_from_env({}).clean_label
+    end
+
+    # the backend itself may still neither list nor remove images
+    def test_the_backend_may_not_remove_images
+        config = DockerPolicy.config_from_env('GUARD_IMAGES' => 'hs_code_server')
+        refute DockerPolicy.decide('DELETE', "/v1.47/images/sha256:#{'a' * 64}", '', '', config)[0]
+        refute DockerPolicy.decide('GET', '/v1.47/images/json', '', '', config)[0]
+    end
 end

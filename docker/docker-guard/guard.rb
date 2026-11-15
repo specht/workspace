@@ -86,6 +86,33 @@ def dechunk(text)
     out
 end
 
+# A request of the guard's own to Docker: [status, body].
+def docker_request(method, path)
+    sock = UNIXSocket.new(DOCKER_SOCKET)
+    sock.write("#{method} #{path} HTTP/1.1\r\nHost: docker\r\nConnection: close\r\n\r\n")
+    response = sock.read
+    sock.close
+    head, body = response.split("\r\n\r\n", 2)
+    body = dechunk(body.to_s) if head.to_s.downcase.include?('transfer-encoding: chunked')
+    [head.to_s[/\AHTTP\/1\.\d (\d+)/, 1].to_i, body.to_s]
+end
+
+# Every hour: old Workspace images that no container uses any more
+# (DockerPolicy.old_images). Docker answers 409 for an image a container
+# uses; it stays until the next hour.
+def remove_old_images(label)
+    filters = URI.encode_www_form_component(JSON.generate({ 'dangling' => ['true'], 'label' => [label] }))
+    status, body = docker_request('GET', "/images/json?filters=#{filters}")
+    return puts("old images: listing answered #{status}") unless status == 200
+
+    DockerPolicy.old_images(JSON.parse(body), label).each do |id|
+        status, = docker_request('DELETE', "/images/#{id}")
+        puts status == 200 ? "old image removed: #{id[7, 12]}" : "old image kept: #{id[7, 12]} (#{status})"
+    end
+rescue StandardError => e
+    puts "old images: #{e.class}: #{e.message}"
+end
+
 def refuse(client, reason)
     body = JSON.generate({ 'message' => "docker-guard: #{reason}" })
     client.write("HTTP/1.1 403 Forbidden\r\nContent-Type: application/json\r\nContent-Length: #{body.bytesize}\r\nConnection: close\r\n\r\n#{body}")
@@ -138,6 +165,14 @@ server = UNIXServer.new(LISTEN)
 File.chmod(0o660, LISTEN)
 puts CONFIG.readonly ? "docker-guard listening on #{LISTEN}, read only" :
     "docker-guard listening on #{LISTEN} (images #{CONFIG.images.join(', ')}, folders under #{CONFIG.bind_prefix})"
+if CONFIG.clean_label && !CONFIG.readonly
+    Thread.new do
+        loop do
+            remove_old_images(CONFIG.clean_label)
+            sleep 3600
+        end
+    end
+end
 loop do
     client = server.accept
     Thread.new(client) { |c| handle(c) }
