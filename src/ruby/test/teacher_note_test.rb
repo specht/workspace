@@ -31,8 +31,11 @@ class TeacherNoteTest < Minitest::Test
     # The table opens with the goals (docs/checkliste.md »Für Lehrkräfte«):
     # what students can do afterwards, two to four points, apart from the
     # first paragraph about what they do on the page.
+    # pages that only introduce the Workspace, without tasks: no goals
+    WITHOUT_GOALS = %w[about basics].freeze
+
     def test_the_table_opens_with_two_to_four_goals
-        wrong = activities.select { |slug| File.file?(File.join(CONTENT, slug, 'lehrkraft.md')) }.filter_map do |slug|
+        wrong = (activities - WITHOUT_GOALS).select { |slug| File.file?(File.join(CONTENT, slug, 'lehrkraft.md')) }.filter_map do |slug|
             text = File.read(File.join(CONTENT, slug, 'lehrkraft.md'))
             row = text[%r{<table[^>]*>\s*<tr><th>Ziele</th><td>(.*?)</td></tr>}m, 1]
             next "#{slug}: no row »Ziele« first in the table" if row.nil?
