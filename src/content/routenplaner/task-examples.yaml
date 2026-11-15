@@ -387,6 +387,93 @@ examples:
                     def pop(self):
                         return self.items.pop() if self.items else None
           say: Elternteil
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # eine sortierte Liste statt eines Heaps: richtig, aber langsam
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide MinHeap;
+                export 'solution.dart' hide MinHeap;
+
+                class MinHeap {
+                  final items = <(double, String)>[];
+                  bool get isEmpty => items.isEmpty;
+                  int get length => items.length;
+                  void push(double priority, String value) {
+                    items.add((priority, value));
+                    items.sort((a, b) => b.$1.compareTo(a.$1));
+                  }
+                  (double, String)? pop() => items.isEmpty ? null : items.removeLast();
+                }
+          say: Elternteil
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+        # ein sortiertes Array statt eines Heaps
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                class MinHeap {
+                    constructor() {
+                        this.items = [];
+                    }
+                    isEmpty() {
+                        return this.items.length === 0;
+                    }
+                    push(priority, value) {
+                        this.items.push([priority, value]);
+                        this.items.sort((a, b) => b[0] - a[0]);
+                    }
+                    pop() {
+                        return this.items.length > 0 ? this.items.pop() : null;
+                    }
+                }
+          say: Elternteil
+        # ohne Math.floor: der Index des Elternteils ist eine Kommazahl
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                class MinHeap {
+                    constructor() {
+                        this.items = [];
+                    }
+                    isEmpty() {
+                        return this.items.length === 0;
+                    }
+                    push(priority, value) {
+                        const items = this.items;
+                        items.push([priority, value]);
+                        let i = items.length - 1;
+                        while (i > 0) {
+                            const parent = (i - 1) / 2;
+                            if (items[parent][0] <= items[i][0]) break;
+                            [items[parent], items[i]] = [items[i], items[parent]];
+                            i = parent;
+                        }
+                    }
+                    pop() {
+                        return null;
+                    }
+                }
+          say: undefined
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        # eine sortierte Liste statt eines Heaps
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/heap-sortiert.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+          say: Elternteil
   dijkstra-heap:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -518,6 +605,166 @@ examples:
                             heap.push(total, neighbour)
                     return {'path': path_to(previous, goal), 'visited': visited}
           say: done
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes-5.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+          say: MinHeap
+        # der Heap ist fertig, dijkstra sucht noch in frontier
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide dijkstra;
+                export 'solution.dart' hide dijkstra;
+
+                Search dijkstra(Graph graph, String start, String goal) {
+                  final metres = <String, double>{start: 0};
+                  final previous = <String, String?>{start: null};
+                  final frontier = <String, double>{start: 0}; // gefunden, aber noch nicht fertig
+                  final visited = <String>[];
+                  while (frontier.isNotEmpty) {
+                    var node = frontier.keys.first;
+                    for (final id in frontier.keys) {
+                      if (frontier[id]! < frontier[node]!) node = id;
+                    }
+                    final soFar = frontier.remove(node)!;
+                    visited.add(node);
+                    if (node == goal) break;
+                    for (final edge in graph.edges[node] ?? <Edge>[]) {
+                      final total = soFar + edge.cost;
+                      if (metres.containsKey(edge.to) && metres[edge.to]! <= total) continue;
+                      metres[edge.to] = total;
+                      previous[edge.to] = node;
+                      frontier[edge.to] = total;
+                    }
+                  }
+                  return Search(pathTo(previous, goal), visited);
+                }
+          say: MinHeap
+        # mit dem Heap, aber ohne done: b kommt zweimal dran
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide dijkstra;
+                export 'solution.dart' hide dijkstra;
+
+                Search dijkstra(Graph graph, String start, String goal) {
+                  final costs = <String, double>{start: 0};
+                  final previous = <String, String?>{start: null};
+                  final heap = MinHeap()..push(0, start);
+                  final visited = <String>[];
+                  while (!heap.isEmpty) {
+                    final (soFar, node) = heap.pop()!;
+                    visited.add(node);
+                    if (node == goal) break;
+                    for (final edge in graph.edges[node] ?? <Edge>[]) {
+                      final total = soFar + edge.cost;
+                      if (costs.containsKey(edge.to) && costs[edge.to]! <= total) continue;
+                      costs[edge.to] = total;
+                      previous[edge.to] = node;
+                      heap.push(total, edge.to);
+                    }
+                  }
+                  return Search(pathTo(previous, goal), visited);
+                }
+          say: done
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes-5.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+          say: MinHeap
+        # der Heap ist fertig, dijkstra sucht noch in frontier
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { readWays, buildGraph, MinHeap } = require('./solution');
+                // pathTo hier selbst: Arrays aus solution.js kämen aus einem anderen vm-Kontext, und isDeepStrictEqual vergleicht auch den Prototyp
+                function pathTo(previous, goal) {
+                    if (!previous.has(goal)) return null;
+                    const path = [];
+                    for (let node = goal; node !== null; node = previous.get(node)) path.unshift(node);
+                    return path;
+                }
+
+                function dijkstra(graph, start, goal) {
+                    const metres = new Map([[start, 0]]);
+                    const previous = new Map([[start, null]]);
+                    const frontier = new Map([[start, 0]]); // gefunden, aber noch nicht fertig
+                    const visited = [];
+                    while (frontier.size > 0) {
+                        let node = null;
+                        for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
+                        const soFar = frontier.get(node);
+                        frontier.delete(node);
+                        visited.push(node);
+                        if (node === goal) break;
+                        for (const [neighbour, length] of graph.edges[node] || []) {
+                            const total = soFar + length;
+                            if (metres.has(neighbour) && metres.get(neighbour) <= total) continue;
+                            metres.set(neighbour, total);
+                            previous.set(neighbour, node);
+                            frontier.set(neighbour, total);
+                        }
+                    }
+                    return { path: pathTo(previous, goal), visited };
+                }
+          say: MinHeap
+        # mit dem Heap, aber ohne done: b kommt zweimal dran
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { readWays, buildGraph, MinHeap } = require('./solution');
+                // pathTo hier selbst: Arrays aus solution.js kämen aus einem anderen vm-Kontext, und isDeepStrictEqual vergleicht auch den Prototyp
+                function pathTo(previous, goal) {
+                    if (!previous.has(goal)) return null;
+                    const path = [];
+                    for (let node = goal; node !== null; node = previous.get(node)) path.unshift(node);
+                    return path;
+                }
+
+                function dijkstra(graph, start, goal) {
+                    const costs = new Map([[start, 0]]);
+                    const previous = new Map([[start, null]]);
+                    const heap = new MinHeap();
+                    heap.push(0, start);
+                    const visited = [];
+                    while (!heap.isEmpty()) {
+                        const [soFar, node] = heap.pop();
+                        visited.push(node);
+                        if (node === goal) break;
+                        for (const [neighbour, length] of graph.edges[node] || []) {
+                            const total = soFar + length;
+                            if (costs.has(neighbour) && costs.get(neighbour) <= total) continue;
+                            costs.set(neighbour, total);
+                            previous.set(neighbour, node);
+                            heap.push(total, neighbour);
+                        }
+                    }
+                    return { path: pathTo(previous, goal), visited };
+                }
+          say: done
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        # der Heap ist fertig, dijkstra sucht noch in frontier
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/dijkstra-ohne-heap.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+          say: MinHeap
+        # mit dem Heap, aber ohne done: b kommt zweimal dran
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/dijkstra-ohne-done.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+          say: done
   astern:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
@@ -549,6 +796,52 @@ examples:
                 from solution import *
                 def a_star(graph, start, goal):
                     return dijkstra(graph, start, goal)
+          say: Schätzung
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        # Dijkstra unter dem Namen A*: der richtige Weg, aber auch nach Norden gesucht
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide aStar;
+                export 'solution.dart' hide aStar;
+
+                Search aStar(Graph graph, String start, String goal) => dijkstra(graph, start, goal);
+          say: Schätzung
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        # Dijkstra unter dem Namen A*
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { readWays, buildGraph, dijkstra } = require('./solution');
+
+                function aStar(graph, start, goal) {
+                    // die Arrays neu: Arrays aus solution.js kämen aus einem anderen vm-Kontext, und isDeepStrictEqual vergleicht auch den Prototyp
+                    const { path, visited } = dijkstra(graph, start, goal);
+                    return { path: path && [...path], visited: [...visited] };
+                }
+          say: Schätzung
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        # Dijkstra unter dem Namen A*
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/astern-wie-dijkstra.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
           say: Schätzung
   reisen:
     pass:
@@ -588,6 +881,83 @@ examples:
         - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
         - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        # ohne Einbahnstraßen
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'dart:math';
+
+                import 'solution.dart' hide buildTravelGraph;
+                export 'solution.dart' hide buildTravelGraph;
+
+                Graph buildTravelGraph(List<Way> ways, String mode) {
+                  final table = speeds[mode]!;
+                  final graph = Graph();
+                  for (final way in ways) {
+                    final speed = table[way.kind];
+                    if (speed == null) continue;
+                    for (var i = 0; i + 1 < way.points.length; i++) {
+                      final a = way.points[i], b = way.points[i + 1];
+                      graph.nodes[a.id] = a;
+                      graph.nodes[b.id] = b;
+                      final seconds = distance(a.lon, a.lat, b.lon, b.lat) / (speed / 3.6);
+                      graph.edges.putIfAbsent(a.id, () => []).add(Edge(b.id, seconds));
+                      graph.edges.putIfAbsent(b.id, () => []).add(Edge(a.id, seconds));
+                    }
+                  }
+                  graph.fastest = table.values.reduce(max) / 3.6;
+                  return graph;
+                }
+          say: Einbahnstraße
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        # ohne Einbahnstraßen
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { readWays, distance, SPEEDS } = require('./solution');
+
+                function buildTravelGraph(ways, mode) {
+                    const speeds = SPEEDS[mode];
+                    const nodes = {};
+                    const edges = {};
+                    for (const way of ways) {
+                        const speed = speeds[way.kind];
+                        if (!speed) continue;
+                        for (let i = 0; i + 1 < way.points.length; i++) {
+                            const [a, lon1, lat1] = way.points[i];
+                            const [b, lon2, lat2] = way.points[i + 1];
+                            nodes[a] = [lon1, lat1];
+                            nodes[b] = [lon2, lat2];
+                            const seconds = distance(lon1, lat1, lon2, lat2) / (speed / 3.6);
+                            (edges[a] ??= []).push([b, seconds]);
+                            (edges[b] ??= []).push([a, seconds]);
+                        }
+                    }
+                    return { nodes, edges, fastest: Math.max(...Object.values(speeds)) / 3.6 };
+                }
+          say: Einbahnstraße
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        # ohne Einbahnstraßen
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/ohne-einbahnstrassen.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+          say: Einbahnstraße
   rundfahrt:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
@@ -615,6 +985,52 @@ examples:
                 from solution import *
                 def tour_length(costs, order):
                     return sum(costs[a][b] for a, b in zip(order, order[1:]))
+          say: zurück
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # ohne den Weg zurück
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide tourLength;
+                export 'solution.dart' hide tourLength;
+
+                double tourLength(List<List<double>> costs, List<int> order) {
+                  var total = 0.0;
+                  for (var i = 0; i + 1 < order.length; i++) {
+                    total += costs[order[i]][order[i + 1]];
+                  }
+                  return total;
+                }
+          say: zurück
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+        # ohne den Weg zurück
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                function tourLength(costs, order) {
+                    let total = 0;
+                    for (let i = 0; i + 1 < order.length; i++) total += costs[order[i]][order[i + 1]];
+                    return total;
+                }
+          say: zurück
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        # ohne den Weg zurück
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/rundfahrt-ohne-rueckweg.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
           say: zurück
   alle-reihenfolgen:
     pass:
@@ -644,6 +1060,46 @@ examples:
                 def best_tour(costs):
                     return nearest_tour(costs)
           say: kürzeste
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # der nächste Nachbar statt aller Reihenfolgen
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide bestTour;
+                export 'solution.dart' hide bestTour;
+
+                List<int> bestTour(List<List<double>> costs) => nearestTour(costs);
+          say: kürzeste
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+        # der nächste Nachbar statt aller Reihenfolgen
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { tourLength, nearestTour } = require('./solution');
+
+                function bestTour(costs) {
+                    return nearestTour(costs);
+                }
+          say: kürzeste
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        # der nächste Nachbar statt aller Reihenfolgen
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/alle-reihenfolgen-nachbar.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+          say: kürzeste
   naechster-nachbar:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
@@ -654,6 +1110,24 @@ examples:
         - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
         - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        # int nearest: left.remove(nearest) nimmt den Eintrag an diesem Index heraus
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/naechster-nachbar-int.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+          say: IndexOutOfBounds
   zwei-opt:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
@@ -681,4 +1155,44 @@ examples:
                 from solution import *
                 def improve_tour(costs, order):
                     return order
+          say: 2-opt
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        # nichts verbessert
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide improveTour;
+                export 'solution.dart' hide improveTour;
+
+                List<int> improveTour(List<List<double>> costs, List<int> order) => order;
+          say: 2-opt
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+        # nichts verbessert
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                const { tourLength } = require('./solution');
+
+                function improveTour(costs, order) {
+                    return order;
+                }
+          say: 2-opt
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        # nichts verbessert
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/zwei-opt-nichts.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
           say: 2-opt

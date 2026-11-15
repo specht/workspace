@@ -1690,6 +1690,208 @@ tasks:
                       # hier: tauschen und beim Kind weitermachen
               return top
           ```
+    dart:
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: final h = MinHeap(); for (final x in [5, 3, 8, 1]) h.push(x.toDouble(), '$x'); [h.pop(), h.pop(), h.pop(), h.pop()]
+            expect: "[(1.0, '1'), (3.0, '3'), (5.0, '5'), (8.0, '8')]"
+            say: pop gibt immer das Paar mit der kleinsten Priorität zurück, als (Priorität, Wert).
+          - call: MinHeap().pop()
+            expect: ~
+            say: Ein leerer Heap gibt null zurück.
+          - call: final h = MinHeap(); h.push(5, 'a'); h.push(2, 'b'); final first = h.pop(); h.push(1, 'c'); [first, h.pop(), h.pop(), h.isEmpty]
+            expect: "[(2.0, 'b'), (1.0, 'c'), (5.0, 'a'), true]"
+            say: Auch wenn push und pop sich abwechseln, kommt das Kleinste zuerst.
+          - call: final h = MinHeap(); for (var i = 1; i <= 300; i++) h.push(((i * 37) % 301).toDouble(), '$i'); var sorted = true; for (var i = 1; i <= 300; i++) sorted &= h.pop()!.$1 == i; sorted
+            expect: true
+          - call: final h = MinHeap(); for (var i = 1; i <= 100; i++) h.push(((i * 37) % 101).toDouble(), '$i'); var heap = true; for (var i = 1; i < h.items.length; i++) heap &= h.items[(i - 1) ~/ 2].$1 <= h.items[i].$1; heap
+            expect: true
+            say: Die Einträge in items sollen ein Heap sein, keine sortierte Liste, keine Liste zum Durchsuchen. Jedes Elternteil (i - 1) ~/ 2 ist höchstens so groß wie sein Kind i.
+      hint:
+        - |
+          Leg von Hand nacheinander 4, 7, 2 und 9 in einen leeren Heap und schreib die
+          Liste nach jedem Schritt auf. Wo landet die 2, und mit wem wird sie
+          getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an Index 0,
+          und wohin sinkt es? Im Handbuch unter »push« und »pop« kannst du ein anderes
+          Beispiel durchklicken.
+        - |
+          `push`: hinten anhängen, dann mit dem Elternteil am Index
+          `(i - 1) ~/ 2` vergleichen und tauschen, solange das Elternteil größer ist.
+          `pop`: das Paar an Index 0 merken, das letzte Paar an Index 0 setzen
+          und nach unten tauschen, immer mit dem kleineren der beiden Kinder
+          `2 * i + 1` und `2 * i + 2`, solange eines kleiner ist. Verglichen wird nur
+          die Priorität, `.$1`. Und Vorsicht: War der herausgenommene Eintrag der
+          einzige, ist der Heap danach leer.
+        - |
+          Ein Gerüst für die beiden Methoden in `MinHeap`:
+
+          ```dart
+          void push(double priority, String value) {
+            items.add((priority, value));
+            var i = items.length - 1;
+            while (i > 0) {
+              final parent = (i - 1) ~/ 2;
+              // hier: aufhören, wenn das Elternteil nicht größer ist, sonst tauschen
+              i = parent;
+            }
+          }
+
+          (double, String)? pop() {
+            if (items.isEmpty) return null;
+            final top = items[0];
+            final last = items.removeLast();
+            if (items.isNotEmpty) {
+              items[0] = last;
+              var i = 0;
+              while (true) {
+                var smallest = i;
+                // hier: ist eines der Kinder 2 * i + 1 und 2 * i + 2, wenn es sie gibt, kleiner?
+                if (smallest == i) break;
+                // hier: tauschen und beim Kind weitermachen
+              }
+            }
+            return top;
+          }
+          ```
+    javascript:
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: const h = new MinHeap(); for (const x of [5, 3, 8, 1]) h.push(x, String(x)); [h.pop(), h.pop(), h.pop(), h.pop()]
+            expect: "[[1, '1'], [3, '3'], [5, '5'], [8, '8']]"
+            say: pop gibt immer das Paar mit der kleinsten Priorität zurück, als [Priorität, Wert].
+          - call: new MinHeap().pop()
+            expect: ~
+            say: Ein leerer Heap gibt null zurück.
+          - call: const h = new MinHeap(); h.push(5, 'a'); h.push(2, 'b'); const first = h.pop(); h.push(1, 'c'); [first, h.pop(), h.pop(), h.isEmpty()]
+            expect: "[[2, 'b'], [1, 'c'], [5, 'a'], true]"
+            say: Auch wenn push und pop sich abwechseln, kommt das Kleinste zuerst.
+          - call: const h = new MinHeap(); for (let i = 1; i <= 300; i++) h.push((i * 37) % 301, i); let sorted = true; for (let i = 1; i <= 300; i++) sorted = h.pop()[0] === i && sorted; sorted
+            expect: true
+          - call: const h = new MinHeap(); for (let i = 1; i <= 100; i++) h.push((i * 37) % 101, i); h.items.every((item, i) => i === 0 || h.items[Math.floor((i - 1) / 2)][0] <= item[0])
+            expect: true
+            say: Die Einträge in this.items sollen ein Heap sein, kein sortiertes Array, keine Liste zum Durchsuchen. Jedes Elternteil Math.floor((i - 1) / 2) ist höchstens so groß wie sein Kind i.
+      hint:
+        - |
+          Leg von Hand nacheinander 4, 7, 2 und 9 in einen leeren Heap und schreib das
+          Array nach jedem Schritt auf. Wo landet die 2, und mit wem wird sie
+          getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an Index 0,
+          und wohin sinkt es? Im Handbuch unter »push« und »pop« kannst du ein anderes
+          Beispiel durchklicken.
+        - |
+          `push`: hinten anhängen, dann mit dem Elternteil am Index
+          `Math.floor((i - 1) / 2)` vergleichen und tauschen, solange das Elternteil
+          größer ist; ohne `Math.floor` wäre der Index eine Kommazahl.
+          `pop`: das Paar an Index 0 merken, das letzte Paar an Index 0 setzen
+          und nach unten tauschen, immer mit dem kleineren der beiden Kinder
+          `2 * i + 1` und `2 * i + 2`, solange eines kleiner ist. Verglichen wird nur
+          die Priorität, `[0]`. Und Vorsicht: War der herausgenommene Eintrag der
+          einzige, ist der Heap danach leer.
+        - |
+          Ein Gerüst für die beiden Methoden in `MinHeap`:
+
+          ```javascript
+          push(priority, value) {
+              const items = this.items;
+              items.push([priority, value]);
+              let i = items.length - 1;
+              while (i > 0) {
+                  const parent = Math.floor((i - 1) / 2);
+                  // hier: aufhören, wenn das Elternteil nicht größer ist, sonst tauschen
+                  i = parent;
+              }
+          }
+
+          pop() {
+              const items = this.items;
+              if (items.length === 0) return null;
+              const top = items[0];
+              const last = items.pop();
+              if (items.length > 0) {
+                  items[0] = last;
+                  let i = 0;
+                  while (true) {
+                      let smallest = i;
+                      // hier: ist eines der Kinder 2 * i + 1 und 2 * i + 2, wenn es sie gibt, kleiner?
+                      if (smallest === i) break;
+                      // hier: tauschen und beim Kind weitermachen
+                  }
+              }
+              return top;
+          }
+          ```
+    java:
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: 'Routes.MinHeap h = new Routes.MinHeap(); for (int x : new int[] {5, 3, 8, 1}) h.push(x, String.valueOf(x)); Arrays.asList(h.pop(), h.pop(), h.pop(), h.pop())'
+            expect: 'List.of(new Routes.MinHeap.Entry(1, "1"), new Routes.MinHeap.Entry(3, "3"), new Routes.MinHeap.Entry(5, "5"), new Routes.MinHeap.Entry(8, "8"))'
+            say: pop gibt immer das Paar mit der kleinsten Priorität zurück, als Entry aus Priorität und Wert.
+          - call: new Routes.MinHeap().pop()
+            expect: ~
+            say: Ein leerer Heap gibt null zurück.
+          - call: Routes.MinHeap h = new Routes.MinHeap(); h.push(5, "a"); h.push(2, "b"); Routes.MinHeap.Entry first = h.pop(); h.push(1, "c"); Arrays.asList(first, h.pop(), h.pop(), h.isEmpty())
+            expect: 'Arrays.asList(new Routes.MinHeap.Entry(2, "b"), new Routes.MinHeap.Entry(1, "c"), new Routes.MinHeap.Entry(5, "a"), true)'
+            say: Auch wenn push und pop sich abwechseln, kommt das Kleinste zuerst.
+          - call: Routes.MinHeap h = new Routes.MinHeap(); for (int i = 1; i <= 300; i++) h.push((i * 37) % 301, String.valueOf(i)); boolean sorted = true; for (int i = 1; i <= 300; i++) sorted &= h.pop().priority() == i; sorted
+            expect: true
+          - call: Routes.MinHeap h = new Routes.MinHeap(); for (int i = 1; i <= 100; i++) h.push((i * 37) % 101, String.valueOf(i)); boolean heap = true; for (int i = 1; i < h.items.size(); i++) heap &= h.items.get((i - 1) / 2).priority() <= h.items.get(i).priority(); heap
+            expect: true
+            say: Die Einträge in items sollen ein Heap sein, keine sortierte Liste, keine Liste zum Durchsuchen. Jedes Elternteil (i - 1) / 2 ist höchstens so groß wie sein Kind i.
+      hint:
+        - |
+          Leg von Hand nacheinander 4, 7, 2 und 9 in einen leeren Heap und schreib die
+          Liste nach jedem Schritt auf. Wo landet die 2, und mit wem wird sie
+          getauscht? Nimm dann einmal das Kleinste heraus: Was kommt an Index 0,
+          und wohin sinkt es? Im Handbuch unter »push« und »pop« kannst du ein anderes
+          Beispiel durchklicken.
+        - |
+          `push`: hinten anhängen, dann mit dem Elternteil am Index
+          `(i - 1) / 2` vergleichen und tauschen, solange das Elternteil größer ist.
+          `pop`: das Paar an Index 0 merken, das letzte Paar an Index 0 setzen
+          und nach unten tauschen, immer mit dem kleineren der beiden Kinder
+          `2 * i + 1` und `2 * i + 2`, solange eines kleiner ist. Verglichen wird nur
+          die Priorität, `priority()`; `Collections.swap(items, a, b)` tauscht zwei
+          Einträge. Und Vorsicht: War der herausgenommene Eintrag der einzige, ist der
+          Heap danach leer.
+        - |
+          Ein Gerüst für die beiden Methoden in `MinHeap`:
+
+          ```java
+          void push(double priority, String value) {
+              items.add(new Entry(priority, value));
+              int i = items.size() - 1;
+              while (i > 0) {
+                  int parent = (i - 1) / 2;
+                  // hier: aufhören, wenn das Elternteil nicht größer ist, sonst tauschen
+                  i = parent;
+              }
+          }
+
+          Entry pop() {
+              if (items.isEmpty()) return null;
+              Entry top = items.get(0);
+              Entry last = items.remove(items.size() - 1);
+              if (!items.isEmpty()) {
+                  items.set(0, last);
+                  int i = 0;
+                  while (true) {
+                      int smallest = i;
+                      // hier: ist eines der Kinder 2 * i + 1 und 2 * i + 2, wenn es sie gibt, kleiner?
+                      if (smallest == i) break;
+                      // hier: tauschen und beim Kind weitermachen
+                  }
+              }
+              return top;
+          }
+          ```
 
   - id: dijkstra-heap
     title: Dijkstra mit dem Heap
@@ -1769,6 +1971,173 @@ tasks:
         node = heap.pop()`, `continue`, wenn `node in done`, sonst
         `done.add(node)`; ein Nachbar mit einem kürzeren Weg kommt mit
         `heap.push(total, neighbour)` hinein.
+    dart:
+      prompt: |
+        Bau `dijkstra` in `routes.dart` auf den Heap um. Der Workspace sucht
+        wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in
+        dem ein Knoten zweimal in den Heap kommt, und sieht in `routes.dart`
+        nach, ob `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap`
+        holt.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        setup: |
+          import 'dart:io';
+
+          // Ob die Funktion name in routes.dart, ohne Kommentare, einen MinHeap
+          // anlegt und mit pop aus ihm liest
+          bool popsFromMinHeap(String name) {
+            final source = File('routenplaner-starter/dart/routes.dart')
+                .readAsStringSync()
+                .replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '')
+                .replaceAll(RegExp(r'//[^\n]*'), '');
+            final found = RegExp(r'Search\s+' + name + r'\s*\([^)]*\)\s*(\{|=>)').firstMatch(source);
+            if (found == null) return false;
+            var end = found.end;
+            if (found.group(1) == '=>') {
+              end = source.indexOf(';', end);
+              if (end < 0) end = source.length;
+            } else {
+              var depth = 1;
+              while (end < source.length && depth > 0) {
+                final c = source[end++];
+                if (c == '{') depth++;
+                if (c == '}') depth--;
+              }
+            }
+            final body = source.substring(found.end, end);
+            return body.contains('MinHeap') && body.contains('.pop()');
+          }
+        cases:
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.last
+            expect: "'16'"
+            say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.contains('22')
+            expect: false
+            say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+          - call: "dijkstra(Graph()..edges.addAll({'a': [Edge('b', 5), Edge('c', 1)], 'b': [Edge('a', 5), Edge('c', 1), Edge('d', 1)], 'c': [Edge('a', 1), Edge('b', 1)], 'd': [Edge('b', 1), Edge('e', 10)], 'e': [Edge('d', 10)]}), 'a', 'e').path"
+            expect: "['a', 'c', 'b', 'd', 'e']"
+            say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
+          - call: "dijkstra(Graph()..edges.addAll({'a': [Edge('b', 5), Edge('c', 1)], 'b': [Edge('a', 5), Edge('c', 1), Edge('d', 1)], 'c': [Edge('a', 1), Edge('b', 1)], 'd': [Edge('b', 1), Edge('e', 10)], 'e': [Edge('d', 10)]}), 'a', 'e').visited"
+            expect: "['a', 'c', 'b', 'd', 'e']"
+            say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
+          - call: popsFromMinHeap('dijkstra')
+            expect: true
+            say: '`dijkstra` holt den nächsten Knoten noch nicht mit `pop` aus einem `MinHeap`: Statt `frontier` gibt es den Heap, in dem am Anfang der Start mit 0 liegt.'
+      solution: |
+        `final done = <String>{};`, `final heap = MinHeap();` und
+        `heap.push(0, start);` statt `frontier`. Die Schleife läuft
+        `while (!heap.isEmpty)`: `final (soFar, node) = heap.pop()!;`,
+        `continue`, wenn `done.contains(node)`, sonst `done.add(node)`; ein
+        Nachbar mit einem kürzeren Weg kommt mit `heap.push(total, edge.to)`
+        hinein.
+    javascript:
+      prompt: |
+        Bau `dijkstra` in `routes.js` auf den Heap um. Der Workspace sucht
+        wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in
+        dem ein Knoten zweimal in den Heap kommt, und sieht nach, ob
+        `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap` holt.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.at(-1)
+            expect: "'16'"
+            say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.includes('22')
+            expect: false
+            say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+          - call: "dijkstra({ nodes: {}, edges: { a: [['b', 5], ['c', 1]], b: [['a', 5], ['c', 1], ['d', 1]], c: [['a', 1], ['b', 1]], d: [['b', 1], ['e', 10]], e: [['d', 10]] } }, 'a', 'e').path"
+            expect: "['a', 'c', 'b', 'd', 'e']"
+            say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
+          - call: "dijkstra({ nodes: {}, edges: { a: [['b', 5], ['c', 1]], b: [['a', 5], ['c', 1], ['d', 1]], c: [['a', 1], ['b', 1]], d: [['b', 1], ['e', 10]], e: [['d', 10]] } }, 'a', 'e').visited"
+            expect: "['a', 'c', 'b', 'd', 'e']"
+            say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
+          - call: let pops = 0; const original = MinHeap.prototype.pop; MinHeap.prototype.pop = function () { pops += 1; return original.call(this); }; dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16'); MinHeap.prototype.pop = original; pops > 0
+            expect: true
+            say: '`dijkstra` holt den nächsten Knoten noch nicht mit `pop` aus einem `MinHeap`: Statt `frontier` gibt es den Heap, in dem am Anfang der Start mit 0 liegt.'
+      solution: |
+        `const done = new Set()`, `const heap = new MinHeap()` und
+        `heap.push(0, start)` statt `frontier`. Die Schleife läuft
+        `while (!heap.isEmpty())`: `const [soFar, node] = heap.pop()`,
+        `continue`, wenn `done.has(node)`, sonst `done.add(node)`; ein Nachbar
+        mit einem kürzeren Weg kommt mit `heap.push(total, neighbour)` hinein.
+    java:
+      prompt: |
+        Bau `dijkstra` in `Routes.java` auf den Heap um. Der Workspace sucht
+        wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in
+        dem ein Knoten zweimal in den Heap kommt, und sieht in `Routes.java`
+        nach, ob `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap`
+        holt.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        setup: |
+          // Ob die Methode name in Routes.java, ohne Kommentare, einen MinHeap
+          // anlegt und mit pop aus ihm liest
+          static boolean popsFromMinHeap(String name) throws Exception {
+              String source = java.nio.file.Files.readString(java.nio.file.Path.of("routenplaner-starter/java/Routes.java"))
+                  .replaceAll("(?s)/\\*.*?\\*/", "")
+                  .replaceAll("//[^\\n]*", "");
+              java.util.regex.Matcher found = java.util.regex.Pattern.compile("Search\\s+" + name + "\\s*\\([^)]*\\)\\s*\\{").matcher(source);
+              if (!found.find()) return false;
+              int end = found.end(), depth = 1;
+              while (end < source.length() && depth > 0) {
+                  char c = source.charAt(end++);
+                  if (c == '{') depth++;
+                  if (c == '}') depth--;
+              }
+              String body = source.substring(found.end(), end);
+              return body.contains("MinHeap") && body.contains(".pop()");
+          }
+        cases:
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+            expect: 'List.of("11", "12", "13", "14", "15", "16")'
+            say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+            expect: 'List.of("11")'
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().getLast()
+            expect: '"16"'
+            say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().contains("22")
+            expect: false
+            say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
+          - call: 'Graph g = new Graph(); g.edges.putAll(Map.of("a", List.of(new Edge("b", 5), new Edge("c", 1)), "b", List.of(new Edge("a", 5), new Edge("c", 1), new Edge("d", 1)), "c", List.of(new Edge("a", 1), new Edge("b", 1)), "d", List.of(new Edge("b", 1), new Edge("e", 10)), "e", List.of(new Edge("d", 10)))); Routes.dijkstra(g, "a", "e").path()'
+            expect: 'List.of("a", "c", "b", "d", "e")'
+            say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
+          - call: 'Graph g = new Graph(); g.edges.putAll(Map.of("a", List.of(new Edge("b", 5), new Edge("c", 1)), "b", List.of(new Edge("a", 5), new Edge("c", 1), new Edge("d", 1)), "c", List.of(new Edge("a", 1), new Edge("b", 1)), "d", List.of(new Edge("b", 1), new Edge("e", 10)), "e", List.of(new Edge("d", 10)))); Routes.dijkstra(g, "a", "e").visited()'
+            expect: 'List.of("a", "c", "b", "d", "e")'
+            say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
+          - call: popsFromMinHeap("dijkstra")
+            expect: true
+            say: '`dijkstra` holt den nächsten Knoten noch nicht mit `pop` aus einem `MinHeap`: Statt `frontier` gibt es den Heap, in dem am Anfang der Start mit 0 liegt.'
+      solution: |
+        `Set<String> done = new HashSet<>();`, `MinHeap heap = new MinHeap();`
+        und `heap.push(0, start);` statt `frontier`. Die Schleife läuft
+        `while (!heap.isEmpty())`: `MinHeap.Entry entry = heap.pop();` gibt
+        mit `entry.priority()` die Meter und mit `entry.value()` den Knoten;
+        `continue`, wenn `done.contains(node)`, sonst `done.add(node)`; ein
+        Nachbar mit einem kürzeren Weg kommt mit `heap.push(total, edge.to())`
+        hinein.
 
   - id: astern
     title: A*
@@ -1888,6 +2257,184 @@ tasks:
                       # hier: wie in dijkstra, nur mit total + estimate(neighbour) als Priorität
                       ...
               return {'path': path_to(previous, goal), 'visited': visited}
+          ```
+    dart:
+      prompt: Schreib `aStar` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.contains('21')
+            expect: false
+            say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/test.tsv')), '1', '5').path!.length
+            expect: 4
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Der Knoten 21 liegt nach Norden, weg
+          vom Ziel. Wie groß ist für ihn der Weg bis zu ihm plus die Luftlinie zum
+          Ziel, verglichen mit 12 auf der Lindenstraße? Im Handbuch unter »A-Stern«
+          siehst du an einem anderen Graphen, welche Knoten deshalb gar nicht erst
+          drankommen.
+        - |
+          Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu ist zweierlei: eine
+          kleine Funktion `estimate`, die mit `distance` die Luftlinie von einem Knoten
+          zum Ziel ausrechnet (die Lage steht in `graph.nodes`), und beim Hineinlegen
+          ist die Priorität der Weg plus diese Schätzung. Den Weg bis zu einem Knoten
+          nimmst du darum aus `costs`, nicht aus der Priorität, die aus dem Heap
+          kommt.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          Search aStar(Graph graph, String start, String goal) {
+            final target = graph.nodes[goal]!;
+            double estimate(String id) {
+              // hier: die Luftlinie von id zum Ziel, mit distance
+            }
+
+            final costs = <String, double>{start: 0};
+            final previous = <String, String?>{start: null};
+            final done = <String>{};
+            final heap = MinHeap()..push(estimate(start), start);
+            final visited = <String>[];
+            while (!heap.isEmpty) {
+              final (_, node) = heap.pop()!;
+              // hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
+              // besucht und am Ziel aufhören
+              for (final edge in graph.edges[node] ?? <Edge>[]) {
+                final total = costs[node]! + edge.cost;
+                // hier: wie in dijkstra, nur mit total + estimate(edge.to) als Priorität
+              }
+            }
+            return Search(pathTo(previous, goal), visited);
+          }
+          ```
+    javascript:
+      prompt: Schreib `aStar` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.includes('21')
+            expect: false
+            say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/test.tsv')), '1', '5').path.length
+            expect: 4
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Der Knoten 21 liegt nach Norden, weg
+          vom Ziel. Wie groß ist für ihn der Weg bis zu ihm plus die Luftlinie zum
+          Ziel, verglichen mit 12 auf der Lindenstraße? Im Handbuch unter »A-Stern«
+          siehst du an einem anderen Graphen, welche Knoten deshalb gar nicht erst
+          drankommen.
+        - |
+          Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu ist zweierlei: eine
+          kleine Funktion `estimate`, die mit `distance` die Luftlinie von einem Knoten
+          zum Ziel ausrechnet (die Lage steht in `graph.nodes`), und beim Hineinlegen
+          ist die Priorität der Weg plus diese Schätzung. Den Weg bis zu einem Knoten
+          nimmst du darum aus `costs`, nicht aus der Priorität, die aus dem Heap
+          kommt.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function aStar(graph, start, goal) {
+              const [goalLon, goalLat] = graph.nodes[goal];
+              const estimate = (id) => {
+                  // hier: die Luftlinie von id zum Ziel, mit distance
+              };
+              const costs = new Map([[start, 0]]);
+              const previous = new Map([[start, null]]);
+              const done = new Set();
+              const heap = new MinHeap();
+              heap.push(estimate(start), start);
+              const visited = [];
+              while (!heap.isEmpty()) {
+                  const [, node] = heap.pop();
+                  // hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
+                  // besucht und am Ziel aufhören
+                  for (const [neighbour, length] of graph.edges[node] || []) {
+                      const total = costs.get(node) + length;
+                      // hier: wie in dijkstra, nur mit total + estimate(neighbour) als Priorität
+                  }
+              }
+              return { path: pathTo(previous, goal), visited };
+          }
+          ```
+    java:
+      prompt: Schreib `aStar` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+            expect: 'List.of("11", "12", "13", "14", "15", "16")'
+            say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().contains("21")
+            expect: false
+            say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+            expect: ~
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+            expect: 'List.of("11")'
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")), "1", "5").path().size()
+            expect: 4
+      hint:
+        - |
+          Auf `data/detour.tsv` von 11 nach 16: Der Knoten 21 liegt nach Norden, weg
+          vom Ziel. Wie groß ist für ihn der Weg bis zu ihm plus die Luftlinie zum
+          Ziel, verglichen mit 12 auf der Lindenstraße? Im Handbuch unter »A-Stern«
+          siehst du an einem anderen Graphen, welche Knoten deshalb gar nicht erst
+          drankommen.
+        - |
+          Nimm dein `dijkstra` mit dem Heap als Vorlage. Neu ist zweierlei: eine
+          kleine Methode `estimate`, die mit `distance` die Luftlinie von einem Knoten
+          zum Ziel ausrechnet (die Lage steht in `graph.nodes`), und beim Hineinlegen
+          ist die Priorität der Weg plus diese Schätzung. Den Weg bis zu einem Knoten
+          nimmst du darum aus `costs`, nicht aus der Priorität, die aus dem Heap
+          kommt.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static double estimate(Graph graph, String id, String goal) {
+              // hier: die Luftlinie von id zum Ziel, mit distance
+          }
+
+          static Search aStar(Graph graph, String start, String goal) {
+              Map<String, Double> costs = new HashMap<>(Map.of(start, 0.0));
+              Map<String, String> previous = new HashMap<>();
+              previous.put(start, null);
+              Set<String> done = new HashSet<>();
+              MinHeap heap = new MinHeap();
+              heap.push(estimate(graph, start, goal), start);
+              List<String> visited = new ArrayList<>();
+              while (!heap.isEmpty()) {
+                  String node = heap.pop().value();
+                  // hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
+                  // besucht und am Ziel aufhören
+                  for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+                      double total = costs.get(node) + edge.cost();
+                      // hier: wie in dijkstra, nur mit total + estimate(graph, edge.to(), goal) als Priorität
+                  }
+              }
+              return new Search(pathTo(previous, goal), visited);
+          }
           ```
 
   - id: reisen
@@ -2022,6 +2569,208 @@ tasks:
                           edges.setdefault(b, []).append([a, seconds])
               return {'nodes': nodes, 'edges': edges, 'fastest': …}
           ```
+    dart:
+      prompt: Schreib `buildTravelGraph` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'foot').edges['5']!.map((e) => e.to).toList()..sort()
+            expect: "['3', '4']"
+            say: Zu Fuß gilt keine Einbahnstraße.
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['2']!.map((e) => e.to).toList()..sort()
+            expect: "['1', '3']"
+            say: Den Fußweg von 2 nach 4 darf ein Auto nicht fahren. Er steht nicht in speeds['car'].
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['5']!.map((e) => e.to).toList()
+            expect: "['4']"
+            say: Der Birkenweg ist eine Einbahnstraße (yes) in Richtung seiner Punkte, 3 → 5 → 4. Von 5 geht es mit dem Auto nur nach 4.
+          - call: (buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['4'] ?? []).map((e) => e.to).toList()
+            expect: '[]'
+            say: Von 4 kommt ein Auto nicht weg, gegen die Einbahnstraße nicht und den Fußweg nicht.
+          - call: (buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['1']!.first.cost - 9.76).abs() < 0.05
+            expect: true
+            say: An jeder Kante stehen Sekunden. 67,8 Meter mit 25 km/h, das sind 25 / 3,6 Meter je Sekunde, dauern knapp 10 Sekunden.
+          - call: (buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').fastest - 25.0).abs() < 0.001
+            expect: true
+            say: fastest ist das größte Tempo in speeds['car'], in Metern je Sekunde, 90 km/h also 25 m/s.
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'bike').edges['4']!.map((e) => e.to).toList()
+            expect: "['5']"
+            say: Auf dem Fußweg darf man nicht Rad fahren, die Einbahnstraße gilt für das Rad hier nicht.
+      hint:
+        - |
+          Geh die Testkarte `data/test.tsv` mit dem Auto durch: Welche der drei Wege
+          darf es fahren (`speeds['car']`)? Der Birkenweg 3–5–4 ist eine
+          Einbahnstraße, `yes`: In welche Richtung gibt es seine Kanten? Und wie viele
+          Sekunden braucht ein Auto für 67,8 Meter mit 25 km/h?
+        - |
+          Fang mit einer Kopie von `buildGraph` an. Davor holst du
+          `final table = speeds[mode]!;`, und ein Weg, dessen Art darin fehlt
+          (`table[way.kind]` ist `null`), wird übersprungen. An die Kanten kommen
+          Sekunden: die Meter geteilt durch das Tempo in Metern je Sekunde, km/h
+          geteilt durch 3,6. Nur für das Auto zählt die Einbahnstraße: bei `yes` nur
+          die Kante vorwärts, bei `-1` nur zurück. Am Ende bekommt
+          `graph.fastest` das größte Tempo in `table`, in Metern je Sekunde
+          (`table.values.reduce(max)` aus `dart:math`).
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```dart
+          Graph buildTravelGraph(List<Way> ways, String mode) {
+            final table = speeds[mode]!;
+            final graph = Graph();
+            for (final way in ways) {
+              final speed = table[way.kind];
+              if (speed == null) continue;
+              final forward = …;    // darf man vorwärts? Zu Fuß und mit dem Rad immer
+              final backward = …;   // und zurück?
+              for (var i = 0; i + 1 < way.points.length; i++) {
+                final a = way.points[i], b = way.points[i + 1];
+                graph.nodes[a.id] = a;
+                graph.nodes[b.id] = b;
+                final seconds = …;   // die Meter geteilt durch das Tempo in Metern je Sekunde
+                if (forward) graph.edges.putIfAbsent(a.id, () => []).add(Edge(b.id, seconds));
+                if (backward) graph.edges.putIfAbsent(b.id, () => []).add(Edge(a.id, seconds));
+              }
+            }
+            graph.fastest = …;
+            return graph;
+          }
+          ```
+    javascript:
+      prompt: Schreib `buildTravelGraph` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'foot').edges['5'].map((e) => e[0]).sort()
+            expect: "['3', '4']"
+            say: Zu Fuß gilt keine Einbahnstraße.
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['2'].map((e) => e[0]).sort()
+            expect: "['1', '3']"
+            say: Den Fußweg von 2 nach 4 darf ein Auto nicht fahren. Er steht nicht in SPEEDS.car.
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['5'].map((e) => e[0])
+            expect: "['4']"
+            say: Der Birkenweg ist eine Einbahnstraße (yes) in Richtung seiner Punkte, 3 → 5 → 4. Von 5 geht es mit dem Auto nur nach 4.
+          - call: (buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['4'] || []).map((e) => e[0])
+            expect: '[]'
+            say: Von 4 kommt ein Auto nicht weg, gegen die Einbahnstraße nicht und den Fußweg nicht.
+          - call: Math.abs(buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').edges['1'][0][1] - 9.76) < 0.05
+            expect: true
+            say: An jeder Kante stehen Sekunden. 67,8 Meter mit 25 km/h, das sind 25 / 3,6 Meter je Sekunde, dauern knapp 10 Sekunden.
+          - call: Math.abs(buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'car').fastest - 25.0) < 0.001
+            expect: true
+            say: fastest ist das größte Tempo in SPEEDS.car, in Metern je Sekunde, 90 km/h also 25 m/s.
+          - call: buildTravelGraph(readWays('routenplaner-starter/data/test.tsv'), 'bike').edges['4'].map((e) => e[0])
+            expect: "['5']"
+            say: Auf dem Fußweg darf man nicht Rad fahren, die Einbahnstraße gilt für das Rad hier nicht.
+      hint:
+        - |
+          Geh die Testkarte `data/test.tsv` mit dem Auto durch: Welche der drei Wege
+          darf es fahren (`SPEEDS.car`)? Der Birkenweg 3–5–4 ist eine
+          Einbahnstraße, `yes`: In welche Richtung gibt es seine Kanten? Und wie viele
+          Sekunden braucht ein Auto für 67,8 Meter mit 25 km/h?
+        - |
+          Fang mit einer Kopie von `buildGraph` an. Davor holst du
+          `const speeds = SPEEDS[mode]`, und ein Weg, dessen Art darin fehlt
+          (`speeds[way.kind]` ist `undefined`), wird übersprungen. An die Kanten
+          kommen Sekunden: die Meter geteilt durch das Tempo in Metern je Sekunde,
+          km/h geteilt durch 3,6. Nur für das Auto zählt die Einbahnstraße: bei `yes`
+          nur die Kante vorwärts, bei `-1` nur zurück. Am Ende kommt `fastest` ins
+          Objekt, das größte Tempo in `speeds`, in Metern je Sekunde
+          (`Math.max(...Object.values(speeds))`).
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```javascript
+          function buildTravelGraph(ways, mode) {
+              const speeds = SPEEDS[mode];
+              const nodes = {};
+              const edges = {};
+              for (const way of ways) {
+                  const speed = speeds[way.kind];
+                  if (!speed) continue;
+                  const forward = …;    // darf man vorwärts? Zu Fuß und mit dem Rad immer
+                  const backward = …;   // und zurück?
+                  for (let i = 0; i + 1 < way.points.length; i++) {
+                      const [a, lon1, lat1] = way.points[i];
+                      const [b, lon2, lat2] = way.points[i + 1];
+                      nodes[a] = [lon1, lat1];
+                      nodes[b] = [lon2, lat2];
+                      const seconds = …;   // die Meter geteilt durch das Tempo in Metern je Sekunde
+                      if (forward) (edges[a] ??= []).push([b, seconds]);
+                      if (backward) (edges[b] ??= []).push([a, seconds]);
+                  }
+              }
+              return { nodes, edges, fastest: … };
+          }
+          ```
+    java:
+      prompt: Schreib `buildTravelGraph` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.buildTravelGraph(Routes.readWays("routenplaner-starter/data/test.tsv"), "foot").edges.get("5").stream().map(Edge::to).sorted().toList()
+            expect: 'List.of("3", "4")'
+            say: Zu Fuß gilt keine Einbahnstraße.
+          - call: Routes.buildTravelGraph(Routes.readWays("routenplaner-starter/data/test.tsv"), "car").edges.get("2").stream().map(Edge::to).sorted().toList()
+            expect: 'List.of("1", "3")'
+            say: Den Fußweg von 2 nach 4 darf ein Auto nicht fahren. Er steht nicht in SPEEDS.get("car").
+          - call: Routes.buildTravelGraph(Routes.readWays("routenplaner-starter/data/test.tsv"), "car").edges.get("5").stream().map(Edge::to).toList()
+            expect: 'List.of("4")'
+            say: Der Birkenweg ist eine Einbahnstraße (yes) in Richtung seiner Punkte, 3 → 5 → 4. Von 5 geht es mit dem Auto nur nach 4.
+          - call: Routes.buildTravelGraph(Routes.readWays("routenplaner-starter/data/test.tsv"), "car").edges.getOrDefault("4", List.of()).stream().map(Edge::to).toList()
+            expect: 'List.of()'
+            say: Von 4 kommt ein Auto nicht weg, gegen die Einbahnstraße nicht und den Fußweg nicht.
+          - call: Math.abs(Routes.buildTravelGraph(Routes.readWays("routenplaner-starter/data/test.tsv"), "car").edges.get("1").get(0).cost() - 9.76) < 0.05
+            expect: true
+            say: An jeder Kante stehen Sekunden. 67,8 Meter mit 25 km/h, das sind 25 / 3,6 Meter je Sekunde, dauern knapp 10 Sekunden.
+          - call: Math.abs(Routes.buildTravelGraph(Routes.readWays("routenplaner-starter/data/test.tsv"), "car").fastest - 25.0) < 0.001
+            expect: true
+            say: fastest ist das größte Tempo in SPEEDS.get("car"), in Metern je Sekunde, 90 km/h also 25 m/s.
+          - call: Routes.buildTravelGraph(Routes.readWays("routenplaner-starter/data/test.tsv"), "bike").edges.get("4").stream().map(Edge::to).toList()
+            expect: 'List.of("5")'
+            say: Auf dem Fußweg darf man nicht Rad fahren, die Einbahnstraße gilt für das Rad hier nicht.
+      hint:
+        - |
+          Geh die Testkarte `data/test.tsv` mit dem Auto durch: Welche der drei Wege
+          darf es fahren (`SPEEDS.get("car")`)? Der Birkenweg 3–5–4 ist eine
+          Einbahnstraße, `yes`: In welche Richtung gibt es seine Kanten? Und wie viele
+          Sekunden braucht ein Auto für 67,8 Meter mit 25 km/h?
+        - |
+          Fang mit einer Kopie von `buildGraph` an. Davor holst du
+          `Map<String, Integer> speeds = SPEEDS.get(mode);`, und ein Weg, dessen Art
+          darin fehlt (`speeds.get(way.kind())` ist `null`), wird übersprungen. An die
+          Kanten kommen Sekunden: die Meter geteilt durch das Tempo in Metern je
+          Sekunde, km/h geteilt durch 3,6. Nur für das Auto zählt die Einbahnstraße:
+          bei `yes` nur die Kante vorwärts, bei `-1` nur zurück. Am Ende bekommt
+          `graph.fastest` das größte Tempo in `speeds`, in Metern je Sekunde
+          (`Collections.max(speeds.values())`).
+        - |
+          Ein Gerüst; die Lücken mit `…` füllst du:
+
+          ```java
+          static Graph buildTravelGraph(List<Way> ways, String mode) {
+              Map<String, Integer> speeds = SPEEDS.get(mode);
+              Graph graph = new Graph();
+              for (Way way : ways) {
+                  Integer speed = speeds.get(way.kind());
+                  if (speed == null) continue;
+                  boolean forward = …;    // darf man vorwärts? Zu Fuß und mit dem Rad immer
+                  boolean backward = …;   // und zurück?
+                  for (int i = 0; i + 1 < way.points().size(); i++) {
+                      Point a = way.points().get(i), b = way.points().get(i + 1);
+                      graph.nodes.put(a.id(), a);
+                      graph.nodes.put(b.id(), b);
+                      double seconds = …;   // die Meter geteilt durch das Tempo in Metern je Sekunde
+                      if (forward) graph.edges.computeIfAbsent(a.id(), id -> new ArrayList<>()).add(new Edge(b.id(), seconds));
+                      if (backward) graph.edges.computeIfAbsent(b.id(), id -> new ArrayList<>()).add(new Edge(a.id(), seconds));
+                  }
+              }
+              graph.fastest = …;
+              return graph;
+          }
+          ```
 
   - id: rundfahrt
     title: Wie lang ist eine Rundfahrt?
@@ -2072,6 +2821,78 @@ tasks:
           paarweise durch, immer zwei aufeinanderfolgende Orte `a` und `b`
           (`zip(stops, stops[1:])`), und zählst `costs[a][b]` zusammen (`sum`). Erst
           `a`, dann `b`: Hin ist nicht immer so weit wie zurück.
+    dart:
+      prompt: Schreib `tourLength` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 1, 2, 3, 4])
+            expect: 52
+            say: 'Von 0 nach 1 sind es 10, dann 9, 7 und 12, und am Ende 14 zurück zum Anfang: 52.'
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4])
+            expect: 36
+          - call: tourLength([[0, 1], [3, 0]], [0, 1])
+            expect: 4
+            say: Hin ist nicht immer so weit wie zurück, etwa mit dem Auto und Einbahnstraßen. Nimm immer costs[von][nach].
+      hint:
+        - |
+          Rechne die Reihenfolge `[0, 3, 2, 1, 4]` mit der Tabelle auf der Seite
+          selbst nach: Welche fünf Strecken sind es, und welche Zahl steht jeweils in
+          `costs`? Vergiss den Weg zurück zum Anfang nicht.
+        - |
+          Geh die Reihenfolge mit einem Index `i` durch: Von `order[i]` geht es zu
+          `order[i + 1]`, vom letzten Ort zurück zu `order[0]`; beides gibt
+          `order[(i + 1) % order.length]`. Zähl `costs[a][b]` zusammen. Erst `a`, dann
+          `b`: Hin ist nicht immer so weit wie zurück.
+    javascript:
+      prompt: Schreib `tourLength` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 1, 2, 3, 4])
+            expect: 52
+            say: 'Von 0 nach 1 sind es 10, dann 9, 7 und 12, und am Ende 14 zurück zum Anfang: 52.'
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4])
+            expect: 36
+          - call: tourLength([[0, 1], [3, 0]], [0, 1])
+            expect: 4
+            say: Hin ist nicht immer so weit wie zurück, etwa mit dem Auto und Einbahnstraßen. Nimm immer costs[von][nach].
+      hint:
+        - |
+          Rechne die Reihenfolge `[0, 3, 2, 1, 4]` mit der Tabelle auf der Seite
+          selbst nach: Welche fünf Strecken sind es, und welche Zahl steht jeweils in
+          `costs`? Vergiss den Weg zurück zum Anfang nicht.
+        - |
+          Geh die Reihenfolge mit einem Index `i` durch: Von `order[i]` geht es zu
+          `order[i + 1]`, vom letzten Ort zurück zu `order[0]`; beides gibt
+          `order[(i + 1) % order.length]`. Zähl `costs[a][b]` zusammen. Erst `a`, dann
+          `b`: Hin ist nicht immer so weit wie zurück.
+    java:
+      prompt: Schreib `tourLength` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.tourLength(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, List.of(0, 1, 2, 3, 4))
+            expect: 52
+            say: 'Von 0 nach 1 sind es 10, dann 9, 7 und 12, und am Ende 14 zurück zum Anfang: 52.'
+          - call: Routes.tourLength(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, List.of(0, 3, 2, 1, 4))
+            expect: 36
+          - call: Routes.tourLength(new double[][] {{0, 1}, {3, 0}}, List.of(0, 1))
+            expect: 4
+            say: Hin ist nicht immer so weit wie zurück, etwa mit dem Auto und Einbahnstraßen. Nimm immer costs[von][nach].
+      hint:
+        - |
+          Rechne die Reihenfolge `[0, 3, 2, 1, 4]` mit der Tabelle auf der Seite
+          selbst nach: Welche fünf Strecken sind es, und welche Zahl steht jeweils in
+          `costs`? Vergiss den Weg zurück zum Anfang nicht.
+        - |
+          Geh die Reihenfolge mit einem Index `i` durch: Von `order.get(i)` geht es zu
+          `order.get(i + 1)`, vom letzten Ort zurück zu `order.get(0)`; beides gibt
+          `order.get((i + 1) % order.size())`. Zähl `costs[a][b]` zusammen. Erst `a`,
+          dann `b`: Hin ist nicht immer so weit wie zurück.
 
   - id: alle-reihenfolgen
     title: Alle Reihenfolgen
@@ -2128,6 +2949,161 @@ tasks:
           übrigen Orte, als Tupel. Setz vor jede die 0 (`[0] + list(rest)`) und nimm
           mit `min(…, key=…)` die mit der kleinsten `tour_length`. Probier auch
           `best_tour([[0]])`: Bei einem einzigen Ort ist die Rundfahrt nur `[0]`.
+    dart:
+      prompt: Schreib `bestTour` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], bestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))
+            expect: 30
+            say: Die kürzeste Rundfahrt durch diese fünf Orte ist 30 lang.
+          - call: bestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]).first
+            expect: 0
+            say: Die Reihenfolge beginnt beim Ort 0.
+          - call: bestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]).toList()..sort()
+            expect: '[0, 1, 2, 3, 4]'
+            say: Jeder Ort kommt genau einmal vor.
+          - call: bestTour([[0]])
+            expect: '[0]'
+      hint:
+        - |
+          Bei vier Orten 0, 1, 2 und 3 steht die 0 vorne fest. Schreib alle
+          Reihenfolgen der übrigen drei auf: Wie viele sind es? Für jede rechnet dein
+          `tourLength` die Länge aus, und du behältst die kürzeste.
+        - |
+          Alle Reihenfolgen gibt eine Funktion, die sich selbst aufruft. Sie bekommt
+          die Reihenfolge bis jetzt und die Orte, die noch fehlen. Fehlt keiner mehr,
+          ist eine Reihenfolge fertig: Ist sie kürzer als die beste bisher, merkst du
+          sie dir. Sonst hängt sie jeden fehlenden Ort einmal an und ruft sich mit
+          den übrigen auf. Angefangen wird mit `[0]` und allen anderen Orten. Probier
+          auch `bestTour([[0]])`: Bei einem einzigen Ort ist die Rundfahrt nur `[0]`.
+        - |
+          Ein Gerüst; `tryAll` steht in `bestTour`, so sieht sie `best` und
+          `shortest`:
+
+          ```dart
+          List<int> bestTour(List<List<double>> costs) {
+            var best = [0];
+            var shortest = double.infinity;
+            void tryAll(List<int> order, List<int> left) {
+              if (left.isEmpty) {
+                // hier: ist order kürzer als shortest? Dann merken
+                return;
+              }
+              for (final next in left) {
+                tryAll([...order, next], [for (final i in left) if (i != next) i]);
+              }
+            }
+
+            tryAll([0], [for (var i = 1; i < costs.length; i++) i]);
+            return best;
+          }
+          ```
+    javascript:
+      prompt: Schreib `bestTour` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], bestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]]))
+            expect: 30
+            say: Die kürzeste Rundfahrt durch diese fünf Orte ist 30 lang.
+          - call: bestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]])[0]
+            expect: 0
+            say: Die Reihenfolge beginnt beim Ort 0.
+          - call: '[...bestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]])].sort((a, b) => a - b)'
+            expect: '[0, 1, 2, 3, 4]'
+            say: Jeder Ort kommt genau einmal vor.
+          - call: bestTour([[0]])
+            expect: '[0]'
+      hint:
+        - |
+          Bei vier Orten 0, 1, 2 und 3 steht die 0 vorne fest. Schreib alle
+          Reihenfolgen der übrigen drei auf: Wie viele sind es? Für jede rechnet dein
+          `tourLength` die Länge aus, und du behältst die kürzeste.
+        - |
+          Alle Reihenfolgen gibt eine Funktion, die sich selbst aufruft. Sie bekommt
+          die Reihenfolge bis jetzt und die Orte, die noch fehlen. Fehlt keiner mehr,
+          ist eine Reihenfolge fertig: Ist sie kürzer als die beste bisher, merkst du
+          sie dir. Sonst hängt sie jeden fehlenden Ort einmal an und ruft sich mit
+          den übrigen auf. Angefangen wird mit `[0]` und allen anderen Orten. Probier
+          auch `bestTour([[0]])`: Bei einem einzigen Ort ist die Rundfahrt nur `[0]`.
+        - |
+          Ein Gerüst; `tryAll` steht in `bestTour`, so sieht sie `best` und
+          `shortest`:
+
+          ```javascript
+          function bestTour(costs) {
+              let best = [0];
+              let shortest = Infinity;
+              function tryAll(order, left) {
+                  if (left.length === 0) {
+                      // hier: ist order kürzer als shortest? Dann merken
+                      return;
+                  }
+                  for (const next of left) tryAll([...order, next], left.filter((i) => i !== next));
+              }
+              tryAll([0], Array.from({ length: costs.length - 1 }, (_, i) => i + 1));
+              return best;
+          }
+          ```
+    java:
+      prompt: Schreib `bestTour` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.tourLength(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, Routes.bestTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}))
+            expect: 30
+            say: Die kürzeste Rundfahrt durch diese fünf Orte ist 30 lang.
+          - call: Routes.bestTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}).get(0)
+            expect: 0
+            say: Die Reihenfolge beginnt beim Ort 0.
+          - call: Routes.bestTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}).stream().sorted().toList()
+            expect: 'List.of(0, 1, 2, 3, 4)'
+            say: Jeder Ort kommt genau einmal vor.
+          - call: Routes.bestTour(new double[][] {{0}})
+            expect: 'List.of(0)'
+      hint:
+        - |
+          Bei vier Orten 0, 1, 2 und 3 steht die 0 vorne fest. Schreib alle
+          Reihenfolgen der übrigen drei auf: Wie viele sind es? Für jede rechnet dein
+          `tourLength` die Länge aus, und du behältst die kürzeste.
+        - |
+          Alle Reihenfolgen gibt eine Methode, die sich selbst aufruft. Sie bekommt
+          die Reihenfolge bis jetzt und die Orte, die noch fehlen, und gibt die
+          kürzeste Rundfahrt zurück, die so anfängt. Fehlt kein Ort mehr, ist das die
+          Reihenfolge selbst. Sonst hängt sie jeden fehlenden Ort einmal an, ruft sich
+          mit den übrigen auf und behält die kürzeste. Angefangen wird mit `[0]` und
+          allen anderen Orten. Vorsicht bei `remove`: Mit einem `int` nimmt es den
+          Eintrag an diesem Index heraus, mit einem `Integer` den Ort selbst. Probier
+          auch `bestTour(new double[][] {{0}})`: Bei einem einzigen Ort ist die
+          Rundfahrt nur `[0]`.
+        - |
+          Ein Gerüst mit einer zweiten Methode `tryAll`:
+
+          ```java
+          static List<Integer> bestTour(double[][] costs) {
+              List<Integer> left = new ArrayList<>();
+              for (int i = 1; i < costs.length; i++) left.add(i);
+              return tryAll(costs, List.of(0), left);
+          }
+
+          static List<Integer> tryAll(double[][] costs, List<Integer> order, List<Integer> left) {
+              if (left.isEmpty()) return order;
+              List<Integer> best = null;
+              for (Integer next : left) {
+                  List<Integer> longer = new ArrayList<>(order);
+                  longer.add(next);
+                  List<Integer> rest = new ArrayList<>(left);
+                  rest.remove(next);
+                  List<Integer> tour = tryAll(costs, longer, rest);
+                  // hier: ist best noch null oder tour kürzer als best? Dann best = tour
+              }
+              return best;
+          }
+          ```
 
   - id: naechster-nachbar
     title: Der nächste Nachbar
@@ -2172,6 +3148,73 @@ tasks:
           übrig sind. Solange etwas übrig ist: Nimm von den übrigen den, für den
           `costs[order[-1]][i]` am kleinsten ist (`min(left, key=…)`), häng ihn an die
           Reihenfolge an und streich ihn aus den übrigen (`remove`).
+    dart:
+      prompt: Schreib `nearestTour` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: nearestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]])
+            expect: '[0, 3, 2, 1, 4]'
+            say: 'Von 0 ist 3 am nächsten (2), von 3 dann 2 (7), von 2 dann 1 (9), und übrig bleibt 4.'
+          - call: nearestTour([[0, 5, 1], [5, 0, 2], [1, 2, 0]])
+            expect: '[0, 2, 1]'
+      hint:
+        - |
+          Mit der Tabelle auf der Seite: Welcher Ort ist von 0 aus am nächsten? Und
+          von dort aus, welcher der übrigen? Schreib die Reihenfolge auf, bis kein Ort
+          mehr übrig ist.
+        - |
+          Halte zwei Listen: die Reihenfolge, am Anfang `[0]`, und die Orte, die noch
+          übrig sind. Solange etwas übrig ist: Such unter den übrigen mit einer
+          Schleife den, für den `costs[order.last][i]` am kleinsten ist, häng ihn an
+          die Reihenfolge an und streich ihn aus den übrigen (`remove`).
+    javascript:
+      prompt: Schreib `nearestTour` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: nearestTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]])
+            expect: '[0, 3, 2, 1, 4]'
+            say: 'Von 0 ist 3 am nächsten (2), von 3 dann 2 (7), von 2 dann 1 (9), und übrig bleibt 4.'
+          - call: nearestTour([[0, 5, 1], [5, 0, 2], [1, 2, 0]])
+            expect: '[0, 2, 1]'
+      hint:
+        - |
+          Mit der Tabelle auf der Seite: Welcher Ort ist von 0 aus am nächsten? Und
+          von dort aus, welcher der übrigen? Schreib die Reihenfolge auf, bis kein Ort
+          mehr übrig ist.
+        - |
+          Halte zwei Arrays: die Reihenfolge, am Anfang `[0]`, und die Orte, die noch
+          übrig sind. Solange etwas übrig ist: Such unter den übrigen mit einer
+          Schleife den, für den `costs[order.at(-1)][i]` am kleinsten ist, häng ihn an
+          die Reihenfolge an und streich ihn aus den übrigen
+          (`left.splice(left.indexOf(nearest), 1)`).
+    java:
+      prompt: Schreib `nearestTour` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.nearestTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}})
+            expect: 'List.of(0, 3, 2, 1, 4)'
+            say: 'Von 0 ist 3 am nächsten (2), von 3 dann 2 (7), von 2 dann 1 (9), und übrig bleibt 4.'
+          - call: Routes.nearestTour(new double[][] {{0, 5, 1}, {5, 0, 2}, {1, 2, 0}})
+            expect: 'List.of(0, 2, 1)'
+      hint:
+        - |
+          Mit der Tabelle auf der Seite: Welcher Ort ist von 0 aus am nächsten? Und
+          von dort aus, welcher der übrigen? Schreib die Reihenfolge auf, bis kein Ort
+          mehr übrig ist.
+        - |
+          Halte zwei Listen: die Reihenfolge, am Anfang `[0]`, und die Orte, die noch
+          übrig sind. Solange etwas übrig ist: Such unter den übrigen mit einer
+          Schleife den, für den `costs[order.getLast()][i]` am kleinsten ist, häng
+          ihn an die Reihenfolge an und streich ihn aus den übrigen. Vorsicht:
+          `left.remove(nearest)` mit einem `int` nimmt den Eintrag am Index
+          `nearest` heraus, nicht den Ort. Mit `Integer nearest` streicht es den Ort
+          selbst.
 
   - id: zwei-opt
     title: Besser mit 2-opt
@@ -2269,5 +3312,161 @@ tasks:
                           # hier: ist turned kürzer als order? Dann übernehmen und better merken
                           ...
               return order
+          ```
+    dart:
+      prompt: Schreib `improveTour` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]))
+            expect: 30
+            say: Aus der Reihenfolge des nächsten Nachbarn (36) macht 2-opt hier die kürzeste (30).
+          - call: improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]).first
+            expect: 0
+            say: Der Anfang bleibt, wo er ist; umgedreht werden nur Stücke danach.
+          - call: improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]).toList()..sort()
+            expect: '[0, 1, 2, 3, 4]'
+          - call: final o = [0, 2, 4, 1, 3]; improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], o); o
+            expect: '[0, 2, 4, 1, 3]'
+            say: improveTour gibt eine neue Reihenfolge zurück und lässt die übergebene, wie sie ist ([...order]).
+      hint:
+        - |
+          Dreh in `[0, 3, 2, 1, 4]` das Stück `2, 1, 4` um. Wie lang ist die neue
+          Rundfahrt, und ist sie kürzer als 36? Welche Stücke gibt es überhaupt, wenn
+          die 0 vorne an ihrem Platz bleibt? Im Handbuch unter »Eine Rundreise« kannst
+          du 2-opt an anderen Orten durchklicken.
+        - |
+          Zwei Schleifen geben jedes Stück: Es beginnt am Index `i` (ab 1, denn
+          die 0 bleibt vorne) und endet am Index `j` (nach `i`). Umgedreht wird
+          mit `[...order.sublist(0, i), ...order.sublist(i, j + 1).reversed,
+          ...order.sublist(j + 1)]`. Ist das kürzer, nimmst du es und merkst dir, dass
+          sich etwas verbessert hat. Das Ganze wiederholst du, bis ein ganzer
+          Durchgang nichts mehr verbessert. Arbeite auf einer Kopie (`[...order]`),
+          damit die übergebene Reihenfolge bleibt, wie sie war.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          List<int> improveTour(List<List<double>> costs, List<int> order) {
+            order = [...order];
+            var better = true;
+            while (better) {
+              better = false;
+              for (var i = 1; i < order.length - 1; i++) {
+                for (var j = i + 1; j < order.length; j++) {
+                  final turned = [
+                    ...order.sublist(0, i),
+                    ...order.sublist(i, j + 1).reversed,
+                    ...order.sublist(j + 1),
+                  ];
+                  // hier: ist turned kürzer als order? Dann übernehmen und better merken
+                }
+              }
+            }
+            return order;
+          }
+          ```
+    javascript:
+      prompt: Schreib `improveTour` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: tourLength([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4]))
+            expect: 30
+            say: Aus der Reihenfolge des nächsten Nachbarn (36) macht 2-opt hier die kürzeste (30).
+          - call: improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4])[0]
+            expect: 0
+            say: Der Anfang bleibt, wo er ist; umgedreht werden nur Stücke danach.
+          - call: '[...improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], [0, 3, 2, 1, 4])].sort((a, b) => a - b)'
+            expect: '[0, 1, 2, 3, 4]'
+          - call: const o = [0, 2, 4, 1, 3]; improveTour([[0, 10, 5, 2, 14], [10, 0, 9, 8, 4], [5, 9, 0, 7, 11], [2, 8, 7, 0, 12], [14, 4, 11, 12, 0]], o); o
+            expect: '[0, 2, 4, 1, 3]'
+            say: improveTour gibt eine neue Reihenfolge zurück und lässt die übergebene, wie sie ist ([...order]).
+      hint:
+        - |
+          Dreh in `[0, 3, 2, 1, 4]` das Stück `2, 1, 4` um. Wie lang ist die neue
+          Rundfahrt, und ist sie kürzer als 36? Welche Stücke gibt es überhaupt, wenn
+          die 0 vorne an ihrem Platz bleibt? Im Handbuch unter »Eine Rundreise« kannst
+          du 2-opt an anderen Orten durchklicken.
+        - |
+          Zwei Schleifen geben jedes Stück: Es beginnt am Index `i` (ab 1, denn
+          die 0 bleibt vorne) und endet am Index `j` (nach `i`). Umgedreht wird
+          mit `[...order.slice(0, i), ...order.slice(i, j + 1).reverse(),
+          ...order.slice(j + 1)]`. Ist das kürzer, nimmst du es und merkst dir, dass
+          sich etwas verbessert hat. Das Ganze wiederholst du, bis ein ganzer
+          Durchgang nichts mehr verbessert. Arbeite auf einer Kopie (`[...order]`),
+          damit die übergebene Reihenfolge bleibt, wie sie war.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function improveTour(costs, order) {
+              order = [...order];
+              let better = true;
+              while (better) {
+                  better = false;
+                  for (let i = 1; i < order.length - 1; i++) {
+                      for (let j = i + 1; j < order.length; j++) {
+                          const turned = [...order.slice(0, i), ...order.slice(i, j + 1).reverse(), ...order.slice(j + 1)];
+                          // hier: ist turned kürzer als order? Dann übernehmen und better merken
+                      }
+                  }
+              }
+              return order;
+          }
+          ```
+    java:
+      prompt: Schreib `improveTour` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.tourLength(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, Routes.improveTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, List.of(0, 3, 2, 1, 4)))
+            expect: 30
+            say: Aus der Reihenfolge des nächsten Nachbarn (36) macht 2-opt hier die kürzeste (30).
+          - call: Routes.improveTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, List.of(0, 3, 2, 1, 4)).get(0)
+            expect: 0
+            say: Der Anfang bleibt, wo er ist; umgedreht werden nur Stücke danach.
+          - call: Routes.improveTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, List.of(0, 3, 2, 1, 4)).stream().sorted().toList()
+            expect: 'List.of(0, 1, 2, 3, 4)'
+          - call: List<Integer> o = new ArrayList<>(List.of(0, 2, 4, 1, 3)); Routes.improveTour(new double[][] {{0, 10, 5, 2, 14}, {10, 0, 9, 8, 4}, {5, 9, 0, 7, 11}, {2, 8, 7, 0, 12}, {14, 4, 11, 12, 0}}, o); o
+            expect: 'List.of(0, 2, 4, 1, 3)'
+            say: improveTour gibt eine neue Reihenfolge zurück und lässt die übergebene, wie sie ist (new ArrayList<>(order)).
+      hint:
+        - |
+          Dreh in `[0, 3, 2, 1, 4]` das Stück `2, 1, 4` um. Wie lang ist die neue
+          Rundfahrt, und ist sie kürzer als 36? Welche Stücke gibt es überhaupt, wenn
+          die 0 vorne an ihrem Platz bleibt? Im Handbuch unter »Eine Rundreise« kannst
+          du 2-opt an anderen Orten durchklicken.
+        - |
+          Zwei Schleifen geben jedes Stück: Es beginnt am Index `i` (ab 1, denn
+          die 0 bleibt vorne) und endet am Index `j` (nach `i`). Umgedreht wird
+          auf einer Kopie: `List<Integer> turned = new ArrayList<>(order);`, dann
+          `Collections.reverse(turned.subList(i, j + 1));`. Ist das kürzer, nimmst du
+          es und merkst dir, dass sich etwas verbessert hat. Das Ganze wiederholst du,
+          bis ein ganzer Durchgang nichts mehr verbessert. Arbeite auch sonst auf
+          einer Kopie (`new ArrayList<>(order)`), damit die übergebene Reihenfolge
+          bleibt, wie sie war.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static List<Integer> improveTour(double[][] costs, List<Integer> order) {
+              order = new ArrayList<>(order);
+              boolean better = true;
+              while (better) {
+                  better = false;
+                  for (int i = 1; i < order.size() - 1; i++) {
+                      for (int j = i + 1; j < order.size(); j++) {
+                          List<Integer> turned = new ArrayList<>(order);
+                          Collections.reverse(turned.subList(i, j + 1));
+                          // hier: ist turned kürzer als order? Dann übernehmen und better merken
+                      }
+                  }
+              }
+              return order;
+          }
           ```
 
