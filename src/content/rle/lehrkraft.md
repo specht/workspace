@@ -16,6 +16,12 @@ Die einfachste Kompression zuerst: Lauflängen, in Ruby oder Python. Lernende ma
 <li>Messen (15 Minuten)</li>
 <li><b>Für Schnelle:</b> PackBits.</li>
 </ul></td></tr>
+<tr><th>Ohne Rechner</th><td><ul>
+<li><b>Vor »Läufe«, 10 Minuten, zu zweit, mit Karopapier:</b> Eine Person bekommt ein Schwarz-Weiß-Bild aus 10 × 10 Kästchen und diktiert es Zeile für Zeile nur mit Zahlen: wie viele weiße Kästchen, dann wie viele schwarze und so weiter; jede Zeile beginnt mit Weiß, notfalls mit 0. Die andere Person sieht das Bild nicht und malt es auf leeres Karopapier. Dann vergleichen und tauschen, mit einem Bild, das die zweite Person selbst malt.</li>
+<li><b>Was sichtbar wird:</b> Ein Bild lässt sich ohne Verlust als Zahlen weitergeben. Große ruhige Flächen brauchen wenige Zahlen, ein Muster mit vielen Wechseln viele, ein Schachbrett fast so viele, wie es Kästchen hat.</li>
+<li><b>Zurück zur Seite:</b> In <a href='#läufe'>»Läufe«</a> schreibt der Pixeleditor dieselben Läufe neben jede Zeile, mit der Farbe statt »beginnt mit Weiß«; dort malen die Paare ihr Bild nach und lesen ab, wie groß es als Läufe ist.</li>
+<li><b>Vorbild:</b> »Squeezing pictures into less space« bei <a href='https://www.csunplugged.org/en/topics/image-representation/squeezing-pictures-into-less-space/'>CS Unplugged</a> (englisch, dort für Jüngere gedacht; hier genügen zehn Minuten).</li>
+</ul></td></tr>
 <tr><th>Dateien</th><td><ul>
 <li>Alles in <code>/workspace/rle</code>: <code>rle.rb</code>, dazu <code>diskette.raw</code>, <code>spec-gif89a.txt</code> und <code>44-baseline.jpg</code>, die die Lernenden mit <code>wget</code> laden.</li>
 <li><code>diskette.raw</code> ist die Diskette aus dem GIF-Labor, achtfach vergrößert, ein Byte pro Pixel (128 × 128).</li>
