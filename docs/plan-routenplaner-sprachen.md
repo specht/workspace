@@ -63,8 +63,15 @@ eight); what carries over is the language. First used by an LK on
    `loesung/`, examples, `<!-- language: … -->` blocks, »Einrichten« with
    `./run`, the teacher note, docs/dart-java.md.
 3. A run in a real Workspace with all five languages, e2e.
-4. Later: heap, Dijkstra with heap, A*, travel graphs and tours in the
-   three new languages.
+4. Heap, Dijkstra with heap, A*, travel graphs and tours in the three new
+   languages (built): `MinHeap` in each starter (Dart: a list of records
+   `(double, String)`, `isEmpty`, `length`; JavaScript: `[priority, value]`,
+   `isEmpty()`, `size`; Java: a static nested class `Routes.MinHeap` with the
+   record `Entry`, `isEmpty()`, `size()`), solutions and stages in `loesung/`
+   (`routes-5.dart`, `routes-5.js` for the stage up to Dijkstra), typical
+   mistakes in `fehler/java/` and as text in the examples. Dart and Java
+   cannot replace `pop` at run time, so »Dijkstra mit dem Heap« reads the
+   code of `dijkstra` there (a `setup` helper `popsFromMinHeap`).
 
 The starter is pushed (directly, as allowed for it) only together with the
 page's deploy, so that nobody clones a starter the page does not describe.

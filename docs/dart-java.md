@@ -26,9 +26,13 @@ at a time (a class ranks its languages under »Sprachen der Klasse«).
   student's file in their Workspace.
 - **Routenplaner** (`routenplaner`): Ruby, Python, Dart, JavaScript and
   Java, the languages of the data structures sandbox, through one server in
-  Ruby and a bridge per language (docs/plan-routenplaner-sprachen.md); the
-  new three up to Dijkstra so far, the cards with the check types `dart`,
-  `javascript` and `java`.
+  Ruby and a bridge per language (docs/plan-routenplaner-sprachen.md); every
+  card in all five, from reading the map to 2-opt, with the check types
+  `dart`, `javascript` and `java`. The heap is the student's own in every
+  language (no `PriorityQueue`); whether `dijkstra` uses it, JavaScript
+  checks at run time like Ruby and Python, Dart and Java read the function's
+  code (a `setup` that reads the file; Dart moves a setup's `import` lines to
+  the top of its harness).
 - **Handbuch:** »Dart und Java nebeneinander« (`reference/dart-java`), and
   Dart and Java columns in »Pseudocode und Struktogramme«.
 - **Language choice:** a class ranks any of the five; a person's own switch

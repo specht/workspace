@@ -678,6 +678,15 @@ In `routes.rb` gibt es die Klasse `MinHeap` schon, mit dem Array `@items` für P
 <!-- language: python -->
 In `routes.py` gibt es die Klasse `MinHeap` schon, mit der Liste `self.items` für Paare aus Priorität und Wert. Es fehlen `push` und `pop`. Python hat für so etwas das Modul `heapq`; hier baust du den Heap selbst, damit du siehst, wie er arbeitet.
 <!-- /language -->
+<!-- language: dart -->
+In `routes.dart` gibt es die Klasse `MinHeap` schon, mit der Liste `items` für Paare aus Priorität und Wert, als Record `(double, String)`: `items[0].$1` ist die Priorität des Eintrags an Index 0, `items[0].$2` sein Wert. Es fehlen `push` und `pop`. Den Index des Elternteils gibt `(i - 1) ~/ 2`, die Division ohne Rest. Das Paket `collection` hat eine fertige `PriorityQueue`; hier baust du den Heap selbst, damit du siehst, wie er arbeitet.
+<!-- /language -->
+<!-- language: javascript -->
+In `routes.js` gibt es die Klasse `MinHeap` schon, mit dem Array `this.items` für Paare `[Priorität, Wert]`. Es fehlen `push` und `pop`. Den Index des Elternteils gibt `Math.floor((i - 1) / 2)`: Ohne `Math.floor` wäre er eine Kommazahl.
+<!-- /language -->
+<!-- language: java -->
+In `Routes.java` gibt es die Klasse `MinHeap` schon, innerhalb von `Routes`, mit der Liste `items` für Paare aus Priorität und Wert. Jedes Paar ist ein `Entry`, ein Record mit `priority()` und `value()`. Es fehlen `push` und `pop`. `(i - 1) / 2` rechnet mit `int` und lässt den Rest weg, das ist der Index des Elternteils. Java hat für so etwas die Klasse `PriorityQueue`; hier baust du den Heap selbst, damit du siehst, wie er arbeitet.
+<!-- /language -->
 
 _uses(priority-queue, heap, heap-push, heap-pop)
 
@@ -833,6 +842,226 @@ while not heap.empty():
 ```
 <!-- /solution -->
 <!-- /language -->
+<!-- language: dart -->
+<div class='hint own' data-check='dijkstra-heap'>
+<strong>Jetzt bist du dran:</strong> Bau dein <code>dijkstra</code> auf den Heap um. Statt <code>frontier</code> gibt es am Anfang die leere Menge <code>done</code> und einen <code>MinHeap</code>, in dem der Start mit 0 Metern liegt. Die Schleife läuft, bis der Heap leer ist: <code>pop</code> gibt den Knoten mit dem kleinsten Abstand, ein Knoten aus <code>done</code> wird übersprungen, und ein Nachbar mit einem neuen, kürzeren Abstand kommt mit <code>push</code> in den Heap.
+</div>
+
+<!-- hint -->
+Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+und das Ende mit `pathTo` bleiben. Warum kann derselbe Knoten jetzt zweimal
+aus dem Heap kommen, und was soll beim zweiten Mal passieren?
+<!-- /hint -->
+<!-- hint -->
+`heap.pop()!` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten,
+als Record: `final (soFar, node) = heap.pop()!;`. Das `!` sagt Dart, dass
+der Heap hier nicht leer ist. Steht `node` schon in `done`, geht es mit
+`continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den
+Nachbarn ersetzt `heap.push(total, edge.to)` die Zeile, die ihn in
+`frontier` geschrieben hat.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für die Schleife:
+
+```dart
+while (!heap.isEmpty) {
+  final (soFar, node) = heap.pop()!;
+  // hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
+  visited.add(node);
+  if (node == goal) break;
+  for (final edge in graph.edges[node] ?? <Edge>[]) {
+    final total = soFar + edge.cost;
+    // wie bisher: weiter, wenn edge.to schon einen Weg hat, der nicht länger ist
+    // hier: neuer Abstand, neuer Vorgänger, und edge.to mit total in den Heap
+  }
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+Am Anfang stehen statt `frontier` diese Zeilen. Die Map mit den Abständen
+nennt die Lösung `costs` statt `metres`, weil später, beim Reisen mit dem
+Rad oder dem Auto, auch Sekunden darin stehen:
+
+<!-- page-code: own -->
+```dart
+final costs = <String, double>{start: 0};
+final previous = <String, String?>{start: null};
+final done = <String>{};
+final heap = MinHeap()..push(0, start);
+final visited = <String>[];
+```
+
+Und die Schleife:
+
+<!-- page-code: own -->
+```dart
+while (!heap.isEmpty) {
+  final (soFar, node) = heap.pop()!;
+  if (done.contains(node)) continue;
+  done.add(node);
+  visited.add(node);
+  if (node == goal) break;
+  for (final edge in graph.edges[node] ?? <Edge>[]) {
+    final total = soFar + edge.cost;
+    if (costs.containsKey(edge.to) && costs[edge.to]! <= total) continue;
+    costs[edge.to] = total;
+    previous[edge.to] = node;
+    heap.push(total, edge.to);
+  }
+}
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: javascript -->
+<div class='hint own' data-check='dijkstra-heap'>
+<strong>Jetzt bist du dran:</strong> Bau dein <code>dijkstra</code> auf den Heap um. Statt <code>frontier</code> gibt es am Anfang das leere Set <code>done</code> und einen <code>MinHeap</code>, in dem der Start mit 0 Metern liegt. Die Schleife läuft, bis der Heap leer ist: <code>pop</code> gibt den Knoten mit dem kleinsten Abstand, ein Knoten aus <code>done</code> wird übersprungen, und ein Nachbar mit einem neuen, kürzeren Abstand kommt mit <code>push</code> in den Heap.
+</div>
+
+<!-- hint -->
+Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+und das Ende mit `pathTo` bleiben. Warum kann derselbe Knoten jetzt zweimal
+aus dem Heap kommen, und was soll beim zweiten Mal passieren?
+<!-- /hint -->
+<!-- hint -->
+`heap.pop()` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
+`const [soFar, node] = heap.pop();`. Steht `node` schon in `done`, geht es
+mit `continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei
+den Nachbarn ersetzt `heap.push(total, neighbour)` die Zeile, die ihn in
+`frontier` geschrieben hat.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für die Schleife:
+
+```javascript
+while (!heap.isEmpty()) {
+    const [soFar, node] = heap.pop();
+    // hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
+    visited.push(node);
+    if (node === goal) break;
+    for (const [neighbour, length] of graph.edges[node] || []) {
+        const total = soFar + length;
+        // wie bisher: weiter, wenn neighbour schon einen Weg hat, der nicht länger ist
+        // hier: neuer Abstand, neuer Vorgänger, und neighbour mit total in den Heap
+    }
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+Am Anfang stehen statt `frontier` diese Zeilen. Die Map mit den Abständen
+nennt die Lösung `costs` statt `metres`, weil später, beim Reisen mit dem
+Rad oder dem Auto, auch Sekunden darin stehen:
+
+<!-- page-code: own -->
+```javascript
+const costs = new Map([[start, 0]]);
+const previous = new Map([[start, null]]);
+const done = new Set();
+const heap = new MinHeap();
+heap.push(0, start);
+const visited = [];
+```
+
+Und die Schleife:
+
+<!-- page-code: own -->
+```javascript
+while (!heap.isEmpty()) {
+    const [soFar, node] = heap.pop();
+    if (done.has(node)) continue;
+    done.add(node);
+    visited.push(node);
+    if (node === goal) break;
+    for (const [neighbour, length] of graph.edges[node] || []) {
+        const total = soFar + length;
+        if (costs.has(neighbour) && costs.get(neighbour) <= total) continue;
+        costs.set(neighbour, total);
+        previous.set(neighbour, node);
+        heap.push(total, neighbour);
+    }
+}
+```
+<!-- /solution -->
+<!-- /language -->
+<!-- language: java -->
+<div class='hint own' data-check='dijkstra-heap'>
+<strong>Jetzt bist du dran:</strong> Bau dein <code>dijkstra</code> auf den Heap um. Statt <code>frontier</code> gibt es am Anfang die leere Menge <code>done</code>, ein <code>HashSet</code>, und einen <code>MinHeap</code>, in dem der Start mit 0 Metern liegt. Die Schleife läuft, bis der Heap leer ist: <code>pop</code> gibt den Knoten mit dem kleinsten Abstand, ein Knoten aus <code>done</code> wird übersprungen, und ein Nachbar mit einem neuen, kürzeren Abstand kommt mit <code>push</code> in den Heap.
+</div>
+
+<!-- hint -->
+Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+und das Ende mit `pathTo` bleiben. Warum kann derselbe Knoten jetzt zweimal
+aus dem Heap kommen, und was soll beim zweiten Mal passieren?
+<!-- /hint -->
+<!-- hint -->
+`heap.pop()` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
+`MinHeap.Entry entry = heap.pop();`, dann ist `entry.value()` der Knoten und
+`entry.priority()` sein Abstand. Steht der Knoten schon in `done`, geht es mit
+`continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den
+Nachbarn ersetzt `heap.push(total, edge.to())` die Zeile, die ihn in
+`frontier` geschrieben hat.
+<!-- /hint -->
+<!-- hint -->
+Ein Gerüst für die Schleife:
+
+```java
+while (!heap.isEmpty()) {
+    MinHeap.Entry entry = heap.pop();
+    String node = entry.value();
+    // hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
+    visited.add(node);
+    if (node.equals(goal)) break;
+    for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+        double total = entry.priority() + edge.cost();
+        // wie bisher: weiter, wenn edge.to() schon einen Weg hat, der nicht länger ist
+        // hier: neuer Abstand, neuer Vorgänger, und edge.to() mit total in den Heap
+    }
+}
+```
+<!-- /hint -->
+
+<!-- solution -->
+Am Anfang stehen statt `frontier` diese Zeilen. Die Map mit den Abständen
+nennt die Lösung `costs` statt `metres`, weil später, beim Reisen mit dem
+Rad oder dem Auto, auch Sekunden darin stehen:
+
+<!-- page-code: own -->
+```java
+Map<String, Double> costs = new HashMap<>(Map.of(start, 0.0));
+Map<String, String> previous = new HashMap<>();
+previous.put(start, null);
+Set<String> done = new HashSet<>();
+MinHeap heap = new MinHeap();
+heap.push(0, start);
+List<String> visited = new ArrayList<>();
+```
+
+Und die Schleife:
+
+<!-- page-code: own -->
+```java
+while (!heap.isEmpty()) {
+    MinHeap.Entry entry = heap.pop();
+    String node = entry.value();
+    if (done.contains(node)) continue;
+    done.add(node);
+    visited.add(node);
+    if (node.equals(goal)) break;
+    for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+        double total = entry.priority() + edge.cost();
+        if (costs.containsKey(edge.to()) && costs.get(edge.to()) <= total) continue;
+        costs.put(edge.to(), total);
+        previous.put(edge.to(), node);
+        heap.push(total, edge.to());
+    }
+}
+```
+<!-- /solution -->
+<!-- /language -->
 
 _task(dijkstra-heap)
 
@@ -842,10 +1071,19 @@ Prüfe `dijkstra` mit der Aufgabe darüber, speichere und such den Weg zur Pfaue
 # Die Lösung aller Schritte, der Server neu gestartet
 write-file: ruby/routes.rb <- file:loesung/routes.rb
 write-file: python/routes.py <- file:loesung/routes.py
+write-file: dart/routes.dart <- file:loesung/dart/routes.dart
+write-file: javascript/routes.js <- file:loesung/javascript/routes.js
+write-file: java/Routes.java <- file:loesung/java/Routes.java
 check-task: heap
 check-task: dijkstra
 check-task: heap python
 check-task: dijkstra python
+check-task: heap dart
+check-task: dijkstra-heap dart
+check-task: heap javascript
+check-task: dijkstra-heap javascript
+check-task: heap java
+check-task: dijkstra-heap java
 terminal-open
 press: Control+C
 terminal-wait-for-prompt
@@ -887,6 +1125,30 @@ heap.push(total + estimate(neighbour), neighbour)
 
 `estimate` ist eine kleine Funktion für die Luftlinie, mit deinem `distance` und der Lage des Ziels, `graph['nodes'][goal]`. Du kannst sie innerhalb von `a_star` mit `def` schreiben.
 <!-- /language -->
+<!-- language: dart -->
+<!-- page-code: own -->
+```dart
+heap.push(total + estimate(edge.to), edge.to);
+```
+
+`estimate` ist eine kleine Funktion für die Luftlinie, mit deinem `distance` und der Lage des Ziels, `graph.nodes[goal]`. In Dart darf sie innerhalb von `aStar` stehen: `double estimate(String id) { … }`.
+<!-- /language -->
+<!-- language: javascript -->
+<!-- page-code: own -->
+```javascript
+heap.push(total + estimate(neighbour), neighbour);
+```
+
+`estimate` ist eine kleine Funktion für die Luftlinie, mit deinem `distance` und der Lage des Ziels, `graph.nodes[goal]`. Du kannst sie innerhalb von `aStar` schreiben: `const estimate = (id) => …`.
+<!-- /language -->
+<!-- language: java -->
+<!-- page-code: own -->
+```java
+heap.push(total + estimate(graph, edge.to(), goal), edge.to());
+```
+
+`estimate` ist eine kleine Methode für die Luftlinie, neben `aStar` in `Routes`, mit deinem `distance` und der Lage des Ziels, `graph.nodes.get(goal)`.
+<!-- /language -->
 
 _uses(a-stern)
 
@@ -895,6 +1157,9 @@ _task(astern)
 <!-- tutorial-step
 check-task: astern
 check-task: astern python
+check-task: astern dart
+check-task: astern javascript
+check-task: astern java
 -->
 
 Wie viel A* spart, zeigt ein Weg quer durch die Stadt, zum Brandenburger Tor. Dafür braucht der Server drei Bezirke: Steglitz-Zehlendorf, Tempelhof-Schöneberg und Mitte. Halte ihn an und starte ihn so:
@@ -952,7 +1217,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar
 Derselbe Weg, 8 km, aber A* besucht nur ein Zehntel der Knoten: ein Band zum Ziel hin statt eines Kreises, und ist darum zehnmal so schnell fertig. Mit `AREA=berlin` hast du die ganze Stadt, 1,3 Millionen Knoten. Das Lesen dauert dann gut eine halbe Minute, aber A* findet auch dort einen Weg in Sekunden.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Mach die Schätzung absichtlich zu groß: Schreib in <code>a_star</code> in der Zeile mit <code>heap.push</code> ein <code>2 *</code> vor die Schätzung, starte den Server neu und such den Weg zum Brandenburger Tor noch einmal mit A*. Besucht A* jetzt weniger Knoten? Ist der Weg noch so kurz wie mit Dijkstra? Und mit <code>0 *</code> statt <code>2 *</code>: Was für eine Suche ist A* dann? Stell die Zeile danach wieder her.
+<strong>Ausprobieren:</strong> Mach die Schätzung absichtlich zu groß: Schreib in <code>a_star</code> (oder <code>aStar</code>) in der Zeile mit <code>heap.push</code> ein <code>2 *</code> vor die Schätzung, starte den Server neu und such den Weg zum Brandenburger Tor noch einmal mit A*. Besucht A* jetzt weniger Knoten? Ist der Weg noch so kurz wie mit Dijkstra? Und mit <code>0 *</code> statt <code>2 *</code>: Was für eine Suche ist A* dann? Stell die Zeile danach wieder her.
 </div>
 
 ## Zu Fuß, mit dem Rad, mit dem Auto
@@ -965,14 +1230,33 @@ Wie schnell man wo vorankommt, steht in `routes.rb` in der Tabelle `SPEEDS`, in 
 <!-- language: python -->
 Wie schnell man wo vorankommt, steht in `routes.py` in der Tabelle `SPEEDS`, in km/h: `SPEEDS['car']['residential']` ist 25, in einer Wohnstraße fährt man mit dem Auto im Schnitt 25 km/h. Fehlt eine Art von Weg in der Tabelle, darf man ihn so nicht benutzen.
 <!-- /language -->
+<!-- language: dart -->
+Wie schnell man wo vorankommt, steht in `routes.dart` in der Map `speeds`, in km/h: `speeds['car']!['residential']` ist 25, in einer Wohnstraße fährt man mit dem Auto im Schnitt 25 km/h. Fehlt eine Art von Weg in der Map, darf man ihn so nicht benutzen.
+<!-- /language -->
+<!-- language: javascript -->
+Wie schnell man wo vorankommt, steht in `routes.js` im Objekt `SPEEDS`, in km/h: `SPEEDS.car.residential` ist 25, in einer Wohnstraße fährt man mit dem Auto im Schnitt 25 km/h. Fehlt eine Art von Weg im Objekt, darf man ihn so nicht benutzen.
+<!-- /language -->
+<!-- language: java -->
+Wie schnell man wo vorankommt, steht in `Routes.java` in der Map `SPEEDS`, in km/h: `SPEEDS.get("car").get("residential")` ist 25, in einer Wohnstraße fährt man mit dem Auto im Schnitt 25 km/h. Fehlt eine Art von Weg in der Map, darf man ihn so nicht benutzen.
+<!-- /language -->
 
-`build_travel_graph` ist fast `build_graph`, mit drei Unterschieden:
+`build_travel_graph` (in Dart, JavaScript und Java `buildTravelGraph`) ist fast `build_graph`, mit drei Unterschieden:
 
-1. Ein Weg, dessen Art in `SPEEDS[mode]` fehlt, kommt nicht in den Graphen.
+1. Ein Weg, dessen Art in `SPEEDS[mode]` fehlt (in Dart `speeds[mode]`), kommt nicht in den Graphen.
 2. An jeder Kante stehen Sekunden: die Meter geteilt durch das Tempo in Metern je Sekunde, also km/h geteilt durch 3,6.
 3. Für das Auto gelten die Einbahnstraßen: Bei `yes` gibt es nur die Kante in Richtung der Punkte, bei `-1` nur die zurück. Zu Fuß und mit dem Rad gibt es beide.
 
 Dazu gehört in den Graphen noch `fastest`, das größte Tempo der Tabelle in Metern je Sekunde. A* braucht es: Die Luftlinie in Metern geteilt durch `fastest` ist eine Schätzung in Sekunden, die nie zu groß ist, denn schneller als mit dem größten Tempo kommt man nirgends voran. Teile darum in `a_star` die Luftlinie durch `fastest`, wenn der Graph es hat, und sonst durch 1.
+
+<!-- language: dart -->
+In Dart hat jeder `Graph` ein `fastest`, das 1 ist, bis `buildTravelGraph` es setzt. In `aStar` teilst du darum immer durch `graph.fastest`.
+<!-- /language -->
+<!-- language: javascript -->
+`buildGraph` gibt kein `fastest` zurück. In `aStar` teilst du darum durch `graph.fastest || 1`.
+<!-- /language -->
+<!-- language: java -->
+In Java hat jeder `Graph` ein `fastest`, das 1 ist, bis `buildTravelGraph` es setzt. In `aStar` oder `estimate` teilst du darum immer durch `graph.fastest`.
+<!-- /language -->
 
 _task(reisen)
 
@@ -981,6 +1265,9 @@ Dijkstra und A* musst du sonst nicht ändern: Sie zählen zusammen, was an den K
 <!-- tutorial-step
 check-task: reisen
 check-task: reisen python
+check-task: reisen dart
+check-task: reisen javascript
+check-task: reisen java
 -->
 
 <div class='gallery columns-2'>
@@ -1015,7 +1302,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar | car
 Schau dir an, wie viele Knoten A* mit dem Auto besucht: Zu Fuß ist es ein Zehntel dessen, was Dijkstra besucht, mit dem Auto fast die Hälfte. Die Schätzung rechnet mit 90 km/h, dem Tempo auf der Autobahn, aber in der Stadt kommt man viel langsamer voran. Je weiter die Schätzung unter dem wirklichen Weg liegt, desto weniger hilft sie.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Setz in <code>SPEEDS</code> beim Auto das Tempo für <code>motorway</code> von 90 auf 250 und speichere. Besucht A* mit dem Auto jetzt mehr oder weniger Knoten als vorher, und warum? Ändert sich der Weg? Stell die 90 danach wieder her.
+<strong>Ausprobieren:</strong> Setz in <code>SPEEDS</code> (in Dart <code>speeds</code>) beim Auto das Tempo für <code>motorway</code> von 90 auf 250 und speichere. Besucht A* mit dem Auto jetzt mehr oder weniger Knoten als vorher, und warum? Ändert sich der Weg? Stell die 90 danach wieder her.
 </div>
 
 ## Eine Rundfahrt
@@ -1040,6 +1327,9 @@ _task(rundfahrt)
 <!-- tutorial-step
 check-task: rundfahrt
 check-task: rundfahrt python
+check-task: rundfahrt dart
+check-task: rundfahrt javascript
+check-task: rundfahrt java
 -->
 
 Die sichere Art, die beste Reihenfolge zu finden: alle ausprobieren. Der Startort steht fest, die anderen kommen in jeder möglichen Reihenfolge dahinter. Bei fünf Orten sind das 4 · 3 · 2 · 1 = 24, bei neun schon 40 320, bei zwanzig mehr, als ein Computer in deinem Leben ausprobieren kann.
@@ -1050,12 +1340,24 @@ Die sichere Art, die beste Reihenfolge zu finden: alle ausprobieren. Der Startor
 <!-- language: python -->
 `itertools.permutations(range(1, len(costs)))` gibt alle Reihenfolgen der Orte außer dem Startort, `min` mit `key=` die mit der kleinsten Länge.
 <!-- /language -->
+<!-- language: dart -->
+Eine fertige Funktion für alle Reihenfolgen hat Dart nicht. Du schreibst sie selbst, als Funktion, die sich selbst aufruft: Sie bekommt die Reihenfolge bis jetzt und die Orte, die noch fehlen, und hängt jeden davon einmal an. Fehlt keiner mehr, ist eine Reihenfolge fertig.
+<!-- /language -->
+<!-- language: javascript -->
+Eine fertige Funktion für alle Reihenfolgen hat JavaScript nicht. Du schreibst sie selbst, als Funktion, die sich selbst aufruft: Sie bekommt die Reihenfolge bis jetzt und die Orte, die noch fehlen, und hängt jeden davon einmal an. Fehlt keiner mehr, ist eine Reihenfolge fertig.
+<!-- /language -->
+<!-- language: java -->
+Eine fertige Methode für alle Reihenfolgen hat Java nicht. Du schreibst sie selbst, als Methode, die sich selbst aufruft: Sie bekommt die Reihenfolge bis jetzt und die Orte, die noch fehlen, und hängt jeden davon einmal an. Fehlt keiner mehr, ist eine Reihenfolge fertig.
+<!-- /language -->
 
 _task(alle-reihenfolgen)
 
 <!-- tutorial-step
 check-task: alle-reihenfolgen
 check-task: alle-reihenfolgen python
+check-task: alle-reihenfolgen dart
+check-task: alle-reihenfolgen javascript
+check-task: alle-reihenfolgen java
 -->
 
 Schneller, aber ohne Garantie: der **nächste Nachbar**. Vom Startort aus geht es immer zu dem Ort, der am nächsten liegt und an dem die Rundfahrt noch nicht war.
@@ -1065,6 +1367,9 @@ _task(naechster-nachbar)
 <!-- tutorial-step
 check-task: naechster-nachbar
 check-task: naechster-nachbar python
+check-task: naechster-nachbar dart
+check-task: naechster-nachbar javascript
+check-task: naechster-nachbar java
 -->
 
 Der nächste Nachbar macht oft einen Fehler: Am Anfang nimmt er die kurzen Wege, am Ende bleiben die langen übrig, und die Rundfahrt kreuzt sich selbst. **2-opt** repariert das: Es nimmt ein Stück der Reihenfolge und dreht es um. Wird die Rundfahrt dadurch kürzer, bleibt es dabei. Das probiert es für jedes Stück, und so lange, bis kein Umdrehen mehr hilft.
@@ -1081,6 +1386,9 @@ _task(zwei-opt)
 <!-- tutorial-step
 check-task: zwei-opt
 check-task: zwei-opt python
+check-task: zwei-opt dart
+check-task: zwei-opt javascript
+check-task: zwei-opt java
 -->
 
 Wechsle auf der Seite zu »Rundfahrt«, füge Orte hinzu und probiere die drei Arten aus. Der erste Ort ist der Anfang. Ist die Rundfahrt berechnet, stehen die Orte in der Liste und auf der Karte in der Reihenfolge, in der sie besucht werden:
