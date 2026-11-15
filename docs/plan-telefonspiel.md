@@ -280,7 +280,10 @@ Workspace: telefon spiel.rb ── the same game code (core/game.py) ───�
   the packets without a word) nor over AudioSocket (it reads them as
   8 kHz). G.722 keeps the 16 kHz; a trunk that offers only G.711 gets it
   translated by Asterisk. G.722's RTP clock runs at 8000 per second, so
-  the timestamp grows by 160 per 20 ms frame.
+  the timestamp grows by 160 per 20 ms frame. ICE is off (`rtp.conf`):
+  with it on, Asterisk 20.15 and 22 start an ICE session for the External
+  Media stream too and drop every packet the runner sends, so the caller
+  hears nothing (14 and 15 November 2026; 20.11 still took them).
 - **The mixer** (`src/phone/runner/mixer.py`): looping music, speech on
   top, the music at a quarter of its volume under speech (down in 80 ms,
   back in 400 ms); keys pressed during a sentence wait for the game's next
@@ -493,7 +496,8 @@ loop.
 - tests: `src/phone/test/test_mixer.py` (ducking, speech, G.722 packets),
   `test_calls.py` (a call's line) and `src/phone/test/e2e.sh` (a whole
   call: menu, key 1, three guesses, the runner's log and the calls' lines
-  checked, the recording kept). The test telephone sends
+  checked, that the telephone heard at least 30 s of sound, the recording
+  kept). The test telephone sends
   keys as RFC 4733 events and needs a key release after each key (0x04 on
   baresip's UDP console), or each key arrives only with the next one.
 
