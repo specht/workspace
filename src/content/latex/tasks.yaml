@@ -23,6 +23,26 @@ tasks:
       - when: { problem: missing }
         say: Es gibt noch keine `facharbeit/facharbeit.pdf`. Heißt deine Datei genau `facharbeit.tex` und liegt sie im Ordner `/workspace/facharbeit`? Ist LaTeX Workshop installiert?
 
+  - id: zeilenende
+    title: Wo die Zeile endet
+    prediction: true
+    prompt: Was macht LaTeX aus dem Ende einer Zeile mitten in einem Absatz des Quelltexts?
+    check:
+      type: choice
+      options:
+        - Ein Leerzeichen, umbrechen tut LaTeX selbst.
+        - Im PDF beginnt dort auch eine neue Zeile.
+        - Dort beginnt ein neuer Absatz.
+        - Nichts, die Wörter davor und danach stoßen aneinander.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Im Quelltext endet die erste Zeile hinter »Fadenpendel«. Wo endet die erste Zeile im PDF?
+      - when: { picked: 2 }
+        say: Unter »1 Einleitung« steht im PDF ein einziger Absatz, obwohl er im Quelltext drei Zeilen hat.
+      - when: { picked: 3 }
+        say: Im Quelltext endet die zweite Zeile hinter »untersuche«. Steht im PDF »untersucheich« oder »untersuche ich«?
+
   - id: sonderzeichen
     title: Prozent und Und
     prompt: |

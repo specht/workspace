@@ -122,9 +122,15 @@ Die Datei hat zwei Teile:
 - Die **Präambel** bis `\begin{document}` sagt, was für ein Dokument es ist: ein Artikel in 12 pt auf A4, auf Deutsch (für die Silbentrennung und Wörter wie »Inhaltsverzeichnis«), in der Schrift »TeX Gyre Termes«, die aussieht wie Times. Die erste Zeile sorgt dafür, dass LaTeX Workshop mit LuaLaTeX übersetzt, das moderne Schriften versteht.
 - Zwischen `\begin{document}` und `\end{document}` steht der Text. `\section{…}` ist eine Überschrift, die LaTeX selbst nummeriert, `\emph{…}` hebt ein Wort hervor.
 
-Wo eine Zeile im Quelltext endet, ist LaTeX egal; es setzt den Absatz selbst und trennt Wörter richtig. Einen neuen Absatz beginnst du mit einer **Leerzeile**.
+Der Absatz unter der Überschrift steht im Quelltext auf drei Zeilen. Vergleich im PDF, wo seine Zeilen enden und was zwischen »Fadenpendel« und »war« steht.
 
 _task(erstes-pdf)
+
+_task(zeilenende)
+
+<!-- after: zeilenende -->
+Wo eine Zeile im Quelltext endet, ist LaTeX egal: Es macht daraus ein Leerzeichen, setzt den Absatz selbst und trennt Wörter richtig. Einen neuen Absatz beginnst du mit einer **Leerzeile**.
+<!-- /after -->
 
 Ein paar Zeichen haben in LaTeX eine eigene Bedeutung: `%` beginnt einen Kommentar, `&` trennt Spalten in Tabellen, `$` beginnt eine Formel. Willst du sie im Text haben, schreibst du einen `\` davor: `50 \%`. Mehr dazu unter [Sonderzeichen](/reference/latex#sonderzeichen).
 
