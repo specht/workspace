@@ -14,6 +14,11 @@ Lernende schalten Gatter, Addierer, Flipflops und ein kleines Rechenwerk auf der
 <li><b>2. Doppelstunde:</b> Volladdierer, Addierer für 4 Bit mit der Vorhersage zum Überlauf, RS- und D-Flipflop.</li>
 <li><b>3. Doppelstunde oder für Schnelle:</b> das Rechenwerk: Subtrahieren mit dem Addierer, die Flags, die Aufgabe <code>alu</code> und der Vergleich mit der CPU Sandbox.</li>
 </ul></td></tr>
+<tr><th>Ohne Rechner</th><td><ul>
+<li><b>Vor »Gatter«, 10 Minuten, sieben Lernende vorn:</b> Zwei sind die Eingänge a und b und halten je eine Karte hoch, 0 oder 1. Vier stehen dahinter als UND, ODER, XOR und NICHT (das NICHT schaut nur auf a), jede Person mit einer Karte, auf der ihre Regel steht, und halten ihre Antwort hoch, sobald sich ein Eingang ändert. Die siebte Person steht hinter dem UND, spielt ein zweites NICHT und schaut nur auf das UND. Die Klasse ruft die vier Kombinationen von a und b aus und schreibt für jedes Gatter mit, was es zeigt.</li>
+<li><b>Was sichtbar wird:</b> Ein Gatter kennt nur seine Eingänge, nicht die ganze Schaltung; vier Kombinationen beschreiben ein Gatter vollständig; und ein NICHT hinter einem UND ist ein neues Gatter.</li>
+<li><b>Zurück zur Seite:</b> In <a href='#0-und-1-auf-einer-leitung'>»0 und 1 auf einer Leitung«</a> zeigt das Widget »Gatter« dieselben vier, und die mitgeschriebenen Zeilen sind ihre Wahrheitstabellen. Das UND mit dem NICHT dahinter ist das NAND aus <a href='#alles-aus-nand'>»Alles aus NAND«</a>. Einen Addierer aus Personen erst nach der Aufgabe »Summe und Übertrag« stellen, sonst verrät er ihre Antwort.</li>
+</ul></td></tr>
 <tr><th>Dateien</th><td>Keine: Der Code steht in den Aufgaben auf der Seite, der Workspace muss nicht laufen.</td></tr>
 <tr><th>Prüfung</th><td><ul>
 <li>Sieben Aufgaben mit Code (<code>function</code>): Die Prüfung ruft die Funktionen mit allen Kombinationen der Eingänge auf, beim Addierer und beim Rechenwerk mit 10 und 15 Paaren.</li>
