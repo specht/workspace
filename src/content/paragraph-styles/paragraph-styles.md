@@ -155,6 +155,10 @@ bearbeiten…*. Dort stellst du die *Schriftfarbe* ein.
 **Jetzt bist du dran:** Mach »Überschrift 1« grün. Wenn eine Überschrift blau
 bleibt, hat sie noch Formatierung von Hand.
 
+<div class='history' id='history-scribe'>
+<p><strong>Was es ist, nicht wie es aussieht</strong>, 1980. Brian Reid schrieb an der Carnegie Mellon University in Pittsburgh das Programm Scribe. Wer damit einen Text setzte, sagte nur, was ein Stück ist, eine Überschrift, eine Aufzählung, ein Zitat; wie das aussieht, stand an anderer Stelle, einmal für alle Überschriften. Diese Trennung von Inhalt und Aussehen war damals neu. LaTeX hat die Idee übernommen, und Webseiten arbeiten bis heute so: HTML sagt, was ein Stück ist, CSS, wie es aussieht.</p>
+</div>
+
 ## Prüfen
 
 _task(tagebuch)

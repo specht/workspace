@@ -101,6 +101,10 @@ zwischen Posten und Preis durch einen einzigen Tab. Markier dann alle fünf
 Zeilen und setz einen rechtsbündigen Tabstopp bei 16 cm, mit Punkten als
 Füllzeichen.
 
+<div class='history' id='history-tabulator'>
+<p><strong>Die Taste für Tabellen</strong>, um 1900. Auf einer Schreibmaschine rückte jeder Anschlag den Wagen mit dem Papier um ein Zeichen weiter. Wer eine Tabelle tippte, drückte für jede Spalte wieder und wieder die Leertaste und die Rücktaste. Um 1900 kamen Schreibmaschinen mit einem Tabulator: kleine Klammern auf einer Schiene, die man von Hand an die Stellen der Spalten steckte, und eine Taste, auf die hin der Wagen bis zur nächsten Klammer sprang. Daher der Name: <em>Tab</em> kommt von <em>tabulate</em>, »in eine Tabelle bringen«. Ein Patent von 1903 sah sogar eigene Tasten für Einer, Zehner und Hunderter vor, damit die Stellen von Zahlen genau untereinander standen.</p>
+</div>
+
 ## Prüfen
 
 _task(packliste)
