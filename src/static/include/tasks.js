@@ -1340,8 +1340,11 @@
         };
     }
 
+    // deeper than any puzzle needs; more only makes a narrow column of text on a phone
+    const PARSONS_MAX_LEVEL = 4;
+
     function parsonsLevel(li, level) {
-        li.dataset.level = String(Math.max(0, Math.min(8, level)));
+        li.dataset.level = String(Math.max(0, Math.min(PARSONS_MAX_LEVEL, level)));
         li.style.setProperty('--level', li.dataset.level);
     }
 
@@ -1469,7 +1472,9 @@
         function draw() {
             if (!drag || !drag.lifted) return;
             const box = list.getBoundingClientRect();
-            const x = drag.px - box.left - drag.grabX - drag.left;
+            // free, but within the list: on a phone it would leave the screen
+            const slack = 24;
+            const x = Math.max(-drag.left - slack, Math.min(box.width - drag.width - drag.left + slack, drag.px - box.left - drag.grabX - drag.left));
             const y = drag.py - box.top - drag.grabY - drag.top;
             // the tilt follows the sideways speed and settles when the pointer rests
             const target = parsonsCalm.matches ? 0 : Math.max(-4, Math.min(4, drag.vx * 0.6));
@@ -1498,6 +1503,7 @@
             li.style.transition = 'none';
             li.classList.add('parsons-dragging');
             drag.left = r.left - box.left;
+            drag.width = r.width;
             drag.top = r.top - box.top;
             drag.lifted = true;
             draw();
@@ -1512,7 +1518,7 @@
             let next = drag.slot.nextElementSibling;
             if (next === drag.li) next = next.nextElementSibling;
             if (below !== next) parsonsSlide(list, () => list.insertBefore(drag.slot, below), drag.li);
-            const level = Math.max(0, Math.min(8, drag.level + Math.round((drag.px - drag.x) / drag.step)));
+            const level = Math.max(0, Math.min(PARSONS_MAX_LEVEL, drag.level + Math.round((drag.px - drag.x) / drag.step)));
             drag.slot.style.setProperty('--level', String(level));
             drag.target = level;
         }
@@ -1525,8 +1531,10 @@
             e.preventDefault();
             // one step of indentation, as wide as in the CSS (narrower on a phone)
             const step = (parseFloat(getComputedStyle(li).fontSize) || 16) * (window.matchMedia('(max-width: 500px)').matches ? 1.2 : 2);
+            // a finger needs a longer way sideways for one step: it wanders while it drags
+            const sideways = e.pointerType === 'mouse' ? step : Math.max(step, 48);
             const level = Number(li.dataset.level);
-            drag = { li: li, x: e.clientX, y: e.clientY, px: e.clientX, py: e.clientY, level: level, target: level, step: step,
+            drag = { li: li, x: e.clientX, y: e.clientY, px: e.clientX, py: e.clientY, level: level, target: level, step: sideways,
                      id: e.pointerId, lifted: false, tilt: 0, vx: 0, t: performance.now() };
             try { li.setPointerCapture(e.pointerId); } catch (error) { /* a synthetic event */ }
         });
