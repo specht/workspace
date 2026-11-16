@@ -897,6 +897,21 @@ class Main < Sinatra::Base
             end
         end
 
+        # The usage numbers on the admins' start page (activity_usage), made
+        # again every ten minutes (USAGE_SECONDS) here instead of by the
+        # request that comes after them.
+        Thread.new do
+            loop do
+                sleep(DEVELOPMENT ? 60 : 600)
+                begin
+                    Main.load_invitations
+                    Main.new!.refresh_activity_usage
+                rescue => e
+                    STDERR.puts "Counting how the activities are used failed: #{e.class}: #{e.message}"
+                end
+            end
+        end
+
         # Announced deletions whose date has come, expired share links, the
         # disk, ended groups and »Betrieb« (include/server_health.rb), once
         # an hour (the first time a minute after start in development, to
@@ -3134,13 +3149,19 @@ class Main < Sinatra::Base
     # For admins on the front page: how often each task was solved (correct
     # or handed in, StudentHome::DONE), and by how many people per activity,
     # without admins, teachers and test accounts. Two queries over all
-    # TaskStates, at most every USAGE_SECONDS; nothing new is stored.
+    # TaskStates, made by a thread every USAGE_SECONDS (configure), so that
+    # no request waits for them; a request only reads the last counts, and
+    # only the first after a start makes them itself. Nothing new is stored.
     # { :tasks => { 'activity/id' => solved }, :people => { activity => n } }
     USAGE_SECONDS = 600
     def activity_usage
         @@activity_usage = nil unless defined?(@@activity_usage)
-        return @@activity_usage[:counts] if @@activity_usage && Time.now - @@activity_usage[:at] < USAGE_SECONDS
+        return @@activity_usage[:counts] if @@activity_usage
 
+        refresh_activity_usage
+    end
+
+    def refresh_activity_usage
         excluded = (ADMIN_USERS.to_a + @@teachers.keys + @@test_accounts.keys).uniq
         options = { :done => StudentHome::DONE, :excluded => excluded }
         tasks = neo4j_query(<<~END_OF_QUERY, options).to_h { |row| [row['task'], row['solved'].to_i] }
