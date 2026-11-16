@@ -24,6 +24,7 @@ test('a Parsons puzzle is ordered, indented, checked and kept', async ({ page, e
   const lines = card.locator('.parsons-line');
   // the solution and the two lines that do not belong
   await expect(lines).toHaveCount(solution.length + 2);
+  const shuffled = await lines.evaluateAll((items) => items.map((li) => (li as HTMLElement).dataset.text));
   await expect(card.locator('.parsons-answer')).toBeHidden();
 
   // bring each line of the solution to its place with »nach oben«, indent it
@@ -52,7 +53,15 @@ test('a Parsons puzzle is ordered, indented, checked and kept', async ({ page, e
   await expect(card.locator('.parsons-answer')).toHaveValue(solution.join('\n') + '\n');
   await expect(lines.first()).toHaveAttribute('data-text', solution[0]);
   await expect(lines.nth(solution.length)).toHaveClass(/parsons-skipped/);
-  await page.request.post('/api/task/delete', { data: { task: 'kata-loops/sum-even' } });
+
+  // »Meine Antwort löschen«: the puzzle as it was at the start, shuffled, nothing indented or left out
+  await card.locator('.task-delete').click();
+  await page.locator('#__template_modal .btn-danger').click();
+  await expect(card.locator('.task-delete')).toBeHidden();
+  expect(await lines.evaluateAll((items) => items.map((li) => (li as HTMLElement).dataset.text))).toEqual(shuffled);
+  await expect(card.locator('.parsons-line.parsons-skipped')).toHaveCount(0);
+  await expect(card.locator('.parsons-line:not([data-level="0"])')).toHaveCount(0);
+  expect(await card.locator('.parsons-answer').inputValue()).toBe(shuffled.join('\n') + '\n');
 });
 
 // Dragging with the mouse moves a line; dragging it to the right indents it.
@@ -76,7 +85,12 @@ test('Parsons lines can be dragged with the mouse and with a finger', async ({ b
   await page.mouse.down();
   await page.mouse.move(from.x + 30, to.y + to.height * 0.8, { steps: 8 });
   await page.mouse.move(from.x + 10 + 34, to.y + to.height * 0.8, { steps: 4 });
+  // while dragged the line is lifted out of the list and a slot shows where it lands
+  await expect(card.locator('.parsons-slot')).toHaveCount(1);
+  await expect(card.locator('.parsons-line.parsons-dragging')).toHaveCount(1);
+  await card.screenshot({ path: testInfo.outputPath('dragging.png') });
   await page.mouse.up();
+  await expect(card.locator('.parsons-slot')).toHaveCount(0);
   const after = await texts(card);
   expect(after.indexOf(first)).toBe(3);
   await expect(lines.nth(3)).toHaveAttribute('data-level', '1');

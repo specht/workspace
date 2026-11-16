@@ -6508,6 +6508,7 @@ body.cl-dragging-page * {
 }
 
 .parsons-lines {
+    position: relative;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -6530,11 +6531,28 @@ body.cl-dragging-page * {
 }
 
 .parsons-line.parsons-dragging {
+    position: absolute;
+    z-index: 2;
     cursor: grabbing;
     border-color: var(--bs-primary);
-    box-shadow: 0 0.2em 0.6em rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0.6em 1.4em rgba(0, 0, 0, 0.22);
+    will-change: transform;
+}
+
+/* gliding into its slot after the drag: still above the others */
+.parsons-line.parsons-landing {
     position: relative;
-    z-index: 1;
+    z-index: 2;
+    border-color: var(--bs-primary);
+}
+
+/* where the dragged line lands, indented as it will be */
+.parsons-slot {
+    margin-left: calc(var(--level, 0) * 2em);
+    border: 2px dashed var(--bs-primary-border-subtle);
+    border-radius: 0.4em;
+    background: var(--bs-primary-bg-subtle);
+    transition: margin-left 0.12s ease;
 }
 
 /* the grip: where a finger starts dragging (no scrolling there) */
@@ -6598,6 +6616,10 @@ body.cl-dragging-page * {
         padding-left: calc(0.2em + var(--level, 0) * 1.2em);
     }
 
+    .parsons-slot {
+        margin-left: calc(var(--level, 0) * 1.2em);
+    }
+
     .parsons-code {
         white-space: pre-wrap;
         overflow-wrap: anywhere;
@@ -6609,7 +6631,8 @@ body.cl-dragging-page * {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .parsons-line {
+    .parsons-line,
+    .parsons-slot {
         transition: none;
     }
 }

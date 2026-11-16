@@ -1380,9 +1380,30 @@
             parsonsSkip(li, false);
             placed.push(li);
         });
-        if (placed.length === 0) return; // nothing stored: the shuffled order stays
+        if (placed.length === 0) { parsonsShuffle(card); return; } // nothing stored (or deleted): shuffled again
         rest.forEach((li) => parsonsSkip(li, box.dataset.unused === 'true'));
         placed.concat(rest).forEach((li) => list.appendChild(li));
+        parsonsSync(card);
+    }
+
+    // The starting order: shuffled the same way every time for one person
+    // and card (so a reload or »Meine Antwort löschen« brings the same
+    // puzzle back), nothing indented, nothing left out. The lines slide
+    // there when they stood elsewhere.
+    function parsonsShuffle(card) {
+        const box = card.querySelector('.parsons');
+        const list = box.querySelector('.parsons-lines');
+        const area = card.querySelector('.parsons-answer');
+        // sorted by the server's order first, so the shuffle never depends on the order before it
+        const items = Array.from(list.querySelectorAll('.parsons-line'))
+            .sort((a, b) => Number(a.dataset.index) - Number(b.dataset.index));
+        const random = seededRandom((page.seed || '') + '\n' + card.dataset.task + '\n' + (area.dataset.codeLanguage || ''));
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+        parsonsSlide(list, () => items.forEach((li) => list.appendChild(li)));
+        items.forEach((li) => { parsonsLevel(li, 0); parsonsSkip(li, false); });
         parsonsSync(card);
     }
 
@@ -1391,60 +1412,176 @@
         if (!box || box.dataset.ready) return;
         box.dataset.ready = 'yes';
         const list = box.querySelector('.parsons-lines');
-        const area = card.querySelector('.parsons-answer');
-        const items = Array.from(list.children);
-        const random = seededRandom((page.seed || '') + '\n' + card.dataset.task + '\n' + (area.dataset.codeLanguage || ''));
-        for (let i = items.length - 1; i > 0; i--) {
-            const j = Math.floor(random() * (i + 1));
-            [items[i], items[j]] = [items[j], items[i]];
-        }
-        items.forEach((li) => { parsonsLevel(li, 0); list.appendChild(li); });
-        parsonsSync(card);
+        parsonsShuffle(card);
         list.addEventListener('click', function (e) {
             const button = e.target.closest('.parsons-move');
             if (!button || button.disabled) return;
             const li = button.closest('.parsons-line');
             const move = button.dataset.move;
-            if (move === 'up' && li.previousElementSibling) list.insertBefore(li, li.previousElementSibling);
-            if (move === 'down' && li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+            parsonsSlide(list, function () {
+                if (move === 'up' && li.previousElementSibling) list.insertBefore(li, li.previousElementSibling);
+                if (move === 'down' && li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
+            });
             if (move === 'left') parsonsLevel(li, Number(li.dataset.level) - 1);
             if (move === 'right') parsonsLevel(li, Number(li.dataset.level) + 1);
             if (move === 'skip') parsonsSkip(li, !li.classList.contains('parsons-skipped'));
             button.focus();
             parsonsSync(card);
         });
-        // Dragging, with mouse, finger or pen (Pointer Events): up and down
-        // moves the line, sideways indents it, one step per indentation.
-        // With a finger only from the grip, so that the page still scrolls
-        // when someone swipes over the lines; with a mouse from anywhere on
-        // the line except its buttons.
+        parsonsDrag(card, list);
+    }
+
+    const parsonsCalm = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // The lines that change places slide there (FLIP): where each is seen
+    // before the change, where the change puts it, and a transform that
+    // starts at the old place and runs out. A line still sliding starts
+    // from where it is seen, so quick moves one after another stay smooth.
+    function parsonsSlide(list, change, skip) {
+        if (parsonsCalm.matches) { change(); return; }
+        const items = Array.from(list.children).filter((li) => li !== skip);
+        const before = new Map(items.map((li) => [li, li.getBoundingClientRect().top]));
+        change();
+        items.forEach((li) => {
+            li.style.transition = 'none';
+            li.style.transform = '';
+            const dy = before.get(li) - li.getBoundingClientRect().top;
+            if (Math.abs(dy) < 0.5) { li.style.transition = ''; return; }
+            li.style.transform = 'translateY(' + dy + 'px)';
+            li.getBoundingClientRect(); // the old place is drawn once
+            li.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), padding-left 0.12s ease';
+            li.style.transform = '';
+        });
+    }
+
+    // Dragging, with mouse, finger or pen (Pointer Events). The line is
+    // lifted out of the list and follows the pointer freely, a little
+    // tilted while it moves; a dashed slot shows where it lands, indented
+    // one step per indentation the pointer has moved sideways, and the
+    // other lines slide out of its way. On release it glides into the slot.
+    // With a finger only from the grip, so that the page still scrolls
+    // when someone swipes over the lines; with a mouse from anywhere on
+    // the line except its buttons. The order counts only on release.
+    function parsonsDrag(card, list) {
         let drag = null;
+        const rest = () => Array.from(list.children).filter((li) => li !== drag.li && li !== drag.slot);
+
+        function draw() {
+            if (!drag || !drag.lifted) return;
+            const box = list.getBoundingClientRect();
+            const x = drag.px - box.left - drag.grabX - drag.left;
+            const y = drag.py - box.top - drag.grabY - drag.top;
+            // the tilt follows the sideways speed and settles when the pointer rests
+            const target = parsonsCalm.matches ? 0 : Math.max(-4, Math.min(4, drag.vx * 0.6));
+            drag.tilt += (target - drag.tilt) * 0.25;
+            drag.vx *= 0.85;
+            drag.li.style.transform = 'translate(' + x + 'px, ' + y + 'px) rotate(' + drag.tilt.toFixed(2) + 'deg) scale(1.02)';
+            drag.frame = requestAnimationFrame(draw);
+        }
+
+        function lift() {
+            const li = drag.li;
+            const r = li.getBoundingClientRect();
+            const box = list.getBoundingClientRect();
+            drag.grabX = drag.x - r.left;
+            drag.grabY = drag.y - r.top;
+            const slot = document.createElement('li');
+            slot.className = 'parsons-slot';
+            slot.setAttribute('aria-hidden', 'true');
+            slot.style.height = r.height + 'px';
+            slot.style.setProperty('--level', li.dataset.level);
+            drag.slot = slot;
+            list.insertBefore(slot, li);
+            li.style.width = r.width + 'px';
+            li.style.left = (r.left - box.left) + 'px';
+            li.style.top = (r.top - box.top) + 'px';
+            li.style.transition = 'none';
+            li.classList.add('parsons-dragging');
+            drag.left = r.left - box.left;
+            drag.top = r.top - box.top;
+            drag.lifted = true;
+            draw();
+        }
+
+        function follow() {
+            const box = list.getBoundingClientRect();
+            const middle = drag.py - box.top - drag.grabY + drag.li.offsetHeight / 2;
+            // the slot goes before the first other line whose middle is below the dragged one's
+            // (measured where the lines stand, not where they are seen sliding)
+            const below = rest().find((li) => middle < li.offsetTop + li.offsetHeight / 2) || null;
+            let next = drag.slot.nextElementSibling;
+            if (next === drag.li) next = next.nextElementSibling;
+            if (below !== next) parsonsSlide(list, () => list.insertBefore(drag.slot, below), drag.li);
+            const level = Math.max(0, Math.min(8, drag.level + Math.round((drag.px - drag.x) / drag.step)));
+            drag.slot.style.setProperty('--level', String(level));
+            drag.target = level;
+        }
+
         list.addEventListener('pointerdown', function (e) {
             const li = e.target.closest('.parsons-line');
-            if (!li || e.target.closest('.parsons-move') || card.classList.contains('task-logged-out')) return;
+            if (!li || drag || e.target.closest('.parsons-move') || card.classList.contains('task-logged-out')) return;
             if (e.pointerType !== 'mouse' && !e.target.closest('.parsons-grip')) return;
             if (e.button !== undefined && e.button > 0) return;
             e.preventDefault();
             // one step of indentation, as wide as in the CSS (narrower on a phone)
             const step = (parseFloat(getComputedStyle(li).fontSize) || 16) * (window.matchMedia('(max-width: 500px)').matches ? 1.2 : 2);
-            drag = { li: li, x: e.clientX, level: Number(li.dataset.level), step: step, id: e.pointerId };
-            li.classList.add('parsons-dragging');
+            const level = Number(li.dataset.level);
+            drag = { li: li, x: e.clientX, y: e.clientY, px: e.clientX, py: e.clientY, level: level, target: level, step: step,
+                     id: e.pointerId, lifted: false, tilt: 0, vx: 0, t: performance.now() };
             try { li.setPointerCapture(e.pointerId); } catch (error) { /* a synthetic event */ }
         });
         window.addEventListener('pointermove', function (e) {
             if (!drag || e.pointerId !== drag.id) return;
             e.preventDefault();
-            // the line goes before the first other line whose middle is below the pointer
-            const others = Array.from(list.children).filter((li) => li !== drag.li);
-            const below = others.find((li) => { const r = li.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; });
-            if (below !== drag.li.nextElementSibling || (!below && list.lastElementChild !== drag.li)) list.insertBefore(drag.li, below || null);
-            parsonsLevel(drag.li, drag.level + Math.round((e.clientX - drag.x) / drag.step));
+            const now = performance.now();
+            drag.vx = drag.vx * 0.5 + (e.clientX - drag.px) / Math.max(8, now - drag.t) * 8;
+            drag.t = now;
+            drag.px = e.clientX;
+            drag.py = e.clientY;
+            // a click that wobbles a pixel or two is no drag
+            if (!drag.lifted && Math.hypot(drag.px - drag.x, drag.py - drag.y) < 4) return;
+            if (!drag.lifted) lift();
+            follow();
         }, { passive: false });
+        // scrolling while dragging (a mouse wheel): the slot follows the line
+        window.addEventListener('scroll', function () { if (drag && drag.lifted) follow(); }, { passive: true });
+
         const drop = function (e) {
             if (!drag || e.pointerId !== drag.id) return;
-            drag.li.classList.remove('parsons-dragging');
+            const d = drag;
             drag = null;
+            cancelAnimationFrame(d.frame);
+            if (!d.lifted) return;
+            const li = d.li;
+            const from = li.getBoundingClientRect();
+            const tilt = d.tilt;
+            // into the slot at once, so the order is the new one; then it glides there
+            list.insertBefore(li, d.slot);
+            d.slot.remove();
+            li.style.width = li.style.left = li.style.top = '';
+            li.style.transform = '';
+            li.classList.remove('parsons-dragging');
+            if (parsonsCalm.matches) {
+                li.style.transition = '';
+                parsonsLevel(li, d.target);
+                parsonsSync(card);
+                return;
+            }
+            const to = li.getBoundingClientRect();
+            li.classList.add('parsons-landing');
+            li.style.transform = 'translate(' + (from.left - to.left) + 'px, ' + (from.top - to.top) + 'px) rotate(' + tilt + 'deg) scale(1.02)';
+            li.getBoundingClientRect();
+            // a small overshoot, as if it clicked into place; the indentation glides with it
+            li.style.transition = 'transform 0.32s cubic-bezier(0.3, 1.45, 0.5, 1), padding-left 0.2s ease, box-shadow 0.32s ease';
+            li.style.transform = '';
+            parsonsLevel(li, d.target);
             parsonsSync(card);
+            li.addEventListener('transitionend', function done(t) {
+                if (t.propertyName !== 'transform') return;
+                li.removeEventListener('transitionend', done);
+                li.classList.remove('parsons-landing');
+                li.style.transition = '';
+            });
         };
         window.addEventListener('pointerup', drop);
         window.addEventListener('pointercancel', drop);
