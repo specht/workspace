@@ -35,5 +35,13 @@ test('a trace table is filled in, checked cell by cell and kept', async ({ page,
   await page.reload();
   await expect(card.locator('.task-trace-input').nth(2)).toHaveValue('4');
   await expect(card.locator('.task-trace-input').nth(7)).toHaveValue('5');
-  await page.request.post('/api/task/delete', { data: { task: 'kata-loops/trace-halving' } });
+
+  // »Meine Antwort löschen« empties the fields; the given cells stay
+  await card.locator('.task-delete').click();
+  await page.locator('#__template_modal .btn-danger').click();
+  await expect(card.locator('.task-delete')).toBeHidden();
+  for (let i = 0; i < 8; i++) await expect(card.locator('.task-trace-input').nth(i)).toHaveValue('');
+  await expect(card.locator('.task-trace-given')).toHaveText(['18', '1']);
+  await page.reload();
+  await expect(card.locator('.task-trace-input').nth(2)).toHaveValue('');
 });

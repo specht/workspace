@@ -190,8 +190,8 @@ module TaskCard
                     io << "<p class='parsons-note'>Bring die Zeilen in die richtige Reihenfolge und rück sie ein, wo es nötig ist." \
                           "#{unused ? ' Nicht jede Zeile gehört dazu: Was nicht passt, lässt du weg.' : ''} Ziehen geht auch.</p>"
                     io << "<ol class='parsons-lines' aria-label='Zeilen des Programms'>"
-                    Parsons.shown(task['parsons'], task['parsons_unused']).each do |line|
-                        io << "<li class='parsons-line' data-text='#{h.(line)}' data-level='0'>" \
+                    Parsons.shown(task['parsons'], task['parsons_unused']).each_with_index do |line, index|
+                        io << "<li class='parsons-line' data-text='#{h.(line)}' data-index='#{index}' data-level='0'>" \
                               "<span class='parsons-grip' aria-hidden='true'><i class='bi bi-grip-vertical'></i></span>" \
                               "<code class='parsons-code'>#{h.(line)}</code><span class='parsons-buttons'>" \
                               "<button type='button' class='parsons-move' data-move='up' aria-label='nach oben'><i class='bi bi-arrow-up' aria-hidden='true'></i></button>" \

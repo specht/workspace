@@ -38,3 +38,28 @@ test('the class page counts what the class predicted first', async ({ browser },
   await student.context().close();
   await teacher.context().close();
 });
+
+// A card »Vom Beispiel zur Regel« (a choice with prediction: true): once
+// answered, the rule after it shows; »Meine Antwort löschen« unticks the
+// choice and hides the rule again.
+test('deleting the answer of a rule card resets it and hides the rule again', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(90_000);
+  const task = 'calculator/baum-regel';
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.request.post('/api/task/delete', { data: { task } });
+  await page.goto('/calculator');
+  const card = page.locator(`.task-card[data-task="${task}"]:visible`);
+  const after = page.locator('.after-task[data-after="baum-regel"]');
+  await expect(after).not.toHaveClass(/after-task-shown/);
+  await card.locator('label', { hasText: 'von links nach rechts' }).click();
+  await card.locator('.task-submit').click();
+  await expect(card).toHaveAttribute('data-status', 'wrong');
+  await expect(after).toHaveClass(/after-task-shown/);
+
+  await card.locator('.task-delete').click();
+  await page.locator('#__template_modal .btn-danger').click();
+  await expect(card.locator('.task-delete')).toBeHidden();
+  await expect(card.locator('.form-check-input:checked')).toHaveCount(0);
+  await expect(after).not.toHaveClass(/after-task-shown/);
+  await expect(card).not.toHaveAttribute('data-status', /./);
+});
