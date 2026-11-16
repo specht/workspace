@@ -21,7 +21,21 @@ const group_schools = E.schools || {};
 const my_school = E.mySchool || null;
 
 function exam_title(entry) {
-    return (entry.filename || 'Leistungsüberprüfung').replace(/\.(tar\.gz|tgz|tar)$/i, '');
+    return entry.title || (entry.filename || 'Leistungsüberprüfung').replace(/\.(tar\.gz|tar\.bz2|tgz|tar)$/i, '');
+}
+
+function rename_exam(entry) {
+    const before = exam_title(entry);
+    input_dialog({ title: `»${before}« umbenennen`, label: 'Neuer Name', value: before, confirm: 'Umbenennen', icon: 'bi-pencil' }, function (title) {
+        if (title === before) return true;
+        if (title.length > 100) return false;
+        api_call('/api/test_rename', { tag: entry.tag, title: title }, function (d) {
+            if (!d.success) return;
+            $('#__template_modal').modal('hide');
+            refresh_test_archives();
+        });
+        return false;
+    });
 }
 
 // the teacher's groups that someone taking part in the exam is in, with
@@ -56,7 +70,10 @@ function refresh_test_archives() {
             const title = exam_title(entry);
             const row = $('<tr>').appendTo(tbody);
             const uploaded = entry.ts ? new Date(entry.ts * 1000).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' }) : '';
-            const name_cell = $('<td>').append($('<strong>').text(title))
+            const rename = $(`<button type='button' class='btn btn-link btn-sm p-0 ms-2 exam-rename'><i class='bi bi-pencil'></i></button>`)
+                .attr({ 'aria-label': `${title} umbenennen`, title: 'Umbenennen' });
+            rename.on('click', () => rename_exam(entry));
+            const name_cell = $('<td>').append($('<strong>').text(title)).append(rename)
                 .append($("<div class='small text-body-secondary'>").text(`${uploaded ? 'hochgeladen am ' + uploaded + ', ' : ''}${entry.size}`))
                 .appendTo(row);
             if (!entry.group) {

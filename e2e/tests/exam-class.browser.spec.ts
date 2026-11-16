@@ -91,6 +91,18 @@ test('an exam uploaded for a class: its students take part, one taken out and ba
     await page.unroute('**/api/start_test_demo');
     await page.getByRole('link', { name: 'Zurück zur Klasse' }).click();
     await expect(page).toHaveURL(/\/klasse\?group=.*tab=pruefungen/);
+
+    // renamed: the new name in the row, the file name stays
+    const renamed = `Probe ${Date.now()}`;
+    await page.locator('#table_my_test_archives tr', { hasText: name.replace(/\.tar\.gz$/, '') })
+      .getByRole('button', { name: /umbenennen$/ }).click();
+    await page.locator('#ti_input_dialog').fill(renamed);
+    await page.locator('#ti_input_dialog').press('Enter');
+    await expect(page.locator('#table_my_test_archives tr', { hasText: renamed })).toHaveCount(1);
+    const after = (await (await page.request.post('/api/get_my_test_archives', { data: {} })).json()).entries
+      .find((e: any) => e.tag === tag);
+    expect(after.title).toBe(renamed);
+    expect(after.filename).toBe(name);
   } finally {
     fs.rmSync(archive, { force: true });
     if (tag) await page.request.post('/api/delete_test', { data: { tag } });

@@ -10810,7 +10810,8 @@ tr.row-detail > td {
     padding-top: 0;
 }
 
-.btn.btn-icon .bi {
+.btn.btn-icon .bi,
+.btn.exam-rename .bi {
     margin-right: 0;
 }
 

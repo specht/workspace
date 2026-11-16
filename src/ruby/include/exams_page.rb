@@ -130,6 +130,7 @@ class Main < Sinatra::Base
                 running: row['t'][:running],
                 size: bytes_to_str(row['f'][:size]),
                 filename: row['t'][:filename],
+                title: exam_title(row['t']),
                 ts: row['t'][:ts],
                 group: group,
                 count: row['COUNT(u2)'],
@@ -176,6 +177,26 @@ class Main < Sinatra::Base
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
     end
+    # The name of an exam the teacher gave it (»Umbenennen« beside the
+    # name, exams.js); the file name of the package stays as it was.
+    post '/api/test_rename' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag, :title], :max_value_lengths => { :title => 200 })
+        require_test_owner!(data[:tag])
+        title = data[:title].to_s.gsub(/[[:space:]]+/, ' ').strip
+        halt 400 if title.empty? || title.length > 100
+        neo4j_query('MATCH (t:Test {tag: $tag}) SET t.title = $title;', :tag => data[:tag], :title => title)
+        respond(:ok => true, :title => title)
+    end
+
+    # What an exam is called: the name the teacher gave it, else the file
+    # name of the package without .tar.gz and the like.
+    def exam_title(test)
+        title = test[:title].to_s.strip
+        return title unless title.empty?
+        test[:filename].to_s.sub(/\.(tar\.gz|tar\.bz2|tgz|tbz2?|tar)\z/i, '')
+    end
+
     # An exam uploaded before exams belonged to a class (in the profile)
     # given to one; who takes part stays as it is
     post '/api/test_assign_group' do
@@ -355,7 +376,7 @@ class Main < Sinatra::Base
                            :email => @session_user[:email], :tag => tag).first
         halt 404 unless test
         h = ->(t) { CGI.escapeHTML(t.to_s) }
-        title = test['t'][:filename].to_s.sub(/\.(tar\.gz|tgz|tar\.bz2|tar)\z/i, '')
+        title = exam_title(test['t'])
         group = params['group'].to_s
         back = "/klasse?#{group.empty? ? '' : "group=#{CGI.escape(group)}&"}tab=pruefungen"
         me = (@@invitations[@session_user[:email]] || {})[:name] || @session_user[:email]
@@ -634,7 +655,7 @@ class Main < Sinatra::Base
         end
         FileUtils.chown_R(WORKSPACE_UID, WORKSPACE_GID, dir)
 
-        title = test['t'][:filename].to_s.sub(/\.tar\.(gz|bz2)\z|\.t[gb]z\z/, '')
+        title = exam_title(test['t'])
         title = 'leistungsueberpruefung' if title.strip.empty?
         args = ZipStream.command(WORKSPACE_UID, WORKSPACE_GID, '--skip-hidden', "=#{dir}", *trees)
         @respond_streaming = true
