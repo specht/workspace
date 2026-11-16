@@ -59,6 +59,8 @@ class TestWorkspacePackageTest < Minitest::Test
             File.write(File.join(dir, '.cache', 'Microsoft', 'DeveloperTools', 'deviceid'), "secret\n")
             File.write(File.join(dir, 'src', '.build', 'generated', 'artifact.txt'), "hidden\n")
             File.write(File.join(dir, '.gitignore'), "*.bak\n")
+            File.write(File.join(dir, '.lesshst'), ".less-history-file:\n")
+            File.write(File.join(dir, '.python_history'), "print(1)\n")
             File.binwrite(File.join(dir, 'src', 'binary.dat'), "\x00\x01\x02")
 
             assert_equal(
@@ -261,6 +263,19 @@ class TestWorkspacePackageTest < Minitest::Test
             assert_includes contents, '.workspace/'
             assert_includes contents, '.test_init'
             assert_includes contents, '.test_git_pending'
+        end
+    end
+
+    def test_hidden_files_at_the_top_are_excluded_after_the_package
+        Dir.mktmpdir do |dir|
+            FileUtils.mkdir_p(File.join(dir, '.git', 'info'))
+            TestWorkspacePackage.write_git_exclude(dir)
+            refute_includes File.read(File.join(dir, '.git', 'info', 'exclude')).lines.map(&:chomp), '/.*',
+                            'before the commit, the package\'s .gitignore must still be added'
+            2.times { TestWorkspacePackage.write_hidden_git_exclude(dir) }
+            lines = File.read(File.join(dir, '.git', 'info', 'exclude')).lines.map(&:chomp)
+            assert_equal 1, lines.count('/.*')
+            assert_includes lines, '!/.gitignore'
         end
     end
 

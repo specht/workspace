@@ -19,6 +19,10 @@
         ".config": true,
         ".npm": true,
         ".pub-cache": true,
+        ".dart-tool": true,
+        ".dartServer": true,
+        ".vscode-oss-shared": true,
+        ".lesshst": true,
 
         ".gitconfig": true,
         ".hackschule": true,

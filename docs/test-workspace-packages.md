@@ -143,8 +143,10 @@ bereits entpackte Prüfungen.
 Ohne weitere Konfiguration werden alle rekursiv gefundenen UTF-8-Textdateien
 gedruckt. Binärdateien, versteckte Verzeichnisse auf jeder Ebene (z. B.
 `.cache`, `.git`, `.workspace`, `src/.cache`) sowie interne Workspace-Dateien
-wie `.test_init` werden automatisch ausgelassen. Einzelne versteckte Dateien
-wie `.gitignore` können dagegen gedruckt werden.
+wie `.test_init` werden automatisch ausgelassen, ebenso was Werkzeuge im
+Home-Ordner anlegen (`.lesshst`, `.bash_history`, `.python_history` und andere
+`.*history`, `.wget-hsts`, `.viminfo`). Andere versteckte Dateien wie
+`.gitignore` können dagegen gedruckt werden.
 
 Mit `print.exclude` lassen sich zusätzliche Dateien über Glob-Muster
 ausschließen:
@@ -260,7 +262,14 @@ Repository zu committen (`TestWorkspacePackage.nested_repositories`, höchstens
 
 Workspace-eigene Dateien werden bei `fresh` und `preserve` über
 `.git/info/exclude` ausgeblendet, ohne die vom Lehrer bereitgestellte
-`.gitignore` zu verändern.
+`.gitignore` zu verändern. Nach dem Commit »Ausgangszustand« (bei `preserve`
+gleich nach der Einrichtung) kommt dort `/.*` dazu: Versteckte Dateien und
+Ordner oben im Workspace, die Git noch nicht verfolgt, erscheinen nicht in
+`git status`. Gemeint sind die Caches, die Werkzeuge im Home-Ordner anlegen
+(`.dartServer`, `.dart-tool`, `.lesshst`, `.vscode-oss-shared`). Was das Paket
+mitbringt, ist dann schon verfolgt und bleibt es; eine `.gitignore`,
+`.gitattributes` oder ein `.vscode`, das die Schülerin oder der Schüler anlegt,
+erscheint weiterhin (`write_hidden_git_exclude`).
 
 ## Aus einem Ordner des Workspace
 

@@ -1345,6 +1345,9 @@ class Main < Sinatra::Base
             git.call('add', '-A')
             git.call('commit', '--allow-empty', '-m', 'Ausgangszustand')
         end
+        with_user_files(container_name, '.git/info/exclude') do
+            TestWorkspacePackage.write_hidden_git_exclude(workspace_path)
+        end
 
         FileUtils.rm_f(pending_path)
         with_user_files(container_name, '.test_git_init') do

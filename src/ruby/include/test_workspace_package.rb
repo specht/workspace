@@ -93,6 +93,12 @@ module TestWorkspacePackage
         '.test_init',
         '.test_git_pending',
         '.test_git_init',
+        # what tools write into the home folder: less, the shells and
+        # REPLs (.python_history, .node_repl_history, .sqlite_history), wget, vim
+        '.lesshst',
+        '.*history',
+        '.wget-hsts',
+        '.viminfo',
     ].freeze
 
     FNM_FLAGS = File::FNM_PATHNAME | File::FNM_DOTMATCH | File::FNM_EXTGLOB
@@ -340,6 +346,28 @@ module TestWorkspacePackage
         extra.each { |entry| text << "#{entry}\n" }
         UserFiles.write(workspace_path, rel, text, mode: :append)
         path
+    end
+
+    # After the commit »Ausgangszustand«: every hidden file and folder at the
+    # top that Git does not track yet, so the caches tools write into the
+    # home folder (.dartServer, .dart-tool, .lesshst, .vscode-oss-shared)
+    # stay out of git status. Only now, because before the commit the rule
+    # would keep the package's own .gitignore out of it; what is tracked
+    # stays tracked. A .gitignore, .gitattributes or .vscode the student
+    # makes still shows.
+    HIDDEN_GIT_EXCLUDES = ['/.*', '!/.gitignore', '!/.gitattributes', '!/.vscode/'].freeze
+
+    def self.write_hidden_git_exclude(workspace_path)
+        rel = '.git/info/exclude'
+        existing = UserFiles.read(workspace_path, rel) || ''
+        marker = '# Hidden files at the top, made by tools'
+        return if existing.include?(marker)
+
+        text = +''
+        text << "\n" unless existing.empty? || existing.end_with?("\n")
+        text << "#{marker}\n"
+        HIDDEN_GIT_EXCLUDES.each { |entry| text << "#{entry}\n" }
+        UserFiles.write(workspace_path, rel, text, mode: :append)
     end
 
     def self.text_file?(path)
