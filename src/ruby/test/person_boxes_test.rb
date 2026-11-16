@@ -77,13 +77,26 @@ class PersonBoxesTest < Minitest::Test
         assert_includes PersonBoxes.annotate(page, uses), "<p class='person-pages'>Im Workspace: <a href='/grep'>Suchen mit grep</a></p>\n</div>\n<!-- /part -->"
     end
 
+    # The Personen page is public; a page only teachers may open is named
+    # there without a link, which would give everyone else a 403.
+    def test_a_page_for_teachers_is_named_without_a_link
+        with_content do |root|
+            uses = PersonBoxes.uses([['/grep', File.join(root, 'grep', 'grep.md')],
+                ['/lehrmaterial-grep', File.join(root, 'grep', 'grep.md'), true]])
+            html = PersonBoxes.annotate(PAGE, uses)
+            assert_includes html, "Im Workspace: <a href='/grep'>Suchen mit grep</a>, Suchen mit grep (für Lehrkräfte)</p>"
+            refute_includes html, "href='/lehrmaterial-grep'"
+        end
+    end
+
     def test_a_person_nobody_places_gets_no_line
         assert_equal PAGE, PersonBoxes.annotate(PAGE, Hash.new { |h, k| h[k] = [] })
     end
 
     # Every person on the Personen page stands on at least one page a reader
-    # may be led to (not hidden, not parked, not only in development), so
-    # that every box there has its line »Im Workspace«.
+    # may be led to (not hidden, not parked, not only in development; a page
+    # for teachers counts), so that every box there has its line »Im
+    # Workspace«.
     CONTENT = File.expand_path('../../content', __dir__)
 
     def test_every_person_is_placed_on_a_visible_page
@@ -94,6 +107,11 @@ class PersonBoxesTest < Minitest::Test
         end
         YAML.load_file(File.join(CONTENT, 'reference', 'sections.yaml')).each do |section|
             Array(section['entries']).map(&:to_s).reject { |e| e.start_with?('.') }.each { |e| visible << File.join(CONTENT, 'reference', e, "#{e}.md") }
+        end
+        # the pages for teachers count: the box stands there, and the
+        # Personen page names the page (without a link)
+        YAML.load_file(File.join(CONTENT, 'lehrmaterial', 'sections.yaml')).each do |section|
+            Array(section['entries']).map(&:to_s).reject { |e| e.start_with?('.') }.each { |e| visible << File.join(CONTENT, 'lehrmaterial', e, "#{e}.md") }
         end
         placed = visible.select { |f| File.file?(f) }.flat_map { |f| File.read(f).scan(PersonBoxes::PERSON).flatten }.uniq
         people = File.read(File.join(CONTENT, 'reference', 'personen', 'personen.md')).scan(ContentParts::PART_MARKER).flatten

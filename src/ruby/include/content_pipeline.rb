@@ -537,8 +537,9 @@ class Main < Sinatra::Base
         end
 
         # the pages a person box on the Personen page may lead to (PersonBoxes)
+        # and whether only teachers may open it (the Lehrmaterial catalog)
         person_pages = paths.reject { |entry| entry[:dev_only] || entry[:extra] || %w[hidden parked].include?(entry[:section]) }
-            .map { |entry| ["/#{entry[:slug]}", entry[:original_path]] }
+            .map { |entry| ["/#{entry[:slug]}", entry[:original_path], teaching_section_order.include?(entry[:section])] }
 
         if partial
             paths.select! do |entry|

@@ -62,30 +62,39 @@ module PersonBoxes
         text.sub(/^<div class=['"]person\b[^>]*>[ \t]*\n/) { |line| line + html }
     end
 
-    # name => [{ url:, title: }] of the pages that place each person, in the
-    # catalogs' order. pages: [[url, Markdown file]] of the pages a reader
-    # may be led to (not hidden, not parked).
+    # name => [{ url:, title:, teachers_only: }] of the pages that place each
+    # person, in the catalogs' order. pages: [[url, Markdown file, teachers
+    # only]] of the pages a reader may be led to (not hidden, not parked);
+    # the third is true for the pages only teachers may open (Lehrmaterial).
     def self.uses(pages)
         result = Hash.new { |h, k| h[k] = [] }
-        pages.each do |url, path|
+        pages.each do |url, path, teachers_only|
             next unless path && File.file?(path)
 
             markdown = File.read(path, encoding: 'UTF-8')
             # as text: a title may be written with entities (C&#35;)
             title = CGI.unescapeHTML(ContentParts.page_title(markdown) || url)
-            markdown.scan(PERSON).flatten.uniq.each { |name| result[name] << { :url => url, :title => title } }
+            markdown.scan(PERSON).flatten.uniq.each { |name| result[name] << { :url => url, :title => title, :teachers_only => teachers_only ? true : false } }
         end
         result
     end
 
     # On the Personen page: in each box, before the photo's source (or at its
-    # end when there is none), the pages that place the person.
+    # end when there is none), the pages that place the person. A page only
+    # teachers may open is named without a link: the Personen page is public,
+    # and the link would give everyone else a 403.
     def self.annotate(markdown, uses, sources = {})
         out = []
         current = nil
         done = false
         line_for = lambda do |name|
-            links = uses[name].map { |page| "<a href='#{CGI.escapeHTML(page[:url])}'>#{CGI.escapeHTML(page[:title])}</a>" }
+            links = uses[name].map do |page|
+                if page[:teachers_only]
+                    "#{CGI.escapeHTML(page[:title])} (für Lehrkräfte)"
+                else
+                    "<a href='#{CGI.escapeHTML(page[:url])}'>#{CGI.escapeHTML(page[:title])}</a>"
+                end
+            end
             "<p class='person-pages'>Im Workspace: #{links.join(', ')}</p>\n"
         end
         markdown.each_line do |line|

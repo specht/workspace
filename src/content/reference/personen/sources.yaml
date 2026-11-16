@@ -4364,3 +4364,143 @@ cook-karp:
         quote: "He won the 1982 ACM Turing Award."
       - url: https://en.wikipedia.org/wiki/Richard_M._Karp
         quote: "for which he received the 1985 ACM Turing Award"
+
+sweller:
+  - text: (geboren 1946 in Legnica in Polen), australischer Bildungspsychologe, emeritierter Professor an der University of New South Wales
+    sources:
+      - url: https://en.wikipedia.org/wiki/John_Sweller
+        quote: "John Sweller (born Jan Schweller, Legnica, Poland, 26 January 1946) is an Australian educational psychologist who is best known for formulating an influential theory of cognitive load. As of 2020 he was Professor Emeritus at the University of New South Wales."
+  - text: Ende der 1980er Jahre beobachtete er Lernende beim Lösen von Aufgaben und entwickelte daraus die Cognitive Load Theory
+    sources:
+      - url: https://en.wikipedia.org/wiki/Cognitive_load
+        quote: "In the late 1980s Sweller developed cognitive load theory (CLT) while studying problem solving. Studying learners as they solved problems, he and his associates found that learners often use a problem-solving strategy called means–ends analysis."
+      - url: https://doi.org/10.1207/s15516709cog1202_4
+        quote: "Cognitive Load During Problem Solving: Effects on Learning (Cognitive Science 12(2), 1988)"
+  - text: Das Arbeitsgedächtnis hält nur wenig Neues auf einmal, und wer eine Lösung erst suchen muss, verbraucht es für die Suche statt für das Lernen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Cognitive_load
+        quote: "He suggests problem solving by means–ends analysis requires a relatively large amount of cognitive processing capacity, which may not be devoted to schema construction."
+      - url: https://en.wikipedia.org/wiki/John_Sweller
+        quote: "with specific emphasis on the instructional implications of working memory limitations and their consequences for instructional procedures"
+  - text: Darum riet er, Lernenden am Anfang durchgerechnete Beispiele (Worked Examples) zu geben statt Aufgaben, die sie ohne Anleitung lösen sollen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Cognitive_load
+        quote: "Sweller suggested that instructional designers should prevent this unnecessary cognitive load by designing instructional materials which do not involve problem solving. Examples of alternative instructional materials include what are known as worked examples and goal-free problems."
+  - text: Deshalb zeigen die Seiten im Workspace meist nur die Zeilen, die neu dazukommen
+    none: Workspace
+
+sajaniemi:
+  - text: finnischer Informatiker an der Universität Joensuu, die heute zur University of Eastern Finland gehört
+    sources:
+      - url: https://saja.kapsi.fi/var_roles/abstracts/didinf05.pdf
+        quote: "Jorma Sajaniemi, University of Joensuu, Department of Computer Science"
+      - url: https://en.wikipedia.org/wiki/University_of_Eastern_Finland
+        quote: "The University of Eastern Finland … established 2010 … Campuses in Joensuu and Kuopio"
+  - text: Er erforschte, wie Menschen Programme lesen und schreiben
+    sources:
+      - url: https://ppig.org/papers/2002-ppig-14th-sajaniemi/
+        quote: "Many students learning to write computer programs encounter considerable difficulties. … We present a classification of roles and introduce an animation system, PlanAni, that uses this approach."
+  - text: Um 2002 untersuchte er die Variablen in vielen kleinen Programmen für Anfängerinnen und Anfänger und fand, dass zehn Rollen für 99 % von ihnen reichen
+    sources:
+      - url: https://saja.kapsi.fi/var_roles/abstracts/didinf05.pdf
+        quote: "Only ten roles are needed to cover 99 % of all variables in novice-level procedural programming (Sajaniemi 2002)"
+      - url: https://saja.kapsi.fi/var_roles/role_intro.html
+        quote: "only ten roles are needed to cover 99 % of all variables in novice-level programs"
+  - text: 'Mit seiner Gruppe erprobte er die Rollen in einem Programmierkurs mit 91 Studierenden: Wer sie gelernt hatte, beschrieb ein Programm eher so, wie es geübte Leserinnen und Leser von Code tun'
+    sources:
+      - url: https://saja.kapsi.fi/var_roles/abstracts/didinf05.pdf
+        quote: "The participants of the experiment—ninety-one Finnish undergraduate students studying computer science for the first semester—were divided into three groups … Our result thus indicates that roles provided students a conceptual framework that enabled them to mentally process program information in a way similar to that of good code comprehenders."
+  - text: In den Katas zu Schleifen nennt die Rückmeldung eine Variable
+    none: Workspace
+
+wiliam:
+  - text: walisischer Bildungsforscher, emeritierter Professor am Institute of Education des University College London
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dylan_Wiliam
+        quote: "Dylan ap Rhys Wiliam is a Welsh educationalist. He is emeritus professor of educational assessment at the UCL Institute of Education."
+  - text: Er wuchs in Nordwales in einer Familie auf, die nur Walisisch sprach, und lernte Englisch erst auf dem Gymnasium
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dylan_Wiliam
+        quote: "Born in North Wales, Wiliam grew up in a monoglot Welsh-speaking family. He did not learn English until attending Whitchurch Grammar School in Cardiff and Altrincham Grammar School for Boys in Greater Manchester."
+  - text: '1998 schrieb er mit Paul Black das Buch »Inside the Black Box«: wie Lehrkräfte schon während des Unterrichts herausfinden, was ihre Klasse verstanden hat, und den Unterricht danach ändern'
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dylan_Wiliam
+        quote: "His 1998 book, Inside the Black Box, which he wrote with Paul Black, was a successful polemic about formative assessment, selling over 100,000 copies."
+      - url: https://en.wikipedia.org/wiki/Formative_assessment
+        quote: "Formative assessment … is a range of formal and informal assessment procedures conducted by teachers during the learning process in order to modify teaching and learning activities to improve student attainment."
+  - text: Es verkaufte sich über 100.000-mal
+    sources:
+      - url: https://en.wikipedia.org/wiki/Dylan_Wiliam
+        quote: "selling over 100,000 copies"
+  - text: 'Lehrkräften empfiehlt er die Hinge Question, eine Frage an der Stelle, an der eine Stunde »in den Angeln hängt«: Alle antworten auf einmal, oft durch Auswahl, und jede falsche Antwort ist ein bekannter Denkfehler'
+    sources:
+      - url: https://www.teachermagazine.com/sea_en/articles/teacher-podcast-dylan-wiliam-on-effective-questioning-in-the-classroom
+        quote: "So the whole lesson 'hinges' around this point. … we often do them in multiple choice format … all the incorrect options can be well known misconceptions"
+  - text: Stimmt es bei allen, geht es weiter; wenn nicht, wird es noch einmal erklärt
+    sources:
+      - url: https://www.teachermagazine.com/sea_en/articles/teacher-podcast-dylan-wiliam-on-effective-questioning-in-the-classroom
+        quote: "if the students get it correct you move on … if they show that they don't yet understand it you might go back and teach it again"
+  - text: Bei den Vorhersagen im Workspace sieht deine Lehrkraft ohne Namen
+    none: Workspace
+
+bell:
+  - text: neuseeländischer Informatiker, Professor an der University of Canterbury in Christchurch, wo er über die Kompression von Texten forschte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Tim_Bell_(computer_scientist)
+        quote: "Timothy Clinton Bell CNZM is a New Zealand computer scientist, with interests in computer science education, computer music and text compression. … He completed his PhD at the University of Canterbury, with a thesis titled A unifying theory and improvements for existing approaches to text compression. … Bell joined the staff and rose to professor and head of department."
+      - url: https://classic.csunplugged.org/documents/books/english/unplugged-book-v1.pdf
+        quote: "Tim Bell, Department of Computer Science, University of Canterbury, Private Bag 4800, Christchurch, New Zealand"
+  - text: Ende der 1980er Jahre begannen er und Mike Fellows unabhängig voneinander, Informatik ohne Computer zu unterrichten, mit Karten, Spielen und Rätseln
+    sources:
+      - url: https://cmsc2026.github.io/speakers/
+        quote: "CS Unplugged emerged from independent efforts by Mike Fellows and Tim Bell in the late 1980s."
+      - url: https://classic.csunplugged.org/documents/books/english/unplugged-book-v1.pdf
+        quote: "Many important topics in computer science can be taught without using computers at all. This book unplugs computer science by providing twenty off-line activities, games and puzzles"
+  - text: Nachdem sie sich 1992 getroffen hatten, wurde daraus Computer Science Unplugged
+    sources:
+      - url: https://cmsc2026.github.io/speakers/
+        quote: "Following their first meeting in 1992, these ideas developed into CS Unplugged, which was launched around 1996."
+  - text: 1998 erschien das Buch dazu, zusammen mit Ian Witten
+    sources:
+      - url: https://classic.csunplugged.org/documents/books/english/unplugged-book-v1.pdf
+        quote: "Computer Science Unplugged . . . off-line activities and games for all ages. Tim Bell, Ian H. Witten, Mike Fellows. c June 9, 1998"
+  - text: 2024 wurde er für seine Verdienste um den Informatikunterricht zum Companion des New Zealand Order of Merit ernannt; das Foto zeigt ihn an diesem Tag
+    sources:
+      - url: https://en.wikipedia.org/wiki/Tim_Bell_(computer_scientist)
+        quote: "In the 2024 New Year Honours, Bell was appointed a Companion of the New Zealand Order of Merit, for services to computer science education."
+      - url: https://commons.wikimedia.org/wiki/File:Tim_Bell_CNZM_(tight_crop).jpg
+        quote: "Tim Bell, after his investiture as CNZM, for services to computer science education, at Government House, Wellington, on 28 May 2024"
+  - text: Einige Spiele ohne Rechner, die der Workspace Lehrkräften für den Unterricht vorschlägt
+    none: Workspace
+
+sentance:
+  - text: britische Informatikerin
+    sources:
+      - url: https://en.wikipedia.org/wiki/Sue_Sentance
+        quote: "Susan Elizabeth Sentance OBE is a British computer scientist, educator and director of the Raspberry Pi Computing Education Research Centre"
+  - text: Nach ihrer Doktorarbeit in Edinburgh 1993, über künstliche Intelligenz beim Lernen, arbeitete sie als Informatiklehrerin, bildete Lehrkräfte aus und forschte, ab 2014 am King's College London
+    sources:
+      - url: https://www.cst.cam.ac.uk/people/ss2600
+        quote: "Since gaining a PhD in Artificial Intelligence in Education in 1993, I have worked as a teacher of computer science, teacher educator, university lecturer and researcher"
+      - url: https://en.wikipedia.org/wiki/Sue_Sentance
+        quote: "Sentance studied artificial intelligence (AI) and information technology (IT) at the University of Edinburgh where she was awarded a Master of Science degree in 1989 followed by a PhD in 1993 … In 2014 Sentance joined King's College London as a lecturer in computing education."
+  - text: Seit 2021 leitet sie in Cambridge ein Forschungszentrum für den Informatikunterricht, das die Universität mit der Raspberry Pi Foundation gegründet hat
+    sources:
+      - url: https://www.cst.cam.ac.uk/people/ss2600
+        quote: "I joined the Department in October 2021 as Director of the Raspberry Pi Computing Education Research Centre. … The Centre is a joint initiative between the University and the Raspberry Pi Foundation"
+  - text: 2024 bekam sie die Lovelace Medal der British Computer Society
+    sources:
+      - url: https://en.wikipedia.org/wiki/Sue_Sentance
+        quote: "2024: BCS Lovelace Medal for her exceptional contributions and research in computing education."
+  - text: 'Zuerst für Schulen, mit denen sie arbeitete, entwickelte sie PRIMM, eine Reihenfolge für Programmierstunden: Predict, Run, Investigate, Modify, Make'
+    sources:
+      - url: https://cs4fn.blog/2025/03/23/sue-sentance-teaching-the-world-to-program/
+        quote: "Sue originally developed PRIMM with local schools she was working with in mind, … it is now used worldwide in countries introducing programming in schools."
+      - url: https://www.cst.cam.ac.uk/people/ss2600
+        quote: "In my own research, I developed an approach to structuring programming lessons called PRIMM (Predict-Run-Investigate-Modify-Make)"
+  - text: Du sagst voraus, was ein Programm tut, führst es aus, untersuchst es, änderst es und schreibst zuletzt ein eigenes
+    sources:
+      - url: https://doi.org/10.1080/08993408.2019.1608781
+        quote: "Teaching computer programming with PRIMM: a sociocultural perspective (Sentance, Waite, Kallia, Computer Science Education 29(2–3), 2019)"
+  - text: So sind die Aktivitäten im Workspace aufgebaut
+    none: Workspace

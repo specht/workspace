@@ -927,6 +927,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1946 -->
+<!-- part: sweller -->
+### John Sweller
+
+<div class='person'>
+<p><strong>John Sweller</strong> (geboren 1946 in Legnica in Polen), australischer Bildungspsychologe, emeritierter Professor an der University of New South Wales. Ende der 1980er Jahre beobachtete er Lernende beim Lösen von Aufgaben und entwickelte daraus die Cognitive Load Theory: Das Arbeitsgedächtnis hält nur wenig Neues auf einmal, und wer eine Lösung erst suchen muss, verbraucht es für die Suche statt für das Lernen. Darum riet er, Lernenden am Anfang durchgerechnete Beispiele (Worked Examples) zu geben statt Aufgaben, die sie ohne Anleitung lösen sollen.</p>
+<p>Deshalb zeigen die Seiten im Workspace meist nur die Zeilen, die neu dazukommen, statt jedes Mal die ganze Datei, und eine schwere Stelle erklären sie an einem fertigen Beispiel, bevor du selbst eine kleine Funktion schreibst.</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1947 -->
 <!-- part: chen -->
 ### Peter Chen
@@ -1065,6 +1075,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1952 -->
+<!-- part: sajaniemi -->
+### Jorma Sajaniemi
+
+<div class='person'>
+<p><strong>Jorma Sajaniemi</strong>, finnischer Informatiker an der Universität Joensuu, die heute zur University of Eastern Finland gehört. Er erforschte, wie Menschen Programme lesen und schreiben. Um 2002 untersuchte er die Variablen in vielen kleinen Programmen für Anfängerinnen und Anfänger und fand, dass zehn Rollen für 99 % von ihnen reichen. Mit seiner Gruppe erprobte er die Rollen in einem Programmierkurs mit 91 Studierenden: Wer sie gelernt hatte, beschrieb ein Programm eher so, wie es geübte Leserinnen und Leser von Code tun.</p>
+<p>In den Katas zu Schleifen nennt die Rückmeldung eine Variable, die mit dem falschen Wert anfängt, beim Namen ihrer Rolle, etwa einen Gatherer.</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1954 -->
 <!-- part: wall -->
 ### Larry Wall
@@ -1098,6 +1118,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Karlheinz Brandenburg</strong> (geboren 1954), Elektroingenieur aus Erlangen. In seiner Doktorarbeit von 1989 codierte er Musik nach dem, was das Ohr wahrnimmt, und mit seinem Team am Fraunhofer-Institut für Integrierte Schaltungen in Erlangen entwickelte er daraus das Verfahren, das als MP3 bekannt wurde.</p>
 <p>Später lehrte er an der Technischen Universität Ilmenau und leitete dort das Fraunhofer-Institut für Digitale Medientechnologie. 2014 kam er in die Internet Hall of Fame.</p>
 <p class='person-credit'>Foto: Christliches Medienmagazin pro, 2010, CC BY 2.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Karlheinz_Brandenburg_cropped.jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1954 -->
+<!-- part: wiliam -->
+### Dylan Wiliam
+
+<div class='person'>
+<img src='wiliam.webp' alt='Dylan Wiliam 2006: ein Mann mit Glatze und grauem Kinnbart in dunklem Sakko und bunter Krawatte vor einem Bücherregal, lächelnd.'>
+<p><strong>Dylan Wiliam</strong>, walisischer Bildungsforscher, emeritierter Professor am Institute of Education des University College London. Er wuchs in Nordwales in einer Familie auf, die nur Walisisch sprach, und lernte Englisch erst auf dem Gymnasium. 1998 schrieb er mit Paul Black das Buch »Inside the Black Box«: wie Lehrkräfte schon während des Unterrichts herausfinden, was ihre Klasse verstanden hat, und den Unterricht danach ändern. Es verkaufte sich über 100.000-mal.</p>
+<p>Lehrkräften empfiehlt er die Hinge Question, eine Frage an der Stelle, an der eine Stunde »in den Angeln hängt«: Alle antworten auf einmal, oft durch Auswahl, und jede falsche Antwort ist ein bekannter Denkfehler. Stimmt es bei allen, geht es weiter; wenn nicht, wird es noch einmal erklärt. Bei den Vorhersagen im Workspace sieht deine Lehrkraft ohne Namen, was die Klasse zuerst vermutet hat.</p>
+<p class='person-credit'>Foto: Douglas A. Lockard, Science History Institute, 2006, CC BY-SA 3.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Dylan_Wiliam_LISE2006_portrait.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->
 
@@ -1290,6 +1322,18 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 </div>
 <!-- /part -->
 
+<!-- year: 1961 -->
+<!-- part: bell -->
+### Tim Bell
+
+<div class='person'>
+<img src='bell.webp' alt='Tim Bell 2024: ein lachender Mann mit grauem Haar und randloser Brille, um den Hals das rote Band eines Ordens, vor einem dunkelroten Vorhang.'>
+<p><strong>Tim Bell</strong>, neuseeländischer Informatiker, Professor an der University of Canterbury in Christchurch, wo er über die Kompression von Texten forschte. Ende der 1980er Jahre begannen er und Mike Fellows unabhängig voneinander, Informatik ohne Computer zu unterrichten, mit Karten, Spielen und Rätseln. Nachdem sie sich 1992 getroffen hatten, wurde daraus Computer Science Unplugged; 1998 erschien das Buch dazu, zusammen mit Ian Witten. 2024 wurde er für seine Verdienste um den Informatikunterricht zum Companion des New Zealand Order of Merit ernannt; das Foto zeigt ihn an diesem Tag.</p>
+<p>Einige Spiele ohne Rechner, die der Workspace Lehrkräften für den Unterricht vorschlägt, kommen von dort: der Kartentrick zu den Prüfbits, die Schatzsuche zu den endlichen Automaten und die Waage zum Sortieren.</p>
+<p class='person-credit'>Foto: New Zealand Government, Office of the Governor-General, 2024, CC0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:Tim_Bell_CNZM_(tight_crop).jpg'>Wikimedia Commons</a>)</p>
+</div>
+<!-- /part -->
+
 <!-- year: 1962 -->
 <!-- part: widenius -->
 ### Michael »Monty« Widenius
@@ -1334,6 +1378,16 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Yukihiro Matsumoto</strong> (geboren 1965), japanischer Programmierer, den alle »Matz« nennen, veröffentlichte Ruby 1995. Er wollte eine Sprache, mit der Programmieren Freude macht: »Ich hoffe, dass Ruby jedem Programmierer auf der Welt hilft, produktiv zu sein, Spaß am Programmieren zu haben und glücklich zu sein.« Auch die Website des Workspace läuft mit Ruby.</p>
 <p>Den Namen wählte er 1993 in einem Chat mit dem Programmierer Keiju Ishitsuka, noch bevor er eine Zeile der Sprache geschrieben hatte: Der Rubin war der Geburtsstein eines Kollegen.</p>
 <p class='person-credit'>Foto: Marcin Bajer, zugeschnitten</p>
+</div>
+<!-- /part -->
+
+<!-- year: 1965 -->
+<!-- part: sentance -->
+### Sue Sentance
+
+<div class='person'>
+<p><strong>Sue Sentance</strong>, britische Informatikerin. Nach ihrer Doktorarbeit in Edinburgh 1993, über künstliche Intelligenz beim Lernen, arbeitete sie als Informatiklehrerin, bildete Lehrkräfte aus und forschte, ab 2014 am King's College London. Seit 2021 leitet sie in Cambridge ein Forschungszentrum für den Informatikunterricht, das die Universität mit der Raspberry Pi Foundation gegründet hat. 2024 bekam sie die Lovelace Medal der British Computer Society.</p>
+<p>Zuerst für Schulen, mit denen sie arbeitete, entwickelte sie PRIMM, eine Reihenfolge für Programmierstunden: Predict, Run, Investigate, Modify, Make. Du sagst voraus, was ein Programm tut, führst es aus, untersuchst es, änderst es und schreibst zuletzt ein eigenes. So sind die Aktivitäten im Workspace aufgebaut.</p>
 </div>
 <!-- /part -->
 

@@ -29,7 +29,9 @@ for i from 1 to n:
 
 `i` und `total` ändern sich beide in jedem Durchlauf, aber auf ganz verschiedene Art. Die Werte von `i` stehen fest, sobald die Schleife beginnt: 1, 2, 3 und so weiter bis `n`. Was in `total` steht, hängt davon ab, was in jedem Durchlauf dazukommt; es sammelt das Ergebnis. `i` ist ein **Stepper** (Schrittwert), `total` ein **Gatherer** (Sammler). Wie sich eine Variable im Lauf des Programms ändert, heißt ihre **Rolle**.
 
-Der finnische Informatiker Jorma Sajaniemi hat um 2002 viele Programme von Anfängerinnen und Anfängern untersucht und dabei festgestellt, dass zehn Rollen für 99 % ihrer Variablen reichen. Er hat ihnen englische Namen gegeben, und so heißen sie auch hier, wie Stack und Queue: Der deutsche Name in Klammern sagt nur, was gemeint ist.
+Beschrieben hat diese Rollen der finnische Informatiker Jorma Sajaniemi. Er hat ihnen englische Namen gegeben, und so heißen sie auch hier, wie Stack und Queue: Der deutsche Name in Klammern sagt nur, was gemeint ist.
+
+_person(sajaniemi)
 
 Rollen helfen zweimal:
 
