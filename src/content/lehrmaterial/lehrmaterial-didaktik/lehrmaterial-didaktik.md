@@ -1,6 +1,6 @@
 <div class='meta'>
 image: didaktik.webp
-image_alt: "Eine Welle zwischen zwei gestrichelten Linien, oben »allgemein«, unten »konkret«; auf ihr drei Stationen: vermuten, ausprobieren, Regel fassen"
+image_alt: "Ein Regal mit neun bunten Büchern, auf den Buchrücken: PRIMM, Parsons, Notional Machine, Rollen, Fehlvorstellungen, Hinge Questions, Semantic Waves, Cognitive Load, Unplugged; das letzte lehnt am vorletzten"
 </div>
 
 <div
