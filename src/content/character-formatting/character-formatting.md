@@ -124,17 +124,6 @@ Wörter in Comic Sans um einen Hund, als wären es seine Gedanken.
 <figure><img src='bilder/meme-doge.jpg' alt='Ein Shiba-Inu springt durch tiefen Schnee; um ihn herum bunte Wörter in Comic Sans: »many ice«, »so snow«, »very winter«, »much frosty«, »such freeze omg«, zweimal »wow«'><figcaption>Doge, in Comic Sans. Bild: likeaduck, CC BY 2.0 (<a href='https://commons.wikimedia.org/wiki/File:Doge_meme_example.jpg'>Wikimedia Commons</a>)</figcaption></figure>
 </div>
 
-Unter Leuten, die Schriften gestalten, gibt es eigene Witze. Der Comic xkcd
-spielt mit dem **Kerning**: dem Abstand zwischen zwei bestimmten Buchstaben,
-den eine gute Schrift für jedes Paar einzeln festlegt. Stimmt er nicht, liest
-man ein Wort falsch, oder man stolpert über eine Lücke, die nicht dahin gehört.
-Wer das einmal sieht, sieht es überall:
-
-<figure>
-<img src='bilder/xkcd-kerning.png' style='width: 25em; max-width: 100%' alt='Ein Comic: Zwei Strichmännchen stehen vor einem Gebäude mit dem Schild »CITY OFFICES«, zwischen dem C und dem E eine zu große Lücke. Einer ruft »ARGH!«, der andere fragt »WHAT?«. Darunter steht: »If you really hate someone, teach them to recognize bad kerning.«'>
-<figcaption>»Wenn du jemanden wirklich hasst, bring ihm bei, schlechtes Kerning zu erkennen.« Bild: Randall Munroe, <a href='https://xkcd.com/1015/'>xkcd 1015</a>, CC BY-NC 2.5</figcaption>
-</figure>
-
 Für ein Blatt reichen zwei: eine für die Überschrift, eine für den
 Text. Mehr Schriften machen ein Blatt nicht lebendiger, sondern unruhig, und
 jede neue Schrift fragt den Blick: Ist das etwas anderes?
