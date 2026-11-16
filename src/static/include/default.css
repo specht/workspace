@@ -9105,6 +9105,21 @@ div[data-stepper] :not(pre) > code:not([class]),
     border-radius: 0.4em;
 }
 .person p { grid-column: 2; margin: 0 0 0.5em; text-align: left; }
+/* a font in a person box (Morison, Carter): its letters, not a portrait */
+.person .person-specimen img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: auto;
+    object-fit: contain;
+    border-radius: 0;
+}
+/* samples of fonts in a table (»Schrift mit Absicht«): one line each */
+.font-names img.font-sample { height: 1.9em; width: auto; max-width: none; margin: 0; display: block; }
+.font-names td { vertical-align: middle; }
+.font-names td:nth-child(1), .font-names td:nth-child(3) { white-space: nowrap; }
+.font-names td:nth-child(1) { font-weight: 600; }
+.font-names td:nth-child(2) { min-width: 12em; }
 /* the person one came for (/reference/personen#gorman): a yellow ring
    (Cling, as Sek I on /lehrplan) that stays a few seconds for the eye to
    find the box, then fades; the layout stays as it is */

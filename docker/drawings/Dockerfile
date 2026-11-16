@@ -24,6 +24,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # repository mounted at /repo
 COPY fonts.conf /etc/fonts/conf.d/90-site-fonts.conf
 
+# fonts the drawings show as samples (»Schrift mit Absicht«, the names of
+# fonts, the person boxes of Morison and Carter): the Microsoft core fonts
+# (Times New Roman, Arial, Verdana, Georgia, Comic Sans, Impact, Courier
+# New) through Debian's installer, which fetches them from Microsoft's
+# original packages; Open Sans and Roboto Slab from Debian; Space Grotesk,
+# Didact Gothic (OFL) and PxPlus IBM VGA 8x16 (the screen of an old PC, from VileR's Ultimate Oldschool PC Font Pack, CC BY-SA 4.0), licences beside them, from fonts/
+RUN sed -i 's/^Components: main$/Components: main contrib/' /etc/apt/sources.list.d/debian.sources \
+    && echo 'ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true' | debconf-set-selections \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        ttf-mscorefonts-installer wget ca-certificates cabextract \
+        fonts-open-sans fonts-roboto-slab \
+    && rm -rf /var/lib/apt/lists/*
+COPY fonts/ /usr/local/share/fonts/samples/
+RUN fc-cache -f >/dev/null
+
 # a home for whichever user runs it (src/scripts/drawings: the caller's), with
 # the cache of the typeset labels mounted into it
 RUN mkdir -p /home/drawings/.cache && chmod -R 777 /home/drawings

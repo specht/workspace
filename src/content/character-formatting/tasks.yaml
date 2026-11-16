@@ -5,23 +5,22 @@ format: 1
 activity: character-formatting
 tasks:
   - id: schriften
-    title: Schriften zählen
+    title: Welche Schrift?
     prompt: |
-      Stell den Cursor nacheinander in jede Zeile des Aushangs. Wie viele
-      verschiedene Schriftarten zählst du?
+      Stell den Cursor in den Absatz mit dem Preis (»Ein Stück kostet 1 Euro
+      …«). Welche Schriftart steht im Feld ganz links?
     check:
-      type: number
-      expect: 7
-      tolerance: 0
+      type: answer
+      expect: Verdana
     feedback:
-      - when: { between: [5, 6] }
-        say: Fast. Hat die Zeile unter der Überschrift auch eine eigene Schrift? Und »Danke!«?
-    hint:
-      - Die Schrift steht im Feld ganz links, wenn der Cursor im Text steht.
-      - Jede Zeile hat eine andere, nur zwei nicht. Und es gibt keine zwei Zeilen mit derselben.
+      - when: { equals: [Arial, Calibri, Helvetica] }
+        say: Sieht ähnlich aus, ist es aber nicht. Schau ins Feld ganz links, wenn der Cursor im Absatz steht.
+    hint: Klick mitten in den Satz »Ein Stück kostet 1 Euro …«. Das Feld ganz links zeigt dann den Namen der Schrift.
     solution: |
-      Sieben: Impact, Comic Sans MS, Times New Roman, Courier New, Verdana,
-      Arial und Georgia, eine für jeden Absatz.
+      Verdana. Jeder Absatz des Aushangs hat eine andere Schrift, sieben
+      insgesamt: Impact, Comic Sans MS, Times New Roman, Courier New,
+      Verdana, Arial und Georgia. Ohne das Feld kann man sie leicht
+      verwechseln; Verdana und Arial sehen sich ähnlich.
 
   - id: loeschen
     title: Formatierung löschen

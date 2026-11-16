@@ -9,7 +9,7 @@ Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größ
 <tr><th>Voraussetzungen</th><td><a href='/formatting-marks'>Was das Auge nicht sieht</a>: Formatierungszeichen, Ausrichtung und Abstand. Eine Textverarbeitung: LibreOffice Writer, Word oder Nextcloud Office.</td></tr>
 <tr><th>Ablauf (45 Minuten)</th><td><ul>
 <li><b>5 Minuten:</b> Vorführen (siehe unten).</li>
-<li><b>15 Minuten:</b> der Aushang, Schriften zählen, Serifen, Größe.</li>
+<li><b>15 Minuten:</b> der Aushang, eine Schrift im Feld ablesen, Serifen und die Namen der Schriften, Größe.</li>
 <li><b>15 Minuten:</b> die Vermutung zum Löschen der Formatierung, zwei Schriften, hervorheben.</li>
 <li><b>10 Minuten:</b> prüfen, bis alles erfüllt ist, der Versuch mit zwei Sekunden.</li>
 <li><b>Für Schnelle:</b> einen eigenen Aushang (eine AG, ein Fest) mit denselben Regeln.</li>

@@ -86,8 +86,11 @@ module PictureRights
                 next if credit && credit =~ FREE
                 next if credit.nil? && box == :figure
 
-                block.scan(/<img [^>]*?src='([^']+)'/).flatten.each do |src|
+                block.scan(/(<img [^>]*?src='([^']+)'[^>]*>)/).each do |tag, src|
                     next if src.start_with?('/', 'http')
+                    # a drawing of the site's own (a font sample in a
+                    # person box) is no one else's picture
+                    next if tag =~ /class='[^']*\bdrawing\b/
 
                     file = File.join(File.dirname(md.delete_prefix("#{root}/")), src)
                     part = part_at(markdown, match.begin(0))

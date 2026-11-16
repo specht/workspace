@@ -64,6 +64,9 @@ DARK = {
     '#fdecc8' => '#fdecc8', # pale amber behind it
     '#e3ecfa' => '#e3ecfa', # pale blue behind a part of the sheet
     '#e6e8eb' => '#e6e8eb', # the grey of a field (a page number)
+    '#ffb000' => '#ffb000', # amber letters on an old monitor (»Schrift mit Absicht«): the same in both modes
+    '#d8d2c2' => '#d8d2c2', # the beige plastic of that monitor
+    '#a39d8c' => '#a39d8c', # its edges and stand
     '#2e7d32' => '#2e7d32', # green of a tick on a sheet (a check passed)
     # the cards of the Office series (office-drawings.py, card_ground): the
     # faint motif on the ground, darker in the dark; a second green of a pie

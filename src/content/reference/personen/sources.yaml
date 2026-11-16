@@ -4504,3 +4504,77 @@ sentance:
         quote: "Teaching computer programming with PRIMM: a sociocultural perspective (Sentance, Waite, Kallia, Computer Science Education 29(2–3), 2019)"
   - text: So sind die Aktivitäten im Workspace aufgebaut
     none: Workspace
+
+morison:
+  - text: (1889 bis 1967), britischer Typograf und Historiker des Buchdrucks
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stanley_Morison
+        quote: "Stanley Arthur Morison was born on 6 May 1889, at Wanstead, Essex"
+      - url: https://en.wikipedia.org/wiki/Stanley_Morison
+        quote: "was a British typographer, printing executive and historian of printing"
+      - url: https://en.wikipedia.org/wiki/Stanley_Morison
+        quote: "Morison died in London on 11 October 1967"
+  - text: Er verließ früh die Schule und brachte sich die Typografie selbst bei
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stanley_Morison
+        quote: "He was self-taught, having left school after his father abandoned his family."
+  - text: Von 1923 an beriet er die Firma Monotype, die Setzmaschinen und Schriften herstellte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stanley_Morison
+        quote: "From 1923 to 1967, Morison was a typographic consultant for the Monotype Corporation."
+  - text: Die Zeitung The Times bat ihn um eine neue Schrift, die leicht zu lesen war
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stanley_Morison
+        quote: "he was commissioned by the newspaper to produce a new, easy-to-read typeface for the publication"
+  - text: Mit dem Grafiker Victor Lardent entwickelte er die Times New Roman; die Zeitung druckte sie 1932 zum ersten Mal, und ein Jahr später konnte jede Druckerei sie bei Monotype kaufen
+    sources:
+      - url: https://en.wikipedia.org/wiki/Stanley_Morison
+        quote: "the typeface which Morison developed with graphic artist Victor Lardent, was first used by the newspaper in 1932 and was issued commercially by Monotype in 1933"
+  - text: Die Times New Roman hat Serifen und wirkt neben vielen anderen Schriften recht schmal
+    sources:
+      - url: https://en.wikipedia.org/wiki/Times_New_Roman
+        quote: "Times New Roman is a serif typeface commissioned for use by the British newspaper The Times in 1931."
+      - url: https://en.wikipedia.org/wiki/Times_New_Roman
+        quote: "a relatively condensed appearance"
+
+carter:
+  - text: (geboren 1937 in London), englisch-amerikanischer Schriftgestalter
+    sources:
+      - url: https://en.wikipedia.org/wiki/Matthew_Carter
+        quote: "Matthew Carter (born 1 October 1937) is an English-born American type designer"
+  - text: Sein Vater war Buchgestalter und Historiker des Buchdrucks
+    sources:
+      - url: https://en.wikipedia.org/wiki/Matthew_Carter
+        quote: "the son of Harry Carter, a book designer and later historian of printing"
+  - text: durch ihn lernte Carter als junger Mann in der Schriftgießerei Enschedé in den Niederlanden, Stempel von Hand zu schneiden, aus denen man Buchstaben aus Metall gießt
+    sources:
+      - url: https://en.wikipedia.org/wiki/Matthew_Carter
+        quote: "manual punchcutting, the method used to make moulds used to cast metal type"
+  - text: In den 1990er Jahren zeichnete er für Microsoft Georgia und Verdana, zwei Schriften für die groben Bildschirme dieser Zeit, auf denen jeder Bildpunkt nur an oder aus sein konnte
+    sources:
+      - url: https://en.wikipedia.org/wiki/Matthew_Carter
+        quote: "Verdana and Georgia ... were all about binary bitmaps: every pixel was on or off, black or white"
+      - url: https://en.wikipedia.org/wiki/Verdana
+        quote: "designed by Matthew Carter for Microsoft"
+      - url: https://en.wikipedia.org/wiki/Georgia_(typeface)
+        quote: "designed in 1993 by Matthew Carter"
+  - text: Auch die Schrift Tahoma aus Windows ist von ihm
+    sources:
+      - url: https://en.wikipedia.org/wiki/Matthew_Carter
+        quote: "the Windows interface typeface Tahoma"
+  - text: und schon 1987 die Charter, für die Laserdrucker der 1980er Jahre mit ihren groben 300 Punkten pro Zoll
+    sources:
+      - url: https://en.wikipedia.org/wiki/Charter_(typeface)
+        quote: "designed by Matthew Carter in 1987 for Bitstream Inc."
+      - url: https://en.wikipedia.org/wiki/Charter_(typeface)
+        quote: "originally optimized for printing on the low-resolution 300 dpi laser printers of the 1980s"
+  - text: 2010 bekam er ein Stipendium der MacArthur Foundation
+    sources:
+      - url: https://en.wikipedia.org/wiki/Matthew_Carter
+        quote: "In 2010, Carter was named a MacArthur Foundation Fellow"
+  - text: Georgia hat Serifen, Verdana keine; beide sollten auch in kleiner Größe gut lesbar sein
+    sources:
+      - url: https://en.wikipedia.org/wiki/Georgia_(typeface)
+        quote: "legible when printed small or on low-resolution screens"
+      - url: https://en.wikipedia.org/wiki/Verdana
+        quote: "was designed to be readable at small sizes on the low-resolution computer screens of the period"

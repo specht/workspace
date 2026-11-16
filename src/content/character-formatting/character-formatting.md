@@ -50,12 +50,88 @@ die Größe.
 
 _task(schriften)
 
+Jeder Absatz des Aushangs hat eine eigene Schrift, sieben verschiedene.
+Manche sehen sich so ähnlich, dass nur das Feld sie sicher verrät.
+
 Schriften gibt es mit **Serifen**, den kleinen Füßchen an den Enden der
 Buchstaben (Times New Roman, Georgia), und **ohne Serifen** (Arial, Verdana,
 Calibri).
 
-<img class='drawing d-none d-lg-block' style='width: 35em' src='serifen-wide.svg' alt='Das Wort »Hand« zweimal, groß. Links mit Serifen: blaue Ringe um die kleinen Querstriche an den Enden der Striche, unten an jedem Fuß und oben am H und am d. Rechts dasselbe Wort ohne Serifen, die Striche enden glatt'>
-<img class='drawing d-lg-none' style='width: 17.5em' src='serifen.svg' alt='Das Wort »Hand« zweimal, groß. Oben mit Serifen: blaue Ringe um die kleinen Querstriche an den Enden der Striche, unten an jedem Fuß und oben am H und am d. Unten dasselbe Wort ohne Serifen, die Striche enden glatt'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='serifen-wide.svg' alt='Das Wort »Hand« zweimal, groß. Links mit Serifen: hellblaue Flecken hinter den Enden der Striche, unten an jedem Fuß und oben am H und am d, wo kleine Querstriche sitzen. Rechts dasselbe Wort ohne Serifen, an denselben Stellen hellblaue Flecken; dort enden die Striche glatt'>
+<img class='drawing d-lg-none' style='width: 17.5em' src='serifen.svg' alt='Das Wort »Hand« zweimal, groß. Oben mit Serifen: hellblaue Flecken hinter den Enden der Striche, unten an jedem Fuß und oben am H und am d, wo kleine Querstriche sitzen. Unten dasselbe Wort ohne Serifen, an denselben Stellen hellblaue Flecken; dort enden die Striche glatt'>
+
+_person(morison)
+
+Das Wort *sans* ist Französisch und heißt »ohne«. Eine Schrift ohne Serifen
+heißt darum auf Englisch *sans serif*, und viele Schriften tragen das im
+Namen. Auch andere Teile eines Namens verraten, wie eine Schrift aussieht:
+
+<div class='table-responsive'>
+<table class='table font-names'>
+<thead><tr><th>Im Namen</th><th>Bedeutet</th><th>So sieht es aus</th><th>Schrift</th></tr></thead>
+<tbody>
+<tr><td rowspan='2'>Sans</td><td rowspan='2'>ohne Serifen</td><td><img class='drawing font-sample' src='schriften/open-sans.svg' alt='»Kuchenverkauf« in Open Sans, ohne Serifen, rund und offen'></td><td>Open Sans</td></tr>
+<tr><td><img class='drawing font-sample' src='schriften/ibm-plex-sans.svg' alt='»Kuchenverkauf« in IBM Plex Sans, ohne Serifen'></td><td>IBM Plex Sans, die Schrift dieser Seiten</td></tr>
+<tr><td>Serif</td><td>mit Serifen</td><td><img class='drawing font-sample' src='schriften/dejavu-serif.svg' alt='»Kuchenverkauf« in DejaVu Serif, mit kräftigen Serifen'></td><td>DejaVu Serif</td></tr>
+<tr><td>Grotesk</td><td>ohne Serifen</td><td><img class='drawing font-sample' src='schriften/space-grotesk.svg' alt='»Kuchenverkauf« in Space Grotesk, ohne Serifen'></td><td>Space Grotesk</td></tr>
+<tr><td>Gothic</td><td>ohne Serifen</td><td><img class='drawing font-sample' src='schriften/didact-gothic.svg' alt='»Kuchenverkauf« in Didact Gothic, ohne Serifen, mit fast kreisrunden Bögen'></td><td>Didact Gothic</td></tr>
+<tr><td>Mono</td><td>jeder Buchstabe gleich breit, das i so breit wie das m</td><td><img class='drawing font-sample' src='schriften/dejavu-sans-mono.svg' alt='»Kuchenverkauf« in DejaVu Sans Mono, jeder Buchstabe gleich breit'></td><td>DejaVu Sans Mono</td></tr>
+<tr><td>Slab</td><td>Serifen als dicke, eckige Blöcke</td><td><img class='drawing font-sample' src='schriften/roboto-slab.svg' alt='»Kuchenverkauf« in Roboto Slab, mit Serifen wie kleine Balken'></td><td>Roboto Slab</td></tr>
+<tr><td>Nerd Font</td><td>eine Mono-Schrift mit vielen Symbolen dazu, für das Terminal</td><td><img class='drawing font-sample' src='schriften/nerd-font.svg' alt='Ein Ordner-Symbol und »kuchen«, das Symbol für einen Git-Branch und »main«, dann das Symbol von Python, alles in 0xProto Nerd Font Mono'></td><td>0xProto Nerd Font Mono, die Schrift im Editor und im Terminal des Workspace</td></tr>
+</tbody>
+</table>
+</div>
+
+Sans, Grotesk und Gothic heißen alle drei »ohne Serifen«. Die Namen kommen
+aus verschiedenen Zeiten und Ländern.
+
+**Grotesk** kommt vom italienischen *grottesco*, »zur Höhle gehörig«, und
+meinte später alles, was missgestaltet aussah. Als Anfang des
+19. Jahrhunderts in England die ersten Schriften ohne Serifen aufkamen,
+verglich man sie mit den verzierten Schriften, die man gewohnt war, und fand
+sie plump; man nannte sie *grotesque*, auf Deutsch Grotesk. Typisch für diese
+Schriften: Die Striche sind fast überall gleich dick, die Großbuchstaben
+ungefähr gleich breit, das Ende eines Bogens wie beim c ist waagerecht
+abgeschnitten, und das R hat oft ein geschwungenes Bein. Akzidenz-Grotesk ist
+so eine. Nach ihrem Vorbild entstand später Helvetica, und Arial ist in den
+Maßen der Helvetica gebaut.
+
+**Gothic** sagten die Schriftgießereien in Amerika: Eine in Boston brachte
+1837 Schriften ohne Serifen unter diesem Namen heraus. Warum, ist nicht
+sicher. Vielleicht nach der gotischen Baukunst, die weder griechisch noch
+römisch ist, vielleicht weil solche Schriften damals in Deutschland beliebt
+waren. Über die Form sagt der Name wenig: Franklin Gothic ist eine Grotesk,
+Century Gothic baut ihre Buchstaben dagegen aus Kreisen und geraden Linien,
+das o ist fast rund.
+
+**Sans** (von *sans serif*) ist das Wort, das sich heute für alle
+durchgesetzt hat; Open Sans etwa ist gemacht, um auf Bildschirmen und auf
+Papier gut lesbar zu sein.
+
+_person(carter)
+
+Zwei Schriften aus dem Aushang kennst du vielleicht aus Memes. **Impact**
+zeichnete Geoffrey Lee 1965; weiß mit schwarzem Rand steht sie über
+unzähligen Bildern im Netz. **Comic Sans** zeichnete Vincent Connare 1994 bei
+Microsoft, nach der Schrift in Comics, für die Sprechblasen eines Programms.
+Weil sie danach überall auftauchte, auch dort, wo es ernst zugeht, lachen
+viele über sie, und so wurde sie selbst zum Meme.
+
+Unter Leuten, die Schriften gestalten, gibt es eigene Witze. Der Comic xkcd
+spielt mit dem **Kerning**: dem Abstand zwischen zwei bestimmten Buchstaben,
+den eine gute Schrift für jedes Paar einzeln festlegt. Stimmt er nicht, liest
+man ein Wort falsch, oder man stolpert über eine Lücke, die nicht dahin gehört.
+Wer das einmal sieht, sieht es überall:
+
+<figure>
+<img src='bilder/xkcd-kerning.png' style='width: 25em; max-width: 100%' alt='Ein Comic: Zwei Strichmännchen stehen vor einem Gebäude mit dem Schild »CITY OFFICES«, zwischen dem C und dem E eine zu große Lücke. Einer ruft »ARGH!«, der andere fragt »WHAT?«. Darunter steht: »If you really hate someone, teach them to recognize bad kerning.«'>
+<figcaption>»Wenn du jemanden wirklich hasst, bring ihm bei, schlechtes Kerning zu erkennen.« Bild: Randall Munroe, <a href='https://xkcd.com/1015/'>xkcd 1015</a>, CC BY-NC 2.5</figcaption>
+</figure>
+
+<div class='gallery' style='max-width: 36em'>
+<figure><img class='drawing' src='schriften/impact.svg' alt='»WENN DER KUCHEN SCHON WEG IST« in Impact, weiß mit schwarzem Rand, oben und unten über einem leeren Kuchenteller mit ein paar Krümeln, wie in einem Meme'><figcaption>Impact</figcaption></figure>
+<figure><img class='drawing' src='schriften/comic-sans.svg' alt='»Danke fürs Backen!« in Comic Sans in einer Sprechblase'><figcaption>Comic Sans</figcaption></figure>
+</div>
 
 Für ein Blatt reichen zwei: eine für die Überschrift, eine für den
 Text. Mehr Schriften machen ein Blatt nicht lebendiger, sondern unruhig, und
@@ -64,6 +140,10 @@ jede neue Schrift fragt den Blick: Ist das etwas anderes?
 <div class='history' id='history-bravo'>
 <p><strong>Schrift auf dem Bildschirm</strong>, 1974. Lange zeigte ein Bildschirm nur eine Schrift in einer Größe; wie ein Text gedruckt aussah, sah man erst auf dem Papier. Bei Xerox PARC in Kalifornien schrieben Butler Lampson, Charles Simonyi und ihre Kollegen 1974 das Programm Bravo für den Rechner Alto: Es zeigte verschiedene Schriften und den Text ungefähr so, wie er gedruckt aussehen würde. Heute heißt das WYSIWYG, »what you see is what you get«, was du siehst, bekommst du.</p>
 </div>
+
+<img class='drawing d-none d-lg-block' style='width: 52em' src='bildschirm-wide.svg' alt='Links ein alter Bildschirm in beigem Gehäuse, schwarz mit oranger Schrift aus Bildpunkten, alles in einer Schrift und einer Größe: »KUCHENVERKAUF!« in Großbuchstaben, darunter der Text mit dem Zeichen ^B vor und hinter jedem Wort, das fett werden soll. Rechts derselbe Text gedruckt auf Papier: die Überschrift groß und fett, im Text »14. März«, »großen Pause« und »vor der Mensa« fett, die Zeichen ^B sind verschwunden'>
+<img class='drawing d-lg-none' style='width: 22em' src='bildschirm.svg' alt='Oben ein alter Bildschirm in beigem Gehäuse, schwarz mit oranger Schrift aus Bildpunkten, alles in einer Schrift und einer Größe: »KUCHENVERKAUF!« in Großbuchstaben, darunter der Text mit dem Zeichen ^B vor und hinter jedem Wort, das fett werden soll. Unten derselbe Text gedruckt auf Papier: die Überschrift groß und fett, im Text »14. März«, »großen Pause« und »vor der Mensa« fett, die Zeichen ^B sind verschwunden'>
+<p class='small text-body-secondary'>Die Schrift auf dem Bildschirm ist die eines PC aus den 1980er Jahren: PxPlus IBM VGA 8x16 aus <a href='https://int10h.org/oldschool-pc-fonts/'>The Ultimate Oldschool PC Font Pack</a> von VileR, CC BY-SA 4.0.</p>
 
 _person(tesler)
 
@@ -105,8 +185,8 @@ ein Link und macht die Unterlängen schwer lesbar (g, p, y). **Großbuchstaben**
 liest man langsamer: Wörter erkennen wir an ihrer Form, und in Großbuchstaben
 haben alle Wörter dieselbe Form, ein Rechteck.
 
-<img class='drawing d-none d-lg-block' style='width: 35em' src='hervorheben-wide.svg' alt='Oben »Gruppe gegen Typen« unterstrichen; rote Ringe zeigen, wo die Linie durch g, p und y geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
-<img class='drawing d-lg-none' style='width: 22.5em' src='hervorheben.svg' alt='Oben »Gruppe gegen Typen« unterstrichen; rote Ringe zeigen, wo die Linie durch g, p und y geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
+<img class='drawing d-none d-lg-block' style='width: 35em' src='hervorheben-wide.svg' alt='Oben »Waffeln gegen Spenden« unterstrichen; rote Ringe zeigen, wo die Linie durch die beiden g und das p geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='hervorheben.svg' alt='Oben »Waffeln gegen Spenden« unterstrichen; rote Ringe zeigen, wo die Linie durch die beiden g und das p geht. Darunter »Kuchenverkauf« mit einer blauen Linie um das Wort, die bei K, h, k und f nach oben springt: eine Form, an der man das Wort erkennt. Darunter »KUCHENVERKAUF«, die Linie darum ein Rechteck'>
 
 _task(hervorheben)
 

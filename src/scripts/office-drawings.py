@@ -209,7 +209,8 @@ def abstand():
 # ---- Schrift mit Absicht
 
 def serifen():
-    """the same word with and without serifs, the serifs marked"""
+    """the same word with and without serifs: a soft mark behind every end
+    of a stroke, in both, so the eye compares the same places"""
     w, h = 560, 214
     size = 92
     panels = []
@@ -219,7 +220,7 @@ def serifen():
                                                 ('ohne Serifen', 'Arial, Verdana, Calibri', 'sans')]):
         cx = 140 + i * 280
         body = []
-        panels.append((body, (cx - 130, 4 if i == 0 else 36, 260, 200 if i == 0 else 168)))
+        panels.append((body, (cx - 130, 4, 260, 200)))
         word = 'Hand'
         font = serif_font if family == 'serif' else TTFont(str(FONTS / 'IBM_Plex_Sans' / 'IBMPlexSans-Regular.ttf'))
         file_size = size
@@ -235,9 +236,10 @@ def serifen():
             pen = SVGPathPen(glyphs)
             glyphs[name].draw(pen)
             paths.append(f"<path transform='translate({x:.2f} {base}) scale({scale:.5f} {-scale:.5f})' d='{pen.getCommands()}'/>")
-            if family == 'serif':
-                # a serif ends in a flat edge: a straight horizontal piece
+            if True:
+                # an end of a stroke is flat: a straight horizontal piece
                 # of the outline at the baseline or at the top of a stem
+                # (with serifs, the foot; without, the cut end)
                 record = RecordingPen()
                 glyphs[name].draw(record)
                 # (the last edge of an outline is the line that closes
@@ -255,19 +257,108 @@ def serifen():
                             serifs.append((x + (point[0] + last[0]) / 2 * scale, base - y * scale, abs(point[0] - last[0]) * scale))
                     last = point
             x += glyphs[name].width * scale
-        body.append(f"<g fill='{INK}'>{''.join(paths)}</g>")
-        # one ring per serif (its upper and lower edge are both found)
+        # one mark per end (a serif's upper and lower edge are both found),
+        # pale and behind the letters, so that it does not cover them
         kept = []
         for found in sorted(serifs, key=lambda f: -f[2]):
             if all(abs(found[0] - k[0]) > 12 or abs(found[1] - k[1]) > 16 for k in kept):
                 kept.append(found)
-        for sx, sy, sw in kept:
-            body.append(f"<ellipse cx='{sx:.1f}' cy='{sy:.1f}' rx='{sw / 2 + 5:.1f}' ry='7' fill='none' stroke='{BLUE}' stroke-width='1.8'/>")
+        # (one group with one opacity: where two overlap, no darker spot)
+        body.append(f"<g fill='{BLUE}' opacity='0.16'>" + ''.join(
+            f"<ellipse cx='{sx:.1f}' cy='{sy:.1f}' rx='{max(sw, 10) / 2 + 6:.1f}' ry='10'/>" for sx, sy, sw in kept) + '</g>')
+        body.append(f"<g fill='{TEXT}'>{''.join(paths)}</g>")
         body.append(text(cx, 168, label, 16, TEXT, 'middle', '600'))
         body.append(text(cx, 190, names, 14, GREY, 'middle'))
     # what the blue is
     panels[0][0].append(text(140, 26, 'Serifen: die Füßchen an den Enden', 14, BLUE, 'middle'))
+    panels[1][0].append(text(420, 26, 'ohne Füßchen: die Enden glatt', 14, BLUE, 'middle'))
     two_ways('serifen', 'character-formatting', (w, h), 'Hand mit und ohne Serifen', panels)
+
+
+def bildschirm():
+    """before WYSIWYG: an old monitor shows one font in one size, with marks
+    where bold begins and ends; what it looks like shows only the paper"""
+    import subprocess
+    w, h = 760, 336
+    # the monitor, the same in both modes: beige plastic, a dark tube,
+    # amber letters in the font of a PC's text screen (PxPlus IBM VGA 8x16,
+    # the Ultimate Oldschool PC Font Pack by VileR, CC BY-SA 4.0)
+    case, case_edge, tube, amber = '#d8d2c2', '#a39d8c', '#0b0f19', '#ffb000'
+    vt = TTFont(subprocess.run(['fc-match', '-f', '%{file}', 'PxPlus IBM VGA 8x16'], capture_output=True, text=True, check=True).stdout)
+    glyphs, cmap = vt.getGlyphSet(), vt.getBestCmap()
+
+    def pixels(x, y, s, size):
+        scale = size / vt['head'].unitsPerEm
+        out = []
+        for c in s:
+            name = cmap.get(ord(c), '.notdef')
+            pen = SVGPathPen(glyphs)
+            glyphs[name].draw(pen)
+            if pen.getCommands():
+                out.append(f"<path transform='translate({x:.2f} {y:.2f}) scale({scale:.5f} {-scale:.5f})' d='{pen.getCommands()}'/>")
+            x += glyphs[name].width * scale
+        return ''.join(out), x
+
+    panels = []
+    body = []
+    x, y = 10, 44
+    mw, mh = 420, 252
+    body.append(text(x + mw / 2, 26, 'auf dem Bildschirm', 16, TEXT, 'middle', '600'))
+    # the case, the tube in it with rounded corners, a stand below
+    body.append(rect(x + 150, y + mh - 4, 80, 18, case_edge, r=3))
+    body.append(rect(x, y, mw, mh - 6, case, case_edge, 2, 18))
+    sx, sy, sw, sh = x + 22, y + 20, mw - 44, mh - 52
+    body.append(rect(sx - 4, sy - 4, sw + 8, sh + 8, case_edge, r=22))
+    body.append(rect(sx, sy, sw, sh, tube, r=20))
+    size = 20
+    status = 'AUSHANG    SEITE 1  ZEILE 7'
+    lines = ['KUCHENVERKAUF!', '', 'Am Donnerstag, dem ^B14. März^B,', 'verkaufen wir in der ^Bgroßen',
+             'Pause^B Kuchen und Waffeln.', '', 'Wo: ^Bvor der Mensa^B']
+    tx, ty = sx + 16, sy + 30
+    letters = []
+    bar_w = pixels(0, 0, status, size)[1]
+    body.append(rect(tx - 3, ty - 15, bar_w + 6, 19, amber))
+    body.append(f"<g fill='{tube}'>{pixels(tx, ty, status, size)[0]}</g>")
+    for i, t in enumerate(lines):
+        drawn, end = pixels(tx, ty + 24 + i * 19, t, size)
+        letters.append(drawn)
+    end = pixels(tx, 0, lines[-1], size)[1]
+    letters.append(f"<rect x='{end + 2:.1f}' y='{ty + 24 + 6 * 19 - 13:.1f}' width='9' height='15'/>")
+    # the glow of the phosphor: the letters once more, blurred, behind them
+    body.append("<defs><filter id='glow' x='-5%' y='-20%' width='110%' height='140%'><feGaussianBlur stdDeviation='1.6'/></filter></defs>")
+    body.append(f"<g fill='{amber}' opacity='0.35' filter='url(#glow)'>{''.join(letters)}</g>")
+    body.append(f"<g fill='{amber}'>{''.join(letters)}</g>")
+    # the lines of the tube, across everything on it
+    body.append(f"<g stroke='{tube}' stroke-width='0.5' opacity='0.22'>" + ''.join(
+        f"<line x1='{sx}' y1='{yy + 0.5}' x2='{sx + sw}' y2='{yy + 0.5}'/>" for yy in range(int(sy) + 2, int(sy + sh), 2)) + '</g>')
+    body.append(text(x + mw / 2, y + mh + 36, '^B: ab hier fett, bis zum nächsten ^B', 14, GREY, 'middle'))
+    panels.append((body, (x, 4, mw, mh + 40 + 4)))
+    # the paper: what the printer made of it
+    body = []
+    x = 452
+    pw = 296
+    body.append(text(x + pw / 2, 26, 'erst auf dem Papier', 16, TEXT, 'middle', '600'))
+    body.append(paper(x, y, pw, mh - 6))
+    body.append(text(x + pw / 2, y + 44, 'Kuchenverkauf!', 26, INK, 'middle', '700'))
+    ty = y + 88
+    for parts in [[('Am Donnerstag, dem ', '400'), ('14. März', '700'), (',', '400')],
+                  [('verkaufen wir in der ', '400'), ('großen', '700')],
+                  [('Pause', '700'), (' Kuchen und Waffeln.', '400')],
+                  [],
+                  [('Wo: ', '400'), ('vor der Mensa', '700')]]:
+        tx = x + 22
+        for t, weight in parts:
+            if t.startswith(' '):
+                # a space at the start of a text element is dropped
+                tx += measure(' ', 15, weight)
+                t = t[1:]
+            body.append(text(tx, ty, t, 15, INK, weight=weight))
+            tx += measure(t, 15, weight)
+        ty += 24
+    body.append(text(x + pw / 2, y + mh + 36, 'Schriften, Größen, fett', 14, GREY, 'middle'))
+    panels.append((body, (x, 4, pw, mh + 40 + 4)))
+    two_ways('bildschirm', 'character-formatting', (w, h),
+             'Ein Text auf einem alten Bildschirm mit Zeichen für fett, daneben derselbe Text gedruckt', panels)
 
 
 def hervorheben(phone=False):
@@ -275,22 +366,37 @@ def hervorheben(phone=False):
     w, h = (360, 336) if phone else (560, 262)
     body = []
     # underlined: the line runs through g, p and y
-    word, size = 'Gruppe gegen Typen', 30
+    word, size = 'Waffeln gegen Spenden', 30 if not phone else 28
     x0, base = 24, 54
     body.append(text(x0, base, word, size, TEXT))
     under = base + 4
     body.append(line(x0, under, x0 + measure(word, size), under, TEXT, 1.8))
-    x = x0
-    for c in word:
-        cw = measure(c, size)
-        if c in 'gpy':
-            body.append(f"<circle cx='{x + cw / 2:.1f}' cy='{under + 1:.1f}' r='7' fill='none' stroke='{RED}' stroke-width='1.6'/>")
-        x += cw
+    # where the line runs through a letter: the word drawn large, the ink
+    # in the line's band, each piece of ink there gets a ring
+    from PIL import Image, ImageDraw
+    big = 400
+    font = ImageFont.truetype(str(_FONT_FILES[('sans', '400')]), big)
+    width = int(font.getlength(word)) + 40
+    picture = Image.new('L', (width, big * 2), 0)
+    ImageDraw.Draw(picture).text((0, big), word, font=font, fill=255, anchor='ls')
+    k = big / size
+    band = range(int(big + (4 - 0.9) * k), int(big + (4 + 0.9) * k) + 1)
+    inked = [any(picture.getpixel((px, py)) > 128 for py in band) for px in range(width)]
+    pieces, start = [], None
+    for px, on in enumerate(inked + [False]):
+        if on and start is None:
+            start = px
+        elif not on and start is not None:
+            pieces.append((start / k, px / k))
+            start = None
+    for a, b in pieces:
+        body.append(f"<ellipse cx='{x0 + (a + b) / 2:.1f}' cy='{under:.1f}' rx='{(b - a) / 2 + 4:.1f}' ry='5.5' "
+                    f"fill='none' stroke='{RED}' stroke-width='1.6'/>")
     if phone:
-        body.append(text(x0, base + 34, 'unterstrichen: die Linie schneidet g, p, y', 14, GREY))
+        body.append(text(x0, base + 34, 'unterstrichen: die Linie schneidet g und p', 14, GREY))
     else:
         body.append(text(x0 + measure(word, size) + 18, base - 4, 'unterstrichen:', 14, GREY))
-        body.append(text(x0 + measure(word, size) + 18, base + 14, 'die Linie schneidet g, p, y', 14, GREY))
+        body.append(text(x0 + measure(word, size) + 18, base + 14, 'die Linie schneidet g und p', 14, GREY))
     # the shape of a word: lower case has one, capitals are a rectangle
     size = 32
     up = set('bdfhklt') | set('ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ')
@@ -1662,7 +1768,7 @@ def karte_tabellen():
     svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
 
 
-DRAWINGS = {f.__name__: f for f in [abstand, serifen, hervorheben, liste, tabstopp, zelle, kopfzeile,
+DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, zelle, kopfzeile,
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, quadrat, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 # the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)
