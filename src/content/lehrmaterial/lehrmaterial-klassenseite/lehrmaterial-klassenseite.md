@@ -38,6 +38,8 @@ Hier wählst du eine Aktivität und siehst, wer welche Aufgabe gelöst hat. Jede
 
 Die Zeile **Klasse** darunter zählt, wie viele fertig sind und wie viele hängen. Eine gelbe Spalte heißt: Viele liegen bei dieser Aufgabe gerade falsch. Das ist oft ein guter Moment, kurz für alle zu erklären.
 
+Bei einer Vorhersage zählt die Zeile **Klasse** auch, wie viele richtig vermutet haben, und unter der Tabelle steht für jede Vorhersage eine Liste zum Aufklappen: welche Antworten die Klasse zuerst gegeben hat und wie oft, die richtige zuerst, und bei jeder falschen die Rückmeldung, die sie bekommt. Namen stehen dort nicht, und es zählt nur der erste Versuch jeder Person, auch wenn sie danach richtig liegt. Was viele zuerst vermuten, ist ein Thema für die Besprechung; warum das so gebaut ist, steht unter [Didaktik im Workspace](/lehrmaterial-didaktik#9-diagnostische-fragen).
+
 Ganz rechts steht unter **zuletzt**, wann jemand zuletzt eine Aufgabe dieser Aktivität geprüft, beantwortet oder abgegeben hat, etwa »vor 12 min«. Wer still ist, fällt dadurch auf, auch wenn noch kein Kreuz in der Zeile steht: Arbeitet die Klasse gerade an der Aktivität, steht über der Tabelle, wer seit über zehn Minuten nichts geprüft oder abgegeben hat, und diese Namen sind leicht hinterlegt. Das kann jemand sein, der hängt und nicht fragt, oder jemand, der in Ruhe arbeitet, ohne zu prüfen; was im Workspace geschieht, sieht die Seite nicht. Wer bei einem Treffpunkt als »fehlt heute« markiert ist, steht nicht in dieser Zeile. Die Zeiten laufen weiter, solange die Seite offen ist.
 
 Darüber stehen zwei Werkzeuge:

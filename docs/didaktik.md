@@ -9,6 +9,14 @@ sie gebraucht werden: [aktivitaet-schreiben.md](aktivitaet-schreiben.md) (wie
 man es macht), [aufgaben.md](aufgaben.md) (die Felder und Prüfarten) und
 [checkliste.md](checkliste.md) (was jede Aktivität erfüllen muss).
 
+Für Lehrkräfte erklärt die Seite »Didaktik im Workspace«
+(`src/content/lehrmaterial/lehrmaterial-didaktik`, nur für Lehrkräfte) die
+Ideen dahinter mit Quellen und Personenkästen: PRIMM, erst lesen, Parsons,
+Notional Machine, Rollen von Variablen, Vorhersagen, Fehlvorstellungen,
+diagnostische Fragen, Semantic Waves, Cognitive Load, gestufte Hilfen, ohne
+Rechner. Ändert sich hier eine Entscheidung, die dort als Beispiel steht,
+ändert sich der Abschnitt dort mit.
+
 Das Muster dahinter ist PRIMM (Predict, Run, Investigate, Modify, Make;
 Sentance und Waite): erst vermuten, dann ausführen, untersuchen, ändern und am
 Ende selbst schreiben. Die geführten Projekte (Raytracer, Raycaster,
