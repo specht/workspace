@@ -43,10 +43,20 @@ Abstände misst sie in pt, Seitenränder und Bilder dagegen in cm.
 _task(groesser)
 
 <!-- after: groesser -->
-So sieht die Einladung aus, wenn die Schrift überall eine Stufe größer wird:
+So sieht die Einladung aus, wenn die Schrift überall eine Stufe größer wird,
+im selben Maßstab neben der Einladung, wie sie war:
 
-<img class='paper' src='bilder/einladung-groesser.svg' alt='Dieselbe Einladung mit größerer Schrift: Die Überschrift steht rechts von der Mitte, das Datum am Anfang einer eigenen Zeile links, und im Brief folgt auf jede lange Zeile eine kurze mit ein, zwei Wörtern'>
+<div class='gallery'>
+<figure><img class='paper' src='bilder/einladung.svg' alt='Die Einladung, wie sie ausgedruckt aussieht: »Einladung zum Elternabend« fett in der Mitte, darunter »Klassenfahrt der 7b an den Kranichsee«, rechts »2. März«, dann »Liebe Eltern,« und ein Brief aus drei Zeilen, zwei Sätze zu Ort und Zeit, Gruß und Unterschrift'><figcaption><b>Vorher:</b> der Brief in 12 pt</figcaption></figure>
+<figure><img class='paper' src='bilder/einladung-groesser.svg' alt='Dieselbe Einladung mit größerer Schrift: Die Überschrift steht rechts von der Mitte, das Datum am Anfang einer eigenen Zeile links, und im Brief folgt auf jede lange Zeile eine kurze mit ein, zwei Wörtern'><figcaption><b>Eine Stufe größer:</b> der Brief in 14 pt</figcaption></figure>
+</div>
 
+Vergleiche die beiden Fassungen Zeile für Zeile, bevor du weiterliest.
+
+_task(zeilen-groesser)
+<!-- /after -->
+
+<!-- after: zeilen-groesser -->
 Die Überschrift stand nie in der Mitte. Vor ihr stehen 38 Leerzeichen, so
 viele, bis sie bei 16 pt ungefähr in der Mitte aussah. Werden die Leerzeichen
 breiter, schieben sie die Überschrift weiter nach rechts. Vor dem Datum stehen

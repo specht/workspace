@@ -30,6 +30,26 @@ tasks:
       und am Ende jeder Zeile des Briefs steht ein Zeilenumbruch von Hand. Mit
       größerer Schrift werden die Leerzeichen breiter und die Zeilen länger.
 
+  - id: zeilen-groesser
+    title: Zeilen zählen
+    prompt: |
+      Der Brief beginnt mit »im Mai« und endet mit »Kinder.«. Vorher steht er
+      in drei Zeilen. Auf wie viele Zeilen verteilt er sich, wenn die Schrift
+      eine Stufe größer ist?
+    check:
+      type: number
+      expect: 6
+      tolerance: 0
+    feedback:
+      - when: { between: [3, 3] }
+        say: So viele sind es vorher, mit 12 pt. Zähl in der rechten Fassung.
+      - when: { between: [4, 5] }
+        say: Zähl auch die kurzen Zeilen, in denen nur ein Wort steht.
+    hint: Fang in der rechten Fassung bei »im Mai« an und zähl jede Zeile bis »Kinder.«, auch die ganz kurzen.
+    solution: |
+      6: Auf jede lange Zeile folgt eine kurze mit einem einzigen Wort, »dem«,
+      »beantworten« und »Kinder.«.
+
   - id: absaetze
     title: Absätze zählen
     prompt: |
