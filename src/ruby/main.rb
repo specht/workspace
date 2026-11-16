@@ -2163,6 +2163,15 @@ class Main < Sinatra::Base
     # a person or a group; nil counts the page as it is.
     # drafts: activities still in development that count all the same (pinned
     # for the group in question, pinned_drafts)
+    # A task's check version (TaskSpec.check_version: a hash over its check),
+    # kept per task object: the tasks of the content do not change while the
+    # server runs, and the start page asks for the version of every task on
+    # every request. Weak, so tasks of a reloaded content are forgotten.
+    @@task_versions = ObjectSpace::WeakMap.new
+    def task_version(task)
+        @@task_versions[task] ||= TaskSpec.check_version(task)
+    end
+
     def activities_with_tasks(variant_of = nil, drafts: [])
         @@content.select { |slug, c| c[:tasks] && !(c[:tasks][:on_page] || []).empty? && (DEVELOPMENT || !c[:dev_only] || drafts.include?(slug)) && !c[:teacher_only] }
             .map do |slug, c|
@@ -2170,7 +2179,7 @@ class Main < Sinatra::Base
                 tasks = on_page.map do |id|
                     t = c[:tasks][:by_id][id]
                     { :id => id, :title => t['title'], :type => t['check']['type'],
-                      :version => TaskSpec.check_version(t), :prediction => t['prediction'] == true,
+                      :version => task_version(t), :prediction => t['prediction'] == true,
                       :extra => t['extra'] == true }
                 end
                 { :slug => slug, :activity => c[:tasks][:activity],
@@ -2182,6 +2191,19 @@ class Main < Sinatra::Base
     # the tasks as the group sees them.
     def class_activities(group)
         activities_with_tasks(->(slug) { group_page_variant(slug, group) }, :drafts => pinned_drafts([group])).map { |a| [a[:activity], a[:title], a[:tasks]] }.sort_by { |_, title, _| title.downcase }
+    end
+
+    # The activities of a group's class board, { activity => title }: the
+    # same as class_activities, without building the tasks (a version for
+    # each), which the start page's feedback hint does not need for every
+    # group a teacher teaches.
+    def class_activity_titles(group)
+        drafts = pinned_drafts([group])
+        @@content.each_with_object({}) do |(slug, c), titles|
+            next unless c[:tasks] && !(c[:tasks][:on_page] || []).empty? && (DEVELOPMENT || !c[:dev_only] || drafts.include?(slug)) && !c[:teacher_only]
+
+            titles[c[:tasks][:activity]] = CGI.unescapeHTML(c[:title].to_s.gsub(/<[^>]*>/, '').gsub('&shy;', ''))
+        end
     end
 
     # The logged-in person's TaskStates as { 'activity/id' => state }, once per request.

@@ -126,9 +126,11 @@ class Main < Sinatra::Base
         now = Time.now.to_i
         due = []
         groups.each do |group|
-            activities = class_activities(group).to_h { |key, title, _| [key, title] }
             per_activity = Hash.new { |hash, key| hash[key] = [] }
             students[group].each { |email| last[email].each { |activity, t| per_activity[activity] << t if t > 0 } }
+            next if per_activity.empty?
+
+            activities = class_activity_titles(group)
             per_activity.each do |activity, times|
                 next unless activities[activity]
 
