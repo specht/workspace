@@ -4,6 +4,26 @@
 format: 1
 activity: kata-dicts
 examples:
+  missing:
+    fail:
+      - answer: "def missing(book, names)\n  result = []\n  names.each do |name|\n    if book.key?(name)\n      result << name\n    end\n  end\n  result\nend\n"
+      - answer: "def missing(book, names)\n  result = []\n  names.each do |name|\n    if !book.key?(name)\n      result << book[name]\n    end\n  end\n  result\nend\n"
+    python:
+      fail:
+        - answer: "def missing(book, names):\n    result = []\n    for name in names:\n        if name in book:\n            result.append(name)\n    return result\n"
+        - answer: "def missing(book, names):\n    result = []\n    for name in names:\n        if name not in book:\n            result.append(book[name])\n    return result\n"
+    javascript:
+      fail:
+        - answer: "function missing(book, names) {\n  let result = [];\n  for (const name of names) {\n    if (name in book) {\n      result.push(name);\n    }\n  }\n  return result;\n}\n"
+        - answer: "function missing(book, names) {\n  let result = [];\n  for (const name of names) {\n    if (!(name in book)) {\n      result.push(book[name]);\n    }\n  }\n  return result;\n}\n"
+    dart:
+      fail:
+        - answer: "List<String> missing(Map<String, String> book, List<String> names) {\n  var result = <String>[];\n  for (final name in names) {\n    if (book.containsKey(name)) {\n      result.add(name);\n    }\n  }\n  return result;\n}\n"
+        - answer: "List<String> missing(Map<String, String> book, List<String> names) {\n  var result = <String>[];\n  for (final name in names) {\n    if (!book.containsKey(name)) {\n      result.add(book[name]!);\n    }\n  }\n  return result;\n}\n"
+    java:
+      fail:
+        - answer: "List<String> missing(Map<String, String> book, List<String> names) {\n    List<String> result = new ArrayList<>();\n    for (String name : names) {\n        if (book.containsKey(name)) {\n            result.add(name);\n        }\n    }\n    return result;\n}\n"
+        - answer: "List<String> missing(Map<String, String> book, List<String> names) {\n    List<String> result = new ArrayList<>();\n    for (String name : names) {\n        if (!book.containsKey(name)) {\n            result.add(book.get(name));\n        }\n    }\n    return result;\n}\n"
   phone-number:
     pass:
       - answer: "def phone_number(book, name)\n  if book.key?(name)\n    book[name]\n  else\n    'unbekannt'\n  end\nend\n"

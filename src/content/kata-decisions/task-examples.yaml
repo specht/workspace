@@ -4,6 +4,26 @@
 format: 1
 activity: kata-decisions
 examples:
+  sign:
+    fail:
+      - answer: "def sign(n)\n  if n >= 0\n    'positiv'\n  elsif n < 0\n    'negativ'\n  else\n    'null'\n  end\nend\n"
+      - answer: "def sign(n)\n  if n > 0\n    'positiv'\n  elsif n <= 0\n    'negativ'\n  else\n    'null'\n  end\nend\n"
+    python:
+      fail:
+        - answer: "def sign(n):\n    if n >= 0:\n        return 'positiv'\n    elif n < 0:\n        return 'negativ'\n    else:\n        return 'null'\n"
+        - answer: "def sign(n):\n    if n > 0:\n        return 'positiv'\n    elif n <= 0:\n        return 'negativ'\n    else:\n        return 'null'\n"
+    javascript:
+      fail:
+        - answer: "function sign(n) {\n  if (n >= 0) {\n    return 'positiv';\n  } else if (n < 0) {\n    return 'negativ';\n  } else {\n    return 'null';\n  }\n}\n"
+        - answer: "function sign(n) {\n  if (n > 0) {\n    return 'positiv';\n  } else if (n <= 0) {\n    return 'negativ';\n  } else {\n    return 'null';\n  }\n}\n"
+    dart:
+      fail:
+        - answer: "String sign(int n) {\n  if (n >= 0) {\n    return 'positiv';\n  } else if (n < 0) {\n    return 'negativ';\n  } else {\n    return 'null';\n  }\n}\n"
+        - answer: "String sign(int n) {\n  if (n > 0) {\n    return 'positiv';\n  } else if (n <= 0) {\n    return 'negativ';\n  } else {\n    return 'null';\n  }\n}\n"
+    java:
+      fail:
+        - answer: "String sign(int n) {\n    if (n >= 0) {\n        return \"positiv\";\n    } else if (n < 0) {\n        return \"negativ\";\n    } else {\n        return \"null\";\n    }\n}\n"
+        - answer: "String sign(int n) {\n    if (n > 0) {\n        return \"positiv\";\n    } else if (n <= 0) {\n        return \"negativ\";\n    } else {\n        return \"null\";\n    }\n}\n"
   even:
     pass:
       - answer: "def even(n)\n  n % 2 == 0\nend\n"

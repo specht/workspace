@@ -144,6 +144,10 @@ wie sie ist.
 
 ## Einstieg
 
+Zum Anfang setzt du wieder eine Funktion aus fertigen Zeilen zusammen. Achte darauf, dass die neue Liste vor der Schleife entsteht und in ihr wächst.
+
+_task(positives)
+
 _task(list-sum)
 
 _task(list-max)

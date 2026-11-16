@@ -1,6 +1,205 @@
 format: 1
 activity: kata-recursion
 tasks:
+  - id: digit-sum
+    title: "Quersumme, rekursiv"
+    level: 1
+    prompt: |
+      Die Quersumme von 1815 ist 1 + 8 + 1 + 5 = 15. Rekursiv gedacht: Die Quersumme ist die letzte Ziffer, `n % 10`, plus die Quersumme der Zahl ohne die letzte Ziffer, `n / 10`. Eine einstellige Zahl ist ihre eigene Quersumme. Setz aus den Zeilen eine Funktion `digit_sum(n)` zusammen, die genau so rechnet: `digit_sum(1815)` ergibt `15`.
+    parsons:
+      - "def digit_sum(n)"
+      - "  if n < 10"
+      - "    n"
+      - "  else"
+      - "    n % 10 + digit_sum(n / 10)"
+      - "  end"
+      - "end"
+    parsons_unused:
+      - "    0"
+      - "    n % 10 + digit_sum(n)"
+    check:
+      type: function
+      language: ruby
+      recursive: true
+      loops: false
+      cases:
+        - call: "digit_sum(1815)"
+          expect: "15"
+        - call: "digit_sum(7)"
+          expect: "7"
+          say: "Eine einstellige Zahl ist ihre eigene Quersumme."
+        - call: "digit_sum(0)"
+          expect: "0"
+        - call: "digit_sum(99)"
+          expect: "18"
+        - call: "digit_sum(1000)"
+          expect: "1"
+    hint:
+      - "Erst die Frage, ob die Zahl schon einstellig ist: Dann ist sie selbst das Ergebnis. Sonst kommt die letzte Ziffer plus der Aufruf mit der kürzeren Zahl."
+      - "Zwei Zeilen gehören nicht dazu: Eine gibt für eine einstellige Zahl das Falsche zurück, die andere ruft die Funktion mit derselben Zahl wieder auf und hört nie auf."
+    solution: |
+      ```ruby
+      def digit_sum(n)
+        if n < 10
+          n
+        else
+          n % 10 + digit_sum(n / 10)
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Die Quersumme von 1815 ist 1 + 8 + 1 + 5 = 15. Rekursiv gedacht: Die Quersumme ist die letzte Ziffer, `n % 10`, plus die Quersumme der Zahl ohne die letzte Ziffer, `n // 10`. Eine einstellige Zahl ist ihre eigene Quersumme. Setz aus den Zeilen eine Funktion `digit_sum(n)` zusammen, die genau so rechnet: `digit_sum(1815)` ergibt `15`.
+      parsons:
+        - "def digit_sum(n):"
+        - "    if n < 10:"
+        - "        return n"
+        - "    return n % 10 + digit_sum(n // 10)"
+      parsons_unused:
+        - "        return 0"
+        - "    return n % 10 + digit_sum(n)"
+      check:
+        type: function
+        language: python
+        recursive: true
+        loops: false
+        cases:
+          - call: "digit_sum(1815)"
+            expect: "15"
+          - call: "digit_sum(7)"
+            expect: "7"
+            say: "Eine einstellige Zahl ist ihre eigene Quersumme."
+          - call: "digit_sum(0)"
+            expect: "0"
+          - call: "digit_sum(99)"
+            expect: "18"
+          - call: "digit_sum(1000)"
+            expect: "1"
+      solution: |
+        ```python
+        def digit_sum(n):
+            if n < 10:
+                return n
+            return n % 10 + digit_sum(n // 10)
+        ```
+    javascript:
+      prompt: |
+        Die Quersumme von 1815 ist 1 + 8 + 1 + 5 = 15. Rekursiv gedacht: Die Quersumme ist die letzte Ziffer, `n % 10`, plus die Quersumme der Zahl ohne die letzte Ziffer, `Math.floor(n / 10)`. Eine einstellige Zahl ist ihre eigene Quersumme. Setz aus den Zeilen eine Funktion `digitSum(n)` zusammen, die genau so rechnet: `digitSum(1815)` ergibt `15`.
+      parsons:
+        - "function digitSum(n) {"
+        - "  if (n < 10) {"
+        - "    return n;"
+        - "  }"
+        - "  return n % 10 + digitSum(Math.floor(n / 10));"
+        - "}"
+      parsons_unused:
+        - "    return 0;"
+        - "  return n % 10 + digitSum(n);"
+      check:
+        type: function
+        language: javascript
+        recursive: true
+        loops: false
+        cases:
+          - call: "digitSum(1815)"
+            expect: "15"
+          - call: "digitSum(7)"
+            expect: "7"
+            say: "Eine einstellige Zahl ist ihre eigene Quersumme."
+          - call: "digitSum(0)"
+            expect: "0"
+          - call: "digitSum(99)"
+            expect: "18"
+          - call: "digitSum(1000)"
+            expect: "1"
+      solution: |
+        ```javascript
+        function digitSum(n) {
+          if (n < 10) {
+            return n;
+          }
+          return n % 10 + digitSum(Math.floor(n / 10));
+        }
+        ```
+    dart:
+      prompt: |
+        Die Quersumme von 1815 ist 1 + 8 + 1 + 5 = 15. Rekursiv gedacht: Die Quersumme ist die letzte Ziffer, `n % 10`, plus die Quersumme der Zahl ohne die letzte Ziffer, `n ~/ 10`. Eine einstellige Zahl ist ihre eigene Quersumme. Setz aus den Zeilen eine Funktion `int digitSum(int n)` zusammen, die genau so rechnet: `digitSum(1815)` ergibt `15`.
+      parsons:
+        - "int digitSum(int n) {"
+        - "  if (n < 10) {"
+        - "    return n;"
+        - "  }"
+        - "  return n % 10 + digitSum(n ~/ 10);"
+        - "}"
+      parsons_unused:
+        - "    return 0;"
+        - "  return n % 10 + digitSum(n);"
+      check:
+        type: function
+        language: dart
+        recursive: true
+        loops: false
+        cases:
+          - call: "digitSum(1815)"
+            expect: "15"
+          - call: "digitSum(7)"
+            expect: "7"
+            say: "Eine einstellige Zahl ist ihre eigene Quersumme."
+          - call: "digitSum(0)"
+            expect: "0"
+          - call: "digitSum(99)"
+            expect: "18"
+          - call: "digitSum(1000)"
+            expect: "1"
+      solution: |
+        ```dart
+        int digitSum(int n) {
+          if (n < 10) {
+            return n;
+          }
+          return n % 10 + digitSum(n ~/ 10);
+        }
+        ```
+    java:
+      prompt: |
+        Die Quersumme von 1815 ist 1 + 8 + 1 + 5 = 15. Rekursiv gedacht: Die Quersumme ist die letzte Ziffer, `n % 10`, plus die Quersumme der Zahl ohne die letzte Ziffer, `n / 10`. Eine einstellige Zahl ist ihre eigene Quersumme. Setz aus den Zeilen eine Methode `int digitSum(int n)` zusammen, die genau so rechnet: `digitSum(1815)` ergibt `15`.
+      parsons:
+        - "int digitSum(int n) {"
+        - "    if (n < 10) {"
+        - "        return n;"
+        - "    }"
+        - "    return n % 10 + digitSum(n / 10);"
+        - "}"
+      parsons_unused:
+        - "        return 0;"
+        - "    return n % 10 + digitSum(n);"
+      check:
+        type: function
+        language: java
+        recursive: true
+        loops: false
+        cases:
+          - call: "digitSum(1815)"
+            expect: "15"
+          - call: "digitSum(7)"
+            expect: "7"
+            say: "Eine einstellige Zahl ist ihre eigene Quersumme."
+          - call: "digitSum(0)"
+            expect: "0"
+          - call: "digitSum(99)"
+            expect: "18"
+          - call: "digitSum(1000)"
+            expect: "1"
+      solution: |
+        ```java
+        int digitSum(int n) {
+            if (n < 10) {
+                return n;
+            }
+            return n % 10 + digitSum(n / 10);
+        }
+        ```
+
   - id: factorial
     title: "Fakultät, rekursiv"
     level: 1

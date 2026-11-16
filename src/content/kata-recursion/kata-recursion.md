@@ -99,6 +99,10 @@ wartenden Aufrufe voll ist.
 
 ## Einstieg
 
+Zum Anfang setzt du wieder eine Funktion aus fertigen Zeilen zusammen. Achte darauf, wo die Rekursion aufhört und womit die Funktion sich selbst aufruft.
+
+_task(digit-sum)
+
 _task(factorial)
 
 _task(total)

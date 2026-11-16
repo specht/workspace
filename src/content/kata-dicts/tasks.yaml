@@ -1,6 +1,226 @@
 format: 1
 activity: kata-dicts
 tasks:
+  - id: missing
+    title: "Wer fehlt?"
+    level: 1
+    prompt: |
+      `book` ordnet Namen ihre Telefonnummern zu. Setz aus den Zeilen eine Funktion `missing(book, names)` zusammen, die die Namen aus der Liste `names` zurückgibt, die nicht in `book` stehen, in der Reihenfolge der Liste: `missing({'Ada' => '030 1815', 'Alan' => '040 1912'}, ['Ada', 'Grace', 'Linus'])` ergibt `['Grace', 'Linus']`.
+    parsons:
+      - "def missing(book, names)"
+      - "  result = []"
+      - "  names.each do |name|"
+      - "    if !book.key?(name)"
+      - "      result << name"
+      - "    end"
+      - "  end"
+      - "  result"
+      - "end"
+    parsons_unused:
+      - "    if book.key?(name)"
+      - "      result << book[name]"
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "missing({'Ada' => '030 1815', 'Alan' => '040 1912'}, ['Ada', 'Grace', 'Linus'])"
+          expect: "['Grace', 'Linus']"
+        - call: "missing({'Ada' => '030 1815', 'Alan' => '040 1912'}, ['Alan', 'Ada'])"
+          expect: "[]"
+          say: "Stehen alle darin, bleibt die Liste leer."
+        - call: "missing({}, ['Ada'])"
+          expect: "['Ada']"
+        - call: "missing({'Ada' => '030 1815', 'Alan' => '040 1912'}, [])"
+          expect: "[]"
+        - call: "missing({'Ada' => '030 1815', 'Alan' => '040 1912'}, ['Linus', 'Ada', 'Margaret'])"
+          expect: "['Linus', 'Margaret']"
+          say: "In der Reihenfolge der Liste."
+    hint:
+      - "Erst die leere Liste für das Ergebnis, dann die Schleife über die Namen, in ihr die Frage, ob der Name im Telefonbuch steht, und darin das Anhängen."
+      - "Zwei Zeilen gehören nicht dazu: Eine fragt genau verkehrt herum, die andere hängt eine Nummer an statt eines Namens."
+    solution: |
+      ```ruby
+      def missing(book, names)
+        result = []
+        names.each do |name|
+          if !book.key?(name)
+            result << name
+          end
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        `book` ordnet Namen ihre Telefonnummern zu. Setz aus den Zeilen eine Funktion `missing(book, names)` zusammen, die die Namen aus der Liste `names` zurückgibt, die nicht in `book` stehen, in der Reihenfolge der Liste: `missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Ada', 'Grace', 'Linus'])` ergibt `['Grace', 'Linus']`.
+      parsons:
+        - "def missing(book, names):"
+        - "    result = []"
+        - "    for name in names:"
+        - "        if name not in book:"
+        - "            result.append(name)"
+        - "    return result"
+      parsons_unused:
+        - "        if name in book:"
+        - "            result.append(book[name])"
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Ada', 'Grace', 'Linus'])"
+            expect: "['Grace', 'Linus']"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Alan', 'Ada'])"
+            expect: "[]"
+            say: "Stehen alle darin, bleibt die Liste leer."
+          - call: "missing({}, ['Ada'])"
+            expect: "['Ada']"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, [])"
+            expect: "[]"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Linus', 'Ada', 'Margaret'])"
+            expect: "['Linus', 'Margaret']"
+            say: "In der Reihenfolge der Liste."
+      solution: |
+        ```python
+        def missing(book, names):
+            result = []
+            for name in names:
+                if name not in book:
+                    result.append(name)
+            return result
+        ```
+    javascript:
+      prompt: |
+        `book` ordnet Namen ihre Telefonnummern zu. Setz aus den Zeilen eine Funktion `missing(book, names)` zusammen, die die Namen aus der Liste `names` zurückgibt, die nicht in `book` stehen, in der Reihenfolge der Liste: `missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Ada', 'Grace', 'Linus'])` ergibt `['Grace', 'Linus']`.
+      parsons:
+        - "function missing(book, names) {"
+        - "  let result = [];"
+        - "  for (const name of names) {"
+        - "    if (!(name in book)) {"
+        - "      result.push(name);"
+        - "    }"
+        - "  }"
+        - "  return result;"
+        - "}"
+      parsons_unused:
+        - "    if (name in book) {"
+        - "      result.push(book[name]);"
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Ada', 'Grace', 'Linus'])"
+            expect: "['Grace', 'Linus']"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Alan', 'Ada'])"
+            expect: "[]"
+            say: "Stehen alle darin, bleibt die Liste leer."
+          - call: "missing({}, ['Ada'])"
+            expect: "['Ada']"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, [])"
+            expect: "[]"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Linus', 'Ada', 'Margaret'])"
+            expect: "['Linus', 'Margaret']"
+            say: "In der Reihenfolge der Liste."
+      solution: |
+        ```javascript
+        function missing(book, names) {
+          let result = [];
+          for (const name of names) {
+            if (!(name in book)) {
+              result.push(name);
+            }
+          }
+          return result;
+        }
+        ```
+    dart:
+      prompt: |
+        `book` ordnet Namen ihre Telefonnummern zu. Setz aus den Zeilen eine Funktion `List<String> missing(Map<String, String> book, List<String> names)` zusammen, die die Namen aus der Liste `names` zurückgibt, die nicht in `book` stehen, in der Reihenfolge der Liste: `missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Ada', 'Grace', 'Linus'])` ergibt `['Grace', 'Linus']`.
+      parsons:
+        - "List<String> missing(Map<String, String> book, List<String> names) {"
+        - "  var result = <String>[];"
+        - "  for (final name in names) {"
+        - "    if (!book.containsKey(name)) {"
+        - "      result.add(name);"
+        - "    }"
+        - "  }"
+        - "  return result;"
+        - "}"
+      parsons_unused:
+        - "    if (book.containsKey(name)) {"
+        - "      result.add(book[name]!);"
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Ada', 'Grace', 'Linus'])"
+            expect: "['Grace', 'Linus']"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Alan', 'Ada'])"
+            expect: "[]"
+            say: "Stehen alle darin, bleibt die Liste leer."
+          - call: "missing(<String, String>{}, ['Ada'])"
+            expect: "['Ada']"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, [])"
+            expect: "[]"
+          - call: "missing({'Ada': '030 1815', 'Alan': '040 1912'}, ['Linus', 'Ada', 'Margaret'])"
+            expect: "['Linus', 'Margaret']"
+            say: "In der Reihenfolge der Liste."
+      solution: |
+        ```dart
+        List<String> missing(Map<String, String> book, List<String> names) {
+          var result = <String>[];
+          for (final name in names) {
+            if (!book.containsKey(name)) {
+              result.add(name);
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        `book` ordnet Namen ihre Telefonnummern zu. Setz aus den Zeilen eine Methode `List<String> missing(Map<String, String> book, List<String> names)` zusammen, die die Namen aus der Liste `names` zurückgibt, die nicht in `book` stehen, in der Reihenfolge der Liste: `missing(Map.of("Ada", "030 1815", "Alan", "040 1912"), List.of("Ada", "Grace", "Linus"))` ergibt `["Grace", "Linus"]`.
+      parsons:
+        - "List<String> missing(Map<String, String> book, List<String> names) {"
+        - "    List<String> result = new ArrayList<>();"
+        - "    for (String name : names) {"
+        - "        if (!book.containsKey(name)) {"
+        - "            result.add(name);"
+        - "        }"
+        - "    }"
+        - "    return result;"
+        - "}"
+      parsons_unused:
+        - "        if (book.containsKey(name)) {"
+        - "            result.add(book.get(name));"
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "missing(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\"), List.of(\"Ada\", \"Grace\", \"Linus\"))"
+            expect: "List.of(\"Grace\", \"Linus\")"
+          - call: "missing(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\"), List.of(\"Alan\", \"Ada\"))"
+            expect: "List.of()"
+            say: "Stehen alle darin, bleibt die Liste leer."
+          - call: "missing(Map.of(), List.of(\"Ada\"))"
+            expect: "List.of(\"Ada\")"
+          - call: "missing(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\"), List.of())"
+            expect: "List.of()"
+          - call: "missing(Map.of(\"Ada\", \"030 1815\", \"Alan\", \"040 1912\"), List.of(\"Linus\", \"Ada\", \"Margaret\"))"
+            expect: "List.of(\"Linus\", \"Margaret\")"
+            say: "In der Reihenfolge der Liste."
+      solution: |
+        ```java
+        List<String> missing(Map<String, String> book, List<String> names) {
+            List<String> result = new ArrayList<>();
+            for (String name : names) {
+                if (!book.containsKey(name)) {
+                    result.add(name);
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: phone-number
     title: "Im Telefonbuch"
     level: 1

@@ -149,6 +149,10 @@ von Unicode. Mit den Nummern kann man rechnen.
 
 ## Einstieg
 
+Zum Anfang setzt du wieder eine Funktion aus fertigen Zeilen zusammen. Achte darauf, was vor der Schleife steht, was in ihr und was danach.
+
+_task(digits-only)
+
 _task(reverse-text)
 
 _task(count-vowels)

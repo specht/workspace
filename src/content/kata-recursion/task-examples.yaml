@@ -4,6 +4,26 @@
 format: 1
 activity: kata-recursion
 examples:
+  digit-sum:
+    fail:
+      - answer: "def digit_sum(n)\n  if n < 10\n    0\n  else\n    n % 10 + digit_sum(n / 10)\n  end\nend\n"
+      - answer: "def digit_sum(n)\n  if n < 10\n    n\n  else\n    n % 10 + digit_sum(n)\n  end\nend\n"
+    python:
+      fail:
+        - answer: "def digit_sum(n):\n    if n < 10:\n        return 0\n    return n % 10 + digit_sum(n // 10)\n"
+        - answer: "def digit_sum(n):\n    if n < 10:\n        return n\n    return n % 10 + digit_sum(n)\n"
+    javascript:
+      fail:
+        - answer: "function digitSum(n) {\n  if (n < 10) {\n    return 0;\n  }\n  return n % 10 + digitSum(Math.floor(n / 10));\n}\n"
+        - answer: "function digitSum(n) {\n  if (n < 10) {\n    return n;\n  }\n  return n % 10 + digitSum(n);\n}\n"
+    dart:
+      fail:
+        - answer: "int digitSum(int n) {\n  if (n < 10) {\n    return 0;\n  }\n  return n % 10 + digitSum(n ~/ 10);\n}\n"
+        - answer: "int digitSum(int n) {\n  if (n < 10) {\n    return n;\n  }\n  return n % 10 + digitSum(n);\n}\n"
+    java:
+      fail:
+        - answer: "int digitSum(int n) {\n    if (n < 10) {\n        return 0;\n    }\n    return n % 10 + digitSum(n / 10);\n}\n"
+        - answer: "int digitSum(int n) {\n    if (n < 10) {\n        return n;\n    }\n    return n % 10 + digitSum(n);\n}\n"
   factorial:
     pass:
       - answer: "def factorial(n)\n  return 1 if n == 0\n  n * factorial(n - 1)\nend\n"

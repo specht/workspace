@@ -122,6 +122,10 @@ Handbuchseite [Hash Tables](/reference/hash-tables).
 
 ## Einstieg
 
+Zum Anfang setzt du wieder eine Funktion aus fertigen Zeilen zusammen. Achte darauf, worüber die Schleife läuft: über die Liste der Namen, nicht über das Telefonbuch.
+
+_task(missing)
+
 _task(phone-number)
 
 _task(count-items)

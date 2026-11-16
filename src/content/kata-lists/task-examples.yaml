@@ -4,6 +4,26 @@
 format: 1
 activity: kata-lists
 examples:
+  positives:
+    fail:
+      - answer: "def positives(numbers)\n  result = []\n  numbers.each do |number|\n    if number >= 0\n      result << number\n    end\n  end\n  result\nend\n"
+      - answer: "def positives(numbers)\n  result = []\n  numbers.each do |number|\n    if number > 0\n      result = [number]\n    end\n  end\n  result\nend\n"
+    python:
+      fail:
+        - answer: "def positives(numbers):\n    result = []\n    for number in numbers:\n        if number >= 0:\n            result.append(number)\n    return result\n"
+        - answer: "def positives(numbers):\n    result = []\n    for number in numbers:\n        if number > 0:\n            result = [number]\n    return result\n"
+    javascript:
+      fail:
+        - answer: "function positives(numbers) {\n  let result = [];\n  for (const number of numbers) {\n    if (number >= 0) {\n      result.push(number);\n    }\n  }\n  return result;\n}\n"
+        - answer: "function positives(numbers) {\n  let result = [];\n  for (const number of numbers) {\n    if (number > 0) {\n      result = [number];\n    }\n  }\n  return result;\n}\n"
+    dart:
+      fail:
+        - answer: "List<int> positives(List<int> numbers) {\n  var result = <int>[];\n  for (final number in numbers) {\n    if (number >= 0) {\n      result.add(number);\n    }\n  }\n  return result;\n}\n"
+        - answer: "List<int> positives(List<int> numbers) {\n  var result = <int>[];\n  for (final number in numbers) {\n    if (number > 0) {\n      result = [number];\n    }\n  }\n  return result;\n}\n"
+    java:
+      fail:
+        - answer: "List<Integer> positives(List<Integer> numbers) {\n    List<Integer> result = new ArrayList<>();\n    for (int number : numbers) {\n        if (number >= 0) {\n            result.add(number);\n        }\n    }\n    return result;\n}\n"
+        - answer: "List<Integer> positives(List<Integer> numbers) {\n    List<Integer> result = new ArrayList<>();\n    for (int number : numbers) {\n        if (number > 0) {\n            result = List.of(number);\n        }\n    }\n    return result;\n}\n"
   list-sum:
     pass:
       - answer: "def list_sum(numbers)\n  total = 0\n  numbers.each do |number|\n    total += number\n  end\n  total\nend\n"

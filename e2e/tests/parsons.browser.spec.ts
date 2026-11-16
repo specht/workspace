@@ -127,3 +127,29 @@ test('Parsons lines can be dragged with the mouse and with a finger', async ({ b
   expect((await texts(pcard)).indexOf(order[0])).toBe(3);
   await phone.context().close();
 });
+
+// Every Kata whose »Einstieg« starts with a puzzle shows it: its lines, two
+// that do not belong, nothing indented, and the hidden code in that order.
+const PUZZLES: [string, string, number][] = [
+  ['kata-decisions', 'sign', 11], ['kata-loops', 'sum-even', 11], ['kata-texts', 'digits-only', 11],
+  ['kata-lists', 'positives', 11], ['kata-dicts', 'missing', 11], ['kata-recursion', 'digit-sum', 9],
+  ['kata-search', 'first-negative', 10],
+];
+test('the first card of each Kata\'s »Einstieg« is a puzzle', async ({ page, e2eEmail }, testInfo) => {
+  test.setTimeout(120_000);
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  for (const [kata, id, count] of PUZZLES) {
+    await page.request.post('/api/task/delete', { data: { task: `${kata}/${id}` } });
+    await page.goto(`/${kata}`);
+    const card = page.locator(`.task-card[data-task="${kata}/${id}"]:visible`);
+    const lines = card.locator('.parsons-line');
+    const language = await card.locator('.parsons-answer').getAttribute('data-code-language');
+    // the counts are Ruby's lines; in Python, without »end«, there are fewer
+    if (language === 'ruby') await expect(lines).toHaveCount(count);
+    else expect(await lines.count()).toBeGreaterThan(5);
+    await expect(card.locator('.parsons-line:not([data-level="0"])')).toHaveCount(0);
+    const texts = await lines.evaluateAll((items) => items.map((li) => (li as HTMLElement).dataset.text));
+    expect(await card.locator('.parsons-answer').inputValue()).toBe(texts.join('\n') + '\n');
+    if (kata === 'kata-decisions') await card.screenshot({ path: testInfo.outputPath('sign.png') });
+  }
+});

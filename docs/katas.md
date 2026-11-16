@@ -213,8 +213,17 @@ compilers hot (`src/ruby/include/hot_compile.rb`):
 - **Parsons puzzles** (`parsons`, docs/aufgaben.md »Parsons-Puzzles«): a
   function card whose code is put together from given lines, shuffled per
   person, with up to three lines that do not belong; the first card of
-  »Katas: Schleifen« is one, before students write code themselves (the
-  LAA concept: reading and ordering before writing).
+  »Einstieg« in Bedingungen (`sign`), Schleifen (`sum-even`), Texte
+  (`digits-only`), Listen (`positives`), Dictionaries (`missing`), Rekursion
+  (`digit-sum`) and Suchen (`first-negative`) is one, before students write
+  code themselves (the LAA concept: reading and ordering before writing).
+  Each is a problem of its own, near the next card but not its solution; the
+  two lines that do not belong are the typical mistakes (`>=` for `>`, the
+  value for its index, a variable overwritten instead of added to, a call
+  that never gets smaller), and task-examples.yaml has the solution with
+  each of them as a »fail«. Dragged, a line is lifted and follows the
+  pointer, a slot shows where it lands; »Meine Antwort löschen« shuffles
+  the puzzle back to the person's starting order.
 - **»Lösung einsetzen«** beside a Kata's buttons for teachers puts the
   solution into the editor; the solution is never in the card's HTML.
 - **Visitors** see a Kata's code read-only in the same editor, with colours

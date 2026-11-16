@@ -1,6 +1,221 @@
 format: 1
 activity: kata-texts
 tasks:
+  - id: digits-only
+    title: "Nur die Ziffern"
+    level: 1
+    prompt: |
+      Setz aus den Zeilen eine Funktion `digits_only(text)` zusammen, die nur die Ziffern eines Textes zurückgibt, in ihrer Reihenfolge: `digits_only('R2-D2')` ergibt `'22'`.
+    parsons:
+      - "def digits_only(text)"
+      - "  digits = ''"
+      - "  text.each_char do |c|"
+      - "    if '0123456789'.include?(c)"
+      - "      digits += c"
+      - "    end"
+      - "  end"
+      - "  digits"
+      - "end"
+    parsons_unused:
+      - "  digits = 0"
+      - "      digits = c"
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "digits_only('R2-D2')"
+          expect: "'22'"
+        - call: "digits_only('10115 Berlin')"
+          expect: "'10115'"
+        - call: "digits_only('Hallo')"
+          expect: "''"
+          say: "Ohne Ziffern bleibt ein leerer Text."
+        - call: "digits_only('')"
+          expect: "''"
+        - call: "digits_only('a1b2c3')"
+          expect: "'123'"
+    hint:
+      - "Erst der Text für das Ergebnis, dann die Schleife über die Zeichen, in ihr die Frage, ob das Zeichen eine Ziffer ist, und darin das Anhängen. Ganz am Ende kommt das Ergebnis zurück."
+      - "Zwei Zeilen gehören nicht dazu: Eine fängt mit einer Zahl statt mit einem Text an, die andere ersetzt das Ergebnis, statt etwas anzuhängen."
+    solution: |
+      ```ruby
+      def digits_only(text)
+        digits = ''
+        text.each_char do |c|
+          if '0123456789'.include?(c)
+            digits += c
+          end
+        end
+        digits
+      end
+      ```
+    python:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `digits_only(text)` zusammen, die nur die Ziffern eines Textes zurückgibt, in ihrer Reihenfolge: `digits_only('R2-D2')` ergibt `'22'`.
+      parsons:
+        - "def digits_only(text):"
+        - "    digits = ''"
+        - "    for c in text:"
+        - "        if c in '0123456789':"
+        - "            digits += c"
+        - "    return digits"
+      parsons_unused:
+        - "    digits = 0"
+        - "            digits = c"
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "digits_only('R2-D2')"
+            expect: "'22'"
+          - call: "digits_only('10115 Berlin')"
+            expect: "'10115'"
+          - call: "digits_only('Hallo')"
+            expect: "''"
+            say: "Ohne Ziffern bleibt ein leerer Text."
+          - call: "digits_only('')"
+            expect: "''"
+          - call: "digits_only('a1b2c3')"
+            expect: "'123'"
+      solution: |
+        ```python
+        def digits_only(text):
+            digits = ''
+            for c in text:
+                if c in '0123456789':
+                    digits += c
+            return digits
+        ```
+    javascript:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `digitsOnly(text)` zusammen, die nur die Ziffern eines Textes zurückgibt, in ihrer Reihenfolge: `digitsOnly('R2-D2')` ergibt `'22'`.
+      parsons:
+        - "function digitsOnly(text) {"
+        - "  let digits = '';"
+        - "  for (const c of text) {"
+        - "    if ('0123456789'.includes(c)) {"
+        - "      digits += c;"
+        - "    }"
+        - "  }"
+        - "  return digits;"
+        - "}"
+      parsons_unused:
+        - "  let digits = 0;"
+        - "      digits = c;"
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "digitsOnly('R2-D2')"
+            expect: "'22'"
+          - call: "digitsOnly('10115 Berlin')"
+            expect: "'10115'"
+          - call: "digitsOnly('Hallo')"
+            expect: "''"
+            say: "Ohne Ziffern bleibt ein leerer Text."
+          - call: "digitsOnly('')"
+            expect: "''"
+          - call: "digitsOnly('a1b2c3')"
+            expect: "'123'"
+      solution: |
+        ```javascript
+        function digitsOnly(text) {
+          let digits = '';
+          for (const c of text) {
+            if ('0123456789'.includes(c)) {
+              digits += c;
+            }
+          }
+          return digits;
+        }
+        ```
+    dart:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `String digitsOnly(String text)` zusammen, die nur die Ziffern eines Textes zurückgibt, in ihrer Reihenfolge: `digitsOnly('R2-D2')` ergibt `'22'`.
+      parsons:
+        - "String digitsOnly(String text) {"
+        - "  var digits = '';"
+        - "  for (final c in text.split('')) {"
+        - "    if ('0123456789'.contains(c)) {"
+        - "      digits += c;"
+        - "    }"
+        - "  }"
+        - "  return digits;"
+        - "}"
+      parsons_unused:
+        - "  var digits = 0;"
+        - "      digits = c;"
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "digitsOnly('R2-D2')"
+            expect: "'22'"
+          - call: "digitsOnly('10115 Berlin')"
+            expect: "'10115'"
+          - call: "digitsOnly('Hallo')"
+            expect: "''"
+            say: "Ohne Ziffern bleibt ein leerer Text."
+          - call: "digitsOnly('')"
+            expect: "''"
+          - call: "digitsOnly('a1b2c3')"
+            expect: "'123'"
+      solution: |
+        ```dart
+        String digitsOnly(String text) {
+          var digits = '';
+          for (final c in text.split('')) {
+            if ('0123456789'.contains(c)) {
+              digits += c;
+            }
+          }
+          return digits;
+        }
+        ```
+    java:
+      prompt: |
+        Setz aus den Zeilen eine Methode `String digitsOnly(String text)` zusammen, die nur die Ziffern eines Textes zurückgibt, in ihrer Reihenfolge: `digitsOnly("R2-D2")` ergibt `"22"`.
+      parsons:
+        - "String digitsOnly(String text) {"
+        - "    String digits = \"\";"
+        - "    for (char c : text.toCharArray()) {"
+        - "        if (\"0123456789\".indexOf(c) >= 0) {"
+        - "            digits += c;"
+        - "        }"
+        - "    }"
+        - "    return digits;"
+        - "}"
+      parsons_unused:
+        - "    int digits = 0;"
+        - "            digits = \"\" + c;"
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "digitsOnly(\"R2-D2\")"
+            expect: "\"22\""
+          - call: "digitsOnly(\"10115 Berlin\")"
+            expect: "\"10115\""
+          - call: "digitsOnly(\"Hallo\")"
+            expect: "\"\""
+            say: "Ohne Ziffern bleibt ein leerer Text."
+          - call: "digitsOnly(\"\")"
+            expect: "\"\""
+          - call: "digitsOnly(\"a1b2c3\")"
+            expect: "\"123\""
+      solution: |
+        ```java
+        String digitsOnly(String text) {
+            String digits = "";
+            for (char c : text.toCharArray()) {
+                if ("0123456789".indexOf(c) >= 0) {
+                    digits += c;
+                }
+            }
+            return digits;
+        }
+        ```
+
   - id: reverse-text
     title: "Rückwärts"
     level: 1

@@ -1,6 +1,223 @@
 format: 1
 activity: kata-decisions
 tasks:
+  - id: sign
+    title: "Das Vorzeichen"
+    level: 1
+    prompt: |
+      Setz aus den Zeilen eine Funktion `sign(n)` zusammen, die sagt, ob eine Zahl positiv, negativ oder null ist: `sign(5)` ergibt `'positiv'`, `sign(-3)` ergibt `'negativ'` und `sign(0)` ergibt `'null'`.
+    parsons:
+      - "def sign(n)"
+      - "  if n > 0"
+      - "    'positiv'"
+      - "  elsif n < 0"
+      - "    'negativ'"
+      - "  else"
+      - "    'null'"
+      - "  end"
+      - "end"
+    parsons_unused:
+      - "  if n >= 0"
+      - "  elsif n <= 0"
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "sign(5)"
+          expect: "'positiv'"
+        - call: "sign(-3)"
+          expect: "'negativ'"
+        - call: "sign(0)"
+          expect: "'null'"
+          say: "0 ist weder positiv noch negativ."
+        - call: "sign(1)"
+          expect: "'positiv'"
+        - call: "sign(-1)"
+          expect: "'negativ'"
+    hint:
+      - "Ganz oben steht die erste Zeile der Funktion, ganz unten ihr Ende. Dazwischen kommen drei Zweige: einer für positive Zahlen, einer für negative und einer für alles andere."
+      - "Was in einem Zweig steht, ist eine Stufe weiter eingerückt als die Bedingung darüber. Zwei Zeilen gehören nicht dazu: Probier aus, was sie mit der 0 machen würden."
+    solution: |
+      ```ruby
+      def sign(n)
+        if n > 0
+          'positiv'
+        elsif n < 0
+          'negativ'
+        else
+          'null'
+        end
+      end
+      ```
+    python:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `sign(n)` zusammen, die sagt, ob eine Zahl positiv, negativ oder null ist: `sign(5)` ergibt `'positiv'`, `sign(-3)` ergibt `'negativ'` und `sign(0)` ergibt `'null'`.
+      parsons:
+        - "def sign(n):"
+        - "    if n > 0:"
+        - "        return 'positiv'"
+        - "    elif n < 0:"
+        - "        return 'negativ'"
+        - "    else:"
+        - "        return 'null'"
+      parsons_unused:
+        - "    if n >= 0:"
+        - "    elif n <= 0:"
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "sign(5)"
+            expect: "'positiv'"
+          - call: "sign(-3)"
+            expect: "'negativ'"
+          - call: "sign(0)"
+            expect: "'null'"
+            say: "0 ist weder positiv noch negativ."
+          - call: "sign(1)"
+            expect: "'positiv'"
+          - call: "sign(-1)"
+            expect: "'negativ'"
+      solution: |
+        ```python
+        def sign(n):
+            if n > 0:
+                return 'positiv'
+            elif n < 0:
+                return 'negativ'
+            else:
+                return 'null'
+        ```
+    javascript:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `sign(n)` zusammen, die sagt, ob eine Zahl positiv, negativ oder null ist: `sign(5)` ergibt `'positiv'`, `sign(-3)` ergibt `'negativ'` und `sign(0)` ergibt `'null'`.
+      parsons:
+        - "function sign(n) {"
+        - "  if (n > 0) {"
+        - "    return 'positiv';"
+        - "  } else if (n < 0) {"
+        - "    return 'negativ';"
+        - "  } else {"
+        - "    return 'null';"
+        - "  }"
+        - "}"
+      parsons_unused:
+        - "  if (n >= 0) {"
+        - "  } else if (n <= 0) {"
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "sign(5)"
+            expect: "'positiv'"
+          - call: "sign(-3)"
+            expect: "'negativ'"
+          - call: "sign(0)"
+            expect: "'null'"
+            say: "0 ist weder positiv noch negativ."
+          - call: "sign(1)"
+            expect: "'positiv'"
+          - call: "sign(-1)"
+            expect: "'negativ'"
+      solution: |
+        ```javascript
+        function sign(n) {
+          if (n > 0) {
+            return 'positiv';
+          } else if (n < 0) {
+            return 'negativ';
+          } else {
+            return 'null';
+          }
+        }
+        ```
+    dart:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `String sign(int n)` zusammen, die sagt, ob eine Zahl positiv, negativ oder null ist: `sign(5)` ergibt `'positiv'`, `sign(-3)` ergibt `'negativ'` und `sign(0)` ergibt `'null'`.
+      parsons:
+        - "String sign(int n) {"
+        - "  if (n > 0) {"
+        - "    return 'positiv';"
+        - "  } else if (n < 0) {"
+        - "    return 'negativ';"
+        - "  } else {"
+        - "    return 'null';"
+        - "  }"
+        - "}"
+      parsons_unused:
+        - "  if (n >= 0) {"
+        - "  } else if (n <= 0) {"
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "sign(5)"
+            expect: "'positiv'"
+          - call: "sign(-3)"
+            expect: "'negativ'"
+          - call: "sign(0)"
+            expect: "'null'"
+            say: "0 ist weder positiv noch negativ."
+          - call: "sign(1)"
+            expect: "'positiv'"
+          - call: "sign(-1)"
+            expect: "'negativ'"
+      solution: |
+        ```dart
+        String sign(int n) {
+          if (n > 0) {
+            return 'positiv';
+          } else if (n < 0) {
+            return 'negativ';
+          } else {
+            return 'null';
+          }
+        }
+        ```
+    java:
+      prompt: |
+        Setz aus den Zeilen eine Methode `String sign(int n)` zusammen, die sagt, ob eine Zahl positiv, negativ oder null ist: `sign(5)` ergibt `"positiv"`, `sign(-3)` ergibt `"negativ"` und `sign(0)` ergibt `"null"`.
+      parsons:
+        - "String sign(int n) {"
+        - "    if (n > 0) {"
+        - "        return \"positiv\";"
+        - "    } else if (n < 0) {"
+        - "        return \"negativ\";"
+        - "    } else {"
+        - "        return \"null\";"
+        - "    }"
+        - "}"
+      parsons_unused:
+        - "    if (n >= 0) {"
+        - "    } else if (n <= 0) {"
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "sign(5)"
+            expect: "\"positiv\""
+          - call: "sign(-3)"
+            expect: "\"negativ\""
+          - call: "sign(0)"
+            expect: "\"null\""
+            say: "0 ist weder positiv noch negativ."
+          - call: "sign(1)"
+            expect: "\"positiv\""
+          - call: "sign(-1)"
+            expect: "\"negativ\""
+      solution: |
+        ```java
+        String sign(int n) {
+            if (n > 0) {
+                return "positiv";
+            } else if (n < 0) {
+                return "negativ";
+            } else {
+                return "null";
+            }
+        }
+        ```
+
   - id: even
     title: "Gerade oder ungerade"
     level: 1

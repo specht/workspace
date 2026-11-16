@@ -138,6 +138,10 @@ auch direkt zurückgeben.
 
 ## Einstieg
 
+Zum Anfang schreibst du nichts selbst, sondern setzt eine Funktion aus fertigen Zeilen zusammen. Achte darauf, welche Bedingung zuerst gefragt wird und welche Zeile zu welchem Zweig gehört.
+
+_task(sign)
+
 _task(even)
 
 _task(max-of-two)

@@ -106,6 +106,10 @@ kann nicht `null` sein.
 
 ## Einstieg
 
+Zum Anfang setzt du wieder eine Funktion aus fertigen Zeilen zusammen. Achte darauf, was passiert, sobald die Suche fündig wird, und was erst nach der Schleife kommt.
+
+_task(first-negative)
+
 _task(linear-search)
 
 _task(min-index)

@@ -4,6 +4,26 @@
 format: 1
 activity: kata-search
 examples:
+  first-negative:
+    fail:
+      - answer: "def first_negative(numbers)\n  numbers.each_with_index do |number, i|\n    if number < 0\n      return number\n    end\n  end\n  nil\nend\n"
+      - answer: "def first_negative(numbers)\n  numbers.each_with_index do |number, i|\n    if number <= 0\n      return i\n    end\n  end\n  nil\nend\n"
+    python:
+      fail:
+        - answer: "def first_negative(numbers):\n    for i in range(len(numbers)):\n        if numbers[i] < 0:\n            return numbers[i]\n    return None\n"
+        - answer: "def first_negative(numbers):\n    for i in range(len(numbers)):\n        if numbers[i] <= 0:\n            return i\n    return None\n"
+    javascript:
+      fail:
+        - answer: "function firstNegative(numbers) {\n  for (let i = 0; i < numbers.length; i++) {\n    if (numbers[i] < 0) {\n      return numbers[i];\n    }\n  }\n  return null;\n}\n"
+        - answer: "function firstNegative(numbers) {\n  for (let i = 0; i < numbers.length; i++) {\n    if (numbers[i] <= 0) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+    dart:
+      fail:
+        - answer: "int? firstNegative(List<int> numbers) {\n  for (var i = 0; i < numbers.length; i++) {\n    if (numbers[i] < 0) {\n      return numbers[i];\n    }\n  }\n  return null;\n}\n"
+        - answer: "int? firstNegative(List<int> numbers) {\n  for (var i = 0; i < numbers.length; i++) {\n    if (numbers[i] <= 0) {\n      return i;\n    }\n  }\n  return null;\n}\n"
+    java:
+      fail:
+        - answer: "Integer firstNegative(List<Integer> numbers) {\n    for (int i = 0; i < numbers.size(); i++) {\n        if (numbers.get(i) < 0) {\n            return numbers.get(i);\n        }\n    }\n    return null;\n}\n"
+        - answer: "Integer firstNegative(List<Integer> numbers) {\n    for (int i = 0; i < numbers.size(); i++) {\n        if (numbers.get(i) <= 0) {\n            return i;\n        }\n    }\n    return null;\n}\n"
   linear-search:
     pass:
       - answer: "def linear_search(items, wanted)\n  items.each_with_index do |item, i|\n    return i if item == wanted\n  end\n  nil\nend\n"

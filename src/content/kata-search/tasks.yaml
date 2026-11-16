@@ -1,6 +1,216 @@
 format: 1
 activity: kata-search
 tasks:
+  - id: first-negative
+    title: "Die erste negative Zahl"
+    level: 1
+    prompt: |
+      Setz aus den Zeilen eine Funktion `first_negative(numbers)` zusammen, die den Index der ersten negativen Zahl einer Liste zurückgibt, und `nil`, wenn keine darin steht: `first_negative([4, 0, -2, -7])` ergibt `2`.
+    parsons:
+      - "def first_negative(numbers)"
+      - "  numbers.each_with_index do |number, i|"
+      - "    if number < 0"
+      - "      return i"
+      - "    end"
+      - "  end"
+      - "  nil"
+      - "end"
+    parsons_unused:
+      - "      return number"
+      - "    if number <= 0"
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "first_negative([4, 0, -2, -7])"
+          expect: "2"
+          say: "Es zählt die erste, und gefragt ist ihr Index, nicht die Zahl."
+        - call: "first_negative([1, 2])"
+          expect: "nil"
+        - call: "first_negative([])"
+          expect: "nil"
+        - call: "first_negative([-1])"
+          expect: "0"
+        - call: "first_negative([0, 3, -5])"
+          expect: "2"
+          say: "0 ist nicht negativ."
+    hint:
+      - "Die Schleife geht die Indizes der Reihe nach durch. In ihr steht die Frage, ob die Zahl an diesem Index negativ ist, und darin das sofortige Zurückgeben."
+      - "Erst nach der Schleife, wenn keine Zahl gepasst hat, kommt der Wert für »nicht gefunden«. Zwei Zeilen gehören nicht dazu: Eine gibt die Zahl statt ihres Index zurück, die andere hält auch die 0 für negativ."
+    solution: |
+      ```ruby
+      def first_negative(numbers)
+        numbers.each_with_index do |number, i|
+          if number < 0
+            return i
+          end
+        end
+        nil
+      end
+      ```
+    python:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `first_negative(numbers)` zusammen, die den Index der ersten negativen Zahl einer Liste zurückgibt, und `None`, wenn keine darin steht: `first_negative([4, 0, -2, -7])` ergibt `2`.
+      parsons:
+        - "def first_negative(numbers):"
+        - "    for i in range(len(numbers)):"
+        - "        if numbers[i] < 0:"
+        - "            return i"
+        - "    return None"
+      parsons_unused:
+        - "            return numbers[i]"
+        - "        if numbers[i] <= 0:"
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "first_negative([4, 0, -2, -7])"
+            expect: "2"
+            say: "Es zählt die erste, und gefragt ist ihr Index, nicht die Zahl."
+          - call: "first_negative([1, 2])"
+            expect: "None"
+          - call: "first_negative([])"
+            expect: "None"
+          - call: "first_negative([-1])"
+            expect: "0"
+          - call: "first_negative([0, 3, -5])"
+            expect: "2"
+            say: "0 ist nicht negativ."
+      solution: |
+        ```python
+        def first_negative(numbers):
+            for i in range(len(numbers)):
+                if numbers[i] < 0:
+                    return i
+            return None
+        ```
+    javascript:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `firstNegative(numbers)` zusammen, die den Index der ersten negativen Zahl einer Liste zurückgibt, und `null`, wenn keine darin steht: `firstNegative([4, 0, -2, -7])` ergibt `2`.
+      parsons:
+        - "function firstNegative(numbers) {"
+        - "  for (let i = 0; i < numbers.length; i++) {"
+        - "    if (numbers[i] < 0) {"
+        - "      return i;"
+        - "    }"
+        - "  }"
+        - "  return null;"
+        - "}"
+      parsons_unused:
+        - "      return numbers[i];"
+        - "    if (numbers[i] <= 0) {"
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "firstNegative([4, 0, -2, -7])"
+            expect: "2"
+            say: "Es zählt die erste, und gefragt ist ihr Index, nicht die Zahl."
+          - call: "firstNegative([1, 2])"
+            expect: "null"
+          - call: "firstNegative([])"
+            expect: "null"
+          - call: "firstNegative([-1])"
+            expect: "0"
+          - call: "firstNegative([0, 3, -5])"
+            expect: "2"
+            say: "0 ist nicht negativ."
+      solution: |
+        ```javascript
+        function firstNegative(numbers) {
+          for (let i = 0; i < numbers.length; i++) {
+            if (numbers[i] < 0) {
+              return i;
+            }
+          }
+          return null;
+        }
+        ```
+    dart:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `int? firstNegative(List<int> numbers)` zusammen, die den Index der ersten negativen Zahl einer Liste zurückgibt, und `null`, wenn keine darin steht: `firstNegative([4, 0, -2, -7])` ergibt `2`. Das `?` in `int?` erlaubt das `null`.
+      parsons:
+        - "int? firstNegative(List<int> numbers) {"
+        - "  for (var i = 0; i < numbers.length; i++) {"
+        - "    if (numbers[i] < 0) {"
+        - "      return i;"
+        - "    }"
+        - "  }"
+        - "  return null;"
+        - "}"
+      parsons_unused:
+        - "      return numbers[i];"
+        - "    if (numbers[i] <= 0) {"
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "firstNegative([4, 0, -2, -7])"
+            expect: "2"
+            say: "Es zählt die erste, und gefragt ist ihr Index, nicht die Zahl."
+          - call: "firstNegative([1, 2])"
+            expect: "null"
+          - call: "firstNegative([])"
+            expect: "null"
+          - call: "firstNegative([-1])"
+            expect: "0"
+          - call: "firstNegative([0, 3, -5])"
+            expect: "2"
+            say: "0 ist nicht negativ."
+      solution: |
+        ```dart
+        int? firstNegative(List<int> numbers) {
+          for (var i = 0; i < numbers.length; i++) {
+            if (numbers[i] < 0) {
+              return i;
+            }
+          }
+          return null;
+        }
+        ```
+    java:
+      prompt: |
+        Setz aus den Zeilen eine Methode `Integer firstNegative(List<Integer> numbers)` zusammen, die den Index der ersten negativen Zahl einer Liste zurückgibt, und `null`, wenn keine darin steht: `firstNegative(List.of(4, 0, -2, -7))` ergibt `2`. Ein `Integer` darf `null` sein, ein `int` nicht.
+      parsons:
+        - "Integer firstNegative(List<Integer> numbers) {"
+        - "    for (int i = 0; i < numbers.size(); i++) {"
+        - "        if (numbers.get(i) < 0) {"
+        - "            return i;"
+        - "        }"
+        - "    }"
+        - "    return null;"
+        - "}"
+      parsons_unused:
+        - "            return numbers.get(i);"
+        - "        if (numbers.get(i) <= 0) {"
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "firstNegative(List.of(4, 0, -2, -7))"
+            expect: "2"
+            say: "Es zählt die erste, und gefragt ist ihr Index, nicht die Zahl."
+          - call: "firstNegative(List.of(1, 2))"
+            expect: "null"
+          - call: "firstNegative(List.of())"
+            expect: "null"
+          - call: "firstNegative(List.of(-1))"
+            expect: "0"
+          - call: "firstNegative(List.of(0, 3, -5))"
+            expect: "2"
+            say: "0 ist nicht negativ."
+      solution: |
+        ```java
+        Integer firstNegative(List<Integer> numbers) {
+            for (int i = 0; i < numbers.size(); i++) {
+                if (numbers.get(i) < 0) {
+                    return i;
+                }
+            }
+            return null;
+        }
+        ```
+
   - id: linear-search
     title: "Wo steht es?"
     level: 1

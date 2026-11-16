@@ -79,7 +79,9 @@ wird über die Reihenfolge, die Einrückung und das, was in die Schleife
 gehört und was danach kommt; zwei Zeilen, die nicht dazugehören, sind
 typische Fehler, die man erkennen muss. Die Prüfung führt das Ergebnis aus
 wie jede Kata. Vorbild: »Gerade Zahlen zusammenzählen« am Anfang von »Katas:
-Schleifen«, vor der ersten Kata, die man selbst schreibt.
+Schleifen«, vor der ersten Kata, die man selbst schreibt; ebenso beginnt der
+Abschnitt »Einstieg« in den Katas Bedingungen, Texte, Listen, Dictionaries,
+Rekursion und Suchen.
 
 ## Vermuten vor dem Ausprobieren
 

@@ -4,6 +4,26 @@
 format: 1
 activity: kata-texts
 examples:
+  digits-only:
+    fail:
+      - answer: "def digits_only(text)\n  digits = 0\n  text.each_char do |c|\n    if '0123456789'.include?(c)\n      digits += c\n    end\n  end\n  digits\nend\n"
+      - answer: "def digits_only(text)\n  digits = ''\n  text.each_char do |c|\n    if '0123456789'.include?(c)\n      digits = c\n    end\n  end\n  digits\nend\n"
+    python:
+      fail:
+        - answer: "def digits_only(text):\n    digits = 0\n    for c in text:\n        if c in '0123456789':\n            digits += c\n    return digits\n"
+        - answer: "def digits_only(text):\n    digits = ''\n    for c in text:\n        if c in '0123456789':\n            digits = c\n    return digits\n"
+    javascript:
+      fail:
+        - answer: "function digitsOnly(text) {\n  let digits = 0;\n  for (const c of text) {\n    if ('0123456789'.includes(c)) {\n      digits += c;\n    }\n  }\n  return digits;\n}\n"
+        - answer: "function digitsOnly(text) {\n  let digits = '';\n  for (const c of text) {\n    if ('0123456789'.includes(c)) {\n      digits = c;\n    }\n  }\n  return digits;\n}\n"
+    dart:
+      fail:
+        - answer: "String digitsOnly(String text) {\n  var digits = 0;\n  for (final c in text.split('')) {\n    if ('0123456789'.contains(c)) {\n      digits += c;\n    }\n  }\n  return digits;\n}\n"
+        - answer: "String digitsOnly(String text) {\n  var digits = '';\n  for (final c in text.split('')) {\n    if ('0123456789'.contains(c)) {\n      digits = c;\n    }\n  }\n  return digits;\n}\n"
+    java:
+      fail:
+        - answer: "String digitsOnly(String text) {\n    int digits = 0;\n    for (char c : text.toCharArray()) {\n        if (\"0123456789\".indexOf(c) >= 0) {\n            digits += c;\n        }\n    }\n    return digits;\n}\n"
+        - answer: "String digitsOnly(String text) {\n    String digits = \"\";\n    for (char c : text.toCharArray()) {\n        if (\"0123456789\".indexOf(c) >= 0) {\n            digits = \"\" + c;\n        }\n    }\n    return digits;\n}\n"
   reverse-text:
     pass:
       - answer: "def reverse_text(text)\n  result = ''\n  text.each_char do |char|\n    result = char + result\n  end\n  result\nend\n"

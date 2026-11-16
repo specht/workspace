@@ -1,6 +1,226 @@
 format: 1
 activity: kata-lists
 tasks:
+  - id: positives
+    title: "Nur die positiven Zahlen"
+    level: 1
+    prompt: |
+      Setz aus den Zeilen eine Funktion `positives(numbers)` zusammen, die eine neue Liste mit den Zahlen über 0 zurückgibt, in ihrer Reihenfolge: `positives([3, -1, 4, 0, -5])` ergibt `[3, 4]`.
+    parsons:
+      - "def positives(numbers)"
+      - "  result = []"
+      - "  numbers.each do |number|"
+      - "    if number > 0"
+      - "      result << number"
+      - "    end"
+      - "  end"
+      - "  result"
+      - "end"
+    parsons_unused:
+      - "    if number >= 0"
+      - "      result = [number]"
+    check:
+      type: function
+      language: ruby
+      cases:
+        - call: "positives([3, -1, 4, 0, -5])"
+          expect: "[3, 4]"
+          say: "0 ist weder positiv noch negativ."
+        - call: "positives([1, 2, 3])"
+          expect: "[1, 2, 3]"
+        - call: "positives([-2, -7])"
+          expect: "[]"
+          say: "Ohne positive Zahlen bleibt die Liste leer."
+        - call: "positives([])"
+          expect: "[]"
+        - call: "positives([-1, 8, -1, 8])"
+          expect: "[8, 8]"
+    hint:
+      - "Erst die leere Liste für das Ergebnis, dann die Schleife über die Zahlen, in ihr die Frage, ob die Zahl positiv ist, und darin das Anhängen."
+      - "Zwei Zeilen gehören nicht dazu: Eine lässt auch die 0 durch, die andere ersetzt die ganze Liste, statt eine Zahl anzuhängen."
+    solution: |
+      ```ruby
+      def positives(numbers)
+        result = []
+        numbers.each do |number|
+          if number > 0
+            result << number
+          end
+        end
+        result
+      end
+      ```
+    python:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `positives(numbers)` zusammen, die eine neue Liste mit den Zahlen über 0 zurückgibt, in ihrer Reihenfolge: `positives([3, -1, 4, 0, -5])` ergibt `[3, 4]`.
+      parsons:
+        - "def positives(numbers):"
+        - "    result = []"
+        - "    for number in numbers:"
+        - "        if number > 0:"
+        - "            result.append(number)"
+        - "    return result"
+      parsons_unused:
+        - "        if number >= 0:"
+        - "            result = [number]"
+      check:
+        type: function
+        language: python
+        cases:
+          - call: "positives([3, -1, 4, 0, -5])"
+            expect: "[3, 4]"
+            say: "0 ist weder positiv noch negativ."
+          - call: "positives([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "positives([-2, -7])"
+            expect: "[]"
+            say: "Ohne positive Zahlen bleibt die Liste leer."
+          - call: "positives([])"
+            expect: "[]"
+          - call: "positives([-1, 8, -1, 8])"
+            expect: "[8, 8]"
+      solution: |
+        ```python
+        def positives(numbers):
+            result = []
+            for number in numbers:
+                if number > 0:
+                    result.append(number)
+            return result
+        ```
+    javascript:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `positives(numbers)` zusammen, die eine neue Liste mit den Zahlen über 0 zurückgibt, in ihrer Reihenfolge: `positives([3, -1, 4, 0, -5])` ergibt `[3, 4]`.
+      parsons:
+        - "function positives(numbers) {"
+        - "  let result = [];"
+        - "  for (const number of numbers) {"
+        - "    if (number > 0) {"
+        - "      result.push(number);"
+        - "    }"
+        - "  }"
+        - "  return result;"
+        - "}"
+      parsons_unused:
+        - "    if (number >= 0) {"
+        - "      result = [number];"
+      check:
+        type: function
+        language: javascript
+        cases:
+          - call: "positives([3, -1, 4, 0, -5])"
+            expect: "[3, 4]"
+            say: "0 ist weder positiv noch negativ."
+          - call: "positives([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "positives([-2, -7])"
+            expect: "[]"
+            say: "Ohne positive Zahlen bleibt die Liste leer."
+          - call: "positives([])"
+            expect: "[]"
+          - call: "positives([-1, 8, -1, 8])"
+            expect: "[8, 8]"
+      solution: |
+        ```javascript
+        function positives(numbers) {
+          let result = [];
+          for (const number of numbers) {
+            if (number > 0) {
+              result.push(number);
+            }
+          }
+          return result;
+        }
+        ```
+    dart:
+      prompt: |
+        Setz aus den Zeilen eine Funktion `List<int> positives(List<int> numbers)` zusammen, die eine neue Liste mit den Zahlen über 0 zurückgibt, in ihrer Reihenfolge: `positives([3, -1, 4, 0, -5])` ergibt `[3, 4]`.
+      parsons:
+        - "List<int> positives(List<int> numbers) {"
+        - "  var result = <int>[];"
+        - "  for (final number in numbers) {"
+        - "    if (number > 0) {"
+        - "      result.add(number);"
+        - "    }"
+        - "  }"
+        - "  return result;"
+        - "}"
+      parsons_unused:
+        - "    if (number >= 0) {"
+        - "      result = [number];"
+      check:
+        type: function
+        language: dart
+        cases:
+          - call: "positives([3, -1, 4, 0, -5])"
+            expect: "[3, 4]"
+            say: "0 ist weder positiv noch negativ."
+          - call: "positives([1, 2, 3])"
+            expect: "[1, 2, 3]"
+          - call: "positives([-2, -7])"
+            expect: "[]"
+            say: "Ohne positive Zahlen bleibt die Liste leer."
+          - call: "positives([])"
+            expect: "[]"
+          - call: "positives([-1, 8, -1, 8])"
+            expect: "[8, 8]"
+      solution: |
+        ```dart
+        List<int> positives(List<int> numbers) {
+          var result = <int>[];
+          for (final number in numbers) {
+            if (number > 0) {
+              result.add(number);
+            }
+          }
+          return result;
+        }
+        ```
+    java:
+      prompt: |
+        Setz aus den Zeilen eine Methode `List<Integer> positives(List<Integer> numbers)` zusammen, die eine neue Liste mit den Zahlen über 0 zurückgibt, in ihrer Reihenfolge: `positives(List.of(3, -1, 4, 0, -5))` ergibt `[3, 4]`.
+      parsons:
+        - "List<Integer> positives(List<Integer> numbers) {"
+        - "    List<Integer> result = new ArrayList<>();"
+        - "    for (int number : numbers) {"
+        - "        if (number > 0) {"
+        - "            result.add(number);"
+        - "        }"
+        - "    }"
+        - "    return result;"
+        - "}"
+      parsons_unused:
+        - "        if (number >= 0) {"
+        - "            result = List.of(number);"
+      check:
+        type: function
+        language: java
+        cases:
+          - call: "positives(List.of(3, -1, 4, 0, -5))"
+            expect: "List.of(3, 4)"
+            say: "0 ist weder positiv noch negativ."
+          - call: "positives(List.of(1, 2, 3))"
+            expect: "List.of(1, 2, 3)"
+          - call: "positives(List.of(-2, -7))"
+            expect: "List.of()"
+            say: "Ohne positive Zahlen bleibt die Liste leer."
+          - call: "positives(List.of())"
+            expect: "List.of()"
+          - call: "positives(List.of(-1, 8, -1, 8))"
+            expect: "List.of(8, 8)"
+      solution: |
+        ```java
+        List<Integer> positives(List<Integer> numbers) {
+            List<Integer> result = new ArrayList<>();
+            for (int number : numbers) {
+                if (number > 0) {
+                    result.add(number);
+                }
+            }
+            return result;
+        }
+        ```
+
   - id: list-sum
     title: "Die Summe"
     level: 1
