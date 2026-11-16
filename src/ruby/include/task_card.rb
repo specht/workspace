@@ -33,6 +33,17 @@ module TaskCard
     # language: the programming language of this card when the task has one
     # for each (CodeLanguages); tasks.js sends it along. id_suffix keeps the
     # element ids of the second card apart from the first.
+    # One line of a Parsons puzzle, highlighted like the code blocks (the
+    # light and dark theme of the code chips, _template.html). A line alone
+    # can confuse a lexer (a lone »}«); CodeHighlight.tokens makes that
+    # punctuation. Without Rouge (a test outside the container) as text.
+    def self.parsons_code_html(line, language)
+        lexer = defined?(Rouge) && defined?(CodeHighlight) && language && Rouge::Lexer.find(language.to_s)
+        return CGI.escapeHTML(line.to_s) unless lexer
+
+        Rouge::Formatters::HTML.new.format(CodeHighlight.tokens(lexer.new, line.to_s))
+    end
+
     def self.html(task, activity:, number:, render:, language: nil, id_suffix: '')
         h = ->(s) { CGI.escapeHTML(s.to_s) }
         check = task['check']
@@ -193,7 +204,7 @@ module TaskCard
                     Parsons.shown(task['parsons'], task['parsons_unused']).each_with_index do |line, index|
                         io << "<li class='parsons-line' data-text='#{h.(line)}' data-index='#{index}' data-level='0'>" \
                               "<span class='parsons-grip' aria-hidden='true'><i class='bi bi-grip-vertical'></i></span>" \
-                              "<code class='parsons-code'>#{h.(line)}</code><span class='parsons-buttons'>" \
+                              "<code class='parsons-code'>#{parsons_code_html(line, check['language'])}</code><span class='parsons-buttons'>" \
                               "<button type='button' class='parsons-move' data-move='up' aria-label='nach oben'><i class='bi bi-arrow-up' aria-hidden='true'></i></button>" \
                               "<button type='button' class='parsons-move' data-move='down' aria-label='nach unten'><i class='bi bi-arrow-down' aria-hidden='true'></i></button>" \
                               "<button type='button' class='parsons-move' data-move='left' aria-label='weniger einrücken'><i class='bi bi-arrow-bar-left' aria-hidden='true'></i></button>" \

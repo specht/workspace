@@ -6572,7 +6572,8 @@ body.cl-dragging-page * {
     white-space: pre;
     overflow-x: auto;
     color: var(--bs-body-color);
-    background: none;
+    /* the theme of the highlighting (_template.html) brings its own ground */
+    background: none !important;
     font-size: 0.95em;
 }
 
