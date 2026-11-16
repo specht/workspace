@@ -271,7 +271,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='morison.webp' alt='Stanley Morison, ein älterer Mann mit Halbglatze und runder Brille, in dunklem Anzug mit Krawatte, an einem Schreibtisch, ein Blatt Papier in den Händen; ein Schwarz-Weiß-Foto.'>
 <p><strong>Stanley Morison</strong> (1889 bis 1967), britischer Typograf und Historiker des Buchdrucks. Er verließ früh die Schule und brachte sich die Typografie selbst bei. Von 1923 an beriet er die Firma Monotype, die Setzmaschinen und Schriften herstellte. Die Zeitung The Times bat ihn um eine neue Schrift, die leicht zu lesen war. Mit dem Grafiker Victor Lardent entwickelte er die Times New Roman; die Zeitung druckte sie 1932 zum ersten Mal, und ein Jahr später konnte jede Druckerei sie bei Monotype kaufen.</p>
 <p>Die Times New Roman hat Serifen und wirkt neben vielen anderen Schriften recht schmal.</p>
-<p class='person-specimen'><img class='drawing' src='morison-schrift.svg' alt='Der Name »Times New Roman« in Times New Roman, darunter klein: mit Serifen, 1932'></p>
+<p class='person-specimen'><img class='drawing no-zoom' src='morison-schrift.svg' alt='Der Name »Times New Roman« in Times New Roman, darunter klein: mit Serifen, 1932'></p>
 <p class='person-credit'>Foto: unbekannt</p>
 </div>
 <!-- /part -->
@@ -695,7 +695,7 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <img src='carter.webp' alt='Matthew Carter 2018: ein älterer Mann mit weißem, nach hinten gekämmtem Haar und vielen Falten, in dunklem Sakko und hellem Hemd, ernst in die Kamera blickend; ein Schwarz-Weiß-Foto.'>
 <p><strong>Matthew Carter</strong> (geboren 1937 in London), englisch-amerikanischer Schriftgestalter. Sein Vater war Buchgestalter und Historiker des Buchdrucks; durch ihn lernte Carter als junger Mann in der Schriftgießerei Enschedé in den Niederlanden, Stempel von Hand zu schneiden, aus denen man Buchstaben aus Metall gießt. In den 1990er Jahren zeichnete er für Microsoft Georgia und Verdana, zwei Schriften für die groben Bildschirme dieser Zeit, auf denen jeder Bildpunkt nur an oder aus sein konnte. Auch die Schrift Tahoma aus Windows ist von ihm, und schon 1987 die Charter, für die Laserdrucker der 1980er Jahre mit ihren groben 300 Punkten pro Zoll. 2010 bekam er ein Stipendium der MacArthur Foundation.</p>
 <p>Georgia hat Serifen, Verdana keine; beide sollten auch in kleiner Größe gut lesbar sein.</p>
-<p class='person-specimen'><img class='drawing' src='carter-schriften.svg' alt='Die Namen Georgia, Verdana und Charter nebeneinander, jeder in seiner eigenen Schrift, darunter klein: mit Serifen, 1993; ohne Serifen, 1996; mit Serifen, 1987'></p>
+<p class='person-specimen'><img class='drawing no-zoom' src='carter-schriften.svg' alt='Die Namen Georgia, Verdana und Charter nebeneinander, jeder in seiner eigenen Schrift, darunter klein: mit Serifen, 1993; ohne Serifen, 1996; mit Serifen, 1987'></p>
 <p class='person-credit'>Foto: Norman Posselt, 2018, CC BY-SA 4.0, zugeschnitten (<a href='https://commons.wikimedia.org/wiki/File:20180914-ATypI-2018-Matthew_Carter-NP.jpg'>Wikimedia Commons</a>)</p>
 </div>
 <!-- /part -->

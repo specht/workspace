@@ -113,52 +113,11 @@ TABLE = [
     ('nerd-font', '0xProto Nerd Font Mono:style=Regular', '\uf07b kuchen  \ue725 main  \ue606'),
 ]
 
-# the same in both modes: a picture of a meme and a speech bubble on paper
-# (render-svg.rb keeps these colours)
-WHITE, INK, GROUND, EDGE = '#fdfdfd', '#1b1f24', '#9aa3ae', '#c9ced6'
-
-
-def meme(path):
-    """Impact as in a meme: white letters with a black edge over a picture
-    (a grey ground here), a line at the top and one at the bottom"""
-    w, h, size = 320, 200, 30
-    body = [f"<rect x='0' y='0' width='{w}' height='{h}' rx='6' fill='{GROUND}'/>"]
-    # the picture: an empty cake plate with a few crumbs
-    cx, cy = w / 2, 106
-    body.append(f"<ellipse cx='{cx}' cy='{cy}' rx='78' ry='22' fill='{WHITE}' stroke='{INK}' stroke-width='1.5'/>")
-    body.append(f"<ellipse cx='{cx}' cy='{cy - 2}' rx='54' ry='13' fill='none' stroke='{EDGE}' stroke-width='1.5'/>")
-    for dx, dy, r in [(-22, -4, 2.6), (-8, 4, 1.8), (14, -6, 2.2), (26, 3, 1.6), (4, -1, 1.4), (-34, 2, 1.5)]:
-        body.append(f"<circle cx='{cx + dx}' cy='{cy + dy}' r='{r}' fill='#b45309'/>")
-    for line, y in [('WENN DER KUCHEN', 42), ('SCHON WEG IST', h - 16)]:
-        lw = width('Impact', line, size)
-        d, _ = outline('Impact', line, size, (w - lw) / 2, y)
-        body.append(f"<path d='{d}' fill='{WHITE}' stroke='{INK}' stroke-width='3' stroke-linejoin='round' paint-order='stroke'/>")
-    write(path, w, h, body, 'Impact wie in einem Meme')
-
-
-def bubble(path):
-    """Comic Sans in a speech bubble"""
-    w, h, size = 320, 200, 26
-    line = 'Danke fürs Backen!'
-    lw = width('Comic Sans MS:style=Regular', line, size)
-    bw, bh = lw + 44, 74
-    bx, by = (w - bw) / 2, 50
-    body = [f"<path d='M {bx + 18} {by} H {bx + bw - 18} Q {bx + bw} {by} {bx + bw} {by + 18} V {by + bh - 18} "
-            f"Q {bx + bw} {by + bh} {bx + bw - 18} {by + bh} H {bx + 70} L {bx + 40} {by + bh + 34} L {bx + 46} {by + bh} "
-            f"H {bx + 18} Q {bx} {by + bh} {bx} {by + bh - 18} V {by + 18} Q {bx} {by} {bx + 18} {by} Z' "
-            f"fill='{WHITE}' stroke='{INK}' stroke-width='2.5' stroke-linejoin='round'/>"]
-    d, _ = outline('Comic Sans MS:style=Regular', line, size, (w - lw) / 2, by + bh / 2 + 9)
-    body.append(f"<path d='{d}' fill='{INK}'/>")
-    write(path, w, h, body, 'Comic Sans in einer Sprechblase')
-
-
 def main():
     folder = CONTENT / 'character-formatting' / 'schriften'
     folder.mkdir(exist_ok=True)
     for slug, pattern, s in TABLE:
         sample(folder / f'{slug}.svg', pattern, s)
-    meme(folder / 'impact.svg')
-    bubble(folder / 'comic-sans.svg')
     personen = CONTENT / 'reference' / 'personen'
     names(personen / 'morison-schrift.svg', [('Times New Roman:style=Regular', 'Times New Roman', 'mit Serifen, 1932')],
           'Times New Roman, in ihrer eigenen Schrift')

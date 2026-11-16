@@ -70,14 +70,14 @@ Namen. Auch andere Teile eines Namens verraten, wie eine Schrift aussieht:
 <table class='table font-names'>
 <thead><tr><th>Im Namen</th><th>Bedeutet</th><th>So sieht es aus</th><th>Schrift</th></tr></thead>
 <tbody>
-<tr><td rowspan='2'>Sans</td><td rowspan='2'>ohne Serifen</td><td><img class='drawing font-sample' src='schriften/open-sans.svg' alt='»Kuchenverkauf« in Open Sans, ohne Serifen, rund und offen'></td><td>Open Sans</td></tr>
-<tr><td><img class='drawing font-sample' src='schriften/ibm-plex-sans.svg' alt='»Kuchenverkauf« in IBM Plex Sans, ohne Serifen'></td><td>IBM Plex Sans, die Schrift dieser Seiten</td></tr>
-<tr><td>Serif</td><td>mit Serifen</td><td><img class='drawing font-sample' src='schriften/dejavu-serif.svg' alt='»Kuchenverkauf« in DejaVu Serif, mit kräftigen Serifen'></td><td>DejaVu Serif</td></tr>
-<tr><td>Grotesk</td><td>ohne Serifen</td><td><img class='drawing font-sample' src='schriften/space-grotesk.svg' alt='»Kuchenverkauf« in Space Grotesk, ohne Serifen'></td><td>Space Grotesk</td></tr>
-<tr><td>Gothic</td><td>ohne Serifen</td><td><img class='drawing font-sample' src='schriften/didact-gothic.svg' alt='»Kuchenverkauf« in Didact Gothic, ohne Serifen, mit fast kreisrunden Bögen'></td><td>Didact Gothic</td></tr>
-<tr><td>Mono</td><td>jeder Buchstabe gleich breit, das i so breit wie das m</td><td><img class='drawing font-sample' src='schriften/dejavu-sans-mono.svg' alt='»Kuchenverkauf« in DejaVu Sans Mono, jeder Buchstabe gleich breit'></td><td>DejaVu Sans Mono</td></tr>
-<tr><td>Slab</td><td>Serifen als dicke, eckige Blöcke</td><td><img class='drawing font-sample' src='schriften/roboto-slab.svg' alt='»Kuchenverkauf« in Roboto Slab, mit Serifen wie kleine Balken'></td><td>Roboto Slab</td></tr>
-<tr><td>Nerd Font</td><td>eine Mono-Schrift mit vielen Symbolen dazu, für das Terminal</td><td><img class='drawing font-sample' src='schriften/nerd-font.svg' alt='Ein Ordner-Symbol und »kuchen«, das Symbol für einen Git-Branch und »main«, dann das Symbol von Python, alles in 0xProto Nerd Font Mono'></td><td>0xProto Nerd Font Mono, die Schrift im Editor und im Terminal des Workspace</td></tr>
+<tr><td rowspan='2'>Sans</td><td rowspan='2'>ohne Serifen</td><td><img class='drawing font-sample no-zoom' src='schriften/open-sans.svg' alt='»Kuchenverkauf« in Open Sans, ohne Serifen, rund und offen'></td><td>Open Sans</td></tr>
+<tr><td><img class='drawing font-sample no-zoom' src='schriften/ibm-plex-sans.svg' alt='»Kuchenverkauf« in IBM Plex Sans, ohne Serifen'></td><td>IBM Plex Sans, die Schrift dieser Seiten</td></tr>
+<tr><td>Serif</td><td>mit Serifen</td><td><img class='drawing font-sample no-zoom' src='schriften/dejavu-serif.svg' alt='»Kuchenverkauf« in DejaVu Serif, mit kräftigen Serifen'></td><td>DejaVu Serif</td></tr>
+<tr><td>Grotesk</td><td>ohne Serifen</td><td><img class='drawing font-sample no-zoom' src='schriften/space-grotesk.svg' alt='»Kuchenverkauf« in Space Grotesk, ohne Serifen'></td><td>Space Grotesk</td></tr>
+<tr><td>Gothic</td><td>ohne Serifen</td><td><img class='drawing font-sample no-zoom' src='schriften/didact-gothic.svg' alt='»Kuchenverkauf« in Didact Gothic, ohne Serifen, mit fast kreisrunden Bögen'></td><td>Didact Gothic</td></tr>
+<tr><td>Mono</td><td>jeder Buchstabe gleich breit, das i so breit wie das m</td><td><img class='drawing font-sample no-zoom' src='schriften/dejavu-sans-mono.svg' alt='»Kuchenverkauf« in DejaVu Sans Mono, jeder Buchstabe gleich breit'></td><td>DejaVu Sans Mono</td></tr>
+<tr><td>Slab</td><td>Serifen als dicke, eckige Blöcke</td><td><img class='drawing font-sample no-zoom' src='schriften/roboto-slab.svg' alt='»Kuchenverkauf« in Roboto Slab, mit Serifen wie kleine Balken'></td><td>Roboto Slab</td></tr>
+<tr><td>Nerd Font</td><td>eine Mono-Schrift mit vielen Symbolen dazu, für das Terminal</td><td><img class='drawing font-sample no-zoom' src='schriften/nerd-font.svg' alt='Ein Ordner-Symbol und »kuchen«, das Symbol für einen Git-Branch und »main«, dann das Symbol von Python, alles in 0xProto Nerd Font Mono'></td><td>0xProto Nerd Font Mono, die Schrift im Editor und im Terminal des Workspace</td></tr>
 </tbody>
 </table>
 </div>
@@ -112,10 +112,17 @@ _person(carter)
 
 Zwei Schriften aus dem Aushang kennst du vielleicht aus Memes. **Impact**
 zeichnete Geoffrey Lee 1965; weiß mit schwarzem Rand steht sie über
-unzähligen Bildern im Netz. **Comic Sans** zeichnete Vincent Connare 1994 bei
-Microsoft, nach der Schrift in Comics, für die Sprechblasen eines Programms.
-Weil sie danach überall auftauchte, auch dort, wo es ernst zugeht, lachen
-viele über sie, und so wurde sie selbst zum Meme.
+unzähligen Bildern im Netz, oben ein Satz, unten die Pointe. **Comic Sans**
+zeichnete Vincent Connare 1994 bei Microsoft, nach der Schrift in Comics, für
+die Sprechblasen eines Programms. Weil sie danach überall auftauchte, auch
+dort, wo es ernst zugeht, lachen viele über sie; im Doge-Meme stehen bunte
+Wörter in Comic Sans um einen Hund, als wären es seine Gedanken.
+
+<div class='gallery'>
+<figure><img src='bilder/meme-goethe.jpg' alt='Goethe auf einem alten Gemälde, ein Blatt Papier in der Hand; oben steht in Impact, weiß mit schwarzem Rand, »ACH DU MEINE«, unten »GOETHE«'><figcaption>»Ach du meine Goethe«, in Impact. Bild: Joseph Karl Stieler, 1828, Text: PantheraLeo1359531, gemeinfrei (<a href='https://commons.wikimedia.org/wiki/File:Goethe_(Stieler_1828)-Meme.jpg'>Wikimedia Commons</a>)</figcaption></figure>
+<figure><img src='bilder/meme-grumpy-cat.jpg' alt='Eine Katze mit mürrischem Gesicht; oben steht in Impact »I HAD FUN ONCE.«, unten »IT WAS AWFUL.«'><figcaption>Grumpy Cat: »Ich hatte einmal Spaß. Es war furchtbar.« In Impact. Foto: Gage Skidmore, CC BY-SA 4.0 (<a href='https://commons.wikimedia.org/wiki/File:Grumpy_Cat_meme_example.jpg'>Wikimedia Commons</a>)</figcaption></figure>
+<figure><img src='bilder/meme-doge.jpg' alt='Ein Shiba-Inu springt durch tiefen Schnee; um ihn herum bunte Wörter in Comic Sans: »many ice«, »so snow«, »very winter«, »much frosty«, »such freeze omg«, zweimal »wow«'><figcaption>Doge, in Comic Sans. Bild: likeaduck, CC BY 2.0 (<a href='https://commons.wikimedia.org/wiki/File:Doge_meme_example.jpg'>Wikimedia Commons</a>)</figcaption></figure>
+</div>
 
 Unter Leuten, die Schriften gestalten, gibt es eigene Witze. Der Comic xkcd
 spielt mit dem **Kerning**: dem Abstand zwischen zwei bestimmten Buchstaben,
@@ -127,11 +134,6 @@ Wer das einmal sieht, sieht es überall:
 <img src='bilder/xkcd-kerning.png' style='width: 25em; max-width: 100%' alt='Ein Comic: Zwei Strichmännchen stehen vor einem Gebäude mit dem Schild »CITY OFFICES«, zwischen dem C und dem E eine zu große Lücke. Einer ruft »ARGH!«, der andere fragt »WHAT?«. Darunter steht: »If you really hate someone, teach them to recognize bad kerning.«'>
 <figcaption>»Wenn du jemanden wirklich hasst, bring ihm bei, schlechtes Kerning zu erkennen.« Bild: Randall Munroe, <a href='https://xkcd.com/1015/'>xkcd 1015</a>, CC BY-NC 2.5</figcaption>
 </figure>
-
-<div class='gallery' style='max-width: 36em'>
-<figure><img class='drawing' src='schriften/impact.svg' alt='»WENN DER KUCHEN SCHON WEG IST« in Impact, weiß mit schwarzem Rand, oben und unten über einem leeren Kuchenteller mit ein paar Krümeln, wie in einem Meme'><figcaption>Impact</figcaption></figure>
-<figure><img class='drawing' src='schriften/comic-sans.svg' alt='»Danke fürs Backen!« in Comic Sans in einer Sprechblase'><figcaption>Comic Sans</figcaption></figure>
-</div>
 
 Für ein Blatt reichen zwei: eine für die Überschrift, eine für den
 Text. Mehr Schriften machen ein Blatt nicht lebendiger, sondern unruhig, und

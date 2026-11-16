@@ -12,7 +12,9 @@
 // double click zooms in and back out. A single picture of a page (a
 // screenshot, a rendered scene, a drawing: img.full and img.drawing outside a
 // gallery) opens the same way, as a gallery of one, wherever its file is
-// clearly larger than the picture on the page: there is more to see.
+// clearly larger than the picture on the page: there is more to see. A
+// picture with class 'no-zoom' never opens (a font sample: letters, nothing
+// more to see).
 // On a phone a gallery that would stack its pictures one under the other
 // becomes a row to swipe through (.swipe, default.css), with a dot for each
 // picture below it, the one in view filled. Galleries that already suit a
@@ -108,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const previews = document.querySelectorAll('.tutorial-preview');
     const singleImages = [...document.querySelectorAll('img.full, img.drawing')]
-        .filter((image) => !image.closest('a, .gallery, .tutorial-preview') && !image.classList.contains('teaser'));
+        .filter((image) => !image.closest('a, .gallery, .tutorial-preview') && !image.classList.contains('teaser') && !image.classList.contains('no-zoom'));
     const galleryImages = [...document.querySelectorAll('.gallery figure img')].filter((image) => !image.closest('a')).concat(singleImages);
     if (previews.length === 0 && galleryImages.length === 0) return;
 
