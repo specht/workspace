@@ -279,7 +279,7 @@ def bildschirm():
     """before WYSIWYG: an old monitor shows one font in one size, with marks
     where bold begins and ends; what it looks like shows only the paper"""
     import subprocess
-    w, h = 760, 336
+    w, h = 760, 424
     # the monitor, the same in both modes: beige plastic, a dark tube,
     # amber letters in the font of a PC's text screen (PxPlus IBM VGA 8x16,
     # the Ultimate Oldschool PC Font Pack by VileR, CC BY-SA 4.0)
@@ -302,10 +302,11 @@ def bildschirm():
     panels = []
     body = []
     x, y = 10, 44
-    mw, mh = 420, 252
+    # the tube 4:3, as screens were then
+    mw, mh = 420, 52 + round((420 - 44) * 3 / 4)
     body.append(text(x + mw / 2, 26, 'auf dem Bildschirm', 16, TEXT, 'middle', '600'))
     # the case, the tube in it with rounded corners, a stand below
-    body.append(rect(x + 150, y + mh - 4, 80, 18, case_edge, r=3))
+    body.append(rect(x + mw / 2 - 40, y + mh - 4, 80, 18, case_edge, r=3))
     body.append(rect(x, y, mw, mh - 6, case, case_edge, 2, 18))
     sx, sy, sw, sh = x + 22, y + 20, mw - 44, mh - 52
     body.append(rect(sx - 4, sy - 4, sw + 8, sh + 8, case_edge, r=22))
