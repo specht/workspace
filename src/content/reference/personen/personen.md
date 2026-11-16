@@ -272,7 +272,6 @@ Hinter <code>grep</code>, Git, dem Web und dem kürzesten Weg im Navi stehen Men
 <p><strong>Stanley Morison</strong> (1889 bis 1967), britischer Typograf und Historiker des Buchdrucks. Er verließ früh die Schule und brachte sich die Typografie selbst bei. Von 1923 an beriet er die Firma Monotype, die Setzmaschinen und Schriften herstellte. Die Zeitung The Times bat ihn um eine neue Schrift, die leicht zu lesen war. Mit dem Grafiker Victor Lardent entwickelte er die Times New Roman; die Zeitung druckte sie 1932 zum ersten Mal, und ein Jahr später konnte jede Druckerei sie bei Monotype kaufen.</p>
 <p>Die Times New Roman hat Serifen und wirkt neben vielen anderen Schriften recht schmal.</p>
 <p class='person-specimen'><img class='drawing no-zoom' src='morison-schrift.svg' alt='Der Name »Times New Roman« in Times New Roman, darunter klein: mit Serifen, 1932'></p>
-<p class='person-credit'>Foto: unbekannt</p>
 </div>
 <!-- /part -->
 
