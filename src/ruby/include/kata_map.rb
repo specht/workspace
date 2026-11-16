@@ -226,14 +226,21 @@ module KataMap
                 coasting = requestAnimationFrame(step);
             });
             track.addEventListener('dragstart', function (event) { event.preventDefault(); });
-            // the strip runs to the window's edges, the first set in line
-            // with the text: how far the strip stands from each edge
+            // in a narrow window the strip runs to the window's edges, the
+            // first set in line with the text: how far the strip stands from each edge
             // (default.css, --kata-bleed-left/right)
+            // only in a narrow window: in a wide one the strip would run far
+            // past the text on one side, and it ends beside the text with a fade
+            var BLEED_UP_TO = 80;
             function bleed() {
                 var box = carousel.querySelector('.kata-strip').getBoundingClientRect();
                 var width = document.documentElement.clientWidth;
-                carousel.style.setProperty('--kata-bleed-left', Math.max(0, box.left) + 'px');
-                carousel.style.setProperty('--kata-bleed-right', Math.max(0, width - box.right) + 'px');
+                var left = Math.max(0, box.left);
+                var right = Math.max(0, width - box.right);
+                var on = left <= BLEED_UP_TO && right <= BLEED_UP_TO;
+                carousel.classList.toggle('kata-bleed', on);
+                carousel.style.setProperty('--kata-bleed-left', (on ? left : 0) + 'px');
+                carousel.style.setProperty('--kata-bleed-right', (on ? right : 0) + 'px');
             }
             // a pinned set stands in the middle when the page opens; again
             // once fonts and pictures are in (they move the sets), unless
