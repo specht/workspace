@@ -11507,11 +11507,14 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
     flex: 1;
     gap: 1em;
     /* a scrolling box clips on every side: room for a set's hover shadow,
-       taken back by the margins so the sets stay in line with the text */
-    padding: 0.6em 1em 1.8em;
-    margin: -0.6em -1em -1.8em;
+       taken back by the margins so the sets stay in line with the text.
+       At the sides it reaches the window's edges (KataMap's script measures
+       the distance), so a set scrolled away passes under the edge instead
+       of being cut off beside the text */
+    padding: 0.6em max(1em, var(--kata-bleed-right, 1em)) 1.8em max(1em, var(--kata-bleed-left, 1em));
+    margin: -0.6em calc(-1 * max(1em, var(--kata-bleed-right, 1em))) -1.8em calc(-1 * max(1em, var(--kata-bleed-left, 1em)));
     overflow-x: auto;
-    scroll-padding-inline: 1em;
+    scroll-padding-inline: max(1em, var(--kata-bleed-left, 1em)) max(1em, var(--kata-bleed-right, 1em));
     scroll-snap-type: x mandatory;
     /* faded at a side where more sets follow (the script in KataMap); the
        fade comes and goes softly (@property below) */
@@ -11825,8 +11828,8 @@ html[data-bs-theme="dark"] .qr-damage .qr-damage-verdict.fail {
 .kata-scroll .bi::before {
     vertical-align: 0;
 }
-.kata-more-left .kata-track { --kata-fade-left: 1.6em; --kata-fade-from: 0.3; }
-.kata-more-right .kata-track { --kata-fade-right: 1.6em; --kata-fade-to: 0.3; }
+/* no fade at the sides: the strip ends at the window's edge, and the set
+   cut off there already says that more follows */
 .kata-scroll[data-dir='-1'] { left: -0.8em; }
 .kata-scroll[data-dir='1'] { right: -0.8em; }
 .kata-scroll { transition: opacity 250ms; }

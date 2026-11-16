@@ -226,15 +226,37 @@ module KataMap
                 coasting = requestAnimationFrame(step);
             });
             track.addEventListener('dragstart', function (event) { event.preventDefault(); });
+            // the strip runs to the window's edges, the first set in line
+            // with the text: how far the strip stands from each edge
+            // (default.css, --kata-bleed-left/right)
+            function bleed() {
+                var box = carousel.querySelector('.kata-strip').getBoundingClientRect();
+                var width = document.documentElement.clientWidth;
+                carousel.style.setProperty('--kata-bleed-left', Math.max(0, box.left) + 'px');
+                carousel.style.setProperty('--kata-bleed-right', Math.max(0, width - box.right) + 'px');
+            }
+            // a pinned set stands in the middle when the page opens; again
+            // once fonts and pictures are in (they move the sets), unless
+            // the strip was scrolled meanwhile
             var centre = track.querySelector('[data-centre]');
-            if (centre) {
+            var touched = false;
+            ['pointerdown', 'wheel', 'touchstart', 'keydown'].forEach(function (name) {
+                track.addEventListener(name, function () { touched = true; }, { passive: true });
+            });
+            carousel.querySelectorAll('.kata-scroll').forEach(function (b) { b.addEventListener('click', function () { touched = true; }); });
+            function toCentre() {
+                if (!centre || touched) return;
                 track.style.scrollBehavior = 'auto';
                 track.style.scrollSnapType = 'none';
-                track.scrollLeft = centre.offsetLeft - track.offsetLeft - (track.clientWidth - centre.offsetWidth) / 2;
-                requestAnimationFrame(function () { track.style.scrollBehavior = ''; track.style.scrollSnapType = ''; });
+                track.scrollLeft = centred(centre);
+                requestAnimationFrame(function () { track.style.scrollBehavior = ''; track.style.scrollSnapType = ''; ends(); });
             }
+            bleed();
+            toCentre();
             ends();
-            window.addEventListener('resize', ends);
+            if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { bleed(); toCentre(); });
+            window.addEventListener('load', function () { bleed(); toCentre(); });
+            window.addEventListener('resize', function () { bleed(); ends(); });
         });
         </script>
     JS
