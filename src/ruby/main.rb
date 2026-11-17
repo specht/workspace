@@ -829,6 +829,9 @@ class Main < Sinatra::Base
         rescue
         end
 
+        # deleted exams whose Workspaces a restart left (exams_page.rb)
+        Thread.new { Main.resume_exam_instance_removals }
+
         Thread.new do
             loop do
                 system("ruby housekeeping.rb")

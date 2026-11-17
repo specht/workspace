@@ -156,8 +156,9 @@ test('an exam has MySQL and Neo4j databases of its own', async ({ browser, page,
     await test.step('Deleting the exam removes its logins', async () => {
       expect((await post(teacher.request, '/api/delete_test', { tag })).status).toBe(200);
       tag = '';
-      expect(fails('docker', mysqlAs(mysqlLogin, mysqlPassword))).toBe(true);
-      expect(fails('docker', neo4jAs(mysqlLogin, neo4jPassword))).toBe(true);
+      // the answer comes at once, the drops follow in a thread of the server
+      await expect.poll(() => fails('docker', mysqlAs(mysqlLogin, mysqlPassword)), { timeout: 30_000 }).toBe(true);
+      await expect.poll(() => fails('docker', neo4jAs(mysqlLogin, neo4jPassword)), { timeout: 30_000 }).toBe(true);
       // the student's normal database is still there
       expect((await post(page.request, '/api/get_my_mysql_databases')).body.result.databases).toContain(normalDatabase);
     });

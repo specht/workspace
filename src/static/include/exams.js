@@ -125,7 +125,17 @@ function refresh_test_archives() {
             const del = $(`<button type='button' class='btn btn-sm btn-outline-danger btn-icon'><i class='bi bi-trash'></i></button>`)
                 .attr({ 'aria-label': `${title} löschen`, title: 'Löschen' });
             del.on('click', () => confirm_dialog({ title: `»${title}« löschen`, text: 'Gelöscht werden die Workspaces und Datenbanken, die für diese Leistungsüberprüfung angelegt wurden, bei allen Teilnehmenden, und deine Vorschau. Die eigenen Workspaces und Datenbanken der Teilnehmenden bleiben, wie sie sind. Lade vorher die Ergebnisse als PDF herunter, wenn du sie noch brauchst.', confirm: 'Löschen', icon: 'bi-trash', danger: true },
-                () => api_call('/api/delete_test', { tag: entry.tag }, d => { if (d.success) refresh_test_archives(); })));
+                () => {
+                    // The answer comes quickly (the Workspaces go in the
+                    // background); until then the row shows that it is going.
+                    row.addClass('opacity-50');
+                    del.prop('disabled', true).find('.bi').removeClass('bi-trash').addClass('bi-arrow-repeat bi-spin');
+                    api_call('/api/delete_test', { tag: entry.tag }, d => {
+                        if (d.success) return refresh_test_archives();
+                        row.removeClass('opacity-50');
+                        del.prop('disabled', false).find('.bi').removeClass('bi-arrow-repeat bi-spin').addClass('bi-trash');
+                    });
+                }));
             $("<td class='text-end'>").append(del).appendTo(row);
         }
     });

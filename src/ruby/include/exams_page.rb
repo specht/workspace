@@ -139,6 +139,14 @@ class Main < Sinatra::Base
         end
         respond(:entries => entries)
     end
+    # What a deleted exam leaves to be removed: its Workspaces, moved here at
+    # once (a rename, the folder stays on the same disk), and a job file per
+    # exam with the containers to stop and the database logins to drop.
+    # A thread works off the job (remove_exam_instances); a job a restart
+    # interrupted is done again at the next start (configure, main.rb), and
+    # the drops are IF EXISTS, so doing one twice does no harm.
+    DELETED_EXAM_INSTANCES = '/user/.deleted-exams'
+
     post '/api/delete_test' do
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
@@ -152,16 +160,6 @@ class Main < Sinatra::Base
         unless neo4j_query('MATCH (:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag}) RETURN t.tag;', :email => @session_user[:email], :tag => data[:tag]).empty?
             instances << [@session_user[:email], Main.test_demo_tag(@session_user[:email], data[:tag])]
         end
-        instances.each do |email, tag|
-            container_name = fs_tag_for_email("#{email}#{tag}")
-            workspace_runtime.stop_workspace(container_name, :timeout => shell_timeout(:docker_kill))
-            FileUtils.rm_rf("/user/#{container_name}")
-        end
-        unless instances.empty?
-            logins = instances.map { |email, tag| DatabaseIdentity.ephemeral_login(db_login_for_email(email), tag) }
-            run_mysql_statements(logins.flat_map { |login| DatabaseProvisioning.mysql_drop_statements(login) })
-            run_neo4j_statements(logins.flat_map { |login| DatabaseProvisioning.neo4j_drop_statements(login) })
-        end
         deleted = neo4j_query(<<~END_OF_STRING, {:tag => data[:tag], :email => @session_user[:email]}).size
             MATCH (u:User {email: $email})<-[:BELONGS_TO]-(t:Test {tag: $tag})
             WITH t, t.tag AS tag
@@ -174,9 +172,70 @@ class Main < Sinatra::Base
         if deleted > 0 && data[:tag].match?(/\A[a-z0-9]+\z/)
             FileUtils.rm_f(File.join(TestWorkspaceExtensions::MANIFESTS, "#{data[:tag]}.json"))
         end
+        unless instances.empty?
+            # Stopping the containers, dropping the databases and removing
+            # some 10,000 files per Workspace (a Dart exam) took over a
+            # minute for a class, longer than nginx waits for an answer: the
+            # teacher saw an error although everything went. Now that is a
+            # thread's work, and the answer comes at once.
+            job = {
+                'containers' => instances.map { |email, tag| fs_tag_for_email("#{email}#{tag}") },
+                'logins' => instances.map { |email, tag| DatabaseIdentity.ephemeral_login(db_login_for_email(email), tag) },
+            }
+            job_path = queue_exam_instances_removal(job)
+            Thread.new { remove_exam_instances(job_path) }
+        end
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
     end
+
+    # Writes the job file, then moves the Workspaces aside (a folder that is
+    # not there, of a student who never opened the exam, is left out);
+    # returns the job file's path. The job comes first: a folder there never
+    # lacks its job, and one a restart left in /user goes with the job too.
+    def queue_exam_instances_removal(job)
+        FileUtils.mkdir_p(DELETED_EXAM_INSTANCES)
+        job_path = File.join(DELETED_EXAM_INSTANCES, "#{Time.now.strftime('%Y%m%d%H%M%S')}-#{SecureRandom.hex(4)}.json")
+        File.write("#{job_path}.tmp", job.to_json)
+        File.rename("#{job_path}.tmp", job_path)
+        folder = job_path.delete_suffix('.json')
+        FileUtils.mkdir_p(folder)
+        job['containers'].each do |container_name|
+            path = "/user/#{container_name}"
+            File.rename(path, File.join(folder, container_name)) if File.directory?(path)
+        end
+        job_path
+    end
+
+    # Does a job: the containers stopped (side by side, each may wait for
+    # its timeout), the databases dropped, the folders removed; the job file
+    # last, so that an interrupted job is done again.
+    def remove_exam_instances(job_path)
+        job = JSON.parse(File.read(job_path))
+        job['containers'].map do |container_name|
+            Thread.new { workspace_runtime.stop_workspace(container_name, :timeout => shell_timeout(:docker_kill)) }
+        end.each(&:join)
+        unless job['logins'].empty?
+            run_mysql_statements(job['logins'].flat_map { |login| DatabaseProvisioning.mysql_drop_statements(login) })
+            run_neo4j_statements(job['logins'].flat_map { |login| DatabaseProvisioning.neo4j_drop_statements(login) })
+        end
+        FileUtils.rm_rf(job_path.delete_suffix('.json'))
+        # a Workspace the move did not reach (a restart in between); its name
+        # belongs to this exam alone
+        job['containers'].each { |container_name| FileUtils.rm_rf("/user/#{container_name}") }
+        FileUtils.rm_f(job_path)
+    rescue => e
+        STDERR.puts "Removing the Workspaces of a deleted exam failed (#{job_path}, done again at the next start): #{e.class}: #{e.message}"
+    end
+
+    # At the start: the jobs a restart interrupted, one after the other.
+    def self.resume_exam_instance_removals
+        Dir[File.join(DELETED_EXAM_INSTANCES, '*.json')].sort.each do |job_path|
+            STDERR.puts "Resuming the removal of a deleted exam's Workspaces: #{File.basename(job_path)}"
+            Main.new!.remove_exam_instances(job_path)
+        end
+    end
+
     # The name of an exam the teacher gave it (»Umbenennen« beside the
     # name, exams.js); the file name of the package stays as it was.
     post '/api/test_rename' do
