@@ -386,6 +386,20 @@ stehen in den Klassen der Lehrkraft, in denen jemand der Teilnehmenden ist
 (solange niemand teilnimmt, in jeder), mit den Klassen der Teilnehmenden und
 »Dieser Klasse zuordnen« (`/api/test_assign_group`); wer teilnimmt, bleibt dabei.
 
+## Probelauf
+
+Unter dem Namen jeder Leistungsüberprüfung steht der Schalter »Probelauf«
+(`/api/test_set_practice`, `Test.practice`). Läuft eine Probe, hat ihre
+Startseite neben dem Knopf in den Prüfungs-Workspace »Zur normalen Seite«
+(`/api/practice_exam_away`, `away` auf der Kante `TAKES`): Die Person sieht dann
+die normale Seite mit Menü und kommt in ihren eigenen Workspace, und ein gelber
+Balken unter dem Menü (`look_in_bar_html`) führt zurück. Gedacht für eine Probe
+über mehrere Tage, in denen die Klasse auch anderes macht. Solange die Probe
+läuft, leitet nginx beide Workspaces weiter, jeden unter seiner eigenen
+Adresse (`refresh_nginx_config`), wie die Vorschau der Lehrkraft neben deren
+eigenem Workspace. Schaltet die Lehrkraft den Probelauf ab oder startet die
+Leistungsüberprüfung neu, sind alle wieder in der Prüfung.
+
 ## Vor dem Einsatz prüfen
 
 Auf der Klassenseite, im Reiter »Leistungsüberprüfungen« der Klasse, hat jedes

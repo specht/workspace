@@ -485,7 +485,8 @@ class Main < Sinatra::Base
         email = @session_user[:email]
         active_workspace = neo4j_query_expect_one(<<~END_OF_QUERY, :email => email)
             MATCH (u:User {email: $email})
-            OPTIONAL MATCH (u)-[:TAKES]->(t:Test {running: TRUE})
+            OPTIONAL MATCH (u)-[r:TAKES]->(t:Test {running: TRUE})
+            WHERE NOT (coalesce(t.practice, FALSE) AND coalesce(r.away, FALSE))
             RETURN t;
         END_OF_QUERY
         test_tag = (active_workspace['t'] || {})[:tag]

@@ -129,6 +129,20 @@ class Main < Sinatra::Base
                 "<span>Du siehst die Seite als <strong>#{CGI.escapeHTML(name)}</strong>.</span>" \
                 "<button type='button' class='btn btn-sm btn-light bu-stop-impersonation'><i class='bi bi-arrow-return-left' aria-hidden='true'></i>Zurück zu deinem Konto</button></div></div>"
         end
+        # a mock exam the student went away from to the normal site
+        # (exams_page.rb, »Probelauf«): the way back, on every page
+        away = my_practice_exams_away
+        unless away.empty?
+            buttons = away.map do |entry|
+                "<button type='button' class='btn btn-sm btn-light bu-practice-exam-back' data-tag='#{CGI.escapeHTML(entry[:tag].to_s)}'>" \
+                    "<i class='bi bi-arrow-return-left' aria-hidden='true'></i>Zurück zur Probe-Leistungsüberprüfung</button>"
+            end
+            teachers = away.map { |entry| entry[:teacher] }.compact.uniq
+            by = teachers.empty? ? '' : " bei #{CGI.escapeHTML(teachers.join(', '))}"
+            return "<div class='look-in-bar look-in-bar-impersonating'><div class='container look-in-bar-inner'><i class='bi bi-hourglass-split' aria-hidden='true'></i>" \
+                "<span>Die Probe-Leistungsüberprüfung#{by} läuft noch. Du bist gerade auf der normalen Seite und in deinem eigenen Workspace.</span>" \
+                "#{buttons.join}</div></div>"
+        end
         unseen = look_ins(:only_unseen => true)
         return '' if unseen.empty?
 

@@ -149,6 +149,15 @@ class Main < Sinatra::Base
                 running_servers[fs_tag][:server_tag] = server_tag
                 running_servers[fs_tag][:share_tag] = user[:share_tag] if user[:share_expires].nil? || user[:share_expires].to_i > Time.now.to_i
             end
+            # During a mock exam (»Probelauf«, exams_page.rb) the own
+            # Workspace stays reachable beside the exam's, under its own
+            # address, as a teacher's preview beside the teacher's own
+            # Workspace; not shared meanwhile.
+            own_fs_tag = fs_tag_for_email(user[:email])
+            if test && test[:practice] == true && running_servers.include?(own_fs_tag)
+                running_servers[own_fs_tag][:server_sid] = user[:server_sid]
+                running_servers[own_fs_tag][:server_tag] = user[:server_tag]
+            end
         end
 
         # Teacher test demos use the same DNS-disabled test runtime as students,

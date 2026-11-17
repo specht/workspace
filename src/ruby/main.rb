@@ -3531,11 +3531,18 @@ class Main < Sinatra::Base
     def running_tests_html(running_tests, demo: false)
         h = ->(t) { CGI.escapeHTML(t.to_s) }
         buttons = running_tests.map do |entry|
+            # a mock exam (»Probelauf«, exams_page.rb): also the way to the
+            # normal site and the own Workspace, back by the bar under the menu
+            away = entry[:practice] && !demo ?
+                " <button class='btn btn-outline-secondary bu-practice-exam-away' data-tag='#{h.(entry[:tag])}'>" \
+                    "<i class='bi bi-house'></i>Zur normalen Seite</button>" : ''
             "<p style='text-align: center;'><button class='btn btn-success #{demo ? 'bu-launch-test-demo' : 'bu-launch-test'}' data-tag='#{h.(entry[:tag])}'>" \
-                "<i class='bi bi-code-slash'></i>Leistungsüberprüfung bei #{h.(entry[:teacher])}</button></p>"
+                "<i class='bi bi-code-slash'></i>#{entry[:practice] ? 'Probe-Leistungsüberprüfung' : 'Leistungsüberprüfung'} bei #{h.(entry[:teacher])}</button>#{away}</p>"
         end
+        practice = running_tests.any? { |entry| entry[:practice] } && !demo
         "<div style='text-align: center;'><h2>Leistungsüberprüfung</h2><p style='text-align: center;'>" \
-            'Momentan läuft eine Leistungsüberprüfung. Klicke auf den entsprechenden Button, um den dazugehörigen Workspace zu öffnen.</p>' \
+            'Momentan läuft eine Leistungsüberprüfung. Klicke auf den entsprechenden Button, um den dazugehörigen Workspace zu öffnen.' \
+            "#{practice ? ' Weil es eine Probe ist, kannst du zwischendurch auf die normale Seite und in deinen eigenen Workspace; ein gelber Balken oben führt dich zurück.' : ''}</p>" \
             "#{buttons.join}</div>"
     end
 

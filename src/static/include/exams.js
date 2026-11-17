@@ -76,6 +76,23 @@ function refresh_test_archives() {
             const name_cell = $('<td>').append($('<strong>').text(title)).append(rename)
                 .append($("<div class='small text-body-secondary'>").text(`${uploaded ? 'hochgeladen am ' + uploaded + ', ' : ''}${entry.size}`))
                 .appendTo(row);
+            // a mock exam: who takes part may go to the normal site and the
+            // own Workspace meanwhile, and back (/api/test_set_practice)
+            const practice_id = `exam_practice_${entry.tag}`;
+            const practice = $(`<div class='form-check form-switch small mt-1 mb-0 exam-practice'>
+                <input class='form-check-input' type='checkbox' role='switch'>
+                <label class='form-check-label'>Probelauf: Die Teilnehmenden können zwischendurch auf die normale Seite</label></div>`);
+            practice.find('input').attr('id', practice_id).prop('checked', !!entry.practice)
+                .on('change', function () {
+                    const box = $(this).prop('disabled', true);
+                    api_call('/api/test_set_practice', { tag: entry.tag, practice: box.prop('checked') }, d => {
+                        box.prop('disabled', false);
+                        if (d.success) entry.practice = box.prop('checked');
+                        else box.prop('checked', !!entry.practice);
+                    });
+                });
+            practice.find('label').attr('for', practice_id);
+            name_cell.append(practice);
             if (!entry.group) {
                 const from = participant_groups(entry).map(([g, n]) => g === E.testGroup ? group_label(g) : `${g} (${n})`).join(', ');
                 name_cell.append($("<div class='small text-body-secondary exam-unassigned'>")

@@ -334,7 +334,7 @@ module Privacy
                 :how_long => 'bis die Person sie löscht oder neu abgibt, sonst ' + ACCOUNT_END,
             },
             {
-                :data => 'Leistungsüberprüfungen: ein eigener Workspace und eigene Datenbanken für die Dauer einer Leistungsüberprüfung, mit allem, was darin entsteht',
+                :data => 'Leistungsüberprüfungen: ein eigener Workspace und eigene Datenbanken für die Dauer einer Leistungsüberprüfung, mit allem, was darin entsteht; bei einem Probelauf, ob die Person gerade auf der normalen Seite ist',
                 :categories => [:content],
                 :purpose => 'Leistungsüberprüfung im Unterricht; die Lehrkraft lädt die Ergebnisse zur Korrektur als PDF herunter',
                 :who => 'die Person selbst während der Überprüfung; die Lehrkraft, der die Überprüfung gehört',

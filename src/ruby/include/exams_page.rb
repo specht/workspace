@@ -128,6 +128,7 @@ class Main < Sinatra::Base
             entries << {
                 tag: row['t'][:tag],
                 running: row['t'][:running],
+                practice: row['t'][:practice],
                 size: bytes_to_str(row['f'][:size]),
                 filename: row['t'][:filename],
                 title: exam_title(row['t']),
@@ -233,6 +234,58 @@ class Main < Sinatra::Base
         Dir[File.join(DELETED_EXAM_INSTANCES, '*.json')].sort.each do |job_path|
             STDERR.puts "Resuming the removal of a deleted exam's Workspaces: #{File.basename(job_path)}"
             Main.new!.remove_exam_instances(job_path)
+        end
+    end
+
+    # A mock exam (»Probelauf«, the switch under its name, exams.js): while
+    # it runs, who takes part may go to the normal site and the own
+    # Workspace and come back (practice_exam_away); a yellow bar under the
+    # menu shows the way back. For a mock exam over several days, in which
+    # the class also does other work.
+    post '/api/test_set_practice' do
+        assert(teacher_logged_in?)
+        data = parse_request_data(:required_keys => [:tag, :practice], :types => { :practice => Object })
+        require_test_owner!(data[:tag])
+        if data[:practice] == true
+            neo4j_query('MATCH (t:Test {tag: $tag}) SET t.practice = TRUE;', :tag => data[:tag])
+        else
+            # back to a real exam: everyone who is away comes back into it
+            neo4j_query(<<~END_OF_STRING, :tag => data[:tag])
+                MATCH (t:Test {tag: $tag})
+                REMOVE t.practice
+                WITH t
+                OPTIONAL MATCH (:User)-[r:TAKES]->(t)
+                REMOVE r.away;
+            END_OF_STRING
+        end
+        Main.refresh_nginx_config()
+        respond(:ok => true)
+    end
+
+    # A student during a mock exam: away to the normal site (away true) or
+    # back into the exam (false); only for a mock exam that runs.
+    post '/api/practice_exam_away' do
+        assert(user_logged_in?)
+        data = parse_request_data(:required_keys => [:tag, :away], :types => { :away => Object })
+        found = neo4j_query(<<~END_OF_STRING, :email => @session_user[:email], :tag => data[:tag].to_s, :away => data[:away] == true).to_a
+            MATCH (:User {email: $email})-[r:TAKES]->(t:Test {tag: $tag, running: TRUE, practice: TRUE})
+            SET r.away = CASE WHEN $away THEN TRUE ELSE NULL END
+            RETURN t.tag;
+        END_OF_STRING
+        halt 404 if found.empty?
+        respond(:ok => true)
+    end
+
+    # The mock exams a student went away from (the bar under the menu,
+    # look_in_bar_html)
+    def my_practice_exams_away
+        return [] unless user_logged_in?
+
+        neo4j_query(<<~END_OF_QUERY, :email => @session_user[:email]).map do |row|
+            MATCH (:User {email: $email})-[:TAKES {away: TRUE}]->(t:Test {running: TRUE, practice: TRUE})-[:BELONGS_TO]->(tu:User)
+            RETURN t.tag AS tag, tu.email AS teacher;
+        END_OF_QUERY
+            { :tag => row['tag'], :teacher => (@@invitations[row['teacher']] || {})[:name] }
         end
     end
 
@@ -405,9 +458,14 @@ class Main < Sinatra::Base
         assert(teacher_logged_in?)
         data = parse_request_data(:required_keys => [:tag])
         require_test_owner!(data[:tag])
+        # everyone starts in the exam, also who went to the normal site the
+        # last time it ran (a mock exam, practice_exam_away)
         neo4j_query(<<~END_OF_STRING, {:tag => data[:tag]})
             MATCH (t:Test {tag: $tag})
-            SET t.running = TRUE;
+            SET t.running = TRUE
+            WITH t
+            OPTIONAL MATCH (:User)-[r:TAKES]->(t)
+            REMOVE r.away;
         END_OF_STRING
         Main.refresh_nginx_config()
         respond(:ok => 'sure')
@@ -523,12 +581,14 @@ class Main < Sinatra::Base
         end
         entries = []
         neo4j_query(<<~END_OF_QUERY, {:email => @session_user[:email]}).each do |row|
-            MATCH (u:User {email: $email})-[:TAKES]->(t:Test {running: TRUE})-[:BELONGS_TO]->(tu:User)
+            MATCH (u:User {email: $email})-[r:TAKES]->(t:Test {running: TRUE})-[:BELONGS_TO]->(tu:User)
+            WHERE NOT (coalesce(t.practice, FALSE) AND coalesce(r.away, FALSE))
             RETURN t, tu.email;
         END_OF_QUERY
             entries << {
                 :tag => row['t'][:tag],
-                :teacher => @@invitations[row['tu.email']][:name]
+                :teacher => @@invitations[row['tu.email']][:name],
+                :practice => row['t'][:practice] == true,
             }
         end
         entries

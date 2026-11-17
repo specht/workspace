@@ -321,6 +321,16 @@ document.addEventListener('click', function (e) {
         back.disabled = true;
         api_call('/api/stop_impersonation', {}, function () { location.href = '/klasse'; });
     }
+    // a mock exam: to the normal site and back (exams_page.rb, »Probelauf«)
+    const practice = e.target.closest('.bu-practice-exam-away, .bu-practice-exam-back');
+    if (practice) {
+        practice.disabled = true;
+        const away = practice.classList.contains('bu-practice-exam-away');
+        api_call('/api/practice_exam_away', { tag: practice.dataset.tag, away: away }, function (data) {
+            if (data.success) location.href = '/';
+            else practice.disabled = false;
+        });
+    }
     const seen = e.target.closest('.bu-look-ins-seen');
     if (seen) {
         seen.disabled = true;
