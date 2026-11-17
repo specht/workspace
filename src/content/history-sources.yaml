@@ -486,3 +486,55 @@ takahashi:
   - text: Für dein Referat ist ein Wort pro Folie zu wenig, aber die Methode zeigt, wie wenig auf einer Folie stehen muss
     none: 'die Folgerung des Blatts für den Unterricht'
 
+
+tabulator:
+  - text: Die Taste für Tabellen, um 1900
+    sources:
+      - url: https://en.wikipedia.org/wiki/Tab_key
+        quote: "Fredric Hillard filed a patent application for such a mechanism in 1900."
+  - text: Auf einer Schreibmaschine rückte jeder Anschlag den Wagen mit dem Papier um ein Zeichen weiter
+    sources:
+      - url: https://en.wikipedia.org/wiki/Typewriter
+        quote: "The platen was mounted on a carriage that moved horizontally to the left, automatically advancing the typing position, after each character was typed."
+  - text: Wer eine Tabelle tippte, drückte für jede Spalte wieder und wieder die Leertaste und die Rücktaste
+    sources:
+      - url: https://en.wikipedia.org/wiki/Tab_key
+        quote: "When a person wanted to type a table (of numbers or text) on a typewriter, there was a lot of time-consuming and repetitive use of the space bar and backspace key."
+  - text: Um 1900 kamen Schreibmaschinen mit einem Tabulator
+    sources:
+      - url: https://en.wikipedia.org/wiki/Tab_key
+        quote: "Pressing the tab key would advance the carriage to the next tabulator stop. The original tabulator stops were adjustable clips that could be arranged by the user on the tabulator rack. Fredric Hillard filed a patent application for such a mechanism in 1900."
+  - text: Daher der Name
+    sources:
+      - url: https://en.wikipedia.org/wiki/Tab_key
+        quote: "The word tab derives from the word tabulate, which means \"to arrange data in a tabular, or table, form\"."
+  - text: Ein Patent von 1903 sah sogar eigene Tasten für Einer, Zehner und Hunderter vor
+    sources:
+      - url: https://en.wikipedia.org/wiki/Tab_key
+        quote: "For numeric data, however, the logical place for the tab stop is the location of the least significant digit. […] in 1903, Harry Dukes and William Clayton filed for a patent on a tab mechanism with multiple tab keys numbered 1, 10, 100, etc."
+
+scribe:
+  - text: Was es ist, nicht wie es aussieht, 1980
+    sources:
+      - url: https://en.wikipedia.org/wiki/Scribe_(markup_language)
+        quote: "It formed the subject of his 1980 doctoral dissertation"
+  - text: Brian Reid schrieb an der Carnegie Mellon University in Pittsburgh das Programm Scribe
+    sources:
+      - url: https://en.wikipedia.org/wiki/Scribe_(markup_language)
+        quote: "Scribe was designed and developed by Brian Reid of Carnegie Mellon University."
+      - url: https://en.wikipedia.org/wiki/Carnegie_Mellon_University
+        quote: "Carnegie Mellon University (CMU) is a private research university in Pittsburgh, Pennsylvania"
+  - text: Wer damit einen Text setzte, sagte nur, was ein Stück ist
+    sources:
+      - url: https://en.wikipedia.org/wiki/Scribe_(markup_language)
+        quote: "Because of the separation of concerns between the content (structure) of the document and its style (format), writers did not need to concern themselves with the details of formatting."
+  - text: Diese Trennung von Inhalt und Aussehen war damals neu
+    sources:
+      - url: https://en.wikipedia.org/wiki/Scribe_(markup_language)
+        quote: "Scribe was notable when it was proposed, because it involved for the first time a clean separation of presentation and content."
+  - text: LaTeX hat die Idee übernommen, und Webseiten arbeiten bis heute so
+    sources:
+      - url: https://en.wikipedia.org/wiki/LaTeX
+        quote: "LaTeX extends TeX with the descriptive markup ideas of Scribe."
+      - url: https://en.wikipedia.org/wiki/CSS
+        quote: "CSS is designed to enable the separation of content and presentation, including layout, colors, and fonts."
