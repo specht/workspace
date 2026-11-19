@@ -19,6 +19,8 @@ const user_groups = E.groups || {};
 const invitations = E.names || {};
 const group_schools = E.schools || {};
 const my_school = E.mySchool || null;
+// a course from several classes: { group: { email: class or null } }
+const group_classes = E.classes || {};
 
 function exam_title(entry) {
     return entry.title || (entry.filename || 'Leistungsüberprüfung').replace(/\.(tar\.gz|tar\.bz2|tgz|tar)$/i, '');
@@ -176,6 +178,7 @@ function open_exam_people(entry) {
             <span class='exam-people-count' role='status' aria-live='polite'></span></div>`).appendTo(body);
         const search = bar.find('input');
         const sections = [];
+        const class_sections = [];
         // Groups by school, one's own first. Other schools stay hidden
         // behind a button, unless someone there is already chosen.
         const school_of = (group) => group_schools[group] || 'Ohne Schule';
@@ -200,13 +203,39 @@ function open_exam_people(entry) {
             const actions = $(`<span class='exam-people-group-actions'>
                 <button type='button' class='btn btn-link btn-sm' data-flag='1'>Alle</button>
                 <button type='button' class='btn btn-link btn-sm' data-flag='0'>Keine</button></span>`).appendTo(summary);
-            const grid = $(`<div class='exam-people-grid'>`).appendTo(details);
-            for (let email of members) {
-                const id = `exam_${Math.random().toString(36).slice(2, 10)}`;
-                const item = $(`<div class='form-check'><input class='form-check-input' type='checkbox'><label class='form-check-label'></label></div>`).appendTo(grid);
-                item.find('input').attr({ id: id, 'data-email': email });
-                item.find('label').attr('for', id).text(exam_name(email));
-                if (exam_name(email) !== email) item.attr('title', email);
+            const add_grid = function (people) {
+                const grid = $(`<div class='exam-people-grid'>`).appendTo(details);
+                for (let email of people) {
+                    const id = `exam_${Math.random().toString(36).slice(2, 10)}`;
+                    const item = $(`<div class='form-check'><input class='form-check-input' type='checkbox'><label class='form-check-label'></label></div>`).appendTo(grid);
+                    item.find('input').attr({ id: id, 'data-email': email });
+                    item.find('label').attr('for', id).text(exam_name(email));
+                    if (exam_name(email) !== email) item.attr('title', email);
+                }
+            };
+            // a course from several classes: each class under a heading of
+            // its own, with »Alle« and »Keine«; who is in none, last
+            const classes = group_classes[group];
+            if (classes) {
+                const names = [...new Set(members.map((e) => classes[e]).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de'));
+                if (members.some((e) => !classes[e])) names.push(null);
+                for (let name of names) {
+                    const people = members.filter((e) => (classes[e] || null) === name);
+                    const head = $(`<div class='exam-people-class'><span class='exam-people-class-name'></span><span class='exam-people-group-count text-body-secondary small'></span>
+                        <span class='exam-people-group-actions'>
+                        <button type='button' class='btn btn-link btn-sm' data-flag='1'>Alle</button>
+                        <button type='button' class='btn btn-link btn-sm' data-flag='0'>Keine</button></span></div>`).appendTo(details);
+                    head.find('.exam-people-class-name').text(name || 'Weitere');
+                    head.find('button').attr('aria-label', function () { return `${$(this).text()} aus ${name || 'Weitere'}`; })
+                        .on('click', function () {
+                            const flag = $(this).data('flag') === 1;
+                            set_people(people.filter(m => chosen.has(m) !== flag), flag);
+                        });
+                    add_grid(people);
+                    class_sections.push({ head, members: people });
+                }
+            } else {
+                add_grid(members);
             }
             // open: the class, and a group with someone added from it
             const in_class = (e) => (user_groups[exam_group] || []).includes(e);
@@ -231,7 +260,10 @@ function open_exam_people(entry) {
             body.find('input[type=checkbox]').each(function () { this.checked = chosen.has($(this).data('email')); });
             for (let s of sections) {
                 const n = s.members.filter(m => chosen.has(m)).length;
-                s.details.find('.exam-people-group-count').text(`${n} von ${s.members.length}`);
+                s.details.children('summary').find('.exam-people-group-count').text(`${n} von ${s.members.length}`);
+            }
+            for (let c of class_sections) {
+                c.head.find('.exam-people-group-count').text(`${c.members.filter(m => chosen.has(m)).length} von ${c.members.length}`);
             }
             bar.find('.exam-people-count').text(`${chosen.size} ausgewählt`);
         };
@@ -259,6 +291,13 @@ function open_exam_people(entry) {
                 });
                 s.details.toggle(hits > 0);
                 if (q && hits > 0) s.details.prop('open', true);
+            }
+            // a class heading only with someone found under it
+            for (let c of class_sections) {
+                const grid = c.head.next('.exam-people-grid');
+                const shown = grid.find('.form-check').filter(function () { return this.style.display !== 'none'; }).length;
+                c.head.toggle(shown > 0);
+                grid.toggle(shown > 0);
             }
         });
         show();

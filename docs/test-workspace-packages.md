@@ -386,6 +386,15 @@ stehen in den Klassen der Lehrkraft, in denen jemand der Teilnehmenden ist
 (solange niemand teilnimmt, in jeder), mit den Klassen der Teilnehmenden und
 »Dieser Klasse zuordnen« (`/api/test_assign_group`); wer teilnimmt, bleibt dabei.
 
+Kommen die Mitglieder einer Gruppe aus mehreren Klassen (ein Kurs der
+Oberstufe), stehen sie im Dialog nach Klassen getrennt, jede mit »Alle« und
+»Keine« (`ExamPeopleClasses`). Was eine Klasse ist, weiß der Workspace nicht;
+er nimmt dafür die anderen Gruppen derselben Schule, die sich unter den
+Mitgliedern nicht überschneiden und zusammen die meisten von ihnen enthalten.
+Ein Kurs, den einige nebenbei gemeinsam haben, überschneidet sich mit den
+Klassen und zählt nicht. Eine Gruppe zählt erst ab zwei Mitgliedern; wer in
+keiner steht, steht unter »Weitere«.
+
 ## Probelauf
 
 Unter dem Namen jeder Leistungsüberprüfung steht der Schalter »Probelauf«

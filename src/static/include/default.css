@@ -19083,6 +19083,23 @@ form.phone-manage-dirty {
     gap: 0.2rem 1rem;
     padding: 0.5rem 0 0.4rem 1.2rem;
 }
+/* a course from several classes: a heading per class (ExamPeopleClasses) */
+.exam-people-class {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin: 0.5rem 0 0 1.2rem;
+    padding-top: 0.3rem;
+    border-top: 1px dashed var(--bs-border-color-translucent);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.exam-people-group > summary + .exam-people-class {
+    border-top: 0;
+}
+.exam-people-class + .exam-people-grid {
+    padding-top: 0.25rem;
+}
 .exam-people-grid .form-check-label {
     overflow-wrap: anywhere;
 }

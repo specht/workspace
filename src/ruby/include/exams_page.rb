@@ -320,6 +320,20 @@ class Main < Sinatra::Base
         respond(:ok => true)
     end
 
+    # { group => { email => class } } for the teacher's groups whose members
+    # come from at least two classes (ExamPeopleClasses)
+    def exam_people_classes
+        skip = @@test_groups.to_a + ['Administrator', Roster::TEACHERS_GROUP, Roster::NO_GROUP]
+        schools = school_names_of_groups
+        my_user_groups.each_with_object({}) do |(group, members), result|
+            # only the groups of the group's school (none known: all, as
+            # before the roster was imported)
+            same_school = schools.empty? ? @@group_members : @@group_members.select { |name, _| schools[name] == schools[group] }
+            split = ExamPeopleClasses.split(group, members, same_school, :skip => skip)
+            result[group] = split unless split.empty?
+        end
+    end
+
     # The tab »Leistungsüberprüfungen« of the class page (exams.js): the
     # upload, how to make a package, the table, the dialog of who takes part
     def class_exams_html(group)
@@ -332,6 +346,9 @@ class Main < Sinatra::Base
             :names => my_invitations, :schools => school_names_of_groups.slice(*my_user_group_order), :mySchool => school,
             # the test group is shown as the teacher's test account
             :testGroup => @@test_group_of[me],
+            # a course from several classes: its members by class
+            # (ExamPeopleClasses), in the dialog of who takes part
+            :classes => exam_people_classes,
         }
         # trying it first: »Ausprobieren« shows the start page as the class
         # sees it and opens the teacher's preview behind it
