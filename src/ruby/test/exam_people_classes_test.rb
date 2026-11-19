@@ -1,5 +1,4 @@
 require 'minitest/autorun'
-require 'set'
 require_relative '../include/exam_people_classes'
 
 class ExamPeopleClassesTest < Minitest::Test
