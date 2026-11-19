@@ -20,7 +20,7 @@ jobs:
         part: [quick, task-examples]
     name: ${{ matrix.part }}
     runs-on: ubuntu-latest
-    container: ruby:3.4.12-trixie
+    container: ruby:3.4.13-trixie
     steps:
       - uses: actions/checkout@v5
       - name: Tools the task examples need

@@ -556,7 +556,7 @@ end
 # DOCKER_HOST.
 FileUtils.mkpath(File.join(DATA_PATH, 'docker-guard'))
 docker_compose[:services][:docker_guard] = {
-    :image => 'ruby:3.4.12-alpine3.24@sha256:68d60620b4458fc58c1e1d04a79ee26b85564fdd5387f3071ae077e2c56ae766',
+    :image => 'ruby:3.4.13-alpine3.24@sha256:9010b7942739e483ab8e359eae1190ea10af21cf7476daa41ece6f896dc8e02a',
     :command => ['ruby', '/guard/guard.rb'],
     :volumes => ['/var/run/docker.sock:/var/run/docker.sock',
                  './docker/docker-guard:/guard:ro',
@@ -582,7 +582,7 @@ docker_compose[:services][:ruby][:environment] << 'DOCKER_HOST=unix:///run/docke
 # the firewall, with NET_ADMIN on the host's network, holds no Docker socket.
 FileUtils.mkpath(File.join(DATA_PATH, 'docker-guard-ro'))
 docker_compose[:services][:docker_guard_ro] = {
-    :image => 'ruby:3.4.12-alpine3.24@sha256:68d60620b4458fc58c1e1d04a79ee26b85564fdd5387f3071ae077e2c56ae766',
+    :image => 'ruby:3.4.13-alpine3.24@sha256:9010b7942739e483ab8e359eae1190ea10af21cf7476daa41ece6f896dc8e02a',
     :command => ['ruby', '/guard/guard.rb'],
     :volumes => ['/var/run/docker.sock:/var/run/docker.sock',
                  './docker/docker-guard:/guard:ro',

@@ -1,4 +1,4 @@
-FROM ruby:3.4.12-trixie@sha256:5803b69dd8a875a9afc7e3bbc10d0ba683e12aad2640dbbd44295b4890cc8927
+FROM ruby:3.4.13-trixie@sha256:fe8f5c26ec7a8687d8a64dec2e5ceb6870aad7ed0e246c714b2cd6b58e6c79cf
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   less \
