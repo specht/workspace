@@ -5623,7 +5623,12 @@ body.cl-dragging-page * {
 
 /* The class page's tabs on a phone: one row that scrolls sideways. */
 @media (max-width: 575.98px) {
+    /* relative: the hidden names below are absolute; without it they are
+       placed outside the scrolling row, are not clipped by it and make the
+       whole page wider than the phone (with a long chosen tab like
+       »Leistungsüberprüfungen«) */
     .class-tabs {
+        position: relative;
         flex-wrap: nowrap;
         overflow-x: auto;
         scrollbar-width: thin;
@@ -19105,6 +19110,13 @@ form.phone-manage-dirty {
 }
 .exam-table td:first-child {
     min-width: 12rem;
+}
+/* the notes under an exam's name wrap (.table td is nowrap), so that the
+   first column is not as wide as their longest sentence */
+.exam-table .exam-practice,
+.exam-table .exam-unassigned {
+    max-width: 18rem;
+    white-space: normal;
 }
 .class-exams-head {
     display: flex;

@@ -482,11 +482,26 @@
             document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
         });
         if (focus) tab.focus();
+        reveal(tab);
         const url = new URL(location.href);
         url.searchParams.set('tab', tab.dataset.tab);
         history.replaceState(null, '', url);
         document.querySelectorAll('.class-board-select input[name=tab]').forEach((input) => { input.value = tab.dataset.tab; });
     }
+
+    // On a phone the tabs are one row that scrolls sideways: the chosen tab
+    // in view, also when it is far right (»Leistungsüberprüfungen«). Only
+    // the row scrolls, not the page.
+    function reveal(tab) {
+        const bar = tab.parentElement;
+        if (bar.scrollWidth <= bar.clientWidth) return;
+        const b = bar.getBoundingClientRect();
+        const t = tab.getBoundingClientRect();
+        if (t.right > b.right) bar.scrollLeft += t.right - b.right + 8;
+        else if (t.left < b.left) bar.scrollLeft -= b.left - t.left + 8;
+    }
+    const chosen = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+    if (chosen) reveal(chosen);
 
     tabs.forEach((tab, i) => {
         tab.addEventListener('click', () => select(tab, false));
