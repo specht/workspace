@@ -19653,11 +19653,15 @@ form.phone-manage-dirty {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-/* who solved Extras: a violet ring and their number on the dot, beside
-   the name on a chip */
-.projector-dot.has-extras {
-    position: relative;
-    box-shadow: 0 0 0 2px var(--bs-body-bg), 0 0 0 5px var(--projector-extra);
+/* who solved Extras: a violet dot with their number inside (nothing
+   that sticks out and covers a neighbour in a full column), beside the
+   name on a chip */
+.projector-column .projector-dot.has-extras {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--projector-extra);
+    border-color: var(--projector-extra);
 }
 .projector-column .projector-chip.has-extras {
     border-color: var(--projector-extra);
@@ -19677,12 +19681,16 @@ form.phone-manage-dirty {
     white-space: nowrap;
 }
 .projector-dot .projector-extras {
-    position: absolute;
-    z-index: 1;
-    top: -0.55em;
-    right: -0.7em;
-    font-size: clamp(11px, calc(var(--dot-size, 1.6rem) * 0.42), 22px);
-    box-shadow: 0 0 0 2px var(--bs-body-bg);
+    padding: 0;
+    gap: 0.1em;
+    font-size: calc(var(--dot-size, 1.6rem) * 0.4);
+    line-height: 1;
+}
+/* the stars only where the dot has room for them, the number only where
+   it can be read (projector.js: dots-big, dots-small) */
+.projector-board:not(.dots-big) .projector-dot .projector-extras .bi,
+.projector-board.dots-small .projector-dot .projector-extras {
+    display: none;
 }
 .projector-chip .projector-extras {
     font-size: 0.9em;

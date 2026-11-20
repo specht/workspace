@@ -8,7 +8,7 @@
 // in the browser). Who is absent today on the class page (meeting_status.js)
 // is left out. Asked again when a student of the group solved a task
 // (/ws_meeting) and every minute; the dots that moved slide there. Who
-// solved Extras gets their number on the dot, violet with the stars.
+// solved Extras is a violet dot with their number inside.
 (function () {
     const root = document.querySelector('.projector');
     if (!root) return;
@@ -115,7 +115,8 @@
         note.textContent = (data.unit === 'Blatt' ? 'Jede Person steht beim ersten Blatt, das sie noch nicht fertig hat (alle Aufgaben außer den Extras)' :
             'Jede Person steht bei der ersten Aufgabe, die sie noch nicht gelöst hat') +
             (names ? '; gestrichelt: noch nichts geprüft.' : '; ein leerer Kreis: noch nichts geprüft.') +
-            (data.extras ? ' Die Extras (' + data.extras + ') zählen nicht mit: Wer fertig ist, kann daran weitermachen; die violette Zahl sagt, wie viele jemand gelöst hat.' : '');
+            (data.extras ? ' Die Extras (' + data.extras + ') zählen nicht mit: Wer fertig ist, kann daran weitermachen. ' +
+                (names ? 'Die violette Zahl sagt, wie viele Extras jemand gelöst hat.' : 'Ein violetter Punkt hat Extras gelöst, die Zahl darin sagt, wie viele.') : '');
     }
 
     // the board as tall as the screen leaves below the site's header and
@@ -144,6 +145,8 @@
             if (Math.ceil(most / row) * (size + gap) <= space) break;
         }
         board.style.setProperty('--dot-size', size + 'px');
+        board.classList.toggle('dots-big', size >= 40);
+        board.classList.toggle('dots-small', size < 20);
     }
     window.addEventListener('resize', fit);
     window.addEventListener('load', fit);
