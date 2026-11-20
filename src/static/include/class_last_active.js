@@ -72,7 +72,7 @@ window.ClassLastActive = (function () {
                 if (!data.success) return;
                 latest = data;
                 apply(board, group, data);
-            }, { no_please_wait: true });
+            }, { no_please_wait: true, quiet: true });
         }
         // the server's view at once (clock skew), then every minute
         refresh();

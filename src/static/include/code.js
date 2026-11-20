@@ -205,10 +205,14 @@ function searchable_select(select) {
         input.val(chosen.val() === '' && !/alle /i.test(chosen.text()) ? '' : chosen.text());
     };
     const close = function () { menu.removeClass('show').empty(); input.attr('aria-expanded', 'false'); shown = []; active = -1; };
-    const mark = function () {
+    const mark = function (centre) {
         const item = menu.find('.dropdown-item').removeClass('active').eq(active).addClass('active');
+        if (!item.length) return;
+        // the chosen one in the middle when the list opens, without
+        // scrolling the page
+        if (centre) menu[0].scrollTop = item[0].offsetTop - (menu[0].clientHeight - item[0].offsetHeight) / 2;
         // the active one in view when the arrows move through a long list
-        if (item.length) item[0].scrollIntoView({ block: 'nearest' });
+        else item[0].scrollIntoView({ block: 'nearest' });
     };
     const pick = function (option) {
         close();
@@ -234,6 +238,10 @@ function searchable_select(select) {
             words.every(w => (plain(o.text) + ' ' + plain(o.value) + ' ' + plain(o.more)).includes(w))).map(o => ({ ...o, in_text: true }));
         shown = direct.concat(in_text);
         active = shown.length ? 0 : -1;
+        // opened without a word: at the chosen option, its neighbours
+        // around it (the next sheet of a series, the next class)
+        const at_choice = words.length === 0 && shown.findIndex(o => o.value === select.val() && o.value !== '');
+        if (at_choice > 0) active = at_choice;
         menu.empty();
         // a heading where the group changes; what only the description
         // matched comes last, under its own heading
@@ -247,8 +255,13 @@ function searchable_select(select) {
             menu.append(item);
         });
         if (!shown.length) menu.append(`<li><span class='dropdown-item-text text-body-secondary small'>Keine passt.</span></li>`);
-        mark();
+        menu[0].style.maxHeight = '';
         menu.addClass('show');
+        // no taller than the window leaves below the field, so that the
+        // list ends on the screen
+        const room = window.innerHeight - input[0].getBoundingClientRect().bottom - 12;
+        if (room > 160 && menu[0].offsetHeight > room) menu[0].style.maxHeight = room + 'px';
+        mark(at_choice > 0);
         input.attr('aria-expanded', 'true');
     };
     input.on('focus', function () { input.select(); show(''); });
@@ -380,7 +393,11 @@ function api_call(url, data, callback, options) {
     jqxhr.fail(function (http) {
         clearTimeout(window.please_wait_timeout);
         $('.api_messages').empty();
-        show_error_message('Bei der Bearbeitung der Anfrage ist ein Fehler aufgetreten.');
+        // quiet: a request the page repeats by itself (every minute, after
+        // a solved task) says nothing; one that fails while the server
+        // restarts would otherwise leave a message nobody caused
+        if (options.quiet !== true)
+            show_error_message('Bei der Bearbeitung der Anfrage ist ein Fehler aufgetreten.');
         if (typeof (callback) !== 'undefined') {
             var error_message = 'unknown_error';
             try {

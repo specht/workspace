@@ -188,7 +188,7 @@
                 if (!reply.success) return;
                 data = reply.data;
                 draw(true);
-            }, { no_please_wait: true });
+            }, { no_please_wait: true, quiet: true });
         }, 800);
     }
     setInterval(function () { if (!document.hidden) refresh(); }, 60000);

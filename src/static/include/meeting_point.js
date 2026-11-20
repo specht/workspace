@@ -232,7 +232,7 @@
             if (!data.success) return;
             statuses[group] = data.status;
             drawStatus(group);
-        }, { no_please_wait: true });
+        }, { no_please_wait: true, quiet: true });
     }
     if (config.teacher) MeetingStatus.onChange(drawAll);
 

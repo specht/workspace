@@ -18,7 +18,7 @@ Unter **Klassen** wählst du oben die Gruppe. Darunter liegen fünf Reiter: **Fo
 
 ## Fortschritt
 
-Hier wählst du eine Aktivität und siehst, wer welche Aufgabe gelöst hat. Jede Spalte ist eine Aufgabe, ihr Titel steht darüber.
+Hier wählst du eine Aktivität und siehst, wer welche Aufgabe gelöst hat. Jede Spalte ist eine Aufgabe, ihr Titel steht darüber. Gehört die Aktivität zu einer Reihe, etwa den Blättern zur Textverarbeitung, stehen unter der Auswahl die Nummern ihrer Blätter: Ein Klick führt zu einem anderen Blatt, rechts daneben steht das nächste mit seinem Titel, links die ganze Reihe mit einer Spalte je Blatt.
 
 <img class='full full-shadow shot' src='klasse-fortschritt.webp' alt='Der Reiter Fortschritt: eine Tabelle mit Namen und Aufgaben, Haken für gelöste Aufgaben.'>
 

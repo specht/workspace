@@ -621,6 +621,14 @@ im Fortschritt) mit einem Balken, dazu »zuletzt« über alle Aktivitäten
 (`ClassBoard.overview`). Noten und Export gibt es nicht; die Zahlen sagen,
 wie weit jemand ist.
 
+Ein Blatt einer Reihe hat im »Fortschritt« unter der Auswahl die Nummern
+aller Blätter, das nächste mit Titel und die ganze Reihe
+(`class_sheet_strip_html`): In der langen Liste stehen die Blätter einer
+Rubrik alphabetisch, und das nächste Blatt war schwer zu finden (Wunsch
+des Maintainers, 20. November 2026). Die Liste selbst (`searchable_select`)
+öffnet beim gewählten Eintrag, in der Mitte, und endet am unteren Rand
+des Fensters.
+
 ## Rückmeldung zu einer Aktivität
 
 Lehrkräfte sagen der Administration, wie eine Aktivität mit einer Gruppe

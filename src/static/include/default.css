@@ -5832,6 +5832,53 @@ body.cl-dragging-page * {
     margin-right: 0.4em;
 }
 
+/* On a sheet of a series (class_sheet_strip_html): the series, its sheets
+   by number, the next by its title */
+.class-sheets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 1em;
+    margin: -0.4em 0 1em;
+}
+.class-sheets .bi {
+    margin-right: 0.35em;
+}
+.class-sheets-next .bi {
+    margin: 0 0 0 0.35em;
+}
+.class-sheets-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.class-sheets-list a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.1em;
+    height: 2.1em;
+    padding: 0 0.4em;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.4em;
+    color: var(--bs-body-color);
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+}
+.class-sheets-list a:hover {
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+}
+.class-sheets-list a[aria-current='page'] {
+    border-color: var(--bs-primary);
+    background: var(--bs-primary);
+    color: #fff;
+    font-weight: 600;
+}
+
 /* The meeting point (meeting_point.js, class_meeting.js): on the page a
    band across the width where the class meets, quiet until one has
    arrived; on the class board the choice, who is there, and a line after
@@ -6101,6 +6148,14 @@ body.cl-dragging-page * {
 .class-activity-select .form-select {
     width: auto;
     max-width: 100%;
+}
+/* the list of activities wider than the field and taller than other
+   lists: titles on one line, the sheets of a section together */
+.searchable-select.class-activity-choice > .suggest-menu {
+    min-width: 100%;
+    width: max-content;
+    max-width: min(34em, calc(100vw - 2em));
+    max-height: min(34rem, 65vh);
 }
 
 .class-live-results h2,

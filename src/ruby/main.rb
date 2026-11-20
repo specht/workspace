@@ -2989,6 +2989,30 @@ class Main < Sinatra::Base
         end
     end
 
+    # On a sheet of a series: the series' sheets by number, to go to the
+    # next without the long list, the whole series first, the next sheet
+    # by its title (a number's title is no help on a touch screen).
+    def class_sheet_strip_html(group, series, activity_key)
+        h = ->(t) { CGI.escapeHTML(t.to_s) }
+        key, title, sheets = series.find { |_, _, list| list.any? { |k, _, _, _| k == activity_key } }
+        return '' if key.nil?
+
+        link = ->(k) { "/klasse?group=#{CGI.escape(group)}&amp;tab=fortschritt&amp;activity=#{CGI.escape(k)}" }
+        here = sheets.index { |k, _, _, _| k == activity_key }
+        io = +"<nav class='class-sheets' aria-label='Blätter der Reihe #{h.(title)}'>"
+        io << "<a class='class-sheets-all' href='#{link.(key)}' title='Die ganze Reihe: je Blatt eine Spalte'><i class='bi bi-grid-3x3-gap' aria-hidden='true'></i>Reihe: #{h.(title)}</a>"
+        io << "<ol class='class-sheets-list'>"
+        sheets.each_with_index do |(k, sheet_title, _, _), i|
+            current = i == here ? " aria-current='page'" : ''
+            io << "<li><a href='#{link.(k)}' title='#{i + 1}. #{h.(sheet_title)}'#{current}><span class='visually-hidden'>Blatt </span>#{i + 1}</a></li>"
+        end
+        io << '</ol>'
+        if (following = sheets[here + 1])
+            io << "<a class='class-sheets-next' href='#{link.(following[0])}'>#{here + 2}. #{h.(following[1])}<i class='bi bi-arrow-right' aria-hidden='true'></i></a>"
+        end
+        io << '</nav>'
+    end
+
     # A whole series at once (»Reihe: …«): a row per student, a column per
     # activity, each cell how many of its tasks are solved, without the
     # extras (they count apart, »+2«), linking to its board; the open points
@@ -3107,6 +3131,7 @@ class Main < Sinatra::Base
         io << meeting_control_html(group, activity_key, tasks)
         io << class_template_html(group, activity_key)
         io << "</div>"
+        io << class_sheet_strip_html(group, series, activity_key)
         io << "<div class='class-template-results' aria-live='polite'></div>"
         io << "<div class='class-live-results' aria-live='polite'></div>"
 

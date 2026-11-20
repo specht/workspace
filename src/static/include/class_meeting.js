@@ -42,7 +42,7 @@
             if (!data.success) return;
             status = data.status;
             draw();
-        }, { no_please_wait: true });
+        }, { no_please_wait: true, quiet: true });
     }
     refresh();
     setInterval(refresh, 60000);
