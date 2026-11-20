@@ -40,6 +40,7 @@ Lernende bauen einen Routenplaner für Berlin mit echten Karten von OpenStreetMa
 - **Vom Gymnasium Steglitz zum Brandenburger Tor** (drei Bezirke, 356 615 Knoten): 8,0 km, Dijkstra besucht 225 556 Knoten in 2 s, A* 23 996 in 0,2 s. Mit dem Auto 9,8 km in 12 min; A* besucht dort noch fast die Hälfte, weil die Schätzung mit 90 km/h rechnet.
 - **Die Rundfahrt durch acht Orte in Mitte** zu Fuß: nächster Nachbar 11,2 km, alle Reihenfolgen 9,8 km, 2-opt 9,86 km.
 - Die Testkarte `data/detour.tsv` ist so gebaut, dass Breitensuche und Dijkstra verschiedene Wege finden.
+- Die Testkarte `data/shortcut.tsv` ist so gebaut, dass ein Dijkstra ohne das Verbessern (ein Nachbar kommt nur dazu, wenn er neu ist, wie in der Breitensuche) einen falschen Weg findet: Den Knoten 44 erreicht die Suche zuerst über 42 nach 600 Metern, über 43 sind es nur 500. Die Aufgabe »Dijkstra« prüft darum beide Karten.
 
 #### Tipps in Stufen
 

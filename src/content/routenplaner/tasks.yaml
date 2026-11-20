@@ -4,7 +4,9 @@
 # Fußweg 2-4 und der Birkenweg 3-5-4, eine Einbahnstraße) und für die Suchen
 # data/detour.tsv (die Lindenstraße 11-12-13-14-15-16 geradeaus, der
 # Eichenweg 11-21-22-16 als Umweg mit weniger Kanten, ein Fußweg 31-32 ohne
-# Verbindung); die Werte kommen aus loesung/.
+# Verbindung), für Dijkstra auch data/shortcut.tsv (der Kastanienweg 41-42-44,
+# der Erlenweg 41-43-44, der Weidenweg 44-45: 44 wird zuerst über 42 gefunden,
+# nach 600 Metern, über 43 sind es nur 500); die Werte kommen aus loesung/.
 format: 1
 activity: routenplaner
 tasks:
@@ -1264,6 +1266,9 @@ tasks:
         - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
           expect: "['11', '12', '13', '14', '15', '16']"
           say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/shortcut.tsv')), '41', '45')[:path]
+          expect: "['41', '43', '44', '45']"
+          say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
         - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
           expect: "['11']"
         - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
@@ -1282,7 +1287,10 @@ tasks:
         Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
         Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
         »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
-        jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+        jeweils als Nächster drankommt und wann sich ein Abstand noch ändert. Auf
+        `data/shortcut.tsv` von 41 nach 45 ändert sich ein Abstand: Über welchen
+        Nachbarn findet die Suche den Knoten 44 zuerst, und über welchen ist der
+        Weg zu ihm kürzer?
       - |
         Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
         `frontier`, einen Hash von Knoten zu Metern, und als Nächstes kommt der mit
@@ -1322,6 +1330,9 @@ tasks:
           - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
             expect: "['11', '12', '13', '14', '15', '16']"
             say: 'Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/shortcut.tsv'')), ''41'', ''45'')[''path'']'
+            expect: "['41', '43', '44', '45']"
+            say: 'Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.'
           - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
             expect: "['11']"
           - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
@@ -1340,7 +1351,10 @@ tasks:
           Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
           Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
           »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
-          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert. Auf
+          `data/shortcut.tsv` von 41 nach 45 ändert sich ein Abstand: Über welchen
+          Nachbarn findet die Suche den Knoten 44 zuerst, und über welchen ist der
+          Weg zu ihm kürzer?
         - |
           Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
           `frontier`, ein dict von Knoten zu Metern, und als Nächstes kommt der mit den
@@ -1378,6 +1392,9 @@ tasks:
           - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
             expect: "['11', '12', '13', '14', '15', '16']"
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/shortcut.tsv')), '41', '45').path
+            expect: "['41', '43', '44', '45']"
+            say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
           - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
             expect: "['11']"
           - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
@@ -1396,7 +1413,10 @@ tasks:
           Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
           Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
           »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
-          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert. Auf
+          `data/shortcut.tsv` von 41 nach 45 ändert sich ein Abstand: Über welchen
+          Nachbarn findet die Suche den Knoten 44 zuerst, und über welchen ist der
+          Weg zu ihm kürzer?
         - |
           Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
           `frontier`, eine Map von Knoten zu Metern, und als Nächstes kommt der mit
@@ -1440,6 +1460,9 @@ tasks:
           - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
             expect: "['11', '12', '13', '14', '15', '16']"
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/shortcut.tsv')), '41', '45').path
+            expect: "['41', '43', '44', '45']"
+            say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
           - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
             expect: "['11']"
           - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
@@ -1458,7 +1481,10 @@ tasks:
           Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
           Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
           »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
-          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert. Auf
+          `data/shortcut.tsv` von 41 nach 45 ändert sich ein Abstand: Über welchen
+          Nachbarn findet die Suche den Knoten 44 zuerst, und über welchen ist der
+          Weg zu ihm kürzer?
         - |
           Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
           `frontier`, eine Map von Knoten zu Metern, und als Nächstes kommt der mit
@@ -1501,6 +1527,9 @@ tasks:
           - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
             expect: 'List.of("11", "12", "13", "14", "15", "16")'
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/shortcut.tsv")), "41", "45").path()
+            expect: 'List.of("41", "43", "44", "45")'
+            say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
           - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
             expect: 'List.of("11")'
           - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
@@ -1519,7 +1548,10 @@ tasks:
           Auf `data/detour.tsv` von 11 nach 16: Die Lindenstraße hat fünf Kanten, der
           Eichenweg drei. Welcher Weg ist kürzer in Metern? Im Handbuch unter
           »Dijkstra« kannst du die Suche durchklicken; achte darauf, welcher Knoten
-          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert.
+          jeweils als Nächster drankommt und wann sich ein Abstand noch ändert. Auf
+          `data/shortcut.tsv` von 41 nach 45 ändert sich ein Abstand: Über welchen
+          Nachbarn findet die Suche den Knoten 44 zuerst, und über welchen ist der
+          Weg zu ihm kürzer?
         - |
           Gegenüber deiner Breitensuche ändert sich zweierlei. Statt der Queue gibt es
           `frontier`, eine Map von Knoten zu Metern, und als Nächstes kommt der mit
