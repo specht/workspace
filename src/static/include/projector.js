@@ -7,7 +7,8 @@
 // shows them (»Namen zeigen«, remembered in the address as names=1, never
 // in the browser). Who is absent today on the class page (meeting_status.js)
 // is left out. Asked again when a student of the group solved a task
-// (/ws_meeting) and every minute; the dots that moved slide there.
+// (/ws_meeting) and every minute; the dots that moved slide there. Who
+// solved Extras gets their number on the dot, violet with the stars.
 (function () {
     const root = document.querySelector('.projector');
     if (!root) return;
@@ -30,10 +31,13 @@
     }
 
     function person(s) {
-        const cls = 'projector-' + (names ? 'chip' : 'dot') + (s.started ? '' : ' is-new');
-        const title = s.started ? '' : 'noch nichts geprüft';
+        const extras = s.extras || 0;
+        const cls = 'projector-' + (names ? 'chip' : 'dot') + (s.started ? '' : ' is-new') + (extras ? ' has-extras' : '');
+        const title = !s.started ? 'noch nichts geprüft' : extras ? extras + (extras === 1 ? ' Extra' : ' Extras') + ' gelöst' : '';
+        // the Extras solved: violet with the stars, as the Extras are everywhere on the site
+        const badge = extras ? "<span class='projector-extras'><i class='bi bi-stars' aria-hidden='true'></i>" + extras + '</span>' : '';
         return "<span class='" + cls + "' data-key='" + id(s.email) + "'" + (title ? " title='" + title + "'" : '') + '>' +
-            (names ? esc(s.name) : '') + '</span>';
+            (names ? "<span class='projector-name'>" + esc(s.name) + '</span>' : '') + badge + '</span>';
     }
 
     function column(label, number, people, extra) {
@@ -101,6 +105,9 @@
                 ': <strong>' + there + ' von ' + n + '</strong> da</span>');
         }
         // not on the site today (left out by the server), and marked absent on the class page
+        const stars = present.filter(function (s) { return s.extras; }).length;
+        if (stars) parts.push("<span class='projector-total-extras'><i class='bi bi-stars' aria-hidden='true'></i>" + stars +
+            ' mit Extras</span>');
         const gone = data.absent + data.students.length - n;
         if (gone) parts.push('<span>' + gone + ' heute nicht da</span>');
         total.innerHTML = parts.join('');
@@ -108,7 +115,7 @@
         note.textContent = (data.unit === 'Blatt' ? 'Jede Person steht beim ersten Blatt, das sie noch nicht fertig hat (alle Aufgaben außer den Extras)' :
             'Jede Person steht bei der ersten Aufgabe, die sie noch nicht gelöst hat') +
             (names ? '; gestrichelt: noch nichts geprüft.' : '; ein leerer Kreis: noch nichts geprüft.') +
-            (data.extras ? ' Die Extras (' + data.extras + ') zählen nicht mit: Wer fertig ist, kann daran weitermachen.' : '');
+            (data.extras ? ' Die Extras (' + data.extras + ') zählen nicht mit: Wer fertig ist, kann daran weitermachen; die violette Zahl sagt, wie viele jemand gelöst hat.' : '');
     }
 
     // the board as tall as the screen leaves below the site's header and

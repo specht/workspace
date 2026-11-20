@@ -19435,6 +19435,9 @@ form.phone-manage-dirty {
     --projector-done: var(--meeting-all);
     --projector-done-bg: var(--meeting-all-bg);
     --projector-gap: clamp(0.25rem, 0.8vw, 0.9rem);
+    /* the Extras: violet, as their badges on the pages */
+    --projector-extra: #6f42c1;
+    --projector-extra-ink: #fff;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -19444,6 +19447,8 @@ form.phone-manage-dirty {
 }
 [data-bs-theme='dark'] .projector {
     --projector-glow: rgba(94, 234, 212, 0.35);
+    --projector-extra: #b197fc;
+    --projector-extra-ink: #1c1233;
 }
 .projector:fullscreen {
     background: var(--bs-body-bg);
@@ -19572,10 +19577,10 @@ form.phone-manage-dirty {
 .projector-chip {
     flex: 1 1 100%;
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3em;
     padding: 0.1em 0.4em;
     border-radius: 0.4em;
     border: 2px solid var(--projector-dot);
@@ -19586,6 +19591,49 @@ form.phone-manage-dirty {
 .projector-column.is-done .projector-chip {
     border-color: var(--projector-done);
     background: var(--bs-body-bg);
+}
+.projector-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+/* who solved Extras: a violet ring and their number on the dot, beside
+   the name on a chip */
+.projector-dot.has-extras {
+    position: relative;
+    box-shadow: 0 0 0 2px var(--bs-body-bg), 0 0 0 5px var(--projector-extra);
+}
+.projector-column .projector-chip.has-extras {
+    border-color: var(--projector-extra);
+}
+.projector-extras {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    flex-shrink: 0;
+    padding: 0 0.35em;
+    border-radius: 1em;
+    background: var(--projector-extra);
+    color: var(--projector-extra-ink);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+.projector-dot .projector-extras {
+    position: absolute;
+    z-index: 1;
+    top: -0.55em;
+    right: -0.7em;
+    font-size: clamp(11px, calc(var(--dot-size, 1.6rem) * 0.42), 22px);
+    box-shadow: 0 0 0 2px var(--bs-body-bg);
+}
+.projector-chip .projector-extras {
+    font-size: 0.9em;
+}
+.projector-total-extras .bi {
+    color: var(--projector-extra);
 }
 .projector-chip.is-new {
     border-style: dashed;

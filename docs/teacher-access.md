@@ -578,7 +578,12 @@ nach einer Minute). Wer im selben Browser »fehlt heute« ist, fehlt auch
 hier. In jeder Spalte steht unten, wer zuerst dort war (`since`: die letzte
 gelöste Aufgabe davor); der Server sortiert und schickt keine Zeiten, die
 Seite zeigt keine Plätze oder Nummern (Wunsch des Maintainers, 20. November
-2026). Bei einer Reihe (»Reihe: …«) steht der Knopf ebenso da:
+2026). Gelöste Extras stehen als violette Zahl mit `bi-stars` am Punkt
+(hinter dem Namen), mit violettem Ring, wo die Person auch steht
+(`extras` in `ClassBoard.positions`, bei einer Reihe über alle Blätter);
+oben »n mit Extras« (Wunsch des Maintainers, 20. November 2026). Die
+Zahl ist da, weil Extras freiwillig sind: Sie zeigt, wer weitergemacht
+hat, nicht wer hinten steht. Bei einer Reihe (»Reihe: …«) steht der Knopf ebenso da:
 je Blatt eine Spalte, jede Person beim ersten Blatt, das sie nicht fertig
 hat (alle Aufgaben außer den Extras, wie die Tabelle der Reihe zählt,
 `ClassBoard.series_positions`); `/ws_meeting` nimmt dafür mehrere

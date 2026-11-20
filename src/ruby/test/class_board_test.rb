@@ -278,6 +278,8 @@ class ClassBoardTest < Minitest::Test
         assert_equal [1, true], at['Ben']
         assert_equal [0, true], at['Tom']
         assert_equal [0, false], at['Eve <script>']
+        # the Extras solved, wherever one stands
+        assert_equal({ 'Ada' => 1, 'Ben' => 0, 'Tom' => 0, 'Eve <script>' => 0 }, ClassBoard.positions(b).to_h { |p| [p[:name], p[:extras]] })
         # an Extra still open does not keep anyone from being done
         b = ClassBoard.build(MEMBERS, tasks, { 'ada@x' => TASKS.to_h { |t| [t[:id], state('correct')] } })
         assert_nil ClassBoard.positions(b).find { |p| p[:name] == 'Ada' }[:at]
@@ -302,7 +304,7 @@ class ClassBoardTest < Minitest::Test
                   { :id => 'x', :title => 'X', :type => 'answer', :version => 'v1', :extra => true }]
         all = TASKS.to_h { |t| [t[:id], state('correct')] }
         one = ClassBoard.build(MEMBERS, TASKS, { 'ada@x' => all, 'ben@x' => all, 'tom@x' => { 'adresse' => state('correct') } })
-        two = ClassBoard.build(MEMBERS, second, { 'ada@x' => { 'a' => state('correct') }, 'tom@x' => { 'a' => state('correct') } })
+        two = ClassBoard.build(MEMBERS, second, { 'ada@x' => { 'a' => state('correct') }, 'tom@x' => { 'a' => state('correct'), 'x' => state('correct') } })
         at = ClassBoard.series_positions([one, two]).to_h { |p| [p[:name], [p[:at], p[:started]]] }
         # the Extra of the last sheet does not keep Ada from being done
         assert_equal [nil, true], at['Ada']
@@ -310,6 +312,8 @@ class ClassBoardTest < Minitest::Test
         # a later sheet solved does not skip an open one
         assert_equal [0, true], at['Tom']
         assert_equal [0, false], at['Eve <script>']
+        # an Extra of a later sheet counts while an earlier one is still open
+        assert_equal({ 'Ada' => 0, 'Ben' => 0, 'Tom' => 1, 'Eve <script>' => 0 }, ClassBoard.series_positions([one, two]).to_h { |p| [p[:name], p[:extras]] })
         assert_empty ClassBoard.series_positions([])
     end
 end

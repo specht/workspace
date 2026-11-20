@@ -49,11 +49,12 @@ class Main < Sinatra::Base
 
     # The students for the page: only who is here today, in each column in
     # the order they got there, the first at the bottom (projector.js keeps
-    # the order). The times stay here: the page shows no ranking.
+    # the order). The times stay here: the page shows no ranking. extras:
+    # how many Extras each solved, shown on the dot.
     def projector_students(positions, short, present)
         positions.select { |p| present.include?(p[:email]) }
             .sort_by { |p| [p[:since], p[:name].to_s.downcase] }
-            .map { |p| { :email => p[:email], :name => short[p[:email]], :at => p[:at], :started => p[:started] } }
+            .map { |p| { :email => p[:email], :name => short[p[:email]], :at => p[:at], :started => p[:started], :extras => p[:extras] } }
     end
 
     # A whole series (»Reihe: …« on the class board): a column per sheet,
@@ -72,7 +73,7 @@ class Main < Sinatra::Base
             :group => group, :activity => key, :title => title, :unit => 'Blatt',
             :watch => sheets.map(&:first),
             :tasks => sheets.each_with_index.map { |(_, sheet_title, _, _), i| { :index => i, :title => sheet_title } },
-            :extras => 0,
+            :extras => sheets.sum { |_, _, tasks, _| tasks.count { |t| t[:extra] } },
             :students => projector_students(ClassBoard.series_positions(boards), short, present),
             :absent => members.size - present.size,
             :meeting => nil,
