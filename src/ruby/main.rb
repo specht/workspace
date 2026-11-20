@@ -3082,6 +3082,8 @@ class Main < Sinatra::Base
         io = +"<div class='class-toolbar'>"
         io << class_activity_form(group, activities, series, activity_key)
         io << "<a class='class-activity-link' href='/#{h.(slug)}' title='#{h.(title)} öffnen'><i class='bi bi-box-arrow-up-right' aria-hidden='true'></i>Zur Seite</a>" if slug
+        io << "<a class='btn btn-sm btn-outline-primary class-projector-link' href='/beamer?group=#{CGI.escape(group)}&amp;activity=#{CGI.escape(activity_key)}' target='_blank' " \
+            "title='Wie weit die Klasse ist, für alle zu sehen: ohne Namen, auf Wunsch mit Vornamen'><i class='bi bi-projector' aria-hidden='true'></i>Am Beamer zeigen</a>"
         # the group's repository of the activity, on the Workspace's Git server
         browse = slug && (@@content[slug] || {})[:class_repo] && git_browse_url((group_class_repos([group])[group] || {})[slug])
         io << "<a class='class-activity-link' href='#{h.(browse)}' title='Das Repository der Gruppe zu dieser Aktivität'><i class='bi bi-git' aria-hidden='true'></i>Repository</a>" if browse
@@ -3099,8 +3101,6 @@ class Main < Sinatra::Base
             io << "</ul></div>"
         end
         io << meeting_control_html(group, activity_key, tasks)
-        io << "<a class='class-activity-link' href='/beamer?group=#{CGI.escape(group)}&amp;activity=#{CGI.escape(activity_key)}' target='_blank' " \
-            "title='Wie weit die Klasse ist, für alle zu sehen: ohne Namen, auf Wunsch mit Vornamen'><i class='bi bi-projector' aria-hidden='true'></i>Am Beamer zeigen</a>"
         io << class_template_html(group, activity_key)
         io << "</div>"
         io << "<div class='class-template-results' aria-live='polite'></div>"

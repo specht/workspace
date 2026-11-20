@@ -25,7 +25,7 @@ test('the projector shows how far the class is and follows a solved task', async
   teacher.on('pageerror', (e) => errors.push(e.message));
   await loginAsE2eUser(teacher, 'e2e-teacher@example.com', testInfo);
   await teacher.goto('/klasse?group=E2E&tab=fortschritt&activity=crypto');
-  const link = teacher.locator('a.class-activity-link', { hasText: 'Am Beamer zeigen' });
+  const link = teacher.locator('a.class-projector-link', { hasText: 'Am Beamer zeigen' });
   await expect(link).toHaveAttribute('target', '_blank');
   await teacher.goto((await link.getAttribute('href'))!);
 
