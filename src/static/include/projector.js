@@ -8,7 +8,7 @@
 // in the browser). Who is absent today on the class page (meeting_status.js)
 // is left out. Asked again when a student of the group solved a task
 // (/ws_meeting) and every minute; the dots that moved slide there. Who
-// solved Extras is a violet dot with their number inside.
+// solved Extras has their number in the dot.
 (function () {
     const root = document.querySelector('.projector');
     if (!root) return;
@@ -34,7 +34,7 @@
         const extras = s.extras || 0;
         const cls = 'projector-' + (names ? 'chip' : 'dot') + (s.started ? '' : ' is-new') + (extras ? ' has-extras' : '');
         const title = !s.started ? 'noch nichts geprüft' : extras ? extras + (extras === 1 ? ' Extra' : ' Extras') + ' gelöst' : '';
-        // the Extras solved: violet with the stars, as the Extras are everywhere on the site
+        // the Extras solved: the stars, as the Extras have them everywhere on the site, and the number
         const badge = extras ? "<span class='projector-extras'><i class='bi bi-stars' aria-hidden='true'></i>" + extras + '</span>' : '';
         return "<span class='" + cls + "' data-key='" + id(s.email) + "'" + (title ? " title='" + title + "'" : '') + '>' +
             (names ? "<span class='projector-name'>" + esc(s.name) + '</span>' : '') + badge + '</span>';
@@ -106,7 +106,7 @@
         }
         // not on the site today (left out by the server), and marked absent on the class page
         const stars = present.filter(function (s) { return s.extras; }).length;
-        if (stars) parts.push("<span class='projector-total-extras'><i class='bi bi-stars' aria-hidden='true'></i>" + stars +
+        if (stars) parts.push("<span><i class='bi bi-stars' aria-hidden='true'></i>" + stars +
             ' mit Extras</span>');
         const gone = data.absent + data.students.length - n;
         if (gone) parts.push('<span>' + gone + ' heute nicht da</span>');
@@ -116,7 +116,7 @@
             'Jede Person steht bei der ersten Aufgabe, die sie noch nicht gelöst hat') +
             (names ? '; gestrichelt: noch nichts geprüft.' : '; ein leerer Kreis: noch nichts geprüft.') +
             (data.extras ? ' Die Extras (' + data.extras + ') zählen nicht mit: Wer fertig ist, kann daran weitermachen. ' +
-                (names ? 'Die violette Zahl sagt, wie viele Extras jemand gelöst hat.' : 'Ein violetter Punkt hat Extras gelöst, die Zahl darin sagt, wie viele.') : '');
+                (names ? 'Die Zahl mit den Sternchen sagt, wie viele Extras jemand gelöst hat.' : 'Die Zahl in einem Punkt sagt, wie viele Extras jemand gelöst hat.') : '');
     }
 
     // the board as tall as the screen leaves below the site's header and
@@ -130,9 +130,9 @@
             const below = Math.max(footer ? footer.offsetHeight : 0, 40);
             root.style.setProperty('--projector-height', Math.max(320, window.innerHeight - top - below) + 'px');
         }
-        if (names) return;
         const columns = Array.from(board.querySelectorAll('.projector-column'));
         if (!columns.length) return;
+        if (names) { fitNames(); return; }
         const most = Math.max(1, ...columns.map(function (c) { return c.querySelectorAll('.projector-dot').length; }));
         const c = columns[0];
         const style = getComputedStyle(c);
@@ -147,6 +147,16 @@
         board.style.setProperty('--dot-size', size + 'px');
         board.classList.toggle('dots-big', size >= 40);
         board.classList.toggle('dots-small', size < 20);
+    }
+    // names: one per row while the fullest column has room, else two or
+    // three side by side, so that a full »Fertig« stays on the screen
+    function fitNames() {
+        const full = document.fullscreenElement === root;
+        const target = full ? root.clientHeight : parseFloat(root.style.getPropertyValue('--projector-height')) || 0;
+        const tall = function () { return (full ? root.scrollHeight : root.offsetHeight) > target + 1; };
+        let n = 1;
+        board.style.setProperty('--chips-per-row', n);
+        while (n < 3 && target && tall()) board.style.setProperty('--chips-per-row', ++n);
     }
     window.addEventListener('resize', fit);
     window.addEventListener('load', fit);

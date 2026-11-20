@@ -578,12 +578,16 @@ nach einer Minute). Wer im selben Browser »fehlt heute« ist, fehlt auch
 hier. In jeder Spalte steht unten, wer zuerst dort war (`since`: die letzte
 gelöste Aufgabe davor); der Server sortiert und schickt keine Zeiten, die
 Seite zeigt keine Plätze oder Nummern (Wunsch des Maintainers, 20. November
-2026). Wer Extras gelöst hat, ist ein violetter Punkt mit der Zahl darin
-(`bi-stars` davor, wo der Punkt groß genug ist; mit Namen die Zahl hinter
-dem Namen), wo die Person auch steht (`extras` in
-`ClassBoard.positions`, bei einer Reihe über alle Blätter); erst als Ring
-mit einer Plakette daran, die in einer vollen Spalte die Nachbarn
-verdeckte; oben »n mit Extras« (Wunsch des Maintainers, 20. November 2026). Die
+2026). Wer Extras gelöst hat, hat die Zahl im Punkt, weiß auf Grün
+(dunkel auf den hellen Punkten im dunklen Modus), `bi-stars` davor, wo
+der Punkt groß genug ist; mit Namen steht sie hinter dem Namen. Die
+Farbe des Punkts bleibt, die Extras kommen nur dazu (`extras` in
+`ClassBoard.positions`, bei einer Reihe über alle Blätter); verworfen:
+ein violetter Ring mit Plakette (verdeckte in einer vollen Spalte die
+Nachbarn), ein violetter Punkt, Plaketten in Violett, Gold, Gelb, Orange
+oder Rosa (passten nicht zum Grün). Mit Namen stehen in einer vollen
+Spalte zwei oder drei nebeneinander, damit »Fertig« auf den Schirm passt;
+oben »n mit Extras« (Wunsch des Maintainers, 20. November 2026). Die
 Zahl ist da, weil Extras freiwillig sind: Sie zeigt, wer weitergemacht
 hat, nicht wer hinten steht. Bei einer Reihe (»Reihe: …«) steht der Knopf ebenso da:
 je Blatt eine Spalte, jede Person beim ersten Blatt, das sie nicht fertig

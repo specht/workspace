@@ -19490,8 +19490,7 @@ form.phone-manage-dirty {
     --projector-done: var(--meeting-all);
     --projector-done-bg: var(--meeting-all-bg);
     --projector-gap: clamp(0.25rem, 0.8vw, 0.9rem);
-    /* the Extras: violet, as their badges on the pages */
-    --projector-extra: #6f42c1;
+    /* the Extras solved, written on the dot */
     --projector-extra-ink: #fff;
     display: flex;
     flex-direction: column;
@@ -19502,8 +19501,7 @@ form.phone-manage-dirty {
 }
 [data-bs-theme='dark'] .projector {
     --projector-glow: rgba(94, 234, 212, 0.35);
-    --projector-extra: #b197fc;
-    --projector-extra-ink: #1c1233;
+    --projector-extra-ink: var(--bs-body-bg);
 }
 .projector:fullscreen {
     background: var(--bs-body-bg);
@@ -19630,7 +19628,8 @@ form.phone-manage-dirty {
     background: transparent;
 }
 .projector-chip {
-    flex: 1 1 100%;
+    /* one per row, or two or three in a full column (projector.js) */
+    flex: 0 1 calc((100% - (var(--chips-per-row, 1) - 1) * 5px) / var(--chips-per-row, 1));
     min-width: 0;
     display: flex;
     justify-content: center;
@@ -19653,50 +19652,36 @@ form.phone-manage-dirty {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-/* who solved Extras: a violet dot with their number inside (nothing
-   that sticks out and covers a neighbour in a full column), beside the
-   name on a chip */
+/* who solved Extras: their dot stays as it is, with the stars and the
+   number in it, in the colour of the page on the dot (white on green,
+   dark on the light dots of the dark theme); after the name on a chip */
 .projector-column .projector-dot.has-extras {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--projector-extra);
-    border-color: var(--projector-extra);
-}
-.projector-column .projector-chip.has-extras {
-    border-color: var(--projector-extra);
 }
 .projector-extras {
     display: inline-flex;
     align-items: center;
-    gap: 0.15em;
+    gap: 0.12em;
     flex-shrink: 0;
-    padding: 0 0.35em;
-    border-radius: 1em;
-    background: var(--projector-extra);
-    color: var(--projector-extra-ink);
     font-weight: 700;
     font-variant-numeric: tabular-nums;
-    line-height: 1.35;
+    line-height: 1;
     white-space: nowrap;
 }
 .projector-dot .projector-extras {
-    padding: 0;
-    gap: 0.1em;
-    font-size: calc(var(--dot-size, 1.6rem) * 0.4);
-    line-height: 1;
+    color: var(--projector-extra-ink);
+    font-size: calc(var(--dot-size, 1.6rem) * 0.36);
+}
+.projector-chip .projector-extras {
+    font-size: 0.9em;
 }
 /* the stars only where the dot has room for them, the number only where
    it can be read (projector.js: dots-big, dots-small) */
 .projector-board:not(.dots-big) .projector-dot .projector-extras .bi,
 .projector-board.dots-small .projector-dot .projector-extras {
     display: none;
-}
-.projector-chip .projector-extras {
-    font-size: 0.9em;
-}
-.projector-total-extras .bi {
-    color: var(--projector-extra);
 }
 .projector-chip.is-new {
     border-style: dashed;
