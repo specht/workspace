@@ -571,7 +571,11 @@ ersten offenen Aufgabe, gezählt wie beim Treffpunkt
 Ein leerer Kreis: noch nichts geprüft. Ein Treffpunkt steht als gestrichelte
 Linie da, mit »x von y da«. Gezählt werden nur die Mitglieder, nicht die
 Lehrkraft und ihr Testkonto; wer im selben Browser »fehlt heute« ist,
-fehlt auch hier.
+fehlt auch hier. Bei einer Reihe (»Reihe: …«) steht der Knopf ebenso da:
+je Blatt eine Spalte, jede Person beim ersten Blatt, das sie nicht fertig
+hat (alle Aufgaben außer den Extras, wie die Tabelle der Reihe zählt,
+`ClassBoard.series_positions`); `/ws_meeting` nimmt dafür mehrere
+Aktivitäten, durch Kommas getrennt.
 
 So entschieden (20. November 2026): Die Seite beginnt ohne Namen, denn was am
 Beamer steht, sehen alle, auch wer hinten liegt. »Namen zeigen« zeigt

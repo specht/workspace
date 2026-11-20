@@ -312,6 +312,21 @@ module ClassBoard
         end
     end
 
+    # The same for a series (»Reihe«): boards of its sheets in order, built
+    # for the same members; each student at the first sheet not finished
+    # (every task but the Extras solved, as the series table counts).
+    # [{ email:, name:, at: sheet index or nil, started: }]
+    def self.series_positions(boards)
+        return [] if boards.empty?
+
+        boards.first[:rows].map do |r|
+            rows = boards.map { |b| b[:rows].find { |x| x[:email] == r[:email] } }
+            at = boards.each_index.find { |i| !done?(rows[i], boards[i][:tasks]) }
+            { :email => r[:email], :name => r[:name], :at => at,
+              :started => rows.any? { |x| x[:cells].any? { |c| c.status != 'none' } } }
+        end
+    end
+
     # Names short enough for a projector: the first name, with the initial
     # of the last name where two share it, and the whole name where even
     # that is shared. Names without a space stay whole (an address shows

@@ -5,7 +5,7 @@ require 'json'
 # class is in one activity, for the whole class to see. One column per
 # task that is not an Extra, and one for who is done; each student is a
 # dot in the column of the first task still open for them
-# (ClassBoard.positions). Without names unless the teacher shows them,
+# (ClassBoard.positions). For a series, a column per sheet. Without names unless the teacher shows them,
 # first names only (ClassBoard.short_names). projector.js draws it and asks
 # again when a student of the group solved a task (/ws_meeting).
 class Main < Sinatra::Base
@@ -14,7 +14,10 @@ class Main < Sinatra::Base
     def projector_data(group, activity)
         return nil unless class_groups.include?(group)
 
-        key, title, tasks = class_activities(group).find { |a, _, _| a == activity }
+        activities = class_activities(group)
+        return projector_series_data(group, activities, activity) if activity.start_with?('series:')
+
+        key, title, tasks = activities.find { |a, _, _| a == activity }
         return nil if key.nil?
 
         members = class_members(group)
@@ -22,13 +25,34 @@ class Main < Sinatra::Base
         short = ClassBoard.short_names(members)
         meeting = meeting_points([group], key)[group]
         {
-            :group => group, :activity => key, :title => title,
+            :group => group, :activity => key, :title => title, :unit => 'Aufgabe', :watch => [key],
             # the number each task has on the page and the board
             :tasks => tasks.each_with_index.reject { |t, _| t[:extra] }.map { |t, i| { :index => i, :title => t[:title] } },
             :extras => tasks.count { |t| t[:extra] },
             # the email only to leave out who is absent today (meeting_status.js)
             :students => ClassBoard.positions(board).map { |p| { :email => p[:email], :name => short[p[:email]], :at => p[:at], :started => p[:started] } },
             :meeting => meeting && tasks.index { |t| t[:id] == meeting },
+        }
+    end
+
+    # A whole series (»Reihe: …« on the class board): a column per sheet,
+    # each student at the first sheet not finished (ClassBoard.series_positions).
+    def projector_series_data(group, activities, key)
+        series = class_series(group, activities).find { |k, _, _| k == key }
+        return nil if series.nil?
+
+        _, title, sheets = series
+        members = class_members(group)
+        emails = members.map { |m| m[:email] }
+        boards = sheets.map { |sheet_key, _, tasks, _| ClassBoard.build(members, tasks, class_board_states(emails, sheet_key)) }
+        short = ClassBoard.short_names(members)
+        {
+            :group => group, :activity => key, :title => title, :unit => 'Blatt',
+            :watch => sheets.map(&:first),
+            :tasks => sheets.each_with_index.map { |(_, sheet_title, _, _), i| { :index => i, :title => sheet_title } },
+            :extras => 0,
+            :students => ClassBoard.series_positions(boards).map { |p| { :email => p[:email], :name => short[p[:email]], :at => p[:at], :started => p[:started] } },
+            :meeting => nil,
         }
     end
 

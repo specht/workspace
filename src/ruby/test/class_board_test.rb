@@ -292,4 +292,20 @@ class ClassBoardTest < Minitest::Test
         assert_equal ['Lea Maria Kurz', 'Lea Krause', 'Lea Kurz'], [short['d'], short['e'], short['f']]
         assert_equal 'kim', short['g']
     end
+
+    def test_series_positions_stand_at_the_first_open_sheet
+        second = [{ :id => 'a', :title => 'A', :type => 'answer', :version => 'v1' },
+                  { :id => 'x', :title => 'X', :type => 'answer', :version => 'v1', :extra => true }]
+        all = TASKS.to_h { |t| [t[:id], state('correct')] }
+        one = ClassBoard.build(MEMBERS, TASKS, { 'ada@x' => all, 'ben@x' => all, 'tom@x' => { 'adresse' => state('correct') } })
+        two = ClassBoard.build(MEMBERS, second, { 'ada@x' => { 'a' => state('correct') }, 'tom@x' => { 'a' => state('correct') } })
+        at = ClassBoard.series_positions([one, two]).to_h { |p| [p[:name], [p[:at], p[:started]]] }
+        # the Extra of the last sheet does not keep Ada from being done
+        assert_equal [nil, true], at['Ada']
+        assert_equal [1, true], at['Ben']
+        # a later sheet solved does not skip an open one
+        assert_equal [0, true], at['Tom']
+        assert_equal [0, false], at['Eve <script>']
+        assert_empty ClassBoard.series_positions([])
+    end
 end

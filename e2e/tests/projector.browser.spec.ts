@@ -72,3 +72,22 @@ test('the projector shows how far the class is and follows a solved task', async
   await teacherContext.close();
   expect(errors).toEqual([]);
 });
+
+// A whole series (»Reihe«): a column per sheet, the page listens to all of them.
+test('the projector shows a series sheet by sheet', async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await loginAsE2eUser(page, 'e2e-teacher@example.com', testInfo);
+  await page.goto('/klasse?group=E2E&tab=fortschritt&activity=series:formatting-marks');
+  const link = page.locator('a.class-projector-link', { hasText: 'Am Beamer zeigen' });
+  await expect(link).toHaveAttribute('href', /activity=series%3Aformatting-marks/);
+  const socket = page.waitForEvent('websocket', (ws) => ws.url().includes('/ws_meeting'));
+  await page.goto((await link.getAttribute('href'))!);
+  // ten sheets and »Fertig«
+  await expect(page.locator('.projector-column')).toHaveCount(11);
+  await expect(page.locator('.projector-column').first()).toHaveAttribute('aria-label', /^Blatt 1, /);
+  await expect(page.locator('.projector-note')).toContainText('beim ersten Blatt');
+  expect((await socket).url()).toContain('formatting-marks%2Ccharacter-formatting');
+  await page.waitForTimeout(1000);
+  expect(errors).toEqual([]);
+});

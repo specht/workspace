@@ -2430,7 +2430,7 @@ class Main < Sinatra::Base
     end
 
     # Open pages of an activity, each with the groups whose point it shows
-    # (/ws_meeting): { id => { ws:, activity:, groups:, teacher: } }
+    # (/ws_meeting): { id => { ws:, activities:, groups:, teacher: } }
     @@meeting_ws = {}
     @@meeting_ws_mutex = Mutex.new
 
@@ -2443,7 +2443,7 @@ class Main < Sinatra::Base
         return if groups.empty?
 
         clients = @@meeting_ws_mutex.synchronize do
-            @@meeting_ws.values.select { |c| c[:teacher] && c[:activity] == activity && (c[:groups] & groups).any? }
+            @@meeting_ws.values.select { |c| c[:teacher] && c[:activities].include?(activity) && (c[:groups] & groups).any? }
         end
         clients.each do |c|
             (c[:groups] & groups).each { |group| c[:ws].send({ :action => 'progress', :group => group }.to_json) rescue nil }
@@ -2452,7 +2452,7 @@ class Main < Sinatra::Base
 
     def broadcast_meeting(group, activity, task)
         clients = @@meeting_ws_mutex.synchronize do
-            @@meeting_ws.values.select { |c| c[:activity] == activity && c[:groups].include?(group) }
+            @@meeting_ws.values.select { |c| c[:activities].include?(activity) && c[:groups].include?(group) }
         end
         message = { :action => 'meeting', :group => group, :task => task }.to_json
         clients.each { |c| c[:ws].send(message) rescue nil }
@@ -2529,15 +2529,17 @@ class Main < Sinatra::Base
     get '/ws_meeting' do
         halt 403 unless user_logged_in?
         halt 400 unless Faye::WebSocket.websocket?(request.env)
-        activity = params['activity'].to_s
-        halt 400 unless activity =~ /\A[a-z0-9_-]+\z/
+        # several for the projector of a series (projector.js): its sheets
+        activities = params['activity'].to_s.split(',')
+        halt 400 if activities.empty? || activities.size > 50 || activities.any? { |a| a !~ /\A[a-z0-9_-]+\z/ }
+        activity = activities.first
         Main.load_invitations()
         teacher = teacher_logged_in?
         groups = (my_groups + (teacher ? class_groups : [])).uniq
         ws = Faye::WebSocket.new(request.env)
         id = ws.object_id
         ws.on(:open) do |_|
-            @@meeting_ws_mutex.synchronize { @@meeting_ws[id] = { :ws => ws, :activity => activity, :groups => groups, :teacher => teacher } }
+            @@meeting_ws_mutex.synchronize { @@meeting_ws[id] = { :ws => ws, :activities => activities, :groups => groups, :teacher => teacher } }
             # what is set now: a page that lost its connection catches up
             ws.send({ :action => 'points', :points => meeting_points(groups, activity) }.to_json) rescue nil
         end
@@ -3070,7 +3072,9 @@ class Main < Sinatra::Base
         if (chosen = wanted.compact.map { |key| series.find { |k, _, _| k == key } }.compact.first) &&
            wanted.compact.first == chosen[0]
             remember_class_prefs(group, chosen[0])
-            io = +"<div class='class-toolbar'>#{class_activity_form(group, activities, series, chosen[0])}</div>"
+            io = +"<div class='class-toolbar'>#{class_activity_form(group, activities, series, chosen[0])}" \
+                "<a class='btn btn-sm btn-outline-primary class-projector-link' href='/beamer?group=#{CGI.escape(group)}&amp;activity=#{CGI.escape(chosen[0])}' target='_blank' " \
+                "title='Wie weit die Klasse in der Reihe ist, für alle zu sehen: ohne Namen, auf Wunsch mit Vornamen'><i class='bi bi-projector' aria-hidden='true'></i>Am Beamer zeigen</a></div>"
             return io << class_series_html(group, chosen)
         end
         activity = wanted.compact.map { |key| activities.find { |a, _, _| a == key } }.compact.first || activities.first

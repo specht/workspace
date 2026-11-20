@@ -1,6 +1,6 @@
 // The projector (/beamer, projector_page.rb): how far the class is in one
-// activity. A column per task that is not an Extra, the last for who is
-// done; each student is a dot in the column of the first task still open
+// activity. A column per task that is not an Extra (per sheet for a
+// series), the last for who is done; each student is a dot in the column of the first task still open
 // for them, so the columns grow like bars. Without names until the teacher
 // shows them (»Namen zeigen«, remembered in the address as names=1, never
 // in the browser). Who is absent today on the class page (meeting_status.js)
@@ -79,7 +79,7 @@
         let html = '';
         data.tasks.forEach(function (t, c) {
             const meeting = t.index === data.meeting ? ' is-meeting' : '';
-            html += column('Aufgabe ' + (t.index + 1) + ', ' + t.title + (meeting ? ', danach Treffpunkt' : ''),
+            html += column(data.unit + ' ' + (t.index + 1) + ', ' + t.title + (meeting ? ', danach Treffpunkt' : ''),
                 "<span class='projector-number'>" + (t.index + 1) + "</span><span class='projector-task'>" + esc(t.title) + '</span>' +
                 (meeting ? "<span class='projector-flag'><i class='bi bi-flag-fill' aria-hidden='true'></i>Treffpunkt</span>" : ''),
                 columns[c], meeting);
@@ -104,7 +104,8 @@
         }
         total.innerHTML = parts.join('');
 
-        note.textContent = 'Jede Person steht bei der ersten Aufgabe, die sie noch nicht gelöst hat' +
+        note.textContent = (data.unit === 'Blatt' ? 'Jede Person steht beim ersten Blatt, das sie noch nicht fertig hat (alle Aufgaben außer den Extras)' :
+            'Jede Person steht bei der ersten Aufgabe, die sie noch nicht gelöst hat') +
             (names ? '; gestrichelt: noch nichts geprüft.' : '; ein leerer Kreis: noch nichts geprüft.') +
             (data.extras ? ' Die Extras (' + data.extras + ') zählen nicht mit: Wer fertig ist, kann daran weitermachen.' : '');
     }
@@ -186,7 +187,7 @@
 
     function connect(delay) {
         const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host +
-            '/ws_meeting?activity=' + encodeURIComponent(root.dataset.activity));
+            '/ws_meeting?activity=' + encodeURIComponent(data.watch.join(',')));
         let ping = null;
         ws.onopen = function () {
             // what happened while the connection was gone
