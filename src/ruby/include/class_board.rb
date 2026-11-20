@@ -296,6 +296,35 @@ module ClassBoard
         io << '</tr></tfoot></table></div>'
     end
 
+    # Where each student of the class stands, for the projector (/beamer,
+    # docs/teacher-access.md »Am Beamer«): at the first task in page order
+    # that is not an Extra and not solved, as the meeting point counts
+    # (MeetingPoint.arrived?), or done (at nil). Who solved a later task
+    # first still stands at the gap. started: checked, answered or handed
+    # in anything of the activity. [{ email:, name:, at:, started: }], by
+    # name like the rows.
+    def self.positions(board)
+        tasks = board[:tasks]
+        board[:rows].map do |r|
+            solved = ->(i) { %w[correct sent].include?(r[:cells][i].status) }
+            at = tasks.each_index.find { |i| !tasks[i][:extra] && !solved.(i) }
+            { :email => r[:email], :name => r[:name], :at => at, :started => r[:cells].any? { |c| c.status != 'none' } }
+        end
+    end
+
+    # Names short enough for a projector: the first name, with the initial
+    # of the last name where two share it, and the whole name where even
+    # that is shared. Names without a space stay whole (an address shows
+    # what comes before the @). { email => short }
+    def self.short_names(members)
+        first = ->(m) { m[:name].to_s.split('@').first.to_s.split(/\s+/).first.to_s }
+        initial = ->(m) { (w = m[:name].to_s.split(/\s+/)).size > 1 ? "#{first.(m)} #{w.last[0]}." : first.(m) }
+        firsts = members.map(&first).tally
+        short = members.to_h { |m| [m[:email], firsts[first.(m)] == 1 ? first.(m) : initial.(m)] }
+        shorts = short.values.tally
+        members.to_h { |m| [m[:email], shorts[short[m[:email]]] == 1 ? short[m[:email]] : m[:name].to_s] }
+    end
+
     # Icon and meaning per status: Tabler, or an <i class='bi …'> for the
     # folded paper plane that hand-ins have everywhere on the site.
     SYMBOLS = {

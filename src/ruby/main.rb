@@ -539,6 +539,7 @@ class Main < Sinatra::Base
     require './include/bookmarks_page.rb'
     require './include/cable_page.rb'
     require './include/class_page.rb'
+    require './include/projector_page.rb'
     require './include/content_pipeline.rb'
     require './include/databases_page.rb'
     require './include/exams_page.rb'
@@ -3098,6 +3099,8 @@ class Main < Sinatra::Base
             io << "</ul></div>"
         end
         io << meeting_control_html(group, activity_key, tasks)
+        io << "<a class='class-activity-link' href='/beamer?group=#{CGI.escape(group)}&amp;activity=#{CGI.escape(activity_key)}' target='_blank' " \
+            "title='Wie weit die Klasse ist, für alle zu sehen: ohne Namen, auf Wunsch mit Vornamen'><i class='bi bi-projector' aria-hidden='true'></i>Am Beamer zeigen</a>"
         io << class_template_html(group, activity_key)
         io << "</div>"
         io << "<div class='class-template-results' aria-live='polite'></div>"
@@ -4907,6 +4910,13 @@ class Main < Sinatra::Base
             # Teachers manage their groups on the class page (tab »Gruppe«);
             # /gruppen is the administration's overview of all groups.
             redirect "#{WEB_ROOT}/klasse?tab=lernende", 302 unless admin_logged_in?
+        end
+        # The projector (projector_page.rb): a group's progress in one
+        # activity, for the teachers of the group.
+        if path == '/beamer'
+            this_is_a_page_for_logged_in_users!
+            Main.load_invitations()
+            halt_forbidden_page! unless class_groups.include?(params['group'].to_s)
         end
         if path == '/klasse'
             this_is_a_page_for_logged_in_users!

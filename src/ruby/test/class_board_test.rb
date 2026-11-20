@@ -258,4 +258,38 @@ class ClassBoardTest < Minitest::Test
         # a task that is no prediction has none
         assert_empty ClassBoard.predictions(ClassBoard.build(MEMBERS, TASKS, {}), 0, judge)
     end
+
+    def test_positions_stand_at_the_first_open_task
+        tasks = TASKS + [{ :id => 'mehr', :title => 'Noch mehr', :type => 'answer', :version => 'v1', :extra => true }]
+        b = ClassBoard.build(MEMBERS, tasks, {
+            'ada@x' => { 'adresse' => state('correct'), 'ttl-drei' => state('correct'), 'erklaeren' => state('sent'),
+                         'abgabe' => state('sent'), 'mehr' => state('correct') },
+            # solved a later one first: stands at the gap
+            'ben@x' => { 'adresse' => state('correct'), 'erklaeren' => state('sent') },
+            # a changed task counts as open
+            'tom@x' => { 'adresse' => state('correct', version: 'v0') },
+        })
+        at = ClassBoard.positions(b).to_h { |p| [p[:name], [p[:at], p[:started]]] }
+        assert_equal [nil, true], at['Ada']
+        assert_equal [1, true], at['Ben']
+        assert_equal [0, true], at['Tom']
+        assert_equal [0, false], at['Eve <script>']
+        # an Extra still open does not keep anyone from being done
+        b = ClassBoard.build(MEMBERS, tasks, { 'ada@x' => TASKS.to_h { |t| [t[:id], state('correct')] } })
+        assert_nil ClassBoard.positions(b).find { |p| p[:name] == 'Ada' }[:at]
+    end
+
+    def test_short_names
+        short = ClassBoard.short_names([
+            { :email => 'a', :name => 'Ada Lovelace' }, { :email => 'b', :name => 'Ben Ott' },
+            { :email => 'c', :name => 'Ben Arndt' }, { :email => 'd', :name => 'Lea Maria Kurz' },
+            { :email => 'e', :name => 'Lea Krause' }, { :email => 'f', :name => 'Lea Kurz' },
+            { :email => 'g', :name => 'kim@schule.de' },
+        ])
+        assert_equal 'Ada', short['a']
+        assert_equal ['Ben O.', 'Ben A.'], [short['b'], short['c']]
+        # the same initial twice: the whole name
+        assert_equal ['Lea Maria Kurz', 'Lea Krause', 'Lea Kurz'], [short['d'], short['e'], short['f']]
+        assert_equal 'kim', short['g']
+    end
 end

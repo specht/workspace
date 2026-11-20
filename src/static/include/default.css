@@ -19425,3 +19425,223 @@ form.phone-manage-dirty {
     background: var(--bs-tertiary-bg);
     border-radius: 0.375rem;
 }
+
+/* The projector (/beamer, projector.js): a column per task, the dots of
+   the class stacked from the bottom like bars, the last column for who is
+   done; big enough to read from the back of the room */
+.projector {
+    --projector-dot: var(--meeting);
+    --projector-glow: rgba(15, 118, 110, 0.35);
+    --projector-done: var(--meeting-all);
+    --projector-done-bg: var(--meeting-all-bg);
+    --projector-gap: clamp(0.25rem, 0.8vw, 0.9rem);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    /* what the screen leaves below the site's header (projector.js) */
+    min-height: var(--projector-height, 30rem);
+    padding-block: 1rem;
+}
+[data-bs-theme='dark'] .projector {
+    --projector-glow: rgba(94, 234, 212, 0.35);
+}
+.projector:fullscreen {
+    background: var(--bs-body-bg);
+    padding: 1.5rem 2rem;
+    min-height: 100%;
+    overflow: auto;
+}
+/* the title with the buttons, the counts on a row of their own */
+.projector-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 'heading controls' 'total total';
+    align-items: start;
+    gap: 0.6rem 2rem;
+}
+.projector-heading {
+    grid-area: heading;
+}
+.projector-heading h1 {
+    margin: 0;
+    font-size: clamp(1.6rem, 2.6vw, 2.6rem);
+    text-wrap: balance;
+}
+.projector-sub {
+    margin: 0;
+    color: var(--bs-secondary-color);
+    font-size: clamp(1rem, 1.3vw, 1.3rem);
+}
+.projector-total {
+    display: flex;
+    flex-wrap: wrap;
+    grid-area: total;
+    gap: 0.2rem 2.4rem;
+    margin: 0;
+    font-size: clamp(1.1rem, 1.7vw, 1.7rem);
+    font-variant-numeric: tabular-nums;
+}
+.projector-total .bi {
+    color: var(--meeting);
+    margin-right: 0.35em;
+}
+.projector-controls {
+    grid-area: controls;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+.projector-controls .bi {
+    margin-right: 0.4em;
+}
+/* the buttons are for the teacher, not for the class */
+.projector:fullscreen .projector-controls {
+    opacity: 0.35;
+    transition: opacity 0.2s;
+}
+.projector:fullscreen .projector-controls:hover,
+.projector:fullscreen .projector-controls:focus-within {
+    opacity: 1;
+}
+.projector-board {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(var(--columns, 1), minmax(0, 1fr));
+    gap: var(--projector-gap);
+    min-height: 20rem;
+}
+.projector-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: 0.4rem;
+    min-width: 0;
+    padding: 0.4rem 0.2rem 0;
+    border-bottom: 3px solid var(--bs-border-color);
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+.projector-column.is-done {
+    background: var(--projector-done-bg);
+    border-bottom-color: var(--projector-done);
+}
+/* the meeting point: a dashed line after its task's column */
+.projector-column.is-meeting::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(var(--projector-gap) / -2 - 1px);
+    border-right: 2px dashed var(--meeting);
+}
+.projector-count {
+    text-align: center;
+    font-size: clamp(1.1rem, 2vw, 2rem);
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.projector-column.is-done .projector-count {
+    color: var(--projector-done);
+}
+/* from the bottom up: wrap-reverse puts the first row at the bottom */
+.projector-stack {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 5px;
+}
+.projector-dot {
+    /* as big as the fullest column allows (projector.js) */
+    width: var(--dot-size, 1.6rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--projector-dot);
+    border: 2px solid var(--projector-dot);
+}
+.projector-column.is-done .projector-dot {
+    background: var(--projector-done);
+    border-color: var(--projector-done);
+}
+.projector-dot.is-new {
+    background: transparent;
+}
+.projector-chip {
+    flex: 1 1 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    padding: 0.1em 0.4em;
+    border-radius: 0.4em;
+    border: 2px solid var(--projector-dot);
+    background: var(--meeting-bg);
+    font-size: clamp(0.75rem, 1.15vw, 1.25rem);
+    line-height: 1.3;
+}
+.projector-column.is-done .projector-chip {
+    border-color: var(--projector-done);
+    background: var(--bs-body-bg);
+}
+.projector-chip.is-new {
+    border-style: dashed;
+    color: var(--bs-secondary-color);
+}
+.projector-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    min-height: 5.2em;
+    padding: 0.3rem 0.1rem 0.4rem;
+    text-align: center;
+    line-height: 1.2;
+}
+.projector-number {
+    font-size: clamp(1.1rem, 2vw, 2rem);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.projector-column.is-done .projector-number {
+    color: var(--projector-done);
+}
+.projector-task {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    font-size: clamp(0.7rem, 1vw, 1rem);
+    color: var(--bs-secondary-color);
+}
+.projector-flag {
+    font-size: clamp(0.7rem, 0.95vw, 0.95rem);
+    color: var(--meeting);
+    font-weight: 600;
+}
+.projector-flag .bi {
+    margin-right: 0.25em;
+}
+.projector-note {
+    margin: 0;
+    color: var(--bs-secondary-color);
+    font-size: clamp(0.85rem, 1vw, 1.05rem);
+}
+/* a phone is not a projector, but the page must not get wider than it */
+@media (max-width: 575.98px) {
+    .projector-head {
+        grid-template-columns: 1fr;
+        grid-template-areas: 'heading' 'total' 'controls';
+    }
+    .projector-controls {
+        justify-content: flex-start;
+    }
+    .projector-board {
+        overflow-x: auto;
+        grid-template-columns: repeat(var(--columns, 1), minmax(3.2rem, 1fr));
+    }
+}

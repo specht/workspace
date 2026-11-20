@@ -560,6 +560,31 @@ Sie können weitermachen oder anderen helfen. Welche Tipps jemand aufgeklappt
 hat, zählt nicht mit; das sieht niemand (docs/didaktik.md, »Tipps in
 Stufen«).
 
+## Am Beamer
+
+»Am Beamer zeigen« im Reiter »Fortschritt« öffnet `/beamer?group=…&activity=…`
+in einem neuen Tab (`projector_page.rb`, `projector.js`): wie weit die Klasse
+in der Aktivität ist, für alle zu sehen. Je Aufgabe, die kein Extra ist,
+eine Spalte, dazu »Fertig«; jede Person ist ein Punkt in der Spalte der
+ersten offenen Aufgabe, gezählt wie beim Treffpunkt
+(`ClassBoard.positions`, also bei der Lücke, wenn jemand vorgegriffen hat).
+Ein leerer Kreis: noch nichts geprüft. Ein Treffpunkt steht als gestrichelte
+Linie da, mit »x von y da«. Gezählt werden nur die Mitglieder, nicht die
+Lehrkraft und ihr Testkonto; wer im selben Browser »fehlt heute« ist,
+fehlt auch hier.
+
+So entschieden (20. November 2026): Die Seite beginnt ohne Namen, denn was am
+Beamer steht, sehen alle, auch wer hinten liegt. »Namen zeigen« zeigt
+Vornamen (`ClassBoard.short_names`: bei zwei gleichen mit dem ersten
+Buchstaben des Nachnamens, sonst der ganze Name) und steht als `names=1`
+in der Adresse, nicht im Browser gespeichert: Wer die Seite neu öffnet,
+fängt ohne Namen an. Die Adressen der Lernenden stehen nicht in der Seite;
+nur das JSON für die Zählung der Abwesenden trägt sie, und das sieht nur
+die Lehrkraft. Die Seite hört auf `/ws_meeting` (wie die Zeile des
+Treffpunkts), fragt nach einer Lösung `/api/class/projector` neu und jede
+Minute sowieso; die Punkte gleiten an ihren neuen Platz (nicht bei
+`prefers-reduced-motion`). Ende zu Ende: `e2e/tests/projector.browser.spec.ts`.
+
 ## Was die Klasse vermutet hat
 
 Unter der Tabelle steht zu jeder Vorhersage (`prediction: true`) eine
