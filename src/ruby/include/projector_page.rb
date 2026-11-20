@@ -23,6 +23,7 @@ class Main < Sinatra::Base
         members = class_members(group)
         board = ClassBoard.build(members, tasks, class_board_states(members.map { |m| m[:email] }, key))
         short = ClassBoard.short_names(members)
+        present = projector_present(members)
         meeting = meeting_points([group], key)[group]
         {
             :group => group, :activity => key, :title => title, :unit => 'Aufgabe', :watch => [key],
@@ -30,9 +31,29 @@ class Main < Sinatra::Base
             :tasks => tasks.each_with_index.reject { |t, _| t[:extra] }.map { |t, i| { :index => i, :title => t[:title] } },
             :extras => tasks.count { |t| t[:extra] },
             # the email only to leave out who is absent today (meeting_status.js)
-            :students => ClassBoard.positions(board).map { |p| { :email => p[:email], :name => short[p[:email]], :at => p[:at], :started => p[:started] } },
+            :students => projector_students(ClassBoard.positions(board), short, present),
+            :absent => members.size - present.size,
             :meeting => meeting && tasks.index { |t| t[:id] == meeting },
         }
+    end
+
+    # Who of the members has been on the site today (User.last_seen, written
+    # on the first page of the day, not while a teacher looks in): the
+    # others are not in the room, the projector leaves them out.
+    def projector_present(members)
+        neo4j_query(<<~END_OF_QUERY, :emails => members.map { |m| m[:email] }, :today => Date.today.to_s).map { |row| row['email'] }.to_set
+            MATCH (u:User) WHERE u.email IN $emails AND u.last_seen = $today
+            RETURN u.email AS email;
+        END_OF_QUERY
+    end
+
+    # The students for the page: only who is here today, in each column in
+    # the order they got there, the first at the bottom (projector.js keeps
+    # the order). The times stay here: the page shows no ranking.
+    def projector_students(positions, short, present)
+        positions.select { |p| present.include?(p[:email]) }
+            .sort_by { |p| [p[:since], p[:name].to_s.downcase] }
+            .map { |p| { :email => p[:email], :name => short[p[:email]], :at => p[:at], :started => p[:started] } }
     end
 
     # A whole series (»Reihe: …« on the class board): a column per sheet,
@@ -46,12 +67,14 @@ class Main < Sinatra::Base
         emails = members.map { |m| m[:email] }
         boards = sheets.map { |sheet_key, _, tasks, _| ClassBoard.build(members, tasks, class_board_states(emails, sheet_key)) }
         short = ClassBoard.short_names(members)
+        present = projector_present(members)
         {
             :group => group, :activity => key, :title => title, :unit => 'Blatt',
             :watch => sheets.map(&:first),
             :tasks => sheets.each_with_index.map { |(_, sheet_title, _, _), i| { :index => i, :title => sheet_title } },
             :extras => 0,
-            :students => ClassBoard.series_positions(boards).map { |p| { :email => p[:email], :name => short[p[:email]], :at => p[:at], :started => p[:started] } },
+            :students => projector_students(ClassBoard.series_positions(boards), short, present),
+            :absent => members.size - present.size,
             :meeting => nil,
         }
     end

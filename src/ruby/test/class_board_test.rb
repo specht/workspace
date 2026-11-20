@@ -13,8 +13,8 @@ class ClassBoardTest < Minitest::Test
         { :email => 'ben@x', :name => 'Ben' }, { :email => 'eve@x', :name => 'Eve <script>' },
     ]
 
-    def state(status, attempts: 1, answer: 'x', version: 'v1', first: nil)
-        { :status => status, :attempts => attempts, :last_answer => answer, :version => version, :first_status => first || status, :updated => 1 }
+    def state(status, attempts: 1, answer: 'x', version: 'v1', first: nil, updated: 1)
+        { :status => status, :attempts => attempts, :last_answer => answer, :version => version, :first_status => first || status, :updated => updated }
     end
 
     def board
@@ -265,12 +265,16 @@ class ClassBoardTest < Minitest::Test
             'ada@x' => { 'adresse' => state('correct'), 'ttl-drei' => state('correct'), 'erklaeren' => state('sent'),
                          'abgabe' => state('sent'), 'mehr' => state('correct') },
             # solved a later one first: stands at the gap
-            'ben@x' => { 'adresse' => state('correct'), 'erklaeren' => state('sent') },
+            'ben@x' => { 'adresse' => state('correct', updated: 5), 'erklaeren' => state('sent', updated: 9) },
             # a changed task counts as open
             'tom@x' => { 'adresse' => state('correct', version: 'v0') },
         })
         at = ClassBoard.positions(b).to_h { |p| [p[:name], [p[:at], p[:started]]] }
         assert_equal [nil, true], at['Ada']
+        # since: the last solved task before the place, none: 0
+        since = ClassBoard.positions(b).to_h { |p| [p[:name], p[:since]] }
+        # Ben got to the gap with the first task (5), the later one (9) does not count
+        assert_equal [1, 5, 0, 0], [since['Ada'], since['Ben'], since['Tom'], since['Eve <script>']]
         assert_equal [1, true], at['Ben']
         assert_equal [0, true], at['Tom']
         assert_equal [0, false], at['Eve <script>']

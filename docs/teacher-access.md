@@ -570,8 +570,15 @@ ersten offenen Aufgabe, gezählt wie beim Treffpunkt
 (`ClassBoard.positions`, also bei der Lücke, wenn jemand vorgegriffen hat).
 Ein leerer Kreis: noch nichts geprüft. Ein Treffpunkt steht als gestrichelte
 Linie da, mit »x von y da«. Gezählt werden nur die Mitglieder, nicht die
-Lehrkraft und ihr Testkonto; wer im selben Browser »fehlt heute« ist,
-fehlt auch hier. Bei einer Reihe (»Reihe: …«) steht der Knopf ebenso da:
+Lehrkraft und ihr Testkonto, und nur, wer heute auf der Website war
+(`User.last_seen` von heute, `projector_present`): Wer nicht im Raum ist,
+steht nicht als leerer Kreis bei Aufgabe 1; oben steht »2 heute nicht da«.
+Wer sich später anmeldet, erscheint mit der nächsten Abfrage (spätestens
+nach einer Minute). Wer im selben Browser »fehlt heute« ist, fehlt auch
+hier. In jeder Spalte steht unten, wer zuerst dort war (`since`: die letzte
+gelöste Aufgabe davor); der Server sortiert und schickt keine Zeiten, die
+Seite zeigt keine Plätze oder Nummern (Wunsch des Maintainers, 20. November
+2026). Bei einer Reihe (»Reihe: …«) steht der Knopf ebenso da:
 je Blatt eine Spalte, jede Person beim ersten Blatt, das sie nicht fertig
 hat (alle Aufgaben außer den Extras, wie die Tabelle der Reihe zählt,
 `ClassBoard.series_positions`); `/ws_meeting` nimmt dafür mehrere

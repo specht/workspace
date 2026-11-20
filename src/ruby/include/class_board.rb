@@ -301,29 +301,35 @@ module ClassBoard
     # that is not an Extra and not solved, as the meeting point counts
     # (MeetingPoint.arrived?), or done (at nil). Who solved a later task
     # first still stands at the gap. started: checked, answered or handed
-    # in anything of the activity. [{ email:, name:, at:, started: }], by
-    # name like the rows.
+    # in anything of the activity. since: when they got there, the last
+    # solved task before it (0 for who solved none), for the order in a
+    # column. [{ email:, name:, at:, started:, since: }], by name like the
+    # rows.
     def self.positions(board)
         tasks = board[:tasks]
         board[:rows].map do |r|
             solved = ->(i) { %w[correct sent].include?(r[:cells][i].status) }
             at = tasks.each_index.find { |i| !tasks[i][:extra] && !solved.(i) }
-            { :email => r[:email], :name => r[:name], :at => at, :started => r[:cells].any? { |c| c.status != 'none' } }
+            before = (0...(at || tasks.size)).select { |i| !tasks[i][:extra] && solved.(i) }
+            { :email => r[:email], :name => r[:name], :at => at, :started => r[:cells].any? { |c| c.status != 'none' },
+              :since => before.map { |i| r[:cells][i].updated.to_i }.max || 0 }
         end
     end
 
     # The same for a series (»Reihe«): boards of its sheets in order, built
     # for the same members; each student at the first sheet not finished
     # (every task but the Extras solved, as the series table counts).
-    # [{ email:, name:, at: sheet index or nil, started: }]
+    # [{ email:, name:, at: sheet index or nil, started:, since: }]
     def self.series_positions(boards)
         return [] if boards.empty?
 
         boards.first[:rows].map do |r|
             rows = boards.map { |b| b[:rows].find { |x| x[:email] == r[:email] } }
             at = boards.each_index.find { |i| !done?(rows[i], boards[i][:tasks]) }
+            # when the last sheet before it was finished
+            finished = (0...(at || boards.size)).map { |i| positions(boards[i]).find { |p| p[:email] == r[:email] }[:since] }
             { :email => r[:email], :name => r[:name], :at => at,
-              :started => rows.any? { |x| x[:cells].any? { |c| c.status != 'none' } } }
+              :started => rows.any? { |x| x[:cells].any? { |c| c.status != 'none' } }, :since => finished.max || 0 }
         end
     end
 

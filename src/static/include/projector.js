@@ -1,7 +1,9 @@
 // The projector (/beamer, projector_page.rb): how far the class is in one
 // activity. A column per task that is not an Extra (per sheet for a
 // series), the last for who is done; each student is a dot in the column of the first task still open
-// for them, so the columns grow like bars. Without names until the teacher
+// for them, so the columns grow like bars, in each column the first to get
+// there at the bottom (the server's order). Who has not been on the site
+// today is left out by the server. Without names until the teacher
 // shows them (»Namen zeigen«, remembered in the address as names=1, never
 // in the browser). Who is absent today on the class page (meeting_status.js)
 // is left out. Asked again when a student of the group solved a task
@@ -98,10 +100,9 @@
             parts.push("<span><i class='bi bi-flag-fill' aria-hidden='true'></i>Treffpunkt nach Aufgabe " + (data.meeting + 1) +
                 ': <strong>' + there + ' von ' + n + '</strong> da</span>');
         }
-        if (away.size) {
-            const gone = data.students.length - n;
-            if (gone) parts.push('<span>' + gone + (gone === 1 ? ' fehlt' : ' fehlen') + ' heute</span>');
-        }
+        // not on the site today (left out by the server), and marked absent on the class page
+        const gone = data.absent + data.students.length - n;
+        if (gone) parts.push('<span>' + gone + ' heute nicht da</span>');
         total.innerHTML = parts.join('');
 
         note.textContent = (data.unit === 'Blatt' ? 'Jede Person steht beim ersten Blatt, das sie noch nicht fertig hat (alle Aufgaben außer den Extras)' :
