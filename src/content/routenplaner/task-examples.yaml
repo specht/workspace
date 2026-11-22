@@ -277,13 +277,14 @@ examples:
           say: Eichenweg
   dijkstra:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
       # die Breitensuche unter dem Namen Dijkstra: zählt Kanten, nicht Meter
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -291,44 +292,137 @@ examples:
                   breadth_first(graph, start, goal)
               end
         say: Lindenstraße
+      # Dijkstra ohne Verbessern: ein Nachbar kommt nur dazu, wenn er neu ist
+      - files:
+          routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+          routenplaner-starter/ruby/routes.rb:
+            text: |
+              require_relative 'solution'
+              def dijkstra(graph, start, goal)
+                  metres = { start => 0 }
+                  previous = { start => nil }
+                  frontier = { start => 0 }
+                  visited = []
+                  until frontier.empty?
+                      node, so_far = frontier.min_by { |_id, m| m }
+                      frontier.delete(node)
+                      visited << node
+                      break if node == goal
+
+                      graph[:edges][node].each do |neighbour, length|
+                          next if metres.key?(neighbour)
+
+                          metres[neighbour] = so_far + length
+                          previous[neighbour] = node
+                          frontier[neighbour] = so_far + length
+                      end
+                  end
+                  { path: path_to(previous, goal), visited: visited }
+              end
+        say: zuerst über 42
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
                 def dijkstra(graph, start, goal):
                     return breadth_first(graph, start, goal)
           say: Lindenstraße
+        # Dijkstra ohne Verbessern: ein Nachbar kommt nur dazu, wenn er neu ist
+        - files:
+            routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+            routenplaner-starter/python/routes.py:
+              text: |
+                from solution import *
+                def dijkstra(graph, start, goal):
+                    metres = {start: 0}
+                    previous = {start: None}
+                    frontier = {start: 0}
+                    visited = []
+                    while frontier:
+                        node = min(frontier, key=frontier.get)
+                        so_far = frontier.pop(node)
+                        visited.append(node)
+                        if node == goal:
+                            break
+                        for neighbour, length in graph['edges'].get(node, []):
+                            if neighbour in metres:
+                                continue
+                            metres[neighbour] = so_far + length
+                            previous[neighbour] = node
+                            frontier[neighbour] = so_far + length
+                    return {'path': path_to(previous, goal), 'visited': visited}
+          say: zuerst über 42
     dart:
       pass:
-        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
       fail:
-        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
         # die Breitensuche unter dem Namen Dijkstra: zählt Kanten, nicht Meter
         - files:
             routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
             routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
             routenplaner-starter/dart/routes.dart:
               text: |
                 import 'solution.dart' hide dijkstra;
                 export 'solution.dart' hide dijkstra;
                 Search dijkstra(Graph graph, String start, String goal) => breadthFirst(graph, start, goal);
           say: Lindenstraße
+        # Dijkstra ohne Verbessern: ein Nachbar kommt nur dazu, wenn er neu ist
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide dijkstra;
+                export 'solution.dart' hide dijkstra;
+                Search dijkstra(Graph graph, String start, String goal) {
+                  final metres = <String, double>{start: 0};
+                  final previous = <String, String?>{start: null};
+                  final frontier = <String, double>{start: 0};
+                  final visited = <String>[];
+                  while (frontier.isNotEmpty) {
+                    var node = frontier.keys.first;
+                    for (final id in frontier.keys) {
+                      if (frontier[id]! < frontier[node]!) node = id;
+                    }
+                    final soFar = frontier.remove(node)!;
+                    visited.add(node);
+                    if (node == goal) break;
+                    for (final edge in graph.edges[node] ?? <Edge>[]) {
+                      if (metres.containsKey(edge.to)) continue;
+                      metres[edge.to] = soFar + edge.cost;
+                      previous[edge.to] = node;
+                      frontier[edge.to] = soFar + edge.cost;
+                    }
+                  }
+                  return Search(pathTo(previous, goal), visited);
+                }
+          say: zuerst über 42
     javascript:
       pass:
-        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
       fail:
-        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
         - files:
             routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
             routenplaner-starter/javascript/routes.js:
               text: |
                 const { readWays, buildGraph, breadthFirst } = require('./solution');
@@ -336,14 +430,52 @@ examples:
                     return breadthFirst(graph, start, goal);
                 }
           say: Lindenstraße
+        # Dijkstra ohne Verbessern: ein Nachbar kommt nur dazu, wenn er neu ist
+        - files:
+            routenplaner-starter/javascript/solution.js: loesung/javascript/routes.js
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+            routenplaner-starter/javascript/routes.js:
+              text: |
+                // der Weg ohne pathTo der Lösung: ein Array aus require ist für die
+                // Prüfung, die in einem eigenen Kontext läuft, kein Array wie ihres
+                const { readWays, buildGraph } = require('./solution');
+                function dijkstra(graph, start, goal) {
+                    const metres = new Map([[start, 0]]);
+                    const previous = new Map([[start, null]]);
+                    const frontier = new Map([[start, 0]]);
+                    const visited = [];
+                    while (frontier.size > 0) {
+                        let node = null;
+                        for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
+                        const soFar = frontier.get(node);
+                        frontier.delete(node);
+                        visited.push(node);
+                        if (node === goal) break;
+                        for (const [neighbour, length] of graph.edges[node] || []) {
+                            if (metres.has(neighbour)) continue;
+                            metres.set(neighbour, soFar + length);
+                            previous.set(neighbour, node);
+                            frontier.set(neighbour, soFar + length);
+                        }
+                    }
+                    if (!previous.has(goal)) return { path: null, visited };
+                    const path = [];
+                    for (let id = goal; id !== null; id = previous.get(id)) path.unshift(id);
+                    return { path, visited };
+                }
+          say: zuerst über 42
     java:
       pass:
-        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
       fail:
-        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
         # die Lösung, dijkstra ruft breadthFirst auf
-        - files: { routenplaner-starter/java/Routes.java: fehler/java/dijkstra-mit-kanten.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/dijkstra-mit-kanten.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
           say: Lindenstraße
+        # die Lösung ohne Verbessern: ein Nachbar kommt nur dazu, wenn er neu ist
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/dijkstra-ohne-update.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
+          say: zuerst über 42
   heap:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }

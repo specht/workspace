@@ -59,6 +59,7 @@ write-file: data/steglitz-zehlendorf.tsv <- file:vorlage/data/steglitz-zehlendor
 write-file: data/steglitz-zehlendorf-places.tsv <- file:vorlage/data/steglitz-zehlendorf-places.tsv
 write-file: data/test.tsv <- file:vorlage/data/test.tsv
 write-file: data/detour.tsv <- file:vorlage/data/detour.tsv
+write-file: data/shortcut.tsv <- file:vorlage/data/shortcut.tsv
 write-file: ruby/routes.rb <- file:vorlage/ruby/routes.rb
 write-file: ruby/bridge.rb <- file:vorlage/ruby/bridge.rb
 write-file: python/routes.py <- file:vorlage/python/routes.py
@@ -525,6 +526,7 @@ _task(breitensuche)
 <!-- tutorial-step
 # Die Lösung bis zur Breitensuche und zu Dijkstra, der Server neu gestartet
 write-file: data/detour.tsv <- file:vorlage/data/detour.tsv
+write-file: data/shortcut.tsv <- file:vorlage/data/shortcut.tsv
 write-file: ruby/routes.rb <- file:loesung/routes-5.rb
 write-file: python/routes.py <- file:loesung/routes-5.py
 check-task: weg
