@@ -238,7 +238,7 @@ residential		Schloßstraße	26735834 13.326700,52.456700 26735901 13.325300,52.4
 <tr><td>Punkte</td><td>je eine ID und die Lage als Länge und Breite in Grad, mit Komma dazwischen</td></tr>
 </table>
 
-Die ID macht den Punkt eindeutig: Zwei Wege mit derselben ID an einem Punkt sind an dieser Stelle verbunden. Länge und Breite sind die Koordinaten, wie in jeder Karten-App: Steglitz liegt bei 13,3 Grad östlicher Länge und 52,45 Grad nördlicher Breite.
+Die ID macht den Punkt eindeutig: Zwei Wege mit derselben ID an einem Punkt sind an dieser Stelle verbunden. Länge und Breite sind die Koordinaten, wie in jeder Karten-App: Steglitz liegt bei 13,3 Grad östlicher Länge und 52,45 Grad nördlicher Breite. Im Code heißen sie `lon` und `lat`, nach den englischen Wörtern longitude (Länge) und latitude (Breite). In der Datei steht die Länge zuerst, wie x vor y: Sie zählt nach Osten, die Breite nach Norden. Viele Karten-Apps zeigen die Breite zuerst; wer Koordinaten von dort abschreibt, muss die beiden Zahlen tauschen.
 
 _task(fusswege)
 
