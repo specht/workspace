@@ -292,12 +292,12 @@ tasks:
       type: choice
       options:
         - Die Längengrade laufen an den Polen zusammen. Je weiter nördlich, desto näher liegen sie beieinander.
-        - Die Erde ist am Äquator dicker als von Pol zu Pol.
+        - Die Erde ist keine genaue Kugel. Am Äquator ist sie breiter als von Pol zu Pol.
         - Ein Grad Länge ist eine Stunde Zeitverschiebung, das ist kürzer.
       correct: 0
     feedback:
       - when: { picked: 1 }
-        say: Die Erde ist am Äquator tatsächlich etwas dicker, aber nur um 0,3 Prozent. In Berlin ist ein Grad Länge fast 40 Prozent kürzer.
+        say: Die Erde ist tatsächlich etwas abgeplattet, weil sie sich dreht. Quer durch den Äquator misst sie 12.756 km, von Pol zu Pol 43 km weniger. Das sind aber nur 0,3 Prozent. In Berlin ist ein Grad Länge fast 40 Prozent kürzer.
     solution: |
       Die Längengrade treffen sich an den Polen. Am Äquator ist ein Grad Länge
       etwa 111 km breit, in Berlin (52,5° Nord) nur noch 111 km · cos 52,5° ≈ 68
