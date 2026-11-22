@@ -283,10 +283,13 @@ pre.code-room .no {
 }
 
 /* A formula wider than the screen scrolls by itself instead of widening
-   the page (KaTeX, display mode). */
+   the page (KaTeX, display mode). overflow-y: hidden cuts at the padding's
+   edge: the padding keeps the top of a fraction (2π · 6 371 000 m over 360
+   in »Routenplaner«) and a deep subscript inside the box. */
 .katex-display {
     overflow-x: auto;
     overflow-y: hidden;
+    padding: 0.35em 0;
 }
 
 pre.wrap-code {
