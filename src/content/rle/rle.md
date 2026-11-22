@@ -191,6 +191,8 @@ check-task-fails: bytes python
 
 Schreib `rle`. Es geht den Text Zeichen für Zeichen durch, zählt, wie oft dasselbe Zeichen hintereinander kommt, und schreibt für jeden Lauf die Zahl und das Zeichen hin.
 
+<img class='drawing' style='width: 32em' src='laeufe.svg' alt='Der Text WWWWWWBBBWWWW als dreizehn Kästchen: sechs W blau, drei B orange, vier W blau. Unter jedem Lauf eine Klammer mit seinem Code: 6W, 3B, 4W; darunter zusammen 6W3B4W.'>
+
 <!-- language: ruby -->
 - `text.each_char { |char| … }` geht die Zeichen durch.
 - Merk dir das Zeichen des Laufs und seine Länge. Kommt ein anderes Zeichen, ist der Lauf zu Ende: Häng `"#{count}#{char}"` an das Ergebnis und beginne einen neuen Lauf.
