@@ -116,6 +116,8 @@ merkt sich keine Reihenfolge: Die Namen kommen in irgendeiner heraus. Eine
 ändern lässt.
 <!-- /language -->
 
+<img class='drawing' style='width: 27em' src='paare.svg' alt='Links die Schlüssel Ada, Alan und Grace in blauen Kästen, rechts ihre Werte 36, 41 und 85 in orangen, je mit einem Pfeil verbunden; der Pfeil von Grace ist »neu dazu«. Darunter gestrichelt Linus, ohne Pfeil: kein Schlüssel, nichts zum Nachschlagen.'>
+
 Nachschlagen geht in einem Dictionary sofort, ganz gleich, wie viele Paare
 es hat; in einer Liste muss man suchen. Wie das gelingt, zeigt die
 Handbuchseite [Hash Tables](/reference/hash-tables).

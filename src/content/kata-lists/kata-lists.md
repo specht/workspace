@@ -139,6 +139,8 @@ Index `i`. Wer den Index braucht, zählt selbst:
 `for (int i = 0; i < numbers.size(); i++)`.
 <!-- /language -->
 
+<img class='drawing' style='width: 26em' src='liste.svg' alt='Die Liste numbers mit 3, 4 und 5 in drei Kästen, darüber die Indizes 0, 1 und 2. Von jedem Kasten führt ein Pfeil »mal 2« nach unten zur neuen Liste result mit 6, 8 und 10. Neben numbers steht »bleibt, wie sie ist«, neben result »eine neue Liste«.'>
+
 Die Katas geben eine neue Liste zurück und lassen die, die sie bekommen,
 wie sie ist.
 
