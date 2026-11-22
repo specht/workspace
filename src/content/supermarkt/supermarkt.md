@@ -805,6 +805,10 @@ und schickt jede an eine seiner Kassen. Dabei zählt er mit, wie lange alle
 zusammen gewartet haben und wie viele es waren, damit er am Ende die **mittlere
 Wartezeit** sagen kann, und die ist eine Kommazahl, `double`.
 
+Ein Beispiel mit zwei Kassen: A kommt in Sekunde 0 mit 10 Artikeln, B in Sekunde 10 mit 20, C in Sekunde 30 mit 5 und D in Sekunde 40 mit 2. A geht an Kasse 1, weil beide frei sind und Kasse 1 in der Liste zuerst steht; B an Kasse 2, die noch frei ist. Als C kommt, ist Kasse 1 ab Sekunde 90 frei und Kasse 2 ab 130, also wartet C an Kasse 1. Als D kommt, ist Kasse 1 erst ab 165 frei, also wartet D an Kasse 2:
+
+<img class='drawing' style='width: 30em' src='zwei-kassen.svg' alt='Zwei Kassen von Sekunde 0 bis 200. Kasse 1: A mit 10 Artikeln von 0 bis 90, dann C mit 5 Artikeln von 90 bis 165; C kam in Sekunde 30 und wartet 60 Sekunden. Kasse 2: B mit 20 Artikeln von 10 bis 130, dann D mit 2 Artikeln von 130 bis 196; D kam in Sekunde 40 und wartet 90 Sekunden. A und B warten nicht; im Mittel warten alle vier 37,5 Sekunden.'>
+
 _task(diagramm-supermarkt)
 
 <div class='hint own' data-check='supermarkt'>

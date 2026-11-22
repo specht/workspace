@@ -10,6 +10,7 @@ number of articles in it) and the diagram palette of render-svg.rb:
 
     python3 src/content/supermarkt/bilder/diagramme.py
     ruby src/scripts/render-svg.rb src/content/supermarkt/kasse.svg 1328
+    ruby src/scripts/render-svg.rb src/content/supermarkt/zwei-kassen.svg
 """
 
 # runs in docker/drawings, the same on every machine (src/scripts/drawings)
@@ -78,4 +79,58 @@ def kasse():
     (OUT / "kasse.svg").write_text("\n".join(out) + "\n")
     print(OUT / "kasse.svg")
 
+
+def zwei_kassen():
+    global PER_SECOND
+    keep, PER_SECOND = PER_SECOND, 3.0
+    amber, purple = "#d97706", "#7c3aed"
+    w, h = 664, 440
+    out = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {w} {h}' width='{w}' height='{h}'>",
+           "  <!-- Zwei Kassen und vier Kundinnen; gemacht von bilder/diagramme.py, als Bild:\n"
+           "       ruby src/scripts/render-svg.rb src/content/supermarkt/zwei-kassen.svg -->",
+           f"<rect width='{w}' height='{h}' fill='#ffffff'/>"]
+    # name, arrives, articles, colour; served by the earliest free checkout
+    customers = [("A", 0, 10, BLUE), ("B", 10, 20, GREEN), ("C", 30, 5, amber), ("D", 40, 2, purple)]
+    free = [0, 0]
+    served = []
+    for name, comes, items, colour in customers:
+        k = min(range(2), key=lambda i: (free[i], i))
+        start = max(free[k], comes)
+        end = start + 60 + 3 * items
+        served.append((name, k, start, end, start - comes, colour))
+        free[k] = end
+    lane_h, wait_h = 56, 38
+    lanes = [52, 214]
+    for k, top in enumerate(lanes):
+        out.append(label(X0, top - 12, f"Kasse {k + 1}", SIZE - 2, TEXT, "start", "700"))
+        out.append(f"<rect x='{X0}' y='{top}' width='{PER_SECOND * 200:.1f}' height='{lane_h}' rx='10' fill='{LANE}'/>")
+    for name, k, start, end, wait, colour in served:
+        top = lanes[k]
+        items = next(i for n, _, i, _ in customers if n == name)
+        out.append(f"<rect x='{x(start) + 2:.1f}' y='{top + 6}' width='{x(end) - x(start) - 4:.1f}' height='{lane_h - 12}' rx='8' fill='{colour}'/>")
+        out.append(label((x(start) + x(end)) / 2, top + lane_h / 2 + 8, f"{name}: {items} Artikel", SIZE - 3, "#ffffff", weight="700"))
+        if wait:
+            # waiting in front of the checkout, from coming until it is her turn
+            wy = top + lane_h + 12
+            comes = start - wait
+            out.append(f"<rect x='{x(comes):.1f}' y='{wy}' width='{x(start) - x(comes):.1f}' height='{wait_h}' rx='8' "
+                       f"fill='none' stroke='{colour}' stroke-width='2.5' stroke-dasharray='7 5'/>")
+            out.append(label((x(comes) + x(start)) / 2, wy + wait_h / 2 + 7, f"{name} wartet {wait} s", SIZE - 4, colour, weight="700"))
+            out.append(f"<line x1='{x(start):.1f}' y1='{wy}' x2='{x(start):.1f}' y2='{top + lane_h - 6}' stroke='{colour}' stroke-width='2.5'/>")
+            out.append(f"<circle cx='{x(comes):.1f}' cy='{wy + wait_h / 2}' r='6' fill='{colour}'/>")
+    # the axis
+    axis = 350
+    out.append(f"<line x1='{X0}' y1='{axis}' x2='{x(200):.1f}' y2='{axis}' stroke='{LINE}' stroke-width='2'/>")
+    for second in range(0, 201, 40):
+        out.append(f"<line x1='{x(second):.1f}' y1='{axis - 6}' x2='{x(second):.1f}' y2='{axis + 6}' stroke='{GREY}' stroke-width='1.5'/>")
+        out.append(label(x(second), axis + 28, f"{second} s" if second == 200 else second, SIZE - 4, GREY,
+                         "end" if second == 200 else "start" if second == 0 else "middle"))
+    mean = sum(wt for *_, wt, _ in served) / len(served)
+    out.append(label(X0, 422, f"A und B warten nicht; im Mittel {mean:.1f} s".replace(".", ","), SIZE - 4, TEXT, "start"))
+    out.append("</svg>")
+    (OUT / "zwei-kassen.svg").write_text("\n".join(out) + "\n")
+    print(OUT / "zwei-kassen.svg")
+    PER_SECOND = keep
+
 kasse()
+zwei_kassen()
