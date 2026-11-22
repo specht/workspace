@@ -54,3 +54,43 @@ test('the last picture of the lightbox is on screen afterwards (phone)', async (
   }, FIRST));
   await expect(dots.locator('span').last()).toHaveClass(/active/);
 });
+
+// A single picture opens on a click, not at the end of a drag; on a tablet,
+// where a wide screenshot already scrolls sideways in its box, it does not
+// open at all (tutorial-preview.js, zoomable and dragged). The neighbours
+// of a node on the map of »Routenplaner«.
+const SHOT = 'img[alt^="Der Graph über der blassen Karte, nah herangezoomt"]';
+
+test('a picture opens on a click, not after a drag', async ({ page, e2eEmail }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/routenplaner');
+  const shot = page.locator(SHOT);
+  await shot.scrollIntoViewIfNeeded();
+  await expect(shot).toHaveClass(/gallery-zoom/);
+  const box = (await shot.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2 - 60, box.y + box.height / 2, { steps: 6 });
+  await page.mouse.up();
+  await page.waitForTimeout(400);
+  await expect(page.locator('.tutorial-preview-lightbox')).not.toHaveAttribute('open', '');
+  await shot.click();
+  await expect(page.locator('.tutorial-preview-lightbox')).toHaveClass(/is-visible/);
+});
+
+test('a picture that scrolls sideways on a tablet does not open', async ({ browser, e2eEmail }, testInfo) => {
+  const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL, viewport: { width: 820, height: 1180 }, isMobile: true, hasTouch: true });
+  const page = await context.newPage();
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/routenplaner');
+  const shot = page.locator(SHOT);
+  await shot.scrollIntoViewIfNeeded();
+  // wider than its box: it scrolls
+  expect(await shot.evaluate((img) => img.parentElement!.scrollWidth > img.parentElement!.clientWidth)).toBe(true);
+  await expect(shot).not.toHaveClass(/gallery-zoom/);
+  await shot.tap();
+  await page.waitForTimeout(400);
+  await expect(page.locator('.tutorial-preview-lightbox')).not.toHaveAttribute('open', '');
+  await context.close();
+});

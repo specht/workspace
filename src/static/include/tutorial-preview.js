@@ -12,7 +12,10 @@
 // double click zooms in and back out. A single picture of a page (a
 // screenshot, a rendered scene, a drawing: img.full and img.drawing outside a
 // gallery) opens the same way, as a gallery of one, wherever its file is
-// clearly larger than the picture on the page: there is more to see. A
+// clearly larger than the picture on the page and the window has room to
+// show more: there is more to see. One that already scrolls sideways in its
+// box (a wide screenshot on a tablet) does not open, and only a click opens
+// a picture, not the end of a drag. A
 // picture with class 'no-zoom' never opens (a font sample: letters, nothing
 // more to see).
 // On a phone a gallery that would stack its pictures one under the other
@@ -154,7 +157,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // something, a drawing narrower than most of the window, not a
         // picture that already spans the text (a font sample)
         if (/\.svg($|\?)/.test(image.currentSrc || image.src)) return image.getBoundingClientRect().width < window.innerWidth * 0.75;
-        if (!image.closest('.gallery')) return image.naturalWidth > image.getBoundingClientRect().width * 1.15;
+        if (!image.closest('.gallery')) {
+            // a wide picture that already scrolls sideways in its box (on a
+            // tablet) is shown larger than the text; the window would add
+            // little (the maintainer, November 2026)
+            const box = image.parentElement;
+            if (box && box.classList.contains('scroll-x') && box.scrollWidth > box.clientWidth + 1) return false;
+            const width = image.getBoundingClientRect().width;
+            return Math.min(image.naturalWidth, window.innerWidth) > width * 1.15;
+        }
         const width = image.getBoundingClientRect().width;
         // on a phone too, where the file has much more to show (a texture of 2048 pixels)
         return !narrow.matches || image.classList.contains('inspect') || width < window.innerWidth * 0.75 || image.naturalWidth > width * 2;
@@ -513,7 +524,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }, ANIMATION_TIME);
     }
 
+    // Only a click opens a picture: not the end of a drag that scrolled its
+    // box sideways or moved the pointer (the maintainer, November 2026)
+    let press = null;
+    document.addEventListener('pointerdown', (event) => {
+        const box = event.target.closest && event.target.closest('.scroll-x, .gallery');
+        press = { x: event.clientX, y: event.clientY, box, scroll: box ? box.scrollLeft : 0 };
+    }, { capture: true, passive: true });
+    const dragged = (event) => {
+        if (!press || event.detail === 0) return false;   // detail 0: a click from the keyboard
+        if (Math.hypot(event.clientX - press.x, event.clientY - press.y) > 6) return true;
+        return Boolean(press.box && Math.abs(press.box.scrollLeft - press.scroll) > 2);
+    };
+
     document.addEventListener('click', (event) => {
+        if (dragged(event)) return;
         const preview = !narrow.matches && event.target.closest('.tutorial-preview');
         if (preview) {
             event.preventDefault();
