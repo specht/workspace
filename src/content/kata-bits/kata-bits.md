@@ -85,6 +85,23 @@ Teilt man immer wieder und sammelt die Reste, hat man alle Ziffern, von
 rechts nach links. Was Bits und Bytes im Rechner sind, steht im Handbuch
 unter [Bits und Bytes](/reference/bits-und-bytes).
 
+<div style='display: flex; flex-wrap: wrap; gap: 0 2.5em; align-items: flex-start;'>
+<table class='table' style='width: auto;'>
+<tr><th>Stellenwert</th><td>8</td><td>4</td><td>2</td><td>1</td></tr>
+<tr><th>Bit</th><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><th>zählt</th><td>8</td><td>4</td><td>0</td><td>1</td></tr>
+</table>
+<table class='table' style='width: auto;'>
+<tr><th>Zahl</th><th>geteilt durch 2</th><th>Rest</th></tr>
+<tr><td>13</td><td>6</td><td>1</td></tr>
+<tr><td>6</td><td>3</td><td>0</td></tr>
+<tr><td>3</td><td>1</td><td>1</td></tr>
+<tr><td>1</td><td>0</td><td>1</td></tr>
+</table>
+</div>
+
+Links ergeben die Bits von `1101` zusammen 8 + 4 + 0 + 1 = 13. Rechts wird 13 halbiert, bis nichts mehr übrig ist; die Reste, von unten nach oben gelesen, sind wieder `1101`.
+
 ## Einstieg
 
 _task(to-binary)
