@@ -1373,6 +1373,8 @@ Was neu ist:
 
 Nach einer Stimme zeigt `/vote` nicht gleich das Ergebnis, sondern ruft `redirect` auf: Der Server antwortet mit **`303 See Other`** und dem Header `Location: /results`, »Sieh dort nach.« Der Browser holt dann `/results` mit `GET`. Wozu der Umweg gut ist, überlegst du gleich selbst.
 
+<img class='drawing' style='width: 30em' src='weiterleitung.svg' alt='Browser und Server als zwei Spalten, dazwischen vier Pfeile von oben nach unten: Der Browser schickt POST /vote mit choice=curry; der Server antwortet 303 See Other mit Location: /results; der Browser schickt GET /results; der Server antwortet 200 OK mit der Ergebnisseite.'>
+
 <!-- language: ruby -->
 <div class='hint own' data-check='weiterleitung'>
 <strong>Jetzt bist du dran:</strong> Schreib unter <code>respond</code> die Funktion <code>redirect(client, location)</code>. Sie schickt eine Antwort ohne Inhalt: die Status-Line mit <code>303 See Other</code>, die Header <code>Location</code>, <code>Content-Length: 0</code> und <code>Connection: close</code> und die leere Zeile. Danach schließt sie die Verbindung, so wie <code>respond</code>.
