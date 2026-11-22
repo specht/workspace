@@ -350,6 +350,8 @@ Die Längengrade laufen an den Polen zusammen, und je weiter nördlich man ist, 
 
 Auf den paar Kilometern einer Stadt ist die Erde fast flach. Du rechnest beide Unterschiede in Meter um und nimmst den Satz des Pythagoras:
 
+<img class='drawing' style='width: 26em' src='abstand.svg' alt='Ein rechtwinkliges Dreieck zwischen zwei Punkten A und B. Die waagerechte Seite nach Osten ist Delta Länge mal cos(Breite), die senkrechte nach Norden Delta Breite, die schräge Seite von A nach B ist der Abstand d. Ein kleiner Kompass zeigt Norden nach oben und Osten nach rechts.'>
+
 $$d = \sqrt{(\Delta\text{Länge} \cdot \cos(\text{Breite}))^2 + (\Delta\text{Breite})^2} \cdot \frac{\pi}{180} \cdot 6\,371\,000\ \text{m}$$
 
 Die Winkel sind dabei im Bogenmaß: Der Cosinus (`Math.cos` in Ruby, JavaScript und Java, `math.cos` in Python, `cos` aus `dart:math` in Dart) und die Umrechnung mit \\(\pi / 180\\) erwarten keine Grad. Als Breite nimmst du die Mitte zwischen den beiden Punkten.
@@ -1361,6 +1363,10 @@ Wie schnell man wo vorankommt, steht in `Routes.java` in der Map `SPEEDS`, in km
 2. An jeder Kante stehen Sekunden: die Meter geteilt durch das Tempo in Metern je Sekunde, also km/h geteilt durch 3,6.
 3. Für das Auto gelten die Einbahnstraßen: Bei `yes` gibt es nur die Kante in Richtung der Punkte, bei `-1` nur die zurück. Zu Fuß und mit dem Rad gibt es beide.
 
+Aus `data/test.tsv` wird so der Graph für das Auto: Der Fußweg fehlt, der Birkenweg ist eine Einbahnstraße (`yes`) und hat nur die Kanten in Richtung seiner Punkte, von 3 nach 5 und von 5 nach 4, und an den Kanten stehen Sekunden, bei 25 km/h in einer Wohnstraße. Zum Punkt 4 kommt das Auto, aber von dort nicht mehr weg.
+
+<img class='drawing' style='width: 36em' src='graph-auto.svg' alt='Links die drei Wege aus data/test.tsv, der Birkenweg mit Pfeilen von 3 über 5 nach 4. Rechts der Graph für das Auto: Kanten in beide Richtungen zwischen 1, 2 und 3, je 9,8 s; vom Birkenweg nur die Kanten von 3 nach 5 (16,0 s) und von 5 nach 4 (9,8 s); zwischen 2 und 4 keine Kante, weil der Fußweg fehlt.'>
+
 Dazu gehört in den Graphen noch `fastest`, das größte Tempo der Tabelle in Metern je Sekunde. A* braucht es: Die Luftlinie in Metern geteilt durch `fastest` ist eine Schätzung in Sekunden, die nie zu groß ist, denn schneller als mit dem größten Tempo kommt man nirgends voran. Teile darum in `a_star` die Luftlinie durch `fastest`, wenn der Graph es hat, und sonst durch 1.
 
 <!-- language: dart -->
@@ -1477,6 +1483,10 @@ check-task: alle-reihenfolgen java
 
 Schneller, aber ohne Garantie: der **nächste Nachbar**. Vom Startort aus geht es immer zu dem Ort, der am nächsten liegt und an dem die Rundfahrt noch nicht war.
 
+So sieht das mit sieben Orten aus, deren Entfernung die Luftlinie ist; der Ort 0 ist der Anfang:
+
+<div class='algo-stepper' data-title='Der nächste Nachbar' data-algo='tour' data-mode='nearest' data-points='3 1; 1 3; 8 6; 4 5; 0 0; 6 1; 6 4'></div>
+
 _task(naechster-nachbar)
 
 <!-- tutorial-step
@@ -1495,6 +1505,12 @@ Der nächste Nachbar macht oft einen Fehler: Am Anfang nimmt er die kurzen Wege,
 [0, 3, 4, 1, 2]   32   das Stück 2, 1, 4 umgedreht
 [0, 3, 1, 4, 2]   30   und dann das Stück 4, 1
 ```
+
+Hier beginnt 2-opt mit der Reihenfolge des nächsten Nachbarn von oben. Gestrichelt rot die beiden Wege, die wegfielen, gestrichelt gelb die beiden, die dazukämen:
+
+<div class='algo-stepper' data-title='2-opt' data-algo='tour' data-mode='2opt' data-points='3 1; 1 3; 8 6; 4 5; 0 0; 6 1; 6 4'></div>
+
+Eine Kreuzung verschwindet, wenn man das Stück zwischen ihren beiden Kanten umdreht.
 
 _task(zwei-opt)
 
