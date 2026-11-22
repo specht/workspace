@@ -235,7 +235,10 @@ Die Tabulatoren siehst du nicht, nur Abstände. Zwischen `residential` und `Schl
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Die ersten Zeilen der Karte markiert: In der Markierung stehen die
-# Tabulatoren als Pfeile und die Leerzeichen als Punkte
+# Tabulatoren als Pfeile und die Leerzeichen als Punkte; doppelt so
+# viele Pixel bei derselben Anordnung, weil das Bild nur ein Ausschnitt ist
+viewport: 2058x1120
+zoom: 2
 hide-bottom-panel
 open-file: data/steglitz-zehlendorf.tsv
 press: Control+Home

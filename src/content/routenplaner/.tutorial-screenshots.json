@@ -130,8 +130,8 @@
     },
     "tabulatoren.webp": {
       "environment_fingerprint": "22e82ce7349f78cedc8e4ffd9cce10df4c8ac3cc56bde5e06a136252c96b1691",
-      "output_sha256": "6a0ed46b6cb252739cbee80e8972c7fecdb3c19d7402fcc8f0a3871544b79b30",
-      "state_hash": "3704db4f9c3eb7ccddcc425384585215d57c130106a562e12c08ed26ab1216a3",
+      "output_sha256": "95732fec3bbd3fac1a0c4b4420f4f9b72c98de692c133b9dcb497af93425074d",
+      "state_hash": "a13b69f55de7cda34b4ac5283e118cdfcf5eb34b4fe49d05f46d8a507b771ba3",
       "workspace_look": "4.145.2-ls376",
       "workspace_window": 560
     },
