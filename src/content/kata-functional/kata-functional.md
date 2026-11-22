@@ -284,6 +284,8 @@ Werten, auf dem `map` läuft: Es ruft das Lambda für jedes Element auf.
 bleibt, wie sie ist.
 <!-- /language -->
 
+<img class='drawing' style='width: 24em' src='map.svg' alt='Die Liste 1, 2, 3; von jedem Element führt ein Pfeil »mal 10« zur neuen Liste 10, 20, 30. Neben der alten steht »bleibt, wie sie ist«, neben der neuen »neu, genauso lang«.'>
+
 _task(predict-map)
 
 <!-- after: predict-map -->
@@ -408,6 +410,8 @@ void main() {
 Reihenfolge.
 <!-- /language -->
 
+<img class='drawing' style='width: 28em' src='filter.svg' alt='Die Liste 4, 7, 10, 3; unter 4 und 3 steht »fällt weg«, unter 7 und 10 »bleibt«. Von 7 und 10 führen Pfeile zur neuen Liste 7, 10. Daneben: behalten, was größer als 5 ist.'>
+
 _task(evens)
 
 _task(with-letter)
@@ -497,6 +501,8 @@ Element 3     0 + 3 = 3
 Element 4     3 + 4 = 7
 Element 5     7 + 5 = 12
 ```
+
+<img class='drawing' style='width: 29em' src='reduce.svg' alt='Oben die Liste 3, 4, 5. Unten das Ergebnis, Schritt für Schritt: vom Startwert 0 mit der 3 zu 3, mit der 4 zu 7, mit der 5 zu 12; unter den Pfeilen 0 + 3, 3 + 4 und 7 + 5.'>
 
 _task(predict-empty)
 
