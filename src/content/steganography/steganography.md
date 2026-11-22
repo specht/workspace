@@ -268,6 +268,24 @@ Das Verfahren heißt **Least Significant Bit**, kurz LSB: Jedes unterste Bit jed
 2. Jedes Byte wird zu 8 Bits, das höchste Bit zuerst: Aus »A« (65) wird `01000001`.
 3. Die Bits kommen der Reihe nach in die untersten Bits der Kanäle: das erste in Rot des ersten Pixels, das zweite in Grün, das dritte in Blau, dann das zweite Pixel und so weiter, Zeile für Zeile, genau in der Reihenfolge von `channels`.
 
+Nach den 32 Bits der Länge kommt das erste Byte. Ist es ein »A«, `01000001`, und kommt sein erstes Bit gerade in Rot eines Pixels, wird aus den Kanälen:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Kanal</th><th>vorher</th><th>Bit</th><th>nachher</th></tr>
+<tr><td>Rot</td><td>208 = <code>1101000<strong>0</strong></code></td><td>0</td><td>208 = <code>1101000<strong>0</strong></code></td></tr>
+<tr><td>Grün</td><td>113 = <code>0111000<strong>1</strong></code></td><td>1</td><td>113 = <code>0111000<strong>1</strong></code></td></tr>
+<tr><td>Blau</td><td>64 = <code>0100000<strong>0</strong></code></td><td>0</td><td>64 = <code>0100000<strong>0</strong></code></td></tr>
+<tr><td>Rot des nächsten Pixels</td><td>209 = <code>1101000<strong>1</strong></code></td><td>0</td><td>208 = <code>1101000<strong>0</strong></code></td></tr>
+<tr><td>Grün</td><td>114 = <code>0111001<strong>0</strong></code></td><td>0</td><td>114 = <code>0111001<strong>0</strong></code></td></tr>
+<tr><td>Blau</td><td>66 = <code>0100001<strong>0</strong></code></td><td>0</td><td>66 = <code>0100001<strong>0</strong></code></td></tr>
+<tr><td>Rot des dritten Pixels</td><td>210 = <code>1101001<strong>0</strong></code></td><td>0</td><td>210 = <code>1101001<strong>0</strong></code></td></tr>
+<tr><td>Grün</td><td>112 = <code>0111000<strong>0</strong></code></td><td>1</td><td>113 = <code>0111000<strong>1</strong></code></td></tr>
+</table>
+</div>
+
+Nur zwei Werte ändern sich, und jeder um 1: Das sieht niemand.
+
 Schreib `hide(image, message)`: Es gibt ein neues Bild zurück, in dem die Botschaft steckt, und meldet einen Fehler, wenn sie nicht hineinpasst. Und schreib `reveal(image)`: Es liest zuerst 32 Bits und daraus die Länge, dann so viele Bytes, und macht wieder Text daraus.
 
 <!-- language: ruby -->
@@ -400,6 +418,8 @@ Ist die Botschaft damit unauffindbar? Nein, und gerade weil ihre Bits so gleichm
 </div>
 
 Ersetzt man das unterste Bit, wird aus einer 208 entweder 208 oder 209, aus einer 209 ebenso. Die Werte 208 und 209 bilden ein **Paar**, und dasselbe gilt für 0 und 1, 2 und 3, bis 254 und 255. Sind die versteckten Bits zufällig, landet jeder Wert eines Paares mit gleicher Wahrscheinlichkeit auf dem einen oder dem anderen. Nach dem Verstecken kommen deshalb beide Werte eines Paares **gleich oft** vor. In einem gewöhnlichen Foto ist das nicht so: Dort ist 208 vielleicht 300-mal da und 209 nur 250-mal.
+
+<figure><img class='drawing' style='width: 36em' src='chi.svg' alt='Zwei Balkendiagramme mit je sechs Paaren von Balken, für die Werte 200 und 201 bis 210 und 211, blau der gerade, orange der ungerade Wert. Links »ein Foto«: Die beiden Balken eines Paares sind oft verschieden hoch, etwa 310 und 240. Rechts »mit Botschaft im untersten Bit«: Die beiden Balken jedes Paares sind fast gleich hoch, etwa 278 und 272.'><figcaption>Wie oft die Werte 200 bis 211 vorkommen, in Paaren; ausgedachte Zahlen</figcaption></figure>
 
 Der **Chi-Quadrat-Test** misst, wie weit die Paare von »gleich oft« entfernt sind. Zuerst zählst du in den Zeilen, die du untersuchst, wie oft jeder Wert von 0 bis 255 vorkommt, in allen drei Kanälen zusammen. Für jedes Paar heißen seine beiden Anzahlen \\( a \\) und \\( b \\): Beim Paar 208 und 209 ist \\( a \\), wie oft 208 vorkommt, und \\( b \\), wie oft 209 vorkommt.
 
