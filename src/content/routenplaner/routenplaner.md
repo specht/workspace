@@ -250,6 +250,7 @@ crop-bottom: 73%
 crop-right: 45%
 -->
 <img class='full' src='tabulatoren.webp' alt='Die Datei steglitz-zehlendorf.tsv im Editor, die ersten drei Zeilen markiert. In der Markierung steht für jeden Tabulator ein Pfeil, zwischen der Art und dem Namen zwei Pfeile hintereinander, und für jedes Leerzeichen zwischen den Punkten ein kleiner Punkt.'>
+
 <!-- /tutorial-scope -->
 
 Für die ganze Datei schaltest du das im Menü ein: *View* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Appearance* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Render Whitespace* <i class='bi bi-chevron-right' aria-hidden='true'></i> *All*; *Selection* stellt es wieder zurück. Noch leichter liest sich die Datei mit der Erweiterung **Rainbow CSV**: Öffne die Erweiterungen mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>, suche nach `rainbow csv` und klicke auf »Install«. Sie färbt jeden der vier Teile in einer eigenen Farbe.
@@ -359,6 +360,12 @@ _task(abstand)
 
 Ein Routenplaner sucht nicht in Wegen, sondern in einem **Graphen**: Punkte, die **Knoten**, und Verbindungen zwischen ihnen, die **Kanten**. Jede Kante hat eine Länge in Metern. Aus jedem Weg werden so viele Kanten, wie er Abschnitte hat: zwischen dem ersten und dem zweiten Punkt, dem zweiten und dem dritten und so weiter. Ein Fußweg, der zwei Straßen verbindet, wird zu Kanten, die über die gemeinsamen Punkte an beide anschließen.
 
+So wird aus den drei Wegen in `data/test.tsv` ein Graph mit fünf Knoten. Der Ahornweg hat drei Punkte und darum zwei Abschnitte, von 1 nach 2 und von 2 nach 3; der Fußweg schließt bei 2 an. Jeder Abschnitt wird zu einer Kante in beide Richtungen: 2 ist ein Nachbar von 1, und 1 ist ein Nachbar von 2.
+
+<img class='drawing' style='width: 36em' src='graph.svg' alt='Links drei Wege wie auf einer Karte: der Ahornweg von 1 über 2 nach 3, der Fußweg gestrichelt von 2 nach 4 und der Birkenweg von 3 über 5 nach 4. Rechts der Graph daraus: die fünf Punkte als Kreise, verbunden durch Kanten mit Pfeilen in beide Richtungen, die waagerechten 67,8 m lang, die senkrechten 111,2 m.'>
+
+Dein Programm macht das für jeden Weg: Es geht seine Punkte paarweise durch, immer zwei, die aufeinander folgen. Beide kommen unter ihrer ID zu den Knoten, und der Abstand zwischen ihnen kommt zweimal zu den Kanten, einmal bei jedem der beiden Punkte.
+
 _person(euler)
 
 <!-- language: ruby -->
@@ -393,6 +400,8 @@ graph.edges['2']  // [Edge('1', 67.8), Edge('3', 67.8), Edge('4', 111.2)]
 ```
 
 Zwei aufeinanderfolgende Punkte eines Weges sind `way.points[i]` und `way.points[i + 1]`. `graph.edges.putIfAbsent(id, () => [])` gibt die Liste der Kanten von `id` und legt sie an, wenn es sie noch nicht gibt.
+
+Wie `Graph`, `Edge` und `Point` gebaut sind, steht in `dart/graph.dart`. Mit der Erweiterung »Dart« springst du dorthin: <kbd>F12</kbd> auf einem Namen wie `Graph` öffnet seine Definition. Öffne dafür die Erweiterungen mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>, suche nach `dart` und klicke bei »Dart« auf »Install«.
 <!-- /language -->
 <!-- language: javascript -->
 `buildGraph` bekommt die Wege und gibt ein Objekt mit zwei Objekten zurück: `nodes` mit der Lage jedes Punktes, `edges` mit seinen Nachbarn und dem Abstand zu jedem. Kanten gelten erst einmal in beide Richtungen; um Einbahnstraßen kümmerst du dich später:
@@ -415,6 +424,8 @@ graph.edges.get("2")  // [Edge[to=1, cost=67.8], Edge[to=3, cost=67.8], Edge[to=
 ```
 
 Zwei aufeinanderfolgende Punkte eines Weges sind `way.points().get(i)` und `way.points().get(i + 1)`. `graph.edges.computeIfAbsent(id, k -> new ArrayList<>())` gibt die Liste der Kanten von `id` und legt sie an, wenn es sie noch nicht gibt.
+
+Wie `Graph`, `Edge` und `Point` gebaut sind, steht in `java/Types.java`. Mit der Erweiterung »Language Support for Java(TM) by Red Hat« springst du dorthin: <kbd>F12</kbd> auf einem Namen wie `Graph` öffnet seine Definition. Öffne dafür die Erweiterungen mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>, suche nach `java` und klicke bei »Language Support for Java(TM) by Red Hat« auf »Install«.
 <!-- /language -->
 
 _uses(graph)
@@ -546,6 +557,14 @@ Die Breitensuche selbst, Schritt für Schritt:
 
 `visited` braucht die Suche selbst nicht: Die Seite zeigt damit, in welcher Reihenfolge die Suche die Knoten besucht hat. Zum Ausprobieren gibt es die Testkarte `data/detour.tsv`: Die Lindenstraße geht in fünf Kanten geradeaus vom Knoten 11 zum Knoten 16, der Eichenweg macht einen Bogen und braucht nur drei.
 
+Probier es auf dieser Testkarte aus, vom Knoten 11 zum Knoten 16. Gelb sind die Knoten in der Queue, lila die schon herausgenommenen, der Ring ist der Knoten, der gerade dran ist; jeder Pfeil zeigt von einem Knoten auf seinen Vorgänger. Daneben steht die Suche als Pseudocode wie im Handbuch, auf Englisch: `predecessor` ist dein `previous`, und `path_back` ist dein `path_to`.
+
+<script src='/include/algo_stepper.js'></script>
+
+<div class='algo-stepper' data-title='Breitensuche auf data/detour.tsv' data-algo='bfs' data-graph='umweg' data-start='11' data-goal='16'></div>
+
+Die Breitensuche nimmt den Eichenweg: drei Kanten statt fünf, aber 783 Meter statt 340.
+
 _uses(weg-zurueck, breitensuche)
 
 _task(breitensuche)
@@ -618,6 +637,12 @@ _person(dijkstra)
 4. Weiter mit 2, solange `frontier` nicht leer ist.
 
 Warum stimmt der Abstand, wenn ein Knoten dran ist? Alle anderen in `frontier` sind weiter weg, und jeder Umweg über sie macht den Weg nur länger: Kanten sind nie kürzer als 0 Meter.
+
+Dieselbe Testkarte mit Dijkstra. Über jedem Knoten steht sein Abstand vom Start, so gut ihn die Suche bis jetzt kennt; die Reihe unter dem Graphen ist deine `frontier`, mit dem Abstand über jedem Knoten. Im Pseudocode heißt `metres` hier `dist`, und `frontier` ist eine Priority Queue `pq`, aus der immer der kleinste Abstand kommt. Eine solche baust du gleich selbst; bis dahin suchst du den kleinsten in `frontier` mit einer Schleife.
+
+<div class='algo-stepper' data-title='Dijkstra auf data/detour.tsv' data-algo='dijkstra' data-graph='umweg' data-start='11' data-goal='16'></div>
+
+Dijkstra nimmt die Lindenstraße, 340 Meter. Der Knoten 22 kommt gar nicht mehr dran: Als 16 an der Reihe ist, steht 22 mit 561 Metern in der Reihe.
 
 <!-- language: ruby -->
 `frontier.min_by { |_id, m| m }` gibt den Knoten mit dem kleinsten Abstand, als Paar aus ID und Metern. `frontier.delete(node)` nimmt ihn heraus. Am Ende baut `path_to` den Weg, genau wie bei der Breitensuche.
@@ -700,6 +725,16 @@ Ein **binärer Heap** macht das so: Die Einträge stehen in einem Array, aber ma
 - **pop:** Nimm den Eintrag an Index 0. Setze den letzten an seine Stelle. Solange eines seiner Kinder kleiner ist, tausche ihn mit dem kleineren Kind; so sinkt er nach unten.
 
 Beides braucht nur so viele Schritte, wie der Baum hoch ist: bei hunderttausend Einträgen 17.
+
+So sieht es aus, wenn nacheinander 5, 3, 8, 1, 4 und 2 hineinkommen. Oben steht der Heap als Baum, darunter dasselbe als Array, mit den Indizes klein daneben:
+
+<div class='algo-stepper' data-title='push' data-algo='heap' data-ops='push 5, push 3, push 8, push 1, push 4, push 2'></div>
+
+Und `pop` holt aus demselben Heap dreimal das Kleinste heraus:
+
+<div class='algo-stepper' data-title='pop' data-algo='heap' data-setup='push 5, push 3, push 8, push 1, push 4, push 2' data-ops='pop, pop, pop'></div>
+
+Im Heap deines Routenplaners ist jeder Eintrag ein Paar aus Priorität und Wert, der Abstand und der Knoten; verglichen wird nur die Priorität.
 
 <!-- language: ruby -->
 In `routes.rb` gibt es die Klasse `MinHeap` schon, mit dem Array `@items` für Paare aus Priorität und Wert. Es fehlen `push` und `pop`.
@@ -1223,6 +1258,12 @@ heap.push(total + estimate(graph, edge.to(), goal), edge.to());
 
 `estimate` ist eine kleine Methode für die Luftlinie, neben `aStar` in `Routes`, mit deinem `distance` und der Lage des Ziels, `graph.nodes.get(goal)`.
 <!-- /language -->
+
+Wie A* sucht, zeigt ein kleiner Graph mit acht Knoten, A bis H, die Längen maßstäblich zur Luftlinie. Über jedem Knoten steht sein Weg vom Start, unter ihm seine Luftlinie zum Ziel, \\(h\\); die Reihe unten ist die Priority Queue, mit der Priorität über jedem Eintrag. Im Pseudocode heißt dein `costs` hier `dist`:
+
+<div class='algo-stepper' data-title='A*' data-algo='astar' data-graph='stadt' data-start='A' data-goal='H'></div>
+
+Dijkstra besucht hier alle acht Knoten, bis H dran ist. A* ist nach sechs fertig: C und G liegen weg vom Ziel, ihr Weg bis zu ihnen plus die Luftlinie ist größer als die 107 des kürzesten Weges, und sie kommen gar nicht erst dran.
 
 _uses(a-stern)
 

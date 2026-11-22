@@ -539,9 +539,9 @@ tasks:
           say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
     hint:
       - |
-        Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
-        Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
-        von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+        Geh im Bild über der Aufgabe den Birkenweg durch, die Punkte 3, 5 und 4:
+        Aus welchen zwei Paaren werden Kanten, und in welche Liste kommt jede
+        der vier Kanten?
       - |
         Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen
         (`each_cons(2)`). Beide kommen mit ihrer Lage in `nodes`. Den Abstand
@@ -584,9 +584,9 @@ tasks:
             say: 'Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.'
       hint:
         - |
-          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
-          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
-          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+          Geh im Bild über der Aufgabe den Birkenweg durch, die Punkte 3, 5 und 4:
+          Aus welchen zwei Paaren werden Kanten, und in welche Liste kommt jede
+          der vier Kanten?
         - |
           Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen
           (`zip(points, points[1:])`). Beide kommen mit ihrer Lage in `nodes`. Den
@@ -628,9 +628,9 @@ tasks:
             say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
       hint:
         - |
-          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
-          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
-          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+          Geh im Bild über der Aufgabe den Birkenweg durch, die Punkte 3, 5 und 4:
+          Aus welchen zwei Paaren werden Kanten, und in welche Liste kommt jede
+          der vier Kanten?
         - |
           Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen:
           `way.points[i]` und `way.points[i + 1]`. Beide kommen unter ihrer ID in
@@ -675,9 +675,9 @@ tasks:
             say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Funktion distance.
       hint:
         - |
-          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
-          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
-          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+          Geh im Bild über der Aufgabe den Birkenweg durch, die Punkte 3, 5 und 4:
+          Aus welchen zwei Paaren werden Kanten, und in welche Liste kommt jede
+          der vier Kanten?
         - |
           Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen:
           `way.points[i]` und `way.points[i + 1]`. Beide kommen mit ihrer Lage in
@@ -724,9 +724,9 @@ tasks:
             say: Zu jedem Nachbarn gehört, wie weit er entfernt ist, mit deiner Methode distance.
       hint:
         - |
-          Nimm den Ahornweg aus `data/test.tsv` mit den Punkten 1, 2 und 3: Welche
-          Kanten entstehen aus ihm, in beide Richtungen? Wer sind dann die Nachbarn
-          von 2, wenn noch der Fußweg von 2 nach 4 dazukommt?
+          Geh im Bild über der Aufgabe den Birkenweg durch, die Punkte 3, 5 und 4:
+          Aus welchen zwei Paaren werden Kanten, und in welche Liste kommt jede
+          der vier Kanten?
         - |
           Geh jeden Weg paarweise durch, immer zwei Punkte, die aufeinander folgen:
           `way.points().get(i)` und `way.points().get(i + 1)`. Beide kommen unter

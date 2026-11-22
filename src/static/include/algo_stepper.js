@@ -28,6 +28,17 @@
             edges: [['A', 'B', 29], ['A', 'C', 29], ['A', 'D', 80], ['B', 'D', 33], ['B', 'E', 26], ['C', 'D', 47],
                 ['C', 'G', 70], ['D', 'F', 30], ['D', 'G', 33], ['E', 'F', 27], ['F', 'H', 25], ['G', 'H', 29]],
         },
+        // »umweg«: the test map data/detour.tsv of »Routenplaner«, lengths in
+        // metres as its distance computes them. The Lindenstraße goes
+        // straight from 11 to 16 in five edges, the Eichenweg makes a bend
+        // and needs three: the Breitensuche takes the bend, Dijkstra the
+        // straight way. Not to scale (the bend would not fit the field), so
+        // not for A*.
+        umweg: {
+            nodes: { 11: [0, 52], 12: [20, 52], 13: [40, 52], 14: [60, 52], 15: [80, 52], 16: [100, 52], 21: [0, 8], 22: [100, 8] },
+            edges: [['11', '12', 68], ['12', '13', 68], ['13', '14', 68], ['14', '15', 68], ['15', '16', 68],
+                ['11', '21', 222], ['21', '22', 339], ['22', '16', 222]],
+        },
     };
 
     // How long the movement from one step to the next takes, in ms; a step
