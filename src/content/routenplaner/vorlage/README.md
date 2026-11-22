@@ -23,7 +23,7 @@ speicherst; ein Fehler steht im Terminal und auf der Karte.
   Funktionen fragt; hier änderst du nichts
 - `server.rb`: der Server, er zeigt die Karte und fragt deine Funktionen
 - `public/`: die Seite mit der Karte
-- `data/`: die Gebiete, ein Weg pro Zeile, und die Orte darin; `test.tsv` und
-  `detour.tsv` sind kleine Testkarten
+- `data/`: die Gebiete, ein Weg pro Zeile, und die Orte darin; `test.tsv`,
+  `detour.tsv` und `shortcut.tsv` sind kleine Testkarten
 
 Kartendaten © OpenStreetMap-Mitwirkende, ODbL 1.0.
