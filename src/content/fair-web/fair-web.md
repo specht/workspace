@@ -210,6 +210,19 @@ Blau am wenigsten:
 
 $$L = 0{,}2126 \cdot R\_{\mathrm{lin}} + 0{,}7152 \cdot G\_{\mathrm{lin}} + 0{,}0722 \cdot B\_{\mathrm{lin}}$$
 
+Für ein Blau wie `#2b5fb4`:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Kanal</th><th>hexadezimal</th><th>\(c\)</th><th>\(c' = c / 255\)</th><th>linearisiert</th><th>mal Gewicht</th></tr>
+<tr><td>Rot</td><td><code>2b</code></td><td>43</td><td>0,1686</td><td>0,0242</td><td>0,2126 · 0,0242 = 0,0051</td></tr>
+<tr><td>Grün</td><td><code>5f</code></td><td>95</td><td>0,3725</td><td>0,1144</td><td>0,7152 · 0,1144 = 0,0818</td></tr>
+<tr><td>Blau</td><td><code>b4</code></td><td>180</td><td>0,7059</td><td>0,4564</td><td>0,0722 · 0,4564 = 0,0330</td></tr>
+</table>
+</div>
+
+Zusammen ist \\(L = 0{,}0051 + 0{,}0818 + 0{,}0330 = 0{,}1199\\). Das Blau hat den größten Wert, zählt aber am wenigsten; das Grün macht gut zwei Drittel der Helligkeit aus.
+
 _task(luminance)
 
 Das Verhältnis zweier Farben ist dann der Quotient ihrer Leuchtdichten, die
