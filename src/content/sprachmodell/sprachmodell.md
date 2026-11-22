@@ -355,7 +355,7 @@ weiter. Am einfachsten nimmt es jedes Mal den häufigsten.
 <div class='hint own' data-check='haeufigstes'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>most_likely(counts, word)</code>,
 die den häufigsten Nachfolger von <code>word</code> zurückgibt, oder
-<code>nil</code> (in Python <code>None</code>), wenn das Wort nie vorkam.
+<span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span>, wenn das Wort nie vorkam.
 </div>
 
 <!-- language: ruby -->
@@ -515,7 +515,7 @@ kleiner als 3. Das Modell nimmt »ist«.
 <div class='hint own' data-check='wuerfeln'>
 <strong>Jetzt bist du dran:</strong> Schreib die Funktion <code>next_word(counts, word)</code>,
 die einen Nachfolger von <code>word</code> so zieht, dass jeder so oft drankommt,
-wie er gezählt wurde, und <code>nil</code> (in Python <code>None</code>) für ein
+wie er gezählt wurde, und <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span> für ein
 Wort, das nie vorkam.
 </div>
 
@@ -945,7 +945,7 @@ vielen Texten lernen, wie es weitergeht, und dann Wort für Wort ziehen.
 Dein Modell lernt aus jedem Text, nicht nur aus Märchen. Lade einen anderen
 herunter, etwa ein Buch von [Project Gutenberg](https://www.gutenberg.org/browse/languages/de),
 oder nehmt als Klasse eure eigenen Texte, und ersetze `maerchen.txt` in
-`story.rb` (in Python `story.py`) durch die neue Datei.
+<span class='code-language' data-language='ruby'><code>story.rb</code></span><span class='code-language' data-language='python'><code>story.py</code></span> durch die neue Datei.
 
 <div class='hint try'>
 <strong>Ausprobieren:</strong> Lass das Modell mit einem Text schreiben, der

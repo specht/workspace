@@ -447,7 +447,7 @@ Niemand hat dem Neuron das gesagt; es hat die Regel aus 274 Beispielen.
 
 Die Pinguine, für die die Summe genau 0 ist, liegen auf einer Geraden. Auf der
 einen Seite sagt das Neuron 0, auf der anderen 1. Diese Funktion zeichnet die
-Pinguine und die Gerade in eine Datei `plot.svg`, die VS Code als Bild öffnet; sie gehört wie die anderen Funktionen in `neuron.rb` (in Python `neuron.py`).
+Pinguine und die Gerade in eine Datei `plot.svg`, die VS Code als Bild öffnet; sie gehört wie die anderen Funktionen in <span class='code-language' data-language='ruby'><code>neuron.rb</code></span><span class='code-language' data-language='python'><code>neuron.py</code></span>.
 Ein SVG-Bild ist Text, Kreise und Linien mit ihren Koordinaten; wie es aufgebaut
 ist, steht im Handbuch unter [SVG](/reference/svg):
 
@@ -760,7 +760,7 @@ Die 64 Gewichte gehören zu den 64 Kästchen. Ein großes positives Gewicht hei�
 Ist dieses Kästchen dunkel, spricht das für die zweite Ziffer; ein negatives:
 für die erste. Zeichnest du die Gewichte als 8 mal 8 Kästchen, blau für positiv
 und orange für negativ, siehst du, worauf das Neuron achtet. Auch diese Funktion
-gehört in `neuron.rb` (in Python `neuron.py`):
+gehört in <span class='code-language' data-language='ruby'><code>neuron.rb</code></span><span class='code-language' data-language='python'><code>neuron.py</code></span>:
 
 <!-- language: ruby -->
 ```ruby

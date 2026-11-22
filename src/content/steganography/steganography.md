@@ -471,7 +471,7 @@ Zum Lesen geht man rückwärts, vom letzten benutzten Pixel bis zum ersten: \\( 
 
 _task(stellen)
 
-Ruby und Python rechnen mit beliebig großen ganzen Zahlen, ohne Bibliothek: Eine Botschaft mit 20.000 Bytes ist eine Zahl mit 160.000 Bits, und `%` und `//` (in Ruby `divmod`) funktionieren genauso wie mit kleinen Zahlen. Je größer die Zahl, desto länger dauert jede Division; für ein paar Sätze merkst du davon nichts.
+Ruby und Python rechnen mit beliebig großen ganzen Zahlen, ohne Bibliothek: Eine Botschaft mit 20.000 Bytes ist eine Zahl mit 160.000 Bits, und <span class='code-language' data-language='ruby'><code>divmod</code> funktioniert</span><span class='code-language' data-language='python'><code>%</code> und <code>//</code> funktionieren</span> genauso wie mit kleinen Zahlen. Je größer die Zahl, desto länger dauert jede Division; für ein paar Sätze merkst du davon nichts.
 
 <!-- language: ruby -->
 Schreib eine Klasse `BoxClasses` mit `BoxClasses.new(width)` für Würfel mit `width` Werten pro Kanal:
