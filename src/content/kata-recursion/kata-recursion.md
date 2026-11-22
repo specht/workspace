@@ -97,6 +97,8 @@ von innen nach außen. Fehlt der Fall, der aufhört, ruft sich die Funktion
 ohne Ende auf, und das Programm bricht ab, weil der Speicher für die
 wartenden Aufrufe voll ist.
 
+<img class='drawing' style='width: 34em' src='aufrufe.svg' alt='Fünf Kästen als Treppe nach rechts unten: halvings(20) ruft halvings(10) auf, das halvings(5), das halvings(2), das halvings(1). Rechts neben jedem Kasten, was er zurückgibt: halvings(1) gibt sofort 0 zurück, halvings(2) 1 + 0 = 1, halvings(5) 1 + 1 = 2, halvings(10) 1 + 2 = 3, halvings(20) 1 + 3 = 4. Ein Pfeil daneben zeigt nach oben: von innen nach außen.'>
+
 ## Einstieg
 
 Zum Anfang setzt du wieder eine Funktion aus fertigen Zeilen zusammen. Achte darauf, wo die Rekursion aufhört und womit die Funktion sich selbst aufruft.
