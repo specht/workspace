@@ -210,11 +210,31 @@ Ziehen verschiebt die Karte, das Mausrad und die Knöpfe rechts oben zoomen, ein
 
 Die Vorlage hat die Karte von Steglitz-Zehlendorf. Jeden anderen Bezirk lädt der Server beim ersten Start selbst herunter, wenn du ihn so startest:
 
+<!-- language: ruby -->
 ```bash
 AREA=mitte ./run ruby
 ```
-
-Statt `ruby` steht dort der Name deiner Sprache.
+<!-- /language -->
+<!-- language: python -->
+```bash
+AREA=mitte ./run python
+```
+<!-- /language -->
+<!-- language: dart -->
+```bash
+AREA=mitte ./run dart
+```
+<!-- /language -->
+<!-- language: javascript -->
+```bash
+AREA=mitte ./run javascript
+```
+<!-- /language -->
+<!-- language: java -->
+```bash
+AREA=mitte ./run java
+```
+<!-- /language -->
 
 Die Namen der Bezirke: `charlottenburg-wilmersdorf`, `friedrichshain-kreuzberg`, `lichtenberg`, `marzahn-hellersdorf`, `mitte`, `neukoelln`, `pankow`, `reinickendorf`, `spandau`, `steglitz-zehlendorf`, `tempelhof-schoeneberg`, `treptow-koepenick`. Ganz Berlin heißt `berlin`, aber damit warte lieber, bis deine Suche schnell ist.
 
@@ -328,7 +348,7 @@ new Way("residential", "", "Schloßstraße",
 `Files.readAllLines(Path.of(path))` gibt die Zeilen, `split("\t")` teilt eine Zeile an den Tabulatoren; ein leerer Name bleibt dabei als leerer Text stehen. Die Punkte teilst du an den Leerzeichen und nimmst je zwei Teile zusammen, ID und Lage, mit einer Schleife, die in Zweierschritten zählt. `Double.parseDouble` macht aus `"13.326700"` die Zahl 13.3267.
 <!-- /language -->
 
-Ausprobieren kannst du `read_ways` mit der kleinen Testkarte `data/test.tsv`: drei Wege, fünf Punkte.
+Ausprobieren kannst du <span class='code-language' data-language='ruby python'><code>read_ways</code></span><span class='code-language' data-language='dart javascript java'><code>readWays</code></span> mit der kleinen Testkarte `data/test.tsv`: drei Wege, fünf Punkte.
 
 _task(lesen)
 
@@ -354,7 +374,7 @@ Auf den paar Kilometern einer Stadt ist die Erde fast flach. Du rechnest beide U
 
 $$d = \sqrt{(\Delta\text{Länge} \cdot \cos(\text{Breite}))^2 + (\Delta\text{Breite})^2} \cdot \frac{\pi}{180} \cdot 6\,371\,000\ \text{m}$$
 
-Die Winkel sind dabei im Bogenmaß: Der Cosinus (`Math.cos` in Ruby, JavaScript und Java, `math.cos` in Python, `cos` aus `dart:math` in Dart) und die Umrechnung mit \\(\pi / 180\\) erwarten keine Grad. Als Breite nimmst du die Mitte zwischen den beiden Punkten.
+Die Winkel sind dabei im Bogenmaß: Der Cosinus (<span class='code-language' data-language='ruby javascript java'><code>Math.cos</code></span><span class='code-language' data-language='python'><code>math.cos</code></span><span class='code-language' data-language='dart'><code>cos</code> aus <code>dart:math</code></span>) und die Umrechnung mit \\(\pi / 180\\) erwarten keine Grad. Als Breite nimmst du die Mitte zwischen den beiden Punkten.
 
 _task(abstand)
 
@@ -366,10 +386,10 @@ In `data/test.tsv` stehen drei Wege:
 
 <div style='max-width: 100%; overflow-x: auto;'>
 <table class='table'>
-<tr><th>Art</th><th>Einbahnstraße</th><th>Name</th><th>Punkte: ID, Länge, Breite</th></tr>
-<tr><td><code>residential</code></td><td></td><td>Ahornweg</td><td><code>1 13.300000,52.450000</code><br><code>2 13.301000,52.450000</code><br><code>3 13.302000,52.450000</code></td></tr>
-<tr><td><code>footway</code></td><td></td><td></td><td><code>2 13.301000,52.450000</code><br><code>4 13.301000,52.451000</code></td></tr>
-<tr><td><code>residential</code></td><td><code>yes</code></td><td>Birkenweg</td><td><code>3 13.302000,52.450000</code><br><code>5 13.302000,52.451000</code><br><code>4 13.301000,52.451000</code></td></tr>
+<tr><th>Weg</th><th>Punkte: ID, Länge, Breite</th></tr>
+<tr><td>Ahornweg<br><code>residential</code></td><td style='white-space: nowrap; font-size: 0.9em;'><code>1 13.300000,52.450000</code><br><code>2 13.301000,52.450000</code><br><code>3 13.302000,52.450000</code></td></tr>
+<tr><td>ohne Namen<br><code>footway</code></td><td style='white-space: nowrap; font-size: 0.9em;'><code>2 13.301000,52.450000</code><br><code>4 13.301000,52.451000</code></td></tr>
+<tr><td>Birkenweg<br><code>residential</code>, Einbahnstraße <code>yes</code></td><td style='white-space: nowrap; font-size: 0.9em;'><code>3 13.302000,52.450000</code><br><code>5 13.302000,52.451000</code><br><code>4 13.301000,52.451000</code></td></tr>
 </table>
 </div>
 
@@ -445,7 +465,7 @@ _uses(graph)
 
 _task(graph)
 
-Speichere deine Datei: Der Server startet deine Funktionen neu und baut mit ihnen jetzt den Graphen von Steglitz-Zehlendorf. Wähle auf der Seite unter »Ansicht« den »Graph«: Über der blassen Karte siehst du, was `build_graph` gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
+Speichere deine Datei: Der Server startet deine Funktionen neu und baut mit ihnen jetzt den Graphen von Steglitz-Zehlendorf. Wähle auf der Seite unter »Ansicht« den »Graph«: Über der blassen Karte siehst du, was <span class='code-language' data-language='ruby python'><code>build_graph</code></span><span class='code-language' data-language='dart javascript java'><code>buildGraph</code></span> gebaut hat, jeden Knoten als Punkt und jede Kante als Linie. Klicke auf eine Kreuzung: Die Seite zeigt den Knoten dort und seine Nachbarn.
 
 <!-- tutorial-step
 # Die Lösung der ersten drei Schritte, der Server neu gestartet (im
@@ -557,7 +577,7 @@ previous.get("12")  // "11"; previous ist {11=null, 12=11, 21=11, 13=12, …}
 
 So weiß die Suche auch, welche Knoten sie schon kennt: Ein Nachbar, der schon in `previous` steht, kommt nicht noch einmal in die Queue.
 
-Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht `path_to` (in Dart, JavaScript und Java `pathTo`). Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: `path.unshift(node)` in Ruby und JavaScript, `path.insert(0, node)` in Python und Dart, `path.addFirst(node)` mit einer `LinkedList` in Java.
+Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht <span class='code-language' data-language='ruby python'><code>path_to</code></span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span>. Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: <span class='code-language' data-language='ruby javascript'><code>path.unshift(node)</code></span><span class='code-language' data-language='python dart'><code>path.insert(0, node)</code></span><span class='code-language' data-language='java'><code>path.addFirst(node)</code> mit einer <code>LinkedList</code></span>.
 
 _task(weg)
 
@@ -570,7 +590,7 @@ Die Breitensuche selbst, Schritt für Schritt:
 
 `visited` braucht die Suche selbst nicht: Die Seite zeigt damit, in welcher Reihenfolge die Suche die Knoten besucht hat. Zum Ausprobieren gibt es die Testkarte `data/detour.tsv`: Die Lindenstraße geht in fünf Kanten geradeaus vom Knoten 11 zum Knoten 16, der Eichenweg macht einen Bogen und braucht nur drei.
 
-Probier es auf dieser Testkarte aus, vom Knoten 11 zum Knoten 16. Gelb sind die Knoten in der Queue, lila die schon herausgenommenen, der Ring ist der Knoten, der gerade dran ist; jeder Pfeil zeigt von einem Knoten auf seinen Vorgänger. Daneben steht die Suche als Pseudocode wie im Handbuch, auf Englisch: `predecessor` ist dein `previous`, und `path_back` ist dein `path_to`.
+Probier es auf dieser Testkarte aus, vom Knoten 11 zum Knoten 16. Gelb sind die Knoten in der Queue, lila die schon herausgenommenen, der Ring ist der Knoten, der gerade dran ist; jeder Pfeil zeigt von einem Knoten auf seinen Vorgänger. Daneben steht die Suche als Pseudocode wie im Handbuch, auf Englisch: `predecessor` ist dein `previous`, und `path_back` ist dein <span class='code-language' data-language='ruby python'><code>path_to</code></span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span>.
 
 <script src='/include/algo_stepper.js'></script>
 
@@ -726,7 +746,7 @@ hook: route Gymnasium Steglitz | Pfaueninsel | dijkstra
 <!-- /tutorial-scope -->
 </div>
 
-Die Breitensuche macht gut 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: Er braucht ein Vielfaches der Breitensuche, in Ruby ein paar Sekunden statt Bruchteilen davon. Beide besuchen fast den ganzen Bezirk, der Unterschied ist die Suche nach dem kleinsten Abstand: Sie geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.
+Die Breitensuche macht gut 7 Kilometer Umweg. Dijkstra findet den kürzesten Weg, aber schau auf die Zeit: Er braucht ein Vielfaches der Breitensuche<span class='code-language' data-language='ruby'>, in Ruby ein paar Sekunden statt Bruchteilen davon</span>. Beide besuchen fast den ganzen Bezirk, der Unterschied ist die Suche nach dem kleinsten Abstand: Sie geht bei jedem Schritt durch die ganze `frontier`, und die wird groß. Wie es schneller geht, kommt als Nächstes.
 
 ### Eine Priority Queue
 
@@ -1187,7 +1207,7 @@ while (!heap.isEmpty()) {
 
 _task(dijkstra-heap)
 
-Prüfe `dijkstra` mit der Aufgabe darüber, speichere und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber in einem Bruchteil der Zeit, in Ruby knapp eine Sekunde statt ein paar.
+Prüfe `dijkstra` mit der Aufgabe darüber, speichere und such den Weg zur Pfaueninsel wieder mit Dijkstra. Derselbe Weg, dieselben besuchten Knoten, aber in einem Bruchteil der Zeit<span class='code-language' data-language='ruby'>, in Ruby knapp eine Sekunde statt ein paar</span>.
 
 <!-- tutorial-step
 # Die Lösung aller Schritte, der Server neu gestartet
@@ -1292,11 +1312,31 @@ check-task: astern java
 
 Wie viel A* spart, zeigt ein Weg quer durch die Stadt, zum Brandenburger Tor. Dafür braucht der Server drei Bezirke: Steglitz-Zehlendorf, Tempelhof-Schöneberg und Mitte. Halte ihn an und starte ihn so:
 
+<!-- language: ruby -->
 ```bash
 AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ./run ruby
 ```
-
-Statt `ruby` steht dort wieder der Name deiner Sprache.
+<!-- /language -->
+<!-- language: python -->
+```bash
+AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ./run python
+```
+<!-- /language -->
+<!-- language: dart -->
+```bash
+AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ./run dart
+```
+<!-- /language -->
+<!-- language: javascript -->
+```bash
+AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ./run javascript
+```
+<!-- /language -->
+<!-- language: java -->
+```bash
+AREA=steglitz-zehlendorf,tempelhof-schoeneberg,mitte ./run java
+```
+<!-- /language -->
 
 Die beiden anderen Bezirke lädt er beim ersten Mal herunter. Der Graph hat dann fast 400 000 Knoten; das Lesen dauert ein paar Sekunden länger.
 
@@ -1345,7 +1385,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar
 Derselbe Weg, 8 km, aber A* besucht nur ein Zehntel der Knoten: ein Band zum Ziel hin statt eines Kreises, und ist darum zehnmal so schnell fertig. Mit `AREA=berlin` hast du die ganze Stadt, 1,3 Millionen Knoten. Das Lesen dauert dann gut eine halbe Minute, aber A* findet auch dort einen Weg in Sekunden.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Mach die Schätzung absichtlich zu groß: Schreib in <code>a_star</code> (oder <code>aStar</code>) in der Zeile mit <code>heap.push</code> ein <code>2 *</code> vor die Schätzung, starte den Server neu und such den Weg zum Brandenburger Tor noch einmal mit A*. Besucht A* jetzt weniger Knoten? Ist der Weg noch so kurz wie mit Dijkstra? Und mit <code>0 *</code> statt <code>2 *</code>: Was für eine Suche ist A* dann? Stell die Zeile danach wieder her.
+<strong>Ausprobieren:</strong> Mach die Schätzung absichtlich zu groß: Schreib in <span class='code-language' data-language='ruby python'><code>a_star</code></span><span class='code-language' data-language='dart javascript java'><code>aStar</code></span> in der Zeile mit <code>heap.push</code> ein <code>2 *</code> vor die Schätzung, starte den Server neu und such den Weg zum Brandenburger Tor noch einmal mit A*. Besucht A* jetzt weniger Knoten? Ist der Weg noch so kurz wie mit Dijkstra? Und mit <code>0 *</code> statt <code>2 *</code>: Was für eine Suche ist A* dann? Stell die Zeile danach wieder her.
 </div>
 
 ## Zu Fuß, mit dem Rad, mit dem Auto
@@ -1368,9 +1408,9 @@ Wie schnell man wo vorankommt, steht in `routes.js` im Objekt `SPEEDS`, in km/h:
 Wie schnell man wo vorankommt, steht in `Routes.java` in der Map `SPEEDS`, in km/h: `SPEEDS.get("car").get("residential")` ist 25, in einer Wohnstraße fährt man mit dem Auto im Schnitt 25 km/h. Fehlt eine Art von Weg in der Map, darf man ihn so nicht benutzen.
 <!-- /language -->
 
-`build_travel_graph` (in Dart, JavaScript und Java `buildTravelGraph`) ist fast `build_graph`, mit drei Unterschieden:
+<span class='code-language' data-language='ruby python'><code>build_travel_graph</code></span><span class='code-language' data-language='dart javascript java'><code>buildTravelGraph</code></span> ist fast <span class='code-language' data-language='ruby python'><code>build_graph</code></span><span class='code-language' data-language='dart javascript java'><code>buildGraph</code></span>, mit drei Unterschieden:
 
-1. Ein Weg, dessen Art in `SPEEDS[mode]` fehlt (in Dart `speeds[mode]`), kommt nicht in den Graphen.
+1. Ein Weg, dessen Art in <span class='code-language' data-language='ruby python javascript java'><code>SPEEDS[mode]</code></span><span class='code-language' data-language='dart'><code>speeds[mode]</code></span> fehlt, kommt nicht in den Graphen.
 2. An jeder Kante stehen Sekunden: die Meter geteilt durch das Tempo in Metern je Sekunde, also km/h geteilt durch 3,6.
 3. Für das Auto gelten die Einbahnstraßen: Bei `yes` gibt es nur die Kante in Richtung der Punkte, bei `-1` nur die zurück. Zu Fuß und mit dem Rad gibt es beide.
 
@@ -1378,7 +1418,7 @@ Aus `data/test.tsv` wird so der Graph für das Auto: Der Fußweg fehlt, der Birk
 
 <img class='drawing' style='width: 36em' src='graph-auto.svg' alt='Links die drei Wege aus data/test.tsv, der Birkenweg mit Pfeilen von 3 über 5 nach 4. Rechts der Graph für das Auto: Kanten in beide Richtungen zwischen 1, 2 und 3, je 9,8 s; vom Birkenweg nur die Kanten von 3 nach 5 (16,0 s) und von 5 nach 4 (9,8 s); zwischen 2 und 4 keine Kante, weil der Fußweg fehlt.'>
 
-Dazu gehört in den Graphen noch `fastest`, das größte Tempo der Tabelle in Metern je Sekunde. A* braucht es: Die Luftlinie in Metern geteilt durch `fastest` ist eine Schätzung in Sekunden, die nie zu groß ist, denn schneller als mit dem größten Tempo kommt man nirgends voran. Teile darum in `a_star` die Luftlinie durch `fastest`, wenn der Graph es hat, und sonst durch 1.
+Dazu gehört in den Graphen noch `fastest`, das größte Tempo der Tabelle in Metern je Sekunde. A* braucht es: Die Luftlinie in Metern geteilt durch `fastest` ist eine Schätzung in Sekunden, die nie zu groß ist, denn schneller als mit dem größten Tempo kommt man nirgends voran. Teile darum in <span class='code-language' data-language='ruby python'><code>a_star</code></span><span class='code-language' data-language='dart javascript java'><code>aStar</code></span> die Luftlinie durch `fastest`, wenn der Graph es hat, und sonst durch 1.
 
 <!-- language: dart -->
 In Dart hat jeder `Graph` ein `fastest`, das 1 ist, bis `buildTravelGraph` es setzt. In `aStar` teilst du darum immer durch `graph.fastest`.
@@ -1434,7 +1474,7 @@ hook: route Gymnasium Steglitz | Brandenburger Tor | astar | car
 Schau dir an, wie viele Knoten A* mit dem Auto besucht: Zu Fuß ist es ein Zehntel dessen, was Dijkstra besucht, mit dem Auto fast die Hälfte. Die Schätzung rechnet mit 90 km/h, dem Tempo auf der Autobahn, aber in der Stadt kommt man viel langsamer voran. Je weiter die Schätzung unter dem wirklichen Weg liegt, desto weniger hilft sie.
 
 <div class='hint try'>
-<strong>Ausprobieren:</strong> Setz in <code>SPEEDS</code> (in Dart <code>speeds</code>) beim Auto das Tempo für <code>motorway</code> von 90 auf 250 und speichere. Besucht A* mit dem Auto jetzt mehr oder weniger Knoten als vorher, und warum? Ändert sich der Weg? Stell die 90 danach wieder her.
+<strong>Ausprobieren:</strong> Setz in <span class='code-language' data-language='ruby python javascript java'><code>SPEEDS</code></span><span class='code-language' data-language='dart'><code>speeds</code></span> beim Auto das Tempo für <code>motorway</code> von 90 auf 250 und speichere. Besucht A* mit dem Auto jetzt mehr oder weniger Knoten als vorher, und warum? Ändert sich der Weg? Stell die 90 danach wieder her.
 </div>
 
 ## Eine Rundfahrt
