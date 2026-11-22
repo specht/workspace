@@ -230,6 +230,27 @@ _person(coast)
 residential		Schloßstraße	26735834 13.326700,52.456700 26735901 13.325300,52.457700 …
 ```
 
+Die Tabulatoren siehst du nicht, nur Abstände. Zwischen `residential` und `Schloßstraße` stehen zwei, weil die Einbahnstraße hier leer ist. Markierst du ein paar Zeilen, zeigt Visual Studio Code in der Markierung jeden Tabulator als Pfeil und jedes Leerzeichen als Punkt:
+
+<!-- tutorial-scope -->
+<!-- tutorial-screenshot
+# Die ersten Zeilen der Karte markiert: In der Markierung stehen die
+# Tabulatoren als Pfeile und die Leerzeichen als Punkte
+hide-bottom-panel
+open-file: data/steglitz-zehlendorf.tsv
+press: Control+Home
+press: Shift+ArrowDown
+press: Shift+ArrowDown
+press: Shift+ArrowDown
+sleep: 0.5
+crop-bottom: 73%
+crop-right: 45%
+-->
+<img class='full' src='tabulatoren.webp' alt='Die Datei steglitz-zehlendorf.tsv im Editor, die ersten drei Zeilen markiert. In der Markierung steht für jeden Tabulator ein Pfeil, zwischen der Art und dem Namen zwei Pfeile hintereinander, und für jedes Leerzeichen zwischen den Punkten ein kleiner Punkt.'>
+<!-- /tutorial-scope -->
+
+Für die ganze Datei schaltest du das im Menü ein: *View* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Appearance* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Render Whitespace* <i class='bi bi-chevron-right' aria-hidden='true'></i> *All*; *Selection* stellt es wieder zurück. Noch leichter liest sich die Datei mit der Erweiterung **Rainbow CSV**: Öffne die Erweiterungen mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>, suche nach `rainbow csv` und klicke auf »Install«. Sie färbt jeden der vier Teile in einer eigenen Farbe.
+
 <table class='table'>
 <tr><th>Teil</th><th>Bedeutung</th></tr>
 <tr><td>Art</td><td>was für ein Weg: <code>residential</code> (Wohnstraße), <code>primary</code> (Hauptstraße), <code>footway</code> (Fußweg), <code>cycleway</code> (Radweg), <code>steps</code> (Treppe), …</td></tr>
@@ -239,6 +260,7 @@ residential		Schloßstraße	26735834 13.326700,52.456700 26735901 13.325300,52.4
 </table>
 
 Die ID macht den Punkt eindeutig: Zwei Wege mit derselben ID an einem Punkt sind an dieser Stelle verbunden. Länge und Breite sind die Koordinaten, wie in jeder Karten-App: Steglitz liegt bei 13,3 Grad östlicher Länge und 52,45 Grad nördlicher Breite. Im Code heißen sie `lon` und `lat`, nach den englischen Wörtern longitude (Länge) und latitude (Breite). In der Datei steht die Länge zuerst, wie x vor y: Sie zählt nach Osten, die Breite nach Norden. Viele Karten-Apps zeigen die Breite zuerst; wer Koordinaten von dort abschreibt, muss die beiden Zahlen tauschen.
+
 
 _task(fusswege)
 
@@ -318,6 +340,8 @@ _task(grad)
 
 <!-- after: grad -->
 Die Längengrade laufen an den Polen zusammen, und je weiter nördlich man ist, desto näher liegen sie beieinander, um den Faktor \\(\cos(\text{Breite})\\).
+
+<img class='drawing' style='width: 36em' src='globus.svg' alt='Ein Globus mit Gitternetz. Blau die Längengrade (lines of longitude): Sie laufen von Pol zu Pol und treffen sich oben am Nordpol; einer davon, stärker gezeichnet, ist der Nullmeridian durch Greenwich. Orange die Breitengrade (lines of latitude): Ringe parallel zum Äquator, die zum Pol hin kleiner werden. Ein oranger Pfeil führt auf dem Äquator vom Nullmeridian 13,4° nach Osten, von dort ein blauer Pfeil 52,5° nach Norden zum Punkt Berlin. Rechts steht: Die Länge zählt nach Osten, im Code lon; die Breite zählt nach Norden, im Code lat.'>
 <!-- /after -->
 
 Auf den paar Kilometern einer Stadt ist die Erde fast flach. Du rechnest beide Unterschiede in Meter um und nimmst den Satz des Pythagoras:
