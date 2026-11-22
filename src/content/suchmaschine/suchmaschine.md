@@ -166,6 +166,10 @@ Ohne die zweite Liste liefe er im Kreis: Von der Katze geht es zum Hund und vom
 Hund zurück zur Katze. Dieses Vorgehen heißt **Breitensuche**: zuerst alle
 Seiten, die einen Link entfernt sind, dann alle, die zwei Links entfernt sind.
 
+So arbeitet er sich durch eine kleine Website mit fünf Seiten. Blau umrandet ist, was in diesem Schritt neu in die Queue kommt:
+
+<figure><img class='inspect' src='crawl-queue.svg' alt='Links eine Website aus fünf Seiten: /a.html, der Start, verlinkt /b.html und /c.html, /b.html verlinkt zurück auf /a.html und auf /d.html, /c.html auf /d.html, /d.html auf /e.html. Rechts in Zeilen, was der Crawler holt, die Queue danach und alles schon Gesehene: am Anfang /a.html in beiden; er holt /a.html, die Queue ist /b.html, /c.html; er holt /b.html, /a.html kennt er schon, neu ist /d.html; er holt /c.html, nichts Neues; er holt /d.html, neu ist /e.html; er holt /e.html, die Queue ist leer, fertig.'><figcaption>Die Queue des Crawlers: vorn wird geholt, hinten kommt dazu, was er noch nie gesehen hat</figcaption></figure>
+
 _uses(queue, breitensuche)
 
 Im Ordner `tierlexikon` liegt auch eine Datei `geheim.html`.
@@ -386,6 +390,8 @@ build_index(pages)
 ```
 <!-- /language -->
 
+<figure><img class='inspect' src='index-umgedreht.svg' alt='Links die beiden Seiten, /a.html blau mit »Der Igel schläft.« und /b.html orange mit »Der Hund schläft nicht.«. Ein Pfeil »umgedreht« führt nach rechts zum Index: der mit /a.html und /b.html, igel mit /a.html, schläft mit /a.html und /b.html, hund mit /b.html, nicht mit /b.html, jeder Pfad in der Farbe seiner Seite.'><figcaption>Die Seiten kennen ihre Wörter, der Index kennt zu jedem Wort die Seiten</figcaption></figure>
+
 Andersherum als eine Seite, die zu jedem Pfad die Wörter kennt, kennt der Index
 zu jedem Wort die Pfade. Darum heißt er **invertierter Index**. Die Tags
 gehören nicht zu den Wörtern, und groß oder klein geschrieben ist egal: Wer
@@ -505,6 +511,8 @@ _task(index)
 Eine Suche nach »nachts insekten« soll die Seiten finden, auf denen beide
 Wörter stehen. Im Index stehen zu jedem Wort seine Seiten; gesucht sind die
 Seiten, die in beiden Listen vorkommen, ihre **Schnittmenge**.
+
+<figure><img class='drawing' style='width: 30em' src='schnittmenge.svg' alt='Zwei Kreise, die sich überlappen: links blau die Seiten mit »katze«, /a.html, /b.html und /d.html, rechts orange die Seiten mit »hund«, /b.html, /c.html und /d.html. Im überlappenden Teil stehen /b.html und /d.html, die Treffer für »katze hund«.'><figcaption>Ein Beispiel mit ausgedachten Seiten: Treffer sind nur die Seiten mit beiden Wörtern</figcaption></figure>
 
 <!-- language: ruby -->
 <div class='hint own' data-check='suchen'>
@@ -703,6 +711,10 @@ Ein Link ist eine Empfehlung: Wer auf eine Seite verlinkt, hält sie für
 lesenswert. Auf die Seite über die Hauskatze verlinken die Startseite, der Hund
 und die Amsel. Auf die Anzeige verlinkt nur der Hund, und sich selbst zu
 verlinken, zählt nicht.
+
+Auf der kleinen Website von oben, wenn `/e.html` noch auf sich selbst verlinkt:
+
+<figure><img class='drawing' style='width: 32em' src='eingehend.svg' alt='Die fünf Seiten der kleinen Website mit ihren Links, in jedem Kasten die Zahl der Seiten, die auf ihn verlinken: /a.html 1 (von /b.html), /b.html 1, /c.html 1, /d.html 2 (von /b.html und /c.html), /e.html 1 (von /d.html); der Link von /e.html auf sich selbst zählt nicht.'><figcaption>Gezählt wird, wie viele andere Seiten auf eine Seite verlinken</figcaption></figure>
 
 <!-- language: ruby -->
 <div class='hint own' data-check='eingehend'>
@@ -1213,6 +1225,14 @@ Steht auf der Seite `https://schule.example/tiere/katze.html` ein Link auf
 `https://schule.example/index.html`, und eine ganze Adresse bleibt, wie sie
 ist. Was hinter einem `#` steht, ist nur eine Stelle auf einer Seite: Für den
 Crawler ist `index.html#oben` dieselbe Seite wie `index.html`.
+
+<table class='table'>
+<tr><th>Link auf <code>https://schule.example/tiere/katze.html</code></th><th>ganze Adresse</th></tr>
+<tr><td><code>hund.html</code></td><td><code>https://schule.example/tiere/hund.html</code></td></tr>
+<tr><td><code>/index.html</code></td><td><code>https://schule.example/index.html</code></td></tr>
+<tr><td><code>hund.html#futter</code></td><td><code>https://schule.example/tiere/hund.html</code></td></tr>
+<tr><td><code>https://de.wikipedia.org/wiki/Hauskatze</code></td><td><code>https://de.wikipedia.org/wiki/Hauskatze</code></td></tr>
+</table>
 
 <!-- language: ruby -->
 Das Rechnen nimmt dir `URI.join` ab:
