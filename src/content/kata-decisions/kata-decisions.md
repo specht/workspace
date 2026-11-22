@@ -136,6 +136,21 @@ dasselbe Objekt ist. Zwei Bedingungen verbinden `&&` (beide) und `||`
 auch direkt zurückgeben.
 <!-- /language -->
 
+
+Als Struktogramm: Ist die erste Bedingung wahr, geht es links weiter, sonst rechts, und dort wartet die nächste.
+
+<script src='/include/struktogramm.js'></script>
+
+```struktogramm
+weather(degrees):
+    if degrees ≥ 25:
+        return "Baden!"
+    else if degrees ≥ 15:
+        return "Spazieren"
+    else:
+        return "Lesen"
+```
+
 ## Einstieg
 
 Zum Anfang schreibst du nichts selbst, sondern setzt eine Funktion aus fertigen Zeilen zusammen. Achte darauf, welche Bedingung zuerst gefragt wird und welche Zeile zu welchem Zweig gehört.

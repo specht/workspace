@@ -147,6 +147,8 @@ Welche Nummer zu welchem Zeichen gehört, legt der Zeichensatz fest; die
 ersten 128 sind seit den 1960er Jahren dieselben (ASCII) und heute ein Teil
 von Unicode. Mit den Nummern kann man rechnen.
 
+<img class='drawing' style='width: 28em' src='zeichen.svg' alt='Der Text Hallo als fünf Kästen mit H, a, l, l und o; darüber die Indizes 0 bis 4, daneben »Länge 5«, darunter die Nummern der Zeichen: 72, 97, 108, 108, 111. Ganz unten, was bracket daraus macht: [H][a][l][l][o].'>
+
 ## Einstieg
 
 Zum Anfang setzt du wieder eine Funktion aus fertigen Zeilen zusammen. Achte darauf, was vor der Schleife steht, was in ihr und was danach.
