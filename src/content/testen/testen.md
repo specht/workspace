@@ -316,6 +316,8 @@ beginnt: ein `<` statt `<=`, eine 17, wo 18 gemeint war. Darum testet man an
 jeder **Grenze** beide Seiten, den letzten Wert der einen Klasse und den ersten
 der anderen, bei der Volljährigkeit also 17 und 18.
 
+<img class='drawing' style='width: 34em' src='klassen.svg' alt='Ein Zahlenstrahl für das Alter von 0 bis über 30. Darüber zwei Bereiche: blau »unter 18: nicht volljährig«, orange »ab 18: volljährig«, getrennt von einer gestrichelten Linie zwischen 17 und 18. Auf dem Strahl je ein Vertreter jeder Klasse, bei 9 und bei 25, und die beiden Seiten der Grenze, 17 blau und 18 orange; darunter »die Grenze: beide Seiten testen«.'>
+
 _task(grenzen)
 
 ### Fehler erwarten
@@ -710,6 +712,8 @@ immer wieder:
 2. **Grün:** Schreib gerade so viel Code, dass der Test besteht.
 3. **Aufräumen:** Mach den Code lesbarer, ohne dass sich etwas ändert. Die
    Tests bleiben grün und sagen dir, ob es stimmt.
+
+<img class='drawing' style='width: 30em' src='tdd.svg' alt='Drei Kreise im Kreislauf, mit Pfeilen im Uhrzeigersinn: oben rot »Rot: ein Test, der scheitert«, rechts unten grün »Grün: gerade genug Code«, links unten blau »Aufräumen: lesbarer, Tests grün«, und von dort wieder zu Rot.'>
 
 Wer so arbeitet, überlegt vor dem Code, was er tun soll, und hat am Ende zu
 allem einen Test.
