@@ -589,6 +589,8 @@ Du kannst für deinen Decoder davon ausgehen, dass dieser Wert immer 3 ist und f
 
 In diesem Beispiel hat die Y-Komponente (Helligkeit) die Faktoren 2 × 2, die Cb- und Cr-Komponenten (Farbinformationen) haben 1 × 1: Auf vier Werte für die Helligkeit kommt je einer für die Farbe. Im JPEG-Jargon spricht man von einer Minimum Coded Unit (MCU), die in diesem Fall aus 4 Y-Blöcken, 1 Cb-Block und 1 Cr-Block besteht. Das bedeutet, dass für jede MCU 4 Blöcke der Y-Komponente und jeweils 1 Block der Cb- und Cr-Komponenten codiert werden: die Auflösung der Chroma-Komponenten ist also halb so hoch wie die der Luma-Komponente in beiden Dimensionen. 
 
+<figure><img class='drawing' style='width: 36em' src='mcu.svg' alt='Drei gleich große Quadrate für dieselben 16 mal 16 Pixel einer MCU. Y: ein feines Gitter mit einem Kästchen für jedes Pixel, durch dicke Linien in vier Blöcke von 8 mal 8 geteilt. Cb blau und Cr rot: je ein einziger Block von 8 mal 8 Kästchen, jedes Kästchen so groß wie 2 mal 2 Pixel.'><figcaption>Eine MCU von <code>44-baseline.jpg</code>: Alle drei Komponenten decken dieselben 16 × 16 Pixel, Y mit vier Blöcken, Cb und Cr mit je einem</figcaption></figure>
+
 <div class='hint'>
 <strong>Für deinen Decoder:</strong> Lies Breite, Höhe und die drei Komponenten mit Kennung, Sampling-Faktoren und Quantisierungstabelle. Merk dir außerdem die größten Sampling-Faktoren, hier 2 und 2: Sie bestimmen die Größe einer MCU. Dann öffnest du den Bildschirm mit <code>screen_open(width, height, pixel_rgb24, argv[1])</code>. Bei einem anderen SOF-Marker als 0xFFC0, etwa 0xFFC2 für ein progressives JPEG, beendet <code>fail</code> das Programm: Das kann dein Decoder nicht.
 </div>

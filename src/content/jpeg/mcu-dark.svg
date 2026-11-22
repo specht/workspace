@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 300" width="680" height="300" font-family="IBM Plex Sans, DejaVu Sans, sans-serif">
+  <style id='embedded-fonts'>@font-face{font-family:'IBM Plex Sans';font-weight:400;font-style:normal;src:url(data:font/woff2;base64,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) format('woff2')}@font-face{font-family:'IBM Plex Sans';font-weight:600;font-style:normal;src:url(data:font/woff2;base64,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) format('woff2')}</style>
+  <!-- Eine MCU mit 2 × 2 Subsampling: vier Blöcke Y, je einer Cb und Cr.
+       Gemacht von bilder/mcu.py; die dunkle Fassung mcu-dark.svg
+       und die Schriften: src/scripts/render-svg.rb -->
+  <rect width="680" height="300" fill="#151514"/>
+  <rect x="28" y="52" width="176" height="176" fill="#e3e6ea" fill-opacity="0.10"/>
+  <line x1="39" y1="52" x2="39" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="63" x2="204" y2="63" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="50" y1="52" x2="50" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="74" x2="204" y2="74" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="61" y1="52" x2="61" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="85" x2="204" y2="85" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="72" y1="52" x2="72" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="96" x2="204" y2="96" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="83" y1="52" x2="83" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="107" x2="204" y2="107" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="94" y1="52" x2="94" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="118" x2="204" y2="118" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="105" y1="52" x2="105" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="129" x2="204" y2="129" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="116" y1="52" x2="116" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="140" x2="204" y2="140" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="127" y1="52" x2="127" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="151" x2="204" y2="151" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="138" y1="52" x2="138" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="162" x2="204" y2="162" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="149" y1="52" x2="149" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="173" x2="204" y2="173" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="160" y1="52" x2="160" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="184" x2="204" y2="184" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="171" y1="52" x2="171" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="195" x2="204" y2="195" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="182" y1="52" x2="182" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="206" x2="204" y2="206" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="193" y1="52" x2="193" y2="228" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="28" y1="217" x2="204" y2="217" stroke="#e3e6ea" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="116" y1="52" x2="116" y2="228" stroke="#e3e6ea" stroke-width="2.6"/>
+  <line x1="28" y1="140" x2="204" y2="140" stroke="#e3e6ea" stroke-width="2.6"/>
+  <rect x="28" y="52" width="176" height="176" fill="none" stroke="#e3e6ea" stroke-width="2.6"/>
+  <text x="116.0" y="36.0" font-size="19" fill="#e3e6ea" text-anchor="middle" font-weight="600">Y</text>
+  <text x="116.0" y="256.0" font-size="15" fill="#e3e6ea" text-anchor="middle" font-weight="400">4 Blöcke, ein Wert</text>
+  <text x="116.0" y="277.0" font-size="15" fill="#e3e6ea" text-anchor="middle" font-weight="400">für jedes Pixel</text>
+  <rect x="258" y="52" width="176" height="176" fill="#6ea2f2" fill-opacity="0.10"/>
+  <line x1="280" y1="52" x2="280" y2="228" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="258" y1="74" x2="434" y2="74" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="302" y1="52" x2="302" y2="228" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="258" y1="96" x2="434" y2="96" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="324" y1="52" x2="324" y2="228" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="258" y1="118" x2="434" y2="118" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="346" y1="52" x2="346" y2="228" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="258" y1="140" x2="434" y2="140" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="368" y1="52" x2="368" y2="228" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="258" y1="162" x2="434" y2="162" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="390" y1="52" x2="390" y2="228" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="258" y1="184" x2="434" y2="184" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="412" y1="52" x2="412" y2="228" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="258" y1="206" x2="434" y2="206" stroke="#6ea2f2" stroke-opacity="0.45" stroke-width="0.8"/>
+  <rect x="258" y="52" width="176" height="176" fill="none" stroke="#6ea2f2" stroke-width="2.6"/>
+  <text x="346.0" y="36.0" font-size="19" fill="#6ea2f2" text-anchor="middle" font-weight="600">Cb</text>
+  <text x="346.0" y="256.0" font-size="15" fill="#e3e6ea" text-anchor="middle" font-weight="400">1 Block, ein Wert</text>
+  <text x="346.0" y="277.0" font-size="15" fill="#e3e6ea" text-anchor="middle" font-weight="400">für 2 × 2 Pixel</text>
+  <rect x="488" y="52" width="176" height="176" fill="#f87171" fill-opacity="0.10"/>
+  <line x1="510" y1="52" x2="510" y2="228" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="488" y1="74" x2="664" y2="74" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="532" y1="52" x2="532" y2="228" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="488" y1="96" x2="664" y2="96" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="554" y1="52" x2="554" y2="228" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="488" y1="118" x2="664" y2="118" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="576" y1="52" x2="576" y2="228" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="488" y1="140" x2="664" y2="140" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="598" y1="52" x2="598" y2="228" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="488" y1="162" x2="664" y2="162" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="620" y1="52" x2="620" y2="228" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="488" y1="184" x2="664" y2="184" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="642" y1="52" x2="642" y2="228" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <line x1="488" y1="206" x2="664" y2="206" stroke="#f87171" stroke-opacity="0.45" stroke-width="0.8"/>
+  <rect x="488" y="52" width="176" height="176" fill="none" stroke="#f87171" stroke-width="2.6"/>
+  <text x="576.0" y="36.0" font-size="19" fill="#f87171" text-anchor="middle" font-weight="600">Cr</text>
+  <text x="576.0" y="256.0" font-size="15" fill="#e3e6ea" text-anchor="middle" font-weight="400">1 Block, ein Wert</text>
+  <text x="576.0" y="277.0" font-size="15" fill="#e3e6ea" text-anchor="middle" font-weight="400">für 2 × 2 Pixel</text>
+</svg>
