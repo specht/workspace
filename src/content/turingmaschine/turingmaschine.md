@@ -457,6 +457,12 @@ def paradox():
 _task(halteproblem)
 
 <!-- after: halteproblem -->
+<table class='table'>
+<tr><th><code>halts(paradox)</code> sagt</th><th>dann tut <code>paradox</code></th><th>stimmt die Antwort?</th></tr>
+<tr><td><code>true</code>: es hält an</td><td>läuft ohne Ende</td><td>nein</td></tr>
+<tr><td><code>false</code>: es hält nie an</td><td>hält sofort an</td><td>nein</td></tr>
+</table>
+
 Was auch immer `halts` über `paradox` sagt, `paradox` macht es falsch. Also kann es `halts` nicht geben, egal wie klug man es programmiert. Das ist das **Halteproblem**, und es war Turings Antwort auf eine Frage seiner Zeit: Es gibt Fragen, die genau gestellt sind und eine Antwort Ja oder Nein haben, die aber kein Verfahren für jede Eingabe beantworten kann. Werkzeuge, die vor Endlosschleifen warnen, gibt es trotzdem; sie finden manche, aber nie alle.
 <!-- /after -->
 
