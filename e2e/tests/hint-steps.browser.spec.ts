@@ -49,3 +49,31 @@ test('the next tip waits with a ring that empties', async ({ page, e2eEmail }, t
   await steps.nth(2).locator('summary').click();
   await expect(wait).toHaveCount(0);
 });
+
+// A task solved: its tips go back to the first, and the browser forgets what
+// was opened. The status is set by hand here, as the check sets it.
+test('the tips go back to the first once the task is solved', async ({ page, e2eEmail }, testInfo) => {
+  await page.clock.install();
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/formatting-marks');
+  await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('hint-steps:')).forEach((k) => localStorage.removeItem(k)));
+  const states = page.waitForResponse((r) => r.url().includes('/api/task/states'));
+  await page.reload();
+  await states;
+  const box = page.locator('#aufgabe-einladung .hint-steps');
+  const steps = box.locator('details.hint-step');
+  const saved = () => page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('hint-steps:') && k.includes('einladung')).length);
+
+  await steps.nth(0).locator('summary').click();
+  await expect(box.locator('.hint-step-wait')).toBeVisible();
+  await page.clock.fastForward(61_000);
+  await expect(steps.nth(1)).toBeVisible();
+  expect(await saved()).toBe(1);
+
+  await page.locator('#aufgabe-einladung').evaluate((card) => { card.dataset.status = 'correct'; });
+  await expect(steps.nth(1)).toBeHidden();
+  await expect(box.locator('.hint-step-wait')).toHaveCount(0);
+  await expect(steps.nth(0)).toBeVisible();
+  expect(await steps.nth(0).evaluate((d) => (d as HTMLDetailsElement).open)).toBe(false);
+  expect(await saved()).toBe(0);
+});

@@ -196,6 +196,9 @@ haben. Entschieden ist:
   getrennt: An einem Schulrechner, an dem nacheinander mehrere arbeiten,
   findet niemand die Tipps der Person davor schon aufgeklappt. Lernende
   sollen Hilfe nehmen, ohne sich zu fragen, wie das aussieht.
+- **Gelöst: zurück zum ersten Tipp.** Ist eine Aufgabe gelöst (oder
+  abgegeben), stehen ihre Tipps wieder wie am Anfang da, nur »Tipp«, und der
+  Browser vergisst, was aufgeklappt war (der Maintainer, November 2026).
 - **Auch Fallen haben Tipps in Stufen.** In einem Dokument voller Fallen
   (`traps: true`, docs/aufgaben.md) zeigt die Prüfung nicht, wo sie stecken;
   jede versteckte Falle hat ihre eigenen Tipps, vom Ort bis zur Lösung, mit

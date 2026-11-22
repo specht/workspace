@@ -14,6 +14,9 @@
 // (data-hint-owner on body, a hash): on a shared school computer the next
 // person finds no tips of the one before already open.
 //
+// The tips of a task card go back to the first once the task is solved
+// (status correct or sent), and what was opened is forgotten.
+//
 // The tips of a »Jetzt bist du dran« box are followed by the page's code
 // (details.solution, SolutionBlocks). It is the last step and waits like a
 // tip. Has the box a check of the student's own code (data-check='task-id'),
@@ -145,8 +148,27 @@
             cards.forEach((c) => observer.observe(c, { attributes: true, attributeFilter: ['data-status'] }));
         }
 
+        // A task solved needs no more tips: they go back to the first, and
+        // the browser forgets what was opened (the maintainer, November
+        // 2026). The card's status comes after the page (/api/task/states),
+        // and again after each check.
+        function resetIfSolved() {
+            if (!['correct', 'sent'].includes(card.dataset.status)) return;
+            if (state.opened === 0) return;
+            state.opened = 0;
+            state.at = 0;
+            try { window.localStorage.removeItem(key); } catch (e) { /* no storage here */ }
+            // closing a step changes nothing in state (the toggle listener)
+            steps.forEach((step) => { step.open = false; step.classList.remove('hint-step-new'); });
+            render();
+        }
+        if (card) {
+            new MutationObserver(resetIfSolved).observe(card, { attributes: true, attributeFilter: ['data-status'] });
+        }
+
         render();
         if (cards.length > 0) unlockIfSolved();
+        if (card) resetIfSolved();
     }
 
     function start() {
