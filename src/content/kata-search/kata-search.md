@@ -86,6 +86,10 @@ Zwei `int` teilt `/` ganzzahlig und lässt den Rest weg: Die Mitte zwischen
 den Indizes 0 und 5 ist 2.
 <!-- /language -->
 
+So sucht die binäre Suche die 5 in derselben Liste. Blau ist der Teil zwischen `low` und `high`, in dem die 5 noch stehen kann, orange die Mitte, die sie sich ansieht:
+
+<img class='drawing' style='width: 34em' src='halbieren.svg' alt='Die Liste 2, 5, 8, 12, 16, 23 mit den Indizes 0 bis 5, dreimal untereinander. Zuerst reicht der blaue Teil von low bei Index 0 bis high bei Index 5, die Mitte ist 8: 8 ist größer als 5, links weiter. Dann reicht er von Index 0 bis 1, die Mitte ist 2: 2 ist kleiner als 5, rechts weiter. Zuletzt stehen low und high beide bei Index 1, die Mitte ist 5: gefunden, Index 1. Was nicht mehr in Frage kommt, ist grau.'>
+
 Eine Suche, die etwas findet, gibt seinen Index zurück; findet sie nichts, sagt sie das mit
 <!-- language: ruby -->
 `nil`.
