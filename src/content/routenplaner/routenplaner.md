@@ -362,7 +362,18 @@ _task(abstand)
 
 Ein Routenplaner sucht nicht in Wegen, sondern in einem **Graphen**: Punkte, die **Knoten**, und Verbindungen zwischen ihnen, die **Kanten**. Jede Kante hat eine Länge in Metern. Aus jedem Weg werden so viele Kanten, wie er Abschnitte hat: zwischen dem ersten und dem zweiten Punkt, dem zweiten und dem dritten und so weiter. Ein Fußweg, der zwei Straßen verbindet, wird zu Kanten, die über die gemeinsamen Punkte an beide anschließen.
 
-So wird aus den drei Wegen in `data/test.tsv` ein Graph mit fünf Knoten. Der Ahornweg hat drei Punkte und darum zwei Abschnitte, von 1 nach 2 und von 2 nach 3; der Fußweg schließt bei 2 an. Jeder Abschnitt wird zu einer Kante in beide Richtungen: 2 ist ein Nachbar von 1, und 1 ist ein Nachbar von 2.
+In `data/test.tsv` stehen drei Wege:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Art</th><th>Einbahnstraße</th><th>Name</th><th>Punkte: ID, Länge, Breite</th></tr>
+<tr><td><code>residential</code></td><td></td><td>Ahornweg</td><td><code>1 13.300000,52.450000</code><br><code>2 13.301000,52.450000</code><br><code>3 13.302000,52.450000</code></td></tr>
+<tr><td><code>footway</code></td><td></td><td></td><td><code>2 13.301000,52.450000</code><br><code>4 13.301000,52.451000</code></td></tr>
+<tr><td><code>residential</code></td><td><code>yes</code></td><td>Birkenweg</td><td><code>3 13.302000,52.450000</code><br><code>5 13.302000,52.451000</code><br><code>4 13.301000,52.451000</code></td></tr>
+</table>
+</div>
+
+So wird aus ihnen ein Graph mit fünf Knoten. Der Ahornweg hat drei Punkte und darum zwei Abschnitte, von 1 nach 2 und von 2 nach 3; der Fußweg schließt bei 2 an. Jeder Abschnitt wird zu einer Kante in beide Richtungen: 2 ist ein Nachbar von 1, und 1 ist ein Nachbar von 2. Die Einbahnstraße zählt erst später.
 
 <img class='drawing' style='width: 36em' src='graph.svg' alt='Links drei Wege wie auf einer Karte: der Ahornweg von 1 über 2 nach 3, der Fußweg gestrichelt von 2 nach 4 und der Birkenweg von 3 über 5 nach 4. Rechts der Graph daraus: die fünf Punkte als Kreise, verbunden durch Kanten mit Pfeilen in beide Richtungen, die waagerechten 67,8 m lang, die senkrechten 111,2 m.'>
 

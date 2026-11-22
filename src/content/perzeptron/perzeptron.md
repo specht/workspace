@@ -241,6 +241,20 @@ Kurz: Der Fehler ist die richtige Antwort minus die Vorhersage, also 1, −1 ode
 
 $$w\_i \leftarrow w\_i + (t - y) \cdot x\_i \qquad b \leftarrow b + (t - y)$$
 
+So sehen die ersten drei Pinguine aus, mit den Gewichten 0 und dem Bias 0 am Anfang. Die Merkmale sind Länge und Höhe des Schnabels in Millimetern, \\(t\\) die richtige Antwort und \\(y\\) die Vorhersage:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Pinguin</th><th>Merkmale</th><th>\(t\)</th><th>Summe</th><th>\(y\)</th><th>\(t - y\)</th><th>Gewichte danach</th><th>Bias danach</th></tr>
+<tr><td>am Anfang</td><td></td><td></td><td></td><td></td><td></td><td>0, 0</td><td>0</td></tr>
+<tr><td>Eselspinguin</td><td>50, 15</td><td>1</td><td>0 · 50 + 0 · 15 + 0 = 0</td><td>0</td><td>1</td><td>50, 15</td><td>1</td></tr>
+<tr><td>Adéliepinguin</td><td>39, 19</td><td>0</td><td>50 · 39 + 15 · 19 + 1 = 2236</td><td>1</td><td>−1</td><td>11, −4</td><td>0</td></tr>
+<tr><td>Eselspinguin</td><td>47, 14</td><td>1</td><td>11 · 47 + (−4) · 14 + 0 = 461</td><td>1</td><td>0</td><td>11, −4</td><td>0</td></tr>
+</table>
+</div>
+
+Beim ersten liegt es falsch und addiert die Merkmale, beim zweiten zieht es sie wieder ab, beim dritten liegt es richtig und ändert nichts.
+
 Ein Durchgang durch alle Pinguine heißt **Epoche**. Nach einer Epoche fängt das
 Neuron wieder vorne an, bis es in einer ganzen Epoche keinen Fehler mehr macht.
 
