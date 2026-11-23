@@ -80,23 +80,32 @@ def ways(left, car):
         for x, y in xy:
             add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.5" fill="{color}"/>')
         if car and name == 'Birkenweg':
-            # a chevron on each part: only in the direction of its points
+            # an arrowhead on each part, the same as the graph's: only in the
+            # direction of its points
             for a, b in zip(xy, xy[1:]):
                 mx, my = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
                 ux, uy = unit(a, b)
-                add(f'<path d="M{mx - ux * 9 - uy * 7:.1f},{my - uy * 9 + ux * 7:.1f} L{mx + ux * 5:.1f},{my + uy * 5:.1f} '
-                    f'L{mx - ux * 9 + uy * 7:.1f},{my - uy * 9 - ux * 7:.1f}" fill="none" stroke="{INK}" stroke-width="2.2" '
-                    f'stroke-linecap="round" stroke-linejoin="round"/>')
+                tip, back, half = 7, 7, 6
+                add(f'<path d="M{mx + ux * tip:.1f},{my + uy * tip:.1f} L{mx - ux * back - uy * half:.1f},{my - uy * back + ux * half:.1f} '
+                    f'L{mx - ux * back + uy * half:.1f},{my - uy * back - ux * half:.1f} z" fill="{INK}"/>')
+    # each point: a dashed ring around its dots, one per way through it, and
+    # its number at the ring, so that the number belongs to all of them
     for p in POINTS:
-        x, y = place(left, p)
-        text(p, x + (-18 if p in '14' else 18), y + (28 if y > 150 else -16), INK, 16, 'middle')
+        dots = [(x + dx, y + dy) for name, points in WAYS if p in points
+                for (dx, dy) in [WAY_LOOK[name][1]] for (x, y) in [place(left, p)]]
+        x = sum(d[0] for d in dots) / len(dots)
+        y = sum(d[1] for d in dots) / len(dots)
+        r = max(m.dist((x, y), d) for d in dots) + 9
+        add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r:.1f}" fill="none" stroke="{GREY}" stroke-width="1.3" stroke-dasharray="3 3"/>')
+        text(p, x, y + (r + 17 if y > 150 else -r - 7), INK, 16, 'middle')
     x1, y1 = place(left, '1')
     x2, y2 = place(left, '2')
     x4, y4 = place(left, '4')
     x5, y5 = place(left, '5')
-    text('Ahornweg', (x1 + x2) / 2, y1 + 34, WAY_LOOK['Ahornweg'][0], 17, 'middle')
+    # the names where no point number is: above the Ahornweg, inside the square
+    text('Ahornweg', (x1 + x2) / 2 - 16, y1 - 6, WAY_LOOK['Ahornweg'][0], 17, 'middle')
     text('Fußweg', x2 - 18, (y2 + y4) / 2 + 6, WAY_LOOK['Fußweg'][0], 17, 'end')
-    text('Birkenweg', (x4 + x5) / 2, y5 - 26, WAY_LOOK['Birkenweg'][0], 17, 'middle')
+    text('Birkenweg', (x4 + x5) / 2 + 6, y5 + 20, WAY_LOOK['Birkenweg'][0], 17, 'middle')
 
 
 def graph(left, car):
