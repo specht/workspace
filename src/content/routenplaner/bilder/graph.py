@@ -1,5 +1,7 @@
 """From ways to a graph (»Routenplaner«): the three ways of data/test.tsv on
-the left, a graph made of them on the right.
+the left, each in its colour and a little apart (the maintainer: so that
+one sees the graph is made of separate lines), a graph made of them on the
+right.
 
 - graph.svg (»Vom Weg zum Graphen«): build_graph's, every edge in both
   directions with its length in metres;
@@ -58,15 +60,25 @@ def unit(a, b):
     return (xb - xa) / d, (yb - ya) / d
 
 
+# each way in its own colour, moved a few pixels off the others, so that
+# a shared point (2, 3, 4) shows as one dot of each way that ends or passes
+# there: the graph joins them, the file does not
+WAY_LOOK = {'Ahornweg': ('#2b5fb4', (0, 10)), 'Fußweg': ('#16a34a', (-11, -4)), 'Birkenweg': ('#7c3aed', (10, -9))}
+
+
 def ways(left, car):
-    """the ways, as on a map; for the car the Birkenweg's direction"""
+    """the ways, as on a map, each in its colour and slightly apart; for
+    the car the Birkenweg's direction"""
     text('drei Wege', left + 135, 34, INK, 18, 'middle', 600)
     for name, points in WAYS:
-        xy = [place(left, p) for p in points]
+        color, (dx, dy) = WAY_LOOK[name]
+        xy = [(x + dx, y + dy) for x, y in (place(left, p) for p in points)]
         # the Fußweg dashed, the streets solid
         style = ' stroke-dasharray="8 6" stroke-linecap="butt"' if name == 'Fußweg' else ' stroke-linecap="round"'
-        add(f'<path d="M{" L".join(f"{x:.1f},{y:.1f}" for x, y in xy)}" fill="none" stroke="{GREY}" '
-            f'stroke-width="7" stroke-linejoin="round" opacity="0.45"{style}/>')
+        add(f'<path d="M{" L".join(f"{x:.1f},{y:.1f}" for x, y in xy)}" fill="none" stroke="{color}" '
+            f'stroke-width="6" stroke-linejoin="round" opacity="0.55"{style}/>')
+        for x, y in xy:
+            add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.5" fill="{color}"/>')
         if car and name == 'Birkenweg':
             # a chevron on each part: only in the direction of its points
             for a, b in zip(xy, xy[1:]):
@@ -77,15 +89,14 @@ def ways(left, car):
                     f'stroke-linecap="round" stroke-linejoin="round"/>')
     for p in POINTS:
         x, y = place(left, p)
-        add(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="{INK}"/>')
-        text(p, x + (-12 if p in '14' else 12), y + (24 if y > 150 else -12), INK, 16, 'middle')
+        text(p, x + (-18 if p in '14' else 18), y + (28 if y > 150 else -16), INK, 16, 'middle')
     x1, y1 = place(left, '1')
     x2, y2 = place(left, '2')
     x4, y4 = place(left, '4')
     x5, y5 = place(left, '5')
-    text('Ahornweg', (x1 + x2) / 2, y1 + 28, GREY, 17, 'middle')
-    text('Fußweg', x2 - 10, (y2 + y4) / 2 + 6, GREY, 17, 'end')
-    text('Birkenweg', (x4 + x5) / 2, y5 - 22, GREY, 17, 'middle')
+    text('Ahornweg', (x1 + x2) / 2, y1 + 34, WAY_LOOK['Ahornweg'][0], 17, 'middle')
+    text('Fußweg', x2 - 18, (y2 + y4) / 2 + 6, WAY_LOOK['Fußweg'][0], 17, 'end')
+    text('Birkenweg', (x4 + x5) / 2, y5 - 26, WAY_LOOK['Birkenweg'][0], 17, 'middle')
 
 
 def graph(left, car):
