@@ -49,6 +49,34 @@ def build_graph(ways)
     { nodes: nodes, edges: edges }
 end
 
+# Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
+# zum Ziel. Gibt den Weg zurück, [node, …, goal], oder nil. Geht auf einer
+# Karte im Kreis, bis der Stack voll ist.
+def walk(graph, node, goal)
+    return [node] if node == goal
+
+    graph[:edges][node].each do |neighbour, _metres|
+        rest = walk(graph, neighbour, goal)
+        return [node] + rest if rest
+    end
+    nil
+end
+
+# Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die Knoten,
+# die die Suche schon gefunden hat
+def depth_first(graph, node, goal, found = Set.new)
+    return nil if found.include?(node)
+
+    found << node
+    return [node] if node == goal
+
+    graph[:edges][node].each do |neighbour, _metres|
+        rest = depth_first(graph, neighbour, goal, found)
+        return [node] + rest if rest
+    end
+    nil
+end
+
 # Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
 # gefundenen Knoten, von welchem aus er gefunden wurde (der Start von nil).
 # nil, wenn das Ziel nie gefunden wurde.

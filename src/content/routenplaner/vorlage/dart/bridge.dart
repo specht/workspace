@@ -33,7 +33,12 @@ Map<String, Object?> answer(Map<String, dynamic> request) {
     case 'search':
       final graph = graphs[request['mode']];
       if (graph == null) throw StateError('Kein Graph für ${request['mode']}');
+      // walk und depthFirst geben nur den Weg zurück
+      Search Function(Graph, String, String) pathOnly(List<String>? Function(Graph, String, String) f) =>
+          (g, a, b) => Search(f(g, a, b), []);
       final search = switch (request['fn']) {
+        'walk' => pathOnly(walk),
+        'depth_first' => pathOnly(depthFirst),
         'breadth_first' => breadthFirst,
         'dijkstra' => dijkstra,
         'a_star' => aStar,

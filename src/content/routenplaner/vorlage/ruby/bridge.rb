@@ -33,6 +33,8 @@ while (line = socket.gets)
             began = clock.call
             result = send(request['fn'], graph, request['start'], request['goal'])
             took = clock.call - began
+            # walk und depth_first geben nur den Weg zurück
+            result = { path: result, visited: [] } unless result.is_a?(Hash)
             { path: result[:path], visited: result[:visited] || [], took: took }
         when 'call'
             began = clock.call

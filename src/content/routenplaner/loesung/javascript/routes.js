@@ -59,6 +59,31 @@ function buildGraph(ways) {
     return { nodes, edges };
 }
 
+// Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
+// zum Ziel. Gibt den Weg zurück, [node, …, goal], oder null. Geht auf einer
+// Karte im Kreis, bis der Stack voll ist.
+function walk(graph, node, goal) {
+    if (node === goal) return [node];
+    for (const [neighbour] of graph.edges[node] || []) {
+        const rest = walk(graph, neighbour, goal);
+        if (rest !== null) return [node, ...rest];
+    }
+    return null;
+}
+
+// Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die Knoten,
+// die die Suche schon gefunden hat
+function depthFirst(graph, node, goal, found = new Set()) {
+    if (found.has(node)) return null;
+    found.add(node);
+    if (node === goal) return [node];
+    for (const [neighbour] of graph.edges[node] || []) {
+        const rest = depthFirst(graph, neighbour, goal, found);
+        if (rest !== null) return [node, ...rest];
+    }
+    return null;
+}
+
 // Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
 // gefundenen Knoten, von welchem aus er gefunden wurde (der Start von null).
 // Gibt die IDs vom Start bis zum Ziel zurück, null, wenn das Ziel nicht dabei ist.
@@ -318,6 +343,6 @@ function improveTour(costs, order) {
 }
 
 module.exports = {
-    readWays, distance, buildGraph, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
+    readWays, distance, buildGraph, walk, depthFirst, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
     buildTravelGraph, tourLength, bestTour, nearestTour, improveTour,
 };

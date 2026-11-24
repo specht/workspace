@@ -52,6 +52,36 @@ def build_graph(ways):
     return {'nodes': nodes, 'edges': edges}
 
 
+# Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
+# zum Ziel. Gibt den Weg zurück, [node, …, goal], oder None. Geht auf einer
+# Karte im Kreis, bis der Stack voll ist.
+def walk(graph, node, goal):
+    if node == goal:
+        return [node]
+    for neighbour, _metres in graph['edges'].get(node, []):
+        rest = walk(graph, neighbour, goal)
+        if rest is not None:
+            return [node] + rest
+    return None
+
+
+# Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die Knoten,
+# die die Suche schon gefunden hat
+def depth_first(graph, node, goal, found=None):
+    if found is None:
+        found = set()
+    if node in found:
+        return None
+    found.add(node)
+    if node == goal:
+        return [node]
+    for neighbour, _metres in graph['edges'].get(node, []):
+        rest = depth_first(graph, neighbour, goal, found)
+        if rest is not None:
+            return [node] + rest
+    return None
+
+
 # Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
 # gefundenen Knoten, von welchem aus er gefunden wurde (der Start von None).
 # None, wenn das Ziel nie gefunden wurde.

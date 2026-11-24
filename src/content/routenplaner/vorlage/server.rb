@@ -362,7 +362,8 @@ get '/graph.json' do
 end
 
 # Die Suchen in routes.rb, wie die Seite sie nennt
-SEARCHES = { 'bfs' => [:breadth_first, 'Breitensuche'], 'dijkstra' => [:dijkstra, 'Dijkstra'],
+SEARCHES = { 'walk' => [:walk, 'Einfach losgehen'], 'dfs' => [:depth_first, 'Tiefensuche'],
+             'bfs' => [:breadth_first, 'Breitensuche'], 'dijkstra' => [:dijkstra, 'Dijkstra'],
              'astar' => [:a_star, 'A*'] }.freeze
 
 # Was ein Weg aus IDs in einem Graphen kostet: die Kanten zwischen je zwei
@@ -449,9 +450,10 @@ get '/route' do
     metres = path && metres_of(graph, path)
     cost = path && cost_of(graph, path)
     time = mode == 'length' ? '' : ", #{(cost / 60).round} min #{MODES[mode]}" if path
-    puts "#{name}: #{path ? "#{path.size} Knoten im Weg, #{metres.round} m#{time}" : 'kein Weg'}, " \
+    puts "#{name}: #{path ? "#{path.size} Knoten im Weg, #{metres.round} m#{time}" : (visited.last == goal ? 'am Ziel, ohne Weg' : 'kein Weg')}, " \
          "#{visited.size} besucht, #{format('%.3f', took)} s"
-    JSON.generate(path: path&.map { |id| graph[:nodes][id] }, metres: metres, mode: mode,
+    # am Ziel, auch wenn die Suche den Weg noch nicht zurückgibt
+    JSON.generate(path: path&.map { |id| graph[:nodes][id] }, reached: visited.last == goal, metres: metres, mode: mode,
                   seconds: mode == 'length' ? nil : cost, took: took,
                   visited: visited.flat_map { |id| graph[:nodes][id].map { |x| x.round(6) } },
                   edges: explored(graph, visited))

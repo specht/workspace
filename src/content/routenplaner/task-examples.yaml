@@ -113,14 +113,97 @@ examples:
         - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
         - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
-  weg:
+  losgehen:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
     fail:
       - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      # der Weg ohne den Knoten, auf dem walk steht
+      - files:
+          routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/ruby/routes.rb:
+            text: |
+              require_relative 'solution'
+              def walk(graph, node, goal)
+                  return [node] if node == goal
+                  graph[:edges][node].each do |neighbour, _metres|
+                      rest = walk(graph, neighbour, goal)
+                      return rest if rest
+                  end
+                  nil
+              end
+        say: c kommt vorne davor
+    python:
+      pass:
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+      fail:
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+  tiefensuche:
+    pass:
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    fail:
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      # found in jedem Aufruf neu: wieder im Kreis, bis der Stack voll ist
+      - files:
+          routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/routes.rb:
+            text: |
+              require_relative 'solution'
+              def depth_first(graph, node, goal, found = Set.new)
+                  return nil if found.include?(node)
+                  found << node
+                  return [node] if node == goal
+                  graph[:edges][node].each do |neighbour, _metres|
+                      rest = depth_first(graph, neighbour, goal)
+                      return [node] + rest if rest
+                  end
+                  nil
+              end
+    python:
+      pass:
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    dart:
+      pass:
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    javascript:
+      pass:
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    java:
+      pass:
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      fail:
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+  weg:
+    pass:
+      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+    fail:
+      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       # vorwärts statt rückwärts: der Weg vom Ziel zum Start
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -135,11 +218,22 @@ examples:
                   path
               end
         say: unshift
+      # path_to stimmt, aber breadth_first gibt den Weg noch nicht zurück
+      - files:
+          routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/routes.rb:
+            text: |
+              require_relative 'solution'
+              def breadth_first(graph, start, goal)
+                  { path: nil, visited: [start] }
+              end
+        say: path_to` stimmt
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/python/routes.py:
@@ -157,13 +251,14 @@ examples:
           say: insert
     dart:
       pass:
-        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
+        - files: { routenplaner-starter/dart/routes.dart: vorlage/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         # vorwärts statt rückwärts: der Weg vom Ziel zum Start
         - files:
             routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
             routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/dart/routes.dart:
               text: |
                 import 'solution.dart' hide pathTo;
@@ -179,11 +274,22 @@ examples:
                   return path;
                 }
           say: insert(0
+        # pathTo stimmt, aber breadthFirst gibt den Weg noch nicht zurück
+        - files:
+            routenplaner-starter/dart/solution.dart: loesung/dart/routes.dart
+            routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart
+            routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/dart/routes.dart:
+              text: |
+                import 'solution.dart' hide breadthFirst;
+                export 'solution.dart' hide breadthFirst;
+                Search breadthFirst(Graph graph, String start, String goal) => Search(null, [start]);
+          say: pathTo` stimmt
     javascript:
       pass:
-        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js }
+        - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js }
+        - files: { routenplaner-starter/javascript/routes.js: vorlage/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         - files:
             routenplaner-starter/javascript/routes.js:
               text: |
@@ -200,11 +306,11 @@ examples:
           say: unshift
     java:
       pass:
-        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         # die Lösung, pathTo vorwärts statt rückwärts
-        - files: { routenplaner-starter/java/Routes.java: fehler/java/vorwaerts.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
+        - files: { routenplaner-starter/java/Routes.java: fehler/java/vorwaerts.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
           say: addFirst
   breitensuche:
     pass:
@@ -221,7 +327,7 @@ examples:
               def breadth_first(graph, start, goal)
                   dijkstra(graph, start, goal)
               end
-        say: Eichenweg
+        say: Ring für Ring
     python:
       pass:
         - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -235,7 +341,7 @@ examples:
                 from solution import *
                 def breadth_first(graph, start, goal):
                     return dijkstra(graph, start, goal)
-          say: Eichenweg
+          say: Ring für Ring
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -251,7 +357,7 @@ examples:
                 import 'solution.dart' hide breadthFirst;
                 export 'solution.dart' hide breadthFirst;
                 Search breadthFirst(Graph graph, String start, String goal) => dijkstra(graph, start, goal);
-          say: Eichenweg
+          say: Ring für Ring
     javascript:
       pass:
         - files: { routenplaner-starter/javascript/routes.js: loesung/javascript/routes.js, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -266,7 +372,7 @@ examples:
                 function breadthFirst(graph, start, goal) {
                     return dijkstra(graph, start, goal);
                 }
-          say: Eichenweg
+          say: Ring für Ring
     java:
       pass:
         - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -274,7 +380,7 @@ examples:
         - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         # die Lösung, breadthFirst ruft dijkstra auf
         - files: { routenplaner-starter/java/Routes.java: fehler/java/breitensuche-mit-metern.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
-          say: Eichenweg
+          say: Ring für Ring
   dijkstra:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }

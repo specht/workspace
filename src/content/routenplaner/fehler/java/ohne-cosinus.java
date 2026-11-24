@@ -52,6 +52,41 @@ public class Routes {
         return graph;
     }
 
+    // Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter,
+    // bis zum Ziel. Gibt den Weg zurück, [node, …, goal], oder null. Geht auf
+    // einer Karte im Kreis, bis der Stack voll ist.
+    static List<String> walk(Graph graph, String node, String goal) {
+        if (node.equals(goal)) return new ArrayList<>(List.of(node));
+        for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+            List<String> rest = walk(graph, edge.to(), goal);
+            if (rest != null) {
+                rest.add(0, node);
+                return rest;
+            }
+        }
+        return null;
+    }
+
+    // Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die
+    // Knoten, die die Suche schon gefunden hat
+    static List<String> depthFirst(Graph graph, String start, String goal) {
+        return depthFirst(graph, start, goal, new HashSet<>());
+    }
+
+    static List<String> depthFirst(Graph graph, String node, String goal, Set<String> found) {
+        if (found.contains(node)) return null;
+        found.add(node);
+        if (node.equals(goal)) return new ArrayList<>(List.of(node));
+        for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+            List<String> rest = depthFirst(graph, edge.to(), goal, found);
+            if (rest != null) {
+                rest.add(0, node);
+                return rest;
+            }
+        }
+        return null;
+    }
+
     // Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
     // gefundenen Knoten, von welchem aus er gefunden wurde (der Start von null).
     // Gibt die IDs vom Start bis zum Ziel zurück, null, wenn das Ziel nicht dabei ist.

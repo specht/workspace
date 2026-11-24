@@ -26,6 +26,20 @@ def build_graph(ways):
     raise NotImplementedError('build_graph')
 
 
+# Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
+# zum Ziel. Gibt den Weg zurück, die IDs von node bis zum Ziel, None, wenn
+# es von node aus keinen gibt.
+def walk(graph, node, goal):
+    raise NotImplementedError('walk')
+
+
+# Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
+# die die Suche schon gefunden hat; der erste Aufruf bekommt keine, dann
+# ist found None.
+def depth_first(graph, node, goal, found=None):
+    raise NotImplementedError('depth_first')
+
+
 # Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
 # gefundenen Knoten, von welchem aus er gefunden wurde (der Start von None).
 # Gibt die IDs vom Start bis zum Ziel zurück, None, wenn das Ziel nicht dabei ist.

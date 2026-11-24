@@ -8,7 +8,7 @@ const readline = require('readline');
 const routes = require('./routes.js');
 
 const NAMES = {
-    breadth_first: 'breadthFirst', dijkstra: 'dijkstra', a_star: 'aStar', tour_length: 'tourLength',
+    depth_first: 'depthFirst', breadth_first: 'breadthFirst', dijkstra: 'dijkstra', a_star: 'aStar', tour_length: 'tourLength',
     best_tour: 'bestTour', nearest_tour: 'nearestTour', improve_tour: 'improveTour',
 };
 const ways = {};   // Datei -> Wege
@@ -40,6 +40,8 @@ function answer(request) {
         const began = process.hrtime.bigint();
         const result = search(graph, request.start, request.goal);
         const took = Number(process.hrtime.bigint() - began) / 1e9;
+        // walk und depthFirst geben nur den Weg zurück
+        if (result === null || Array.isArray(result)) return { path: result, visited: [], took };
         return { path: result.path ?? null, visited: result.visited || [], took };
     }
     if (request.op === 'call') {

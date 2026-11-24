@@ -26,6 +26,24 @@ public class Routes {
         throw new UnsupportedOperationException("buildGraph");
     }
 
+    // Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
+    // zum Ziel. Gibt den Weg zurück, die IDs von node bis zum Ziel, null, wenn
+    // es von node aus keinen gibt.
+    static List<String> walk(Graph graph, String node, String goal) {
+        throw new UnsupportedOperationException("walk");
+    }
+
+    // Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
+    // die die Suche schon gefunden hat; der erste Aufruf (mit drei
+    // Parametern) gibt ihr eine leere Menge.
+    static List<String> depthFirst(Graph graph, String start, String goal) {
+        return depthFirst(graph, start, goal, new HashSet<>());
+    }
+
+    static List<String> depthFirst(Graph graph, String node, String goal, Set<String> found) {
+        throw new UnsupportedOperationException("depthFirst");
+    }
+
     // Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
     // gefundenen Knoten, von welchem aus er gefunden wurde (der Start von null).
     // Gibt die IDs vom Start bis zum Ziel zurück, null, wenn das Ziel nicht dabei ist.

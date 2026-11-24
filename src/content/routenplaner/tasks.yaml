@@ -752,9 +752,777 @@ tasks:
           }
           ```
 
+  - id: losgehen
+    title: Einfach losgehen
+    prompt: Schreib `walk` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/ruby/routes.rb
+      cases:
+        - call: "walk({ nodes: {}, edges: { 'a' => [['b', 1.0], ['c', 1.0]], 'b' => [], 'c' => [['d', 1.0]], 'd' => [] } }, 'a', 'a')"
+          expect: "['a']"
+          say: Ist node schon das Ziel, ist der Weg nur dieser eine Knoten.
+        - call: "walk({ nodes: {}, edges: { 'a' => [['b', 1.0], ['c', 1.0]], 'b' => [], 'c' => [['d', 1.0]], 'd' => [] } }, 'c', 'd')"
+          expect: "['c', 'd']"
+          say: Von c führt eine Kante nach d. Der Aufruf für d gibt `['d']` zurück, und c kommt vorne davor.
+        - call: "walk({ nodes: {}, edges: { 'a' => [['b', 1.0], ['c', 1.0]], 'b' => [], 'c' => [['d', 1.0]], 'd' => [] } }, 'a', 'd')"
+          expect: "['a', 'c', 'd']"
+          say: Von b aus geht es nicht weiter, der Aufruf für b findet keinen Weg. Dann ist der nächste Nachbar dran, c.
+        - call: "walk({ nodes: {}, edges: { 'a' => [['b', 1.0], ['c', 1.0]], 'b' => [], 'c' => [['d', 1.0]], 'd' => [] } }, 'b', 'd')"
+          expect: ~
+          say: b hat keine Nachbarn. Dann gibt es von b aus keinen Weg, `nil`.
+        - call: "walk({ nodes: {}, edges: { 'a' => [['b', 1.0], ['c', 1.0]], 'b' => [], 'c' => [['d', 1.0]], 'd' => [] } }, 'a', 'x')"
+          expect: ~
+          say: Führt von keinem Nachbarn ein Weg zum Ziel, gibt es keinen Weg, `nil`.
+    hint:
+      - |
+        Geh `walk(graph, '1', '5')` auf dem kleinen Graphen der Seite von Hand
+        durch, von unten nach oben: Was gibt `walk(graph, '5', '5')` zurück, was
+        `walk(graph, '3', '5')`, was `walk(graph, '4', '5')`?
+      - |
+        Drei Fälle. Ist `node` das Ziel, ist der Weg `[node]`. Sonst ruft `walk`
+        sich für jeden Nachbarn selbst auf, mit dem Nachbarn als `node`. Gibt ein
+        Aufruf einen Weg zurück, kommt `node` vorne davor (`[node] + rest`), und
+        das ist das Ergebnis. Findet kein Aufruf einen Weg, ist das Ergebnis `nil`.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def walk(graph, node, goal)
+            return [node] if …   # hier: ist node das Ziel?
+
+            graph[:edges][node].each do |neighbour, _metres|
+                rest = walk(…)   # hier: weiter vom Nachbarn aus
+                # hier: hat rest einen Weg, node vorne davor und zurückgeben
+            end
+            nil
+        end
+        ```
+    python:
+      prompt: Schreib `walk` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/python/routes.py
+        cases:
+          - call: "walk({'nodes': {}, 'edges': {'a': [['b', 1.0], ['c', 1.0]], 'b': [], 'c': [['d', 1.0]], 'd': []}}, 'a', 'a')"
+            expect: "['a']"
+            say: Ist node schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: "walk({'nodes': {}, 'edges': {'a': [['b', 1.0], ['c', 1.0]], 'b': [], 'c': [['d', 1.0]], 'd': []}}, 'c', 'd')"
+            expect: "['c', 'd']"
+            say: Von c führt eine Kante nach d. Der Aufruf für d gibt `['d']` zurück, und c kommt vorne davor.
+          - call: "walk({'nodes': {}, 'edges': {'a': [['b', 1.0], ['c', 1.0]], 'b': [], 'c': [['d', 1.0]], 'd': []}}, 'a', 'd')"
+            expect: "['a', 'c', 'd']"
+            say: Von b aus geht es nicht weiter, der Aufruf für b findet keinen Weg. Dann ist der nächste Nachbar dran, c.
+          - call: "walk({'nodes': {}, 'edges': {'a': [['b', 1.0], ['c', 1.0]], 'b': [], 'c': [['d', 1.0]], 'd': []}}, 'b', 'd')"
+            expect: ~
+            say: b hat keine Nachbarn. Dann gibt es von b aus keinen Weg, `None`.
+          - call: "walk({'nodes': {}, 'edges': {'a': [['b', 1.0], ['c', 1.0]], 'b': [], 'c': [['d', 1.0]], 'd': []}}, 'a', 'x')"
+            expect: ~
+            say: Führt von keinem Nachbarn ein Weg zum Ziel, gibt es keinen Weg, `None`.
+      hint:
+        - |
+          Geh `walk(graph, '1', '5')` auf dem kleinen Graphen der Seite von Hand
+          durch, von unten nach oben: Was gibt `walk(graph, '5', '5')` zurück,
+          was `walk(graph, '3', '5')`, was `walk(graph, '4', '5')`?
+        - |
+          Drei Fälle. Ist `node` das Ziel, ist der Weg `[node]`. Sonst ruft `walk`
+          sich für jeden Nachbarn selbst auf, mit dem Nachbarn als `node`. Gibt
+          ein Aufruf einen Weg zurück, kommt `node` vorne davor (`[node] + rest`),
+          und das ist das Ergebnis. Findet kein Aufruf einen Weg, ist das Ergebnis
+          `None`.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def walk(graph, node, goal):
+              if …:   # hier: ist node das Ziel?
+                  return [node]
+              for neighbour, _metres in graph['edges'].get(node, []):
+                  rest = walk(…)   # hier: weiter vom Nachbarn aus
+                  # hier: hat rest einen Weg, node vorne davor und zurückgeben
+              return None
+          ```
+    dart:
+      prompt: Schreib `walk` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: "walk(Graph()..edges.addAll({'a': [Edge('b', 1), Edge('c', 1)], 'b': [], 'c': [Edge('d', 1)], 'd': []}), 'a', 'a')"
+            expect: "['a']"
+            say: Ist node schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: "walk(Graph()..edges.addAll({'a': [Edge('b', 1), Edge('c', 1)], 'b': [], 'c': [Edge('d', 1)], 'd': []}), 'c', 'd')"
+            expect: "['c', 'd']"
+            say: Von c führt eine Kante nach d. Der Aufruf für d gibt `['d']` zurück, und c kommt vorne davor.
+          - call: "walk(Graph()..edges.addAll({'a': [Edge('b', 1), Edge('c', 1)], 'b': [], 'c': [Edge('d', 1)], 'd': []}), 'a', 'd')"
+            expect: "['a', 'c', 'd']"
+            say: Von b aus geht es nicht weiter, der Aufruf für b findet keinen Weg. Dann ist der nächste Nachbar dran, c.
+          - call: "walk(Graph()..edges.addAll({'a': [Edge('b', 1), Edge('c', 1)], 'b': [], 'c': [Edge('d', 1)], 'd': []}), 'b', 'd')"
+            expect: ~
+            say: b hat keine Nachbarn. Dann gibt es von b aus keinen Weg, `null`.
+          - call: "walk(Graph()..edges.addAll({'a': [Edge('b', 1), Edge('c', 1)], 'b': [], 'c': [Edge('d', 1)], 'd': []}), 'a', 'x')"
+            expect: ~
+            say: Führt von keinem Nachbarn ein Weg zum Ziel, gibt es keinen Weg, `null`.
+      hint:
+        - |
+          Geh `walk(graph, '1', '5')` auf dem kleinen Graphen der Seite von Hand
+          durch, von unten nach oben: Was gibt `walk(graph, '5', '5')` zurück,
+          was `walk(graph, '3', '5')`, was `walk(graph, '4', '5')`?
+        - |
+          Drei Fälle. Ist `node` das Ziel, ist der Weg `[node]`. Sonst ruft `walk`
+          sich für jeden Nachbarn selbst auf, mit dem Nachbarn (`edge.to`) als
+          `node`. Gibt ein Aufruf einen Weg zurück, kommt `node` vorne davor
+          (`[node, ...rest]`), und das ist das Ergebnis. Findet kein Aufruf einen Weg,
+          ist das Ergebnis `null`.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          List<String>? walk(Graph graph, String node, String goal) {
+            if (…) return [node]; // hier: ist node das Ziel?
+            for (final edge in graph.edges[node] ?? <Edge>[]) {
+              final rest = walk(…); // hier: weiter vom Nachbarn aus
+              // hier: hat rest einen Weg, node vorne davor und zurückgeben
+            }
+            return null;
+          }
+          ```
+    javascript:
+      prompt: Schreib `walk` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: "walk({ nodes: {}, edges: { a: [['b', 1], ['c', 1]], b: [], c: [['d', 1]], d: [] } }, 'a', 'a')"
+            expect: "['a']"
+            say: Ist node schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: "walk({ nodes: {}, edges: { a: [['b', 1], ['c', 1]], b: [], c: [['d', 1]], d: [] } }, 'c', 'd')"
+            expect: "['c', 'd']"
+            say: Von c führt eine Kante nach d. Der Aufruf für d gibt `['d']` zurück, und c kommt vorne davor.
+          - call: "walk({ nodes: {}, edges: { a: [['b', 1], ['c', 1]], b: [], c: [['d', 1]], d: [] } }, 'a', 'd')"
+            expect: "['a', 'c', 'd']"
+            say: Von b aus geht es nicht weiter, der Aufruf für b findet keinen Weg. Dann ist der nächste Nachbar dran, c.
+          - call: "walk({ nodes: {}, edges: { a: [['b', 1], ['c', 1]], b: [], c: [['d', 1]], d: [] } }, 'b', 'd')"
+            expect: ~
+            say: b hat keine Nachbarn. Dann gibt es von b aus keinen Weg, `null`.
+          - call: "walk({ nodes: {}, edges: { a: [['b', 1], ['c', 1]], b: [], c: [['d', 1]], d: [] } }, 'a', 'x')"
+            expect: ~
+            say: Führt von keinem Nachbarn ein Weg zum Ziel, gibt es keinen Weg, `null`.
+      hint:
+        - |
+          Geh `walk(graph, '1', '5')` auf dem kleinen Graphen der Seite von Hand
+          durch, von unten nach oben: Was gibt `walk(graph, '5', '5')` zurück,
+          was `walk(graph, '3', '5')`, was `walk(graph, '4', '5')`?
+        - |
+          Drei Fälle. Ist `node` das Ziel, ist der Weg `[node]`. Sonst ruft `walk`
+          sich für jeden Nachbarn selbst auf, mit dem Nachbarn als `node`. Gibt
+          ein Aufruf einen Weg zurück, kommt `node` vorne davor
+          (`[node, ...rest]`), und das ist das Ergebnis. Findet kein Aufruf einen Weg,
+          ist das Ergebnis `null`.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function walk(graph, node, goal) {
+              if (…) return [node]; // hier: ist node das Ziel?
+              for (const [neighbour] of graph.edges[node] || []) {
+                  const rest = walk(…); // hier: weiter vom Nachbarn aus
+                  // hier: hat rest einen Weg, node vorne davor und zurückgeben
+              }
+              return null;
+          }
+          ```
+    java:
+      prompt: Schreib `walk` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: 'Graph g = new Graph(); g.edges.put("a", List.of(new Edge("b", 1), new Edge("c", 1))); g.edges.put("b", List.of()); g.edges.put("c", List.of(new Edge("d", 1))); g.edges.put("d", List.of()); Routes.walk(g, "a", "a")'
+            expect: 'List.of("a")'
+            say: Ist node schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: 'Graph g = new Graph(); g.edges.put("a", List.of(new Edge("b", 1), new Edge("c", 1))); g.edges.put("b", List.of()); g.edges.put("c", List.of(new Edge("d", 1))); g.edges.put("d", List.of()); Routes.walk(g, "c", "d")'
+            expect: 'List.of("c", "d")'
+            say: Von c führt eine Kante nach d. Der Aufruf für d gibt einen Weg aus d allein zurück, und c kommt vorne davor.
+          - call: 'Graph g = new Graph(); g.edges.put("a", List.of(new Edge("b", 1), new Edge("c", 1))); g.edges.put("b", List.of()); g.edges.put("c", List.of(new Edge("d", 1))); g.edges.put("d", List.of()); Routes.walk(g, "a", "d")'
+            expect: 'List.of("a", "c", "d")'
+            say: Von b aus geht es nicht weiter, der Aufruf für b findet keinen Weg. Dann ist der nächste Nachbar dran, c.
+          - call: 'Graph g = new Graph(); g.edges.put("a", List.of(new Edge("b", 1), new Edge("c", 1))); g.edges.put("b", List.of()); g.edges.put("c", List.of(new Edge("d", 1))); g.edges.put("d", List.of()); Routes.walk(g, "b", "d")'
+            expect: ~
+            say: b hat keine Nachbarn. Dann gibt es von b aus keinen Weg, `null`.
+          - call: 'Graph g = new Graph(); g.edges.put("a", List.of(new Edge("b", 1), new Edge("c", 1))); g.edges.put("b", List.of()); g.edges.put("c", List.of(new Edge("d", 1))); g.edges.put("d", List.of()); Routes.walk(g, "a", "x")'
+            expect: ~
+            say: Führt von keinem Nachbarn ein Weg zum Ziel, gibt es keinen Weg, `null`.
+      hint:
+        - |
+          Geh `walk(graph, "1", "5")` auf dem kleinen Graphen der Seite von Hand
+          durch, von unten nach oben: Was gibt `walk(graph, "5", "5")` zurück,
+          was `walk(graph, "3", "5")`, was `walk(graph, "4", "5")`?
+        - |
+          Drei Fälle. Ist `node` das Ziel, ist der Weg eine neue Liste nur mit
+          `node`. Sonst ruft `walk` sich für jeden Nachbarn selbst auf, mit dem
+          Nachbarn (`edge.to()`) als `node`. Gibt ein Aufruf einen Weg zurück,
+          kommt `node` vorne davor (`rest.add(0, node)`), und das ist das
+          Ergebnis. Findet kein Aufruf einen Weg, ist das Ergebnis `null`. Die Liste
+          für das Ziel muss sich ändern lassen: `new ArrayList<>(List.of(node))`,
+          nicht `List.of(node)`.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static List<String> walk(Graph graph, String node, String goal) {
+              if (…) return new ArrayList<>(List.of(node)); // hier: ist node das Ziel?
+              for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+                  List<String> rest = walk(…); // hier: weiter vom Nachbarn aus
+                  // hier: hat rest einen Weg, node vorne davor und zurückgeben
+              }
+              return null;
+          }
+          ```
+
+  - id: kreis
+    title: Auf der echten Karte
+    prompt: Die Karte fragt jetzt dein `walk` nach einem Weg durch Steglitz-Zehlendorf, wo jede Straße in beide Richtungen geht. Was passiert?
+    check:
+      type: choice
+      options:
+        - walk geht zwischen zwei Nachbarn hin und her, bis das Programm mit einem Fehler abbricht.
+        - walk findet einen Weg, aber einen Umweg.
+        - walk findet keinen Weg, und die Seite meldet »Kein Weg gefunden«.
+        - walk geht ohne Ende hin und her, und die Seite wartet für immer.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Dafür müsste walk irgendwann am Ziel ankommen. Wohin geht es vom ersten Nachbarn des Starts aus als Erstes?
+      - when: { picked: 2 }
+        say: Keinen Weg meldet walk erst, wenn alle Nachbarn durch sind und keiner einen Weg gefunden hat. Wird ein Aufruf je fertig?
+      - when: { picked: 3 }
+        say: Hin und her geht es wirklich. Aber jeder Aufruf wartet auf den nächsten, und jeder wartende Aufruf braucht Platz auf dem Stack. Der ist nicht unendlich groß.
+    solution: |
+      Jede Straße geht in beide Richtungen: Der Start ist ein Nachbar seines
+      ersten Nachbarn. walk geht vom Start zu ihm, von dort zurück zum Start,
+      wieder zu ihm und so weiter. Kein Aufruf wird fertig, jeder wartet auf den
+      nächsten, und jeder wartende Aufruf liegt auf dem Stack. Nach einigen
+      Tausend Aufrufen ist der voll: Stack Overflow.
+
+  - id: tiefensuche
+    title: Nicht im Kreis
+    prompt: Schreib `depth_first` in `routes.rb`.
+    check:
+      type: ruby
+      file: routenplaner-starter/ruby/routes.rb
+      cases:
+        - call: depth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')
+          expect: "['11']"
+          say: Ist der Start schon das Ziel, ist der Weg nur dieser eine Knoten.
+        - call: depth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')
+          expect: "['11', '12', '13', '14', '15', '16']"
+          say: Von 12 aus ist 11 schon gefunden. Dann geht es nicht zurück, sondern weiter zu 13, die Lindenstraße entlang bis zum Ziel. Gibst du `found` bei jedem Aufruf weiter, damit alle Aufrufe dieselbe Menge sehen?
+        - call: depth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')
+          expect: ~
+          say: Zum Fußweg 31-32 führt nichts hin. Hat die Suche alles gefunden, was sie vom Start aus erreicht, gibt es keinen Weg, `nil`.
+    hint:
+      - |
+        Geh es auf `data/detour.tsv` von 11 nach 16 von Hand durch, mit `found`
+        auf Papier: Der erste Nachbar von 11 ist 12, der erste von 12 ist 11.
+        Was macht der Aufruf für 11, wenn 11 schon in `found` steht? Wie geht es
+        dann weiter?
+      - |
+        Fast alles bleibt wie in `walk`. Neu ist `found`: Steht `node` schon
+        darin, gibt es von hier aus nichts Neues, `nil`. Sonst kommt `node`
+        hinein. Alle Aufrufe brauchen dieselbe Menge: Gib `found` bei jedem
+        Aufruf weiter. Der erste Aufruf bekommt keine, dann gilt der Default,
+        eine leere Menge (`Set.new`).
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def depth_first(graph, node, goal, found = Set.new)
+            # hier: steht node schon in found, nil; sonst kommt node hinein
+            return [node] if node == goal
+
+            graph[:edges][node].each do |neighbour, _metres|
+                rest = depth_first(…)   # hier: mit found
+                return [node] + rest if rest
+            end
+            nil
+        end
+        ```
+    python:
+      prompt: Schreib `depth_first` in `routes.py`.
+      check:
+        type: python
+        file: routenplaner-starter/python/routes.py
+        cases:
+          - call: "depth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')"
+            expect: "['11']"
+            say: Ist der Start schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: "depth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')"
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: Von 12 aus ist 11 schon gefunden. Dann geht es nicht zurück, sondern weiter zu 13, die Lindenstraße entlang bis zum Ziel. Gibst du `found` bei jedem Aufruf weiter, damit alle Aufrufe dieselbe Menge sehen?
+          - call: "depth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')"
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Hat die Suche alles gefunden, was sie vom Start aus erreicht, gibt es keinen Weg, `None`.
+      hint:
+        - |
+          Geh es auf `data/detour.tsv` von 11 nach 16 von Hand durch, mit `found`
+          auf Papier: Der erste Nachbar von 11 ist 12, der erste von 12 ist 11.
+          Was macht der Aufruf für 11, wenn 11 schon in `found` steht? Wie geht
+          es dann weiter?
+        - |
+          Fast alles bleibt wie in `walk`. Neu ist `found`: Steht `node` schon
+          darin, gibt es von hier aus nichts Neues, `None`. Sonst kommt `node`
+          hinein. Alle Aufrufe brauchen dieselbe Menge: Gib `found` bei jedem
+          Aufruf weiter. Der erste Aufruf bekommt keine, dann ist `found` erst
+          `None`, und die Funktion legt eine leere Menge an. Ein Default
+          `found=set()` ginge schief: Python legt ihn nur einmal an, und alle
+          Suchen teilten sich dieselbe Menge.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def depth_first(graph, node, goal, found=None):
+              if found is None:
+                  found = set()
+              # hier: steht node schon in found, None; sonst kommt node hinein
+              if node == goal:
+                  return [node]
+              for neighbour, _metres in graph['edges'].get(node, []):
+                  rest = depth_first(…)   # hier: mit found
+                  if rest is not None:
+                      return [node] + rest
+              return None
+          ```
+    dart:
+      prompt: Schreib `depthFirst` in `routes.dart`.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: depthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
+            expect: "['11']"
+            say: Ist der Start schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: depthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: Von 12 aus ist 11 schon gefunden. Dann geht es nicht zurück, sondern weiter zu 13, die Lindenstraße entlang bis zum Ziel. Gibst du `found` bei jedem Aufruf weiter, damit alle Aufrufe dieselbe Menge sehen?
+          - call: depthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Hat die Suche alles gefunden, was sie vom Start aus erreicht, gibt es keinen Weg, `null`.
+      hint:
+        - |
+          Geh es auf `data/detour.tsv` von 11 nach 16 von Hand durch, mit `found`
+          auf Papier: Der erste Nachbar von 11 ist 12, der erste von 12 ist 11.
+          Was macht der Aufruf für 11, wenn 11 schon in `found` steht? Wie geht
+          es dann weiter?
+        - |
+          Fast alles bleibt wie in `walk`. Neu ist `found`, ein `Set<String>`:
+          Steht `node` schon darin (`contains`), gibt es von hier aus nichts
+          Neues, `null`. Sonst kommt `node` hinein (`add`). Alle Aufrufe brauchen
+          dieselbe Menge: Gib `found` bei jedem Aufruf weiter. Der erste Aufruf
+          bekommt keine; `found` ist darum ein optionaler Parameter in eckigen
+          Klammern, und `found ??= {}` legt eine leere Menge an, wenn er fehlt.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          List<String>? depthFirst(Graph graph, String node, String goal, [Set<String>? found]) {
+            found ??= {};
+            // hier: steht node schon in found, null; sonst kommt node hinein
+            if (node == goal) return [node];
+            for (final edge in graph.edges[node] ?? <Edge>[]) {
+              final rest = depthFirst(…); // hier: mit found
+              if (rest != null) return [node, ...rest];
+            }
+            return null;
+          }
+          ```
+    javascript:
+      prompt: Schreib `depthFirst` in `routes.js`.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: depthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
+            expect: "['11']"
+            say: Ist der Start schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: depthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
+            expect: "['11', '12', '13', '14', '15', '16']"
+            say: Von 12 aus ist 11 schon gefunden. Dann geht es nicht zurück, sondern weiter zu 13, die Lindenstraße entlang bis zum Ziel. Gibst du `found` bei jedem Aufruf weiter, damit alle Aufrufe dieselbe Menge sehen?
+          - call: depthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Hat die Suche alles gefunden, was sie vom Start aus erreicht, gibt es keinen Weg, `null`.
+      hint:
+        - |
+          Geh es auf `data/detour.tsv` von 11 nach 16 von Hand durch, mit `found`
+          auf Papier: Der erste Nachbar von 11 ist 12, der erste von 12 ist 11.
+          Was macht der Aufruf für 11, wenn 11 schon in `found` steht? Wie geht
+          es dann weiter?
+        - |
+          Fast alles bleibt wie in `walk`. Neu ist `found`, ein `Set`: Steht
+          `node` schon darin (`has`), gibt es von hier aus nichts Neues, `null`.
+          Sonst kommt `node` hinein (`add`). Alle Aufrufe brauchen dieselbe
+          Menge: Gib `found` bei jedem Aufruf weiter. Der erste Aufruf bekommt
+          keine, dann gilt der Default, eine leere Menge (`found = new Set()`).
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function depthFirst(graph, node, goal, found = new Set()) {
+              // hier: steht node schon in found, null; sonst kommt node hinein
+              if (node === goal) return [node];
+              for (const [neighbour] of graph.edges[node] || []) {
+                  const rest = depthFirst(…); // hier: mit found
+                  if (rest !== null) return [node, ...rest];
+              }
+              return null;
+          }
+          ```
+    java:
+      prompt: Schreib `depthFirst` in `Routes.java`.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.depthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11")
+            expect: 'List.of("11")'
+            say: Ist der Start schon das Ziel, ist der Weg nur dieser eine Knoten.
+          - call: Routes.depthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")
+            expect: 'List.of("11", "12", "13", "14", "15", "16")'
+            say: Von 12 aus ist 11 schon gefunden. Dann geht es nicht zurück, sondern weiter zu 13, die Lindenstraße entlang bis zum Ziel. Gibst du `found` bei jedem Aufruf weiter, damit alle Aufrufe dieselbe Menge sehen?
+          - call: Routes.depthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31")
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Hat die Suche alles gefunden, was sie vom Start aus erreicht, gibt es keinen Weg, `null`.
+      hint:
+        - |
+          Geh es auf `data/detour.tsv` von 11 nach 16 von Hand durch, mit `found`
+          auf Papier: Der erste Nachbar von 11 ist 12, der erste von 12 ist 11.
+          Was macht der Aufruf für 11, wenn 11 schon in `found` steht? Wie geht
+          es dann weiter?
+        - |
+          Fast alles bleibt wie in `walk`. Neu ist `found`, ein `Set<String>`:
+          Steht `node` schon darin (`contains`), gibt es von hier aus nichts
+          Neues, `null`. Sonst kommt `node` hinein (`add`). Alle Aufrufe brauchen
+          dieselbe Menge: Gib `found` bei jedem Aufruf weiter. Der erste Aufruf
+          bekommt keine; dafür steht in `Routes.java` schon ein `depthFirst` mit
+          drei Parametern, das deins mit einem leeren `HashSet` aufruft.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static List<String> depthFirst(Graph graph, String node, String goal, Set<String> found) {
+              // hier: steht node schon in found, null; sonst kommt node hinein
+              if (node.equals(goal)) return new ArrayList<>(List.of(node));
+              for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+                  List<String> rest = depthFirst(…); // hier: mit found
+                  if (rest != null) {
+                      rest.add(0, node);
+                      return rest;
+                  }
+              }
+              return null;
+          }
+          ```
+
+  - id: umweg
+    title: Ein Weg, aber was für einer
+    prompt: Zum Botanischen Garten, keine zwei Kilometer vom Gymnasium Steglitz, findet die Tiefensuche einen Weg von fast 77 Kilometern. Warum?
+    check:
+      type: choice
+      options:
+        - Sie geht immer zum ersten neuen Nachbarn weiter und kehrt erst um, wenn es nicht mehr weitergeht. Der erste Weg, der so am Ziel ankommt, ist ihr Ergebnis.
+        - Sie zählt Kanten statt Metern, und der kurze Weg hat mehr Kanten.
+        - Sie sucht absichtlich lange, damit sie alle Knoten des Bezirks sieht.
+      correct: 0
+    feedback:
+      - when: { picked: 1 }
+        say: Auch in Kanten ist ihr Weg lang, 4 562 Stück. Die Tiefensuche vergleicht Wege gar nicht, weder nach Kanten noch nach Metern.
+      - when: { picked: 2 }
+        say: Sie hört auf, sobald sie am Ziel ist. Nur kommt sie dort erst nach einer langen Irrfahrt an.
+    solution: |
+      Die Tiefensuche vergleicht keine Wege. Sie folgt vom Start aus immer dem
+      ersten Nachbarn, den sie noch nicht kennt, so tief es geht, und erst in
+      einer Sackgasse kehrt sie um. Welcher Weg herauskommt, hängt an der
+      Reihenfolge der Nachbarn, nicht an der Länge. Und jeder Schritt in die
+      Tiefe ist ein Aufruf mehr auf dem Stack: Zum Strandbad Wannsee reicht er
+      nicht mehr.
+
+  - id: breitensuche
+    title: Die Welle
+    prompt: Schreib `breadth_first` in `routes.rb`, erst einmal ohne den Weg.
+    check:
+      type: ruby
+      file: routenplaner-starter/ruby/routes.rb
+      cases:
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].first
+          expect: "'11'"
+          say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].last
+          expect: "'16'"
+          say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited]
+          expect: "['11', '12', '21', '13', '22', '14', '16']"
+          say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gefunden wurden.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:visited]
+          expect: "['11']"
+          say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:visited].sort
+          expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+          say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+    hint:
+      - |
+        Geh die Welle auf `data/detour.tsv` von 11 nach 16 von Hand durch, wie im
+        Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in Ring 2? In
+        welcher Reihenfolge sind sie dran, bis 16 dran ist?
+      - |
+        Die Suche merkt sich dreierlei: `found` (am Anfang nur der Start),
+        `ring`, den Ring, der gerade dran ist (am Anfang nur der Start), und
+        `visited` (am Anfang leer). Jeder Knoten des Rings kommt in `visited`;
+        ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der noch nicht in
+        `found` steht, kommt in `found` und in den nächsten Ring. Ist der Ring
+        durch, ist der nächste dran. Den Weg kennt die Suche noch nicht: `path`
+        ist `nil`.
+      - |
+        Ein Gerüst:
+
+        ```ruby
+        def breadth_first(graph, start, goal)
+            found = Set[start]
+            ring = [start]
+            visited = []
+            until ring.empty?
+                next_ring = []
+                ring.each do |node|
+                    # hier: node in visited, und beim Ziel: return { path: nil, visited: visited }
+                    graph[:edges][node].each do |neighbour, _metres|
+                        # hier: ein neuer Nachbar kommt in found und in next_ring
+                    end
+                end
+                ring = next_ring
+            end
+            { path: nil, visited: visited }
+        end
+        ```
+    python:
+      prompt: Schreib `breadth_first` in `routes.py`, erst einmal ohne den Weg.
+      check:
+        type: python
+        file: routenplaner-starter/python/routes.py
+        cases:
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['visited'][0]"
+            expect: "'11'"
+            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['visited'][-1]"
+            expect: "'16'"
+            say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['visited']"
+            expect: "['11', '12', '21', '13', '22', '14', '16']"
+            say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gefunden wurden.
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')['visited']"
+            expect: "['11']"
+            say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
+          - call: "sorted(breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')['visited'])"
+            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+      hint:
+        - |
+          Geh die Welle auf `data/detour.tsv` von 11 nach 16 von Hand durch, wie
+          im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
+          Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
+        - |
+          Die Suche merkt sich dreierlei: `found` (am Anfang nur der Start),
+          `ring`, den Ring, der gerade dran ist (am Anfang nur der Start), und
+          `visited` (am Anfang leer). Jeder Knoten des Rings kommt in `visited`;
+          ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der noch nicht
+          in `found` steht, kommt in `found` und in den nächsten Ring. Ist der
+          Ring durch, ist der nächste dran. Den Weg kennt die Suche noch nicht:
+          `'path'` ist `None`.
+        - |
+          Ein Gerüst:
+
+          ```python
+          def breadth_first(graph, start, goal):
+              found = {start}
+              ring = [start]
+              visited = []
+              while ring:
+                  next_ring = []
+                  for node in ring:
+                      # hier: node in visited, und beim Ziel: return {'path': None, 'visited': visited}
+                      for neighbour, _metres in graph['edges'].get(node, []):
+                          # hier: ein neuer Nachbar kommt in found und in next_ring
+                          ...
+                  ring = next_ring
+              return {'path': None, 'visited': visited}
+          ```
+    dart:
+      prompt: Schreib `breadthFirst` in `routes.dart`, erst einmal ohne den Weg.
+      check:
+        type: dart
+        file: routenplaner-starter/dart/routes.dart
+        cases:
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.first
+            expect: "'11'"
+            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.last
+            expect: "'16'"
+            say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited
+            expect: "['11', '12', '21', '13', '22', '14', '16']"
+            say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gefunden wurden.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').visited
+            expect: "['11']"
+            say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').visited.toList()..sort()
+            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+      hint:
+        - |
+          Geh die Welle auf `data/detour.tsv` von 11 nach 16 von Hand durch, wie
+          im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
+          Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
+        - |
+          Die Suche merkt sich dreierlei: `found` (am Anfang nur der Start),
+          `ring`, den Ring, der gerade dran ist (am Anfang nur der Start), und
+          `visited` (am Anfang leer). Jeder Knoten des Rings kommt in `visited`;
+          ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der noch nicht
+          in `found` steht, kommt in `found` und in den nächsten Ring. Ist der
+          Ring durch, ist der nächste dran. Den Weg kennt die Suche noch nicht:
+          Sie gibt `Search(null, visited)` zurück.
+        - |
+          Ein Gerüst:
+
+          ```dart
+          Search breadthFirst(Graph graph, String start, String goal) {
+            final found = <String>{start};
+            var ring = [start];
+            final visited = <String>[];
+            while (ring.isNotEmpty) {
+              final nextRing = <String>[];
+              for (final node in ring) {
+                // hier: node in visited, und beim Ziel: return Search(null, visited);
+                for (final edge in graph.edges[node] ?? <Edge>[]) {
+                  // hier: ein neuer Nachbar (edge.to) kommt in found und in nextRing
+                }
+              }
+              ring = nextRing;
+            }
+            return Search(null, visited);
+          }
+          ```
+    javascript:
+      prompt: Schreib `breadthFirst` in `routes.js`, erst einmal ohne den Weg.
+      check:
+        type: javascript
+        file: routenplaner-starter/javascript/routes.js
+        cases:
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited[0]
+            expect: "'11'"
+            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.at(-1)
+            expect: "'16'"
+            say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited
+            expect: "['11', '12', '21', '13', '22', '14', '16']"
+            say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gefunden wurden.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').visited
+            expect: "['11']"
+            say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
+          - call: '[...breadthFirst(buildGraph(readWays(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'').visited].sort()'
+            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
+            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+      hint:
+        - |
+          Geh die Welle auf `data/detour.tsv` von 11 nach 16 von Hand durch, wie
+          im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
+          Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
+        - |
+          Die Suche merkt sich dreierlei: `found`, ein `Set` (am Anfang nur der
+          Start), `ring`, den Ring, der gerade dran ist (am Anfang nur der
+          Start), und `visited` (am Anfang leer). Jeder Knoten des Rings kommt in
+          `visited`; ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der
+          noch nicht in `found` steht, kommt in `found` und in den nächsten Ring.
+          Ist der Ring durch, ist der nächste dran. Den Weg kennt die Suche noch
+          nicht: `path` ist `null`.
+        - |
+          Ein Gerüst:
+
+          ```javascript
+          function breadthFirst(graph, start, goal) {
+              const found = new Set([start]);
+              let ring = [start];
+              const visited = [];
+              while (ring.length > 0) {
+                  const nextRing = [];
+                  for (const node of ring) {
+                      // hier: node in visited, und beim Ziel: return { path: null, visited };
+                      for (const [neighbour] of graph.edges[node] || []) {
+                          // hier: ein neuer Nachbar kommt in found und in nextRing
+                      }
+                  }
+                  ring = nextRing;
+              }
+              return { path: null, visited };
+          }
+          ```
+    java:
+      prompt: Schreib `breadthFirst` in `Routes.java`, erst einmal ohne den Weg.
+      check:
+        type: java
+        file: routenplaner-starter/java/Routes.java
+        cases:
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().get(0)
+            expect: '"11"'
+            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().getLast()
+            expect: '"16"'
+            say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited()
+            expect: 'List.of("11", "12", "21", "13", "22", "14", "16")'
+            say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gefunden wurden.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").visited()
+            expect: 'List.of("11")'
+            say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").visited().stream().sorted().toList()
+            expect: 'List.of("11", "12", "13", "14", "15", "16", "21", "22")'
+            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
+      hint:
+        - |
+          Geh die Welle auf `data/detour.tsv` von 11 nach 16 von Hand durch, wie
+          im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
+          Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
+        - |
+          Die Suche merkt sich dreierlei: `found`, ein `HashSet` (am Anfang nur
+          der Start), `ring`, den Ring, der gerade dran ist (am Anfang nur der
+          Start), und `visited` (am Anfang leer). Jeder Knoten des Rings kommt in
+          `visited`; ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der
+          noch nicht in `found` steht, kommt in `found` und in den nächsten Ring.
+          Ist der Ring durch, ist der nächste dran. Den Weg kennt die Suche noch
+          nicht: Sie gibt `new Search(null, visited)` zurück.
+        - |
+          Ein Gerüst:
+
+          ```java
+          static Search breadthFirst(Graph graph, String start, String goal) {
+              Set<String> found = new HashSet<>(List.of(start));
+              List<String> ring = List.of(start);
+              List<String> visited = new ArrayList<>();
+              while (!ring.isEmpty()) {
+                  List<String> nextRing = new ArrayList<>();
+                  for (String node : ring) {
+                      // hier: node in visited, und beim Ziel: return new Search(null, visited);
+                      for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
+                          // hier: ein neuer Nachbar (edge.to()) kommt in found und in nextRing
+                      }
+                  }
+                  ring = nextRing;
+              }
+              return new Search(null, visited);
+          }
+          ```
+
   - id: weg
     title: Der Weg zurück
-    prompt: Schreib `path_to` in `routes.rb`.
+    prompt: Schreib `path_to` in `routes.rb`, und lass `breadth_first` damit den Weg zurückgeben.
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -770,6 +1538,14 @@ tasks:
         - call: path_to({ 'a' => nil, 'b' => 'a' }, 'x')
           expect: ~
           say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+          expect: "['11', '21', '22', '16']"
+          say: '`path_to` stimmt. Jetzt gibt `breadth_first` damit den Weg zurück: `previous` statt `found`, und am Ende `path_to(previous, goal)` statt `nil`. Über den Eichenweg sind es drei Kanten.'
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+          expect: "['11']"
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+          expect: ~
+          say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
     hint:
       - |
         Mit `previous = { 'a' => nil, 'b' => 'a', 'c' => 'b' }`: Von welchem Knoten
@@ -780,6 +1556,8 @@ tasks:
         Das war der Start. Jeden Knoten setzt du vorne in den Weg (`unshift`), dann
         steht er am Ende vom Start zum Ziel da. Steht das Ziel gar nicht in
         `previous`, hat die Suche es nie gefunden: Dann gibt es keinen Weg, `nil`.
+        In `breadth_first` wird aus `found` der Hash `previous`, wie auf der Seite
+        beschrieben, und beide `return` geben `path_to(previous, goal)` zurück.
       - |
         Ein Gerüst:
 
@@ -796,7 +1574,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `path_to` in `routes.py`.
+      prompt: Schreib `path_to` in `routes.py`, und lass `breadth_first` damit den Weg zurückgeben.
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -812,6 +1590,14 @@ tasks:
           - call: 'path_to({''a'': None, ''b'': ''a''}, ''x'')'
             expect: ~
             say: 'Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.'
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['path']"
+            expect: "['11', '21', '22', '16']"
+            say: '`path_to` stimmt. Jetzt gibt `breadth_first` damit den Weg zurück: `previous` statt `found`, und am Ende `path_to(previous, goal)` statt `None`. Über den Eichenweg sind es drei Kanten.'
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')['path']"
+            expect: "['11']"
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')['path']"
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
         - |
           Mit `previous = {'a': None, 'b': 'a', 'c': 'b'}`: Von welchem Knoten aus hat
@@ -822,7 +1608,9 @@ tasks:
           Das war der Start. Jeden Knoten setzt du vorne in den Weg
           (`path.insert(0, node)`), dann steht er am Ende vom Start zum Ziel da. Steht
           das Ziel gar nicht in `previous`, hat die Suche es nie gefunden: Dann gibt es
-          keinen Weg, `None`.
+          keinen Weg, `None`. In `breadth_first` wird aus `found` das Dictionary
+          `previous`, wie auf der Seite beschrieben, und beide `return` geben
+          `path_to(previous, goal)` zurück.
         - |
           Ein Gerüst:
 
@@ -838,7 +1626,7 @@ tasks:
               return path
           ```
     dart:
-      prompt: Schreib `pathTo` in `routes.dart`.
+      prompt: Schreib `pathTo` in `routes.dart`, und lass `breadthFirst` damit den Weg zurückgeben.
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -854,17 +1642,27 @@ tasks:
           - call: "pathTo({'a': null, 'b': 'a'}, 'x')"
             expect: ~
             say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '21', '22', '16']"
+            say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `found`, und am Ende `Search(pathTo(previous, goal), visited)` statt `Search(null, visited)`. Über den Eichenweg sind es drei Kanten.'
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
         - |
           Mit `previous = {'a': null, 'b': 'a', 'c': 'b'}`: Von welchem Knoten aus hat
-          die Suche `c` gefunden? Und den davor? Schreib die Knoten in der Reihenfolge
-          auf, in der du sie so findest, und dreh sie dann um.
+          die Suche `c` gefunden? Und den davor? Schreib die Knoten in der
+          Reihenfolge auf, in der du sie so findest, und dreh sie dann um.
         - |
           Beginne beim Ziel und geh von Vorgänger zu Vorgänger, bis einer `null` ist:
           Das war der Start. Jeden Knoten setzt du vorne in den Weg
           (`path.insert(0, node)`), dann steht er am Ende vom Start zum Ziel da. Steht
           das Ziel gar nicht in `previous` (`containsKey`), hat die Suche es nie
-          gefunden: Dann gibt es keinen Weg, `null`.
+          gefunden: Dann gibt es keinen Weg, `null`. In `breadthFirst` wird aus
+          `found` die Map `previous`, wie auf der Seite beschrieben, und beide
+          `return` geben `Search(pathTo(previous, goal), visited)` zurück.
         - |
           Ein Gerüst:
 
@@ -880,7 +1678,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `pathTo` in `routes.js`.
+      prompt: Schreib `pathTo` in `routes.js`, und lass `breadthFirst` damit den Weg zurückgeben.
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -896,6 +1694,14 @@ tasks:
           - call: "pathTo(new Map([['a', null], ['b', 'a']]), 'x')"
             expect: ~
             say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+            expect: "['11', '21', '22', '16']"
+            say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `found`, und am Ende `pathTo(previous, goal)` statt `null`. Über den Eichenweg sind es drei Kanten.'
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            expect: "['11']"
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
         - |
           Mit `previous = new Map([['a', null], ['b', 'a'], ['c', 'b']])`: Von welchem
@@ -906,7 +1712,9 @@ tasks:
           Das war der Start. `previous.get(node)` gibt den Vorgänger. Jeden Knoten
           setzt du vorne in den Weg (`path.unshift(node)`), dann steht er am Ende vom
           Start zum Ziel da. Steht das Ziel gar nicht in `previous` (`has`), hat die
-          Suche es nie gefunden: Dann gibt es keinen Weg, `null`.
+          Suche es nie gefunden: Dann gibt es keinen Weg, `null`. In `breadthFirst`
+          wird aus `found` die Map `previous`, wie auf der Seite beschrieben, und
+          beide `return` geben `pathTo(previous, goal)` als `path` zurück.
         - |
           Ein Gerüst:
 
@@ -922,7 +1730,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `pathTo` in `Routes.java`.
+      prompt: Schreib `pathTo` in `Routes.java`, und lass `breadthFirst` damit den Weg zurückgeben.
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -938,6 +1746,14 @@ tasks:
           - call: 'Map<String, String> previous = new HashMap<>(); previous.put("a", null); previous.put("b", "a"); Routes.pathTo(previous, "x")'
             expect: ~
             say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+            expect: 'List.of("11", "21", "22", "16")'
+            say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `found`, und am Ende `new Search(pathTo(previous, goal), visited)` statt `new Search(null, visited)`. Über den Eichenweg sind es drei Kanten.'
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+            expect: 'List.of("11")'
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+            expect: ~
+            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
         - |
           Mit einer Map `previous`, in der a ohne Vorgänger steht (`null`), b mit
@@ -949,7 +1765,10 @@ tasks:
           Das war der Start. `previous.get(node)` gibt den Vorgänger. Jeden Knoten
           setzt du vorne in den Weg (`path.addFirst(node)`), dann steht er am Ende vom
           Start zum Ziel da. Steht das Ziel gar nicht in `previous` (`containsKey`),
-          hat die Suche es nie gefunden: Dann gibt es keinen Weg, `null`.
+          hat die Suche es nie gefunden: Dann gibt es keinen Weg, `null`. In
+          `breadthFirst` wird aus `found` die Map `previous`, wie auf der Seite
+          beschrieben, und beide `return` geben
+          `new Search(pathTo(previous, goal), visited)` zurück.
         - |
           Ein Gerüst:
 
@@ -962,276 +1781,6 @@ tasks:
                   // hier: node vorne in den Weg, dann weiter zu seinem Vorgänger
               }
               return path;
-          }
-          ```
-
-  - id: breitensuche
-    title: Breitensuche
-    prompt: Schreib `breadth_first` in `routes.rb`.
-    check:
-      type: ruby
-      file: routenplaner-starter/ruby/routes.rb
-      cases:
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
-          expect: "['11', '21', '22', '16']"
-          say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
-          expect: "['11']"
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
-          expect: ~
-          say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].first
-          expect: "'11'"
-          say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:visited].sort
-          expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
-          say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
-    hint:
-      - |
-        Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
-        Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
-        Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
-        unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
-        Schritt durchklicken.
-      - |
-        Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
-        Vorgänger), die Queue (am Anfang nur der Start) und `visited` (am Anfang
-        leer). Einen Nachbarn, der schon gefunden ist, erkennst du daran, dass er in
-        `previous` steht. Am Ende baut dein `path_to` den Weg.
-      - |
-        Ein Gerüst:
-
-        ```ruby
-        def breadth_first(graph, start, goal)
-            previous = { start => nil }
-            queue = [start]
-            visited = []
-            until queue.empty?
-                node = queue.shift
-                # hier: node in visited, und beim Ziel aufhören
-                graph[:edges][node].each do |neighbour, _metres|
-                    # hier: einen neuen Nachbarn mit Vorgänger eintragen und hinten anstellen
-                end
-            end
-            { path: path_to(previous, goal), visited: visited }
-        end
-        ```
-    python:
-      prompt: Schreib `breadth_first` in `routes.py`.
-      check:
-        type: python
-        file: routenplaner-starter/python/routes.py
-        cases:
-          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
-            expect: "['11', '21', '22', '16']"
-            say: 'Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.'
-          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
-            expect: "['11']"
-          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
-            expect: ~
-            say: 'Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.'
-          - call: 'breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][0]'
-            expect: "'11'"
-            say: 'In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.'
-          - call: 'sorted(breadth_first(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''visited''])'
-            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
-            say: 'Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.'
-      hint:
-        - |
-          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
-          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
-          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
-          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
-          Schritt durchklicken.
-        - |
-          Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
-          Vorgänger), die Queue (am Anfang nur der Start, dazu `first = 0` für den
-          Knoten, der als Nächster dran ist) und `visited` (am Anfang leer). Einen
-          Nachbarn, der schon gefunden ist, erkennst du daran, dass er in `previous`
-          steht. Am Ende baut dein `path_to` den Weg.
-        - |
-          Ein Gerüst:
-
-          ```python
-          def breadth_first(graph, start, goal):
-              previous = {start: None}
-              queue = [start]
-              first = 0
-              visited = []
-              while first < len(queue):
-                  node = queue[first]
-                  first += 1
-                  # hier: node in visited, und beim Ziel aufhören
-                  for neighbour, _metres in graph['edges'].get(node, []):
-                      # hier: einen neuen Nachbarn mit Vorgänger eintragen und hinten anstellen
-                      ...
-              return {'path': path_to(previous, goal), 'visited': visited}
-          ```
-    dart:
-      prompt: Schreib `breadthFirst` in `routes.dart`.
-      check:
-        type: dart
-        file: routenplaner-starter/dart/routes.dart
-        cases:
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
-            expect: "['11', '21', '22', '16']"
-            say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
-            expect: "['11']"
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
-            expect: ~
-            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.first
-            expect: "'11'"
-            say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').visited.toList()..sort()
-            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
-            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
-      hint:
-        - |
-          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
-          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
-          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
-          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
-          Schritt durchklicken.
-        - |
-          Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
-          Vorgänger), die Queue (am Anfang nur der Start) und `visited` (am Anfang
-          leer). Einen Nachbarn, der schon gefunden ist, erkennst du daran, dass er in
-          `previous` steht. Am Ende baut dein `pathTo` den Weg. Als Queue nimmst du
-          `Queue` aus `dart:collection`: `add` stellt hinten an, `removeFirst` nimmt
-          vorne heraus. Eine Liste mit `removeAt(0)` rückt dagegen jedes Mal alles
-          nach vorne, und bei den gut 141 000 Knoten von Steglitz-Zehlendorf kriecht
-          die Suche dann; `Queue` ist ein Ring Buffer, genau die Idee der Queue aus
-          der Data Structures Sandbox.
-        - |
-          Ein Gerüst:
-
-          ```dart
-          Search breadthFirst(Graph graph, String start, String goal) {
-            final previous = <String, String?>{start: null};
-            final queue = Queue<String>()..add(start);
-            final visited = <String>[];
-            while (queue.isNotEmpty) {
-              final node = queue.removeFirst();
-              // hier: node in visited, und beim Ziel aufhören
-              for (final edge in graph.edges[node] ?? <Edge>[]) {
-                // hier: einen neuen Nachbarn (edge.to) mit Vorgänger eintragen und hinten anstellen
-              }
-            }
-            return Search(pathTo(previous, goal), visited);
-          }
-          ```
-    javascript:
-      prompt: Schreib `breadthFirst` in `routes.js`.
-      check:
-        type: javascript
-        file: routenplaner-starter/javascript/routes.js
-        cases:
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
-            expect: "['11', '21', '22', '16']"
-            say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
-            expect: "['11']"
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
-            expect: ~
-            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited[0]
-            expect: "'11'"
-            say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
-          - call: '[...breadthFirst(buildGraph(readWays(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'').visited].sort()'
-            expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
-            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
-      hint:
-        - |
-          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
-          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
-          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
-          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
-          Schritt durchklicken.
-        - |
-          Die Suche merkt sich dreierlei: `previous` (eine Map, am Anfang nur der
-          Start, ohne Vorgänger), die Queue (ein Array, am Anfang nur der Start, dazu
-          `head = 0` für den Index des Knotens, der als Nächster dran ist) und
-          `visited` (am Anfang leer). Einen Nachbarn, der schon gefunden ist, erkennst
-          du daran, dass er in `previous` steht. Am Ende baut dein `pathTo` den Weg.
-          `queue.shift()` verschiebt bei jedem Aufruf das ganze Array, und bei den gut
-          141 000 Knoten von Steglitz-Zehlendorf kriecht die Suche dann; der Index
-          `head`, der nur vorrückt, ist genau die Idee des Ring Buffers, mit dem die
-          Queue in der Data Structures Sandbox arbeitet.
-        - |
-          Ein Gerüst:
-
-          ```javascript
-          function breadthFirst(graph, start, goal) {
-              const previous = new Map([[start, null]]);
-              const queue = [start];
-              let head = 0;
-              const visited = [];
-              while (head < queue.length) {
-                  const node = queue[head++];
-                  // hier: node in visited, und beim Ziel aufhören
-                  for (const [neighbour] of graph.edges[node] || []) {
-                      // hier: einen neuen Nachbarn mit Vorgänger eintragen und hinten anstellen
-                  }
-              }
-              return { path: pathTo(previous, goal), visited };
-          }
-          ```
-    java:
-      prompt: Schreib `breadthFirst` in `Routes.java`.
-      check:
-        type: java
-        file: routenplaner-starter/java/Routes.java
-        cases:
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
-            expect: 'List.of("11", "21", "22", "16")'
-            say: Über den Eichenweg sind es nur drei Kanten, über die Lindenstraße fünf.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
-            expect: 'List.of("11")'
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
-            expect: ~
-            say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Queue irgendwann leer, und es gibt keinen Weg.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().get(0)
-            expect: '"11"'
-            say: In visited kommt jeder Knoten, wenn er aus der Queue genommen wird, der Start also zuerst.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").visited().stream().sorted().toList()
-            expect: 'List.of("11", "12", "13", "14", "15", "16", "21", "22")'
-            say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
-      hint:
-        - |
-          Probier es auf der Testkarte `data/detour.tsv` von Hand, mit der Queue auf
-          Papier: Start ist 11. Welche Knoten stellst du hinten an, welcher kommt als
-          Nächster vorne heraus? Über welchen Vorgänger findest du 16? Im Handbuch
-          unter »Breitensuche« kannst du dasselbe an einem anderen Graphen Schritt für
-          Schritt durchklicken.
-        - |
-          Die Suche merkt sich dreierlei: `previous` (am Anfang nur der Start, ohne
-          Vorgänger), die Queue (am Anfang nur der Start) und `visited` (am Anfang
-          leer). Einen Nachbarn, der schon gefunden ist, erkennst du daran, dass er in
-          `previous` steht. Am Ende baut dein `pathTo` den Weg. Als Queue nimmst du
-          eine `ArrayDeque`: `add` stellt hinten an, `poll` nimmt vorne heraus. Eine
-          `ArrayList` mit `remove(0)` rückt dagegen jedes Mal alles nach vorne, und
-          bei den gut 141 000 Knoten von Steglitz-Zehlendorf kriecht die Suche dann;
-          `ArrayDeque` ist ein Ring Buffer, genau die Idee der Queue aus der Data
-          Structures Sandbox.
-        - |
-          Ein Gerüst:
-
-          ```java
-          static Search breadthFirst(Graph graph, String start, String goal) {
-              Map<String, String> previous = new HashMap<>();
-              previous.put(start, null);
-              ArrayDeque<String> queue = new ArrayDeque<>(List.of(start));
-              List<String> visited = new ArrayList<>();
-              while (!queue.isEmpty()) {
-                  String node = queue.poll();
-                  // hier: node in visited, und beim Ziel aufhören
-                  for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
-                      // hier: einen neuen Nachbarn (edge.to()) mit Vorgänger eintragen und hinten anstellen
-                  }
-              }
-              return new Search(pathTo(previous, goal), visited);
           }
           ```
 

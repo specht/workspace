@@ -32,6 +32,19 @@ function buildGraph(ways) {
     throw notYet('buildGraph');
 }
 
+// Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
+// zum Ziel. Gibt den Weg zurück, die IDs von node bis zum Ziel, null, wenn
+// es von node aus keinen gibt.
+function walk(graph, node, goal) {
+    throw notYet('walk');
+}
+
+// Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
+// die die Suche schon gefunden hat; der erste Aufruf bekommt eine leere Menge.
+function depthFirst(graph, node, goal, found = new Set()) {
+    throw notYet('depthFirst');
+}
+
 // Der Weg zum Ziel, rückwärts aus den Vorgängern: previous ist eine Map, die
 // für jeden gefundenen Knoten sagt, von welchem aus er gefunden wurde (der
 // Start von null).
@@ -133,6 +146,6 @@ function improveTour(costs, order) {
 }
 
 module.exports = {
-    readWays, distance, buildGraph, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
+    readWays, distance, buildGraph, walk, depthFirst, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
     buildTravelGraph, tourLength, bestTour, nearestTour, improveTour,
 };

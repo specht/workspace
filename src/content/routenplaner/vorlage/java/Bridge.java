@@ -11,7 +11,7 @@ import java.util.*;
 public class Bridge {
     // Die leeren Methoden der Vorlage melden sich mit ihrem Namen; jede andere
     // UnsupportedOperationException (etwa List.of(…) verändert) ist ein Fehler
-    static final Set<String> STUBS = Set.of("readWays", "distance", "buildGraph", "pathTo", "breadthFirst",
+    static final Set<String> STUBS = Set.of("readWays", "distance", "buildGraph", "walk", "depthFirst", "pathTo", "breadthFirst",
         "dijkstra", "aStar", "buildTravelGraph", "tourLength", "bestTour", "nearestTour", "improveTour",
         "MinHeap.push", "MinHeap.pop");
     static final Map<String, List<Way>> ways = new HashMap<>();   // Datei -> Wege
@@ -86,6 +86,9 @@ public class Bridge {
                 String start = (String) request.get("start"), goal = (String) request.get("goal");
                 long began = System.nanoTime();
                 Search result = switch ((String) request.get("fn")) {
+                    // walk und depthFirst geben nur den Weg zurück
+                    case "walk" -> new Search(Routes.walk(graph, start, goal), List.of());
+                    case "depth_first" -> new Search(Routes.depthFirst(graph, start, goal), List.of());
                     case "breadth_first" -> Routes.breadthFirst(graph, start, goal);
                     case "dijkstra" -> Routes.dijkstra(graph, start, goal);
                     case "a_star" -> Routes.aStar(graph, start, goal);

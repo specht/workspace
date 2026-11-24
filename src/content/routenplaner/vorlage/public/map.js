@@ -771,7 +771,7 @@ function showChoice() {
 }
 
 // Die Route mit der gewählten Suche: erst die Suche Knoten für Knoten, dann der Weg
-const SEARCH_NAMES = { bfs: 'Breitensuche', dijkstra: 'Dijkstra', astar: 'A*' };
+const SEARCH_NAMES = { walk: 'Einfach losgehen', dfs: 'Tiefensuche', bfs: 'Breitensuche', dijkstra: 'Dijkstra', astar: 'A*' };
 const MODE_NAMES = { length: 'Strecke', foot: 'zu Fuß', bike: 'mit dem Rad', car: 'mit dem Auto' };
 
 // Die Datei mit deinen Funktionen, je nach Sprache (ruby/routes.rb, dart/routes.dart, …)
@@ -846,10 +846,13 @@ function showRoute(name, answer) {
     const time = answer.seconds == null ? '' : `, ${duration(answer.seconds)} ${MODE_NAMES[answer.mode]}`;
     way.textContent = answer.path
         ? `Weg: ${length(answer.metres)}${time} über ${NUMBER.format(answer.path.length)} Knoten (Luftlinie ${length(beeline())})`
-        : 'Kein Weg gefunden.';
+        : answer.reached ? 'Am Ziel, aber welchen Weg die Suche genommen hat, gibt sie noch nicht zurück.' : 'Kein Weg gefunden.';
     const visited = document.createElement('span');
     visited.className = 'note';
-    visited.textContent = `Besucht: ${NUMBER.format(answer.visited.length / 2)} Knoten in ${seconds} s, von Gelb (früh) bis Rot (spät)`;
+    // walk und die Tiefensuche geben nur den Weg zurück, keine besuchten Knoten
+    visited.textContent = answer.visited.length
+        ? `Besucht: ${NUMBER.format(answer.visited.length / 2)} Knoten in ${seconds} s, von Gelb (früh) bis Rot (spät)`
+        : `Gesucht in ${seconds} s`;
     info.replaceChildren(title, way, visited);
 }
 

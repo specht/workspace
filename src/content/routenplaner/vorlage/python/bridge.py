@@ -36,6 +36,8 @@ def answer(request):
         began = time.perf_counter()
         result = getattr(routes, request['fn'])(graph, request['start'], request['goal'])
         took = time.perf_counter() - began
+        if not isinstance(result, dict):  # walk und depth_first geben nur den Weg zurück
+            result = {'path': result, 'visited': []}
         return {'path': result.get('path'), 'visited': result.get('visited') or [], 'took': took}
     if op == 'call':
         began = time.perf_counter()
