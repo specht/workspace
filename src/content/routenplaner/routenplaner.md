@@ -757,6 +757,10 @@ _task(kanten)
 
 Die Welle breitet sich nach Kanten aus, nicht nach Metern: Im Botanischen Garten haben die Wege viele kurze Kanten, eine lange gerade Straße ist oft nur eine einzige.
 
+<div class='hint think'>
+<strong>Zum Weiterdenken:</strong> Schreib deine Breitensuche mit einer Queue (»Die Ringe in einer Reihe«) und nimm dann den Knoten, der als Nächstes dran ist, nicht vorne heraus, sondern hinten (<span class='code-language' data-language='ruby'><code>queue.pop</code></span><span class='code-language' data-language='python'><code>queue.pop()</code> statt <code>queue[first]</code></span><span class='code-language' data-language='dart'><code>queue.removeLast()</code></span><span class='code-language' data-language='javascript'><code>queue.pop()</code> statt <code>queue[head++]</code></span><span class='code-language' data-language='java'><code>queue.pollLast()</code></span>). Aus der Queue wird so ein Stack: Was zuletzt hineinkam, ist zuerst dran. Such damit wieder den Weg zum Botanischen Garten und zum Strandbad Wannsee. Achte darauf, wie sich die Punkte ausbreiten, wie lang der Weg wird und ob die Suche überläuft. Welche Suche von vorhin erkennst du wieder? Ihr Weg ist trotzdem ein anderer als der deiner rekursiven Tiefensuche. Warum? Vergleiche, wann ein Knoten jeweils als gefunden gilt: wenn er in den Stack kommt oder wenn er dran ist.
+</div>
+
 ## Kürzeste Wege
 
 ### Dijkstra
