@@ -823,6 +823,14 @@ async function findRoute() {
     route = { path: answer.path, visited: answer.visited, edges: answer.edges || [], shown: 0, position: 0 };
     showRoute(name, answer);
     const total = answer.visited.length / 2;
+    if (!total) {
+        // walk und die Tiefensuche geben nur den Weg zurück: ganz zu sehen,
+        // ohne den Spieler für die besuchten Knoten
+        if (!answer.path) return draw();
+        const lons = answer.path.map((p) => p[0]);
+        const lats = answer.path.map((p) => p[1]);
+        return fit(Math.min(...lons), Math.min(...lats), Math.max(...lons), Math.max(...lats), 200000);
+    }
     const slider = document.getElementById('progress');
     slider.max = total;
     document.getElementById('player').hidden = false;

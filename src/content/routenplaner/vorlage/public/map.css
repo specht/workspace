@@ -381,6 +381,16 @@ button svg {
     background: var(--soft);
 }
 
+/* fünf Suchen: die Knöpfe nach ihrer Beschriftung, notfalls in zwei Reihen */
+#searches {
+    flex-wrap: wrap;
+}
+
+#searches button {
+    flex: 1 0 auto;
+    padding: 0 0.55rem;
+}
+
 .segments[hidden],
 [data-for][hidden] {
     display: none;
