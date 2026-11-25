@@ -550,7 +550,7 @@ Probier es aus: Such mit »Losgehen« einen Weg und schau ins Terminal.
 
 ### Nicht im Kreis
 
-Das erste Problem: `walk` geht dorthin zurück, wo es herkam. Abhilfe schafft eine Menge `found` (<span class='code-language' data-language='ruby'>ein <code>Set</code></span><span class='code-language' data-language='python'>ein <code>set</code></span><span class='code-language' data-language='dart'>ein <code>Set&lt;String&gt;</code></span><span class='code-language' data-language='javascript'>ein <code>Set</code></span><span class='code-language' data-language='java'>ein <code>HashSet</code></span>), in der sich die Suche jeden Knoten merkt, den sie schon gefunden hat. Ein Aufruf für einen Knoten, der schon in `found` steht, gibt gleich zurück, dass er keinen Weg findet; sonst trägt er seinen Knoten ein und sucht weiter wie `walk`. Alle Aufrufe teilen sich dieselbe Menge: Jeder gibt sie an die Aufrufe für seine Nachbarn weiter.
+Das erste Problem: `walk` geht dorthin zurück, wo es herkam. Abhilfe schafft eine Menge `seen` (<span class='code-language' data-language='ruby'>ein <code>Set</code></span><span class='code-language' data-language='python'>ein <code>set</code></span><span class='code-language' data-language='dart'>ein <code>Set&lt;String&gt;</code></span><span class='code-language' data-language='javascript'>ein <code>Set</code></span><span class='code-language' data-language='java'>ein <code>HashSet</code></span>), in der sich die Suche jeden Knoten merkt, den sie schon gesehen hat. Ein Aufruf für einen Knoten, der schon in `seen` steht, gibt gleich zurück, dass er keinen Weg findet; sonst trägt er seinen Knoten ein und sucht weiter wie `walk`. Alle Aufrufe teilen sich dieselbe Menge: Jeder gibt sie an die Aufrufe für seine Nachbarn weiter.
 
 So sucht <span class='code-language' data-language='ruby python'><code>depth_first</code></span><span class='code-language' data-language='dart javascript java'><code>depthFirst</code></span>, die **Tiefensuche**.
 
@@ -605,7 +605,7 @@ Die Tiefensuche findet einen Weg, aber der Weg ist krumm, und auf langen Wegen l
 _task(idee)
 
 <!-- after: idee -->
-Eine Suche ohne diese beiden Probleme geht nicht in die Tiefe, sondern in die Breite: erst zu allen Nachbarn des Starts, dann zu deren Nachbarn, dann zu den Nachbarn der Nachbarn. Sie breitet sich aus wie eine Welle, Ring für Ring. In Ring 0 steht der Start, in Ring 1 seine Nachbarn, in Ring 2 die Knoten, die man über zwei Kanten erreicht, und so weiter. Jeder Knoten kommt nur in einen Ring, in den ersten, der ihn erreicht; dafür sorgt wieder `found`. Das ist die **Breitensuche**.
+Eine Suche ohne diese beiden Probleme geht nicht in die Tiefe, sondern in die Breite: erst zu allen Nachbarn des Starts, dann zu deren Nachbarn, dann zu den Nachbarn der Nachbarn. Sie breitet sich aus wie eine Welle, Ring für Ring. In Ring 0 steht der Start, in Ring 1 seine Nachbarn, in Ring 2 die Knoten, die man über zwei Kanten erreicht, und so weiter. Jeder Knoten kommt nur in einen Ring, in den ersten, der ihn erreicht; dafür sorgt wieder `seen`. Das ist die **Breitensuche**.
 
 Auf der Testkarte `data/detour.tsv` geht die Lindenstraße in fünf Kanten geradeaus vom Knoten 11 zum Knoten 16, der Eichenweg macht einen Bogen und braucht nur drei:
 
@@ -615,9 +615,9 @@ Die Welle erreicht das Ziel in Ring 3: Es gibt einen Weg über drei Kanten und k
 
 Die Breitensuche Schritt für Schritt:
 
-1. In `found` und im ersten Ring steht nur der Start, `visited` ist leer.
+1. In `seen` und im ersten Ring steht nur der Start, `visited` ist leer.
 2. Nimm die Knoten des Rings der Reihe nach und schreib jeden in `visited`. Ist er das Ziel, bist du fertig.
-3. Jeder Nachbar, der noch nicht in `found` steht, kommt in `found` und in den nächsten Ring.
+3. Jeder Nachbar, der noch nicht in `seen` steht, kommt in `seen` und in den nächsten Ring.
 4. Ist der Ring durch, ist der nächste dran. Bleibt der nächste Ring leer, ohne dass das Ziel dran war, gibt es keinen Weg.
 
 `visited` braucht die Suche selbst nicht: Die Seite zeigt damit, in welcher Reihenfolge die Suche die Knoten besucht hat. Den Weg gibt deine Suche erst einmal nicht zurück, nur <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span>; um ihn geht es im nächsten Abschnitt.
@@ -636,57 +636,57 @@ Speichere, wähle »Breitensuche« und such wieder den Weg zum Botanischen Garte
 _task(merken)
 
 <!-- after: merken -->
-Welchen Weg die Welle genommen hat, muss sie sich merken, während sie sucht: für jeden Knoten, den sie findet, von welchem Knoten aus sie ihn gefunden hat, seinen **Vorgänger**. Dafür wird aus der Menge `found` eine Map `previous`. Gefunden ist ein Knoten jetzt, wenn er in `previous` steht, und wer einen neuen Nachbarn findet, trägt ihn mit dem Knoten, der gerade dran ist, als Vorgänger ein.
+Welchen Weg die Welle genommen hat, muss sie sich merken, während sie sucht: für jeden Knoten, den sie sieht, von welchem Knoten aus sie ihn gesehen hat, seinen **Vorgänger**. Dafür wird aus der Menge `seen` eine Map `previous`. Gesehen ist ein Knoten jetzt, wenn er in `previous` steht, und wer einen neuen Nachbarn sieht, trägt ihn mit dem Knoten, der gerade dran ist, als Vorgänger ein.
 
 <!-- language: ruby -->
-In `previous` steht für den Start `nil`, für jeden anderen gefundenen Knoten sein Vorgänger:
+In `previous` steht für den Start `nil`, für jeden anderen Knoten, den sie gesehen hat, sein Vorgänger:
 
 <!-- page-code: own -->
 ```ruby
 previous = { '11' => nil, '12' => '11', '21' => '11', '13' => '12', … }
 ```
 
-Statt `found.include?(neighbour)` fragst du `previous.key?(neighbour)`, statt `found << neighbour` schreibst du `previous[neighbour] = node`.
+Statt `seen.include?(neighbour)` fragst du `previous.key?(neighbour)`, statt `seen << neighbour` schreibst du `previous[neighbour] = node`.
 <!-- /language -->
 <!-- language: python -->
-In `previous` steht für den Start `None`, für jeden anderen gefundenen Knoten sein Vorgänger:
+In `previous` steht für den Start `None`, für jeden anderen Knoten, den sie gesehen hat, sein Vorgänger:
 
 <!-- page-code: own -->
 ```python
 previous = {'11': None, '12': '11', '21': '11', '13': '12', …}
 ```
 
-`neighbour in previous` fragt wie vorher `neighbour in found`, statt `found.add(neighbour)` schreibst du `previous[neighbour] = node`.
+`neighbour in previous` fragt wie vorher `neighbour in seen`, statt `seen.add(neighbour)` schreibst du `previous[neighbour] = node`.
 <!-- /language -->
 <!-- language: dart -->
-In `previous` steht für den Start `null`, für jeden anderen gefundenen Knoten sein Vorgänger:
+In `previous` steht für den Start `null`, für jeden anderen Knoten, den sie gesehen hat, sein Vorgänger:
 
 <!-- page-code: own -->
 ```dart
 Map<String, String?> previous = {'11': null, '12': '11', '21': '11', '13': '12', …};
 ```
 
-Statt `found.contains(edge.to)` fragst du `previous.containsKey(edge.to)`, statt `found.add(edge.to)` schreibst du `previous[edge.to] = node`.
+Statt `seen.contains(edge.to)` fragst du `previous.containsKey(edge.to)`, statt `seen.add(edge.to)` schreibst du `previous[edge.to] = node`.
 <!-- /language -->
 <!-- language: javascript -->
-In `previous`, einer `Map`, steht für den Start `null`, für jeden anderen gefundenen Knoten sein Vorgänger:
+In `previous`, einer `Map`, steht für den Start `null`, für jeden anderen Knoten, den sie gesehen hat, sein Vorgänger:
 
 <!-- page-code: own -->
 ```javascript
 const previous = new Map([['11', null], ['12', '11'], ['21', '11'], ['13', '12'], …]);
 ```
 
-`previous.has(neighbour)` fragt wie vorher `found.has(neighbour)`, statt `found.add(neighbour)` schreibst du `previous.set(neighbour, node)`.
+`previous.has(neighbour)` fragt wie vorher `seen.has(neighbour)`, statt `seen.add(neighbour)` schreibst du `previous.set(neighbour, node)`.
 <!-- /language -->
 <!-- language: java -->
-In `previous` steht für den Start `null`, für jeden anderen gefundenen Knoten sein Vorgänger:
+In `previous` steht für den Start `null`, für jeden anderen Knoten, den sie gesehen hat, sein Vorgänger:
 
 <!-- page-code: own -->
 ```java
 previous.get("12")  // "11"; previous ist {11=null, 12=11, 21=11, 13=12, …}
 ```
 
-Statt `found.contains(edge.to())` fragst du `previous.containsKey(edge.to())`, statt `found.add(edge.to())` schreibst du `previous.put(edge.to(), node)`.
+Statt `seen.contains(edge.to())` fragst du `previous.containsKey(edge.to())`, statt `seen.add(edge.to())` schreibst du `previous.put(edge.to(), node)`.
 <!-- /language -->
 
 Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht <span class='code-language' data-language='ruby python'><code>path_to</code></span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span>. Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: <span class='code-language' data-language='ruby javascript'><code>path.unshift(node)</code></span><span class='code-language' data-language='python dart'><code>path.insert(0, node)</code></span><span class='code-language' data-language='java'><code>path.addFirst(node)</code> mit einer <code>LinkedList</code></span>. Am Ende gibt die Breitensuche den Weg zurück, den <span class='code-language' data-language='ruby python'><code>path_to</code></span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span> aus `previous` baut.
@@ -749,7 +749,7 @@ Die Welle breitet sich nach Kanten aus, nicht nach Metern: Im Botanischen Garten
 
 #### Die Ringe in einer Reihe
 
-Statt zwei Listen, dem Ring, der dran ist, und dem nächsten, genügt auch eine: Stellst du jeden neu gefundenen Knoten hinten an den Ring, der gerade dran ist, stehen alle Ringe hintereinander in einer Reihe. Vorne nimmst du den nächsten Knoten heraus, hinten stellst du neue an. Das ist eine **Queue**: Wer zuerst hineinkommt, ist zuerst wieder dran. Die Knoten kommen in genau derselben Reihenfolge dran wie Ring für Ring, und so steht die Breitensuche auch im Handbuch.
+Statt zwei Listen, dem Ring, der dran ist, und dem nächsten, genügt auch eine: Stellst du jeden Knoten, den die Suche neu sieht, hinten an den Ring, der gerade dran ist, stehen alle Ringe hintereinander in einer Reihe. Vorne nimmst du den nächsten Knoten heraus, hinten stellst du neue an. Das ist eine **Queue**: Wer zuerst hineinkommt, ist zuerst wieder dran. Die Knoten kommen in genau derselben Reihenfolge dran wie Ring für Ring, und so steht die Breitensuche auch im Handbuch.
 
 <!-- language: ruby -->
 `queue.shift` nimmt den ersten Knoten heraus, `queue << node` stellt einen hinten an.
@@ -774,7 +774,7 @@ Probier es auf der Testkarte aus, vom Knoten 11 zum Knoten 16. Gelb sind die Kno
 <div class='algo-stepper' data-title='Breitensuche auf data/detour.tsv' data-algo='bfs' data-graph='umweg' data-start='11' data-goal='16'></div>
 
 <div class='hint think'>
-<strong>Zum Weiterdenken:</strong> Schreib deine Breitensuche mit einer Queue (»Die Ringe in einer Reihe«) und nimm dann den Knoten, der als Nächstes dran ist, nicht vorne heraus, sondern hinten (<span class='code-language' data-language='ruby'><code>queue.pop</code></span><span class='code-language' data-language='python'><code>queue.pop()</code> statt <code>queue[first]</code></span><span class='code-language' data-language='dart'><code>queue.removeLast()</code></span><span class='code-language' data-language='javascript'><code>queue.pop()</code> statt <code>queue[head++]</code></span><span class='code-language' data-language='java'><code>queue.pollLast()</code></span>). Aus der Queue wird so ein Stack: Was zuletzt hineinkam, ist zuerst dran. Such damit wieder den Weg zum Botanischen Garten und zum Strandbad Wannsee. Achte darauf, wie sich die Punkte ausbreiten, wie lang der Weg wird und ob die Suche überläuft. Welche Suche von vorhin erkennst du wieder? Ihr Weg ist trotzdem ein anderer als der deiner rekursiven Tiefensuche. Warum? Vergleiche, wann ein Knoten jeweils als gefunden gilt: wenn er in den Stack kommt oder wenn er dran ist.
+<strong>Zum Weiterdenken:</strong> Schreib deine Breitensuche mit einer Queue (»Die Ringe in einer Reihe«) und nimm dann den Knoten, der als Nächstes dran ist, nicht vorne heraus, sondern hinten (<span class='code-language' data-language='ruby'><code>queue.pop</code></span><span class='code-language' data-language='python'><code>queue.pop()</code> statt <code>queue[first]</code></span><span class='code-language' data-language='dart'><code>queue.removeLast()</code></span><span class='code-language' data-language='javascript'><code>queue.pop()</code> statt <code>queue[head++]</code></span><span class='code-language' data-language='java'><code>queue.pollLast()</code></span>). Aus der Queue wird so ein Stack: Was zuletzt hineinkam, ist zuerst dran. Such damit wieder den Weg zum Botanischen Garten und zum Strandbad Wannsee. Achte darauf, wie sich die Punkte ausbreiten, wie lang der Weg wird und ob die Suche überläuft. Welche Suche von vorhin erkennst du wieder? Ihr Weg ist trotzdem ein anderer als der deiner rekursiven Tiefensuche. Warum? Vergleiche, wann ein Knoten jeweils als gesehen gilt: wenn er in den Stack kommt oder wenn er dran ist.
 </div>
 
 ## Kürzeste Wege

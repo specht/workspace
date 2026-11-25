@@ -35,15 +35,15 @@ List<String>? walk(Graph graph, String node, String goal) {
 }
 
 // Tiefensuche: wie walk, aber jeden Knoten nur einmal. depthFirst legt die
-// leere Menge found an und fragt search; search sucht wie walk, merkt sich
-// in found jeden Knoten, den es findet, und gibt found bei jedem Aufruf an
+// leere Menge seen an und fragt search; search sucht wie walk, merkt sich
+// in seen jeden Knoten, den es sieht, und gibt seen bei jedem Aufruf an
 // sich selbst weiter.
 List<String>? depthFirst(Graph graph, String start, String goal) {
-  Set<String> found = {};
-  return search(graph, start, goal, found);
+  Set<String> seen = {};
+  return search(graph, start, goal, seen);
 }
 
-List<String>? search(Graph graph, String node, String goal, Set<String> found) {
+List<String>? search(Graph graph, String node, String goal, Set<String> seen) {
   throw UnimplementedError('search');
 }
 

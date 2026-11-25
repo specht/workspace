@@ -33,10 +33,10 @@ def walk(graph, node, goal):
     raise NotImplementedError('walk')
 
 
-# Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
-# die die Suche schon gefunden hat; der erste Aufruf bekommt keine, dann
-# ist found None.
-def depth_first(graph, node, goal, found=None):
+# Tiefensuche: wie walk, aber jeden Knoten nur einmal. seen sind die Knoten,
+# die die Suche schon gesehen hat; der erste Aufruf bekommt keine, dann
+# ist seen None.
+def depth_first(graph, node, goal, seen=None):
     raise NotImplementedError('depth_first')
 
 

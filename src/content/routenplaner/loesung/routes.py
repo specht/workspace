@@ -66,18 +66,18 @@ def walk(graph, node, goal):
     return None
 
 
-# Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die Knoten,
-# die die Suche schon gefunden hat
-def depth_first(graph, node, goal, found=None):
-    if found is None:
-        found = set()
-    if node in found:
+# Tiefensuche: wie walk, aber jeder Knoten nur einmal; seen sind die Knoten,
+# die die Suche schon gesehen hat
+def depth_first(graph, node, goal, seen=None):
+    if seen is None:
+        seen = set()
+    if node in seen:
         return None
-    found.add(node)
+    seen.add(node)
     if node == goal:
         return [node]
     for neighbour, _metres in graph['edges'].get(node, []):
-        rest = depth_first(graph, neighbour, goal, found)
+        rest = depth_first(graph, neighbour, goal, seen)
         if rest is not None:
             return [node] + rest
     return None

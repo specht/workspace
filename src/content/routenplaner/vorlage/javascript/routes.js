@@ -39,9 +39,9 @@ function walk(graph, node, goal) {
     throw notYet('walk');
 }
 
-// Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
-// die die Suche schon gefunden hat; der erste Aufruf bekommt eine leere Menge.
-function depthFirst(graph, node, goal, found = new Set()) {
+// Tiefensuche: wie walk, aber jeden Knoten nur einmal. seen sind die Knoten,
+// die die Suche schon gesehen hat; der erste Aufruf bekommt eine leere Menge.
+function depthFirst(graph, node, goal, seen = new Set()) {
     throw notYet('depthFirst');
 }
 

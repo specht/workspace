@@ -67,18 +67,18 @@ public class Routes {
         return null;
     }
 
-    // Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die
-    // Knoten, die die Suche schon gefunden hat
+    // Tiefensuche: wie walk, aber jeder Knoten nur einmal; seen sind die
+    // Knoten, die die Suche schon gesehen hat
     static List<String> depthFirst(Graph graph, String start, String goal) {
         return depthFirst(graph, start, goal, new HashSet<>());
     }
 
-    static List<String> depthFirst(Graph graph, String node, String goal, Set<String> found) {
-        if (found.contains(node)) return null;
-        found.add(node);
+    static List<String> depthFirst(Graph graph, String node, String goal, Set<String> seen) {
+        if (seen.contains(node)) return null;
+        seen.add(node);
         if (node.equals(goal)) return new ArrayList<>(List.of(node));
         for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
-            List<String> rest = depthFirst(graph, edge.to(), goal, found);
+            List<String> rest = depthFirst(graph, edge.to(), goal, seen);
             if (rest != null) {
                 rest.add(0, node);
                 return rest;

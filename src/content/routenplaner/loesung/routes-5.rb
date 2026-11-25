@@ -62,16 +62,16 @@ def walk(graph, node, goal)
     nil
 end
 
-# Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die Knoten,
-# die die Suche schon gefunden hat
-def depth_first(graph, node, goal, found = Set.new)
-    return nil if found.include?(node)
+# Tiefensuche: wie walk, aber jeder Knoten nur einmal; seen sind die Knoten,
+# die die Suche schon gesehen hat
+def depth_first(graph, node, goal, seen = Set.new)
+    return nil if seen.include?(node)
 
-    found << node
+    seen << node
     return [node] if node == goal
 
     graph[:edges][node].each do |neighbour, _metres|
-        rest = depth_first(graph, neighbour, goal, found)
+        rest = depth_first(graph, neighbour, goal, seen)
         return [node] + rest if rest
     end
     nil

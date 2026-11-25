@@ -69,21 +69,21 @@ List<String>? walk(Graph graph, String node, String goal) {
   return null;
 }
 
-// Tiefensuche: wie walk, aber jeden Knoten nur einmal; found sind die Knoten,
-// die die Suche schon gefunden hat, für alle Aufrufe von search dieselben
+// Tiefensuche: wie walk, aber jeden Knoten nur einmal; seen sind die Knoten,
+// die die Suche schon gesehen hat, für alle Aufrufe von search dieselben
 List<String>? depthFirst(Graph graph, String start, String goal) {
-  Set<String> found = {};
-  return search(graph, start, goal, found);
+  Set<String> seen = {};
+  return search(graph, start, goal, seen);
 }
 
-List<String>? search(Graph graph, String node, String goal, Set<String> found) {
-  if (found.contains(node)) return null;
-  found.add(node);
+List<String>? search(Graph graph, String node, String goal, Set<String> seen) {
+  if (seen.contains(node)) return null;
+  seen.add(node);
   if (node == goal) return [node];
   List<Edge>? edges = graph.edges[node];
   if (edges == null) return null;
   for (Edge edge in edges) {
-    List<String>? rest = search(graph, edge.to, goal, found);
+    List<String>? rest = search(graph, edge.to, goal, seen);
     if (rest != null) {
       rest.insert(0, node);
       return rest;

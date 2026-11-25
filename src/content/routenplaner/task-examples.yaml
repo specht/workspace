@@ -158,16 +158,16 @@ examples:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
       - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
-      # found in jedem Aufruf neu: wieder im Kreis, bis der Stack voll ist
+      # seen in jedem Aufruf neu: wieder im Kreis, bis der Stack voll ist
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
-              def depth_first(graph, node, goal, found = Set.new)
-                  return nil if found.include?(node)
-                  found << node
+              def depth_first(graph, node, goal, seen = Set.new)
+                  return nil if seen.include?(node)
+                  seen << node
                   return [node] if node == goal
                   graph[:edges][node].each do |neighbour, _metres|
                       rest = depth_first(graph, neighbour, goal)
@@ -203,7 +203,7 @@ examples:
       - answer: ''
   merken:
     pass:
-      - answer: Für jeden Knoten, von welchem Knoten aus die Suche ihn gefunden hat.
+      - answer: Für jeden Knoten, von welchem Knoten aus die Suche ihn gesehen hat.
     fail:
       - answer: ''
   weg:

@@ -31,9 +31,9 @@ def walk(graph, node, goal)
     raise NotImplementedError, 'walk'
 end
 
-# Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
-# die die Suche schon gefunden hat; der erste Aufruf bekommt eine leere Menge.
-def depth_first(graph, node, goal, found = Set.new)
+# Tiefensuche: wie walk, aber jeden Knoten nur einmal. seen sind die Knoten,
+# die die Suche schon gesehen hat; der erste Aufruf bekommt eine leere Menge.
+def depth_first(graph, node, goal, seen = Set.new)
     raise NotImplementedError, 'depth_first'
 end
 

@@ -71,14 +71,14 @@ function walk(graph, node, goal) {
     return null;
 }
 
-// Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die Knoten,
-// die die Suche schon gefunden hat
-function depthFirst(graph, node, goal, found = new Set()) {
-    if (found.has(node)) return null;
-    found.add(node);
+// Tiefensuche: wie walk, aber jeder Knoten nur einmal; seen sind die Knoten,
+// die die Suche schon gesehen hat
+function depthFirst(graph, node, goal, seen = new Set()) {
+    if (seen.has(node)) return null;
+    seen.add(node);
     if (node === goal) return [node];
     for (const [neighbour] of graph.edges[node] || []) {
-        const rest = depthFirst(graph, neighbour, goal, found);
+        const rest = depthFirst(graph, neighbour, goal, seen);
         if (rest !== null) return [node, ...rest];
     }
     return null;

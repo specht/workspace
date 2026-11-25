@@ -33,14 +33,14 @@ public class Routes {
         throw new UnsupportedOperationException("walk");
     }
 
-    // Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
-    // die die Suche schon gefunden hat; der erste Aufruf (mit drei
+    // Tiefensuche: wie walk, aber jeden Knoten nur einmal. seen sind die Knoten,
+    // die die Suche schon gesehen hat; der erste Aufruf (mit drei
     // Parametern) gibt ihr eine leere Menge.
     static List<String> depthFirst(Graph graph, String start, String goal) {
         return depthFirst(graph, start, goal, new HashSet<>());
     }
 
-    static List<String> depthFirst(Graph graph, String node, String goal, Set<String> found) {
+    static List<String> depthFirst(Graph graph, String node, String goal, Set<String> seen) {
         throw new UnsupportedOperationException("depthFirst");
     }
 
