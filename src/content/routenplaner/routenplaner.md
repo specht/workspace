@@ -1138,7 +1138,9 @@ while (!heap.isEmpty) {
   // hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
   visited.add(node);
   if (node == goal) break;
-  for (final edge in graph.edges[node] ?? <Edge>[]) {
+  final edges = graph.edges[node];
+  if (edges == null) continue;
+  for (final edge in edges) {
     final total = soFar + edge.cost;
     // wie bisher: weiter, wenn edge.to schon einen Weg hat, der nicht länger ist
     // hier: neuer Abstand, neuer Vorgänger, und edge.to mit total in den Heap
@@ -1171,7 +1173,9 @@ while (!heap.isEmpty) {
   done.add(node);
   visited.add(node);
   if (node == goal) break;
-  for (final edge in graph.edges[node] ?? <Edge>[]) {
+  final edges = graph.edges[node];
+  if (edges == null) continue;
+  for (final edge in edges) {
     final total = soFar + edge.cost;
     if (costs.containsKey(edge.to) && costs[edge.to]! <= total) continue;
     costs[edge.to] = total;

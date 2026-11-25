@@ -873,14 +873,18 @@ tasks:
           sich für jeden Nachbarn selbst auf, mit dem Nachbarn (`edge.to`) als
           `node`. Gibt ein Aufruf einen Weg zurück, kommt `node` vorne davor
           (`[node, ...rest]`), und das ist das Ergebnis. Findet kein Aufruf einen Weg,
-          ist das Ergebnis `null`.
+          ist das Ergebnis `null`. Ein Knoten ohne Kanten hat in `graph.edges`
+          keinen Eintrag: `graph.edges[node]` ist dann `null`, und von dort gibt es
+          keinen Weg.
         - |
           Ein Gerüst:
 
           ```dart
           List<String>? walk(Graph graph, String node, String goal) {
             if (…) return [node]; // hier: ist node das Ziel?
-            for (final edge in graph.edges[node] ?? <Edge>[]) {
+            final edges = graph.edges[node];
+            if (edges == null) return null;
+            for (final edge in edges) {
               final rest = walk(…); // hier: weiter vom Nachbarn aus
               // hier: hat rest einen Weg, node vorne davor und zurückgeben
             }
@@ -1135,7 +1139,9 @@ tasks:
             if (found == null) found = {};
             // hier: steht node schon in found, null; sonst kommt node hinein
             if (node == goal) return [node];
-            for (final edge in graph.edges[node] ?? <Edge>[]) {
+            final edges = graph.edges[node];
+            if (edges == null) return null;
+            for (final edge in edges) {
               final rest = depthFirst(…); // hier: mit found
               if (rest != null) return [node, ...rest];
             }
@@ -1416,7 +1422,9 @@ tasks:
               final nextRing = <String>[];
               for (final node in ring) {
                 // hier: node in visited, und beim Ziel: return Search(null, visited);
-                for (final edge in graph.edges[node] ?? <Edge>[]) {
+                final edges = graph.edges[node];
+                if (edges == null) continue;
+                for (final edge in edges) {
                   // hier: ein neuer Nachbar (edge.to) kommt in found und in nextRing
                 }
               }
@@ -2016,7 +2024,9 @@ tasks:
               visited.add(node);
               if (node == goal) break;
 
-              for (final edge in graph.edges[node] ?? <Edge>[]) {
+              final edges = graph.edges[node];
+              if (edges == null) continue;
+              for (final edge in edges) {
                 final total = soFar + edge.cost;
                 // hier: ist edge.to neu, oder ist total kürzer als metres[edge.to]?
                 // Dann neuer Abstand, neuer Vorgänger, und edge.to in frontier
@@ -2915,7 +2925,9 @@ tasks:
               final (_, node) = heap.pop()!;
               // hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
               // besucht und am Ziel aufhören
-              for (final edge in graph.edges[node] ?? <Edge>[]) {
+              final edges = graph.edges[node];
+              if (edges == null) continue;
+              for (final edge in edges) {
                 final total = costs[node]! + edge.cost;
                 // hier: wie in dijkstra, nur mit total + estimate(edge.to) als Priorität
               }
