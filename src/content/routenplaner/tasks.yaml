@@ -872,7 +872,7 @@ tasks:
           Drei Fälle. Ist `node` das Ziel, ist der Weg `[node]`. Sonst ruft `walk`
           sich für jeden Nachbarn selbst auf, mit dem Nachbarn (`edge.to`) als
           `node`. Gibt ein Aufruf einen Weg zurück, kommt `node` vorne davor
-          (`[node, ...rest]`), und das ist das Ergebnis. Findet kein Aufruf einen Weg,
+          (`rest.insert(0, node)`), und dieser Weg ist das Ergebnis. Findet kein Aufruf einen Weg,
           ist das Ergebnis `null`. Ein Knoten ohne Kanten hat in `graph.edges`
           keinen Eintrag: `graph.edges[node]` ist dann `null`, und von dort gibt es
           keinen Weg.
@@ -882,15 +882,20 @@ tasks:
           ```dart
           List<String>? walk(Graph graph, String node, String goal) {
             if (…) return [node]; // hier: ist node das Ziel?
-            final edges = graph.edges[node];
+            List<Edge>? edges = graph.edges[node];
             if (edges == null) return null;
-            for (final edge in edges) {
-              final rest = walk(…); // hier: weiter vom Nachbarn aus
-              // hier: hat rest einen Weg, node vorne davor und zurückgeben
+            for (Edge edge in edges) {
+              List<String>? rest = walk(…); // hier: weiter vom Nachbarn aus
+              // hier: hat rest einen Weg, node vorne davor (rest.insert(0, node)) und rest zurückgeben
             }
             return null;
           }
           ```
+
+          Kürzer geschrieben, wenn du magst: `final edges = graph.edges[node];` statt
+          des Typs davor, Dart kennt ihn selbst; `for (final edge in graph.edges[node] ?? [])`
+          statt der Prüfung auf `null` (`??` nimmt die leere Liste, wenn links `null`
+          steht); `return [node, ...rest];` statt `insert` und `return`.
     javascript:
       prompt: Schreib `walk` in `routes.js`.
       check:
@@ -1139,15 +1144,22 @@ tasks:
             if (found == null) found = {};
             // hier: steht node schon in found, null; sonst kommt node hinein
             if (node == goal) return [node];
-            final edges = graph.edges[node];
+            List<Edge>? edges = graph.edges[node];
             if (edges == null) return null;
-            for (final edge in edges) {
-              final rest = depthFirst(…); // hier: mit found
-              if (rest != null) return [node, ...rest];
+            for (Edge edge in edges) {
+              List<String>? rest = depthFirst(…); // hier: mit found
+              if (rest != null) {
+                rest.insert(0, node);
+                return rest;
+              }
             }
             return null;
           }
           ```
+
+          Kürzer geschrieben, wenn du magst: `found ??= {};` statt des `if`;
+          `if (!found.add(node)) return null;` prüft und trägt ein in einem, denn `add`
+          gibt `false` zurück, wenn `node` schon darin stand.
     javascript:
       prompt: Schreib `depthFirst` in `routes.js`.
       check:
@@ -1415,16 +1427,16 @@ tasks:
 
           ```dart
           Search breadthFirst(Graph graph, String start, String goal) {
-            final found = <String>{start};
-            var ring = [start];
-            final visited = <String>[];
+            Set<String> found = {start};
+            List<String> ring = [start];
+            List<String> visited = [];
             while (ring.isNotEmpty) {
-              final nextRing = <String>[];
-              for (final node in ring) {
+              List<String> nextRing = [];
+              for (String node in ring) {
                 // hier: node in visited, und beim Ziel: return Search(null, visited);
-                final edges = graph.edges[node];
+                List<Edge>? edges = graph.edges[node];
                 if (edges == null) continue;
-                for (final edge in edges) {
+                for (Edge edge in edges) {
                   // hier: ein neuer Nachbar (edge.to) kommt in found und in nextRing
                 }
               }
@@ -1433,6 +1445,10 @@ tasks:
             return Search(null, visited);
           }
           ```
+
+          Kürzer geschrieben, wenn du magst: `final visited = <String>[];` statt
+          `List<String> visited = [];`, und `if (found.add(edge.to))` statt erst
+          `contains`, dann `add`.
     javascript:
       prompt: Schreib `breadthFirst` in `routes.js`, erst einmal ohne den Weg.
       check:
@@ -1702,7 +1718,7 @@ tasks:
           ```dart
           List<String>? pathTo(Map<String, String?> previous, String goal) {
             if (…) return null; // hier: hat die Suche das Ziel nicht gefunden?
-            final path = <String>[];
+            List<String> path = [];
             String? node = goal;
             while (node != null) {
               // hier: node vorne in den Weg, dann weiter zu seinem Vorgänger

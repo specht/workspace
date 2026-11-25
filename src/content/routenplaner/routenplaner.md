@@ -663,7 +663,7 @@ In `previous` steht für den Start `null`, für jeden anderen gefundenen Knoten 
 
 <!-- page-code: own -->
 ```dart
-final previous = <String, String?>{'11': null, '12': '11', '21': '11', '13': '12', …};
+Map<String, String?> previous = {'11': null, '12': '11', '21': '11', '13': '12', …};
 ```
 
 Statt `found.contains(edge.to)` fragst du `previous.containsKey(edge.to)`, statt `found.add(edge.to)` schreibst du `previous[edge.to] = node`.
