@@ -195,6 +195,17 @@ examples:
         - files: { routenplaner-starter/java/Routes.java: loesung/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
         - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+  idee:
+    pass:
+      - answer: Erst alle Nachbarn des Starts ansehen, dann deren Nachbarn, und keinen Knoten zweimal.
+      - answer: weiß nicht
+    fail:
+      - answer: ''
+  merken:
+    pass:
+      - answer: Für jeden Knoten, von welchem Knoten aus die Suche ihn gefunden hat.
+    fail:
+      - answer: ''
   weg:
     pass:
       - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }

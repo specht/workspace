@@ -983,6 +983,7 @@ tasks:
   - id: kreis
     title: Auf der echten Karte
     prompt: Die Karte fragt jetzt dein `walk` nach einem Weg durch Steglitz-Zehlendorf, wo jede Straße in beide Richtungen geht. Was passiert?
+    prediction: true
     check:
       type: choice
       options:
@@ -1225,7 +1226,8 @@ tasks:
 
   - id: umweg
     title: Ein Weg, aber was für einer
-    prompt: Zum Botanischen Garten, keine zwei Kilometer vom Gymnasium Steglitz, findet die Tiefensuche einen Weg von fast 77 Kilometern. Warum?
+    prompt: Der Botanische Garten liegt keine zwei Kilometer vom Gymnasium Steglitz. Warum ist der Weg der Tiefensuche dorthin so lang?
+    prediction: true
     check:
       type: choice
       options:
@@ -1245,6 +1247,15 @@ tasks:
       Reihenfolge der Nachbarn, nicht an der Länge. Und jeder Schritt in die
       Tiefe ist ein Aufruf mehr auf dem Stack: Zum Strandbad Wannsee reicht er
       nicht mehr.
+
+  - id: idee
+    title: Deine Idee
+    prompt: Die Tiefensuche geht zu tief und nimmt Umwege. Wie müsste eine Suche vorgehen, die beides nicht tut? Beschreib sie in ein, zwei Sätzen, so genau, dass ein Programm sie ausführen könnte.
+    prediction: true
+    check:
+      type: answer
+      compare: regex
+      expect: '\S'
 
   - id: breitensuche
     title: Die Welle
@@ -1519,6 +1530,15 @@ tasks:
               return new Search(null, visited);
           }
           ```
+
+  - id: merken
+    title: Welcher Weg?
+    prompt: Die Welle ist am Ziel, aber welchen Weg hat sie genommen? Was müsste sich die Suche unterwegs merken, damit du den Weg am Ende kennst? Beschreib es in ein, zwei Sätzen.
+    prediction: true
+    check:
+      type: answer
+      compare: regex
+      expect: '\S'
 
   - id: weg
     title: Der Weg zurück
