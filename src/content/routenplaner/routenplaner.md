@@ -689,7 +689,7 @@ previous.get("12")  // "11"; previous ist {11=null, 12=11, 21=11, 13=12, …}
 Statt `seen.contains(edge.to())` fragst du `previous.containsKey(edge.to())`, statt `seen.add(edge.to())` schreibst du `previous.put(edge.to(), node)`.
 <!-- /language -->
 
-Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht <span class='code-language' data-language='ruby python'><code>path_to</code></span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span>. Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: <span class='code-language' data-language='ruby javascript'><code>path.unshift(node)</code></span><span class='code-language' data-language='python dart'><code>path.insert(0, node)</code></span><span class='code-language' data-language='java'><code>path.addFirst(node)</code> mit einer <code>LinkedList</code></span>. Am Ende gibt die Breitensuche den Weg zurück, den <span class='code-language' data-language='ruby python'><code>path_to</code></span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span> aus `previous` baut.
+Ist die Suche am Ziel, geht der Weg vom Ziel aus rückwärts: zum Vorgänger des Ziels, zu dessen Vorgänger und so weiter, bis zum Start, der keinen Vorgänger hat. Das macht <span class='code-language' data-language='ruby python'>`path_to`</span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span>. Weil du den Weg rückwärts findest, kommt jeder Knoten vorne dazu: <span class='code-language' data-language='ruby javascript'><code>path.unshift(node)</code></span><span class='code-language' data-language='python dart'><code>path.insert(0, node)</code></span><span class='code-language' data-language='java'><code>path.addFirst(node)</code> mit einer <code>LinkedList</code></span>. Am Ende gibt die Breitensuche den Weg zurück, den <span class='code-language' data-language='ruby python'>`path_to`</span><span class='code-language' data-language='dart javascript java'><code>pathTo</code></span> aus `previous` baut.
 
 _uses(weg-zurueck)
 
@@ -1538,7 +1538,7 @@ Wie schnell man wo vorankommt, steht in `routes.js` im Objekt `SPEEDS`, in km/h:
 Wie schnell man wo vorankommt, steht in `Routes.java` in der Map `SPEEDS`, in km/h: `SPEEDS.get("car").get("residential")` ist 25, in einer Wohnstraße fährt man mit dem Auto im Schnitt 25 km/h. Fehlt eine Art von Weg in der Map, darf man ihn so nicht benutzen.
 <!-- /language -->
 
-<span class='code-language' data-language='ruby python'><code>build_travel_graph</code></span><span class='code-language' data-language='dart javascript java'><code>buildTravelGraph</code></span> ist fast <span class='code-language' data-language='ruby python'><code>build_graph</code></span><span class='code-language' data-language='dart javascript java'><code>buildGraph</code></span>, mit drei Unterschieden:
+<span class='code-language' data-language='ruby python'>`build_travel_graph`</span><span class='code-language' data-language='dart javascript java'><code>buildTravelGraph</code></span> ist fast <span class='code-language' data-language='ruby python'>`build_graph`</span><span class='code-language' data-language='dart javascript java'><code>buildGraph</code></span>, mit drei Unterschieden:
 
 1. Ein Weg, dessen Art in <span class='code-language' data-language='ruby python javascript java'><code>SPEEDS[mode]</code></span><span class='code-language' data-language='dart'><code>speeds[mode]</code></span> fehlt, kommt nicht in den Graphen.
 2. An jeder Kante stehen Sekunden: die Meter geteilt durch das Tempo in Metern je Sekunde, also km/h geteilt durch 3,6.
@@ -1735,6 +1735,145 @@ hook: tour astar | foot | best | Brandenburger Tor | Berliner Fernsehturm | Sieg
 </div>
 
 Der nächste Nachbar kommt auf 11,2 km, das Ausprobieren aller 5 040 Reihenfolgen auf 9,8 km. 2-opt, aus der Reihenfolge des nächsten Nachbarn, kommt bis auf 44 Meter an die beste heran, in einem Bruchteil der Zeit. Ganz die beste ist es nicht: 2-opt hört auf, wenn kein einzelnes Umdrehen mehr hilft, und das ist nicht immer die beste Rundfahrt. Für sehr viele Orte kennt niemand einen schnellen Weg zur besten. Routenplaner, Paketdienste und Busunternehmen arbeiten darum mit Verfahren wie 2-opt: gut genug, und rechtzeitig fertig.
+
+<h2 id='auf-einen-blick'>Auf einen Blick</h2>
+
+Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim Programmieren. Am besten öffnest du diesen Abschnitt in einem zweiten Tab: ein Klick mit gedrückter <kbd>Strg</kbd>-Taste oder mit dem Mausrad auf den Link »Auf einen Blick« in einer Aufgabe.
+
+Ein Knoten ist kein eigenes Objekt, sondern nur seine ID, ein String wie `'26735834'`, auf den Testkarten `'11'` oder `'2'`. Die Beispiele unten kommen von der Testkarte `data/detour.tsv`.
+
+<!-- language: ruby -->
+In Ruby gibt es dafür keine Klassen, nur Hashes und Arrays:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Was</th><th>Wie es aussieht</th><th>Bedeutung</th></tr>
+<tr><td>ein Weg</td><td><code>{ kind:, oneway:, name:, points: }</code></td><td><code>kind</code> die Art (<code>'residential'</code>, <code>'footway'</code>, …), <code>oneway</code> <code>'yes'</code>, <code>'-1'</code> oder <code>''</code>, <code>name</code> der Name (<code>''</code> ohne Namen), <code>points</code> die Punkte der Reihe nach</td></tr>
+<tr><td>ein Punkt eines Weges</td><td><code>['11', 13.3, 52.45]</code></td><td>ID, Länge, Breite in Grad</td></tr>
+<tr><td>der Graph</td><td><code>{ nodes:, edges: }</code></td><td><code>nodes</code>: für jede ID <code>[Länge, Breite]</code>; <code>edges</code>: für jede ID ihre Kanten; im Graphen für eine Art zu reisen dazu <code>fastest</code>, das größte Tempo in Metern je Sekunde</td></tr>
+<tr><td>eine Kante</td><td><code>['12', 67.8]</code></td><td>die ID des Nachbarn und die Kosten: Meter, im Graphen für eine Art zu reisen Sekunden</td></tr>
+<tr><td>was eine Suche zurückgibt</td><td><code>{ path:, visited: }</code></td><td>siehe unten</td></tr>
+</table>
+</div>
+
+`graph[:edges]['11']` gibt `[['12', 67.8], ['21', 222.4]]` (gerundet). Für eine ID ohne Kanten gibt es ein leeres Array, wenn dein `build_graph` die Kanten mit `Hash.new { |hash, id| hash[id] = [] }` anlegt wie oben, und `nil` bei einem gewöhnlichen Hash.
+
+So gehst du die Nachbarn eines Knotens durch:
+
+<!-- page-code: own -->
+```ruby
+graph[:edges][node].each do |neighbour, metres|
+    # neighbour: die ID des Nachbarn, metres: die Kosten der Kante
+end
+```
+<!-- /language -->
+<!-- language: python -->
+In Python gibt es dafür keine Klassen, nur Dictionaries und Listen:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Was</th><th>Wie es aussieht</th><th>Bedeutung</th></tr>
+<tr><td>ein Weg</td><td><code>{'kind': …, 'oneway': …, 'name': …, 'points': …}</code></td><td><code>'kind'</code> die Art (<code>'residential'</code>, <code>'footway'</code>, …), <code>'oneway'</code> <code>'yes'</code>, <code>'-1'</code> oder <code>''</code>, <code>'name'</code> der Name (<code>''</code> ohne Namen), <code>'points'</code> die Punkte der Reihe nach</td></tr>
+<tr><td>ein Punkt eines Weges</td><td><code>['11', 13.3, 52.45]</code></td><td>ID, Länge, Breite in Grad</td></tr>
+<tr><td>der Graph</td><td><code>{'nodes': …, 'edges': …}</code></td><td><code>'nodes'</code>: für jede ID <code>[Länge, Breite]</code>; <code>'edges'</code>: für jede ID ihre Kanten; im Graphen für eine Art zu reisen dazu <code>'fastest'</code>, das größte Tempo in Metern je Sekunde</td></tr>
+<tr><td>eine Kante</td><td><code>['12', 67.8]</code></td><td>die ID des Nachbarn und die Kosten: Meter, im Graphen für eine Art zu reisen Sekunden</td></tr>
+<tr><td>was eine Suche zurückgibt</td><td><code>{'path': …, 'visited': …}</code></td><td>siehe unten</td></tr>
+</table>
+</div>
+
+`graph['edges']['11']` gibt `[['12', 67.8], ['21', 222.4]]` (gerundet). Für eine ID ohne Kanten gibt `graph['edges'][node]` einen `KeyError`, `graph['edges'].get(node, [])` eine leere Liste.
+
+So gehst du die Nachbarn eines Knotens durch:
+
+<!-- page-code: own -->
+```python
+for neighbour, metres in graph['edges'].get(node, []):
+    # neighbour: die ID des Nachbarn, metres: die Kosten der Kante
+    ...
+```
+<!-- /language -->
+<!-- language: dart -->
+Die Klassen stehen in `dart/graph.dart`; <kbd>F12</kbd> auf einem Namen öffnet seine Definition.
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Klasse</th><th>Felder</th><th>Bedeutung</th></tr>
+<tr><td><code>Point(String id, double lon, double lat)</code></td><td><code>id</code>, <code>lon</code>, <code>lat</code></td><td>ein Punkt eines Weges: seine ID, Länge und Breite in Grad</td></tr>
+<tr><td><code>Way(String kind, String oneway, String name, List&lt;Point&gt; points)</code></td><td><code>kind</code>, <code>oneway</code>, <code>name</code>, <code>points</code></td><td>ein Weg: die Art (<code>'residential'</code>, <code>'footway'</code>, …), <code>'yes'</code>, <code>'-1'</code> oder <code>''</code> für die Einbahnstraße, der Name (<code>''</code> ohne Namen), die Punkte der Reihe nach</td></tr>
+<tr><td><code>Edge(String to, double cost)</code></td><td><code>to</code>, <code>cost</code></td><td>eine Kante: die ID des Nachbarn und die Kosten, Meter oder im Graphen für eine Art zu reisen Sekunden</td></tr>
+<tr><td><code>Graph()</code></td><td><code>nodes</code>, <code>edges</code>, <code>fastest</code></td><td><code>nodes</code>: <code>Map&lt;String, Point&gt;</code>, jede ID mit ihrem Punkt; <code>edges</code>: <code>Map&lt;String, List&lt;Edge&gt;&gt;</code>, jede ID mit ihren Kanten; <code>fastest</code>: das größte Tempo in Metern je Sekunde, nur im Graphen für eine Art zu reisen</td></tr>
+<tr><td><code>Search(List&lt;String&gt;? path, List&lt;String&gt; visited)</code></td><td><code>path</code>, <code>visited</code></td><td>was eine Suche zurückgibt, siehe unten</td></tr>
+</table>
+</div>
+
+`graph.edges['11']` gibt `[Edge('12', 67.8), Edge('21', 222.4)]` (gerundet), für eine ID ohne Kanten `null`.
+
+So gehst du die Nachbarn eines Knotens durch:
+
+<!-- page-code: own -->
+```dart
+List<Edge>? edges = graph.edges[node];
+if (edges == null) return null; // in einer Schleife: continue
+for (Edge edge in edges) {
+  // edge.to: die ID des Nachbarn, edge.cost: die Kosten der Kante
+}
+```
+<!-- /language -->
+<!-- language: javascript -->
+In JavaScript gibt es dafür keine Klassen, nur Objekte und Arrays:
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Was</th><th>Wie es aussieht</th><th>Bedeutung</th></tr>
+<tr><td>ein Weg</td><td><code>{ kind, oneway, name, points }</code></td><td><code>kind</code> die Art (<code>'residential'</code>, <code>'footway'</code>, …), <code>oneway</code> <code>'yes'</code>, <code>'-1'</code> oder <code>''</code>, <code>name</code> der Name (<code>''</code> ohne Namen), <code>points</code> die Punkte der Reihe nach</td></tr>
+<tr><td>ein Punkt eines Weges</td><td><code>['11', 13.3, 52.45]</code></td><td>ID, Länge, Breite in Grad</td></tr>
+<tr><td>der Graph</td><td><code>{ nodes, edges }</code></td><td><code>nodes</code>: für jede ID <code>[Länge, Breite]</code>; <code>edges</code>: für jede ID ihre Kanten; im Graphen für eine Art zu reisen dazu <code>fastest</code>, das größte Tempo in Metern je Sekunde</td></tr>
+<tr><td>eine Kante</td><td><code>['12', 67.8]</code></td><td>die ID des Nachbarn und die Kosten: Meter, im Graphen für eine Art zu reisen Sekunden</td></tr>
+<tr><td>was eine Suche zurückgibt</td><td><code>{ path, visited }</code></td><td>siehe unten</td></tr>
+</table>
+</div>
+
+`graph.edges['11']` gibt `[['12', 67.8], ['21', 222.4]]` (gerundet), für eine ID ohne Kanten `undefined`.
+
+So gehst du die Nachbarn eines Knotens durch:
+
+<!-- page-code: own -->
+```javascript
+for (const [neighbour, metres] of graph.edges[node] || []) {
+    // neighbour: die ID des Nachbarn, metres: die Kosten der Kante
+}
+```
+<!-- /language -->
+<!-- language: java -->
+Die Records und die Klasse `Graph` stehen in `java/Types.java`; <kbd>F12</kbd> auf einem Namen öffnet seine Definition. Die Felder eines Records liest du mit Klammern: `edge.to()`, `point.lat()`.
+
+<div style='max-width: 100%; overflow-x: auto;'>
+<table class='table'>
+<tr><th>Typ</th><th>Felder</th><th>Bedeutung</th></tr>
+<tr><td><code>new Point(String id, double lon, double lat)</code></td><td><code>id()</code>, <code>lon()</code>, <code>lat()</code></td><td>ein Punkt eines Weges: seine ID, Länge und Breite in Grad</td></tr>
+<tr><td><code>new Way(String kind, String oneway, String name, List&lt;Point&gt; points)</code></td><td><code>kind()</code>, <code>oneway()</code>, <code>name()</code>, <code>points()</code></td><td>ein Weg: die Art (<code>"residential"</code>, <code>"footway"</code>, …), <code>"yes"</code>, <code>"-1"</code> oder <code>""</code> für die Einbahnstraße, der Name (<code>""</code> ohne Namen), die Punkte der Reihe nach</td></tr>
+<tr><td><code>new Edge(String to, double cost)</code></td><td><code>to()</code>, <code>cost()</code></td><td>eine Kante: die ID des Nachbarn und die Kosten, Meter oder im Graphen für eine Art zu reisen Sekunden</td></tr>
+<tr><td><code>new Graph()</code></td><td><code>nodes</code>, <code>edges</code>, <code>fastest</code></td><td><code>nodes</code>: <code>Map&lt;String, Point&gt;</code>, jede ID mit ihrem Punkt; <code>edges</code>: <code>Map&lt;String, List&lt;Edge&gt;&gt;</code>, jede ID mit ihren Kanten; <code>fastest</code>: das größte Tempo in Metern je Sekunde, nur im Graphen für eine Art zu reisen</td></tr>
+<tr><td><code>new Search(List&lt;String&gt; path, List&lt;String&gt; visited)</code></td><td><code>path()</code>, <code>visited()</code></td><td>was eine Suche zurückgibt, siehe unten</td></tr>
+</table>
+</div>
+
+`graph.edges.get("11")` gibt `[Edge[to=12, cost=67.8], Edge[to=21, cost=222.4]]` (gerundet), für eine ID ohne Kanten `null`.
+
+So gehst du die Nachbarn eines Knotens durch:
+
+<!-- page-code: own -->
+```java
+List<Edge> edges = graph.edges.get(node);
+if (edges == null) return null; // in einer Schleife: continue
+for (Edge edge : edges) {
+    // edge.to(): die ID des Nachbarn, edge.cost(): die Kosten der Kante
+}
+```
+<!-- /language -->
+
+Die Suchen <span class='code-language' data-language='ruby python'>`breadth_first`, später `dijkstra` und `a_star`</span><span class='code-language' data-language='dart javascript java'><code>breadthFirst</code>, später <code>dijkstra</code> und <code>aStar</code></span>, geben zweierlei zurück: `path`, die IDs vom Start bis zum Ziel, oder <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span>, wenn es keinen Weg gibt; und `visited`, die Knoten in der Reihenfolge, in der sie dran waren. Damit spielt die Karte die Suche ab. `walk` und <span class='code-language' data-language='ruby python'><code>depth_first</code></span><span class='code-language' data-language='dart javascript java'><code>depthFirst</code></span> geben nur den Weg zurück.
+
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot

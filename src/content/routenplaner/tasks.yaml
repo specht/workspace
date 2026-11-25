@@ -26,7 +26,7 @@ tasks:
 
   - id: lesen
     title: Die Wege lesen
-    prompt: Schreib `read_ways` in `routes.rb`.
+    prompt: Schreib `read_ways` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -73,7 +73,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `read_ways` in `routes.py`.
+      prompt: Schreib `read_ways` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -124,7 +124,7 @@ tasks:
               return ways
           ```
     dart:
-      prompt: Schreib `readWays` in `routes.dart`.
+      prompt: Schreib `readWays` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -178,7 +178,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `readWays` in `routes.js`.
+      prompt: Schreib `readWays` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -232,7 +232,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `readWays` in `Routes.java`.
+      prompt: Schreib `readWays` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -308,7 +308,7 @@ tasks:
 
   - id: abstand
     title: Wie weit ist es?
-    prompt: Schreib `distance` in `routes.rb`.
+    prompt: Schreib `distance` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -350,7 +350,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `distance` in `routes.py`.
+      prompt: Schreib `distance` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -391,7 +391,7 @@ tasks:
               return math.sqrt(x * x + y * y) * 6_371_000
           ```
     dart:
-      prompt: Schreib `distance` in `routes.dart`.
+      prompt: Schreib `distance` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -434,7 +434,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `distance` in `routes.js`.
+      prompt: Schreib `distance` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -476,7 +476,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `distance` in `Routes.java`.
+      prompt: Schreib `distance` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -520,7 +520,7 @@ tasks:
 
   - id: graph
     title: Vom Weg zum Graphen
-    prompt: Schreib `build_graph` in `routes.rb`.
+    prompt: Schreib `build_graph` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -564,7 +564,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `build_graph` in `routes.py`.
+      prompt: Schreib `build_graph` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -608,7 +608,7 @@ tasks:
               return {'nodes': nodes, 'edges': edges}
           ```
     dart:
-      prompt: Schreib `buildGraph` in `routes.dart`.
+      prompt: Schreib `buildGraph` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -655,7 +655,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `buildGraph` in `routes.js`.
+      prompt: Schreib `buildGraph` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -704,7 +704,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `buildGraph` in `Routes.java`.
+      prompt: Schreib `buildGraph` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -754,7 +754,7 @@ tasks:
 
   - id: losgehen
     title: Einfach losgehen
-    prompt: Schreib `walk` in `routes.rb`.
+    prompt: Schreib `walk` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -799,7 +799,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `walk` in `routes.py`.
+      prompt: Schreib `walk` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -843,7 +843,7 @@ tasks:
               return None
           ```
     dart:
-      prompt: Schreib `walk` in `routes.dart`.
+      prompt: Schreib `walk` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -897,7 +897,7 @@ tasks:
           statt der Prüfung auf `null` (`??` nimmt die leere Liste, wenn links `null`
           steht); `return [node, ...rest];` statt `insert` und `return`.
     javascript:
-      prompt: Schreib `walk` in `routes.js`.
+      prompt: Schreib `walk` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -942,7 +942,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `walk` in `Routes.java`.
+      prompt: Schreib `walk` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -1017,7 +1017,7 @@ tasks:
 
   - id: tiefensuche
     title: Nicht im Kreis
-    prompt: Schreib `depth_first` in `routes.rb`.
+    prompt: Schreib `depth_first` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -1059,7 +1059,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `depth_first` in `routes.py`.
+      prompt: Schreib `depth_first` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -1104,7 +1104,7 @@ tasks:
               return None
           ```
     dart:
-      prompt: Schreib `search` in `routes.dart`, das `depthFirst` für die Tiefensuche fragt.
+      prompt: Schreib `search` in `routes.dart`, das `depthFirst` für die Tiefensuche fragt. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -1160,7 +1160,7 @@ tasks:
           aufruft, darf `seen` weglassen, und dann ist es `null`; `seen ??= {};`
           gibt ihm dann eine leere Menge.
     javascript:
-      prompt: Schreib `depthFirst` in `routes.js`.
+      prompt: Schreib `depthFirst` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -1201,7 +1201,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `depthFirst` in `Routes.java`.
+      prompt: Schreib `depthFirst` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -1281,7 +1281,7 @@ tasks:
 
   - id: breitensuche
     title: Die Welle
-    prompt: Schreib `breadth_first` in `routes.rb`, erst einmal ohne den Weg.
+    prompt: Schreib `breadth_first` in `routes.rb`, erst einmal ohne den Weg. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -1336,7 +1336,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `breadth_first` in `routes.py`, erst einmal ohne den Weg.
+      prompt: Schreib `breadth_first` in `routes.py`, erst einmal ohne den Weg. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -1388,7 +1388,7 @@ tasks:
               return {'path': None, 'visited': visited}
           ```
     dart:
-      prompt: Schreib `breadthFirst` in `routes.dart`, erst einmal ohne den Weg.
+      prompt: Schreib `breadthFirst` in `routes.dart`, erst einmal ohne den Weg. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -1449,7 +1449,7 @@ tasks:
           `List<String> visited = [];`, und `if (seen.add(edge.to))` statt erst
           `contains`, dann `add`.
     javascript:
-      prompt: Schreib `breadthFirst` in `routes.js`, erst einmal ohne den Weg.
+      prompt: Schreib `breadthFirst` in `routes.js`, erst einmal ohne den Weg. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -1504,7 +1504,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `breadthFirst` in `Routes.java`, erst einmal ohne den Weg.
+      prompt: Schreib `breadthFirst` in `Routes.java`, erst einmal ohne den Weg. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -1570,7 +1570,7 @@ tasks:
 
   - id: weg
     title: Der Weg zurück
-    prompt: Schreib `path_to` in `routes.rb`, und lass `breadth_first` damit den Weg zurückgeben.
+    prompt: Schreib `path_to` in `routes.rb`, und lass `breadth_first` damit den Weg zurückgeben. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -1622,7 +1622,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `path_to` in `routes.py`, und lass `breadth_first` damit den Weg zurückgeben.
+      prompt: Schreib `path_to` in `routes.py`, und lass `breadth_first` damit den Weg zurückgeben. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -1674,7 +1674,7 @@ tasks:
               return path
           ```
     dart:
-      prompt: Schreib `pathTo` in `routes.dart`, und lass `breadthFirst` damit den Weg zurückgeben.
+      prompt: Schreib `pathTo` in `routes.dart`, und lass `breadthFirst` damit den Weg zurückgeben. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -1726,7 +1726,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `pathTo` in `routes.js`, und lass `breadthFirst` damit den Weg zurückgeben.
+      prompt: Schreib `pathTo` in `routes.js`, und lass `breadthFirst` damit den Weg zurückgeben. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -1778,7 +1778,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `pathTo` in `Routes.java`, und lass `breadthFirst` damit den Weg zurückgeben.
+      prompt: Schreib `pathTo` in `Routes.java`, und lass `breadthFirst` damit den Weg zurückgeben. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -1855,7 +1855,7 @@ tasks:
 
   - id: dijkstra
     title: Dijkstra
-    prompt: Schreib `dijkstra` in `routes.rb`.
+    prompt: Schreib `dijkstra` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -1919,7 +1919,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `dijkstra` in `routes.py`.
+      prompt: Schreib `dijkstra` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -1981,7 +1981,7 @@ tasks:
               return {'path': path_to(previous, goal), 'visited': visited}
           ```
     dart:
-      prompt: Schreib `dijkstra` in `routes.dart`.
+      prompt: Schreib `dijkstra` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -2051,7 +2051,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `dijkstra` in `routes.js`.
+      prompt: Schreib `dijkstra` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -2118,7 +2118,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `dijkstra` in `Routes.java`.
+      prompt: Schreib `dijkstra` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -2189,7 +2189,7 @@ tasks:
 
   - id: heap
     title: Ein Heap
-    prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.rb`.
+    prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -2257,7 +2257,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.py`.
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -2322,7 +2322,7 @@ tasks:
               return top
           ```
     dart:
-      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.dart`.
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -2388,7 +2388,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.js`.
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -2457,7 +2457,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `Routes.java`.
+      prompt: Schreib `push` und `pop` der Klasse `MinHeap` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -2531,6 +2531,8 @@ tasks:
       wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in dem
       ein Knoten zweimal in den Heap kommt, und sieht nach, ob `dijkstra` den
       nächsten Knoten mit `pop` aus einem `MinHeap` holt.
+
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -2569,6 +2571,8 @@ tasks:
         wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in
         dem ein Knoten zweimal in den Heap kommt, und sieht nach, ob
         `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap` holt.
+
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -2609,6 +2613,8 @@ tasks:
         dem ein Knoten zweimal in den Heap kommt, und sieht in `routes.dart`
         nach, ob `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap`
         holt.
+
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -2676,6 +2682,8 @@ tasks:
         wieder Wege auf `data/detour.tsv` und auf einem kleinen Graphen, in
         dem ein Knoten zweimal in den Heap kommt, und sieht nach, ob
         `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap` holt.
+
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -2716,6 +2724,8 @@ tasks:
         dem ein Knoten zweimal in den Heap kommt, und sieht in `Routes.java`
         nach, ob `dijkstra` den nächsten Knoten mit `pop` aus einem `MinHeap`
         holt.
+
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -2772,7 +2782,7 @@ tasks:
 
   - id: astern
     title: A*
-    prompt: Schreib `a_star` in `routes.rb`.
+    prompt: Schreib `a_star` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -2831,7 +2841,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `a_star` in `routes.py`.
+      prompt: Schreib `a_star` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -2890,7 +2900,7 @@ tasks:
               return {'path': path_to(previous, goal), 'visited': visited}
           ```
     dart:
-      prompt: Schreib `aStar` in `routes.dart`.
+      prompt: Schreib `aStar` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -2951,7 +2961,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `aStar` in `routes.js`.
+      prompt: Schreib `aStar` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -3010,7 +3020,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `aStar` in `Routes.java`.
+      prompt: Schreib `aStar` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -3072,7 +3082,7 @@ tasks:
 
   - id: reisen
     title: Zu Fuß, mit dem Rad, mit dem Auto
-    prompt: Schreib `build_travel_graph` in `routes.rb`.
+    prompt: Schreib `build_travel_graph` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -3138,7 +3148,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `build_travel_graph` in `routes.py`.
+      prompt: Schreib `build_travel_graph` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -3203,7 +3213,7 @@ tasks:
               return {'nodes': nodes, 'edges': edges, 'fastest': …}
           ```
     dart:
-      prompt: Schreib `buildTravelGraph` in `routes.dart`.
+      prompt: Schreib `buildTravelGraph` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -3270,7 +3280,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `buildTravelGraph` in `routes.js`.
+      prompt: Schreib `buildTravelGraph` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -3338,7 +3348,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `buildTravelGraph` in `Routes.java`.
+      prompt: Schreib `buildTravelGraph` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -3407,7 +3417,7 @@ tasks:
 
   - id: rundfahrt
     title: Wie lang ist eine Rundfahrt?
-    prompt: Schreib `tour_length` in `routes.rb`.
+    prompt: Schreib `tour_length` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -3431,7 +3441,7 @@ tasks:
         (`each_cons(2)`), und zählst `costs[a][b]` zusammen (`sum`). Erst `a`, dann
         `b`: Hin ist nicht immer so weit wie zurück.
     python:
-      prompt: Schreib `tour_length` in `routes.py`.
+      prompt: Schreib `tour_length` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -3455,7 +3465,7 @@ tasks:
           (`zip(stops, stops[1:])`), und zählst `costs[a][b]` zusammen (`sum`). Erst
           `a`, dann `b`: Hin ist nicht immer so weit wie zurück.
     dart:
-      prompt: Schreib `tourLength` in `routes.dart`.
+      prompt: Schreib `tourLength` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -3479,7 +3489,7 @@ tasks:
           `order[(i + 1) % order.length]`. Zähl `costs[a][b]` zusammen. Erst `a`, dann
           `b`: Hin ist nicht immer so weit wie zurück.
     javascript:
-      prompt: Schreib `tourLength` in `routes.js`.
+      prompt: Schreib `tourLength` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -3503,7 +3513,7 @@ tasks:
           `order[(i + 1) % order.length]`. Zähl `costs[a][b]` zusammen. Erst `a`, dann
           `b`: Hin ist nicht immer so weit wie zurück.
     java:
-      prompt: Schreib `tourLength` in `Routes.java`.
+      prompt: Schreib `tourLength` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -3529,7 +3539,7 @@ tasks:
 
   - id: alle-reihenfolgen
     title: Alle Reihenfolgen
-    prompt: Schreib `best_tour` in `routes.rb`.
+    prompt: Schreib `best_tour` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -3556,7 +3566,7 @@ tasks:
         `tour_length`. Probier auch `best_tour([[0]])`: Bei einem einzigen Ort ist
         die Rundfahrt nur `[0]`.
     python:
-      prompt: Schreib `best_tour` in `routes.py`.
+      prompt: Schreib `best_tour` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -3583,7 +3593,7 @@ tasks:
           mit `min(…, key=…)` die mit der kleinsten `tour_length`. Probier auch
           `best_tour([[0]])`: Bei einem einzigen Ort ist die Rundfahrt nur `[0]`.
     dart:
-      prompt: Schreib `bestTour` in `routes.dart`.
+      prompt: Schreib `bestTour` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -3634,7 +3644,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `bestTour` in `routes.js`.
+      prompt: Schreib `bestTour` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -3682,7 +3692,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `bestTour` in `Routes.java`.
+      prompt: Schreib `bestTour` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -3740,7 +3750,7 @@ tasks:
 
   - id: naechster-nachbar
     title: Der nächste Nachbar
-    prompt: Schreib `nearest_tour` in `routes.rb`.
+    prompt: Schreib `nearest_tour` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -3761,7 +3771,7 @@ tasks:
         `costs[order.last][i]` am kleinsten ist (`min_by`), häng ihn an die
         Reihenfolge an und streich ihn aus den übrigen.
     python:
-      prompt: Schreib `nearest_tour` in `routes.py`.
+      prompt: Schreib `nearest_tour` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -3782,7 +3792,7 @@ tasks:
           `costs[order[-1]][i]` am kleinsten ist (`min(left, key=…)`), häng ihn an die
           Reihenfolge an und streich ihn aus den übrigen (`remove`).
     dart:
-      prompt: Schreib `nearestTour` in `routes.dart`.
+      prompt: Schreib `nearestTour` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -3803,7 +3813,7 @@ tasks:
           Schleife den, für den `costs[order.last][i]` am kleinsten ist, häng ihn an
           die Reihenfolge an und streich ihn aus den übrigen (`remove`).
     javascript:
-      prompt: Schreib `nearestTour` in `routes.js`.
+      prompt: Schreib `nearestTour` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -3825,7 +3835,7 @@ tasks:
           die Reihenfolge an und streich ihn aus den übrigen
           (`left.splice(left.indexOf(nearest), 1)`).
     java:
-      prompt: Schreib `nearestTour` in `Routes.java`.
+      prompt: Schreib `nearestTour` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
@@ -3851,7 +3861,7 @@ tasks:
 
   - id: zwei-opt
     title: Besser mit 2-opt
-    prompt: Schreib `improve_tour` in `routes.rb`.
+    prompt: Schreib `improve_tour` in `routes.rb`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
@@ -3900,7 +3910,7 @@ tasks:
         end
         ```
     python:
-      prompt: Schreib `improve_tour` in `routes.py`.
+      prompt: Schreib `improve_tour` in `routes.py`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: routenplaner-starter/python/routes.py
@@ -3947,7 +3957,7 @@ tasks:
               return order
           ```
     dart:
-      prompt: Schreib `improveTour` in `routes.dart`.
+      prompt: Schreib `improveTour` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -4001,7 +4011,7 @@ tasks:
           }
           ```
     javascript:
-      prompt: Schreib `improveTour` in `routes.js`.
+      prompt: Schreib `improveTour` in `routes.js`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
@@ -4051,7 +4061,7 @@ tasks:
           }
           ```
     java:
-      prompt: Schreib `improveTour` in `Routes.java`.
+      prompt: Schreib `improveTour` in `Routes.java`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: routenplaner-starter/java/Routes.java
