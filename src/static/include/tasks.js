@@ -322,6 +322,7 @@
             input.value = answer || '';
         }
         if (input && input.codeInputUpdate) input.codeInputUpdate();
+        if (card.growText) card.growText();
         if (card.pipButtons) card.pipButtons.load(input.value);
     }
 
@@ -1064,6 +1065,24 @@
                     submit(card);
                 }
             });
+            // a sentence or two (answer with lines: N): Enter makes a new
+            // line, Ctrl+Enter (Cmd+Enter) checks; the field grows with the
+            // text and never gets lower than its rows
+            const text = card.querySelector('textarea.task-text');
+            if (text) {
+                const grow = function () {
+                    text.style.height = 'auto';
+                    if (text.scrollHeight > text.clientHeight) text.style.height = (text.scrollHeight + text.offsetHeight - text.clientHeight) + 'px';
+                };
+                text.addEventListener('input', grow);
+                text.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                        e.preventDefault();
+                        submit(card);
+                    }
+                });
+                card.growText = grow;
+            }
             const del = card.querySelector('.task-delete');
             if (del) {
                 if (card.dataset.type === 'submit') del.textContent = 'Abgabe löschen';

@@ -81,9 +81,19 @@ module TaskCard
             io << "<form class='task-form' autocomplete='off'>"
             case type
             when 'answer'
-                io << "<input type='text' class='form-control task-input' name='answer' aria-labelledby='#{h.(field)}-title'"
-                io << " placeholder='#{h.(check['placeholder'])}'" if check['placeholder']
-                io << " spellcheck='false'>"
+                if check['lines']
+                    # a sentence or two (lines: N): a textarea at full width
+                    # that grows with the text; Enter makes a new line,
+                    # Ctrl+Enter checks, like the button (tasks.js)
+                    io << "<textarea class='form-control task-input task-text' name='answer' rows='#{check['lines'].to_i}' aria-labelledby='#{h.(field)}-title'"
+                    io << " placeholder='#{h.(check['placeholder'])}'" if check['placeholder']
+                    io << '></textarea>'
+                    io << "<div class='task-words'>Neue Zeile mit <kbd>Enter</kbd>, prüfen mit dem Knopf oder <kbd>Strg</kbd>+<kbd>Enter</kbd>.</div>"
+                else
+                    io << "<input type='text' class='form-control task-input' name='answer' aria-labelledby='#{h.(field)}-title'"
+                    io << " placeholder='#{h.(check['placeholder'])}'" if check['placeholder']
+                    io << " spellcheck='false'>"
+                end
             when 'number'
                 io << "<div class='input-group task-number-input'>"
                 io << "<input type='text' inputmode='decimal' class='form-control task-input' name='answer' aria-labelledby='#{h.(field)}-title'"

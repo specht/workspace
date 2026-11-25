@@ -437,6 +437,12 @@ check:
 `expect` darf eine Liste sein. Groß- und Kleinschreibung zählt nur mit
 `case_sensitive: true`; bei `url` zählt sie im Pfad immer.
 
+Für eine Antwort in ein, zwei Sätzen (eine Vermutung wie »Deine Idee« im
+Routenplaner, `compare: regex` mit `expect: '\S'`) macht `lines: 3` das Feld
+zu einem Textfeld über die ganze Breite der Karte, so viele Zeilen hoch (2 bis
+12), das mit dem Text wächst: <kbd>Enter</kbd> beginnt eine neue Zeile, der
+Knopf oder <kbd>Strg</kbd>+<kbd>Enter</kbd> prüft.
+
 ### choice, number, reflection
 
 ```yaml

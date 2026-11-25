@@ -1283,6 +1283,7 @@ tasks:
       type: answer
       compare: regex
       expect: '\S'
+      lines: 3
 
   - id: breitensuche
     title: Die Welle
@@ -1567,6 +1568,7 @@ tasks:
       type: answer
       compare: regex
       expect: '\S'
+      lines: 3
 
   - id: weg
     title: Der Weg zurück

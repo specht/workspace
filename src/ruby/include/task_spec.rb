@@ -317,7 +317,8 @@ module TaskSpec
         allowed = %w[type]
         case type
         when 'answer'
-            allowed += %w[expect compare case_sensitive placeholder]
+            allowed += %w[expect compare case_sensitive placeholder lines]
+            errors << 'lines must be a whole number from 2 to 12' if check.key?('lines') && !(check['lines'].is_a?(Integer) && check['lines'].between?(2, 12))
             expect = check['expect']
             values = expect.is_a?(Array) ? expect : [expect]
             errors << 'expect must be text or a list of texts' unless !values.empty? && values.all? { |v| nonempty_string?(v) }
@@ -797,9 +798,15 @@ module TaskSpec
     # A task with variants for other languages has one version for all of
     # them, so that one solved in Ruby counts in Python too; a change to any
     # of their checks changes it. Without variants it is the same as always.
+    # Keys that only change how the card looks, not what the check accepts:
+    # changing them keeps stored results valid. (placeholder is older than
+    # this list; taking it out would change the version of every task with one.)
+    LOOK_ONLY = %w[lines].freeze
+
     def self.check_version(task)
         variants = CodeLanguages.variant_languages(task).select { |l| task[l].key?('check') }
-        source = variants.empty? ? canonical(task['check']) : canonical([task['check']] + variants.map { |l| [l, task[l]['check']] })
+        look = lambda { |check| check.is_a?(Hash) ? check.reject { |k, _| LOOK_ONLY.include?(k) } : check }
+        source = variants.empty? ? canonical(look.(task['check'])) : canonical([look.(task['check'])] + variants.map { |l| [l, look.(task[l]['check'])] })
         Digest::SHA256.hexdigest(JSON.generate(source))[0, 16]
     end
 
