@@ -432,7 +432,21 @@ graph.nodes['2']  // Point('2', 13.301, 52.45)
 graph.edges['2']  // [Edge('1', 67.8), Edge('3', 67.8), Edge('4', 111.2)]
 ```
 
-Zwei aufeinanderfolgende Punkte eines Weges sind `way.points[i]` und `way.points[i + 1]`. `graph.edges.putIfAbsent(id, () => [])` gibt die Liste der Kanten von `id` und legt sie an, wenn es sie noch nicht gibt.
+Zwei aufeinanderfolgende Punkte eines Weges sind `way.points[i]` und `way.points[i + 1]`. Eine Kante anhängen geht in drei Schritten: die Liste der Kanten des Punktes holen, eine leere anlegen, wenn es noch keine gibt, und die Kante anhängen. Weil du das für jede Kante zweimal brauchst, in beide Richtungen, lohnt sich dafür eine kleine Funktion:
+
+<!-- page-code: own -->
+```dart
+void addEdge(Graph graph, String from, String to, double cost) {
+  List<Edge>? edges = graph.edges[from];
+  if (edges == null) {
+    edges = [];
+    graph.edges[from] = edges;
+  }
+  edges.add(Edge(to, cost));
+}
+```
+
+Schreib sie in `routes.dart` über `buildGraph`. `addEdge(graph, a.id, b.id, metres)` hängt dann die Kante von `a` nach `b` an.
 
 Wie `Graph`, `Edge` und `Point` gebaut sind, steht in `dart/graph.dart`. Mit der Erweiterung »Dart« springst du dorthin: <kbd>F12</kbd> auf einem Namen wie `Graph` öffnet seine Definition. Öffne dafür die Erweiterungen mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>, suche nach `dart` und klicke bei »Dart« auf »Install«.
 <!-- /language -->
@@ -456,7 +470,21 @@ graph.nodes.get("2")  // Point[id=2, lon=13.301, lat=52.45]
 graph.edges.get("2")  // [Edge[to=1, cost=67.8], Edge[to=3, cost=67.8], Edge[to=4, cost=111.2]]
 ```
 
-Zwei aufeinanderfolgende Punkte eines Weges sind `way.points().get(i)` und `way.points().get(i + 1)`. `graph.edges.computeIfAbsent(id, k -> new ArrayList<>())` gibt die Liste der Kanten von `id` und legt sie an, wenn es sie noch nicht gibt.
+Zwei aufeinanderfolgende Punkte eines Weges sind `way.points().get(i)` und `way.points().get(i + 1)`. Eine Kante anhängen geht in drei Schritten: die Liste der Kanten des Punktes holen, eine leere anlegen, wenn es noch keine gibt, und die Kante anhängen. Weil du das für jede Kante zweimal brauchst, in beide Richtungen, lohnt sich dafür eine kleine Methode in `Routes`:
+
+<!-- page-code: own -->
+```java
+static void addEdge(Graph graph, String from, String to, double cost) {
+    List<Edge> edges = graph.edges.get(from);
+    if (edges == null) {
+        edges = new ArrayList<>();
+        graph.edges.put(from, edges);
+    }
+    edges.add(new Edge(to, cost));
+}
+```
+
+Schreib sie in `Routes.java` über `buildGraph`. `addEdge(graph, a.id(), b.id(), metres)` hängt dann die Kante von `a` nach `b` an.
 
 Wie `Graph`, `Edge` und `Point` gebaut sind, steht in `java/Types.java`. Mit der Erweiterung »Language Support for Java(TM) by Red Hat« springst du dorthin: <kbd>F12</kbd> auf einem Namen wie `Graph` öffnet seine Definition. Öffne dafür die Erweiterungen mit <kbd>Strg</kbd><kbd>Shift</kbd><kbd>X</kbd>, suche nach `java` und klicke bei »Language Support for Java(TM) by Red Hat« auf »Install«.
 <!-- /language -->
@@ -1818,7 +1846,9 @@ So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine L
 way['name']                                  # ein Feld lesen: 'Lindenstraße'
 graph['nodes']['11']                         # die Lage eines Knotens: [13.3, 52.45]
 graph['nodes']['11'] = [lon, lat]            # einen Knoten eintragen
-graph['edges'].setdefault(a, []).append([b, metres])  # eine Kante anhängen
+if a not in graph['edges']:                  # eine Kante von a nach b anhängen:
+    graph['edges'][a] = []                   #   hat a noch keine Kanten, eine leere Liste
+graph['edges'][a].append([b, metres])
 '11' in graph['edges']                       # hat der Knoten Kanten?
 {'path': path, 'visited': visited}           # was eine Suche zurückgibt
 ```
@@ -1876,7 +1906,7 @@ point.lat                                 // ein Feld lesen: 52.45
 Graph graph = Graph();                    // ein leerer Graph, ohne Argumente
 graph.nodes['11'] = point;                // einen Knoten eintragen
 Point? p = graph.nodes['11'];             // nachsehen; null, wenn es ihn nicht gibt
-graph.edges.putIfAbsent(a, () => []).add(Edge(b, metres));  // eine Kante anhängen
+addEdge(graph, a, b, metres);             // eine Kante anhängen, mit addEdge aus »Vom Weg zum Graphen«
 return Search(path, visited);             // was eine Suche zurückgibt
 ```
 
@@ -1922,7 +1952,8 @@ So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine L
 way.name                                    // ein Feld lesen: 'Lindenstraße'
 graph.nodes['11']                           // die Lage eines Knotens: [13.3, 52.45]
 graph.nodes['11'] = [lon, lat];             // einen Knoten eintragen
-(graph.edges[a] ??= []).push([b, metres]);  // eine Kante anhängen
+if (!(a in graph.edges)) graph.edges[a] = []; // hat a noch keine Kanten, eine leere Liste
+graph.edges[a].push([b, metres]);           // eine Kante von a nach b anhängen
 '11' in graph.edges                         // hat der Knoten Kanten?
 return { path, visited };                   // was eine Suche zurückgibt
 ```
@@ -1972,7 +2003,7 @@ point.lat()                                   // ein Feld lesen: 52.45
 Graph graph = new Graph();                    // ein leerer Graph, ohne Argumente
 graph.nodes.put("11", point);                 // einen Knoten eintragen
 Point p = graph.nodes.get("11");              // nachsehen; null, wenn es ihn nicht gibt
-graph.edges.computeIfAbsent(a, k -> new ArrayList<>()).add(new Edge(b, metres));  // eine Kante anhängen
+addEdge(graph, a, b, metres);                 // eine Kante anhängen, mit addEdge aus »Vom Weg zum Graphen«
 return new Search(path, visited);             // was eine Suche zurückgibt
 ```
 

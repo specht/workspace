@@ -636,8 +636,8 @@ tasks:
           `way.points[i]` und `way.points[i + 1]`. Beide kommen unter ihrer ID in
           `graph.nodes`. Den Abstand rechnet dein `distance` aus, und in `graph.edges`
           kommen zwei Kanten: `Edge(b.id, metres)` in die Liste von a und
-          `Edge(a.id, metres)` in die Liste von b. `graph.edges.putIfAbsent(a.id, () => [])`
-          gibt die Liste von a und legt sie an, wenn es sie noch nicht gibt.
+          `Edge(a.id, metres)` in die Liste von b. Das Anhängen macht `addEdge` von
+          der Seite: `addEdge(graph, a.id, b.id, metres)`.
         - |
           Ein Gerüst:
 
@@ -648,7 +648,7 @@ tasks:
               for (var i = 0; i + 1 < way.points.length; i++) {
                 final a = way.points[i], b = way.points[i + 1];
                 // hier: a und b unter ihrer ID in graph.nodes
-                // hier: der Abstand, und die Kante in beide Richtungen in graph.edges
+                // hier: der Abstand, und die Kante in beide Richtungen, mit addEdge
               }
             }
             return graph;
@@ -733,8 +733,8 @@ tasks:
           ihrer ID in `graph.nodes`. Den Abstand rechnet dein `distance` aus, und in
           `graph.edges` kommen zwei Kanten: `new Edge(b.id(), metres)` in die Liste
           von a und `new Edge(a.id(), metres)` in die Liste von b.
-          `graph.edges.computeIfAbsent(a.id(), id -> new ArrayList<>())` gibt die
-          Liste von a und legt sie an, wenn es sie noch nicht gibt.
+          Das Anhängen macht `addEdge` von der Seite:
+          `addEdge(graph, a.id(), b.id(), metres)`.
         - |
           Ein Gerüst:
 
@@ -745,7 +745,7 @@ tasks:
                   for (int i = 0; i + 1 < way.points().size(); i++) {
                       Point a = way.points().get(i), b = way.points().get(i + 1);
                       // hier: a und b unter ihrer ID in graph.nodes
-                      // hier: der Abstand, und die Kante in beide Richtungen in graph.edges
+                      // hier: der Abstand, und die Kante in beide Richtungen, mit addEdge
                   }
               }
               return graph;
@@ -3271,8 +3271,8 @@ tasks:
                 graph.nodes[a.id] = a;
                 graph.nodes[b.id] = b;
                 final seconds = …;   // die Meter geteilt durch das Tempo in Metern je Sekunde
-                if (forward) graph.edges.putIfAbsent(a.id, () => []).add(Edge(b.id, seconds));
-                if (backward) graph.edges.putIfAbsent(b.id, () => []).add(Edge(a.id, seconds));
+                if (forward) addEdge(graph, a.id, b.id, seconds);    // addEdge aus »Vom Weg zum Graphen«
+                if (backward) addEdge(graph, b.id, a.id, seconds);
               }
             }
             graph.fastest = …;
@@ -3406,8 +3406,8 @@ tasks:
                       graph.nodes.put(a.id(), a);
                       graph.nodes.put(b.id(), b);
                       double seconds = …;   // die Meter geteilt durch das Tempo in Metern je Sekunde
-                      if (forward) graph.edges.computeIfAbsent(a.id(), id -> new ArrayList<>()).add(new Edge(b.id(), seconds));
-                      if (backward) graph.edges.computeIfAbsent(b.id(), id -> new ArrayList<>()).add(new Edge(a.id(), seconds));
+                      if (forward) addEdge(graph, a.id(), b.id(), seconds);    // addEdge aus »Vom Weg zum Graphen«
+                      if (backward) addEdge(graph, b.id(), a.id(), seconds);
                   }
               }
               graph.fastest = …;
