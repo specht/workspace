@@ -142,6 +142,7 @@ Platform-wide:
 * [ ] Revisit BIF after the teacher workshop and incorporate classroom feedback
 * [ ] Find a section for new pages as they land; keep related progressions adjacent
 * [ ] History boxes (`<div class='history'>`, docs/aktivitaet-schreiben.md »Geschichte«) on every page: go through the activities for history now in the prose or missing (songs, films, machines, events), each fact checked
+* [ ] A reference like Routenplaner's »Auf einen Blick« (`routenplaner#auf-einen-blick`) for other activities where students write functions against data a starter gives them: the classes or data shapes as code with a comment per field, a few lines that read and write them, the loop students need most, linked from every programming task; per language, simple forms first. Look first at activities with a starter and several languages (Textadventure, Supermarkt, Laufzeit, the sandboxes)
 
 
 ## Infrastructure and operations
