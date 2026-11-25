@@ -61,8 +61,10 @@ write-file: data/test.tsv <- file:vorlage/data/test.tsv
 write-file: data/detour.tsv <- file:vorlage/data/detour.tsv
 write-file: data/shortcut.tsv <- file:vorlage/data/shortcut.tsv
 write-file: ruby/routes.rb <- file:vorlage/ruby/routes.rb
+write-file: ruby/visits.rb <- file:vorlage/ruby/visits.rb
 write-file: ruby/bridge.rb <- file:vorlage/ruby/bridge.rb
 write-file: python/routes.py <- file:vorlage/python/routes.py
+write-file: python/visits.py <- file:vorlage/python/visits.py
 write-file: python/bridge.py <- file:vorlage/python/bridge.py
 write-file: dart/routes.dart <- file:vorlage/dart/routes.dart
 write-file: dart/graph.dart <- file:vorlage/dart/graph.dart
@@ -471,7 +473,9 @@ Speichere deine Datei: Der Server startet deine Funktionen neu und baut mit ihne
 # Die Lösung der ersten drei Schritte, der Server neu gestartet (im
 # Workspace; das Bild danach ist die Vorschau)
 write-file: ruby/routes.rb <- file:loesung/routes-3.rb
+write-file: ruby/visits.rb <- file:vorlage/ruby/visits.rb
 write-file: python/routes.py <- file:loesung/routes-3.py
+write-file: python/visits.py <- file:vorlage/python/visits.py
 check-task: lesen
 check-task: abstand
 check-task: graph
@@ -591,7 +595,7 @@ tab: preview
 variants: dark
 hook: route Gymnasium Steglitz | Botanischer Garten | dfs
 -->
-<img class='full' src='tiefensuche.webp' alt='Der Weg der Tiefensuche vom Gymnasium Steglitz zum Botanischen Garten als lila Linie über der blassen Karte: Statt der knapp zwei Kilometer zum Garten windet er sich kreuz und quer durch einen großen Teil des Bezirks. Oben links steht, wie lang er ist, fast 77 Kilometer, und über wie viele Knoten er geht.'>
+<img class='full' src='tiefensuche.webp' alt='Der Weg der Tiefensuche vom Gymnasium Steglitz zum Botanischen Garten als lila Linie über der blassen Karte: Statt der knapp zwei Kilometer zum Garten windet er sich kreuz und quer durch einen großen Teil des Bezirks. Oben links steht, wie lang er ist, fast 77 Kilometer, über wie viele Knoten er geht und dass die Suche 7.645 Knoten besucht hat; darunter der Player, mit dem die Karte die Suche abspielt.'>
 
 <!-- /tutorial-scope -->
 
@@ -700,7 +704,9 @@ _task(weg)
 write-file: data/detour.tsv <- file:vorlage/data/detour.tsv
 write-file: data/shortcut.tsv <- file:vorlage/data/shortcut.tsv
 write-file: ruby/routes.rb <- file:loesung/routes-5.rb
+write-file: ruby/visits.rb <- file:vorlage/ruby/visits.rb
 write-file: python/routes.py <- file:loesung/routes-5.py
+write-file: python/visits.py <- file:vorlage/python/visits.py
 check-task: breitensuche
 check-task: weg
 check-task: dijkstra
@@ -1337,7 +1343,9 @@ Prüfe `dijkstra` mit der Aufgabe darüber, speichere und such den Weg zur Pfaue
 <!-- tutorial-step
 # Die Lösung aller Schritte, der Server neu gestartet
 write-file: ruby/routes.rb <- file:loesung/routes.rb
+write-file: ruby/visits.rb <- file:vorlage/ruby/visits.rb
 write-file: python/routes.py <- file:loesung/routes.py
+write-file: python/visits.py <- file:vorlage/python/visits.py
 write-file: dart/routes.dart <- file:loesung/dart/routes.dart
 write-file: javascript/routes.js <- file:loesung/javascript/routes.js
 write-file: java/Routes.java <- file:loesung/java/Routes.java
