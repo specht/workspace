@@ -1104,7 +1104,7 @@ tasks:
               return None
           ```
     dart:
-      prompt: Schreib `depthFirst` in `routes.dart`.
+      prompt: Schreib `search` in `routes.dart`, das `depthFirst` für die Tiefensuche fragt.
       check:
         type: dart
         file: routenplaner-starter/dart/routes.dart
@@ -1125,29 +1125,24 @@ tasks:
           Was macht der Aufruf für 11, wenn 11 schon in `found` steht? Wie geht
           es dann weiter?
         - |
-          Fast alles bleibt wie in `walk`. Neu ist `found`, ein `Set<String>`:
-          Steht `node` schon darin (`contains`), gibt es von hier aus nichts
-          Neues, `null`. Sonst kommt `node` hinein (`add`). Alle Aufrufe brauchen
-          dieselbe Menge: Gib `found` bei jedem Aufruf weiter. Nur der erste
-          Aufruf, der von der Karte, bekommt keine. Darum steht `found` in eckigen
-          Klammern: Diesen Parameter darf man weglassen, und dann ist er `null`.
-          `if (found == null) found = {};` gibt ihm dann eine leere Menge;
-          `found ??= {};` heißt dasselbe, kürzer geschrieben. Du kannst es auch
-          ohne eckige Klammern lösen: `depthFirst` ruft eine zweite Funktion mit
-          einer leeren Menge auf (`return search(graph, start, goal, {});`), und
-          die hat `found` als ganz gewöhnlichen Parameter und ruft sich selbst auf.
+          `depthFirst` steht in `routes.dart` schon da: Es legt die leere Menge
+          `found` an, ein `Set<String>`, und fragt `search`. Die Arbeit macht
+          `search`, fast wie `walk`, nur mit `found` als viertem Parameter. Steht
+          `node` schon in `found` (`contains`), gibt es von hier aus nichts Neues,
+          `null`. Sonst kommt `node` hinein (`add`). Alle Aufrufe brauchen
+          dieselbe Menge: `search` gibt `found` bei jedem Aufruf an sich selbst
+          weiter.
         - |
           Ein Gerüst:
 
           ```dart
-          List<String>? depthFirst(Graph graph, String node, String goal, [Set<String>? found]) {
-            if (found == null) found = {};
+          List<String>? search(Graph graph, String node, String goal, Set<String> found) {
             // hier: steht node schon in found, null; sonst kommt node hinein
             if (node == goal) return [node];
             List<Edge>? edges = graph.edges[node];
             if (edges == null) return null;
             for (Edge edge in edges) {
-              List<String>? rest = depthFirst(…); // hier: mit found
+              List<String>? rest = search(…); // hier: mit found
               if (rest != null) {
                 rest.insert(0, node);
                 return rest;
@@ -1157,9 +1152,13 @@ tasks:
           }
           ```
 
-          Kürzer geschrieben, wenn du magst: `found ??= {};` statt des `if`;
-          `if (!found.add(node)) return null;` prüft und trägt ein in einem, denn `add`
-          gibt `false` zurück, wenn `node` schon darin stand.
+          Kürzer geschrieben, wenn du magst: `if (!found.add(node)) return null;`
+          prüft und trägt ein in einem, denn `add` gibt `false` zurück, wenn
+          `node` schon darin stand. Ohne `search` geht es mit einem Parameter, den
+          man weglassen darf: `depthFirst(Graph graph, String node, String goal,
+          [Set<String>? found])`. Die eckigen Klammern heißen: Wer `depthFirst`
+          aufruft, darf `found` weglassen, und dann ist es `null`; `found ??= {};`
+          gibt ihm dann eine leere Menge.
     javascript:
       prompt: Schreib `depthFirst` in `routes.js`.
       check:

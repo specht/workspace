@@ -34,12 +34,17 @@ List<String>? walk(Graph graph, String node, String goal) {
   throw UnimplementedError('walk');
 }
 
-// Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
-// die die Suche schon gefunden hat; der erste Aufruf bekommt keine, dann
-// ist found null. Die eckigen Klammern heißen: Diesen Parameter darf man
-// weglassen.
-List<String>? depthFirst(Graph graph, String node, String goal, [Set<String>? found]) {
-  throw UnimplementedError('depthFirst');
+// Tiefensuche: wie walk, aber jeden Knoten nur einmal. depthFirst legt die
+// leere Menge found an und fragt search; search sucht wie walk, merkt sich
+// in found jeden Knoten, den es findet, und gibt found bei jedem Aufruf an
+// sich selbst weiter.
+List<String>? depthFirst(Graph graph, String start, String goal) {
+  Set<String> found = {};
+  return search(graph, start, goal, found);
+}
+
+List<String>? search(Graph graph, String node, String goal, Set<String> found) {
+  throw UnimplementedError('search');
 }
 
 // Der Weg zum Ziel, rückwärts aus den Vorgängern: previous sagt für jeden
