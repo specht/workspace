@@ -36,7 +36,8 @@ List<String>? walk(Graph graph, String node, String goal) {
 
 // Tiefensuche: wie walk, aber jeden Knoten nur einmal. found sind die Knoten,
 // die die Suche schon gefunden hat; der erste Aufruf bekommt keine, dann
-// ist found null.
+// ist found null. Die eckigen Klammern heißen: Diesen Parameter darf man
+// weglassen.
 List<String>? depthFirst(Graph graph, String node, String goal, [Set<String>? found]) {
   throw UnimplementedError('depthFirst');
 }

@@ -1119,15 +1119,20 @@ tasks:
           Fast alles bleibt wie in `walk`. Neu ist `found`, ein `Set<String>`:
           Steht `node` schon darin (`contains`), gibt es von hier aus nichts
           Neues, `null`. Sonst kommt `node` hinein (`add`). Alle Aufrufe brauchen
-          dieselbe Menge: Gib `found` bei jedem Aufruf weiter. Der erste Aufruf
-          bekommt keine; `found` ist darum ein optionaler Parameter in eckigen
-          Klammern, und `found ??= {}` legt eine leere Menge an, wenn er fehlt.
+          dieselbe Menge: Gib `found` bei jedem Aufruf weiter. Nur der erste
+          Aufruf, der von der Karte, bekommt keine. Darum steht `found` in eckigen
+          Klammern: Diesen Parameter darf man weglassen, und dann ist er `null`.
+          `if (found == null) found = {};` gibt ihm dann eine leere Menge;
+          `found ??= {};` heißt dasselbe, kürzer geschrieben. Du kannst es auch
+          ohne eckige Klammern lösen: `depthFirst` ruft eine zweite Funktion mit
+          einer leeren Menge auf (`return search(graph, start, goal, {});`), und
+          die hat `found` als ganz gewöhnlichen Parameter und ruft sich selbst auf.
         - |
           Ein Gerüst:
 
           ```dart
           List<String>? depthFirst(Graph graph, String node, String goal, [Set<String>? found]) {
-            found ??= {};
+            if (found == null) found = {};
             // hier: steht node schon in found, null; sonst kommt node hinein
             if (node == goal) return [node];
             for (final edge in graph.edges[node] ?? <Edge>[]) {

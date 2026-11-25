@@ -72,7 +72,7 @@ List<String>? walk(Graph graph, String node, String goal) {
 // Tiefensuche: wie walk, aber jeder Knoten nur einmal; found sind die Knoten,
 // die die Suche schon gefunden hat
 List<String>? depthFirst(Graph graph, String node, String goal, [Set<String>? found]) {
-  found ??= {};
+  if (found == null) found = {};
   if (found.contains(node)) return null;
   found.add(node);
   if (node == goal) return [node];
