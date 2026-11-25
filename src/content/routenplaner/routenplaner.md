@@ -1766,6 +1766,18 @@ In Ruby gibt es dafür keine Klassen, nur Hashes und Arrays. So sehen sie aus, m
   visited: ['11', …] }     # die Knoten in der Reihenfolge, in der sie dran waren
 ```
 
+So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
+
+<!-- page-code: own -->
+```ruby
+way[:name]                         # ein Feld lesen: 'Lindenstraße'
+graph[:nodes]['11']                # die Lage eines Knotens: [13.3, 52.45]
+graph[:nodes]['11'] = [lon, lat]   # einen Knoten eintragen
+graph[:edges][a] << [b, metres]    # eine Kante anhängen (mit Hash.new { … } wie oben)
+graph[:edges].key?('11')           # hat der Knoten Kanten?
+{ path: path, visited: visited }   # was eine Suche zurückgibt
+```
+
 Für eine ID ohne Kanten gibt `graph[:edges][node]` ein leeres Array, wenn dein `build_graph` die Kanten mit `Hash.new { |hash, id| hash[id] = [] }` anlegt wie oben, sonst `nil`. So gehst du die Nachbarn eines Knotens durch:
 
 <!-- page-code: own -->
@@ -1797,6 +1809,18 @@ In Python gibt es dafür keine Klassen, nur Dictionaries und Listen. So sehen si
 # was eine Suche zurückgibt
 {'path': ['11', …, '16'],  # die IDs vom Start bis zum Ziel, None ohne Weg
  'visited': ['11', …]}     # die Knoten in der Reihenfolge, in der sie dran waren
+```
+
+So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
+
+<!-- page-code: own -->
+```python
+way['name']                                  # ein Feld lesen: 'Lindenstraße'
+graph['nodes']['11']                         # die Lage eines Knotens: [13.3, 52.45]
+graph['nodes']['11'] = [lon, lat]            # einen Knoten eintragen
+graph['edges'].setdefault(a, []).append([b, metres])  # eine Kante anhängen
+'11' in graph['edges']                       # hat der Knoten Kanten?
+{'path': path, 'visited': visited}           # was eine Suche zurückgibt
 ```
 
 Für eine ID ohne Kanten gibt `graph['edges'][node]` einen `KeyError`, `graph['edges'].get(node, [])` eine leere Liste. So gehst du die Nachbarn eines Knotens durch:
@@ -1843,7 +1867,20 @@ class Search {
 }
 ```
 
-Ein neues Objekt bekommt seine Felder in dieser Reihenfolge: `Point('11', 13.3, 52.45)`, `Edge('12', 67.8)`, `Search(path, visited)`; `Graph()` bekommt keine. `graph.edges['11']` gibt `[Edge('12', 67.8), Edge('21', 222.4)]` (gerundet), für eine ID ohne Kanten `null`. So gehst du die Nachbarn eines Knotens durch:
+So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
+
+<!-- page-code: own -->
+```dart
+Point point = Point('11', 13.3, 52.45);   // ein neues Objekt: die Felder der Reihe nach
+point.lat                                 // ein Feld lesen: 52.45
+Graph graph = Graph();                    // ein leerer Graph, ohne Argumente
+graph.nodes['11'] = point;                // einen Knoten eintragen
+Point? p = graph.nodes['11'];             // nachsehen; null, wenn es ihn nicht gibt
+graph.edges.putIfAbsent(a, () => []).add(Edge(b, metres));  // eine Kante anhängen
+return Search(path, visited);             // was eine Suche zurückgibt
+```
+
+`graph.edges['11']` gibt `[Edge('12', 67.8), Edge('21', 222.4)]` (gerundet), für eine ID ohne Kanten `null`. So gehst du die Nachbarn eines Knotens durch:
 
 <!-- page-code: own -->
 ```dart
@@ -1876,6 +1913,18 @@ In JavaScript gibt es dafür keine Klassen, nur Objekte und Arrays. So sehen sie
 // was eine Suche zurückgibt
 { path: ['11', …, '16'],   // die IDs vom Start bis zum Ziel, null ohne Weg
   visited: ['11', …] }     // die Knoten in der Reihenfolge, in der sie dran waren
+```
+
+So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
+
+<!-- page-code: own -->
+```javascript
+way.name                                    // ein Feld lesen: 'Lindenstraße'
+graph.nodes['11']                           // die Lage eines Knotens: [13.3, 52.45]
+graph.nodes['11'] = [lon, lat];             // einen Knoten eintragen
+(graph.edges[a] ??= []).push([b, metres]);  // eine Kante anhängen
+'11' in graph.edges                         // hat der Knoten Kanten?
+return { path, visited };                   // was eine Suche zurückgibt
 ```
 
 Für eine ID ohne Kanten gibt `graph.edges[node]` den Wert `undefined`. So gehst du die Nachbarn eines Knotens durch:
@@ -1914,7 +1963,20 @@ record Search(List<String> path,       // die IDs vom Start bis zum Ziel, null o
               List<String> visited) {} // die Knoten in der Reihenfolge, in der sie dran waren
 ```
 
-Ein neues Objekt bekommt seine Felder in dieser Reihenfolge: `new Point("11", 13.3, 52.45)`, `new Edge("12", 67.8)`, `new Search(path, visited)`; `new Graph()` bekommt keine. `graph.edges.get("11")` gibt `[Edge[to=12, cost=67.8], Edge[to=21, cost=222.4]]` (gerundet), für eine ID ohne Kanten `null`. So gehst du die Nachbarn eines Knotens durch:
+So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
+
+<!-- page-code: own -->
+```java
+Point point = new Point("11", 13.3, 52.45);   // ein neues Objekt: die Felder der Reihe nach
+point.lat()                                   // ein Feld lesen: 52.45
+Graph graph = new Graph();                    // ein leerer Graph, ohne Argumente
+graph.nodes.put("11", point);                 // einen Knoten eintragen
+Point p = graph.nodes.get("11");              // nachsehen; null, wenn es ihn nicht gibt
+graph.edges.computeIfAbsent(a, k -> new ArrayList<>()).add(new Edge(b, metres));  // eine Kante anhängen
+return new Search(path, visited);             // was eine Suche zurückgibt
+```
+
+`graph.edges.get("11")` gibt `[Edge[to=12, cost=67.8], Edge[to=21, cost=222.4]]` (gerundet), für eine ID ohne Kanten `null`. So gehst du die Nachbarn eines Knotens durch:
 
 <!-- page-code: own -->
 ```java
