@@ -50,8 +50,8 @@ Graph buildGraph(List<Way> ways) {
       graph.nodes[a.id] = a;
       graph.nodes[b.id] = b;
       final metres = distance(a.lon, a.lat, b.lon, b.lat);
-      graph.edges.putIfAbsent(a.id, () => []).add(Edge(b.id, metres));
-      graph.edges.putIfAbsent(b.id, () => []).add(Edge(a.id, metres));
+      graph.addEdge(a.id, b.id, metres);
+      graph.addEdge(b.id, a.id, metres);
     }
   }
   return graph;

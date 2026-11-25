@@ -47,8 +47,8 @@ public class Routes {
                 graph.nodes.put(a.id(), a);
                 graph.nodes.put(b.id(), b);
                 double metres = distance(a.lon(), a.lat(), b.lon(), b.lat());
-                graph.edges.computeIfAbsent(a.id(), id -> new ArrayList<>()).add(new Edge(b.id(), metres));
-                graph.edges.computeIfAbsent(b.id(), id -> new ArrayList<>()).add(new Edge(a.id(), metres));
+                graph.addEdge(a.id(), b.id(), metres);
+                graph.addEdge(b.id(), a.id(), metres);
             }
         }
         return graph;
@@ -274,8 +274,8 @@ public class Routes {
                 graph.nodes.put(a.id(), a);
                 graph.nodes.put(b.id(), b);
                 double seconds = distance(a.lon(), a.lat(), b.lon(), b.lat()) / metresPerSecond;
-                if (forward) graph.edges.computeIfAbsent(a.id(), id -> new ArrayList<>()).add(new Edge(b.id(), seconds));
-                if (backward) graph.edges.computeIfAbsent(b.id(), id -> new ArrayList<>()).add(new Edge(a.id(), seconds));
+                if (forward) graph.addEdge(a.id(), b.id(), seconds);
+                if (backward) graph.addEdge(b.id(), a.id(), seconds);
             }
         }
         graph.fastest = Collections.max(speeds.values()) / 3.6;

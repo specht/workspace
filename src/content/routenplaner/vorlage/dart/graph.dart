@@ -51,6 +51,17 @@ class Graph {
   final Map<String, Point> nodes = {};
   final Map<String, List<Edge>> edges = {};
   double fastest = 1;
+
+  // Eine Kante von from nach to anhängen: die Liste der Kanten von from
+  // holen, eine leere anlegen, wenn es noch keine gibt, und anhängen
+  void addEdge(String from, String to, double cost) {
+    List<Edge>? list = edges[from];
+    if (list == null) {
+      list = [];
+      edges[from] = list;
+    }
+    list.add(Edge(to, cost));
+  }
 }
 
 // Was eine Suche zurückgibt: den Weg (die IDs vom Start bis zum Ziel, null

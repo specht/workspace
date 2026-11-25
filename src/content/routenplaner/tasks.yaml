@@ -636,8 +636,8 @@ tasks:
           `way.points[i]` und `way.points[i + 1]`. Beide kommen unter ihrer ID in
           `graph.nodes`. Den Abstand rechnet dein `distance` aus, und in `graph.edges`
           kommen zwei Kanten: `Edge(b.id, metres)` in die Liste von a und
-          `Edge(a.id, metres)` in die Liste von b. Das Anhängen macht `addEdge` von
-          der Seite: `addEdge(graph, a.id, b.id, metres)`.
+          `Edge(a.id, metres)` in die Liste von b. Das Anhängen macht die Methode
+          `addEdge` von `Graph`: `graph.addEdge(a.id, b.id, metres)`.
         - |
           Ein Gerüst:
 
@@ -648,7 +648,7 @@ tasks:
               for (var i = 0; i + 1 < way.points.length; i++) {
                 final a = way.points[i], b = way.points[i + 1];
                 // hier: a und b unter ihrer ID in graph.nodes
-                // hier: der Abstand, und die Kante in beide Richtungen, mit addEdge
+                // hier: der Abstand, und die Kante in beide Richtungen, mit graph.addEdge
               }
             }
             return graph;
@@ -733,8 +733,8 @@ tasks:
           ihrer ID in `graph.nodes`. Den Abstand rechnet dein `distance` aus, und in
           `graph.edges` kommen zwei Kanten: `new Edge(b.id(), metres)` in die Liste
           von a und `new Edge(a.id(), metres)` in die Liste von b.
-          Das Anhängen macht `addEdge` von der Seite:
-          `addEdge(graph, a.id(), b.id(), metres)`.
+          Das Anhängen macht die Methode `addEdge` von `Graph`:
+          `graph.addEdge(a.id(), b.id(), metres)`.
         - |
           Ein Gerüst:
 
@@ -745,7 +745,7 @@ tasks:
                   for (int i = 0; i + 1 < way.points().size(); i++) {
                       Point a = way.points().get(i), b = way.points().get(i + 1);
                       // hier: a und b unter ihrer ID in graph.nodes
-                      // hier: der Abstand, und die Kante in beide Richtungen, mit addEdge
+                      // hier: der Abstand, und die Kante in beide Richtungen, mit graph.addEdge
                   }
               }
               return graph;
@@ -3271,8 +3271,8 @@ tasks:
                 graph.nodes[a.id] = a;
                 graph.nodes[b.id] = b;
                 final seconds = …;   // die Meter geteilt durch das Tempo in Metern je Sekunde
-                if (forward) addEdge(graph, a.id, b.id, seconds);    // addEdge aus »Vom Weg zum Graphen«
-                if (backward) addEdge(graph, b.id, a.id, seconds);
+                if (forward) graph.addEdge(a.id, b.id, seconds);
+                if (backward) graph.addEdge(b.id, a.id, seconds);
               }
             }
             graph.fastest = …;
@@ -3406,8 +3406,8 @@ tasks:
                       graph.nodes.put(a.id(), a);
                       graph.nodes.put(b.id(), b);
                       double seconds = …;   // die Meter geteilt durch das Tempo in Metern je Sekunde
-                      if (forward) addEdge(graph, a.id(), b.id(), seconds);    // addEdge aus »Vom Weg zum Graphen«
-                      if (backward) addEdge(graph, b.id(), a.id(), seconds);
+                      if (forward) graph.addEdge(a.id(), b.id(), seconds);
+                      if (backward) graph.addEdge(b.id(), a.id(), seconds);
                   }
               }
               graph.fastest = …;

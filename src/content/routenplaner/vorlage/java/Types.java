@@ -1,5 +1,6 @@
 // Die Typen, mit denen deine Methoden in Routes.java arbeiten. Hier musst du
 // nichts ändern.
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,4 +28,15 @@ class Graph {
     final Map<String, Point> nodes = new HashMap<>();
     final Map<String, List<Edge>> edges = new HashMap<>();
     double fastest = 1;
+
+    // Eine Kante von from nach to anhängen: die Liste der Kanten von from
+    // holen, eine leere anlegen, wenn es noch keine gibt, und anhängen
+    void addEdge(String from, String to, double cost) {
+        List<Edge> list = edges.get(from);
+        if (list == null) {
+            list = new ArrayList<>();
+            edges.put(from, list);
+        }
+        list.add(new Edge(to, cost));
+    }
 }
