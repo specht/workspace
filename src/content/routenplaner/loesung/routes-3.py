@@ -2,6 +2,9 @@
 # Browser, was sie schon können. (Die Lösung bis Schritt 3.)
 import math
 
+# visit(node): zeigt der Karte, welcher Knoten dran ist (visits.py)
+from visits import visit, visits_of  # noqa: F401
+
 EARTH_RADIUS = 6_371_000  # Meter
 
 
@@ -59,9 +62,9 @@ def path_to(previous, goal):
     raise NotImplementedError('path_to')
 
 
-# Breitensuche: der Weg über die wenigsten Kanten. Gibt zurück:
-#   {'path': [Start-ID, …, Ziel-ID] (oder None, wenn es keinen Weg gibt),
-#    'visited': [ID, …]}  die besuchten Knoten, in der Reihenfolge der Suche
+# Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+# zum Ziel, oder None, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+# Knoten dran ist: Damit spielt die Karte die Suche ab.
 def breadth_first(graph, start, goal):
     raise NotImplementedError('breadth_first')
 

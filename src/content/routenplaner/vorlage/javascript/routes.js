@@ -2,6 +2,24 @@
 // und zeigt im Browser, was sie schon können.
 const fs = require('fs');
 
+// Nur für die Karte: welche Knoten bei einer Suche in welcher Reihenfolge
+// dran waren. Deine Suchen rufen visit(node) auf, wenn ein Knoten dran ist;
+// der Server und die Prüfungen lesen die Reihenfolge hier ab. Für die Suche
+// selbst tut visit nichts.
+const visits = [];
+
+// Nur für die Karte: zeigt, dass dieser Knoten dran ist
+function visit(node) {
+    visits.push(node);
+}
+
+// Die Knoten, die dran waren, während search lief, in ihrer Reihenfolge
+function visitsOf(search) {
+    visits.length = 0;
+    search();
+    return [...visits];
+}
+
 // Was noch nicht fertig ist, meldet sich so: Die Karte sagt dann, was fehlt.
 function notYet(name) {
     const error = new Error(name);
@@ -35,12 +53,15 @@ function buildGraph(ways) {
 // Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
 // zum Ziel. Gibt den Weg zurück, die IDs von node bis zum Ziel, null, wenn
 // es von node aus keinen gibt.
+// Als Erstes ruft walk visit(node) auf: Damit zeigt die Karte, wo die Suche
+// gerade ist; für die Suche selbst tut visit nichts.
 function walk(graph, node, goal) {
     throw notYet('walk');
 }
 
 // Tiefensuche: wie walk, aber jeden Knoten nur einmal. seen sind die Knoten,
 // die die Suche schon gesehen hat; der erste Aufruf bekommt eine leere Menge.
+// Kommt node in seen, ruft die Suche visit(node) auf.
 function depthFirst(graph, node, goal, seen = new Set()) {
     throw notYet('depthFirst');
 }
@@ -53,9 +74,9 @@ function pathTo(previous, goal) {
     throw notYet('pathTo');
 }
 
-// Breitensuche: der Weg über die wenigsten Kanten. Gibt zurück:
-//   { path: [Start-ID, …, Ziel-ID] (oder null, wenn es keinen Weg gibt),
-//     visited: [ID, …] }  die besuchten Knoten, in der Reihenfolge der Suche
+// Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+// zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+// Knoten dran ist: Damit spielt die Karte die Suche ab.
 function breadthFirst(graph, start, goal) {
     throw notYet('breadthFirst');
 }
@@ -146,6 +167,6 @@ function improveTour(costs, order) {
 }
 
 module.exports = {
-    readWays, distance, buildGraph, walk, depthFirst, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
+    visits, visit, visitsOf, readWays, distance, buildGraph, walk, depthFirst, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
     buildTravelGraph, tourLength, bestTour, nearestTour, improveTour,
 };

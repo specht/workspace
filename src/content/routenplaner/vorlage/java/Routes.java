@@ -1,12 +1,17 @@
 // Ein Routenplaner: deine Methoden. Der Server (./run java) fragt sie und
-// zeigt im Browser, was sie schon können. Die Typen Point, Way, Edge, Graph
-// und Search stehen in Types.java.
+// zeigt im Browser, was sie schon können. Die Typen Point, Way, Edge und
+// Graph stehen in Types.java.
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 public class Routes {
+    // Nur für die Karte: zeigt, dass dieser Knoten dran ist (Visits in Types.java)
+    static void visit(String node) {
+        Visits.visit(node);
+    }
+
     // Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile
     // sind durch Tabulatoren getrennt: Art, Einbahnstraße, Name, Punkte. Die
     // Punkte sind »ID LÄNGE,BREITE ID LÄNGE,BREITE …«.
@@ -29,6 +34,8 @@ public class Routes {
     // Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
     // zum Ziel. Gibt den Weg zurück, die IDs von node bis zum Ziel, null, wenn
     // es von node aus keinen gibt.
+    // Als Erstes ruft walk visit(node) auf: Damit zeigt die Karte, wo die Suche
+    // gerade ist; für die Suche selbst tut visit nichts.
     static List<String> walk(Graph graph, String node, String goal) {
         throw new UnsupportedOperationException("walk");
     }
@@ -36,6 +43,7 @@ public class Routes {
     // Tiefensuche: wie walk, aber jeden Knoten nur einmal. seen sind die Knoten,
     // die die Suche schon gesehen hat; der erste Aufruf (mit drei
     // Parametern) gibt ihr eine leere Menge.
+    // Kommt node in seen, ruft die Suche visit(node) auf.
     static List<String> depthFirst(Graph graph, String start, String goal) {
         return depthFirst(graph, start, goal, new HashSet<>());
     }
@@ -51,14 +59,15 @@ public class Routes {
         throw new UnsupportedOperationException("pathTo");
     }
 
-    // Breitensuche: der Weg über die wenigsten Kanten, und die besuchten
-    // Knoten in der Reihenfolge der Suche
-    static Search breadthFirst(Graph graph, String start, String goal) {
+    // Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+    // zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+    // Knoten dran ist: Damit spielt die Karte die Suche ab.
+    static List<String> breadthFirst(Graph graph, String start, String goal) {
         throw new UnsupportedOperationException("breadthFirst");
     }
 
     // Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadthFirst.
-    static Search dijkstra(Graph graph, String start, String goal) {
+    static List<String> dijkstra(Graph graph, String start, String goal) {
         throw new UnsupportedOperationException("dijkstra");
     }
 
@@ -90,7 +99,7 @@ public class Routes {
 
     // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
     // Gibt dasselbe zurück wie breadthFirst.
-    static Search aStar(Graph graph, String start, String goal) {
+    static List<String> aStar(Graph graph, String start, String goal) {
         throw new UnsupportedOperationException("aStar");
     }
 

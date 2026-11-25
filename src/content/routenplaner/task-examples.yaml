@@ -6,14 +6,14 @@ activity: routenplaner
 examples:
   lesen:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
@@ -31,11 +31,12 @@ examples:
         - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   abstand:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # ohne den Cosinus: nach Osten zu weit
       - files:
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               def distance(lon1, lat1, lon2, lat2)
@@ -44,11 +45,12 @@ examples:
         say: Cosinus
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 import math
@@ -90,14 +92,14 @@ examples:
           say: Cosinus
   graph:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
@@ -115,12 +117,13 @@ examples:
         - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
   losgehen:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # der Weg ohne den Knoten, auf dem walk steht
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -135,9 +138,9 @@ examples:
         say: c kommt vorne davor
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py }
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
@@ -155,13 +158,14 @@ examples:
         - files: { routenplaner-starter/java/Routes.java: vorlage/java/Routes.java, routenplaner-starter/java/Types.java: vorlage/java/Types.java, routenplaner-starter/java/Bridge.java: vorlage/java/Bridge.java }
   tiefensuche:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       # seen in jedem Aufruf neu: wieder im Kreis, bis der Stack voll ist
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -177,9 +181,9 @@ examples:
               end
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
@@ -208,13 +212,14 @@ examples:
       - answer: ''
   weg:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       # vorwärts statt rückwärts: der Weg vom Ziel zum Start
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -233,20 +238,22 @@ examples:
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
               def breadth_first(graph, start, goal)
-                  { path: nil, visited: [start] }
+                  nil
               end
         say: path_to` stimmt
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -294,7 +301,7 @@ examples:
               text: |
                 import 'solution.dart' hide breadthFirst;
                 export 'solution.dart' hide breadthFirst;
-                Search breadthFirst(Graph graph, String start, String goal) => Search(null, [start]);
+                List<String>? breadthFirst(Graph graph, String start, String goal) => null;
           say: pathTo` stimmt
     javascript:
       pass:
@@ -325,13 +332,14 @@ examples:
           say: addFirst
   breitensuche:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       # die Meter statt der Kanten: Dijkstra unter dem Namen der Breitensuche
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -341,12 +349,13 @@ examples:
         say: Ring für Ring
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -367,7 +376,7 @@ examples:
               text: |
                 import 'solution.dart' hide breadthFirst;
                 export 'solution.dart' hide breadthFirst;
-                Search breadthFirst(Graph graph, String start, String goal) => dijkstra(graph, start, goal);
+                List<String>? breadthFirst(Graph graph, String start, String goal) => dijkstra(graph, start, goal);
           say: Ring für Ring
     javascript:
       pass:
@@ -379,9 +388,11 @@ examples:
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/javascript/routes.js:
               text: |
-                const { readWays, buildGraph, dijkstra } = require('./solution');
+                const { visits, visit, readWays, buildGraph, dijkstra } = require('./solution');
+                function visitsOf(search) { visits.length = 0; search(); return [...visits]; }
                 function breadthFirst(graph, start, goal) {
-                    return dijkstra(graph, start, goal);
+                    const path = dijkstra(graph, start, goal);
+                    return path && [...path];
                 }
           say: Ring für Ring
     java:
@@ -394,14 +405,15 @@ examples:
           say: Ring für Ring
   dijkstra:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
       # die Breitensuche unter dem Namen Dijkstra: zählt Kanten, nicht Meter
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
           routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -414,6 +426,7 @@ examples:
           routenplaner-starter/ruby/solution.rb: loesung/routes-5.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
           routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -421,11 +434,10 @@ examples:
                   metres = { start => 0 }
                   previous = { start => nil }
                   frontier = { start => 0 }
-                  visited = []
                   until frontier.empty?
                       node, so_far = frontier.min_by { |_id, m| m }
                       frontier.delete(node)
-                      visited << node
+                      visit(node)
                       break if node == goal
 
                       graph[:edges][node].each do |neighbour, length|
@@ -436,18 +448,19 @@ examples:
                           frontier[neighbour] = so_far + length
                       end
                   end
-                  { path: path_to(previous, goal), visited: visited }
+                  path_to(previous, goal)
               end
         say: zuerst über 42
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -459,6 +472,7 @@ examples:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -466,11 +480,10 @@ examples:
                     metres = {start: 0}
                     previous = {start: None}
                     frontier = {start: 0}
-                    visited = []
                     while frontier:
                         node = min(frontier, key=frontier.get)
                         so_far = frontier.pop(node)
-                        visited.append(node)
+                        visit(node)
                         if node == goal:
                             break
                         for neighbour, length in graph['edges'].get(node, []):
@@ -479,7 +492,7 @@ examples:
                             metres[neighbour] = so_far + length
                             previous[neighbour] = node
                             frontier[neighbour] = so_far + length
-                    return {'path': path_to(previous, goal), 'visited': visited}
+                    return path_to(previous, goal)
           say: zuerst über 42
     dart:
       pass:
@@ -496,7 +509,7 @@ examples:
               text: |
                 import 'solution.dart' hide dijkstra;
                 export 'solution.dart' hide dijkstra;
-                Search dijkstra(Graph graph, String start, String goal) => breadthFirst(graph, start, goal);
+                List<String>? dijkstra(Graph graph, String start, String goal) => breadthFirst(graph, start, goal);
           say: Lindenstraße
         # Dijkstra ohne Verbessern: ein Nachbar kommt nur dazu, wenn er neu ist
         - files:
@@ -508,18 +521,17 @@ examples:
               text: |
                 import 'solution.dart' hide dijkstra;
                 export 'solution.dart' hide dijkstra;
-                Search dijkstra(Graph graph, String start, String goal) {
+                List<String>? dijkstra(Graph graph, String start, String goal) {
                   final metres = <String, double>{start: 0};
                   final previous = <String, String?>{start: null};
                   final frontier = <String, double>{start: 0};
-                  final visited = <String>[];
                   while (frontier.isNotEmpty) {
                     var node = frontier.keys.first;
                     for (final id in frontier.keys) {
                       if (frontier[id]! < frontier[node]!) node = id;
                     }
                     final soFar = frontier.remove(node)!;
-                    visited.add(node);
+                    visit(node);
                     if (node == goal) break;
                     for (final edge in graph.edges[node] ?? <Edge>[]) {
                       if (metres.containsKey(edge.to)) continue;
@@ -528,7 +540,7 @@ examples:
                       frontier[edge.to] = soFar + edge.cost;
                     }
                   }
-                  return Search(pathTo(previous, goal), visited);
+                  return pathTo(previous, goal);
                 }
           say: zuerst über 42
     javascript:
@@ -542,9 +554,11 @@ examples:
             routenplaner-starter/data/shortcut.tsv: vorlage/data/shortcut.tsv
             routenplaner-starter/javascript/routes.js:
               text: |
-                const { readWays, buildGraph, breadthFirst } = require('./solution');
+                const { visits, visit, readWays, buildGraph, breadthFirst } = require('./solution');
+                function visitsOf(search) { visits.length = 0; search(); return [...visits]; }
                 function dijkstra(graph, start, goal) {
-                    return breadthFirst(graph, start, goal);
+                    const path = breadthFirst(graph, start, goal);
+                    return path && [...path];
                 }
           say: Lindenstraße
         # Dijkstra ohne Verbessern: ein Nachbar kommt nur dazu, wenn er neu ist
@@ -556,18 +570,18 @@ examples:
               text: |
                 // der Weg ohne pathTo der Lösung: ein Array aus require ist für die
                 // Prüfung, die in einem eigenen Kontext läuft, kein Array wie ihres
-                const { readWays, buildGraph } = require('./solution');
+                const { visits, visit, readWays, buildGraph } = require('./solution');
+                function visitsOf(search) { visits.length = 0; search(); return [...visits]; }
                 function dijkstra(graph, start, goal) {
                     const metres = new Map([[start, 0]]);
                     const previous = new Map([[start, null]]);
                     const frontier = new Map([[start, 0]]);
-                    const visited = [];
                     while (frontier.size > 0) {
                         let node = null;
                         for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
                         const soFar = frontier.get(node);
                         frontier.delete(node);
-                        visited.push(node);
+                        visit(node);
                         if (node === goal) break;
                         for (const [neighbour, length] of graph.edges[node] || []) {
                             if (metres.has(neighbour)) continue;
@@ -576,10 +590,10 @@ examples:
                             frontier.set(neighbour, soFar + length);
                         }
                     }
-                    if (!previous.has(goal)) return { path: null, visited };
+                    if (!previous.has(goal)) return null;
                     const path = [];
                     for (let id = goal; id !== null; id = previous.get(id)) path.unshift(id);
-                    return { path, visited };
+                    return path;
                 }
           say: zuerst über 42
     java:
@@ -595,12 +609,13 @@ examples:
           say: zuerst über 42
   heap:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # ein sortiertes Array statt eines Heaps: richtig, aber langsam
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -617,11 +632,12 @@ examples:
         say: Elternteil
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -745,14 +761,15 @@ examples:
           say: Elternteil
   dijkstra-heap:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes-5.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         say: MinHeap
       # der Heap ist fertig, dijkstra sucht noch in frontier
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -760,11 +777,10 @@ examples:
                   metres = { start => 0 }
                   previous = { start => nil }
                   frontier = { start => 0 } # gefunden, aber noch nicht fertig
-                  visited = []
                   until frontier.empty?
                       node, so_far = frontier.min_by { |_id, m| m }
                       frontier.delete(node)
-                      visited << node
+                      visit(node)
                       break if node == goal
 
                       graph[:edges][node].each do |neighbour, length|
@@ -776,13 +792,14 @@ examples:
                           frontier[neighbour] = total
                       end
                   end
-                  { path: path_to(previous, goal), visited: visited }
+                  path_to(previous, goal)
               end
         say: MinHeap
       # mit dem Heap, aber ohne done: b kommt zweimal dran
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -792,10 +809,9 @@ examples:
                   done = {}
                   heap = MinHeap.new
                   heap.push(0, start)
-                  visited = []
                   until heap.empty?
                       so_far, node = heap.pop
-                      visited << node
+                      visit(node)
                       break if node == goal
 
                       graph[:edges][node].each do |neighbour, length|
@@ -807,18 +823,19 @@ examples:
                           heap.push(total, neighbour)
                       end
                   end
-                  { path: path_to(previous, goal), visited: visited }
+                  path_to(previous, goal)
               end
         say: done
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes-5.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes-5.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv }
         # der Heap ist fertig, dijkstra sucht noch in frontier
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -828,11 +845,10 @@ examples:
                     metres = {start: 0}
                     previous = {start: None}
                     frontier = {start: 0}  # gefunden, aber noch nicht fertig
-                    visited = []
                     while frontier:
                         node = min(frontier, key=frontier.get)
                         so_far = frontier.pop(node)
-                        visited.append(node)
+                        visit(node)
                         if node == goal:
                             break
                         for neighbour, length in graph['edges'].get(node, []):
@@ -842,12 +858,13 @@ examples:
                             metres[neighbour] = total
                             previous[neighbour] = node
                             frontier[neighbour] = total
-                    return {'path': path_to(previous, goal), 'visited': visited}
+                    return path_to(previous, goal)
           say: MinHeap
         # mit dem Heap, aber ohne done: b kommt zweimal dran
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -859,10 +876,9 @@ examples:
                     done = set()
                     heap = MinHeap()
                     heap.push(0, start)
-                    visited = []
                     while not heap.empty():
                         so_far, node = heap.pop()
-                        visited.append(node)
+                        visit(node)
                         if node == goal:
                             break
                         for neighbour, length in graph['edges'].get(node, []):
@@ -872,7 +888,7 @@ examples:
                             costs[neighbour] = total
                             previous[neighbour] = node
                             heap.push(total, neighbour)
-                    return {'path': path_to(previous, goal), 'visited': visited}
+                    return path_to(previous, goal)
           say: done
     dart:
       pass:
@@ -892,18 +908,17 @@ examples:
                 import 'solution.dart' hide dijkstra;
                 export 'solution.dart' hide dijkstra;
 
-                Search dijkstra(Graph graph, String start, String goal) {
+                List<String>? dijkstra(Graph graph, String start, String goal) {
                   final metres = <String, double>{start: 0};
                   final previous = <String, String?>{start: null};
                   final frontier = <String, double>{start: 0}; // gefunden, aber noch nicht fertig
-                  final visited = <String>[];
                   while (frontier.isNotEmpty) {
                     var node = frontier.keys.first;
                     for (final id in frontier.keys) {
                       if (frontier[id]! < frontier[node]!) node = id;
                     }
                     final soFar = frontier.remove(node)!;
-                    visited.add(node);
+                    visit(node);
                     if (node == goal) break;
                     for (final edge in graph.edges[node] ?? <Edge>[]) {
                       final total = soFar + edge.cost;
@@ -913,7 +928,7 @@ examples:
                       frontier[edge.to] = total;
                     }
                   }
-                  return Search(pathTo(previous, goal), visited);
+                  return pathTo(previous, goal);
                 }
           say: MinHeap
         # mit dem Heap, aber ohne done: b kommt zweimal dran
@@ -926,14 +941,13 @@ examples:
                 import 'solution.dart' hide dijkstra;
                 export 'solution.dart' hide dijkstra;
 
-                Search dijkstra(Graph graph, String start, String goal) {
+                List<String>? dijkstra(Graph graph, String start, String goal) {
                   final costs = <String, double>{start: 0};
                   final previous = <String, String?>{start: null};
                   final heap = MinHeap()..push(0, start);
-                  final visited = <String>[];
                   while (!heap.isEmpty) {
                     final (soFar, node) = heap.pop()!;
-                    visited.add(node);
+                    visit(node);
                     if (node == goal) break;
                     for (final edge in graph.edges[node] ?? <Edge>[]) {
                       final total = soFar + edge.cost;
@@ -943,7 +957,7 @@ examples:
                       heap.push(total, edge.to);
                     }
                   }
-                  return Search(pathTo(previous, goal), visited);
+                  return pathTo(previous, goal);
                 }
           say: done
     javascript:
@@ -958,7 +972,8 @@ examples:
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/javascript/routes.js:
               text: |
-                const { readWays, buildGraph, MinHeap } = require('./solution');
+                const { visits, visit, readWays, buildGraph, MinHeap } = require('./solution');
+                function visitsOf(search) { visits.length = 0; search(); return [...visits]; }
                 // pathTo hier selbst: Arrays aus solution.js kämen aus einem anderen vm-Kontext, und isDeepStrictEqual vergleicht auch den Prototyp
                 function pathTo(previous, goal) {
                     if (!previous.has(goal)) return null;
@@ -971,13 +986,12 @@ examples:
                     const metres = new Map([[start, 0]]);
                     const previous = new Map([[start, null]]);
                     const frontier = new Map([[start, 0]]); // gefunden, aber noch nicht fertig
-                    const visited = [];
                     while (frontier.size > 0) {
                         let node = null;
                         for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
                         const soFar = frontier.get(node);
                         frontier.delete(node);
-                        visited.push(node);
+                        visit(node);
                         if (node === goal) break;
                         for (const [neighbour, length] of graph.edges[node] || []) {
                             const total = soFar + length;
@@ -987,7 +1001,7 @@ examples:
                             frontier.set(neighbour, total);
                         }
                     }
-                    return { path: pathTo(previous, goal), visited };
+                    return pathTo(previous, goal);
                 }
           say: MinHeap
         # mit dem Heap, aber ohne done: b kommt zweimal dran
@@ -996,7 +1010,8 @@ examples:
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/javascript/routes.js:
               text: |
-                const { readWays, buildGraph, MinHeap } = require('./solution');
+                const { visits, visit, readWays, buildGraph, MinHeap } = require('./solution');
+                function visitsOf(search) { visits.length = 0; search(); return [...visits]; }
                 // pathTo hier selbst: Arrays aus solution.js kämen aus einem anderen vm-Kontext, und isDeepStrictEqual vergleicht auch den Prototyp
                 function pathTo(previous, goal) {
                     if (!previous.has(goal)) return null;
@@ -1010,10 +1025,9 @@ examples:
                     const previous = new Map([[start, null]]);
                     const heap = new MinHeap();
                     heap.push(0, start);
-                    const visited = [];
                     while (!heap.isEmpty()) {
                         const [soFar, node] = heap.pop();
-                        visited.push(node);
+                        visit(node);
                         if (node === goal) break;
                         for (const [neighbour, length] of graph.edges[node] || []) {
                             const total = soFar + length;
@@ -1023,7 +1037,7 @@ examples:
                             heap.push(total, neighbour);
                         }
                     }
-                    return { path: pathTo(previous, goal), visited };
+                    return pathTo(previous, goal);
                 }
           say: done
     java:
@@ -1038,14 +1052,15 @@ examples:
           say: done
   astern:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       # Dijkstra unter dem Namen A*: der richtige Weg, aber auch nach Norden gesucht
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
           routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -1055,13 +1070,14 @@ examples:
         say: Schätzung
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
             routenplaner-starter/data/detour.tsv: vorlage/data/detour.tsv
             routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -1084,7 +1100,7 @@ examples:
                 import 'solution.dart' hide aStar;
                 export 'solution.dart' hide aStar;
 
-                Search aStar(Graph graph, String start, String goal) => dijkstra(graph, start, goal);
+                List<String>? aStar(Graph graph, String start, String goal) => dijkstra(graph, start, goal);
           say: Schätzung
     javascript:
       pass:
@@ -1098,12 +1114,13 @@ examples:
             routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
             routenplaner-starter/javascript/routes.js:
               text: |
-                const { readWays, buildGraph, dijkstra } = require('./solution');
+                const { visits, visit, readWays, buildGraph, dijkstra } = require('./solution');
+                function visitsOf(search) { visits.length = 0; search(); return [...visits]; }
 
                 function aStar(graph, start, goal) {
                     // die Arrays neu: Arrays aus solution.js kämen aus einem anderen vm-Kontext, und isDeepStrictEqual vergleicht auch den Prototyp
-                    const { path, visited } = dijkstra(graph, start, goal);
-                    return { path: path && [...path], visited: [...visited] };
+                    const path = dijkstra(graph, start, goal);
+                    return path && [...path];
                 }
           say: Schätzung
     java:
@@ -1116,13 +1133,14 @@ examples:
           say: Schätzung
   reisen:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       # ohne Einbahnstraßen
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
           routenplaner-starter/data/test.tsv: vorlage/data/test.tsv
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -1149,9 +1167,9 @@ examples:
         say: Einbahnstraße
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart, routenplaner-starter/data/test.tsv: vorlage/data/test.tsv }
@@ -1231,12 +1249,13 @@ examples:
           say: Einbahnstraße
   rundfahrt:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # ohne den Weg zurück
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -1246,11 +1265,12 @@ examples:
         say: zurück
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -1305,12 +1325,13 @@ examples:
           say: zurück
   alle-reihenfolgen:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # der nächste Nachbar statt aller Reihenfolgen
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -1320,11 +1341,12 @@ examples:
         say: kürzeste
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *
@@ -1373,14 +1395,14 @@ examples:
           say: kürzeste
   naechster-nachbar:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py }
     dart:
       pass:
         - files: { routenplaner-starter/dart/routes.dart: loesung/dart/routes.dart, routenplaner-starter/dart/graph.dart: vorlage/dart/graph.dart }
@@ -1401,12 +1423,13 @@ examples:
           say: IndexOutOfBounds
   zwei-opt:
     pass:
-      - files: { routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: loesung/routes.rb }
     fail:
-      - files: { routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
+      - files: { routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb, routenplaner-starter/ruby/routes.rb: vorlage/ruby/routes.rb }
       # nichts verbessert
       - files:
           routenplaner-starter/ruby/solution.rb: loesung/routes.rb
+          routenplaner-starter/ruby/visits.rb: vorlage/ruby/visits.rb
           routenplaner-starter/ruby/routes.rb:
             text: |
               require_relative 'solution'
@@ -1416,11 +1439,12 @@ examples:
         say: 2-opt
     python:
       pass:
-        - files: { routenplaner-starter/python/routes.py: loesung/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: loesung/routes.py }
       fail:
-        - files: { routenplaner-starter/python/routes.py: vorlage/python/routes.py }
+        - files: { routenplaner-starter/python/visits.py: vorlage/python/visits.py, routenplaner-starter/python/routes.py: vorlage/python/routes.py }
         - files:
             routenplaner-starter/python/solution.py: loesung/routes.py
+            routenplaner-starter/python/visits.py: vorlage/python/visits.py
             routenplaner-starter/python/routes.py:
               text: |
                 from solution import *

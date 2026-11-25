@@ -1,6 +1,9 @@
 # Ein Routenplaner: deine Funktionen. server.rb ruft sie auf und zeigt im
 # Browser, was sie schon können. (Die Lösung aller Schritte.)
 
+# visit(node): zeigt der Karte, welcher Knoten dran ist (visits.rb)
+require_relative 'visits'
+
 EARTH_RADIUS = 6_371_000 # Meter
 
 # Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile sind
@@ -53,6 +56,7 @@ end
 # zum Ziel. Gibt den Weg zurück, [node, …, goal], oder nil. Geht auf einer
 # Karte im Kreis, bis der Stack voll ist.
 def walk(graph, node, goal)
+    visit(node)
     return [node] if node == goal
 
     graph[:edges][node].each do |neighbour, _metres|
@@ -68,6 +72,8 @@ def depth_first(graph, node, goal, seen = Set.new)
     return nil if seen.include?(node)
 
     seen << node
+
+    visit(node)
     return [node] if node == goal
 
     graph[:edges][node].each do |neighbour, _metres|
@@ -98,10 +104,9 @@ end
 def breadth_first(graph, start, goal)
     previous = { start => nil }
     queue = [start]
-    visited = []
     until queue.empty?
         node = queue.shift
-        visited << node
+        visit(node)
         break if node == goal
 
         graph[:edges][node].each do |neighbour, _metres|
@@ -111,7 +116,7 @@ def breadth_first(graph, start, goal)
             queue << neighbour
         end
     end
-    { path: path_to(previous, goal), visited: visited }
+    path_to(previous, goal)
 end
 
 # Eine Priority Queue als binärer Heap: Was hineinkommt, hat eine
@@ -177,13 +182,12 @@ def dijkstra(graph, start, goal)
     done = {}
     heap = MinHeap.new
     heap.push(0, start)
-    visited = []
     until heap.empty?
         so_far, node = heap.pop
         next if done[node]
 
         done[node] = true
-        visited << node
+        visit(node)
         break if node == goal
 
         graph[:edges][node].each do |neighbour, length|
@@ -195,7 +199,7 @@ def dijkstra(graph, start, goal)
             heap.push(total, neighbour)
         end
     end
-    { path: path_to(previous, goal), visited: visited }
+    path_to(previous, goal)
 end
 
 # A*: wie Dijkstra, aber die Priorität ist der Weg bis hier plus eine
@@ -214,13 +218,12 @@ def a_star(graph, start, goal)
     done = {}
     heap = MinHeap.new
     heap.push(estimate.(start), start)
-    visited = []
     until heap.empty?
         _priority, node = heap.pop
         next if done[node]
 
         done[node] = true
-        visited << node
+        visit(node)
         break if node == goal
 
         graph[:edges][node].each do |neighbour, length|
@@ -232,7 +235,7 @@ def a_star(graph, start, goal)
             heap.push(total + estimate.(neighbour), neighbour)
         end
     end
-    { path: path_to(previous, goal), visited: visited }
+    path_to(previous, goal)
 end
 
 # Wie schnell man auf welcher Art von Weg vorankommt, in km/h. Was in der

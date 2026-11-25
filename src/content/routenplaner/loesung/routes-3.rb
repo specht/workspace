@@ -1,6 +1,9 @@
 # Ein Routenplaner: deine Funktionen. server.rb ruft sie auf und zeigt im
 # Browser, was sie schon können.
 
+# visit(node): zeigt der Karte, welcher Knoten dran ist (visits.rb)
+require_relative 'visits'
+
 EARTH_RADIUS = 6_371_000 # Meter
 
 # Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile sind
@@ -56,9 +59,9 @@ def path_to(previous, goal)
     raise NotImplementedError, 'path_to'
 end
 
-# Breitensuche: der Weg über die wenigsten Kanten. Gibt zurück:
-#   { path: [Start-ID, …, Ziel-ID] (oder nil, wenn es keinen Weg gibt),
-#     visited: [ID, …] }  die besuchten Knoten, in der Reihenfolge der Suche
+# Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+# zum Ziel, oder nil, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+# Knoten dran ist: Damit spielt die Karte die Suche ab.
 def breadth_first(graph, start, goal)
     raise NotImplementedError, 'breadth_first'
 end

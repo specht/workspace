@@ -1,6 +1,9 @@
 # Ein Routenplaner: deine Funktionen. Der Server (./run ruby) fragt sie und zeigt im
 # Browser, was sie schon können.
 
+# visit(node): zeigt der Karte, welcher Knoten dran ist (visits.rb)
+require_relative 'visits'
+
 # Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile sind
 # durch Tabulatoren getrennt: Art, Einbahnstraße, Name, Punkte. Die Punkte
 # sind »ID LÄNGE,BREITE ID LÄNGE,BREITE …«.
@@ -27,12 +30,15 @@ end
 # Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
 # zum Ziel. Gibt den Weg zurück, die IDs von node bis zum Ziel, nil, wenn
 # es von node aus keinen gibt.
+# Als Erstes ruft walk visit(node) auf: Damit zeigt die Karte, wo die Suche
+# gerade ist; für die Suche selbst tut visit nichts.
 def walk(graph, node, goal)
     raise NotImplementedError, 'walk'
 end
 
 # Tiefensuche: wie walk, aber jeden Knoten nur einmal. seen sind die Knoten,
 # die die Suche schon gesehen hat; der erste Aufruf bekommt eine leere Menge.
+# Kommt node in seen, ruft die Suche visit(node) auf.
 def depth_first(graph, node, goal, seen = Set.new)
     raise NotImplementedError, 'depth_first'
 end
@@ -44,9 +50,9 @@ def path_to(previous, goal)
     raise NotImplementedError, 'path_to'
 end
 
-# Breitensuche: der Weg über die wenigsten Kanten. Gibt zurück:
-#   { path: [Start-ID, …, Ziel-ID] (oder nil, wenn es keinen Weg gibt),
-#     visited: [ID, …] }  die besuchten Knoten, in der Reihenfolge der Suche
+# Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+# zum Ziel, oder nil, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+# Knoten dran ist: Damit spielt die Karte die Suche ab.
 def breadth_first(graph, start, goal)
     raise NotImplementedError, 'breadth_first'
 end

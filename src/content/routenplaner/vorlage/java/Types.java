@@ -16,10 +16,29 @@ record Way(String kind, String oneway, String name, List<Point> points) {}
 // Sekunden in einem Graphen für eine Art zu reisen)
 record Edge(String to, double cost) {}
 
-// Was eine Suche zurückgibt: den Weg (die IDs vom Start bis zum Ziel, null
-// ohne Weg) und alle besuchten Knoten in der Reihenfolge der Suche. Die
-// Karte spielt die Suche damit ab.
-record Search(List<String> path, List<String> visited) {}
+// Nur für die Karte: welche Knoten bei einer Suche in welcher Reihenfolge
+// dran waren. Deine Suchen rufen visit(node) auf, wenn ein Knoten dran ist;
+// der Server und die Prüfungen lesen die Reihenfolge hier ab. Für die Suche
+// selbst tut visit nichts.
+class Visits {
+    static final List<String> order = new ArrayList<>();
+
+    static void visit(String node) {
+        order.add(node);
+    }
+
+    // Eine Suche, die eine Datei lesen darf (readWays wirft IOException)
+    interface Run {
+        void run() throws Exception;
+    }
+
+    // Die Knoten, die dran waren, während search lief, in ihrer Reihenfolge
+    static List<String> of(Run search) throws Exception {
+        order.clear();
+        search.run();
+        return new ArrayList<>(order);
+    }
+}
 
 // Ein Graph: jeder Knoten mit seinem Punkt, und für jeden Knoten die Kanten
 // zu seinen Nachbarn. fastest: das größte Tempo in Metern je Sekunde (nur in

@@ -1,12 +1,17 @@
 // Ein Routenplaner: deine Methoden. Der Server (./run java) fragt sie und
-// zeigt im Browser, was sie schon können. Die Typen Point, Way, Edge, Graph
-// und Search stehen in Types.java.
+// zeigt im Browser, was sie schon können. Die Typen Point, Way, Edge und
+// Graph stehen in Types.java.
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 public class Routes {
+    // Nur für die Karte: zeigt, dass dieser Knoten dran ist (Visits in Types.java)
+    static void visit(String node) {
+        Visits.visit(node);
+    }
+
     // Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile
     // sind durch Tabulatoren getrennt: Art, Einbahnstraße, Name, Punkte. Die
     // Punkte sind »ID LÄNGE,BREITE ID LÄNGE,BREITE …«.
@@ -58,6 +63,7 @@ public class Routes {
     // bis zum Ziel. Gibt den Weg zurück, [node, …, goal], oder null. Geht auf
     // einer Karte im Kreis, bis der Stack voll ist.
     static List<String> walk(Graph graph, String node, String goal) {
+        visit(node);
         if (node.equals(goal)) return new ArrayList<>(List.of(node));
         for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
             List<String> rest = walk(graph, edge.to(), goal);
@@ -78,6 +84,7 @@ public class Routes {
     static List<String> depthFirst(Graph graph, String node, String goal, Set<String> seen) {
         if (seen.contains(node)) return null;
         seen.add(node);
+        visit(node);
         if (node.equals(goal)) return new ArrayList<>(List.of(node));
         for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
             List<String> rest = depthFirst(graph, edge.to(), goal, seen);
@@ -100,17 +107,17 @@ public class Routes {
         return path;
     }
 
-    // Breitensuche: der Weg über die wenigsten Kanten, und die besuchten
-    // Knoten in der Reihenfolge der Suche
-    static Search breadthFirst(Graph graph, String start, String goal) {
+    // Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+    // zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+    // Knoten dran ist: Damit spielt die Karte die Suche ab.
+    static List<String> breadthFirst(Graph graph, String start, String goal) {
         Map<String, String> previous = new HashMap<>();
         previous.put(start, null);
         ArrayDeque<String> queue = new ArrayDeque<>(); // ein Ring Buffer
         queue.add(start);
-        List<String> visited = new ArrayList<>();
         while (!queue.isEmpty()) {
             String node = queue.poll();
-            visited.add(node);
+            visit(node);
             if (node.equals(goal)) break;
             for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                 if (previous.containsKey(edge.to())) continue;
@@ -118,21 +125,20 @@ public class Routes {
                 queue.add(edge.to());
             }
         }
-        return new Search(pathTo(previous, goal), visited);
+        return pathTo(previous, goal);
     }
 
     // Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadthFirst.
-    static Search dijkstra(Graph graph, String start, String goal) {
+    static List<String> dijkstra(Graph graph, String start, String goal) {
         Map<String, Double> metres = new HashMap<>(Map.of(start, 0.0));
         Map<String, String> previous = new HashMap<>();
         previous.put(start, null);
         Map<String, Double> frontier = new HashMap<>(Map.of(start, 0.0)); // gefunden, aber noch nicht fertig
-        List<String> visited = new ArrayList<>();
         while (!frontier.isEmpty()) {
             String node = null;
             for (String id : frontier.keySet()) if (node == null || frontier.get(id) < frontier.get(node)) node = id;
             double soFar = frontier.remove(node);
-            visited.add(node);
+            visit(node);
             if (node.equals(goal)) break;
             for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                 double total = soFar + edge.cost();
@@ -142,12 +148,12 @@ public class Routes {
                 frontier.put(edge.to(), total);
             }
         }
-        return new Search(pathTo(previous, goal), visited);
+        return pathTo(previous, goal);
     }
 
     // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
     // Gibt dasselbe zurück wie breadthFirst.
-    static Search aStar(Graph graph, String start, String goal) {
+    static List<String> aStar(Graph graph, String start, String goal) {
         throw new UnsupportedOperationException("aStar");
     }
 

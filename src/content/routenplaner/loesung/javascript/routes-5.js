@@ -2,6 +2,24 @@
 // und zeigt im Browser, was sie schon können.
 const fs = require('fs');
 
+// Nur für die Karte: welche Knoten bei einer Suche in welcher Reihenfolge
+// dran waren. Deine Suchen rufen visit(node) auf, wenn ein Knoten dran ist;
+// der Server und die Prüfungen lesen die Reihenfolge hier ab. Für die Suche
+// selbst tut visit nichts.
+const visits = [];
+
+// Nur für die Karte: zeigt, dass dieser Knoten dran ist
+function visit(node) {
+    visits.push(node);
+}
+
+// Die Knoten, die dran waren, während search lief, in ihrer Reihenfolge
+function visitsOf(search) {
+    visits.length = 0;
+    search();
+    return [...visits];
+}
+
 // Was noch nicht fertig ist, meldet sich so: Die Karte sagt dann, was fehlt.
 function notYet(name) {
     const error = new Error(name);
@@ -63,6 +81,7 @@ function buildGraph(ways) {
 // zum Ziel. Gibt den Weg zurück, [node, …, goal], oder null. Geht auf einer
 // Karte im Kreis, bis der Stack voll ist.
 function walk(graph, node, goal) {
+    visit(node);
     if (node === goal) return [node];
     for (const [neighbour] of graph.edges[node] || []) {
         const rest = walk(graph, neighbour, goal);
@@ -76,6 +95,7 @@ function walk(graph, node, goal) {
 function depthFirst(graph, node, goal, seen = new Set()) {
     if (seen.has(node)) return null;
     seen.add(node);
+    visit(node);
     if (node === goal) return [node];
     for (const [neighbour] of graph.edges[node] || []) {
         const rest = depthFirst(graph, neighbour, goal, seen);
@@ -98,19 +118,18 @@ function pathTo(previous, goal) {
     return path;
 }
 
-// Breitensuche: der Weg über die wenigsten Kanten. Gibt zurück:
-//   { path: [Start-ID, …, Ziel-ID] (oder null, wenn es keinen Weg gibt),
-//     visited: [ID, …] }  die besuchten Knoten, in der Reihenfolge der Suche
+// Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+// zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+// Knoten dran ist: Damit spielt die Karte die Suche ab.
 function breadthFirst(graph, start, goal) {
     const previous = new Map([[start, null]]);
     // shift() verschiebt bei jedem Aufruf das ganze Array; ein Index, der
     // vorrückt, holt das Nächste ohne Verschieben (wie eine Queue im Ring)
     const queue = [start];
     let head = 0;
-    const visited = [];
     while (head < queue.length) {
         const node = queue[head++];
-        visited.push(node);
+        visit(node);
         if (node === goal) break;
         for (const [neighbour] of graph.edges[node] || []) {
             if (previous.has(neighbour)) continue;
@@ -118,7 +137,7 @@ function breadthFirst(graph, start, goal) {
             queue.push(neighbour);
         }
     }
-    return { path: pathTo(previous, goal), visited };
+    return pathTo(previous, goal);
 }
 
 // Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadthFirst.
@@ -126,13 +145,12 @@ function dijkstra(graph, start, goal) {
     const metres = new Map([[start, 0]]);
     const previous = new Map([[start, null]]);
     const frontier = new Map([[start, 0]]); // gefunden, aber noch nicht fertig
-    const visited = [];
     while (frontier.size > 0) {
         let node = null;
         for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
         const soFar = frontier.get(node);
         frontier.delete(node);
-        visited.push(node);
+        visit(node);
         if (node === goal) break;
         for (const [neighbour, length] of graph.edges[node] || []) {
             const total = soFar + length;
@@ -142,7 +160,7 @@ function dijkstra(graph, start, goal) {
             frontier.set(neighbour, total);
         }
     }
-    return { path: pathTo(previous, goal), visited };
+    return pathTo(previous, goal);
 }
 
 // Eine Priority Queue: push legt einen Wert mit einer Priorität hinein, pop
@@ -226,6 +244,6 @@ function improveTour(costs, order) {
 }
 
 module.exports = {
-    readWays, distance, buildGraph, walk, depthFirst, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
+    visits, visit, visitsOf, readWays, distance, buildGraph, walk, depthFirst, pathTo, breadthFirst, dijkstra, MinHeap, aStar, SPEEDS,
     buildTravelGraph, tourLength, bestTour, nearestTour, improveTour,
 };

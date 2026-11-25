@@ -1,6 +1,6 @@
 // Ein Routenplaner: deine Funktionen. Der Server (./run dart) fragt sie und
-// zeigt im Browser, was sie schon können. Die Klassen Point, Way, Edge, Graph
-// und Search stehen in graph.dart.
+// zeigt im Browser, was sie schon können. Die Klassen Point, Way, Edge und
+// Graph und visit(node) stehen in graph.dart.
 import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
@@ -30,6 +30,8 @@ Graph buildGraph(List<Way> ways) {
 // Einfach losgehen: von node aus zu jedem Nachbarn und von dort weiter, bis
 // zum Ziel. Gibt den Weg zurück, die IDs von node bis zum Ziel, null, wenn
 // es von node aus keinen gibt.
+// Als Erstes ruft walk visit(node) auf: Damit zeigt die Karte, wo die Suche
+// gerade ist; für die Suche selbst tut visit nichts.
 List<String>? walk(Graph graph, String node, String goal) {
   throw UnimplementedError('walk');
 }
@@ -38,6 +40,7 @@ List<String>? walk(Graph graph, String node, String goal) {
 // leere Menge seen an und fragt search; search sucht wie walk, merkt sich
 // in seen jeden Knoten, den es sieht, und gibt seen bei jedem Aufruf an
 // sich selbst weiter.
+// Kommt node in seen, ruft die Suche visit(node) auf.
 List<String>? depthFirst(Graph graph, String start, String goal) {
   Set<String> seen = {};
   return search(graph, start, goal, seen);
@@ -54,14 +57,15 @@ List<String>? pathTo(Map<String, String?> previous, String goal) {
   throw UnimplementedError('pathTo');
 }
 
-// Breitensuche: der Weg über die wenigsten Kanten, und die besuchten Knoten
-// in der Reihenfolge der Suche
-Search breadthFirst(Graph graph, String start, String goal) {
+// Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+// zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+// Knoten dran ist: Damit spielt die Karte die Suche ab.
+List<String>? breadthFirst(Graph graph, String start, String goal) {
   throw UnimplementedError('breadthFirst');
 }
 
 // Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadthFirst.
-Search dijkstra(Graph graph, String start, String goal) {
+List<String>? dijkstra(Graph graph, String start, String goal) {
   throw UnimplementedError('dijkstra');
 }
 
@@ -86,7 +90,7 @@ class MinHeap {
 
 // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
 // Gibt dasselbe zurück wie breadthFirst.
-Search aStar(Graph graph, String start, String goal) {
+List<String>? aStar(Graph graph, String start, String goal) {
   throw UnimplementedError('aStar');
 }
 

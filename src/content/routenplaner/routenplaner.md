@@ -530,7 +530,7 @@ So sucht `walk` auf einem kleinen Graphen mit Einbahnstraßen den Weg von 1 nach
 
 <img class='drawing' style='width: 40em' src='losgehen.svg' alt='Links ein Graph mit fünf Knoten und Pfeilen nur in eine Richtung: von 1 nach 2 und nach 3, von 2 nach 4, von 3 nach 5, dem Ziel; 4 hat keine Nachbarn. Rechts die Aufrufe als Treppe: walk(1, 5) ruft walk(2, 5) auf, das ruft walk(4, 5) auf. Beide finden keinen Weg. Dann ruft walk(1, 5) walk(3, 5) auf, das ruft walk(5, 5) auf. Am Ziel gibt walk(5, 5) [5] zurück, walk(3, 5) gibt [3, 5] zurück und walk(1, 5) [1, 3, 5].'>
 
-Jeder Aufruf wartet, bis der Aufruf unter ihm fertig ist. `walk(2, 5)` kommt bei 4 nicht weiter und findet keinen Weg, also probiert `walk(1, 5)` den nächsten Nachbarn, 3. Auf dem Rückweg setzt jeder Aufruf seinen Knoten vorne an den Weg: Aus `[5]` wird `[3, 5]`, daraus `[1, 3, 5]`. Findet ein Aufruf keinen Weg, gibt er <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span> zurück.
+Jeder Aufruf wartet, bis der Aufruf unter ihm fertig ist. `walk(2, 5)` kommt bei 4 nicht weiter und findet keinen Weg, also probiert `walk(1, 5)` den nächsten Nachbarn, 3. Auf dem Rückweg setzt jeder Aufruf seinen Knoten vorne an den Weg: Aus `[5]` wird `[3, 5]`, daraus `[1, 3, 5]`. Als Erstes ruft jeder Aufruf `visit(node)` auf: Für die Suche tut das nichts, es zeigt nur der Karte, wo die Suche gerade ist. Findet ein Aufruf keinen Weg, gibt er <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span> zurück.
 
 _task(losgehen)
 
@@ -550,7 +550,7 @@ Probier es aus: Such mit »Losgehen« einen Weg und schau ins Terminal.
 
 ### Nicht im Kreis
 
-Das erste Problem: `walk` geht dorthin zurück, wo es herkam. Abhilfe schafft eine Menge `seen` (<span class='code-language' data-language='ruby'>ein <code>Set</code></span><span class='code-language' data-language='python'>ein <code>set</code></span><span class='code-language' data-language='dart'>ein <code>Set&lt;String&gt;</code></span><span class='code-language' data-language='javascript'>ein <code>Set</code></span><span class='code-language' data-language='java'>ein <code>HashSet</code></span>), in der sich die Suche jeden Knoten merkt, den sie schon gesehen hat. Ein Aufruf für einen Knoten, der schon in `seen` steht, gibt gleich zurück, dass er keinen Weg findet; sonst trägt er seinen Knoten ein und sucht weiter wie `walk`. Alle Aufrufe teilen sich dieselbe Menge: Jeder gibt sie an die Aufrufe für seine Nachbarn weiter.
+Das erste Problem: `walk` geht dorthin zurück, wo es herkam. Abhilfe schafft eine Menge `seen` (<span class='code-language' data-language='ruby'>ein <code>Set</code></span><span class='code-language' data-language='python'>ein <code>set</code></span><span class='code-language' data-language='dart'>ein <code>Set&lt;String&gt;</code></span><span class='code-language' data-language='javascript'>ein <code>Set</code></span><span class='code-language' data-language='java'>ein <code>HashSet</code></span>), in der sich die Suche jeden Knoten merkt, den sie schon gesehen hat. Ein Aufruf für einen Knoten, der schon in `seen` steht, gibt gleich zurück, dass er keinen Weg findet; sonst trägt er seinen Knoten ein, ruft `visit(node)` auf und sucht weiter wie `walk`. Alle Aufrufe teilen sich dieselbe Menge: Jeder gibt sie an die Aufrufe für seine Nachbarn weiter.
 
 So sucht <span class='code-language' data-language='ruby python'><code>depth_first</code></span><span class='code-language' data-language='dart javascript java'><code>depthFirst</code></span>, die **Tiefensuche**.
 
@@ -615,12 +615,12 @@ Die Welle erreicht das Ziel in Ring 3: Es gibt einen Weg über drei Kanten und k
 
 Die Breitensuche Schritt für Schritt:
 
-1. In `seen` und im ersten Ring steht nur der Start, `visited` ist leer.
-2. Nimm die Knoten des Rings der Reihe nach und schreib jeden in `visited`. Ist er das Ziel, bist du fertig.
+1. In `seen` und im ersten Ring steht nur der Start.
+2. Nimm die Knoten des Rings der Reihe nach und ruf für jeden `visit(node)` auf. Ist er das Ziel, bist du fertig.
 3. Jeder Nachbar, der noch nicht in `seen` steht, kommt in `seen` und in den nächsten Ring.
 4. Ist der Ring durch, ist der nächste dran. Bleibt der nächste Ring leer, ohne dass das Ziel dran war, gibt es keinen Weg.
 
-`visited` braucht die Suche selbst nicht: Die Seite zeigt damit, in welcher Reihenfolge die Suche die Knoten besucht hat. Den Weg gibt deine Suche erst einmal nicht zurück, nur <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span>; um ihn geht es im nächsten Abschnitt.
+`visit(node)` braucht die Suche selbst nicht: Damit zeigt die Seite, in welcher Reihenfolge die Suche die Knoten besucht hat. Den Weg gibt deine Suche erst einmal nicht zurück, nur <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span>; um ihn geht es im nächsten Abschnitt.
 
 _uses(breitensuche)
 
@@ -791,7 +791,7 @@ _person(dijkstra)
 </div>
 
 1. `metres` sagt, wie weit jeder gefundene Knoten vom Start weg ist, `previous` wieder seinen Vorgänger, `frontier` die Knoten, die gefunden, aber noch nicht dran waren, mit ihrem Abstand. Am Anfang steht in allen dreien nur der Start, mit 0 Metern und ohne Vorgänger.
-2. Nimm aus `frontier` den Knoten mit dem kleinsten Abstand und schreib ihn in `visited`. Ist es das Ziel, bist du fertig.
+2. Nimm aus `frontier` den Knoten mit dem kleinsten Abstand und ruf `visit(node)` auf. Ist es das Ziel, bist du fertig.
 3. Für jeden Nachbarn: Wie weit wäre er über diesen Knoten? Sein Abstand plus die Länge der Kante. Kennst du den Nachbarn noch nicht, oder ist der Weg über diesen Knoten kürzer als der bisher beste, bekommt er den neuen Abstand und diesen Knoten als Vorgänger und kommt (wieder) in `frontier`.
 4. Weiter mit 2, solange `frontier` nicht leer ist.
 
@@ -969,14 +969,14 @@ Dann bekommt `dijkstra` den Heap statt `frontier`. Ein Knoten kann jetzt mehrmal
 
 <!-- hint -->
 Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
-nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visit(node)`
 und das Ende mit `path_to` bleiben. Warum kann derselbe Knoten jetzt zweimal
 aus dem Heap kommen, und was soll beim zweiten Mal passieren?
 <!-- /hint -->
 <!-- hint -->
 `heap.pop` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
 `so_far, node = heap.pop`. Steht `node` schon in `done`, geht es mit `next`
-zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den Nachbarn
+zum nächsten Paar. Sonst kommt er in `done`, und `visit(node)` meldet ihn der Karte. Bei den Nachbarn
 ersetzt `heap.push(total, neighbour)` die Zeile, die ihn in `frontier`
 geschrieben hat.
 <!-- /hint -->
@@ -987,7 +987,7 @@ Ein Gerüst für die Schleife:
 until heap.empty?
     so_far, node = heap.pop
     # hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
-    visited << node
+    visit(node)
     break if node == goal
 
     graph[:edges][node].each do |neighbour, length|
@@ -1011,7 +1011,6 @@ previous = { start => nil }
 done = {}
 heap = MinHeap.new
 heap.push(0, start)
-visited = []
 ```
 
 Und die Schleife:
@@ -1023,7 +1022,7 @@ until heap.empty?
     next if done[node]
 
     done[node] = true
-    visited << node
+    visit(node)
     break if node == goal
 
     graph[:edges][node].each do |neighbour, length|
@@ -1045,14 +1044,14 @@ end
 
 <!-- hint -->
 Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
-nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visit(node)`
 und das Ende mit `path_to` bleiben. Warum kann derselbe Knoten jetzt zweimal
 aus dem Heap kommen, und was soll beim zweiten Mal passieren?
 <!-- /hint -->
 <!-- hint -->
 `heap.pop()` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
 `so_far, node = heap.pop()`. Steht `node` schon in `done`, geht es mit
-`continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den
+`continue` zum nächsten Paar. Sonst kommt er in `done`, und `visit(node)` meldet ihn der Karte. Bei den
 Nachbarn ersetzt `heap.push(total, neighbour)` die Zeile, die ihn in
 `frontier` geschrieben hat.
 <!-- /hint -->
@@ -1063,7 +1062,7 @@ Ein Gerüst für die Schleife:
 while not heap.empty():
     so_far, node = heap.pop()
     # hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
-    visited.append(node)
+    visit(node)
     if node == goal:
         break
     for neighbour, length in graph['edges'].get(node, []):
@@ -1085,7 +1084,6 @@ previous = {start: None}
 done = set()
 heap = MinHeap()
 heap.push(0, start)
-visited = []
 ```
 
 Und die Schleife:
@@ -1097,7 +1095,7 @@ while not heap.empty():
     if node in done:
         continue
     done.add(node)
-    visited.append(node)
+    visit(node)
     if node == goal:
         break
     for neighbour, length in graph['edges'].get(node, []):
@@ -1117,7 +1115,7 @@ while not heap.empty():
 
 <!-- hint -->
 Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
-nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visit(node)`
 und das Ende mit `pathTo` bleiben. Warum kann derselbe Knoten jetzt zweimal
 aus dem Heap kommen, und was soll beim zweiten Mal passieren?
 <!-- /hint -->
@@ -1125,7 +1123,7 @@ aus dem Heap kommen, und was soll beim zweiten Mal passieren?
 `heap.pop()!` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten,
 als Record: `final (soFar, node) = heap.pop()!;`. Das `!` sagt Dart, dass
 der Heap hier nicht leer ist. Steht `node` schon in `done`, geht es mit
-`continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den
+`continue` zum nächsten Paar. Sonst kommt er in `done`, und `visit(node)` meldet ihn der Karte. Bei den
 Nachbarn ersetzt `heap.push(total, edge.to)` die Zeile, die ihn in
 `frontier` geschrieben hat.
 <!-- /hint -->
@@ -1136,7 +1134,7 @@ Ein Gerüst für die Schleife:
 while (!heap.isEmpty) {
   final (soFar, node) = heap.pop()!;
   // hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
-  visited.add(node);
+  visit(node);
   if (node == goal) break;
   final edges = graph.edges[node];
   if (edges == null) continue;
@@ -1160,7 +1158,6 @@ final costs = <String, double>{start: 0};
 final previous = <String, String?>{start: null};
 final done = <String>{};
 final heap = MinHeap()..push(0, start);
-final visited = <String>[];
 ```
 
 Und die Schleife:
@@ -1171,7 +1168,7 @@ while (!heap.isEmpty) {
   final (soFar, node) = heap.pop()!;
   if (done.contains(node)) continue;
   done.add(node);
-  visited.add(node);
+  visit(node);
   if (node == goal) break;
   final edges = graph.edges[node];
   if (edges == null) continue;
@@ -1193,14 +1190,14 @@ while (!heap.isEmpty) {
 
 <!-- hint -->
 Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
-nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visit(node)`
 und das Ende mit `pathTo` bleiben. Warum kann derselbe Knoten jetzt zweimal
 aus dem Heap kommen, und was soll beim zweiten Mal passieren?
 <!-- /hint -->
 <!-- hint -->
 `heap.pop()` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
 `const [soFar, node] = heap.pop();`. Steht `node` schon in `done`, geht es
-mit `continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei
+mit `continue` zum nächsten Paar. Sonst kommt er in `done`, und `visit(node)` meldet ihn der Karte. Bei
 den Nachbarn ersetzt `heap.push(total, neighbour)` die Zeile, die ihn in
 `frontier` geschrieben hat.
 <!-- /hint -->
@@ -1211,7 +1208,7 @@ Ein Gerüst für die Schleife:
 while (!heap.isEmpty()) {
     const [soFar, node] = heap.pop();
     // hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
-    visited.push(node);
+    visit(node);
     if (node === goal) break;
     for (const [neighbour, length] of graph.edges[node] || []) {
         const total = soFar + length;
@@ -1234,7 +1231,6 @@ const previous = new Map([[start, null]]);
 const done = new Set();
 const heap = new MinHeap();
 heap.push(0, start);
-const visited = [];
 ```
 
 Und die Schleife:
@@ -1245,7 +1241,7 @@ while (!heap.isEmpty()) {
     const [soFar, node] = heap.pop();
     if (done.has(node)) continue;
     done.add(node);
-    visited.push(node);
+    visit(node);
     if (node === goal) break;
     for (const [neighbour, length] of graph.edges[node] || []) {
         const total = soFar + length;
@@ -1265,7 +1261,7 @@ while (!heap.isEmpty()) {
 
 <!-- hint -->
 Was ändert sich gegenüber deiner Fassung mit `frontier`? Nur, woher der
-nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visited`
+nächste Knoten kommt und wie ein Nachbar hineinkommt. `previous`, `visit(node)`
 und das Ende mit `pathTo` bleiben. Warum kann derselbe Knoten jetzt zweimal
 aus dem Heap kommen, und was soll beim zweiten Mal passieren?
 <!-- /hint -->
@@ -1273,7 +1269,7 @@ aus dem Heap kommen, und was soll beim zweiten Mal passieren?
 `heap.pop()` gibt ein Paar aus Priorität und Wert, hier Meter und Knoten:
 `MinHeap.Entry entry = heap.pop();`, dann ist `entry.value()` der Knoten und
 `entry.priority()` sein Abstand. Steht der Knoten schon in `done`, geht es mit
-`continue` zum nächsten Paar. Sonst kommt er in `done` und `visited`. Bei den
+`continue` zum nächsten Paar. Sonst kommt er in `done`, und `visit(node)` meldet ihn der Karte. Bei den
 Nachbarn ersetzt `heap.push(total, edge.to())` die Zeile, die ihn in
 `frontier` geschrieben hat.
 <!-- /hint -->
@@ -1285,7 +1281,7 @@ while (!heap.isEmpty()) {
     MinHeap.Entry entry = heap.pop();
     String node = entry.value();
     // hier: überspringen, wenn node schon fertig ist, sonst als fertig merken
-    visited.add(node);
+    visit(node);
     if (node.equals(goal)) break;
     for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
         double total = entry.priority() + edge.cost();
@@ -1309,7 +1305,6 @@ previous.put(start, null);
 Set<String> done = new HashSet<>();
 MinHeap heap = new MinHeap();
 heap.push(0, start);
-List<String> visited = new ArrayList<>();
 ```
 
 Und die Schleife:
@@ -1321,7 +1316,7 @@ while (!heap.isEmpty()) {
     String node = entry.value();
     if (done.contains(node)) continue;
     done.add(node);
-    visited.add(node);
+    visit(node);
     if (node.equals(goal)) break;
     for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
         double total = entry.priority() + edge.cost();
@@ -1761,9 +1756,8 @@ In Ruby gibt es dafür keine Klassen, nur Hashes und Arrays. So sehen sie aus, m
 # eine Kante
 ['12', 67.8]   # die ID des Nachbarn und die Kosten: Meter, für eine Art zu reisen Sekunden
 
-# was eine Suche zurückgibt
-{ path: ['11', …, '16'],   # die IDs vom Start bis zum Ziel, nil ohne Weg
-  visited: ['11', …] }     # die Knoten in der Reihenfolge, in der sie dran waren
+# was eine Suche zurückgibt: den Weg, die IDs vom Start bis zum Ziel, nil ohne Weg
+['11', …, '16']
 ```
 
 So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
@@ -1775,7 +1769,7 @@ graph[:nodes]['11']                # die Lage eines Knotens: [13.3, 52.45]
 graph[:nodes]['11'] = [lon, lat]   # einen Knoten eintragen
 graph[:edges][a] << [b, metres]    # eine Kante anhängen (mit Hash.new { … } wie oben)
 graph[:edges].key?('11')           # hat der Knoten Kanten?
-{ path: path, visited: visited }   # was eine Suche zurückgibt
+visit(node)                        # nur für die Karte: zeigt, dass node dran ist
 ```
 
 Für eine ID ohne Kanten gibt `graph[:edges][node]` ein leeres Array, wenn dein `build_graph` die Kanten mit `Hash.new { |hash, id| hash[id] = [] }` anlegt wie oben, sonst `nil`. So gehst du die Nachbarn eines Knotens durch:
@@ -1806,9 +1800,8 @@ In Python gibt es dafür keine Klassen, nur Dictionaries und Listen. So sehen si
 # eine Kante
 ['12', 67.8]   # die ID des Nachbarn und die Kosten: Meter, für eine Art zu reisen Sekunden
 
-# was eine Suche zurückgibt
-{'path': ['11', …, '16'],  # die IDs vom Start bis zum Ziel, None ohne Weg
- 'visited': ['11', …]}     # die Knoten in der Reihenfolge, in der sie dran waren
+# was eine Suche zurückgibt: den Weg, die IDs vom Start bis zum Ziel, None ohne Weg
+['11', …, '16']
 ```
 
 So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
@@ -1822,7 +1815,7 @@ if a not in graph['edges']:                  # eine Kante von a nach b anhängen
     graph['edges'][a] = []                   #   hat a noch keine Kanten, eine leere Liste
 graph['edges'][a].append([b, metres])
 '11' in graph['edges']                       # hat der Knoten Kanten?
-{'path': path, 'visited': visited}           # was eine Suche zurückgibt
+visit(node)                                  # nur für die Karte: zeigt, dass node dran ist
 ```
 
 Für eine ID ohne Kanten gibt `graph['edges'][node]` einen `KeyError`, `graph['edges'].get(node, [])` eine leere Liste. So gehst du die Nachbarn eines Knotens durch:
@@ -1865,10 +1858,8 @@ class Graph {
   void addEdge(String from, String to, double cost) { … }   // eine Kante von from nach to anhängen
 }
 
-class Search {
-  final List<String>? path;     // die IDs vom Start bis zum Ziel, null ohne Weg
-  final List<String> visited;   // die Knoten in der Reihenfolge, in der sie dran waren
-}
+// nur für die Karte: zeigt, dass node dran ist
+void visit(String node) { … }
 ```
 
 So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
@@ -1881,7 +1872,7 @@ Graph graph = Graph();                    // ein leerer Graph, ohne Argumente
 graph.nodes['11'] = point;                // einen Knoten eintragen
 Point? p = graph.nodes['11'];             // nachsehen; null, wenn es ihn nicht gibt
 graph.addEdge(a, b, metres);              // eine Kante von a nach b anhängen
-return Search(path, visited);             // was eine Suche zurückgibt
+visit(node);                              // nur für die Karte: zeigt, dass node dran ist
 ```
 
 `graph.edges['11']` gibt `[Edge('12', 67.8), Edge('21', 222.4)]` (gerundet), für eine ID ohne Kanten `null`. So gehst du die Nachbarn eines Knotens durch:
@@ -1914,9 +1905,8 @@ In JavaScript gibt es dafür keine Klassen, nur Objekte und Arrays. So sehen sie
 // eine Kante
 ['12', 67.8]   // die ID des Nachbarn und die Kosten: Meter, für eine Art zu reisen Sekunden
 
-// was eine Suche zurückgibt
-{ path: ['11', …, '16'],   // die IDs vom Start bis zum Ziel, null ohne Weg
-  visited: ['11', …] }     // die Knoten in der Reihenfolge, in der sie dran waren
+// was eine Suche zurückgibt: den Weg, die IDs vom Start bis zum Ziel, null ohne Weg
+['11', …, '16']
 ```
 
 So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
@@ -1929,7 +1919,7 @@ graph.nodes['11'] = [lon, lat];             // einen Knoten eintragen
 if (!(a in graph.edges)) graph.edges[a] = []; // hat a noch keine Kanten, eine leere Liste
 graph.edges[a].push([b, metres]);           // eine Kante von a nach b anhängen
 '11' in graph.edges                         // hat der Knoten Kanten?
-return { path, visited };                   // was eine Suche zurückgibt
+visit(node);                                // nur für die Karte: zeigt, dass node dran ist
 ```
 
 Für eine ID ohne Kanten gibt `graph.edges[node]` den Wert `undefined`. So gehst du die Nachbarn eines Knotens durch:
@@ -1966,8 +1956,8 @@ class Graph {
     void addEdge(String from, String to, double cost) { … }   // eine Kante von from nach to anhängen
 }
 
-record Search(List<String> path,       // die IDs vom Start bis zum Ziel, null ohne Weg
-              List<String> visited) {} // die Knoten in der Reihenfolge, in der sie dran waren
+// in Routes: nur für die Karte, zeigt, dass node dran ist
+static void visit(String node) { … }
 ```
 
 So liest und schreibst du sie; `a` und `b` sind zwei IDs, `lon` und `lat` eine Lage:
@@ -1980,7 +1970,7 @@ Graph graph = new Graph();                    // ein leerer Graph, ohne Argument
 graph.nodes.put("11", point);                 // einen Knoten eintragen
 Point p = graph.nodes.get("11");              // nachsehen; null, wenn es ihn nicht gibt
 graph.addEdge(a, b, metres);                  // eine Kante von a nach b anhängen
-return new Search(path, visited);             // was eine Suche zurückgibt
+visit(node);                                  // nur für die Karte: zeigt, dass node dran ist
 ```
 
 `graph.edges.get("11")` gibt `[Edge[to=12, cost=67.8], Edge[to=21, cost=222.4]]` (gerundet), für eine ID ohne Kanten `null`. So gehst du die Nachbarn eines Knotens durch:
@@ -1995,7 +1985,7 @@ for (Edge edge : edges) {
 ```
 <!-- /language -->
 
-Die Suchen <span class='code-language' data-language='ruby python'>`breadth_first`, später `dijkstra` und `a_star`</span><span class='code-language' data-language='dart javascript java'><code>breadthFirst</code>, später <code>dijkstra</code> und <code>aStar</code></span> geben `path` und `visited` zurück; mit `visited` spielt die Karte die Suche ab. `walk` und <span class='code-language' data-language='ruby python'><code>depth_first</code></span><span class='code-language' data-language='dart javascript java'><code>depthFirst</code></span> geben nur den Weg zurück.
+Jede Suche gibt nur ihren Weg zurück, die IDs vom Start bis zum Ziel, oder <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span>, wenn es keinen gibt. Damit die Karte die Suche abspielen kann, ruft sie `visit(node)` auf, wenn ein Knoten dran ist; für die Suche selbst tut `visit` nichts.
 
 
 <!-- tutorial-scope -->

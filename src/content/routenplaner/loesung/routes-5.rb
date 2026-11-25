@@ -1,6 +1,9 @@
 # Ein Routenplaner: deine Funktionen. server.rb ruft sie auf und zeigt im
 # Browser, was sie schon können.
 
+# visit(node): zeigt der Karte, welcher Knoten dran ist (visits.rb)
+require_relative 'visits'
+
 EARTH_RADIUS = 6_371_000 # Meter
 
 # Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile sind
@@ -53,6 +56,7 @@ end
 # zum Ziel. Gibt den Weg zurück, [node, …, goal], oder nil. Geht auf einer
 # Karte im Kreis, bis der Stack voll ist.
 def walk(graph, node, goal)
+    visit(node)
     return [node] if node == goal
 
     graph[:edges][node].each do |neighbour, _metres|
@@ -68,6 +72,8 @@ def depth_first(graph, node, goal, seen = Set.new)
     return nil if seen.include?(node)
 
     seen << node
+
+    visit(node)
     return [node] if node == goal
 
     graph[:edges][node].each do |neighbour, _metres|
@@ -98,10 +104,9 @@ end
 def breadth_first(graph, start, goal)
     previous = { start => nil }
     queue = [start]
-    visited = []
     until queue.empty?
         node = queue.shift
-        visited << node
+        visit(node)
         break if node == goal
 
         graph[:edges][node].each do |neighbour, _metres|
@@ -111,7 +116,7 @@ def breadth_first(graph, start, goal)
             queue << neighbour
         end
     end
-    { path: path_to(previous, goal), visited: visited }
+    path_to(previous, goal)
 end
 
 # Dijkstra: der kürzeste Weg in Metern. Als Nächstes ist immer der Knoten
@@ -120,11 +125,10 @@ def dijkstra(graph, start, goal)
     metres = { start => 0 }
     previous = { start => nil }
     frontier = { start => 0 } # gefunden, aber noch nicht fertig
-    visited = []
     until frontier.empty?
         node, so_far = frontier.min_by { |_id, m| m }
         frontier.delete(node)
-        visited << node
+        visit(node)
         break if node == goal
 
         graph[:edges][node].each do |neighbour, length|
@@ -136,7 +140,7 @@ def dijkstra(graph, start, goal)
             frontier[neighbour] = total
         end
     end
-    { path: path_to(previous, goal), visited: visited }
+    path_to(previous, goal)
 end
 
 # Eine Priority Queue: push legt einen Wert mit einer Priorität

@@ -1,6 +1,6 @@
 // Ein Routenplaner: deine Funktionen. Der Server (./run dart) fragt sie und
-// zeigt im Browser, was sie schon können. Die Klassen Point, Way, Edge, Graph
-// und Search stehen in graph.dart.
+// zeigt im Browser, was sie schon können. Die Klassen Point, Way, Edge und
+// Graph und visit(node) stehen in graph.dart.
 import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
@@ -61,6 +61,7 @@ Graph buildGraph(List<Way> ways) {
 // zum Ziel. Gibt den Weg zurück, [node, …, goal], oder null. Geht auf einer
 // Karte im Kreis, bis der Stack voll ist.
 List<String>? walk(Graph graph, String node, String goal) {
+  visit(node);
   if (node == goal) return [node];
   for (final edge in graph.edges[node] ?? <Edge>[]) {
     final rest = walk(graph, edge.to, goal);
@@ -79,6 +80,7 @@ List<String>? depthFirst(Graph graph, String start, String goal) {
 List<String>? search(Graph graph, String node, String goal, Set<String> seen) {
   if (seen.contains(node)) return null;
   seen.add(node);
+  visit(node);
   if (node == goal) return [node];
   List<Edge>? edges = graph.edges[node];
   if (edges == null) return null;
@@ -106,15 +108,15 @@ List<String>? pathTo(Map<String, String?> previous, String goal) {
   return path;
 }
 
-// Breitensuche: der Weg über die wenigsten Kanten, und die besuchten Knoten
-// in der Reihenfolge der Suche
-Search breadthFirst(Graph graph, String start, String goal) {
+// Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+// zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+// Knoten dran ist: Damit spielt die Karte die Suche ab.
+List<String>? breadthFirst(Graph graph, String start, String goal) {
   final previous = <String, String?>{start: null};
   final queue = Queue<String>()..add(start);
-  final visited = <String>[];
   while (queue.isNotEmpty) {
     final node = queue.removeFirst();
-    visited.add(node);
+    visit(node);
     if (node == goal) break;
     for (final edge in graph.edges[node] ?? <Edge>[]) {
       if (previous.containsKey(edge.to)) continue;
@@ -122,22 +124,21 @@ Search breadthFirst(Graph graph, String start, String goal) {
       queue.add(edge.to);
     }
   }
-  return Search(pathTo(previous, goal), visited);
+  return pathTo(previous, goal);
 }
 
 // Dijkstra: der kürzeste Weg in Metern. Gibt dasselbe zurück wie breadthFirst.
-Search dijkstra(Graph graph, String start, String goal) {
+List<String>? dijkstra(Graph graph, String start, String goal) {
   final metres = <String, double>{start: 0};
   final previous = <String, String?>{start: null};
   final frontier = <String, double>{start: 0}; // gefunden, aber noch nicht fertig
-  final visited = <String>[];
   while (frontier.isNotEmpty) {
     var node = frontier.keys.first;
     for (final id in frontier.keys) {
       if (frontier[id]! < frontier[node]!) node = id;
     }
     final soFar = frontier.remove(node)!;
-    visited.add(node);
+    visit(node);
     if (node == goal) break;
     for (final edge in graph.edges[node] ?? <Edge>[]) {
       final total = soFar + edge.cost;
@@ -147,7 +148,7 @@ Search dijkstra(Graph graph, String start, String goal) {
       frontier[edge.to] = total;
     }
   }
-  return Search(pathTo(previous, goal), visited);
+  return pathTo(previous, goal);
 }
 
 // Eine Priority Queue: push legt einen Wert mit einer Priorität hinein, pop
@@ -171,7 +172,7 @@ class MinHeap {
 
 // A*: wie Dijkstra, mit der Luftlinie zum Ziel als Schätzung für den Rest.
 // Gibt dasselbe zurück wie breadthFirst.
-Search aStar(Graph graph, String start, String goal) {
+List<String>? aStar(Graph graph, String start, String goal) {
   throw UnimplementedError('aStar');
 }
 

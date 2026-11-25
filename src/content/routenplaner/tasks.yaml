@@ -789,6 +789,7 @@ tasks:
 
         ```ruby
         def walk(graph, node, goal)
+            visit(node)   # nur für die Karte: node ist dran
             return [node] if …   # hier: ist node das Ziel?
 
             graph[:edges][node].each do |neighbour, _metres|
@@ -835,6 +836,7 @@ tasks:
 
           ```python
           def walk(graph, node, goal):
+              visit(node)   # nur für die Karte: node ist dran
               if …:   # hier: ist node das Ziel?
                   return [node]
               for neighbour, _metres in graph['edges'].get(node, []):
@@ -881,6 +883,7 @@ tasks:
 
           ```dart
           List<String>? walk(Graph graph, String node, String goal) {
+            visit(node);   // nur für die Karte: node ist dran
             if (…) return [node]; // hier: ist node das Ziel?
             List<Edge>? edges = graph.edges[node];
             if (edges == null) return null;
@@ -933,6 +936,7 @@ tasks:
 
           ```javascript
           function walk(graph, node, goal) {
+              visit(node);   // nur für die Karte: node ist dran
               if (…) return [node]; // hier: ist node das Ziel?
               for (const [neighbour] of graph.edges[node] || []) {
                   const rest = walk(…); // hier: weiter vom Nachbarn aus
@@ -980,6 +984,7 @@ tasks:
 
           ```java
           static List<String> walk(Graph graph, String node, String goal) {
+              visit(node);   // nur für die Karte: node ist dran
               if (…) return new ArrayList<>(List.of(node)); // hier: ist node das Ziel?
               for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                   List<String> rest = walk(…); // hier: weiter vom Nachbarn aus
@@ -1048,7 +1053,7 @@ tasks:
 
         ```ruby
         def depth_first(graph, node, goal, seen = Set.new)
-            # hier: steht node schon in seen, nil; sonst kommt node hinein
+            # hier: steht node schon in seen, nil; sonst kommt node hinein, dann visit(node)
             return [node] if node == goal
 
             graph[:edges][node].each do |neighbour, _metres|
@@ -1094,7 +1099,7 @@ tasks:
           def depth_first(graph, node, goal, seen=None):
               if seen is None:
                   seen = set()
-              # hier: steht node schon in seen, None; sonst kommt node hinein
+              # hier: steht node schon in seen, None; sonst kommt node hinein, dann visit(node)
               if node == goal:
                   return [node]
               for neighbour, _metres in graph['edges'].get(node, []):
@@ -1137,7 +1142,7 @@ tasks:
 
           ```dart
           List<String>? search(Graph graph, String node, String goal, Set<String> seen) {
-            // hier: steht node schon in seen, null; sonst kommt node hinein
+            // hier: steht node schon in seen, null; sonst kommt node hinein, dann visit(node)
             if (node == goal) return [node];
             List<Edge>? edges = graph.edges[node];
             if (edges == null) return null;
@@ -1191,7 +1196,7 @@ tasks:
 
           ```javascript
           function depthFirst(graph, node, goal, seen = new Set()) {
-              // hier: steht node schon in seen, null; sonst kommt node hinein
+              // hier: steht node schon in seen, null; sonst kommt node hinein, dann visit(node)
               if (node === goal) return [node];
               for (const [neighbour] of graph.edges[node] || []) {
                   const rest = depthFirst(…); // hier: mit seen
@@ -1233,7 +1238,7 @@ tasks:
 
           ```java
           static List<String> depthFirst(Graph graph, String node, String goal, Set<String> seen) {
-              // hier: steht node schon in seen, null; sonst kommt node hinein
+              // hier: steht node schon in seen, null; sonst kommt node hinein, dann visit(node)
               if (node.equals(goal)) return new ArrayList<>(List.of(node));
               for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                   List<String> rest = depthFirst(…); // hier: mit seen
@@ -1286,19 +1291,19 @@ tasks:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
       cases:
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].first
+        - call: visits_of { breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.first
           expect: "'11'"
-          say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].last
+          say: visit(node) gehört an die Stelle, an der ein Knoten dran ist, also kommt der Start zuerst.
+        - call: visits_of { breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.last
           expect: "'16'"
           say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited]
+        - call: visits_of { breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }
           expect: "['11', '12', '21', '13', '22', '14', '16']"
           say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gesehen wurden.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:visited]
+        - call: visits_of { breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11') }
           expect: "['11']"
           say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:visited].sort
+        - call: visits_of { breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31') }.sort
           expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
           say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
     hint:
@@ -1307,13 +1312,13 @@ tasks:
         Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in Ring 2? In
         welcher Reihenfolge sind sie dran, bis 16 dran ist?
       - |
-        Die Suche merkt sich dreierlei: `seen` (am Anfang nur der Start),
-        `ring`, den Ring, der gerade dran ist (am Anfang nur der Start), und
-        `visited` (am Anfang leer). Jeder Knoten des Rings kommt in `visited`;
-        ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der noch nicht in
-        `seen` steht, kommt in `seen` und in den nächsten Ring. Ist der Ring
-        durch, ist der nächste dran. Den Weg kennt die Suche noch nicht: `path`
-        ist `nil`.
+        Die Suche merkt sich zweierlei: `seen` (am Anfang nur der Start) und `ring`,
+        den Ring, der gerade dran ist (am Anfang nur der Start). Für jeden Knoten
+        des Rings ruft sie `visit(node)` auf, damit die Karte sieht, dass er dran
+        ist; ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der noch nicht in
+        `seen` steht, kommt in `seen` und in den nächsten Ring. Ist der Ring durch,
+        ist der nächste dran. Den Weg kennt die Suche noch nicht: Sie gibt `nil`
+        zurück.
       - |
         Ein Gerüst:
 
@@ -1321,18 +1326,17 @@ tasks:
         def breadth_first(graph, start, goal)
             seen = Set[start]
             ring = [start]
-            visited = []
             until ring.empty?
                 next_ring = []
                 ring.each do |node|
-                    # hier: node in visited, und beim Ziel: return { path: nil, visited: visited }
+                    # hier: visit(node), und beim Ziel: return nil
                     graph[:edges][node].each do |neighbour, _metres|
                         # hier: ein neuer Nachbar kommt in seen und in next_ring
                     end
                 end
                 ring = next_ring
             end
-            { path: nil, visited: visited }
+            nil
         end
         ```
     python:
@@ -1341,19 +1345,19 @@ tasks:
         type: python
         file: routenplaner-starter/python/routes.py
         cases:
-          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['visited'][0]"
+          - call: "visits_of(lambda: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16'))[0]"
             expect: "'11'"
-            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
-          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['visited'][-1]"
+            say: visit(node) gehört an die Stelle, an der ein Knoten dran ist, also kommt der Start zuerst.
+          - call: "visits_of(lambda: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16'))[-1]"
             expect: "'16'"
             say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
-          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['visited']"
+          - call: "visits_of(lambda: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16'))"
             expect: "['11', '12', '21', '13', '22', '14', '16']"
             say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gesehen wurden.
-          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')['visited']"
+          - call: "visits_of(lambda: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11'))"
             expect: "['11']"
             say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
-          - call: "sorted(breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')['visited'])"
+          - call: "sorted(visits_of(lambda: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')))"
             expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
             say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
       hint:
@@ -1362,13 +1366,13 @@ tasks:
           im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
           Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
         - |
-          Die Suche merkt sich dreierlei: `seen` (am Anfang nur der Start),
-          `ring`, den Ring, der gerade dran ist (am Anfang nur der Start), und
-          `visited` (am Anfang leer). Jeder Knoten des Rings kommt in `visited`;
-          ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der noch nicht
-          in `seen` steht, kommt in `seen` und in den nächsten Ring. Ist der
-          Ring durch, ist der nächste dran. Den Weg kennt die Suche noch nicht:
-          `'path'` ist `None`.
+          Die Suche merkt sich zweierlei: `seen` (am Anfang nur der Start) und
+          `ring`, den Ring, der gerade dran ist (am Anfang nur der Start). Für jeden
+          Knoten des Rings ruft sie `visit(node)` auf, damit die Karte sieht, dass
+          er dran ist; ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der
+          noch nicht in `seen` steht, kommt in `seen` und in den nächsten Ring. Ist
+          der Ring durch, ist der nächste dran. Den Weg kennt die Suche noch nicht:
+          Sie gibt `None` zurück.
         - |
           Ein Gerüst:
 
@@ -1376,16 +1380,15 @@ tasks:
           def breadth_first(graph, start, goal):
               seen = {start}
               ring = [start]
-              visited = []
               while ring:
                   next_ring = []
                   for node in ring:
-                      # hier: node in visited, und beim Ziel: return {'path': None, 'visited': visited}
+                      # hier: visit(node), und beim Ziel: return None
                       for neighbour, _metres in graph['edges'].get(node, []):
                           # hier: ein neuer Nachbar kommt in seen und in next_ring
                           ...
                   ring = next_ring
-              return {'path': None, 'visited': visited}
+              return None
           ```
     dart:
       prompt: Schreib `breadthFirst` in `routes.dart`, erst einmal ohne den Weg. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
@@ -1393,19 +1396,19 @@ tasks:
         type: dart
         file: routenplaner-starter/dart/routes.dart
         cases:
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.first
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).first
             expect: "'11'"
-            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.last
+            say: visit(node) gehört an die Stelle, an der ein Knoten dran ist, also kommt der Start zuerst.
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).last
             expect: "'16'"
             say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16'))
             expect: "['11', '12', '21', '13', '22', '14', '16']"
             say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gesehen wurden.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').visited
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11'))
             expect: "['11']"
             say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').visited.toList()..sort()
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')).toList()..sort()
             expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
             say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
       hint:
@@ -1414,25 +1417,24 @@ tasks:
           im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
           Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
         - |
-          Die Suche merkt sich dreierlei: `seen` (am Anfang nur der Start),
-          `ring`, den Ring, der gerade dran ist (am Anfang nur der Start), und
-          `visited` (am Anfang leer). Jeder Knoten des Rings kommt in `visited`;
-          ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der noch nicht
-          in `seen` steht, kommt in `seen` und in den nächsten Ring. Ist der
-          Ring durch, ist der nächste dran. Den Weg kennt die Suche noch nicht:
-          Sie gibt `Search(null, visited)` zurück.
+          Die Suche merkt sich zweierlei: `seen` (am Anfang nur der Start) und
+          `ring`, den Ring, der gerade dran ist (am Anfang nur der Start). Für jeden
+          Knoten des Rings ruft sie `visit(node)` auf, damit die Karte sieht, dass
+          er dran ist; ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der
+          noch nicht in `seen` steht, kommt in `seen` und in den nächsten Ring. Ist
+          der Ring durch, ist der nächste dran. Den Weg kennt die Suche noch nicht:
+          Sie gibt `null` zurück.
         - |
           Ein Gerüst:
 
           ```dart
-          Search breadthFirst(Graph graph, String start, String goal) {
+          List<String>? breadthFirst(Graph graph, String start, String goal) {
             Set<String> seen = {start};
             List<String> ring = [start];
-            List<String> visited = [];
             while (ring.isNotEmpty) {
               List<String> nextRing = [];
               for (String node in ring) {
-                // hier: node in visited, und beim Ziel: return Search(null, visited);
+                // hier: visit(node), und beim Ziel: return null;
                 List<Edge>? edges = graph.edges[node];
                 if (edges == null) continue;
                 for (Edge edge in edges) {
@@ -1441,12 +1443,12 @@ tasks:
               }
               ring = nextRing;
             }
-            return Search(null, visited);
+            return null;
           }
           ```
 
-          Kürzer geschrieben, wenn du magst: `final visited = <String>[];` statt
-          `List<String> visited = [];`, und `if (seen.add(edge.to))` statt erst
+          Kürzer geschrieben, wenn du magst: `final nextRing = <String>[];` statt
+          `List<String> nextRing = [];`, und `if (seen.add(edge.to))` statt erst
           `contains`, dann `add`.
     javascript:
       prompt: Schreib `breadthFirst` in `routes.js`, erst einmal ohne den Weg. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
@@ -1454,19 +1456,19 @@ tasks:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
         cases:
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited[0]
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16'))[0]
             expect: "'11'"
-            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.at(-1)
+            say: visit(node) gehört an die Stelle, an der ein Knoten dran ist, also kommt der Start zuerst.
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).at(-1)
             expect: "'16'"
             say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16'))
             expect: "['11', '12', '21', '13', '22', '14', '16']"
             say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gesehen wurden.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').visited
+          - call: visitsOf(() => breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11'))
             expect: "['11']"
             say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
-          - call: '[...breadthFirst(buildGraph(readWays(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'').visited].sort()'
+          - call: '[...visitsOf(() => breadthFirst(buildGraph(readWays(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31''))].sort()'
             expect: "['11', '12', '13', '14', '15', '16', '21', '22']"
             say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
       hint:
@@ -1475,13 +1477,13 @@ tasks:
           im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
           Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
         - |
-          Die Suche merkt sich dreierlei: `seen`, ein `Set` (am Anfang nur der
-          Start), `ring`, den Ring, der gerade dran ist (am Anfang nur der
-          Start), und `visited` (am Anfang leer). Jeder Knoten des Rings kommt in
-          `visited`; ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der
-          noch nicht in `seen` steht, kommt in `seen` und in den nächsten Ring.
-          Ist der Ring durch, ist der nächste dran. Den Weg kennt die Suche noch
-          nicht: `path` ist `null`.
+          Die Suche merkt sich zweierlei: `seen`, ein `Set` (am Anfang nur der
+          Start) und `ring`, den Ring, der gerade dran ist (am Anfang nur der
+          Start). Für jeden Knoten des Rings ruft sie `visit(node)` auf, damit die
+          Karte sieht, dass er dran ist; ist er das Ziel, ist die Suche fertig.
+          Jeder Nachbar, der noch nicht in `seen` steht, kommt in `seen` und in den
+          nächsten Ring. Ist der Ring durch, ist der nächste dran. Den Weg kennt die
+          Suche noch nicht: Sie gibt `null` zurück.
         - |
           Ein Gerüst:
 
@@ -1489,18 +1491,17 @@ tasks:
           function breadthFirst(graph, start, goal) {
               const seen = new Set([start]);
               let ring = [start];
-              const visited = [];
               while (ring.length > 0) {
                   const nextRing = [];
                   for (const node of ring) {
-                      // hier: node in visited, und beim Ziel: return { path: null, visited };
+                      // hier: visit(node), und beim Ziel: return null;
                       for (const [neighbour] of graph.edges[node] || []) {
                           // hier: ein neuer Nachbar kommt in seen und in nextRing
                       }
                   }
                   ring = nextRing;
               }
-              return { path: null, visited };
+              return null;
           }
           ```
     java:
@@ -1509,19 +1510,19 @@ tasks:
         type: java
         file: routenplaner-starter/java/Routes.java
         cases:
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().get(0)
+          - call: Visits.of(() -> Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).get(0)
             expect: '"11"'
-            say: In visited kommt jeder Knoten, wenn er dran ist, der Start also zuerst.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().getLast()
+            say: visit(node) gehört an die Stelle, an der ein Knoten dran ist, also kommt der Start zuerst.
+          - call: Visits.of(() -> Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).getLast()
             expect: '"16"'
             say: Die Suche hört auf, wenn das Ziel selbst dran ist, nicht schon, wenn sie es als Nachbarn findet. Dann ist es der letzte besuchte Knoten.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited()
+          - call: Visits.of(() -> Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16"))
             expect: 'List.of("11", "12", "21", "13", "22", "14", "16")'
             say: Ring für Ring, wie im Bild der Seite. Innerhalb eines Rings kommen die Knoten in der Reihenfolge dran, in der sie gesehen wurden.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").visited()
+          - call: Visits.of(() -> Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11"))
             expect: 'List.of("11")'
             say: Ist der Start schon das Ziel, besucht die Suche nur ihn.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").visited().stream().sorted().toList()
+          - call: Visits.of(() -> Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31")).stream().sorted().toList()
             expect: 'List.of("11", "12", "13", "14", "15", "16", "21", "22")'
             say: Ohne Weg zum Ziel besucht die Suche alles, was sie vom Start aus erreicht, und jeden Knoten nur einmal.
       hint:
@@ -1530,32 +1531,31 @@ tasks:
           im Bild: Ring 0 ist 11. Welche Knoten kommen in Ring 1, welche in
           Ring 2? In welcher Reihenfolge sind sie dran, bis 16 dran ist?
         - |
-          Die Suche merkt sich dreierlei: `seen`, ein `HashSet` (am Anfang nur
-          der Start), `ring`, den Ring, der gerade dran ist (am Anfang nur der
-          Start), und `visited` (am Anfang leer). Jeder Knoten des Rings kommt in
-          `visited`; ist er das Ziel, ist die Suche fertig. Jeder Nachbar, der
-          noch nicht in `seen` steht, kommt in `seen` und in den nächsten Ring.
-          Ist der Ring durch, ist der nächste dran. Den Weg kennt die Suche noch
-          nicht: Sie gibt `new Search(null, visited)` zurück.
+          Die Suche merkt sich zweierlei: `seen`, ein `HashSet` (am Anfang nur der
+          Start) und `ring`, den Ring, der gerade dran ist (am Anfang nur der
+          Start). Für jeden Knoten des Rings ruft sie `visit(node)` auf, damit die
+          Karte sieht, dass er dran ist; ist er das Ziel, ist die Suche fertig.
+          Jeder Nachbar, der noch nicht in `seen` steht, kommt in `seen` und in den
+          nächsten Ring. Ist der Ring durch, ist der nächste dran. Den Weg kennt die
+          Suche noch nicht: Sie gibt `null` zurück.
         - |
           Ein Gerüst:
 
           ```java
-          static Search breadthFirst(Graph graph, String start, String goal) {
+          static List<String> breadthFirst(Graph graph, String start, String goal) {
               Set<String> seen = new HashSet<>(List.of(start));
               List<String> ring = List.of(start);
-              List<String> visited = new ArrayList<>();
               while (!ring.isEmpty()) {
                   List<String> nextRing = new ArrayList<>();
                   for (String node : ring) {
-                      // hier: node in visited, und beim Ziel: return new Search(null, visited);
+                      // hier: visit(node), und beim Ziel: return null;
                       for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                           // hier: ein neuer Nachbar (edge.to()) kommt in seen und in nextRing
                       }
                   }
                   ring = nextRing;
               }
-              return new Search(null, visited);
+              return null;
           }
           ```
 
@@ -1586,12 +1586,12 @@ tasks:
         - call: path_to({ 'a' => nil, 'b' => 'a' }, 'x')
           expect: ~
           say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')
           expect: "['11', '21', '22', '16']"
           say: '`path_to` stimmt. Jetzt gibt `breadth_first` damit den Weg zurück: `previous` statt `seen`, und am Ende `path_to(previous, goal)` statt `nil`. Über den Eichenweg sind es drei Kanten.'
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')
           expect: "['11']"
-        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+        - call: breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')
           expect: ~
           say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
     hint:
@@ -1638,12 +1638,12 @@ tasks:
           - call: 'path_to({''a'': None, ''b'': ''a''}, ''x'')'
             expect: ~
             say: 'Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.'
-          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')['path']"
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')"
             expect: "['11', '21', '22', '16']"
             say: '`path_to` stimmt. Jetzt gibt `breadth_first` damit den Weg zurück: `previous` statt `seen`, und am Ende `path_to(previous, goal)` statt `None`. Über den Eichenweg sind es drei Kanten.'
-          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')['path']"
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')"
             expect: "['11']"
-          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')['path']"
+          - call: "breadth_first(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')"
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
@@ -1690,12 +1690,12 @@ tasks:
           - call: "pathTo({'a': null, 'b': 'a'}, 'x')"
             expect: ~
             say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '21', '22', '16']"
-            say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `seen`, und am Ende `Search(pathTo(previous, goal), visited)` statt `Search(null, visited)`. Über den Eichenweg sind es drei Kanten.'
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+            say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `seen`, und am Ende `pathTo(previous, goal)` statt `null`. Über den Eichenweg sind es drei Kanten.'
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
@@ -1710,7 +1710,7 @@ tasks:
           das Ziel gar nicht in `previous` (`containsKey`), hat die Suche es nie
           gefunden: Dann gibt es keinen Weg, `null`. In `breadthFirst` wird aus
           `seen` die Map `previous`, wie auf der Seite beschrieben, und beide
-          `return` geben `Search(pathTo(previous, goal), visited)` zurück.
+          `return` geben `pathTo(previous, goal)` zurück.
         - |
           Ein Gerüst:
 
@@ -1742,12 +1742,12 @@ tasks:
           - call: "pathTo(new Map([['a', null], ['b', 'a']]), 'x')"
             expect: ~
             say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '21', '22', '16']"
             say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `seen`, und am Ende `pathTo(previous, goal)` statt `null`. Über den Eichenweg sind es drei Kanten.'
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: breadthFirst(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
@@ -1794,12 +1794,12 @@ tasks:
           - call: 'Map<String, String> previous = new HashMap<>(); previous.put("a", null); previous.put("b", "a"); Routes.pathTo(previous, "x")'
             expect: ~
             say: Hat die Suche das Ziel nie gefunden, steht es nicht in previous, und es gibt keinen Weg.
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")
             expect: 'List.of("11", "21", "22", "16")'
-            say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `seen`, und am Ende `new Search(pathTo(previous, goal), visited)` statt `new Search(null, visited)`. Über den Eichenweg sind es drei Kanten.'
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+            say: '`pathTo` stimmt. Jetzt gibt `breadthFirst` damit den Weg zurück: `previous` statt `seen`, und am Ende `pathTo(previous, goal)` statt `null`. Über den Eichenweg sind es drei Kanten.'
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11")
             expect: 'List.of("11")'
-          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+          - call: Routes.breadthFirst(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31")
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin. Dann ist die Welle irgendwann zu Ende, und es gibt keinen Weg.
       hint:
@@ -1816,7 +1816,7 @@ tasks:
           hat die Suche es nie gefunden: Dann gibt es keinen Weg, `null`. In
           `breadthFirst` wird aus `seen` die Map `previous`, wie auf der Seite
           beschrieben, und beide `return` geben
-          `new Search(pathTo(previous, goal), visited)` zurück.
+          `pathTo(previous, goal)` zurück.
         - |
           Ein Gerüst:
 
@@ -1860,23 +1860,23 @@ tasks:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
       cases:
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')
           expect: "['11', '12', '13', '14', '15', '16']"
           say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/shortcut.tsv')), '41', '45')[:path]
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/shortcut.tsv')), '41', '45')
           expect: "['41', '43', '44', '45']"
           say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')
           expect: "['11']"
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')
           expect: ~
           say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].first
+        - call: visits_of { dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.first
           expect: "'11'"
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].last
+        - call: visits_of { dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.last
           expect: "'16'"
           say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('22')
+        - call: visits_of { dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.include?('22')
           expect: false
           say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
     hint:
@@ -1902,11 +1902,10 @@ tasks:
             metres = { start => 0 }
             previous = { start => nil }
             frontier = { start => 0 }
-            visited = []
             until frontier.empty?
                 node, so_far = frontier.min_by { |_id, m| m }
                 frontier.delete(node)
-                visited << node
+                visit(node)
                 break if node == goal
 
                 graph[:edges][node].each do |neighbour, length|
@@ -1915,7 +1914,7 @@ tasks:
                     # Dann neuer Abstand, neuer Vorgänger, und neighbour in frontier
                 end
             end
-            { path: path_to(previous, goal), visited: visited }
+            path_to(previous, goal)
         end
         ```
     python:
@@ -1924,23 +1923,23 @@ tasks:
         type: python
         file: routenplaner-starter/python/routes.py
         cases:
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')'
             expect: "['11', '12', '13', '14', '15', '16']"
             say: 'Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.'
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/shortcut.tsv'')), ''41'', ''45'')[''path'']'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/shortcut.tsv'')), ''41'', ''45'')'
             expect: "['41', '43', '44', '45']"
             say: 'Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.'
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')'
             expect: "['11']"
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')'
             expect: ~
             say: 'Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.'
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][0]'
+          - call: 'visits_of(lambda: dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''))[0]'
             expect: "'11'"
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][-1]'
+          - call: 'visits_of(lambda: dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''))[-1]'
             expect: "'16'"
             say: 'Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.'
-          - call: '''22'' in dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited'']'
+          - call: '''22'' in visits_of(lambda: dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''))'
             expect: false
             say: 'Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.'
       hint:
@@ -1966,11 +1965,10 @@ tasks:
               metres = {start: 0}
               previous = {start: None}
               frontier = {start: 0}
-              visited = []
               while frontier:
                   node = min(frontier, key=frontier.get)
                   so_far = frontier.pop(node)
-                  visited.append(node)
+                  visit(node)
                   if node == goal:
                       break
                   for neighbour, length in graph['edges'].get(node, []):
@@ -1978,7 +1976,7 @@ tasks:
                       # hier: ist neighbour neu, oder ist total kürzer als metres[neighbour]?
                       # Dann neuer Abstand, neuer Vorgänger, und neighbour in frontier
                       ...
-              return {'path': path_to(previous, goal), 'visited': visited}
+              return path_to(previous, goal)
           ```
     dart:
       prompt: Schreib `dijkstra` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
@@ -1986,23 +1984,23 @@ tasks:
         type: dart
         file: routenplaner-starter/dart/routes.dart
         cases:
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '12', '13', '14', '15', '16']"
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/shortcut.tsv')), '41', '45').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/shortcut.tsv')), '41', '45')
             expect: "['41', '43', '44', '45']"
             say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.first
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).first
             expect: "'11'"
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.last
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).last
             expect: "'16'"
             say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.contains('22')
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).contains('22')
             expect: false
             say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
       hint:
@@ -2025,18 +2023,17 @@ tasks:
           Ein Gerüst:
 
           ```dart
-          Search dijkstra(Graph graph, String start, String goal) {
+          List<String>? dijkstra(Graph graph, String start, String goal) {
             final metres = <String, double>{start: 0};
             final previous = <String, String?>{start: null};
             final frontier = <String, double>{start: 0};
-            final visited = <String>[];
             while (frontier.isNotEmpty) {
               var node = frontier.keys.first;
               for (final id in frontier.keys) {
                 if (frontier[id]! < frontier[node]!) node = id;
               }
               final soFar = frontier.remove(node)!;
-              visited.add(node);
+              visit(node);
               if (node == goal) break;
 
               final edges = graph.edges[node];
@@ -2047,7 +2044,7 @@ tasks:
                 // Dann neuer Abstand, neuer Vorgänger, und edge.to in frontier
               }
             }
-            return Search(pathTo(previous, goal), visited);
+            return pathTo(previous, goal);
           }
           ```
     javascript:
@@ -2056,23 +2053,23 @@ tasks:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
         cases:
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '12', '13', '14', '15', '16']"
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/shortcut.tsv')), '41', '45').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/shortcut.tsv')), '41', '45')
             expect: "['41', '43', '44', '45']"
             say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited[0]
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16'))[0]
             expect: "'11'"
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.at(-1)
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).at(-1)
             expect: "'16'"
             say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.includes('22')
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).includes('22')
             expect: false
             say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
       hint:
@@ -2099,13 +2096,12 @@ tasks:
               const metres = new Map([[start, 0]]);
               const previous = new Map([[start, null]]);
               const frontier = new Map([[start, 0]]);
-              const visited = [];
               while (frontier.size > 0) {
                   let node = null;
                   for (const [id, m] of frontier) if (node === null || m < frontier.get(node)) node = id;
                   const soFar = frontier.get(node);
                   frontier.delete(node);
-                  visited.push(node);
+                  visit(node);
                   if (node === goal) break;
 
                   for (const [neighbour, length] of graph.edges[node] || []) {
@@ -2114,7 +2110,7 @@ tasks:
                       // Dann neuer Abstand, neuer Vorgänger, und neighbour in frontier
                   }
               }
-              return { path: pathTo(previous, goal), visited };
+              return pathTo(previous, goal);
           }
           ```
     java:
@@ -2123,23 +2119,23 @@ tasks:
         type: java
         file: routenplaner-starter/java/Routes.java
         cases:
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")
             expect: 'List.of("11", "12", "13", "14", "15", "16")'
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/shortcut.tsv")), "41", "45").path()
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/shortcut.tsv")), "41", "45")
             expect: 'List.of("41", "43", "44", "45")'
             say: Auf der Testkarte `data/shortcut.tsv` findet die Suche den Knoten 44 zuerst über 42, nach 600 Metern; über 43 sind es nur 500. Auch ein Knoten, der schon gefunden ist, bekommt einen neuen Abstand und Vorgänger, wenn ein kürzerer Weg zu ihm führt.
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11")
             expect: 'List.of("11")'
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31")
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin; wenn nichts mehr in frontier steht, gibt es keinen Weg.
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().get(0)
+          - call: Visits.of(() -> Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).get(0)
             expect: '"11"'
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().getLast()
+          - call: Visits.of(() -> Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).getLast()
             expect: '"16"'
             say: Ist das Ziel dran, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().contains("22")
+          - call: Visits.of(() -> Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).contains("22")
             expect: false
             say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
       hint:
@@ -2162,19 +2158,18 @@ tasks:
           Ein Gerüst:
 
           ```java
-          static Search dijkstra(Graph graph, String start, String goal) {
+          static List<String> dijkstra(Graph graph, String start, String goal) {
               Map<String, Double> metres = new HashMap<>(Map.of(start, 0.0));
               Map<String, String> previous = new HashMap<>();
               previous.put(start, null);
               Map<String, Double> frontier = new HashMap<>(Map.of(start, 0.0));
-              List<String> visited = new ArrayList<>();
               while (!frontier.isEmpty()) {
                   String node = null;
                   for (String id : frontier.keySet()) {
                       if (node == null || frontier.get(id) < frontier.get(node)) node = id;
                   }
                   double soFar = frontier.remove(node);
-                  visited.add(node);
+                  visit(node);
                   if (node.equals(goal)) break;
 
                   for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
@@ -2183,7 +2178,7 @@ tasks:
                       // Dann neuer Abstand, neuer Vorgänger, und edge.to() in frontier
                   }
               }
-              return new Search(pathTo(previous, goal), visited);
+              return pathTo(previous, goal);
           }
           ```
 
@@ -2537,24 +2532,24 @@ tasks:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
       cases:
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')
           expect: "['11', '12', '13', '14', '15', '16']"
           say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')
           expect: "['11']"
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')
           expect: ~
           say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].last
+        - call: visits_of { dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.last
           expect: "'16'"
           say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-        - call: dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('22')
+        - call: visits_of { dijkstra(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.include?('22')
           expect: false
           say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
-        - call: 'dijkstra({ nodes: {}, edges: { ''a'' => [[''b'', 5], [''c'', 1]], ''b'' => [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'' => [[''a'', 1], [''b'', 1]], ''d'' => [[''b'', 1], [''e'', 10]], ''e'' => [[''d'', 10]] } }, ''a'', ''e'')[:path]'
+        - call: 'dijkstra({ nodes: {}, edges: { ''a'' => [[''b'', 5], [''c'', 1]], ''b'' => [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'' => [[''a'', 1], [''b'', 1]], ''d'' => [[''b'', 1], [''e'', 10]], ''e'' => [[''d'', 10]] } }, ''a'', ''e'')'
           expect: "['a', 'c', 'b', 'd', 'e']"
           say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
-        - call: 'dijkstra({ nodes: {}, edges: { ''a'' => [[''b'', 5], [''c'', 1]], ''b'' => [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'' => [[''a'', 1], [''b'', 1]], ''d'' => [[''b'', 1], [''e'', 10]], ''e'' => [[''d'', 10]] } }, ''a'', ''e'')[:visited]'
+        - call: 'visits_of { dijkstra({ nodes: {}, edges: { ''a'' => [[''b'', 5], [''c'', 1]], ''b'' => [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'' => [[''a'', 1], [''b'', 1]], ''d'' => [[''b'', 1], [''e'', 10]], ''e'' => [[''d'', 10]] } }, ''a'', ''e'') }'
           expect: "['a', 'c', 'b', 'd', 'e']"
           say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `next if done[node]`.'
         - call: 'pops = 0; MinHeap.prepend(Module.new { define_method(:pop) { pops += 1; super() } }); dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''); pops > 0'
@@ -2577,24 +2572,24 @@ tasks:
         type: python
         file: routenplaner-starter/python/routes.py
         cases:
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')'
             expect: "['11', '12', '13', '14', '15', '16']"
             say: 'Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.'
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')'
             expect: "['11']"
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
+          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')'
             expect: ~
             say: 'Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.'
-          - call: 'dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited''][-1]'
+          - call: 'visits_of(lambda: dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''))[-1]'
             expect: "'16'"
             say: 'Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.'
-          - call: '''22'' in dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited'']'
+          - call: '''22'' in visits_of(lambda: dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''))'
             expect: false
             say: 'Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.'
-          - call: 'dijkstra({''nodes'': {}, ''edges'': {''a'': [[''b'', 5], [''c'', 1]], ''b'': [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'': [[''a'', 1], [''b'', 1]], ''d'': [[''b'', 1], [''e'', 10]], ''e'': [[''d'', 10]]}}, ''a'', ''e'')[''path'']'
+          - call: 'dijkstra({''nodes'': {}, ''edges'': {''a'': [[''b'', 5], [''c'', 1]], ''b'': [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'': [[''a'', 1], [''b'', 1]], ''d'': [[''b'', 1], [''e'', 10]], ''e'': [[''d'', 10]]}}, ''a'', ''e'')'
             expect: "['a', 'c', 'b', 'd', 'e']"
             say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
-          - call: 'dijkstra({''nodes'': {}, ''edges'': {''a'': [[''b'', 5], [''c'', 1]], ''b'': [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'': [[''a'', 1], [''b'', 1]], ''d'': [[''b'', 1], [''e'', 10]], ''e'': [[''d'', 10]]}}, ''a'', ''e'')[''visited'']'
+          - call: 'visits_of(lambda: dijkstra({''nodes'': {}, ''edges'': {''a'': [[''b'', 5], [''c'', 1]], ''b'': [[''a'', 5], [''c'', 1], [''d'', 1]], ''c'': [[''a'', 1], [''b'', 1]], ''d'': [[''b'', 1], [''e'', 10]], ''e'': [[''d'', 10]]}}, ''a'', ''e''))'
             expect: "['a', 'c', 'b', 'd', 'e']"
             say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
           - call: '(calls := [], original := MinHeap.pop, setattr(MinHeap, ''pop'', lambda self: calls.append(1) or original(self)), dijkstra(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''), setattr(MinHeap, ''pop'', original), len(calls) > 0)[-1]'
@@ -2628,7 +2623,7 @@ tasks:
                 .readAsStringSync()
                 .replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '')
                 .replaceAll(RegExp(r'//[^\n]*'), '');
-            final found = RegExp(r'Search\s+' + name + r'\s*\([^)]*\)\s*(\{|=>)').firstMatch(source);
+            final found = RegExp(r'List<String>\?\s+' + name + r'\s*\([^)]*\)\s*(\{|=>)').firstMatch(source);
             if (found == null) return false;
             var end = found.end;
             if (found.group(1) == '=>') {
@@ -2646,24 +2641,24 @@ tasks:
             return body.contains('MinHeap') && body.contains('.pop()');
           }
         cases:
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '12', '13', '14', '15', '16']"
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.last
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).last
             expect: "'16'"
             say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.contains('22')
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).contains('22')
             expect: false
             say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
-          - call: "dijkstra(Graph()..edges.addAll({'a': [Edge('b', 5), Edge('c', 1)], 'b': [Edge('a', 5), Edge('c', 1), Edge('d', 1)], 'c': [Edge('a', 1), Edge('b', 1)], 'd': [Edge('b', 1), Edge('e', 10)], 'e': [Edge('d', 10)]}), 'a', 'e').path"
+          - call: "dijkstra(Graph()..edges.addAll({'a': [Edge('b', 5), Edge('c', 1)], 'b': [Edge('a', 5), Edge('c', 1), Edge('d', 1)], 'c': [Edge('a', 1), Edge('b', 1)], 'd': [Edge('b', 1), Edge('e', 10)], 'e': [Edge('d', 10)]}), 'a', 'e')"
             expect: "['a', 'c', 'b', 'd', 'e']"
             say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
-          - call: "dijkstra(Graph()..edges.addAll({'a': [Edge('b', 5), Edge('c', 1)], 'b': [Edge('a', 5), Edge('c', 1), Edge('d', 1)], 'c': [Edge('a', 1), Edge('b', 1)], 'd': [Edge('b', 1), Edge('e', 10)], 'e': [Edge('d', 10)]}), 'a', 'e').visited"
+          - call: "visitsOf(() => dijkstra(Graph()..edges.addAll({'a': [Edge('b', 5), Edge('c', 1)], 'b': [Edge('a', 5), Edge('c', 1), Edge('d', 1)], 'c': [Edge('a', 1), Edge('b', 1)], 'd': [Edge('b', 1), Edge('e', 10)], 'e': [Edge('d', 10)]}), 'a', 'e'))"
             expect: "['a', 'c', 'b', 'd', 'e']"
             say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
           - call: popsFromMinHeap('dijkstra')
@@ -2688,24 +2683,24 @@ tasks:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
         cases:
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '12', '13', '14', '15', '16']"
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.at(-1)
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).at(-1)
             expect: "'16'"
             say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-          - call: dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.includes('22')
+          - call: visitsOf(() => dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).includes('22')
             expect: false
             say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
-          - call: "dijkstra({ nodes: {}, edges: { a: [['b', 5], ['c', 1]], b: [['a', 5], ['c', 1], ['d', 1]], c: [['a', 1], ['b', 1]], d: [['b', 1], ['e', 10]], e: [['d', 10]] } }, 'a', 'e').path"
+          - call: "dijkstra({ nodes: {}, edges: { a: [['b', 5], ['c', 1]], b: [['a', 5], ['c', 1], ['d', 1]], c: [['a', 1], ['b', 1]], d: [['b', 1], ['e', 10]], e: [['d', 10]] } }, 'a', 'e')"
             expect: "['a', 'c', 'b', 'd', 'e']"
             say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
-          - call: "dijkstra({ nodes: {}, edges: { a: [['b', 5], ['c', 1]], b: [['a', 5], ['c', 1], ['d', 1]], c: [['a', 1], ['b', 1]], d: [['b', 1], ['e', 10]], e: [['d', 10]] } }, 'a', 'e').visited"
+          - call: "visitsOf(() => dijkstra({ nodes: {}, edges: { a: [['b', 5], ['c', 1]], b: [['a', 5], ['c', 1], ['d', 1]], c: [['a', 1], ['b', 1]], d: [['b', 1], ['e', 10]], e: [['d', 10]] } }, 'a', 'e'))"
             expect: "['a', 'c', 'b', 'd', 'e']"
             say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
           - call: let pops = 0; const original = MinHeap.prototype.pop; MinHeap.prototype.pop = function () { pops += 1; return original.call(this); }; dijkstra(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16'); MinHeap.prototype.pop = original; pops > 0
@@ -2736,7 +2731,7 @@ tasks:
               String source = java.nio.file.Files.readString(java.nio.file.Path.of("routenplaner-starter/java/Routes.java"))
                   .replaceAll("(?s)/\\*.*?\\*/", "")
                   .replaceAll("//[^\\n]*", "");
-              java.util.regex.Matcher found = java.util.regex.Pattern.compile("Search\\s+" + name + "\\s*\\([^)]*\\)\\s*\\{").matcher(source);
+              java.util.regex.Matcher found = java.util.regex.Pattern.compile("List<String>\\s+" + name + "\\s*\\([^)]*\\)\\s*\\{").matcher(source);
               if (!found.find()) return false;
               int end = found.end(), depth = 1;
               while (end < source.length() && depth > 0) {
@@ -2748,24 +2743,24 @@ tasks:
               return body.contains("MinHeap") && body.contains(".pop()");
           }
         cases:
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")
             expect: 'List.of("11", "12", "13", "14", "15", "16")'
             say: Die Lindenstraße hat mehr Kanten, ist aber nur 340 Meter lang, der Eichenweg fast 800.
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11")
             expect: 'List.of("11")'
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31")
             expect: ~
             say: Zum Fußweg 31-32 führt nichts hin; ist der Heap leer, gibt es keinen Weg.
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().getLast()
+          - call: Visits.of(() -> Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).getLast()
             expect: '"16"'
             say: Kommt das Ziel aus dem Heap, steht sein Abstand fest. Die Suche hört dann auf, das Ziel ist der letzte besuchte Knoten.
-          - call: Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().contains("22")
+          - call: Visits.of(() -> Routes.dijkstra(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).contains("22")
             expect: false
             say: Der Knoten 22 ist über 550 Meter vom Start weg, das Ziel nur 340. Bevor er dran wäre, ist die Suche schon fertig.
-          - call: 'Graph g = new Graph(); g.edges.putAll(Map.of("a", List.of(new Edge("b", 5), new Edge("c", 1)), "b", List.of(new Edge("a", 5), new Edge("c", 1), new Edge("d", 1)), "c", List.of(new Edge("a", 1), new Edge("b", 1)), "d", List.of(new Edge("b", 1), new Edge("e", 10)), "e", List.of(new Edge("d", 10)))); Routes.dijkstra(g, "a", "e").path()'
+          - call: 'Graph g = new Graph(); g.edges.putAll(Map.of("a", List.of(new Edge("b", 5), new Edge("c", 1)), "b", List.of(new Edge("a", 5), new Edge("c", 1), new Edge("d", 1)), "c", List.of(new Edge("a", 1), new Edge("b", 1)), "d", List.of(new Edge("b", 1), new Edge("e", 10)), "e", List.of(new Edge("d", 10)))); Routes.dijkstra(g, "a", "e")'
             expect: 'List.of("a", "c", "b", "d", "e")'
             say: Über `c` ist `b` nur 2 entfernt statt 5. Bekommt `b` den kürzeren Abstand und kommt damit noch einmal in den Heap?
-          - call: 'Graph g = new Graph(); g.edges.putAll(Map.of("a", List.of(new Edge("b", 5), new Edge("c", 1)), "b", List.of(new Edge("a", 5), new Edge("c", 1), new Edge("d", 1)), "c", List.of(new Edge("a", 1), new Edge("b", 1)), "d", List.of(new Edge("b", 1), new Edge("e", 10)), "e", List.of(new Edge("d", 10)))); Routes.dijkstra(g, "a", "e").visited()'
+          - call: 'Graph g = new Graph(); g.edges.putAll(Map.of("a", List.of(new Edge("b", 5), new Edge("c", 1)), "b", List.of(new Edge("a", 5), new Edge("c", 1), new Edge("d", 1)), "c", List.of(new Edge("a", 1), new Edge("b", 1)), "d", List.of(new Edge("b", 1), new Edge("e", 10)), "e", List.of(new Edge("d", 10)))); Visits.of(() -> Routes.dijkstra(g, "a", "e"))'
             expect: 'List.of("a", "c", "b", "d", "e")'
             say: 'Der Knoten `b` steht zweimal im Heap, mit 5 und mit 2. Kommt der alte Eintrag mit 5 heraus, ist `b` schon fertig: überspringen, mit `continue`, wenn er in `done` steht.'
           - call: popsFromMinHeap("dijkstra")
@@ -2787,17 +2782,17 @@ tasks:
       type: ruby
       file: routenplaner-starter/ruby/routes.rb
       cases:
-        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:path]
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')
           expect: "['11', '12', '13', '14', '15', '16']"
           say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
-        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16')[:visited].include?('21')
+        - call: visits_of { a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '16') }.include?('21')
           expect: false
           say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
-        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')[:path]
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '31')
           expect: ~
-        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')[:path]
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/detour.tsv')), '11', '11')
           expect: "['11']"
-        - call: a_star(build_graph(read_ways('routenplaner-starter/data/test.tsv')), '1', '5')[:path].size
+        - call: a_star(build_graph(read_ways('routenplaner-starter/data/test.tsv')), '1', '5').size
           expect: 4
     hint:
       - |
@@ -2827,7 +2822,6 @@ tasks:
             done = {}
             heap = MinHeap.new
             heap.push(estimate.(start), start)
-            visited = []
             until heap.empty?
                 _priority, node = heap.pop
                 # hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
@@ -2837,7 +2831,7 @@ tasks:
                     # hier: wie in dijkstra, nur mit total + estimate.(neighbour) als Priorität
                 end
             end
-            { path: path_to(previous, goal), visited: visited }
+            path_to(previous, goal)
         end
         ```
     python:
@@ -2846,17 +2840,17 @@ tasks:
         type: python
         file: routenplaner-starter/python/routes.py
         cases:
-          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''path'']'
+          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')'
             expect: "['11', '12', '13', '14', '15', '16']"
             say: 'A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.'
-          - call: '''21'' in a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16'')[''visited'']'
+          - call: '''21'' in visits_of(lambda: a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''16''))'
             expect: false
             say: 'Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.'
-          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')[''path'']'
+          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''31'')'
             expect: ~
-          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')[''path'']'
+          - call: 'a_star(build_graph(read_ways(''routenplaner-starter/data/detour.tsv'')), ''11'', ''11'')'
             expect: "['11']"
-          - call: 'len(a_star(build_graph(read_ways(''routenplaner-starter/data/test.tsv'')), ''1'', ''5'')[''path''])'
+          - call: 'len(a_star(build_graph(read_ways(''routenplaner-starter/data/test.tsv'')), ''1'', ''5''))'
             expect: 4
       hint:
         - |
@@ -2888,7 +2882,6 @@ tasks:
               done = set()
               heap = MinHeap()
               heap.push(estimate(start), start)
-              visited = []
               while not heap.empty():
                   _priority, node = heap.pop()
                   # hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
@@ -2897,7 +2890,7 @@ tasks:
                       total = costs[node] + length
                       # hier: wie in dijkstra, nur mit total + estimate(neighbour) als Priorität
                       ...
-              return {'path': path_to(previous, goal), 'visited': visited}
+              return path_to(previous, goal)
           ```
     dart:
       prompt: Schreib `aStar` in `routes.dart`. Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
@@ -2905,17 +2898,17 @@ tasks:
         type: dart
         file: routenplaner-starter/dart/routes.dart
         cases:
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '12', '13', '14', '15', '16']"
             say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.contains('21')
+          - call: visitsOf(() => aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).contains('21')
             expect: false
             say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/test.tsv')), '1', '5').path!.length
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/test.tsv')), '1', '5')!.length
             expect: 4
       hint:
         - |
@@ -2935,7 +2928,7 @@ tasks:
           Ein Gerüst:
 
           ```dart
-          Search aStar(Graph graph, String start, String goal) {
+          List<String>? aStar(Graph graph, String start, String goal) {
             final target = graph.nodes[goal]!;
             double estimate(String id) {
               // hier: die Luftlinie von id zum Ziel, mit distance
@@ -2945,7 +2938,6 @@ tasks:
             final previous = <String, String?>{start: null};
             final done = <String>{};
             final heap = MinHeap()..push(estimate(start), start);
-            final visited = <String>[];
             while (!heap.isEmpty) {
               final (_, node) = heap.pop()!;
               // hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
@@ -2957,7 +2949,7 @@ tasks:
                 // hier: wie in dijkstra, nur mit total + estimate(edge.to) als Priorität
               }
             }
-            return Search(pathTo(previous, goal), visited);
+            return pathTo(previous, goal);
           }
           ```
     javascript:
@@ -2966,17 +2958,17 @@ tasks:
         type: javascript
         file: routenplaner-starter/javascript/routes.js
         cases:
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').path
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')
             expect: "['11', '12', '13', '14', '15', '16']"
             say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16').visited.includes('21')
+          - call: visitsOf(() => aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '16')).includes('21')
             expect: false
             say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31').path
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '31')
             expect: ~
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11').path
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/detour.tsv')), '11', '11')
             expect: "['11']"
-          - call: aStar(buildGraph(readWays('routenplaner-starter/data/test.tsv')), '1', '5').path.length
+          - call: aStar(buildGraph(readWays('routenplaner-starter/data/test.tsv')), '1', '5').length
             expect: 4
       hint:
         - |
@@ -3006,7 +2998,6 @@ tasks:
               const done = new Set();
               const heap = new MinHeap();
               heap.push(estimate(start), start);
-              const visited = [];
               while (!heap.isEmpty()) {
                   const [, node] = heap.pop();
                   // hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
@@ -3016,7 +3007,7 @@ tasks:
                       // hier: wie in dijkstra, nur mit total + estimate(neighbour) als Priorität
                   }
               }
-              return { path: pathTo(previous, goal), visited };
+              return pathTo(previous, goal);
           }
           ```
     java:
@@ -3025,17 +3016,17 @@ tasks:
         type: java
         file: routenplaner-starter/java/Routes.java
         cases:
-          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").path()
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")
             expect: 'List.of("11", "12", "13", "14", "15", "16")'
             say: A* findet denselben kürzesten Weg wie Dijkstra, die Lindenstraße entlang.
-          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16").visited().contains("21")
+          - call: Visits.of(() -> Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "16")).contains("21")
             expect: false
             say: Der Knoten 21 liegt nach Norden, weg vom Ziel. Seine Schätzung ist zu groß, als dass A* ihn besuchen müsste.
-          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31").path()
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "31")
             expect: ~
-          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11").path()
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/detour.tsv")), "11", "11")
             expect: 'List.of("11")'
-          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")), "1", "5").path().size()
+          - call: Routes.aStar(Routes.buildGraph(Routes.readWays("routenplaner-starter/data/test.tsv")), "1", "5").size()
             expect: 4
       hint:
         - |
@@ -3059,14 +3050,13 @@ tasks:
               // hier: die Luftlinie von id zum Ziel, mit distance
           }
 
-          static Search aStar(Graph graph, String start, String goal) {
+          static List<String> aStar(Graph graph, String start, String goal) {
               Map<String, Double> costs = new HashMap<>(Map.of(start, 0.0));
               Map<String, String> previous = new HashMap<>();
               previous.put(start, null);
               Set<String> done = new HashSet<>();
               MinHeap heap = new MinHeap();
               heap.push(estimate(graph, start, goal), start);
-              List<String> visited = new ArrayList<>();
               while (!heap.isEmpty()) {
                   String node = heap.pop().value();
                   // hier: wie in dijkstra: überspringen, wenn fertig; sonst fertig,
@@ -3076,7 +3066,7 @@ tasks:
                       // hier: wie in dijkstra, nur mit total + estimate(graph, edge.to(), goal) als Priorität
                   }
               }
-              return new Search(pathTo(previous, goal), visited);
+              return pathTo(previous, goal);
           }
           ```
 

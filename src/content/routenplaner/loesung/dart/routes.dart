@@ -1,6 +1,6 @@
 // Ein Routenplaner: deine Funktionen. Der Server (./run dart) fragt sie und
-// zeigt im Browser, was sie schon können. Die Klassen Point, Way, Edge, Graph
-// und Search stehen in graph.dart. (Die Lösung aller Schritte.)
+// zeigt im Browser, was sie schon können. Die Klassen Point, Way, Edge und
+// Graph und visit(node) stehen in graph.dart. (Die Lösung aller Schritte.)
 import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
@@ -61,6 +61,7 @@ Graph buildGraph(List<Way> ways) {
 // zum Ziel. Gibt den Weg zurück, [node, …, goal], oder null. Geht auf einer
 // Karte im Kreis, bis der Stack voll ist.
 List<String>? walk(Graph graph, String node, String goal) {
+  visit(node);
   if (node == goal) return [node];
   for (final edge in graph.edges[node] ?? <Edge>[]) {
     final rest = walk(graph, edge.to, goal);
@@ -79,6 +80,7 @@ List<String>? depthFirst(Graph graph, String start, String goal) {
 List<String>? search(Graph graph, String node, String goal, Set<String> seen) {
   if (seen.contains(node)) return null;
   seen.add(node);
+  visit(node);
   if (node == goal) return [node];
   List<Edge>? edges = graph.edges[node];
   if (edges == null) return null;
@@ -106,15 +108,15 @@ List<String>? pathTo(Map<String, String?> previous, String goal) {
   return path;
 }
 
-// Breitensuche: der Weg über die wenigsten Kanten, und die besuchten Knoten
-// in der Reihenfolge der Suche
-Search breadthFirst(Graph graph, String start, String goal) {
+// Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+// zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+// Knoten dran ist: Damit spielt die Karte die Suche ab.
+List<String>? breadthFirst(Graph graph, String start, String goal) {
   final previous = <String, String?>{start: null};
   final queue = Queue<String>()..add(start);
-  final visited = <String>[];
   while (queue.isNotEmpty) {
     final node = queue.removeFirst();
-    visited.add(node);
+    visit(node);
     if (node == goal) break;
     for (final edge in graph.edges[node] ?? <Edge>[]) {
       if (previous.containsKey(edge.to)) continue;
@@ -122,7 +124,7 @@ Search breadthFirst(Graph graph, String start, String goal) {
       queue.add(edge.to);
     }
   }
-  return Search(pathTo(previous, goal), visited);
+  return pathTo(previous, goal);
 }
 
 // Eine Priority Queue als binärer Heap: Was hineinkommt, hat eine
@@ -177,17 +179,16 @@ class MinHeap {
 // Dijkstra: der kürzeste Weg, mit einer Priority Queue. Ein Knoten kann
 // mehrmals darin stehen, wenn er einen besseren Weg bekommt; der alte
 // Eintrag ist dann veraltet und wird übersprungen.
-Search dijkstra(Graph graph, String start, String goal) {
+List<String>? dijkstra(Graph graph, String start, String goal) {
   final costs = <String, double>{start: 0};
   final previous = <String, String?>{start: null};
   final done = <String>{};
   final heap = MinHeap()..push(0, start);
-  final visited = <String>[];
   while (!heap.isEmpty) {
     final (soFar, node) = heap.pop()!;
     if (done.contains(node)) continue;
     done.add(node);
-    visited.add(node);
+    visit(node);
     if (node == goal) break;
     for (final edge in graph.edges[node] ?? <Edge>[]) {
       final total = soFar + edge.cost;
@@ -197,14 +198,14 @@ Search dijkstra(Graph graph, String start, String goal) {
       heap.push(total, edge.to);
     }
   }
-  return Search(pathTo(previous, goal), visited);
+  return pathTo(previous, goal);
 }
 
 // A*: wie Dijkstra, aber die Priorität ist der Weg bis hier plus eine
 // Schätzung für den Rest, die Luftlinie zum Ziel. Die Schätzung ist nie zu
 // groß, darum findet A* trotzdem den kürzesten Weg. In einem Graphen mit
 // Sekunden statt Metern teilt man die Luftlinie durch das größte Tempo.
-Search aStar(Graph graph, String start, String goal) {
+List<String>? aStar(Graph graph, String start, String goal) {
   final target = graph.nodes[goal];
   double estimate(String id) {
     final point = graph.nodes[id];
@@ -216,12 +217,11 @@ Search aStar(Graph graph, String start, String goal) {
   final previous = <String, String?>{start: null};
   final done = <String>{};
   final heap = MinHeap()..push(estimate(start), start);
-  final visited = <String>[];
   while (!heap.isEmpty) {
     final (_, node) = heap.pop()!;
     if (done.contains(node)) continue;
     done.add(node);
-    visited.add(node);
+    visit(node);
     if (node == goal) break;
     for (final edge in graph.edges[node] ?? <Edge>[]) {
       final total = costs[node]! + edge.cost;
@@ -231,7 +231,7 @@ Search aStar(Graph graph, String start, String goal) {
       heap.push(total + estimate(edge.to), edge.to);
     }
   }
-  return Search(pathTo(previous, goal), visited);
+  return pathTo(previous, goal);
 }
 
 // Wie schnell man auf welcher Art von Weg vorankommt, in km/h. Was in der

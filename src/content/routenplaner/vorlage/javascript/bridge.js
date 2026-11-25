@@ -6,6 +6,7 @@
 const net = require('net');
 const readline = require('readline');
 const routes = require('./routes.js');
+const { visits } = routes; // welche Knoten bei einer Suche dran waren
 
 const NAMES = {
     depth_first: 'depthFirst', breadth_first: 'breadthFirst', dijkstra: 'dijkstra', a_star: 'aStar', tour_length: 'tourLength',
@@ -37,12 +38,12 @@ function answer(request) {
         const graph = graphs[request.mode];
         if (!graph) throw new Error(`Kein Graph für ${request.mode}`);
         const search = fn(request.fn);
+        // jede Suche gibt ihren Weg zurück; welche Knoten dran waren, meldet sie mit visit
+        visits.length = 0;
         const began = process.hrtime.bigint();
-        const result = search(graph, request.start, request.goal);
+        const path = search(graph, request.start, request.goal);
         const took = Number(process.hrtime.bigint() - began) / 1e9;
-        // walk und depthFirst geben nur den Weg zurück
-        if (result === null || Array.isArray(result)) return { path: result, visited: [], took };
-        return { path: result.path ?? null, visited: result.visited || [], took };
+        return { path: path ?? null, visited: [...visits], took };
     }
     if (request.op === 'call') {
         const f = fn(request.fn);

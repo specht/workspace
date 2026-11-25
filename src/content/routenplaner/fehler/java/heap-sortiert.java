@@ -1,12 +1,17 @@
 // Ein Routenplaner: deine Methoden. Der Server (./run java) fragt sie und
-// zeigt im Browser, was sie schon können. Die Typen Point, Way, Edge, Graph
-// und Search stehen in Types.java. (Die Lösung aller Schritte.)
+// zeigt im Browser, was sie schon können. Die Typen Point, Way, Edge und
+// Graph stehen in Types.java. (Die Lösung aller Schritte.)
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 public class Routes {
+    // Nur für die Karte: zeigt, dass dieser Knoten dran ist (Visits in Types.java)
+    static void visit(String node) {
+        Visits.visit(node);
+    }
+
     // Liest die Wege einer Datei aus data/. Jede Zeile ist ein Weg, die Teile
     // sind durch Tabulatoren getrennt: Art, Einbahnstraße, Name, Punkte. Die
     // Punkte sind »ID LÄNGE,BREITE ID LÄNGE,BREITE …«.
@@ -58,6 +63,7 @@ public class Routes {
     // bis zum Ziel. Gibt den Weg zurück, [node, …, goal], oder null. Geht auf
     // einer Karte im Kreis, bis der Stack voll ist.
     static List<String> walk(Graph graph, String node, String goal) {
+        visit(node);
         if (node.equals(goal)) return new ArrayList<>(List.of(node));
         for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
             List<String> rest = walk(graph, edge.to(), goal);
@@ -78,6 +84,7 @@ public class Routes {
     static List<String> depthFirst(Graph graph, String node, String goal, Set<String> seen) {
         if (seen.contains(node)) return null;
         seen.add(node);
+        visit(node);
         if (node.equals(goal)) return new ArrayList<>(List.of(node));
         for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
             List<String> rest = depthFirst(graph, edge.to(), goal, seen);
@@ -99,17 +106,17 @@ public class Routes {
         return path;
     }
 
-    // Breitensuche: der Weg über die wenigsten Kanten, und die besuchten
-    // Knoten in der Reihenfolge der Suche
-    static Search breadthFirst(Graph graph, String start, String goal) {
+    // Breitensuche: der Weg über die wenigsten Kanten, die IDs vom Start bis
+    // zum Ziel, oder null, wenn es keinen gibt. Ruf visit(node) auf, wenn ein
+    // Knoten dran ist: Damit spielt die Karte die Suche ab.
+    static List<String> breadthFirst(Graph graph, String start, String goal) {
         Map<String, String> previous = new HashMap<>();
         previous.put(start, null);
         ArrayDeque<String> queue = new ArrayDeque<>(); // ein Ring Buffer
         queue.add(start);
-        List<String> visited = new ArrayList<>();
         while (!queue.isEmpty()) {
             String node = queue.poll();
-            visited.add(node);
+            visit(node);
             if (node.equals(goal)) break;
             for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                 if (previous.containsKey(edge.to())) continue;
@@ -117,7 +124,7 @@ public class Routes {
                 queue.add(edge.to());
             }
         }
-        return new Search(pathTo(previous, goal), visited);
+        return pathTo(previous, goal);
     }
 
     // Eine Priority Queue als binärer Heap: Was hineinkommt, hat eine
@@ -152,20 +159,19 @@ public class Routes {
     // Dijkstra: der kürzeste Weg, mit einer Priority Queue. Ein Knoten kann
     // mehrmals darin stehen, wenn er einen besseren Weg bekommt; der alte
     // Eintrag ist dann veraltet und wird übersprungen.
-    static Search dijkstra(Graph graph, String start, String goal) {
+    static List<String> dijkstra(Graph graph, String start, String goal) {
         Map<String, Double> costs = new HashMap<>(Map.of(start, 0.0));
         Map<String, String> previous = new HashMap<>();
         previous.put(start, null);
         Set<String> done = new HashSet<>();
         MinHeap heap = new MinHeap();
         heap.push(0, start);
-        List<String> visited = new ArrayList<>();
         while (!heap.isEmpty()) {
             MinHeap.Entry entry = heap.pop();
             String node = entry.value();
             if (done.contains(node)) continue;
             done.add(node);
-            visited.add(node);
+            visit(node);
             if (node.equals(goal)) break;
             for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                 double total = entry.priority() + edge.cost();
@@ -175,26 +181,25 @@ public class Routes {
                 heap.push(total, edge.to());
             }
         }
-        return new Search(pathTo(previous, goal), visited);
+        return pathTo(previous, goal);
     }
 
     // A*: wie Dijkstra, aber die Priorität ist der Weg bis hier plus eine
     // Schätzung für den Rest, die Luftlinie zum Ziel. Die Schätzung ist nie zu
     // groß, darum findet A* trotzdem den kürzesten Weg. In einem Graphen mit
     // Sekunden statt Metern teilt man die Luftlinie durch das größte Tempo.
-    static Search aStar(Graph graph, String start, String goal) {
+    static List<String> aStar(Graph graph, String start, String goal) {
         Map<String, Double> costs = new HashMap<>(Map.of(start, 0.0));
         Map<String, String> previous = new HashMap<>();
         previous.put(start, null);
         Set<String> done = new HashSet<>();
         MinHeap heap = new MinHeap();
         heap.push(estimate(graph, start, goal), start);
-        List<String> visited = new ArrayList<>();
         while (!heap.isEmpty()) {
             String node = heap.pop().value();
             if (done.contains(node)) continue;
             done.add(node);
-            visited.add(node);
+            visit(node);
             if (node.equals(goal)) break;
             for (Edge edge : graph.edges.getOrDefault(node, List.of())) {
                 double total = costs.get(node) + edge.cost();
@@ -204,7 +209,7 @@ public class Routes {
                 heap.push(total + estimate(graph, edge.to(), goal), edge.to());
             }
         }
-        return new Search(pathTo(previous, goal), visited);
+        return pathTo(previous, goal);
     }
 
     // die Schätzung für A*: die Luftlinie vom Knoten id zum Ziel, geteilt

@@ -2,6 +2,9 @@
 # Browser, was sie schon können. (Die Lösung bis Schritt 5.)
 import math
 
+# visit(node): zeigt der Karte, welcher Knoten dran ist (visits.py)
+from visits import visit, visits_of  # noqa: F401
+
 EARTH_RADIUS = 6_371_000  # Meter
 
 
@@ -56,6 +59,7 @@ def build_graph(ways):
 # zum Ziel. Gibt den Weg zurück, [node, …, goal], oder None. Geht auf einer
 # Karte im Kreis, bis der Stack voll ist.
 def walk(graph, node, goal):
+    visit(node)
     if node == goal:
         return [node]
     for neighbour, _metres in graph['edges'].get(node, []):
@@ -73,6 +77,7 @@ def depth_first(graph, node, goal, seen=None):
     if node in seen:
         return None
     seen.add(node)
+    visit(node)
     if node == goal:
         return [node]
     for neighbour, _metres in graph['edges'].get(node, []):
@@ -103,11 +108,10 @@ def breadth_first(graph, start, goal):
     previous = {start: None}
     queue = [start]
     first = 0  # queue[first] ist als Nächstes dran
-    visited = []
     while first < len(queue):
         node = queue[first]
         first += 1
-        visited.append(node)
+        visit(node)
         if node == goal:
             break
         for neighbour, _metres in graph['edges'].get(node, []):
@@ -115,7 +119,7 @@ def breadth_first(graph, start, goal):
                 continue
             previous[neighbour] = node
             queue.append(neighbour)
-    return {'path': path_to(previous, goal), 'visited': visited}
+    return path_to(previous, goal)
 
 
 # Dijkstra: der kürzeste Weg in Metern. Als Nächstes ist immer der Knoten
@@ -124,11 +128,10 @@ def dijkstra(graph, start, goal):
     metres = {start: 0}
     previous = {start: None}
     frontier = {start: 0}  # gefunden, aber noch nicht fertig
-    visited = []
     while frontier:
         node = min(frontier, key=frontier.get)
         so_far = frontier.pop(node)
-        visited.append(node)
+        visit(node)
         if node == goal:
             break
         for neighbour, length in graph['edges'].get(node, []):
@@ -138,7 +141,7 @@ def dijkstra(graph, start, goal):
             metres[neighbour] = total
             previous[neighbour] = node
             frontier[neighbour] = total
-    return {'path': path_to(previous, goal), 'visited': visited}
+    return path_to(previous, goal)
 
 
 # Eine Priority Queue: push legt einen Wert mit einer Priorität

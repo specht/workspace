@@ -7,6 +7,7 @@ require 'json'
 require 'socket'
 
 $stdout.sync = true
+require_relative 'visits'
 require_relative 'routes'
 
 socket = TCPSocket.new('127.0.0.1', Integer(ENV.fetch('ROUTES_PORT')))
@@ -30,12 +31,12 @@ while (line = socket.gets)
             { graph: graph_of.call(request['mode'], request['file']) }
         when 'search'
             graph = graphs[request['mode']] or raise "Kein Graph für #{request['mode']}"
+            # jede Suche gibt ihren Weg zurück; welche Knoten dran waren, meldet sie mit visit
+            VISITS.clear
             began = clock.call
-            result = send(request['fn'], graph, request['start'], request['goal'])
+            path = send(request['fn'], graph, request['start'], request['goal'])
             took = clock.call - began
-            # walk und depth_first geben nur den Weg zurück
-            result = { path: result, visited: [] } unless result.is_a?(Hash)
-            { path: result[:path], visited: result[:visited] || [], took: took }
+            { path: path, visited: VISITS.dup, took: took }
         when 'call'
             began = clock.call
             result = send(request['fn'], *request['args'])

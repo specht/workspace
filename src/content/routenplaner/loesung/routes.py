@@ -3,6 +3,9 @@
 import itertools
 import math
 
+# visit(node): zeigt der Karte, welcher Knoten dran ist (visits.py)
+from visits import visit, visits_of  # noqa: F401
+
 EARTH_RADIUS = 6_371_000  # Meter
 
 
@@ -57,6 +60,7 @@ def build_graph(ways):
 # zum Ziel. Gibt den Weg zurück, [node, …, goal], oder None. Geht auf einer
 # Karte im Kreis, bis der Stack voll ist.
 def walk(graph, node, goal):
+    visit(node)
     if node == goal:
         return [node]
     for neighbour, _metres in graph['edges'].get(node, []):
@@ -74,6 +78,7 @@ def depth_first(graph, node, goal, seen=None):
     if node in seen:
         return None
     seen.add(node)
+    visit(node)
     if node == goal:
         return [node]
     for neighbour, _metres in graph['edges'].get(node, []):
@@ -104,11 +109,10 @@ def breadth_first(graph, start, goal):
     previous = {start: None}
     queue = [start]
     first = 0  # queue[first] ist als Nächstes dran
-    visited = []
     while first < len(queue):
         node = queue[first]
         first += 1
-        visited.append(node)
+        visit(node)
         if node == goal:
             break
         for neighbour, _metres in graph['edges'].get(node, []):
@@ -116,7 +120,7 @@ def breadth_first(graph, start, goal):
                 continue
             previous[neighbour] = node
             queue.append(neighbour)
-    return {'path': path_to(previous, goal), 'visited': visited}
+    return path_to(previous, goal)
 
 
 # Eine Priority Queue als binärer Heap: Was hineinkommt, hat eine
@@ -176,13 +180,12 @@ def dijkstra(graph, start, goal):
     done = set()
     heap = MinHeap()
     heap.push(0, start)
-    visited = []
     while not heap.empty():
         so_far, node = heap.pop()
         if node in done:
             continue
         done.add(node)
-        visited.append(node)
+        visit(node)
         if node == goal:
             break
         for neighbour, length in graph['edges'].get(node, []):
@@ -192,7 +195,7 @@ def dijkstra(graph, start, goal):
             costs[neighbour] = total
             previous[neighbour] = node
             heap.push(total, neighbour)
-    return {'path': path_to(previous, goal), 'visited': visited}
+    return path_to(previous, goal)
 
 
 # A*: wie Dijkstra, aber die Priorität ist der Weg bis hier plus eine
@@ -212,13 +215,12 @@ def a_star(graph, start, goal):
     done = set()
     heap = MinHeap()
     heap.push(estimate(start), start)
-    visited = []
     while not heap.empty():
         _priority, node = heap.pop()
         if node in done:
             continue
         done.add(node)
-        visited.append(node)
+        visit(node)
         if node == goal:
             break
         for neighbour, length in graph['edges'].get(node, []):
@@ -228,7 +230,7 @@ def a_star(graph, start, goal):
             costs[neighbour] = total
             previous[neighbour] = node
             heap.push(total + estimate(neighbour), neighbour)
-    return {'path': path_to(previous, goal), 'visited': visited}
+    return path_to(previous, goal)
 
 
 # Wie schnell man auf welcher Art von Weg vorankommt, in km/h. Was in der

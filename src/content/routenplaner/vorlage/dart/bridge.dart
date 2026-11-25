@@ -33,21 +33,20 @@ Map<String, Object?> answer(Map<String, dynamic> request) {
     case 'search':
       final graph = graphs[request['mode']];
       if (graph == null) throw StateError('Kein Graph für ${request['mode']}');
-      // walk und depthFirst geben nur den Weg zurück
-      Search Function(Graph, String, String) pathOnly(List<String>? Function(Graph, String, String) f) =>
-          (g, a, b) => Search(f(g, a, b), []);
-      final search = switch (request['fn']) {
-        'walk' => pathOnly(walk),
-        'depth_first' => pathOnly(depthFirst),
+      // jede Suche gibt ihren Weg zurück; welche Knoten dran waren, meldet sie mit visit
+      final List<String>? Function(Graph, String, String) search = switch (request['fn']) {
+        'walk' => walk,
+        'depth_first' => depthFirst,
         'breadth_first' => breadthFirst,
         'dijkstra' => dijkstra,
         'a_star' => aStar,
         _ => throw ArgumentError('Keine Suche ${request['fn']}'),
       };
+      visits.clear();
       final clock = Stopwatch()..start();
-      final result = search(graph, request['start'], request['goal']);
+      final path = search(graph, request['start'], request['goal']);
       final took = clock.elapsedMicroseconds / 1e6;
-      return {'path': result.path, 'visited': result.visited, 'took': took};
+      return {'path': path, 'visited': List.of(visits), 'took': took};
     case 'call':
       final args = request['args'] as List;
       final clock = Stopwatch()..start();

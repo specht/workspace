@@ -85,17 +85,18 @@ public class Bridge {
                 if (graph == null) throw new IllegalStateException("Kein Graph für " + request.get("mode"));
                 String start = (String) request.get("start"), goal = (String) request.get("goal");
                 long began = System.nanoTime();
-                Search result = switch ((String) request.get("fn")) {
-                    // walk und depthFirst geben nur den Weg zurück
-                    case "walk" -> new Search(Routes.walk(graph, start, goal), List.of());
-                    case "depth_first" -> new Search(Routes.depthFirst(graph, start, goal), List.of());
+                // jede Suche gibt ihren Weg zurück; welche Knoten dran waren, meldet sie mit visit
+                Visits.order.clear();
+                List<String> path = switch ((String) request.get("fn")) {
+                    case "walk" -> Routes.walk(graph, start, goal);
+                    case "depth_first" -> Routes.depthFirst(graph, start, goal);
                     case "breadth_first" -> Routes.breadthFirst(graph, start, goal);
                     case "dijkstra" -> Routes.dijkstra(graph, start, goal);
                     case "a_star" -> Routes.aStar(graph, start, goal);
                     default -> throw new IllegalArgumentException("Keine Suche " + request.get("fn"));
                 };
                 double took = (System.nanoTime() - began) / 1e9;
-                return "{\"path\":" + Json.write(result.path()) + ",\"visited\":" + Json.write(result.visited())
+                return "{\"path\":" + Json.write(path) + ",\"visited\":" + Json.write(Visits.order)
                     + ",\"took\":" + took + "}";
             }
             case "call": {

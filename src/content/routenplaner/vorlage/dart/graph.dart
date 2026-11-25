@@ -64,14 +64,18 @@ class Graph {
   }
 }
 
-// Was eine Suche zurückgibt: den Weg (die IDs vom Start bis zum Ziel, null
-// ohne Weg) und alle besuchten Knoten in der Reihenfolge der Suche. Die
-// Karte spielt die Suche damit ab.
-class Search {
-  final List<String>? path;
-  final List<String> visited;
-  const Search(this.path, this.visited);
+// Nur für die Karte: welche Knoten bei einer Suche in welcher Reihenfolge
+// dran waren. Deine Suchen rufen visit(node) auf, wenn ein Knoten dran ist;
+// der Server und die Prüfungen lesen die Reihenfolge hier ab. Für die Suche
+// selbst tut visit nichts.
+final List<String> visits = [];
 
-  @override
-  String toString() => 'Search($path, ${visited.length} besucht)';
+// Nur für die Karte: zeigt, dass dieser Knoten dran ist
+void visit(String node) => visits.add(node);
+
+// Die Knoten, die dran waren, während search lief, in ihrer Reihenfolge
+List<String> visitsOf(void Function() search) {
+  visits.clear();
+  search();
+  return List.of(visits);
 }

@@ -824,8 +824,8 @@ async function findRoute() {
     showRoute(name, answer);
     const total = answer.visited.length / 2;
     if (!total) {
-        // walk und die Tiefensuche geben nur den Weg zurück: ganz zu sehen,
-        // ohne den Spieler für die besuchten Knoten
+        // eine Suche ohne visit(node): nur der Weg, ganz zu sehen, ohne den
+        // Spieler für die besuchten Knoten
         if (!answer.path) return draw();
         const lons = answer.path.map((p) => p[0]);
         const lats = answer.path.map((p) => p[1]);
@@ -857,10 +857,11 @@ function showRoute(name, answer) {
         : answer.reached ? 'Am Ziel, aber welchen Weg die Suche genommen hat, gibt sie noch nicht zurück.' : 'Kein Weg gefunden.';
     const visited = document.createElement('span');
     visited.className = 'note';
-    // walk und die Tiefensuche geben nur den Weg zurück, keine besuchten Knoten
+    // welche Knoten dran waren, meldet eine Suche mit visit(node); ohne das
+    // gibt es nur den Weg und nichts zum Abspielen
     visited.textContent = answer.visited.length
         ? `Besucht: ${NUMBER.format(answer.visited.length / 2)} Knoten in ${seconds} s, von Gelb (früh) bis Rot (spät)`
-        : `Gesucht in ${seconds} s`;
+        : `Gesucht in ${seconds} s. Abspielen kann die Karte die Suche nicht: Deine Suche ruft visit(node) nicht auf.`;
     info.replaceChildren(title, way, visited);
 }
 

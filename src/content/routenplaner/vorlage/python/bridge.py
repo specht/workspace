@@ -10,6 +10,7 @@ import time
 import traceback
 
 import routes
+import visits
 
 connection = socket.create_connection(('127.0.0.1', int(os.environ['ROUTES_PORT'])))
 reader = connection.makefile('r', encoding='utf-8')
@@ -33,12 +34,12 @@ def answer(request):
         graph = graphs.get(request['mode'])
         if graph is None:
             raise RuntimeError('Kein Graph für ' + request['mode'])
+        # jede Suche gibt ihren Weg zurück; welche Knoten dran waren, meldet sie mit visit
+        visits.visits.clear()
         began = time.perf_counter()
-        result = getattr(routes, request['fn'])(graph, request['start'], request['goal'])
+        path = getattr(routes, request['fn'])(graph, request['start'], request['goal'])
         took = time.perf_counter() - began
-        if not isinstance(result, dict):  # walk und depth_first geben nur den Weg zurück
-            result = {'path': result, 'visited': []}
-        return {'path': result.get('path'), 'visited': result.get('visited') or [], 'took': took}
+        return {'path': path, 'visited': list(visits.visits), 'took': took}
     if op == 'call':
         began = time.perf_counter()
         result = getattr(routes, request['fn'])(*request['args'])
