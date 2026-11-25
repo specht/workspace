@@ -3672,14 +3672,18 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         // not have keeps its room.
         const sideHeight = { calls: 0, vars: 0, code: 0 };
         const part = (name, children) => el('div', { class: `algo-part algo-part-${name}`, style: sideHeight[name] ? `min-height: ${sideHeight[name]}px;` : '' }, children);
+        // Variables beside the code are pairs [name, value] (the Mampfer's
+        // search); many traces use vars for arrows in the picture instead
+        // ({ name, index }), which the side does not list.
+        const sideVars = (frame) => (frame.vars || []).filter(Array.isArray);
         const listSide = (frame, deepest) => side.replaceChildren(...(deepest ? [part('calls', [el('h5', { text: 'Aufrufe' }), el('ol', { class: 'algo-stack', style: `min-height: ${deepest * STACK_LINE}em;` },
             (frame.stack || []).map((entry, i, all) => {
                 const li = el('li', { class: !frame.returning && i === all.length - 1 ? 'current' : '', style: `margin-left: ${i * 1.2}em;`, text: entry.returns ? `${entry.call} → ${entry.returns}` : entry.call,
                     ...(entry.node !== null && entry.node !== undefined ? { 'data-node': entry.node } : {}) });
                 if (frame.returning) { li.classList.add('returning'); li.style.animationDelay = `${((all.length - 1 - i) / (all.length + 1)) * (frame.duration || MOTION_TIME) / 1000}s`; }
                 return li;
-            }))])] : []), ...(frame.vars ? [part('vars', [el('h5', { text: 'Variablen' }), el('table', { class: 'algo-table algo-vars' },
-                [el('tbody', {}, frame.vars.map(([name, value]) => el('tr', {}, [el('td', { class: 'algo-var-name', text: name }),
+            }))])] : []), ...(sideVars(frame).length ? [part('vars', [el('h5', { text: 'Variablen' }), el('table', { class: 'algo-table algo-vars' },
+                [el('tbody', {}, sideVars(frame).map(([name, value]) => el('tr', {}, [el('td', { class: 'algo-var-name', text: name }),
                     // a dictionary: its entries, the one changed last marked
                     Array.isArray(value) ? el('td', { class: 'algo-dict' }, value.length ? value.map((e) => el('span', { class: e.fresh ? 'algo-entry fresh' : 'algo-entry', text: e.text })) : [el('span', { text: '{ }' })])
                         : el('td', { text: value })])))])])] : sideHeight.vars ? [part('vars', [])] : []), part('code', codeBox(frame.code)));
