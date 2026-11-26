@@ -3968,11 +3968,16 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             if (measureSide()) stale = false;
             draw(frames[index]);
         };
+        // The others in an idle moment (StepperIdle, stepper_keys.js), so that
+        // they have their heights before one scrolls there; until then a
+        // widget keeps the heights it had.
+        const settle = () => { if (window.StepperIdle) window.StepperIdle(() => { if (stale && !near) remeasure(); }); };
         if (window.IntersectionObserver) {
             new IntersectionObserver((seen) => {
                 near = seen[seen.length - 1].isIntersecting;
                 if (near && stale) remeasure();
             }, { rootMargin: '300px' }).observe(widget);
+            settle();
         } else remeasure();
         let sideWidth = side.clientWidth;
         if (window.ResizeObserver) new ResizeObserver(() => {
@@ -3980,6 +3985,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
             sideWidth = side.clientWidth;
             stale = true;
             if (near) remeasure();
+            else settle();
         }).observe(side);
         // One under the other where the code would get less than about 20em
         // beside the picture (34em, the gap 1.2em): measured on the widget,

@@ -33,7 +33,14 @@ module TrustedTemplate
         raise ArgumentError, 'Layout is missing #{CONTENT}' if slot.empty?
         raise ArgumentError, 'Layout contains multiple #{CONTENT} slots' if after.include?(CONTENT_SLOT)
 
-        render(before, context) + render(page, context) + render(after, context)
+        head = render(before, context)
+        body = render(page, context)
+        # A page with a side table of contents: the layout keeps its room
+        # from the start (default.css, body[data-autotoc-secondary]); a
+        # :has() on body would do the same, but it made the browser check
+        # the whole page again after every change.
+        head = head.sub(/<body(?=[\s>])/, '<body data-autotoc-secondary') if body.include?('autotoc-secondary-trigger')
+        head + body + render(after, context)
     end
 
     def self.interpolation_length(source, index)

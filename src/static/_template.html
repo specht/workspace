@@ -1331,7 +1331,7 @@ window.addEventListener('load', function() {
 });
 </script>
 
-<body#{copy_all_code? ? " data-copy-all-code='true'" : ''}#{hint_owner ? " data-hint-owner='#{hint_owner}'" : ''}#{user_logged_in? ? " data-logged-in='true'" : ''}>
+<body#{DEVELOPMENT ? ' data-footer-fixed' : ''}#{copy_all_code? ? " data-copy-all-code='true'" : ''}#{hint_owner ? " data-hint-owner='#{hint_owner}'" : ''}#{user_logged_in? ? " data-logged-in='true'" : ''}>
     <div class="modal" id="__template_modal" tabindex="-1" role="dialog" aria-labelledby="__template_modal_title" aria-hidden="true" style='z-index: 200000;'>
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">

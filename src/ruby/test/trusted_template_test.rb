@@ -21,6 +21,16 @@ class TrustedTemplateTest < Minitest::Test
             TrustedTemplate.render_page(layout, page, binding)
     end
 
+    # A page with a side table of contents marks the body, so that the
+    # layout keeps its room without a :has() on body (default.css)
+    def test_marks_the_body_of_a_page_with_a_side_table_of_contents
+        layout = '<body class="x"><main>#{CONTENT}</main></body>'
+        with = TrustedTemplate.render_page(layout, '<div class="autotoc-secondary-trigger"></div>', binding)
+        assert_equal '<body data-autotoc-secondary class="x"><main><div class="autotoc-secondary-trigger"></div></main></body>', with
+        without = TrustedTemplate.render_page(layout, '<p>text</p>', binding)
+        assert_equal '<body class="x"><main><p>text</p></main></body>', without
+    end
+
     def test_keeps_escaped_directives_literal
         assert_equal '&#35;{<example>}', TrustedTemplate.render('#{<example>}', binding)
     end

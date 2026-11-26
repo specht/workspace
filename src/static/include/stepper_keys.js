@@ -1,3 +1,20 @@
+// Work that settles the page (a widget's heights, its fit in the window) and
+// is not needed on the screen right now: one piece per idle moment, soon
+// after loading, so that nothing changes height later while one scrolls (the
+// scrollbar would wobble). Used by the Algo Stepper too (algo_stepper.js).
+window.StepperIdle = window.StepperIdle || (() => {
+    const queue = [];
+    let waiting = false;
+    const later = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 50));
+    const next = () => {
+        waiting = false;
+        const job = queue.shift();
+        if (job) job();
+        if (queue.length && !waiting) { waiting = true; later(next); }
+    };
+    return (job) => { queue.push(job); if (!waiting) { waiting = true; later(next); } };
+})();
+
 // ← and → step through a step-by-step widget: the Huffman tree, the LZW
 // tables, the GIF decoder, the JPEG decoder; Pos1 and Ende go to its start
 // and its end. A widget built after the page
@@ -637,8 +654,11 @@ document.addEventListener('keydown', (event) => {
     const want = (widget) => {
         if (!nearby) { reserve(widget); return; }
         nearby.observe(widget);
-        if (near.has(widget)) reserve(widget);
-        else waitingFor.add(widget);
+        if (near.has(widget)) { reserve(widget); return; }
+        waitingFor.add(widget);
+        // in an idle moment anyway, so that it has its height before one
+        // scrolls there
+        window.StepperIdle(() => { if (waitingFor.delete(widget)) reserve(widget); });
     };
     const all = () => document.querySelectorAll('[data-stepper]').forEach(want);
     let waiting = 0;
@@ -728,13 +748,15 @@ document.addEventListener('keydown', (event) => {
     });
     window.stepperWindowFit = { fit, clear };
     const near = typeof IntersectionObserver === 'undefined' ? null
-        : new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) fit(e.target); }), { rootMargin: '50% 0px' });
+        : new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting && !fitted.has(e.target)) fit(e.target); }), { rootMargin: '50% 0px' });
     const watch = (widget) => {
         if (widget.dataset.windowFit) return;
         widget.dataset.windowFit = '1';
         if (near) near.observe(widget);
         else fit(widget);
         if (grown) grown.observe(widget);
+        // the others in an idle moment, before one scrolls there
+        window.StepperIdle(() => { if (!fitted.has(widget)) fit(widget); });
     };
     const all = () => document.querySelectorAll(WIDGETS).forEach((w) => { if (!w.parentElement.closest(WIDGETS)) watch(w); });
     let waiting = 0;
