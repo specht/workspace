@@ -700,7 +700,11 @@ var autotoc_secondary_headings = [];
 var autotoc_secondary_links = [];
 var autotoc_secondary_ticking = false;
 
+// Called right after the page's content (so that it shows with the text,
+// not only once every script has run) and again on DOMContentLoaded, which
+// then does nothing.
 function install_secondary_autotoc() {
+    if (autotoc_secondary) return;
     let trigger = document.querySelector('.autotoc-secondary-trigger');
     if (!trigger) return;
 
@@ -1363,6 +1367,7 @@ window.addEventListener('load', function() {
     #{look_in_bar_html}
     #{terms_bar_html}
     #{CONTENT}
+    <script>install_secondary_autotoc();</script>
 
     <nav class="autotoc hidden" aria-label="Seitennavigation" inert>
         <button type="button" class="autotoc-up" aria-label="Nach oben" title="Nach oben"><i class='bi bi-chevron-double-up' aria-hidden='true'></i></button>
