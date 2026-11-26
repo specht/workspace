@@ -19751,13 +19751,15 @@ form.phone-manage-dirty {
 :root {
     --side-panel-width: 36rem;
     --side-panel-accent: #0b5f8a;
-    --side-panel-accent-text: #ffffff;
+    --side-panel-tab-bg: #eaf3fa;
+    --side-panel-tab-line: #b8d5ea;
     --side-panel-bg: #ffffff;
     --side-panel-line: #d8e1ea;
 }
 [data-bs-theme='dark'] {
-    --side-panel-accent: #7fbfe3;
-    --side-panel-accent-text: #10202b;
+    --side-panel-accent: #9fd0ee;
+    --side-panel-tab-bg: #1c2a33;
+    --side-panel-tab-line: #34505f;
     --side-panel-bg: #1d1d1b;
     --side-panel-line: #3a3a37;
 }
@@ -19768,25 +19770,31 @@ form.phone-manage-dirty {
     transform: translateY(-50%);
     z-index: 1030;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.45em;
-    writing-mode: vertical-rl;
-    padding: 0.9em 0.45em;
-    border: none;
-    border-radius: 0.5em 0 0 0.5em;
-    background: var(--side-panel-accent);
-    color: var(--side-panel-accent-text);
-    font-size: 0.9rem;
+    gap: 0.5em;
+    width: 2.3rem;
+    padding: 0.75em 0;
+    border: 1px solid var(--side-panel-tab-line);
+    border-right: none;
+    border-radius: 0.55em 0 0 0.55em;
+    background: var(--side-panel-tab-bg);
+    color: var(--side-panel-accent);
+    font-size: 0.88rem;
     font-weight: 600;
-    letter-spacing: 0.02em;
-    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.18);
+    line-height: 1;
+    box-shadow: -1px 1px 6px rgba(0, 0, 0, 0.08);
     cursor: pointer;
 }
 .side-panel-tab .bi {
-    transform: rotate(90deg);
+    font-size: 1.05em;
+}
+.side-panel-tab span {
+    writing-mode: vertical-rl;
+    letter-spacing: 0.02em;
 }
 .side-panel-tab:hover {
-    filter: brightness(1.1);
+    border-color: var(--side-panel-accent);
 }
 .side-panel-tab:focus-visible {
     outline: 3px solid var(--side-panel-accent);
@@ -19857,7 +19865,8 @@ form.phone-manage-dirty {
         top: auto;
         bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
         transform: none;
-        padding: 0.7em 0.35em;
+        width: 2.1rem;
+        padding: 0.65em 0;
         font-size: 0.8rem;
     }
 }

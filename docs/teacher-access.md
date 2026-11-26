@@ -496,7 +496,9 @@ Im Reiter »Fortschritt« setzt eine Lehrkraft für ihre Gruppe einen
 Treffpunkt nach einer Aufgabe der Aktivität (»Treffpunkt«, über der
 Tabelle), verschiebt ihn oder hebt ihn auf (»keiner«). Wer die Seite offen
 hat, sieht es sofort, ohne neu zu laden: Nach der Aufgabe steht ein Band
-»Hier trifft sich deine Klasse«; wer alle Aufgaben bis dahin gelöst hat
+»Hier trifft sich deine Klasse« (hinter dem, was noch zur Aufgabe gehört: bis
+zur nächsten Überschrift oder zum Ende des Kapitels, nur wenn vorher schon die
+nächste Aufgabe kommt, direkt hinter ihr); wer alle Aufgaben bis dahin gelöst hat
 (Extras zählen nicht), liest dort »Du bist da« und was bis zum Gespräch zu
 tun ist. Versteckt wird nichts; was danach kommt, ist blasser. Über der
 Tabelle steht, wie viele da sind und wer noch fehlt, und es zählt neu,

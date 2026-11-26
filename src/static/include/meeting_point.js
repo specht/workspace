@@ -73,12 +73,19 @@
         // their own points, at the end of the block)
         while (node.nextElementSibling && node.nextElementSibling.matches('.after-task') &&
                !node.nextElementSibling.querySelector('.task-card')) node = node.nextElementSibling;
+        // What follows up to the next heading belongs to the task (what to
+        // do once it is solved, the code »bis hier«, a picture of the
+        // result): the point goes before that heading, or at the end of the
+        // chapter. Another task first: right after this one, since the text
+        // before the next task may already lead to it.
         let next = node.nextElementSibling;
-        while (next && next.tagName !== 'H2') {
+        let last = node;
+        while (next && !/^H[2-4]$/.test(next.tagName)) {
             if (next.matches('.task-card') || next.querySelector('.task-card')) return { after: node };
+            if (next.tagName !== 'SCRIPT' && next.tagName !== 'STYLE') last = next;
             next = next.nextElementSibling;
         }
-        return next ? { before: next } : { after: node };
+        return next ? { before: next } : { after: last };
     }
 
     function studentHtml(point) {

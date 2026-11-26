@@ -2,7 +2,8 @@
 // the Routenplaner): a tab on the right edge opens it, and so does every
 // link to its id. On a wide screen the page moves aside while it is open, so
 // that both stay readable, and the panel opens again after a reload if it
-// was open; on a phone it covers the page and has to be opened again.
+// was open; on a phone it covers the page, has to be opened again, and the
+// browser's Back closes it.
 (function () {
     'use strict';
     if (window.SidePanel) return;
@@ -19,6 +20,17 @@
     const remembered = (panel) => {
         try { return localStorage.getItem(key(panel)) === '1'; } catch (e) { return false; }
     };
+
+    // Back on a phone: the panel whose history step was left closes
+    let closingByBack = false;
+    window.addEventListener('popstate', function () {
+        if (!window.bootstrap) return;
+        document.querySelectorAll('.side-panel.show').forEach(function (panel) {
+            if (history.state && history.state.sidePanel === panel.id) return;
+            closingByBack = true;
+            try { bootstrap.Offcanvas.getOrCreateInstance(panel).hide(); } finally { closingByBack = false; }
+        });
+    });
 
     function setUp() {
         document.querySelectorAll('.side-panel-box').forEach(function (box) {
@@ -39,10 +51,17 @@
             panel.addEventListener('show.bs.offcanvas', function () {
                 document.documentElement.classList.add('side-panel-open');
                 remember(panel, true);
+                // Where it covers the page (a phone), it is a step in the
+                // history: Back closes it instead of leaving the page.
+                if (!WIDE.matches && !(history.state && history.state.sidePanel === panel.id)) {
+                    history.pushState({ sidePanel: panel.id }, '');
+                }
             });
             panel.addEventListener('hide.bs.offcanvas', function () {
                 document.documentElement.classList.remove('side-panel-open');
                 remember(panel, false);
+                // closed with × or Escape: take its step out of the history again
+                if (!closingByBack && history.state && history.state.sidePanel === panel.id) history.back();
             });
             if (location.hash === '#' + panel.id || (WIDE.matches && remembered(panel))) offcanvas.show();
         });
