@@ -91,6 +91,11 @@ test('the reference panel opens from the tab and from a link, undimmed by a meet
     await page.goBack();
     await expect(panel).toBeHidden();
     expect(new URL(page.url()).pathname).toBe('/routenplaner');
+    // also at once, while it is still sliding in
+    await tab.click();
+    await page.goBack();
+    await expect(panel).toBeHidden();
+    expect(new URL(page.url()).pathname).toBe('/routenplaner');
     await tab.click();
     await expect(panel).toBeVisible();
     await panel.locator('.btn-close').click();

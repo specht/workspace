@@ -622,7 +622,25 @@ document.addEventListener('keydown', (event) => {
         jobs.set(widget, { steps, list, next: 0, least: list.map(() => Infinity), most: list.map(() => 0) });
         if (!running) running = setTimeout(run, 0);
     };
-    const all = () => document.querySelectorAll('[data-stepper]').forEach(reserve);
+    // Only widgets near the screen measure at once: every step forces a
+    // layout of the whole page, and a long page has many widgets. The others
+    // wait until they come near (a new width marks them all again).
+    const near = new Set();
+    const waitingFor = new Set();
+    const nearby = window.IntersectionObserver ? new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) { near.delete(entry.target); return; }
+            near.add(entry.target);
+            if (waitingFor.delete(entry.target)) reserve(entry.target);
+        });
+    }, { rootMargin: '600px 0px' }) : null;
+    const want = (widget) => {
+        if (!nearby) { reserve(widget); return; }
+        nearby.observe(widget);
+        if (near.has(widget)) reserve(widget);
+        else waitingFor.add(widget);
+    };
+    const all = () => document.querySelectorAll('[data-stepper]').forEach(want);
     let waiting = 0;
     const soon = () => { clearTimeout(waiting); waiting = setTimeout(all, 150); };
     let width = window.innerWidth;

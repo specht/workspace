@@ -21,14 +21,25 @@
         try { return localStorage.getItem(key(panel)) === '1'; } catch (e) { return false; }
     };
 
+    // Closes a panel, also one still sliding in (Bootstrap would add show
+    // after a hide during the slide): then as soon as it is in.
+    const OPEN = '.side-panel.show, .side-panel.showing';
+    const close = function (panel, before) {
+        const now = function () {
+            if (before) before(true);
+            try { bootstrap.Offcanvas.getOrCreateInstance(panel).hide(); } finally { if (before) before(false); }
+        };
+        if (panel.classList.contains('showing')) panel.addEventListener('shown.bs.offcanvas', now, { once: true });
+        else now();
+    };
+
     // Back on a phone: the panel whose history step was left closes
     let closingByBack = false;
     window.addEventListener('popstate', function () {
         if (!window.bootstrap) return;
-        document.querySelectorAll('.side-panel.show').forEach(function (panel) {
+        document.querySelectorAll(OPEN).forEach(function (panel) {
             if (history.state && history.state.sidePanel === panel.id) return;
-            closingByBack = true;
-            try { bootstrap.Offcanvas.getOrCreateInstance(panel).hide(); } finally { closingByBack = false; }
+            close(panel, function (on) { closingByBack = on; });
         });
     });
 
@@ -83,9 +94,7 @@
     // inside the panel), unless a dialog is open
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape' || e.defaultPrevented || document.querySelector('.modal.show') || !window.bootstrap) return;
-        document.querySelectorAll('.side-panel.show').forEach(function (panel) {
-            bootstrap.Offcanvas.getOrCreateInstance(panel).hide();
-        });
+        document.querySelectorAll(OPEN).forEach(function (panel) { close(panel); });
     });
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setUp);

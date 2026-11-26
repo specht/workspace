@@ -3945,7 +3945,7 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
         if (mountCave) mountCave();
         // every step once, for the height of each part of the side
         const measureSide = () => {
-            if (!side.isConnected || !side.clientWidth) return;
+            if (!side.isConnected || !side.clientWidth) return false;
             const tallest = { calls: 0, vars: 0, code: 0 };
             Object.keys(sideHeight).forEach((k) => { sideHeight[k] = 0; });
             for (const frame of frames) {
@@ -3956,24 +3956,30 @@ div[data-stepper].stepper-lightbox.stepper-stacked .algo-body > .algo-side { gri
                 }
             }
             Object.assign(sideHeight, tallest);
+            return true;
         };
-        // once the widget comes near the screen: a page of the Handbuch has
-        // many widgets, and each would draw all its steps while it loads
+        // Only near the screen: a page has many widgets, each would draw all
+        // its steps while it loads, and each step forces a layout of the
+        // whole page. A new width (a panel opening beside the page) marks the
+        // others, which measure again when they come near.
+        let stale = true;
+        let near = !window.IntersectionObserver;
+        const remeasure = () => {
+            if (measureSide()) stale = false;
+            draw(frames[index]);
+        };
         if (window.IntersectionObserver) {
-            const near = new IntersectionObserver((seen) => {
-                if (!seen.some((e) => e.isIntersecting)) return;
-                near.disconnect();
-                measureSide();
-                draw(frames[index]);
-            }, { rootMargin: '300px' });
-            near.observe(widget);
-        } else measureSide();
+            new IntersectionObserver((seen) => {
+                near = seen[seen.length - 1].isIntersecting;
+                if (near && stale) remeasure();
+            }, { rootMargin: '300px' }).observe(widget);
+        } else remeasure();
         let sideWidth = side.clientWidth;
         if (window.ResizeObserver) new ResizeObserver(() => {
             if (side.clientWidth === sideWidth || !side.clientWidth) return;
             sideWidth = side.clientWidth;
-            measureSide();
-            draw(frames[index]);
+            stale = true;
+            if (near) remeasure();
         }).observe(side);
         // One under the other where the code would get less than about 20em
         // beside the picture (34em, the gap 1.2em): measured on the widget,
