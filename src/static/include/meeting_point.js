@@ -76,12 +76,15 @@
         // What follows up to the next heading belongs to the task (what to
         // do once it is solved, the code »bis hier«, a picture of the
         // result): the point goes before that heading, or at the end of the
-        // chapter. Another task first: right after this one, since the text
-        // before the next task may already lead to it.
+        // chapter. Another task first: after the last »bis hier« (StageCode)
+        // before it, which ends this step, or else right after this task,
+        // since the text before the next task may already lead to it.
         let next = node.nextElementSibling;
         let last = node;
+        let stage = null;
         while (next && !/^H[2-4]$/.test(next.tagName)) {
-            if (next.matches('.task-card') || next.querySelector('.task-card')) return { after: node };
+            if (next.matches('.task-card') || next.querySelector('.task-card')) return { after: stage || node };
+            if (next.matches('.stage-code') || next.querySelector('.stage-code')) stage = next;
             if (next.tagName !== 'SCRIPT' && next.tagName !== 'STYLE') last = next;
             next = next.nextElementSibling;
         }

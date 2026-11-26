@@ -19787,6 +19787,7 @@ form.phone-manage-dirty {
     cursor: pointer;
 }
 .side-panel-tab .bi {
+    margin: 0;
     font-size: 1.05em;
 }
 .side-panel-tab span {
