@@ -19882,3 +19882,21 @@ form.phone-manage-dirty {
         transition: none;
     }
 }
+
+/* The mark of a tab stop as the ruler shows it, in the text (»Listen und
+   Tabstopps«): the same blue as the drawings (render-svg.rb), its foot on the
+   baseline like a letter */
+:root {
+    --tab-mark: #2b5fb4;
+}
+[data-bs-theme='dark'] {
+    --tab-mark: #6ea2f2;
+}
+.tab-mark {
+    width: 0.8em;
+    height: 0.8em;
+    margin: 0 0.15em;
+    vertical-align: baseline;
+    color: var(--tab-mark);
+    overflow: visible;
+}

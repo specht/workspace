@@ -105,8 +105,10 @@ def bar(x, y, w, colour=BAR, h=5):
     return rect(x, y - h, w, h, colour, r=2)
 
 
-def svg(name, folder, w, h, body, about):
-    out = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {w} {h}' width='{w}' height='{h}'>",
+def svg(name, folder, w, h, body, about, root_extra=''):
+    # root_extra: text-rendering='geometricPrecision' keeps small text evenly
+    # spaced when the drawing is scaled (Chrome otherwise snaps each glyph)
+    out = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {w} {h}' width='{w}' height='{h}'{root_extra}>",
            f"  <!-- {about}; made by src/scripts/office-drawings.py, then src/scripts/render-svg.rb -->",
            rect(0, 0, w, h, BG)]
     out += body
@@ -153,20 +155,20 @@ def glyph_path(char, family_file, size, x, y):
 
 
 
-def two_ways(name, folder, wide, about, panels, gap=14, shared=()):
+def two_ways(name, folder, wide, about, panels, gap=14, shared=(), root_extra=''):
     """a drawing of panels side by side for the desktop (name-wide.svg) and
     the same panels one under another for a phone (name.svg), so that its
     text stays readable there (docs/checkliste.md, »Auf dem Handy«);
     panels: [(elements, (x, y, w, h)), …] in the desktop's coordinates;
     shared: what only the row needs (an arrow between two panels)"""
     w, h = wide
-    svg(f'{name}-wide', folder, w, h, [e for els, _ in panels for e in els] + list(shared), about)
+    svg(f'{name}-wide', folder, w, h, [e for els, _ in panels for e in els] + list(shared), about, root_extra)
     body, y, width = [], 10, 0
     for els, (x0, y0, pw, ph) in panels:
         body.append(f"<g transform='translate({10 - x0:.1f} {y - y0:.1f})'>" + ''.join(els) + '</g>')
         y += ph + gap
         width = max(width, pw)
-    svg(name, folder, round(width + 20), round(y - gap + 10), body, about)
+    svg(name, folder, round(width + 20), round(y - gap + 10), body, about, root_extra)
 
 
 # ---- Was das Auge nicht sieht
@@ -515,6 +517,85 @@ def tabstopp(phone=False):
         body.append(text(x0, 194, 'ein Tab (→) springt zum Tabstopp; die Punkte sind das Füllzeichen', 13, GREY))
         body.append(text(x0, 212, 'jeder Preis endet am Tabstopp, in jeder Schrift', 13, GREY))
     svg(variant('tabstopp', phone), 'lists-and-tabs', w, h, body, 'Ein rechtsbündiger Tabstopp mit Füllzeichen')
+
+
+def tab_mark(kind, x, y, size=10, colour=BLUE, width=2.4):
+    """the mark of a tab stop as the ruler shows it, its foot at (x, y):
+    links └, zentriert ┴, rechts ┘, dezimal ┴ with a dot"""
+    s = size
+    if kind == 'links':
+        d = f'M {x} {y - s} L {x} {y} L {x + s * 0.9} {y}'
+    elif kind == 'rechts':
+        d = f'M {x - s * 0.9} {y} L {x} {y} L {x} {y - s}'
+    else:
+        d = f'M {x - s * 0.6} {y} L {x + s * 0.6} {y} M {x} {y} L {x} {y - s}'
+    out = f"<path d='{d}' fill='none' stroke='{colour}' stroke-width='{width}' stroke-linecap='square'/>"
+    if kind == 'dezimal':
+        out += f"<circle cx='{x + s * 0.42:.1f}' cy='{y - s * 0.55:.1f}' r='{max(1.3, s * 0.15):.1f}' fill='{colour}'/>"
+    return out
+
+
+def tabstopp_arten(phone=False):
+    """the button left of the ruler, the four kinds of tab stop and their marks,
+    and what each does with three lines of different length"""
+    kinds = [('links', 'links'), ('zentriert', 'zentriert'), ('rechts', 'rechts'), ('dezimal', 'dezimal')]
+    # the button and the ruler
+    a = []
+    a.append(text(14, 18, 'der Knopf: welche Art', 12.5, BLUE))
+    a.append(rect(14, 28, 26, 26, '#ffffff', '#9aa3ae', 1.2, 3))
+    a.append(tab_mark('links', 23, 47, 11))
+    a.append(rect(46, 28, 222, 26, '#f3f4f6', '#d1d5db', 1, 2))
+    for c in range(0, 9):
+        x = 56 + c * 25
+        a.append(line(x, 46, x, 54, GREY, 1))
+        if c and c % 2 == 0:
+            a.append(text(x, 43, str(c), 10.5, GREY, 'middle'))
+    a.append(tab_mark('links', 181, 52, 10))
+    a.append(text(181, 74, 'Klick ins Lineal: ein Tabstopp', 12.5, BLUE, 'middle'))
+    a.append(text(14, 104, 'jeder Klick auf den Knopf', 12.5, GREY))
+    a.append(text(14, 120, 'zeigt die nächste Art:', 12.5, GREY))
+    for i, (kind, name) in enumerate(kinds):
+        x, y = 14 + (i % 2) * 132, 136 + (i // 2) * 40
+        a.append(rect(x, y, 26, 26, '#ffffff', '#9aa3ae', 1.2, 3))
+        foot = {'links': x + 9, 'rechts': x + 17}.get(kind, x + 13)
+        a.append(tab_mark(kind, foot, y + 19, 11))
+        a.append(text(x + 34, y + 18, name, 14, TEXT))
+    panel_a = (a, (0, 0, 280, 220))
+
+    def mode(x, y, kind, stop, rows, caption):
+        out = [tab_mark(kind, x + 8 if kind == 'links' else x + 12 if kind != 'rechts' else x + 14, y + 12, 9),
+               text(x + 24, y + 12, kind, 13, TEXT, weight='600')]
+        out.append(rect(x, y + 20, 125, 12, '#f3f4f6', '#d1d5db', 1, 2))
+        sx = x + stop
+        out.append(tab_mark(kind, sx, y + 30, 8, BLUE, 2))
+        out.append(paper(x, y + 38, 125, 54))
+        out.append(line(sx, y + 34, sx, y + 98, BLUE, 1.1, " stroke-dasharray='3 3'"))
+        for k, entry in enumerate(rows):
+            ty = y + 56 + k * 15
+            if kind == 'links':
+                out.append(text(sx, ty, entry, 12.5, INK))
+            elif kind == 'zentriert':
+                out.append(text(sx, ty, entry, 12.5, INK, 'middle'))
+            elif kind == 'rechts':
+                out.append(text(sx, ty, entry, 12.5, INK, 'end'))
+            else:
+                whole, part = entry.split(',')
+                out.append(text(sx, ty, whole, 12.5, INK, 'end'))
+                out.append(text(sx, ty, ',' + part, 12.5, INK))
+        out.append(text(x, y + 110, caption, 12, GREY))
+        return out
+
+    places = ['Ulm', 'Hamburg', 'Oberstdorf']
+    m = []
+    m += mode(290, 10, 'links', 22, places, 'Anfang am Tabstopp')
+    m += mode(425, 10, 'zentriert', 62, places, 'Mitte am Tabstopp')
+    n = []
+    n += mode(290, 130, 'rechts', 108, places, 'Ende am Tabstopp')
+    n += mode(425, 130, 'dezimal', 70, ['4,5', '156,00', '12,75'], 'Komma am Tabstopp')
+    two_ways('tabstopp-arten', 'lists-and-tabs', (560, 252),
+             'Der Knopf links am Lineal, die vier Arten von Tabstopps und was jede tut',
+             [panel_a, (m, (290, 10, 260, 114)), (n, (290, 130, 260, 114))], gap=10,
+             root_extra=" text-rendering='geometricPrecision'")
 
 
 # ---- Tabellen
@@ -1769,12 +1850,12 @@ def karte_tabellen():
     svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
 
 
-DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, zelle, kopfzeile,
+DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, tabstopp_arten, zelle, kopfzeile,
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, quadrat, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 # the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)
 TWO_WAYS = {adresse, formel, ausfuellen, zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, sortieren, diagrammarten, achse,
-            hervorheben, tabstopp, zelle, vorlage, verzeichnis, fusszeile, punkt}
+            hervorheben, tabstopp, tabstopp_arten, zelle, vorlage, verzeichnis, fusszeile, punkt}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:
