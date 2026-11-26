@@ -528,6 +528,30 @@ Nach hinten wird es dunkel. …
 <!-- /after -->
 ````
 
+### Zum Nachschlagen
+
+Was Lernende beim Programmieren immer wieder brauchen (welche Daten ihre
+Funktionen bekommen und zurückgeben, die Schleife über die Nachbarn), steht
+nicht als letztes Kapitel am Ende der Seite, sondern in einem Panel, das von
+rechts hereinkommt: Ein Knopf am rechten Rand des Fensters öffnet es, ebenso
+jeder Link auf seine ID. Auf einem breiten Bildschirm rückt die Seite zur
+Seite, und beides bleibt lesbar; auf dem Handy legt sich das Panel über die
+Seite. Ein Treffpunkt, der alles nach ihm blasser macht, lässt das Panel in
+Ruhe. Die Teile für eine Sprache (`<!-- language: … -->`) folgen der Wahl
+oben auf der Seite. Vorbild ist »Auf einen Blick« im Routenplaner
+(`side_panel.rb`, `side_panel.js`, Ende zu Ende
+`e2e/tests/side-panel.browser.spec.ts`):
+
+````markdown
+<!-- side-panel: auf-einen-blick Auf einen Blick -->
+Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim Programmieren. …
+<!-- /side-panel -->
+````
+
+Hinter `side-panel:` stehen die ID (für Links: `[auf einen Blick](#auf-einen-blick)`)
+und der Titel auf dem Knopf. Das Panel steht am besten am Ende der Seite; im
+Inhaltsverzeichnis erscheint es nicht.
+
 ### Tipps in Stufen
 
 Wo Lernende hängen bleiben können, helfen Tipps in Stufen besser als ein

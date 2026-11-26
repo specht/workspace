@@ -1739,9 +1739,9 @@ hook: tour astar | foot | best | Brandenburger Tor | Berliner Fernsehturm | Sieg
 
 Der nächste Nachbar kommt auf 11,2 km, das Ausprobieren aller 5 040 Reihenfolgen auf 9,8 km. 2-opt, aus der Reihenfolge des nächsten Nachbarn, kommt bis auf 44 Meter an die beste heran, in einem Bruchteil der Zeit. Ganz die beste ist es nicht: 2-opt hört auf, wenn kein einzelnes Umdrehen mehr hilft, und das ist nicht immer die beste Rundfahrt. Für sehr viele Orte kennt niemand einen schnellen Weg zur besten. Routenplaner, Paketdienste und Busunternehmen arbeiten darum mit Verfahren wie 2-opt: gut genug, und rechtzeitig fertig.
 
-<h2 id='auf-einen-blick'>Auf einen Blick</h2>
+<!-- side-panel: auf-einen-blick Auf einen Blick -->
 
-Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim Programmieren. Am besten öffnest du diesen Abschnitt in einem zweiten Tab: ein Klick mit gedrückter <kbd>Strg</kbd>-Taste oder mit dem Mausrad auf den Link »Auf einen Blick« in einer Aufgabe.
+Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim Programmieren. Auf einem breiten Bildschirm bleibt sie neben der Seite offen, während du liest und schreibst; auf dem Handy legt sie sich über die Seite. Geöffnet wird sie mit dem Knopf »Auf einen Blick« am rechten Rand oder mit dem Link »auf einen Blick« in einer Aufgabe.
 
 Ein Knoten ist kein eigenes Objekt, sondern nur seine ID, ein String wie `'26735834'`, auf den Testkarten `'11'` oder `'2'`. Die Werte in den Beispielen kommen von der Testkarte `data/detour.tsv`.
 
@@ -1995,6 +1995,7 @@ for (Edge edge : edges) {
 
 Jede Suche gibt nur ihren Weg zurück, die IDs vom Start bis zum Ziel, oder <span class='code-language' data-language='ruby'><code>nil</code></span><span class='code-language' data-language='python'><code>None</code></span><span class='code-language' data-language='dart javascript java'><code>null</code></span>, wenn es keinen gibt. Damit die Karte die Suche abspielen kann, ruft sie `visit(node)` auf, wenn ein Knoten dran ist; für die Suche selbst tut `visit` nichts.
 
+<!-- /side-panel -->
 
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot

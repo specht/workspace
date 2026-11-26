@@ -670,6 +670,8 @@ class Main < Sinatra::Base
                     markdown = HintSteps.mark(markdown)
                     # What gives away a task's answer, until it is answered (AfterTask).
                     markdown = AfterTask.mark(markdown)
+                    # A reference in a panel from the right (SidePanel).
+                    markdown = SidePanel.mark(markdown)
                     # Parts for people with a class repository over SSH or HTTPS,
                     # or without one (<!-- if: class_repo -->, ClassRepos): the
                     # page is rendered once for each, and each request picks one
@@ -744,6 +746,7 @@ class Main < Sinatra::Base
                     SolutionBlocks.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                     HintSteps.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                     AfterTask.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
+                    SidePanel.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                     CodeLanguages.pair(root) if page_languages.empty?
                     insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
                     ExternalLinks.mark(root)    # also the links in the task cards

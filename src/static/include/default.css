@@ -19744,3 +19744,125 @@ form.phone-manage-dirty {
         grid-template-columns: repeat(var(--columns, 1), minmax(3.2rem, 1fr));
     }
 }
+
+/* A reference in a panel from the right (side_panel.rb, side_panel.js):
+   a tab on the right edge of the window opens it; on a wide screen the page
+   moves aside while it is open, on a phone the panel covers the page */
+:root {
+    --side-panel-width: 36rem;
+    --side-panel-accent: #0b5f8a;
+    --side-panel-accent-text: #ffffff;
+    --side-panel-bg: #ffffff;
+    --side-panel-line: #d8e1ea;
+}
+[data-bs-theme='dark'] {
+    --side-panel-accent: #7fbfe3;
+    --side-panel-accent-text: #10202b;
+    --side-panel-bg: #1d1d1b;
+    --side-panel-line: #3a3a37;
+}
+.side-panel-tab {
+    position: fixed;
+    right: env(safe-area-inset-right, 0px);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1030;
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    writing-mode: vertical-rl;
+    padding: 0.9em 0.45em;
+    border: none;
+    border-radius: 0.5em 0 0 0.5em;
+    background: var(--side-panel-accent);
+    color: var(--side-panel-accent-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+}
+.side-panel-tab .bi {
+    transform: rotate(90deg);
+}
+.side-panel-tab:hover {
+    filter: brightness(1.1);
+}
+.side-panel-tab:focus-visible {
+    outline: 3px solid var(--side-panel-accent);
+    outline-offset: 3px;
+}
+.side-panel-open .side-panel-tab {
+    display: none;
+}
+.side-panel.offcanvas {
+    --bs-offcanvas-width: min(var(--side-panel-width), 100vw);
+    --bs-offcanvas-bg: var(--side-panel-bg);
+    border-left: 1px solid var(--side-panel-line);
+    box-shadow: -4px 0 18px rgba(0, 0, 0, 0.12);
+}
+.side-panel .offcanvas-header {
+    padding: 0.8rem 1.1rem;
+    padding-top: calc(0.8rem + env(safe-area-inset-top, 0px));
+    border-bottom: 1px solid var(--side-panel-line);
+}
+.side-panel-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+.side-panel-title .bi {
+    color: var(--side-panel-accent);
+    margin-right: 0.3em;
+}
+.side-panel-body {
+    padding: 1rem 1.1rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    font-size: 0.95rem;
+}
+.side-panel-body pre {
+    font-size: 0.82rem;
+}
+.side-panel-body > :first-child {
+    margin-top: 0;
+}
+@media (min-width: 1200px) {
+    html.side-panel-open body {
+        padding-right: var(--side-panel-width);
+    }
+    /* Bootstrap's containers keep a fixed width per breakpoint */
+    html.side-panel-open body .container {
+        max-width: 100%;
+    }
+}
+/* the layout with the table of contents on the left counts the panel too;
+   where both would leave the text too narrow, the table of contents gives
+   way while the panel is open */
+@media (min-width: 1400px) {
+    html.side-panel-open .autotoc-secondary-layout {
+        width: min(calc(100vw - var(--side-panel-width) - 2rem), var(--autotoc-layout-width));
+    }
+}
+@media (min-width: 1400px) and (max-width: 1799.98px) {
+    html.side-panel-open .autotoc-secondary-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    html.side-panel-open .autotoc-secondary {
+        display: none;
+    }
+    html.side-panel-open .autotoc-secondary-main {
+        max-width: none;
+    }
+}
+@media (max-width: 575.98px) {
+    .side-panel-tab {
+        top: auto;
+        bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+        transform: none;
+        padding: 0.7em 0.35em;
+        font-size: 0.8rem;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .side-panel.offcanvas {
+        transition: none;
+    }
+}

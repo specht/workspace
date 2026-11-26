@@ -245,7 +245,8 @@
         let node = box;
         while (node && node.parentElement) {
             for (let el = node.nextElementSibling; el; el = el.nextElementSibling) {
-                if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE' && !el.matches('.meeting-point')) el.classList.add('meeting-later');
+                // a reference in a panel (side_panel.js) is for every lesson
+                if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE' && !el.matches('.meeting-point, .side-panel-box')) el.classList.add('meeting-later');
             }
             if (!node.parentElement.closest('.autotoc-container')) break;
             node = node.parentElement;
