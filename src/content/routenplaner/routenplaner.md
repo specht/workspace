@@ -1741,7 +1741,7 @@ Der nächste Nachbar kommt auf 11,2 km, das Ausprobieren aller 5 040 Reihenfolge
 
 <!-- side-panel: auf-einen-blick Auf einen Blick -->
 
-Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim Programmieren. Auf einem breiten Bildschirm bleibt sie neben der Seite offen, während du liest und schreibst; auf dem Handy legt sie sich über die Seite. Geöffnet wird sie mit dem Knopf »Auf einen Blick« am rechten Rand oder mit dem Link »auf einen Blick« in einer Aufgabe.
+Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim Programmieren.
 
 Ein Knoten ist kein eigenes Objekt, sondern nur seine ID, ein String wie `'26735834'`, auf den Testkarten `'11'` oder `'2'`. Die Werte in den Beispielen kommen von der Testkarte `data/detour.tsv`.
 
