@@ -2696,10 +2696,14 @@ class Main < Sinatra::Base
         running = (workspace_runtime.running_workspaces(:timeout => shell_timeout(:docker_network_inspect)).keys rescue [])
         io << "<div class='class-people-scroll'><table class='table align-middle class-people-table'>"
         io << "<thead><tr><th>Name</th><th>Workspace</th><th class='text-end'>CPU</th><th class='text-end'>RAM</th><th></th></tr></thead><tbody>"
+        # the short names for the codes on a projector (class_board.js):
+        # first names, the last name's initial or the whole name where two
+        # are alike
+        short = ClassBoard.short_names(members)
         members.each do |m|
             email = m[:email]
             test = @@test_accounts.key?(email)
-            io << "<tr data-email='#{h.(email)}'><td class='class-person'>#{h.(m[:name])}</td>"
+            io << "<tr data-email='#{h.(email)}' data-short='#{h.(short[email])}'><td class='class-person'>#{h.(m[:name])}</td>"
             # Right from the start, not »aus« until the websocket says otherwise.
             on = running.include?(fs_tag_for_email(email))
             io << "<td class='class-ws-status#{on ? ' class-ws-running' : ''}' data-fs-tag='#{h.(fs_tag_for_email(email))}'><span class='class-ws-dot' aria-hidden='true'></span><span class='class-ws-text'>#{on ? 'läuft' : 'aus'}</span></td>"

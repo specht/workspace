@@ -215,6 +215,13 @@
         return row ? row.textContent : email;
     }
 
+    // On the projector: the short name (first name, the last name's initial
+    // where two are alike; ClassBoard.short_names), not the long address
+    function shortFor(email) {
+        const row = people.querySelector('tr[data-email="' + CSS.escape(email) + '"]');
+        return (row && row.dataset.short) || nameFor(email);
+    }
+
     // The codes on a projector: names and codes only, big, live; the
     // students cannot read their mail at school, so they read it here.
     let codesNow = [];
@@ -251,12 +258,12 @@
             list.appendChild(p);
             return;
         }
-        codesNow.slice().sort((a, b) => nameFor(a.email).localeCompare(nameFor(b.email))).forEach((l) => {
+        codesNow.slice().sort((a, b) => shortFor(a.email).localeCompare(shortFor(b.email))).forEach((l) => {
             const row = document.createElement('div');
             row.className = 'class-codes-row';
             const name = document.createElement('span');
             name.className = 'class-codes-name';
-            name.textContent = nameFor(l.email);
+            name.textContent = shortFor(l.email);
             const code = document.createElement('span');
             code.className = 'class-codes-code';
             code.textContent = l.code;

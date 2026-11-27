@@ -316,7 +316,21 @@ class ClassBoardTest < Minitest::Test
         assert_equal ['Ben O.', 'Ben A.'], [short['b'], short['c']]
         # the same initial twice: the whole name
         assert_equal ['Lea Maria Kurz', 'Lea Krause', 'Lea Kurz'], [short['d'], short['e'], short['f']]
-        assert_equal 'kim', short['g']
+        assert_equal 'Kim', short['g']
+    end
+
+    # Without a name, from the address: first name and initial as for names
+    def test_short_names_from_addresses
+        short = ClassBoard.short_names([
+            { :email => 'max.muster@schule.de', :name => 'max.muster@schule.de' },
+            { :email => 'max.beispiel@schule.de', :name => '' },
+            { :email => 'jo_probe-2@schule.de', :name => nil },
+            { :email => 'x', :name => 'Lena Lang' },
+        ])
+        assert_equal ['Max M.', 'Max B.'], [short['max.muster@schule.de'], short['max.beispiel@schule.de']]
+        assert_equal 'Jo', short['jo_probe-2@schule.de']
+        assert_equal 'Lena', short['x']
+        assert_equal 'Max Muster', ClassBoard.full_name({ :email => 'max.muster@schule.de', :name => 'max.muster@schule.de' })
     end
 
     def test_series_positions_stand_at_the_first_open_sheet

@@ -344,12 +344,25 @@ module ClassBoard
     # that is shared. Names without a space stay whole (an address shows
     # what comes before the @). { email => short }
     def self.short_names(members)
-        first = ->(m) { m[:name].to_s.split('@').first.to_s.split(/\s+/).first.to_s }
+        named = members.map { |m| m.merge(:name => full_name(m)) }
+        first = ->(m) { m[:name].to_s.split(/\s+/).first.to_s }
         initial = ->(m) { (w = m[:name].to_s.split(/\s+/)).size > 1 ? "#{first.(m)} #{w.last[0]}." : first.(m) }
-        firsts = members.map(&first).tally
-        short = members.to_h { |m| [m[:email], firsts[first.(m)] == 1 ? first.(m) : initial.(m)] }
+        firsts = named.map(&first).tally
+        short = named.to_h { |m| [m[:email], firsts[first.(m)] == 1 ? first.(m) : initial.(m)] }
         shorts = short.values.tally
-        members.to_h { |m| [m[:email], shorts[short[m[:email]]] == 1 ? short[m[:email]] : m[:name].to_s] }
+        named.to_h { |m| [m[:email], shorts[short[m[:email]]] == 1 ? short[m[:email]] : m[:name].to_s] }
+    end
+
+    # The name of a member; without one (only the address is known, a
+    # student not yet in the roster), made from the address:
+    # johannes.bonsack@schule.de becomes »Johannes Bonsack«.
+    def self.full_name(member)
+        name = member[:name].to_s.strip
+        return name unless name.empty? || name.include?('@')
+
+        local = (name.empty? ? member[:email] : name).to_s.split('@').first.to_s
+        words = local.split(/[._\-]+/).reject(&:empty?).reject { |w| w =~ /\A\d+\z/ }
+        words.empty? ? local : words.map { |w| w[0].upcase + w[1..] }.join(' ')
     end
 
     # Icon and meaning per status: Tabler, or an <i class='bi …'> for the
