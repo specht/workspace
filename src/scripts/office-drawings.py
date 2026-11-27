@@ -655,8 +655,9 @@ def tabstopp_absatz(phone=False):
              root_extra=" text-rendering='geometricPrecision'")
 
 def tabstopp_arten(phone=False):
-    """the button left of the ruler, the four kinds of tab stop and their marks,
-    and what each does with three lines of different length"""
+    """what the four kinds of tab stop do, each with three lines of
+    different length (tabstopp-arten), and the button in the corner of the
+    ruler that chooses the kind, with the marks (lineal-knopf)"""
     kinds = [('links', 'links'), ('zentriert', 'zentriert'), ('rechts', 'rechts'), ('dezimal', 'dezimal')]
     # the corner of the window: the button where the rulers meet, marked
     a = []
@@ -687,7 +688,6 @@ def tabstopp_arten(phone=False):
         foot = {'links': x + 9, 'rechts': x + 17}.get(kind, x + 13)
         a.append(tab_mark(kind, foot, y + 19, 11))
         a.append(text(x + 34, y + 18, name, 14, TEXT))
-    panel_a = (a, (0, 0, 280, 280))
 
     def mode(x, y, kind, stop, rows, caption):
         out = [tab_mark(kind, x + 8 if kind == 'links' else x + 12 if kind != 'rechts' else x + 14, y + 12, 9),
@@ -713,16 +713,21 @@ def tabstopp_arten(phone=False):
         return out
 
     places = ['Ulm', 'Hamburg', 'Oberstdorf']
+    # the four kinds: in a row on the desktop, two by two on a phone
     m = []
-    m += mode(290, 10, 'links', 22, places, 'Anfang am Tabstopp')
-    m += mode(425, 10, 'zentriert', 62, places, 'Mitte am Tabstopp')
+    m += mode(10, 10, 'links', 22, places, 'Anfang am Tabstopp')
+    m += mode(145, 10, 'zentriert', 62, places, 'Mitte am Tabstopp')
     n = []
-    n += mode(290, 130, 'rechts', 108, places, 'Ende am Tabstopp')
-    n += mode(425, 130, 'dezimal', 70, ['4,5', '156,00', '12,75'], 'Komma am Tabstopp')
-    two_ways('tabstopp-arten', 'lists-and-tabs', (560, 284),
-             'Der Knopf links am Lineal, die vier Arten von Tabstopps und was jede tut',
-             [panel_a, (m, (290, 10, 260, 114)), (n, (290, 130, 260, 114))], gap=10,
+    n += mode(280, 10, 'rechts', 108, places, 'Ende am Tabstopp')
+    n += mode(415, 10, 'dezimal', 70, ['4,5', '156,00', '12,75'], 'Komma am Tabstopp')
+    two_ways('tabstopp-arten', 'lists-and-tabs', (550, 128),
+             'Die vier Arten von Tabstopps und was jede tut',
+             [(m, (10, 10, 260, 114)), (n, (280, 10, 260, 114))], gap=10,
              root_extra=" text-rendering='geometricPrecision'")
+    # the button in its corner, for »Schneller am Lineal«
+    svg('lineal-knopf', 'lists-and-tabs', 290, 280, a,
+        'Der Knopf oben links in der Ecke des Lineals und die Zeichen der vier Arten',
+        root_extra=" text-rendering='geometricPrecision'")
 
 
 # ---- Tabellen
