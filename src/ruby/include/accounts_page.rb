@@ -114,6 +114,8 @@ class Main < Sinatra::Base
         run_neo4j_statements(logins.flat_map { |login| DatabaseProvisioning.neo4j_drop_statements(login) })
 
         task_keys.each { |task| FileUtils.rm_f(submission_path(task, email)) }
+        # cases for the development saved from this student's work (CaseStore)
+        CaseStore.delete_for(email)
         # the person's own Git repositories (»Meine Repositorys«)
         git_id = (neo4j_query('MATCH (u:User {email: $email}) RETURN u.git_id AS id;', :email => email).first || {})['id']
         GitServer.delete_folder(git_id) if git_id.to_s.match?(GitServer::GIT_ID)
