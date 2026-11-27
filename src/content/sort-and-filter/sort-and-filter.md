@@ -64,16 +64,21 @@ in eine Zelle der Liste, und das Programm nimmt die ganze Liste.
 <!-- /after -->
 
 <!-- language: libreoffice -->
-In LibreOffice sortierst du über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*: Unter *Sortierschlüssel 1* wählst du
+In LibreOffice klickst du in eine Zelle der Liste, etwa auf einen Namen, und
+sortierst über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*: Unter *Sortierschlüssel 1* wählst du
 die Spalte, nach der sortiert wird, und *Aufsteigend* (A bis Z) oder
-*Absteigend*. Die Überschriften in Zeile 3 erkennt LibreOffice und sortiert
-sie nicht mit. Hast du doch nur eine Spalte markiert, fragt es nach: *Erweiterte
+*Absteigend*, dann *OK*. Die Überschriften in Zeile 3 erkennt LibreOffice und
+sortiert sie nicht mit; steht danach eine Überschrift mitten in der Liste,
+macht <kbd>Strg</kbd>+<kbd>Z</kbd> es rückgängig, und im Register *Optionen*
+setzt du den Haken bei *Bereich enthält Spaltenbeschriftungen*. Hast du doch nur eine Spalte markiert, fragt es nach: *Erweiterte
 Auswahl* nimmt die Spalten daneben mit.
 <!-- /language -->
 <!-- language: word -->
-In Excel sortierst du über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*: Unter *Sortieren nach* wählst du die
-Spalte und die Reihenfolge, *A bis Z* oder *Z bis A*. Die Überschriften in
-Zeile 3 erkennt Excel und sortiert sie nicht mit. Hast du doch nur eine Spalte
+In Excel klickst du in eine Zelle der Liste, etwa auf einen Namen, und
+sortierst über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*: Unter *Sortieren nach* wählst du die
+Spalte und die Reihenfolge, *A bis Z* oder *Z bis A*, dann *OK*. Die
+Überschriften in Zeile 3 erkennt Excel und sortiert sie nicht mit, wenn oben
+rechts im Fenster der Haken bei *Daten haben Überschriften* gesetzt ist. Hast du doch nur eine Spalte
 markiert, fragt es nach: *Markierung erweitern* nimmt die Spalten daneben mit.
 <!-- /language -->
 <!-- language: nextcloud -->
@@ -104,12 +109,17 @@ zurück.
 <!-- language: libreoffice -->
 Den Filter setzt *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i>
 *AutoFilter* (<kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>), wenn eine Zelle
-der Liste gewählt ist.
+der Liste gewählt ist. Eine Bedingung findest du am Pfeil unter
+*Standardfilter…*: *Bedingung* `>`, *Wert* 0, dann *OK*. Zurück nimmst du den
+Filter am selben Pfeil: den Haken bei *Alle* setzen, dann *OK*.
 <!-- /language -->
 <!-- language: word -->
 Den Filter setzt *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i>
 *Filtern* (<kbd>Strg</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd>), wenn eine Zelle der
-Liste gewählt ist; eine Bedingung findest du am Pfeil unter *Zahlenfilter*.
+Liste gewählt ist. Eine Bedingung findest du am Pfeil unter *Zahlenfilter* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Größer als…*: Im Fenster steht schon eine Zahl, ersetz sie durch 0, dann
+*OK*. Zurück nimmst du den Filter am selben Pfeil: *Filter löschen aus*, mit
+dem Namen der Spalte.
 <!-- /language -->
 <!-- language: nextcloud -->
 Den Filter setzt *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i>
@@ -127,7 +137,10 @@ Summe nur die sichtbaren Zeilen zählen, gibt es dafür eine eigene Funktion:
 <!-- /after -->
 
 **Jetzt bist du dran:** Nimm den Filter in Spalte E wieder zurück, sodass alle
-Familien zu sehen sind; die Pfeile im Kopf der Spalten bleiben.
+Familien zu sehen sind; die Pfeile im Kopf der Spalten bleiben. Nimm ihn am
+Pfeil zurück, wie oben, und klick nicht noch einmal auf *Filtern* oder
+*AutoFilter*: Dann wären alle Pfeile weg, und die Prüfung fände keinen
+Filter mehr.
 
 ## Hervorheben
 
@@ -139,12 +152,14 @@ Zelle gleich wieder weiß.
 
 <!-- language: libreoffice -->
 Markiere die Zellen, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…* Im Fenster steht die Bedingung als
-*Zellwert* *ist größer als* und die Zahl daneben; unter *Vorlage zuweisen*
-wählst du, wie die Zelle dann aussieht, etwa *Schlecht*: rot hinterlegt.
+*Zellwert* *ist größer als* und die Zahl daneben; darunter wählst du die
+Vorlage, wie die Zelle dann aussieht, etwa *Schlecht*: rot hinterlegt. Dann
+*OK*.
 <!-- /language -->
 <!-- language: word -->
-Markiere die Zellen, dann *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Regeln zum Hervorheben von Zellen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größer als…* Im Fenster trägst du die
-Zahl ein und wählst, wie die Zelle dann aussieht, etwa eine hellrote Füllung.
+Markiere die Zellen, dann *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Regeln zum Hervorheben von Zellen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größer als…* Im Fenster steht schon
+eine Zahl: Ersetz sie durch deine, wähl daneben, wie die Zelle dann aussieht,
+etwa eine hellrote Füllung, und klick *OK*.
 <!-- /language -->
 <!-- language: nextcloud -->
 Markiere die Zellen, dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingte Formatierung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Bedingung…* Im Fenster steht die Bedingung, etwa *ist
