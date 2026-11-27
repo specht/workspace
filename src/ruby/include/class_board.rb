@@ -106,14 +106,15 @@ module ClassBoard
         h(text).gsub(/`([^`]+)`/, '<code>\\1</code>')
     end
 
-    # The list below the board for each prediction: what the class predicted
-    # first, how often, and what a wrong prediction is told.
-    def self.predictions_html(board, judge)
+    # The list below the board for one prediction (task i): what the class
+    # predicted first, how often, and what a wrong prediction is told; ''
+    # when nobody has made it. The
+    # board puts it right before the answers with names of the same task, so
+    # that all lists below the board follow the order of the tasks.
+    def self.prediction_html(board, i, judge)
         io = +''
-        board[:tasks].each_index do |i|
-            list = predictions(board, i, judge)
-            next if list.empty?
-
+        list = predictions(board, i, judge)
+        unless list.empty?
             total = list.sum { |g| g[:count] }
             wrong = list.reject { |g| g[:correct] }.sum { |g| g[:count] }
             io << "<details class='class-answers class-predictions'><summary>#{i + 1}. #{h(board[:tasks][i][:title])}: " \
@@ -434,11 +435,12 @@ module ClassBoard
             io << "<td class='cb-summary#{s[:often_wrong] ? ' cb-often-wrong' : ''}#{i == meeting ? ' cb-meeting' : ''}'>#{notes.map { |n| h(n) }.join('<br>')}</td>"
         end
         io << '<td></td><td></td></tr></tfoot></table></div>'
-        io << predictions_html(board, judge) if judge
         rows = board[:rows] + [board[:own], *board[:extras]].compact
 
-        # What students wrote and handed in, per task.
+        # Per task, in the order of the tasks: what the class predicted first
+        # (without names), then what students wrote and handed in.
         tasks.each_with_index do |t, i|
+            io << prediction_html(board, i, judge) if judge
             text = TEXT_TYPES.include?(t[:type])
             submit = t[:type] == 'submit'
             document = t[:type] == 'document'
@@ -461,7 +463,8 @@ module ClassBoard
                     # scripts the link downloads the hand-in.
                     io << "<a class='cb-submission' href='#{h(submission_url.call(r[:email], t[:id]))}' data-view-title='#{h("#{r[:name]}: #{t[:title]}")}'>#{h(c.answer)}</a>"
                 else
-                    io << "<span class='cb-answer-text'>#{h(c.answer)}</span>"
+                    # without the empty lines a student typed at the end
+                    io << "<span class='cb-answer-text'>#{h(c.answer.to_s.strip)}</span>"
                 end
                 io << '</li>'
             end

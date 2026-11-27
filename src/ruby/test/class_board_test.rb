@@ -259,6 +259,26 @@ class ClassBoardTest < Minitest::Test
         assert_empty ClassBoard.predictions(ClassBoard.build(MEMBERS, TASKS, {}), 0, judge)
     end
 
+    # The lists below the board follow the order of the tasks: a task's
+    # predictions without names right before its answers with names, not
+    # all predictions first; an answer without the empty lines typed after it
+    def test_lists_below_the_board_follow_the_tasks
+        tasks = [
+            { :id => 'fusswege', :title => 'Wie viele Fußwege?', :type => 'number', :version => 'v1' },
+            { :id => 'grad', :title => 'Ein Grad', :type => 'choice', :version => 'v1', :prediction => true },
+            { :id => 'idee', :title => 'Deine Idee', :type => 'answer', :version => 'v1', :prediction => true },
+        ]
+        st = ->(answer) { { :status => 'correct', :attempts => 1, :last_answer => answer, :first_answer => answer, :version => 'v1', :first_status => 'correct', :updated => 1 } }
+        b = ClassBoard.build(MEMBERS, tasks, {
+            'ada@x' => { 'fusswege' => st.('12'), 'grad' => st.('1'), 'idee' => st.("Ring für Ring\n\n") },
+        })
+        judge = ->(_task, answer) { { :key => answer, :label => answer, :message => nil } }
+        html = ClassBoard.html(b, :activity => 'routenplaner', :judge => judge)
+        order = html.scan(/<summary>(\d+)\. [^<]*: \d+ (Vermutung|Antwort)/)
+        assert_equal [%w[1 Antwort], %w[2 Vermutung], %w[3 Vermutung], %w[3 Antwort]], order
+        assert_includes html, "<span class='cb-answer-text'>Ring für Ring</span>"
+    end
+
     def test_positions_stand_at_the_first_open_task
         tasks = TASKS + [{ :id => 'mehr', :title => 'Noch mehr', :type => 'answer', :version => 'v1', :extra => true }]
         b = ClassBoard.build(MEMBERS, tasks, {
