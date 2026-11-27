@@ -1745,3 +1745,176 @@ _person(luhn)
 - [ISBN Users' Manual](https://www.isbn-international.org/content/isbn-users-manual/29)
   der Internationalen ISBN-Agentur, auf Englisch: wie eine ISBN aufgebaut ist
   und wie ihre Prüfziffer berechnet wird.
+
+<!-- side-panel: auf-einen-blick Auf einen Blick -->
+
+Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim
+Programmieren, mit kleinen Beispielen. Wie sie es tun, steht oben auf der Seite.
+
+<!-- language: ruby -->
+Die Funktionen stehen in zwei Dateien im Ordner `check-digits`.
+
+<!-- page-code: own -->
+```ruby
+# check_digits.rb
+
+# das Gewicht der Ziffer an einem Index
+weight(0)    # => 1
+weight(1)    # => 3
+
+# digits: die ersten zwölf Ziffern,
+# ein Array von Zahlen
+digits = [4, 2, 6, 0, 1, 1,
+          1, 0, 2, 0, 4, 3]
+check_digit(digits)   # => 4
+
+# code: ein String
+valid_ean?('4260111020434')   # => true
+valid_ean?('4260111020435')   # => false
+
+# isbn: ein String
+valid_isbn?('3-499-12304-5')  # => true
+valid_isbn?('3-499-12304-6')  # => false
+```
+
+<!-- page-code: own -->
+```ruby
+# parity_grid.rb
+
+# bits: ein Array aus Nullen und Einsen
+parity([1, 1, 1])   # => 1, ungerade
+parity([0, 1, 1])   # => 0, gerade
+
+# grid: ein Array von Zeilen,
+# jede Zeile ein Array von Bits;
+# Zeile und Spalte des gekippten Bits,
+# etwa [1, 2], und nil, wenn alle
+# Zeilen und Spalten gerade sind
+find_error(grid)
+```
+<!-- /language -->
+<!-- language: python -->
+Die Funktionen stehen in zwei Dateien im Ordner `check-digits`.
+
+<!-- page-code: own -->
+```python
+# check_digits.py
+
+# das Gewicht der Ziffer an einem Index
+weight(0)    # 1
+weight(1)    # 3
+
+# digits: die ersten zwölf Ziffern,
+# eine Liste von Zahlen
+digits = [4, 2, 6, 0, 1, 1,
+          1, 0, 2, 0, 4, 3]
+check_digit(digits)   # 4
+
+# code: ein String
+is_valid_ean('4260111020434')   # True
+is_valid_ean('4260111020435')   # False
+
+# isbn: ein String
+is_valid_isbn('3-499-12304-5')  # True
+is_valid_isbn('3-499-12304-6')  # False
+```
+
+<!-- page-code: own -->
+```python
+# parity_grid.py
+
+# bits: eine Liste aus Nullen und Einsen
+parity([1, 1, 1])   # 1, ungerade
+parity([0, 1, 1])   # 0, gerade
+
+# grid: eine Liste von Zeilen,
+# jede Zeile eine Liste von Bits;
+# Zeile und Spalte des gekippten Bits,
+# etwa [1, 2], und None, wenn alle
+# Zeilen und Spalten gerade sind
+find_error(grid)
+```
+<!-- /language -->
+<!-- language: dart -->
+Die Funktionen stehen in zwei Dateien im Ordner `check-digits`.
+
+<!-- page-code: own -->
+```dart
+// check_digits.dart
+
+// das Gewicht der Ziffer an einem Index
+weight(0);   // 1
+weight(1);   // 3
+
+// die ersten zwölf Ziffern
+List<int> digits = [4, 2, 6, 0, 1, 1,
+    1, 0, 2, 0, 4, 3];
+checkDigit(digits);   // 4
+
+isValidEan('4260111020434');   // true
+isValidEan('4260111020435');   // false
+
+isValidIsbn('3-499-12304-5');  // true
+isValidIsbn('3-499-12304-6');  // false
+```
+
+<!-- page-code: own -->
+```dart
+// parity_grid.dart
+
+// bits: Nullen und Einsen
+parity([1, 1, 1]);   // 1, ungerade
+parity([0, 1, 1]);   // 0, gerade
+
+// grid: eine Liste von Zeilen,
+// List<List<int>>;
+// Zeile und Spalte des gekippten Bits,
+// etwa [1, 2], und null, wenn alle
+// Zeilen und Spalten gerade sind
+List<int>? error = findError(grid);
+```
+<!-- /language -->
+<!-- language: java -->
+Die Methoden stehen als `public static` in zwei Klassen im Ordner
+`check-digits`.
+
+<!-- page-code: own -->
+```java
+// CheckDigits.java
+
+// das Gewicht der Ziffer an einem Index
+weight(0);   // 1
+weight(1);   // 3
+
+// die ersten zwölf Ziffern
+int[] digits = {4, 2, 6, 0, 1, 1,
+    1, 0, 2, 0, 4, 3};
+checkDigit(digits);   // 4
+
+isValidEan("4260111020434");   // true
+isValidEan("4260111020435");   // false
+
+isValidIsbn("3-499-12304-5");  // true
+isValidIsbn("3-499-12304-6");  // false
+```
+
+<!-- page-code: own -->
+```java
+// ParityGrid.java
+
+// bits: Nullen und Einsen
+parity(new int[] {1, 1, 1});  // 1, ungerade
+parity(new int[] {0, 1, 1});  // 0, gerade
+
+// grid: ein Array von Zeilen, int[][];
+// Zeile und Spalte des gekippten Bits,
+// etwa {1, 2}, und null, wenn alle
+// Zeilen und Spalten gerade sind
+int[] error = findError(grid);
+```
+<!-- /language -->
+
+Ein Index zählt ab 0: Die erste Ziffer hat den Index 0, die erste Zeile des
+Gitters auch.
+
+<!-- /side-panel -->

@@ -124,6 +124,7 @@ tasks:
       Schreib in `check-digits/check_digits.rb` die Funktion `weight(index)`:
       Sie gibt für einen geraden Index 1 zurück und für einen ungeraden 3. Die
       Prüfung ruft `weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: check-digits/check_digits.rb
@@ -152,6 +153,7 @@ tasks:
         Schreib in `check-digits/check_digits.py` die Funktion `weight(index)`:
         Sie gibt für einen geraden Index 1 zurück und für einen ungeraden 3. Die
         Prüfung ruft `weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: check-digits/check_digits.py
@@ -178,6 +180,7 @@ tasks:
         Schreib in `check-digits/check_digits.dart` die Funktion `int weight(int index)`:
         Sie gibt für einen geraden Index 1 zurück und für einen ungeraden 3. Die
         Prüfung ruft `weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: check-digits/check_digits.dart
@@ -207,6 +210,7 @@ tasks:
         darin die Methode `public static int weight(int index)`: Sie gibt für einen
         geraden Index 1 zurück und für einen ungeraden 3. Die Prüfung ruft
         `CheckDigits.weight(0)`, `weight(1)`, `weight(4)` und `weight(11)` auf.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: check-digits/CheckDigits.java
@@ -240,6 +244,7 @@ tasks:
       Liste von zwölf Zahlen. Die Prüfung ruft die Funktion mit den Ziffern
       von `4 260111 02043` auf, mit zwölf Nullen und mit
       `[4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]`.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: check-digits/check_digits.rb
@@ -295,6 +300,7 @@ tasks:
         ist eine Liste von zwölf Zahlen. Die Prüfung ruft die Funktion mit den
         Ziffern von `4 260111 02043` auf, mit zwölf Nullen und mit
         `[4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]`.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: check-digits/check_digits.dart
@@ -326,6 +332,7 @@ tasks:
         nach dem Struktogramm. `digits` ist ein Array von zwölf Zahlen. Die
         Prüfung ruft sie mit den Ziffern von `4 260111 02043` auf, mit zwölf Nullen
         und mit `{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}`.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: check-digits/CheckDigits.java
@@ -360,6 +367,7 @@ tasks:
       die richtige Prüfziffer ist, sonst `false`. Die Prüfung ruft sie mit
       gültigen und ungültigen Codes auf, auch mit zu kurzen, zu langen und
       solchen mit Buchstaben.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: check-digits/check_digits.rb
@@ -397,6 +405,7 @@ tasks:
         die richtige Prüfziffer ist, sonst `False`. Die Prüfung ruft sie mit
         gültigen und ungültigen Codes auf, auch mit zu kurzen, zu langen und
         solchen mit Buchstaben.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: check-digits/check_digits.py
@@ -434,6 +443,7 @@ tasks:
         die richtige Prüfziffer ist, sonst `false`. Die Prüfung ruft sie mit
         gültigen und ungültigen Codes auf, auch mit zu kurzen, zu langen und
         solchen mit Buchstaben.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: check-digits/check_digits.dart
@@ -480,6 +490,7 @@ tasks:
         13 Ziffern besteht und die letzte die richtige Prüfziffer ist, sonst
         `false`. Die Prüfung ruft sie mit gültigen und ungültigen Codes auf, auch
         mit zu kurzen, zu langen und solchen mit Buchstaben.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: check-digits/CheckDigits.java
@@ -596,6 +607,7 @@ tasks:
       Schreib `valid_isbn?(isbn)` nach deinem Plan. Die Prüfung ruft sie mit
       ISBNs mit und ohne Bindestriche auf, mit einem X am Ende, mit einem X an
       der falschen Stelle und mit falschen Ziffern.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: check-digits/check_digits.rb
@@ -644,6 +656,7 @@ tasks:
         Schreib `is_valid_isbn(isbn)` nach deinem Plan. Die Prüfung ruft sie mit
         ISBNs mit und ohne Bindestriche auf, mit einem X am Ende, mit einem X an
         der falschen Stelle und mit falschen Ziffern.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: check-digits/check_digits.py
@@ -689,6 +702,7 @@ tasks:
         Schreib `bool isValidIsbn(String isbn)` nach deinem Plan. Die Prüfung ruft
         sie mit ISBNs mit und ohne Bindestriche auf, mit einem X am Ende, mit
         einem X an der falschen Stelle und mit falschen Ziffern.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: check-digits/check_digits.dart
@@ -741,6 +755,7 @@ tasks:
         nach deinem Plan. Die Prüfung ruft sie mit ISBNs mit und ohne
         Bindestriche auf, mit einem X am Ende, mit einem X an der falschen Stelle
         und mit falschen Ziffern.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: check-digits/CheckDigits.java
@@ -984,6 +999,7 @@ tasks:
       Schreib in `check-digits/parity_grid.rb` die Funktion `parity(bits)`. Die
       Prüfung ruft `parity([1, 0, 1, 1])`, `parity([1, 1, 0, 0])`,
       `parity([1])` und `parity([])` auf.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: check-digits/parity_grid.rb
@@ -1013,6 +1029,7 @@ tasks:
         Schreib in `check-digits/parity_grid.py` die Funktion `parity(bits)`.
         Die Prüfung ruft `parity([1, 0, 1, 1])`, `parity([1, 1, 0, 0])`,
         `parity([1])` und `parity([])` auf.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: check-digits/parity_grid.py
@@ -1040,6 +1057,7 @@ tasks:
         Schreib in `check-digits/parity_grid.dart` die Funktion `int parity(List<int> bits)`.
         Die Prüfung ruft `parity([1, 0, 1, 1])`, `parity([1, 1, 0, 0])`,
         `parity([1])` und `parity([])` auf.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: check-digits/parity_grid.dart
@@ -1069,6 +1087,7 @@ tasks:
         Schreib in `check-digits/ParityGrid.java` eine Klasse `ParityGrid` mit der
         Methode `public static int parity(int[] bits)`. Die Prüfung ruft sie mit
         `{1, 0, 1, 1}`, `{1, 1, 0, 0}`, `{1}` und einem leeren Array auf.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: check-digits/ParityGrid.java
@@ -1104,6 +1123,7 @@ tasks:
       Fehler, mit einem gekippten Bit in Zeile 1 und Spalte 2 und mit einem
       gekippten Paritätsbit in Zeile 3 und Spalte 4 (gezählt ab 0); dazu mit
       einem kleineren Gitter aus drei Zeilen und vier Spalten.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: check-digits/parity_grid.rb
@@ -1144,6 +1164,7 @@ tasks:
         ohne Fehler, mit einem gekippten Bit in Zeile 1 und Spalte 2 und mit
         einem gekippten Paritätsbit in Zeile 3 und Spalte 4 (gezählt ab 0);
         dazu mit einem kleineren Gitter aus drei Zeilen und vier Spalten.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: check-digits/parity_grid.py
@@ -1184,6 +1205,7 @@ tasks:
         Zeile 1 und Spalte 2 und mit einem gekippten Paritätsbit in Zeile 3 und
         Spalte 4 (gezählt ab 0); dazu mit einem kleineren Gitter aus drei Zeilen
         und vier Spalten.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: check-digits/parity_grid.dart
@@ -1230,6 +1252,7 @@ tasks:
         gekippten Bit in Zeile 1 und Spalte 2 und mit einem gekippten Paritätsbit
         in Zeile 3 und Spalte 4 (gezählt ab 0); dazu mit einem kleineren Gitter
         aus drei Zeilen und vier Spalten.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: check-digits/ParityGrid.java
