@@ -826,8 +826,14 @@ Ruft Funktionen aus einer Python- oder Ruby-Datei der Lernenden auf und
 vergleicht, was herauskommt. Ein festes Skript (`PythonCheck::HARNESS`) lädt die Datei mit
 `python3` im Workspace der Person, als Gast wie bei `command` (der Code ist
 ihrer, Regel 1), höchstens `timeout` Sekunden (Standard 10, höchstens 30).
-Was das Programm selbst ausgibt, verschwindet; Aufrufe in der Datei selbst
-stören also nicht.
+Was das Programm selbst ausgibt, stört die Prüfung nicht. Was die
+aufgerufenen Funktionen ausgeben (`print`, `puts`, `console.log`,
+`System.out`), hebt jede Sprache für jeden Aufruf auf, höchstens 4000 Zeichen:
+Die Rückmeldung zeigt es unter »Ausgabe«, zugeklappt, je Aufruf höchstens 40
+Zeilen (`CallCheck.output`), damit jemand, der den Fehler nicht findet, wie im
+Terminal mit `print` nachsehen kann. Das gilt für `python`, `ruby`,
+`javascript`, `dart` und `java` und für Katas in diesen Sprachen, noch nicht
+für `c` und `prolog`.
 
 ```yaml
 check:

@@ -58,7 +58,7 @@ module TaskCheck
     # plan:     the files a submit check will copy (SubmissionStore::Plan)
     # replay: what the card plays back (Pip's run, PipCheck.replay)
     # report: a document's checklist, pages and marks (DocumentCheck.report)
-    Result = Struct.new(:status, :message, :solution, :read, :warnings, :problem, :plan, :replay, :report, keyword_init: true) do
+    Result = Struct.new(:status, :message, :solution, :read, :warnings, :problem, :plan, :replay, :report, :output, keyword_init: true) do
         def counts?
             %i[correct wrong sent].include?(status)
         end
@@ -280,16 +280,16 @@ module TaskCheck
         result = runner&.call(command, seconds)
         return Result.new(:status => :unavailable, :message => NOT_RUNNING_CALLS) if result.nil?
 
-        status, message, read = language.evaluate(task, check, result[:output], timed_out: result[:timed_out])
-        Result.new(:status => status, :message => message, :read => read,
+        status, message, read, printed = language.evaluate(task, check, result[:output], timed_out: result[:timed_out])
+        Result.new(:status => status, :message => message, :read => read, :output => printed,
             :solution => status == :correct ? task['solution'] : nil)
     end
 
     # function: a Kata, the code of the card in a container of its own.
     def self.check_function(task, check, answer, kata, seed)
         kata ||= ->(**_) { nil }
-        status, message, read = KataCheck.check(task, check, answer, kata, :seed => seed)
-        Result.new(:status => status, :message => message, :read => read,
+        status, message, read, printed = KataCheck.check(task, check, answer, kata, :seed => seed)
+        Result.new(:status => status, :message => message, :read => read, :output => printed,
             :solution => status == :correct ? task['solution'] : nil)
     end
 

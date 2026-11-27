@@ -337,9 +337,10 @@
 
     // In view: the first paragraph of the message (and the result of an SQL
     // query). The rest of the message, hints and what the Workspace read wait
-    // behind a small »Details« at the end of that line, the solution behind
-    // »Lösung«; each opens below when asked for.
-    function showFeedback(card, status, message, solution, read, warnings) {
+    // behind a small »Details« at the end of that line, what the code printed
+    // while it was checked behind »Ausgabe« (CallCheck.output), the solution
+    // behind »Lösung«; each opens below when asked for.
+    function showFeedback(card, status, message, solution, read, warnings, output) {
         const box = card.querySelector('.task-feedback');
         box.className = 'task-feedback task-feedback-' + status;
         box.innerHTML = '';
@@ -411,6 +412,18 @@
             end.appendChild(button);
         };
         if (more.childNodes.length > 0) addToggle('Details', 'task-read', more);
+        if (output) {
+            const body = document.createElement('div');
+            body.className = 'task-output';
+            const title = document.createElement('p');
+            title.className = 'task-read-title';
+            title.textContent = 'Was dein Code ausgegeben hat, während er geprüft wurde:';
+            body.appendChild(title);
+            const text = document.createElement('div');
+            text.innerHTML = output;
+            body.appendChild(text);
+            addToggle('Ausgabe', 'task-output-panel', body);
+        }
         if (solution) {
             const body = document.createElement('div');
             body.innerHTML = solution;
@@ -482,7 +495,7 @@
             showFeedback(card, 'unavailable', '<p>Das hat gerade nicht geklappt. Versuch es gleich noch einmal.</p>');
             return;
         }
-        showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings);
+        showFeedback(card, data.status, data.message, data.solution, data.read, data.warnings, data.printed);
         // a document's checklist and its pages with the marks
         if (data.report && window.DocumentTask) DocumentTask.render(card, data.report);
         // passed: another round after many checks, something harder after few
@@ -532,7 +545,7 @@
                 card.querySelector('.task-feedback').hidden = false;
                 // free: solved before, and this run was the student's own
                 // experiment; it says so instead of what differs
-                showFeedback(card, data.status, data.message, data.status === 'free' ? null : data.solution, data.read);
+                showFeedback(card, data.status, data.message, data.status === 'free' ? null : data.solution, data.read, null, data.printed);
                 // drawn: a picture on its way; what differs only on request
                 if (data.status === 'drawn' && data.replay) {
                     const compare = document.createElement('button');
@@ -749,7 +762,7 @@
                 }
                 // free: solved before, and this run was the student's own
                 // experiment; it says so instead of what differs
-                showFeedback(card, data.status, data.message, data.status === 'free' ? null : data.solution, data.read);
+                showFeedback(card, data.status, data.message, data.status === 'free' ? null : data.solution, data.read, null, data.printed);
                 // drawn: a picture on its way; what differs only on request
                 if (data.status === 'drawn' && data.replay) {
                     const compare = document.createElement('button');

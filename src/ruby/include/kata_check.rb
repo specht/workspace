@@ -329,11 +329,13 @@ module KataCheck
         end
         explanation = status == :wrong ? explain(message, language_name) : nil
         message = "#{message}\n\n#{explanation}" if explanation
+        # what the code printed, for the panel »Ausgabe« (CallCheck.output)
+        printed = CallCheck.output(CallCheck.parse(mine))
         # right results, but a loop where a recursion is asked for
         if status == :correct && (problem = RecursionCheck.problem(check, code, RecursionCheck.function_name(check)))
-            return [:wrong, problem, read]
+            return [:wrong, problem, read, printed]
         end
-        [status, message, read]
+        [status, message, read, printed]
     end
 
     # Dart and Java (KataCompiled): the code and the typical wrong solutions
@@ -365,10 +367,11 @@ module KataCheck
         end
         explanation = status == :wrong ? explain(message, language_name) : nil
         message = "#{message}\n\n#{explanation}" if explanation
+        printed = CallCheck.output(CallCheck.parse(mine.to_s))
         if status == :correct && (problem = RecursionCheck.problem(check, code, RecursionCheck.function_name(check)))
-            return [:wrong, problem, read]
+            return [:wrong, problem, read, printed]
         end
-        [status, message, read]
+        [status, message, read, printed]
     end
 
     # Error messages that stop a beginner, each with a line in German that

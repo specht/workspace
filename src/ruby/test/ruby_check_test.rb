@@ -77,6 +77,18 @@ class RubyCheckTest < Minitest::Test
         refute_includes read.to_s, 'sieht die Prüfung'
     end
 
+    # What a call prints (puts, p) comes along for the panel »Ausgabe«, per
+    # call; the program at the top level still does not run
+    def test_what_a_call_prints_comes_along
+        printing = LOCK.sub("    state = START\n", "    state = START\n    puts \"Ziffern: \#{digits}\"\n")
+        _status, _message, _read, printed = run_check(printing)
+        assert_includes printed, "`opens('1213')`:\n\n```\nZiffern: 1213\n```"
+        assert_includes printed, 'Ziffern: 121213'
+        refute_includes printed, 'sieht die Prüfung'
+        _status, _message, _read, quiet = run_check(LOCK)
+        assert_nil quiet
+    end
+
     def test_correct_when_every_call_fits
         fixed = LOCK.sub("['121', '3'] => '1213',", "['121', '3'] => '1213',\n    ['121', '2'] => '12',")
         status, message, = run_check(fixed)

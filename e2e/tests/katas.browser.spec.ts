@@ -82,6 +82,31 @@ test('a typical wrong Kata gets its own feedback', async ({ page, e2eEmail }, te
   await expect(card.locator('.task-feedback')).toContainText('Die kleinere Zahl ist nur manchmal ein Teiler der größeren.', { timeout: 30_000 });
 });
 
+// What the code prints while it is checked (CallCheck.output): behind
+// »Ausgabe« in the feedback, per call, as text; closed until asked for
+test('what the code prints while it is checked is behind »Ausgabe«', async ({ page, e2eEmail }, testInfo) => {
+  await loginAsE2eUser(page, e2eEmail, testInfo);
+  await page.goto('/kata-loops');
+  const card = page.locator('.task-card[data-task="kata-loops/gcd"]:visible');
+  await card.locator('.task-code').fill((await languageOf(card)) === 'ruby'
+    ? 'def gcd(a, b)\n  puts "a=#{a} b=#{b} <b>fett</b>"\n  [a, b].min\nend\n'
+    : 'def gcd(a, b):\n    print(f"a={a} b={b} <b>fett</b>")\n    return min(a, b)\n');
+  await card.locator('.task-submit').click();
+  const feedback = card.locator('.task-feedback');
+  await expect(feedback).toContainText('Die kleinere Zahl', { timeout: 30_000 });
+  const toggle = feedback.locator('.task-more-toggle', { hasText: 'Ausgabe' });
+  await expect(toggle).toBeVisible();
+  const panel = feedback.locator('.task-output-panel');
+  await expect(panel).toBeHidden();
+  await toggle.click();
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText('Was dein Code ausgegeben hat');
+  await expect(panel.locator('pre').first()).toContainText(/a=\d+ b=\d+ <b>fett<\/b>/);
+  // printed HTML stays text
+  await expect(panel.locator('b')).toHaveCount(0);
+  await card.screenshot({ path: testInfo.outputPath('ausgabe.png') });
+});
+
 test('an Extra is marked and counts for nobody', async ({ page, e2eEmail }, testInfo) => {
   await loginAsE2eUser(page, e2eEmail, testInfo);
   await page.goto('/kata-decisions');

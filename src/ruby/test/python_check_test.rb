@@ -58,6 +58,16 @@ class PythonCheckTest < Minitest::Test
         PythonCheck.evaluate({}, check, output)
     end
 
+    # What a call prints comes along for the panel »Ausgabe«, per call, at
+    # most CallCheck::OUT_LINES lines each
+    def test_what_a_call_prints_comes_along
+        source = "def opens(digits):\n    for i in range(100):\n        print('Schritt', i)\n    print('Ziffern:', digits)\n    return digits == '1213'\n"
+        _status, _message, _read, printed = run_check(source)
+        assert_includes printed, "`opens('1213')`:\n\n```\nSchritt 0\n"
+        assert_includes printed, "… und 61 weitere Zeilen"
+        refute_includes printed, 'Ziffern: 1213'
+    end
+
     def test_cases_in_both_forms
         cases = PythonCheck.cases(CHECK)
         assert_equal ["opens('1213')", 'True', nil], cases[0].values_at('call', 'expect', 'say')

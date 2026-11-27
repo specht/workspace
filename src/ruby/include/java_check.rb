@@ -160,12 +160,40 @@ module JavaCheck
                     add(call, expect, got, ok, error, -1);
                 }
 
+                // What the person's code prints (System.out), kept per call for
+                // the panel »Ausgabe« (CallCheck.output), at most 4000 bytes
+                static final class Clip extends java.io.OutputStream {
+                    final java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+                    boolean cut;
+                    public void write(int b) {
+                        if (bytes.size() < 4000) bytes.write(b); else cut = true;
+                    }
+                    public void write(byte[] b, int off, int len) {
+                        int room = 4000 - bytes.size();
+                        if (room > 0) bytes.write(b, off, Math.min(room, len));
+                        if (len > room) cut = true;
+                    }
+                    String text() {
+                        String s = bytes.toString(java.nio.charset.StandardCharsets.UTF_8);
+                        return s.isEmpty() ? null : cut ? s + "\\n…" : s;
+                    }
+                }
+                static Clip CLIP = new Clip();
+
+                static void capture() {
+                    CLIP = new Clip();
+                    System.setOut(new java.io.PrintStream(CLIP, true, java.nio.charset.StandardCharsets.UTF_8));
+                }
+
                 static void add(String call, String expect, String got, boolean ok, String error, long ms) {
+                    System.out.flush();
+                    String printed = CLIP.text();
                     if (RESULT.length() > 0) RESULT.append(',');
                     RESULT.append("{\\"call\\":").append(json(call)).append(",\\"expect\\":").append(json(expect)).append(",\\"ok\\":").append(ok);
                     if (ms >= 0) RESULT.append(",\\"ms\\":").append(ms);
                     if (got != null) RESULT.append(",\\"got\\":").append(json(got.length() > 300 ? got.substring(0, 300) + " …" : got));
                     if (error != null) RESULT.append(",\\"error\\":").append(json(error));
+                    if (printed != null) RESULT.append(",\\"out\\":").append(json(printed));
                     RESULT.append('}');
                 }
 
@@ -197,8 +225,7 @@ module JavaCheck
         end
         source << <<~JAVA
                 public static void main(String[] args) {
-                    System.setOut(new java.io.PrintStream(java.io.OutputStream.nullOutputStream()));
-            #{cases.each_index.map { |i| "        case#{i}();" }.join("\n")}
+            #{cases.each_index.map { |i| "        capture();\n        case#{i}();" }.join("\n")}
                     OUT.println();
                     OUT.println("#{RESULT_MARK}{\\"cases\\":[" + RESULT + "]}");
                     OUT.flush();

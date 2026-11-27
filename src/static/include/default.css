@@ -19900,3 +19900,15 @@ form.phone-manage-dirty {
     color: var(--tab-mark);
     overflow: visible;
 }
+
+/* What the code printed while it was checked (»Ausgabe«, CallCheck.output):
+   each call close to its output, the blocks compact */
+.task-output p {
+    margin: 0.5em 0 0.2em;
+}
+.task-output pre {
+    margin: 0 0 0.3em;
+    padding: 0.35em 0.75em;
+    max-height: 16em;
+    overflow: auto;
+}

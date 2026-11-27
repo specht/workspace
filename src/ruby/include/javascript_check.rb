@@ -50,8 +50,19 @@ module JavascriptCheck
             }
             return null;
         };
-        const quiet = () => {};
-        const globals = { console: { log: quiet, info: quiet, warn: quiet, error: quiet } };
+        // What the person's code logs, kept per call for the panel »Ausgabe«
+        // (CallCheck.output), at most LIMIT characters
+        const LIMIT = 4000;
+        let sink = { text: '', cut: false };
+        const keep = (...args) => {
+            const line = util.format(...args) + '\\n';
+            const room = LIMIT - sink.text.length;
+            if (room > 0) sink.text += line.slice(0, room);
+            if (line.length > room) sink.cut = true;
+        };
+        const printed = () => (sink.text ? sink.text + (sink.cut ? '\\n…' : '') : null);
+        const fresh = () => { sink = { text: '', cut: false }; };
+        const globals = { console: { log: keep, info: keep, warn: keep, error: keep } };
         if (modules === 'modules') {
             const own = { exports: {} };
             Object.assign(globals, { require: require('module').createRequire(full), module: own, exports: own.exports });
@@ -96,9 +107,12 @@ module JavascriptCheck
             } catch (error) {
                 result.error = { kind: 'load', line: lineOf(error), message: text(error) };
                 return;
+            } finally {
+                if (printed()) result.out = printed();
             }
             for (const c of cases) {
                 const entry = { call: c.call, expect: c.expect };
+                fresh();
                 if (c.raises) {
                     try {
                         entry.got = short(call(c.call));
@@ -107,6 +121,7 @@ module JavascriptCheck
                         entry.ok = true;
                         entry.error = text(error);
                     }
+                    if (printed()) entry.out = printed();
                     result.cases.push(entry);
                     continue;
                 }
@@ -123,6 +138,7 @@ module JavascriptCheck
                     entry.error = text(error);
                     entry.line = lineOf(error);
                 }
+                if (printed()) entry.out = printed();
                 result.cases.push(entry);
             }
         })();

@@ -43,8 +43,28 @@ module PythonCheck
         import ast, contextlib, importlib.util, io, json, os, sys, time, traceback
         path, cases = sys.argv[1], json.loads(sys.argv[2])
         full = os.path.abspath(path)
-        sink = io.StringIO()
         result = {'cases': []}
+
+        # What the person's code prints, kept per call for the panel
+        # »Ausgabe« (CallCheck.output), at most LIMIT characters
+        class Clip(io.StringIO):
+            LIMIT = 4000
+
+            def __init__(self):
+                super().__init__()
+                self.cut = False
+
+            def write(self, s):
+                room = self.LIMIT - self.tell()
+                if room > 0:
+                    super().write(s[:room])
+                if len(s) > room:
+                    self.cut = True
+                return len(s)
+
+            def text(self):
+                value = self.getvalue()
+                return (value + '\\n…' if self.cut else value) or None
 
         def line_in_file(error):
             lines = [f.lineno for f in traceback.extract_tb(error.__traceback__) if os.path.abspath(f.filename) == full]
@@ -159,8 +179,13 @@ module PythonCheck
                         except SyntaxError:
                             pass
                 code = compile(definitions(tree, wanted), full, 'exec')
-                with contextlib.redirect_stdout(sink):
-                    exec(code, vars(module))
+                loading = Clip()
+                try:
+                    with contextlib.redirect_stdout(loading):
+                        exec(code, vars(module))
+                finally:
+                    if loading.text():
+                        result['out'] = loading.text()
             except SyntaxError as error:
                 result['error'] = {'kind': 'syntax', 'line': error.lineno, 'message': error.msg}
                 return
@@ -169,6 +194,7 @@ module PythonCheck
                 return
             for case in cases:
                 entry = {'call': case['call'], 'expect': case['expect']}
+                sink = Clip()
                 if case.get('raises'):
                     try:
                         with contextlib.redirect_stdout(sink):
@@ -178,6 +204,8 @@ module PythonCheck
                     except Exception as error:
                         entry['ok'] = True
                         entry['error'] = text(error)
+                    if sink.text():
+                        entry['out'] = sink.text()
                     result['cases'].append(entry)
                     continue
                 try:
@@ -195,6 +223,8 @@ module PythonCheck
                     entry['ok'] = False
                     entry['error'] = text(error)
                     entry['line'] = line_in_file(error)
+                if sink.text():
+                    entry['out'] = sink.text()
                 result['cases'].append(entry)
 
         main()

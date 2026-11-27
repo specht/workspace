@@ -207,12 +207,40 @@ module KataCompiled
                 __hsAdd(call, expect, got, ok, error, -1);
             }
 
+            // What the code prints (System.out), kept per call for the panel
+            // »Ausgabe« (CallCheck.output), at most 4000 bytes
+            static final class __HsClip extends java.io.OutputStream {
+                final java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+                boolean cut;
+                public void write(int b) {
+                    if (bytes.size() < 4000) bytes.write(b); else cut = true;
+                }
+                public void write(byte[] b, int off, int len) {
+                    int room = 4000 - bytes.size();
+                    if (room > 0) bytes.write(b, off, Math.min(room, len));
+                    if (len > room) cut = true;
+                }
+                String text() {
+                    String s = bytes.toString(java.nio.charset.StandardCharsets.UTF_8);
+                    return s.isEmpty() ? null : cut ? s + "\\n…" : s;
+                }
+            }
+            static __HsClip __HS_CLIP = new __HsClip();
+
+            static void __hsCapture() {
+                __HS_CLIP = new __HsClip();
+                System.setOut(new java.io.PrintStream(__HS_CLIP, true, java.nio.charset.StandardCharsets.UTF_8));
+            }
+
             static void __hsAdd(String call, String expect, String got, boolean ok, String error, long ms) {
+                System.out.flush();
+                String printed = __HS_CLIP.text();
                 if (__HS_RESULT.length() > 0) __HS_RESULT.append(',');
                 __HS_RESULT.append("{\\"call\\":").append(__hsJson(call)).append(",\\"expect\\":").append(__hsJson(expect)).append(",\\"ok\\":").append(ok);
                 if (ms >= 0) __HS_RESULT.append(",\\"ms\\":").append(ms);
                 if (got != null) __HS_RESULT.append(",\\"got\\":").append(__hsJson(got.length() > 300 ? got.substring(0, 300) + " …" : got));
                 if (error != null) __HS_RESULT.append(",\\"error\\":").append(__hsJson(error));
+                if (printed != null) __HS_RESULT.append(",\\"out\\":").append(__hsJson(printed));
                 __HS_RESULT.append('}');
             }
 
@@ -238,7 +266,7 @@ module KataCompiled
         end
         source << <<~JAVA
                 void __hsRun() {
-            #{cases.each_index.map { |i| "        __hsCase#{i}();" }.join("\n")}
+            #{cases.each_index.map { |i| "        __hsCapture();\n        __hsCase#{i}();" }.join("\n")}
                     __HS_OUT.println();
                     __HS_OUT.println("#{RESULT_MARK}{\\"cases\\":[" + __HS_RESULT + "]}");
                     __HS_OUT.flush();

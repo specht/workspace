@@ -48,6 +48,31 @@ module RubyCheck
         result = { 'cases' => [] }
         real_stdout = $stdout
 
+        # What the person's code prints (puts, p, print), kept per call for
+        # the panel »Ausgabe« (CallCheck.output), at most LIMIT characters
+        class HsClip < StringIO
+            LIMIT = 4000
+            def initialize
+                super(+'')
+                @cut = false
+            end
+
+            def write(*parts)
+                parts.each do |part|
+                    s = part.to_s
+                    room = LIMIT - string.length
+                    super(s[0, [room, 0].max]) if room > 0
+                    @cut = true if s.length > room
+                end
+                parts.sum { |part| part.to_s.bytesize }
+            end
+
+            def text
+                @cut ? string + "\n…" : string
+            end
+        end
+        printed = ->(sink) { sink.string.empty? ? nil : sink.text }
+
         line_in_file = lambda do |error|
             location = (error.backtrace_locations || []).find { |l| l.path == full || l.absolute_path == full }
             location&.lineno
@@ -116,8 +141,9 @@ module RubyCheck
                 result['error'] = { 'kind' => 'syntax', 'line' => syntax.location.start_line, 'message' => syntax.message.to_s[0, 300] }
                 throw :done
             end
+            loading = HsClip.new
             begin
-                $stdout = StringIO.new
+                $stdout = loading
                 TOPLEVEL_BINDING.eval(code, full, 1)
             rescue SyntaxError => error
                 message = error.message.to_s
@@ -131,12 +157,14 @@ module RubyCheck
                 throw :done
             ensure
                 $stdout = real_stdout
+                result['out'] = printed.call(loading) if printed.call(loading)
             end
             cases.each do |c|
                 entry = { 'call' => c['call'], 'expect' => c['expect'] }
+                sink = HsClip.new
                 if c['raises']
                     begin
-                        $stdout = StringIO.new
+                        $stdout = sink
                         got = TOPLEVEL_BINDING.eval(c['call'])
                         $stdout = real_stdout
                         entry['got'] = short.call(got)
@@ -146,13 +174,14 @@ module RubyCheck
                         entry['ok'] = true
                         entry['error'] = text.call(error)
                     end
+                    entry['out'] = printed.call(sink) if printed.call(sink)
                     result['cases'] << entry
                     next
                 end
                 begin
                     expected = TOPLEVEL_BINDING.eval(c['expect'])
                     entry['shown'] = short.call(expected) if c['show']
-                    $stdout = StringIO.new
+                    $stdout = sink
                     started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
                     got = TOPLEVEL_BINDING.eval(c['call'])
                     entry['ms'] = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - started) * 1000).round
@@ -165,6 +194,7 @@ module RubyCheck
                     entry['error'] = text.call(error)
                     entry['line'] = line_in_file.call(error)
                 end
+                entry['out'] = printed.call(sink) if printed.call(sink)
                 result['cases'] << entry
             end
         end

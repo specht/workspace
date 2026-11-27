@@ -8,6 +8,14 @@ class TaskHtmlTest < Minitest::Test
         TaskHtml.render(markdown)
     end
 
+    # What a student's code printed (CallCheck.output) stays text, HTML too
+    def test_printed_output_stays_text
+        out = html("`add(1, 2)`:\n\n```\n<script>alert(1)</script>\n<b>fett</b>\n```")
+        refute_includes out, '<script>'
+        refute_includes out, '<b>'
+        assert_includes out, '&lt;script&gt;alert(1)&lt;/script&gt;'
+    end
+
     def test_authored_markdown_and_kbd_stay
         out = html("Speichere mit <kbd>Strg</kbd><kbd>S</kbd> und sieh in `index.html` nach.\n\n- eins\n- zwei")
         assert_includes out, '<kbd>Strg</kbd><kbd>S</kbd>'

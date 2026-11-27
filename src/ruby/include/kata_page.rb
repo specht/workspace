@@ -236,6 +236,8 @@ class Main < Sinatra::Base
             :message => render_task_markdown(result.message),
             :solution => render_task_markdown(result.solution, :lineno => true),
             :read => render_task_markdown(result.read),
+            # what the code printed while it was checked, for »Ausgabe«
+            :printed => render_task_markdown(result.output),
             :state => state,
             :replay => result.replay,
             # what the program printed (or why it stopped), for the console

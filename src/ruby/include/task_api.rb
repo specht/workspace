@@ -57,6 +57,7 @@ class Main < Sinatra::Base
             :message => render_task_markdown(result.message),
             :solution => render_task_markdown(result.solution, :lineno => true),
             :read => render_task_markdown(result.read),
+            :printed => render_task_markdown(result.output),
             :warnings => (result.warnings || []).map { |w| render_task_markdown(w) },
             :state => state,
         )

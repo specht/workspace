@@ -125,10 +125,24 @@ module DartCheck
               return text.length > 300 ? text.substring(0, 300) : text;
             }
 
+            // What the person's code prints, kept per call for the panel
+            // »Ausgabe« (CallCheck.output), at most 4000 characters; _add
+            // takes it along and starts the next call empty
+            final StringBuffer _out = StringBuffer();
+            bool _outCut = false;
+
             Future<T> _quiet<T>(Future<T> Function() f) =>
-                runZoned(f, zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) {}));
+                runZoned(f, zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) {
+                  final room = 4000 - _out.length;
+                  final text = '$line\\n';
+                  if (room > 0) _out.write(text.length <= room ? text : text.substring(0, room));
+                  if (text.length > room) _outCut = true;
+                }));
 
             void _add(String call, String expect, String? got, bool ok, String? error, [int? ms]) {
+              final printed = _out.isEmpty ? null : (_outCut ? '${_out}\\n…' : _out.toString());
+              _out.clear();
+              _outCut = false;
               _results.add({
                 'call': call,
                 'expect': expect,
@@ -136,6 +150,7 @@ module DartCheck
                 if (ms != null) 'ms': ms,
                 if (got != null) 'got': got.length > 300 ? '${got.substring(0, 300)} …' : got,
                 if (error != null) 'error': error,
+                if (printed != null) 'out': printed,
               });
             }
 

@@ -27,6 +27,9 @@ module CallCheck
     MAX_CASES = 50
     MAX_SHOWN = 12
     RESULT_MARK = '__HS_RESULT__'
+    # what a call printed, in the panel »Ausgabe«: at most so many lines each
+    # (the harnesses keep at most 4000 characters)
+    OUT_LINES = 40
 
     # The cases of a check as [{ 'call' =>, 'expect' =>, 'say' =>, 'raises' => }],
     # with true, false, ~ and numbers from YAML written by literal in the
@@ -127,8 +130,32 @@ module CallCheck
         { :it => 'Dein Code', :in => 'In deinem Code', :of => 'deines Codes' }
     end
 
-    # [status, message, read] for the harness output; language is the name
-    # in messages (»bricht Python ab«), cases the result of cases above.
+    # What the person's code printed while the check ran (puts, print,
+    # console.log, System.out): from the harness's line, »out« of the loading
+    # and of each call, as Markdown for the panel »Ausgabe« beside »Details«
+    # (tasks.js), or nil when it printed nothing. A student who does not
+    # find a mistake can debug with print as in the terminal.
+    def self.output(data)
+        return nil unless data.is_a?(Hash)
+
+        parts = []
+        parts << ['Beim Laden', data['out']] if data['out'].is_a?(String) && !data['out'].strip.empty?
+        (data['cases'] || []).first(MAX_SHOWN).each do |r|
+            parts << ["`#{r['call'].to_s.tr('`', "'")}`", r['out']] if r['out'].is_a?(String) && !r['out'].strip.empty?
+        end
+        return nil if parts.empty?
+
+        parts.map do |label, text|
+            lines = text.lines
+            shown = lines.first(OUT_LINES).join.chomp
+            shown += "\n… und #{lines.size - OUT_LINES} weitere Zeilen" if lines.size > OUT_LINES
+            "#{label}:\n\n```\n#{shown.gsub('```', "'''")}\n```"
+        end.join("\n\n")
+    end
+
+    # [status, message, read, output] for the harness output; language is
+    # the name in messages (»bricht Python ab«), cases the result of cases
+    # above; output what the code printed (output above).
     def self.evaluate(check, cases, output, language:, timed_out: false)
         file = check['file']
         name = names(file)
@@ -147,13 +174,14 @@ module CallCheck
             return [:wrong, "#{name[:it]} ließ sich nicht prüfen.", read]
         end
 
+        printed = output(data)
         if (error = data['error'])
             message = case error['kind']
                 when 'missing' then "#{name[:it]} gibt es nicht."
                 when 'syntax' then "#{name[:in]}#{at_line(error['line'])} ist ein Syntaxfehler: #{error['message']}."
                 else "Schon beim Laden #{name[:of]} bricht #{language} ab#{at_line(error['line'])}: `#{error['message']}`"
             end
-            return [:wrong, message, nil]
+            return [:wrong, message, nil, printed]
         end
 
         results = data['cases'] || []
@@ -172,7 +200,7 @@ module CallCheck
         failed_at = results.each_index.find { |i| !results[i]['ok'] || slow[i] }
         if failed_at.nil?
             n = results.size
-            return [:correct, n == 1 ? 'Der Aufruf liefert, was er soll.' : "Alle #{n} Aufrufe liefern, was sie sollen.", read]
+            return [:correct, n == 1 ? 'Der Aufruf liefert, was er soll.' : "Alle #{n} Aufrufe liefern, was sie sollen.", read, printed]
         end
 
         r = results[failed_at]
@@ -183,7 +211,7 @@ module CallCheck
             message = "`#{r['call']}` liefert das Richtige, braucht dafür aber #{took} Sekunden; " \
                       "weniger als #{seconds_text(limits[failed_at])} sollen es sein."
             message += " #{check['slow']}" if check['slow']
-            return [:wrong, message, read]
+            return [:wrong, message, read, printed]
         end
         message = if cases[failed_at] && cases[failed_at]['raises']
             "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre ein Fehler."
@@ -193,7 +221,7 @@ module CallCheck
             "`#{r['call']}` ergibt `#{r['got']}`, richtig wäre `#{r['shown'] || r['expect']}`."
         end
         message += " #{says[failed_at]}" if says[failed_at]
-        [:wrong, message, read]
+        [:wrong, message, read, printed]
     end
 
     # 1,2 and 0,5 and 2: seconds as German prose writes them
