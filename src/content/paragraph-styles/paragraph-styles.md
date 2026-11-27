@@ -53,17 +53,27 @@ gegen seine Formatvorlage. Lösch darum zuerst die Formatierung von Hand und
 gib dem Absatz dann die Vorlage.
 
 <!-- language: word -->
-In Word markierst du die Überschrift, löschst ihre Formatierung mit
-<kbd>Strg</kbd>+<kbd>Leertaste</kbd> und klickst im Register *Start* in der Liste
-der Formatvorlagen auf *Überschrift 1*. Die Übersicht der Überschriften
-öffnest du mit *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Navigationsbereich*.
+1. **Die ganze Überschrift markieren**, vom ersten bis zum letzten Buchstaben.
+2. Die Formatierung von Hand löschen: <kbd>Strg</kbd>+<kbd>Leertaste</kbd>.
+3. Im Register *Start*, Gruppe *Formatvorlagen*, auf *Überschrift 1* klicken.
+   Die Gruppe zeigt nur ein paar Vorlagen: Fehlt die gesuchte, klick rechts
+   unten an der Gruppe auf den kleinen Pfeil *Weitere* (ein Pfeil mit einem
+   Strich darüber); dann siehst du alle. Ist das Fenster schmal, ist die
+   ganze Gruppe nur ein Knopf *Formatvorlagen*.
+4. Die Übersicht der Überschriften: im Register *Ansicht*, Gruppe *Anzeigen*,
+   den Haken bei *Navigationsbereich* setzen. Links öffnet er sich; oben in
+   ihm *Überschriften* wählen.
 <!-- /language -->
 <!-- language: libreoffice -->
-In LibreOffice markierst du die Überschrift, löschst ihre Formatierung mit
-<kbd>Strg</kbd>+<kbd>M</kbd> (*Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*) und gibst ihr mit
-<kbd>Strg</kbd>+<kbd>1</kbd> die Vorlage *Überschrift 1*, mit <kbd>Strg</kbd>+<kbd>2</kbd>
-*Überschrift 2*. Die Übersicht der Überschriften ist der *Navigator*
-(<kbd>F5</kbd>).
+1. **Die ganze Überschrift markieren**, vom ersten bis zum letzten Buchstaben.
+2. Die Formatierung von Hand löschen: <kbd>Strg</kbd>+<kbd>M</kbd> (*Format*
+   <i class='bi bi-chevron-right' aria-hidden='true'></i> *Direkte Formatierung löschen*).
+3. Die Vorlage geben: <kbd>Strg</kbd>+<kbd>1</kbd> für *Überschrift 1*,
+   <kbd>Strg</kbd>+<kbd>2</kbd> für *Überschrift 2*. Alle Vorlagen findest du
+   im Feld ganz links in der Symbolleiste, in dem der Name der Vorlage steht,
+   etwa *Standard*.
+4. Die Übersicht der Überschriften ist der *Navigator*: <kbd>F5</kbd> (auf
+   manchen Laptops <kbd>Fn</kbd>+<kbd>F5</kbd>).
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office markierst du die Überschrift, löschst ihre Formatierung
@@ -91,8 +101,10 @@ fett und kursiv gemacht. Für sie gibt es eigene Vorlagen, »Titel« und
 mit diesen Vorlagen hat denselben Anfang.
 
 **Jetzt bist du dran:** Lösch die Formatierung von Hand im Titel und in der
-Zeile darunter und gib ihnen die Vorlagen »Titel« und »Untertitel«, aus
-derselben Liste wie die Überschriften.
+Zeile darunter und gib ihnen die Vorlagen »Titel« und »Untertitel«: in Word
+aus derselben Gruppe *Formatvorlagen* wie die Überschriften, in LibreOffice
+und Nextcloud Office aus dem Feld mit dem Namen der Vorlage links in der
+Symbolleiste.
 
 ## Der Text: »Standard«
 
@@ -110,13 +122,15 @@ denen, die noch eine Schrift von Hand haben. Darum löschst du die zuerst.
 <!-- /after -->
 
 <!-- language: word -->
-In Word klickst du mit der rechten Maustaste in der Liste der Formatvorlagen
-auf *Standard* und wählst *Ändern…*. Dort stellst du Schriftart und Größe ein.
+In Word klickst du mit der rechten Maustaste in der Gruppe *Formatvorlagen*
+auf *Standard* und wählst *Ändern…*. Dort stellst du Schriftart und Größe ein
+und klickst auf *OK*.
 <!-- /language -->
 <!-- language: libreoffice -->
-In LibreOffice öffnest du die Seitenleiste mit den Vorlagen (<kbd>F11</kbd>),
-klickst mit der rechten Maustaste auf *Standard* und wählst *Vorlage
-bearbeiten…*. Im Register *Schrift* stellst du Schriftart und Größe ein.
+In LibreOffice öffnest du die Seitenleiste mit den Vorlagen (<kbd>F11</kbd>,
+auf manchen Laptops <kbd>Fn</kbd>+<kbd>F11</kbd>), klickst mit der rechten
+Maustaste auf *Standard* und wählst *Vorlage bearbeiten…*. Im Register
+*Schrift* stellst du Schriftart und Größe ein und klickst auf *OK*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office öffnest du die Seitenleiste mit den Vorlagen, klickst mit
@@ -124,8 +138,10 @@ der rechten Maustaste auf *Standard* und wählst *Vorlage bearbeiten…*. Im
 Register *Schrift* stellst du Schriftart und Größe ein.
 <!-- /language -->
 
-**Jetzt bist du dran:** Lösch die Formatierung von Hand im Text des Dienstags
-und des Donnerstags. Stell dann »Standard« auf Georgia, 11 pt.
+**Jetzt bist du dran:** Lösch die Formatierung von Hand im Text des Dienstags:
+Markier dazu alle seine Absätze, vom ersten Wort unter seiner Überschrift bis
+zum letzten vor der nächsten Überschrift, und drück die Tasten von oben. Dann
+genauso beim Donnerstag. Stell danach »Standard« auf Georgia, 11 pt.
 
 ## Eine Vorlage ändern
 
@@ -138,13 +154,15 @@ Formatvorlage änderst du nur die Vorlage, und jeder Absatz mit dieser Vorlage
 <img class='drawing d-lg-none' style='width: 22.5em' src='vorlage.svg' alt='Oben ein Kasten »Formatvorlage Überschrift 1: grün, 16 pt, fett«, Pfeile von ihm zu drei Überschriften auf einem Blatt. »Montag: Anreise« und »Dienstag: Kletterwald« sind grün; »Mittwoch: Wanderung« ist blau, daneben »blau von Hand«, und sein Pfeil ist gestrichelt'>
 
 <!-- language: word -->
-In Word klickst du mit der rechten Maustaste in der Liste der Formatvorlagen
-auf *Überschrift 1* und wählst *Ändern…*. Dort stellst du die Farbe ein.
+In Word klickst du mit der rechten Maustaste in der Gruppe *Formatvorlagen*
+auf *Überschrift 1* und wählst *Ändern…*. Die Farbe stellst du am Knopf mit
+dem *A* und dem farbigen Strich darunter ein, dann *OK*.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice öffnest du die Seitenleiste mit den Vorlagen (<kbd>F11</kbd>),
 klickst mit der rechten Maustaste auf *Überschrift 1* und wählst *Vorlage
-bearbeiten…*. Dort stellst du die *Schriftfarbe* ein.
+bearbeiten…*. Im Register *Schrifteffekte* stellst du die *Schriftfarbe* ein,
+dann *OK*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office öffnest du die Seitenleiste mit den Vorlagen, klickst
@@ -215,9 +233,10 @@ Formatvorlage** an, mit einem eigenen Namen. Am einfachsten aus einem Absatz,
 der schon so aussieht: Die neue Vorlage übernimmt sein Aussehen.
 
 <!-- language: word -->
-In Word stellst du den Cursor in den Absatz, öffnest im Register *Start* die
-Liste der Formatvorlagen (der kleine Pfeil unten rechts) und wählst
-*Formatvorlage erstellen*.
+In Word stellst du den Cursor in den Absatz, öffnest im Register *Start*
+alle Formatvorlagen (rechts unten an der Gruppe *Formatvorlagen* der Pfeil
+*Weitere* mit dem Strich darüber) und wählst ganz unten *Formatvorlage
+erstellen*. Gib ihr einen Namen und klick auf *OK*.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice stellst du den Cursor in den Absatz, öffnest die Seitenleiste mit
