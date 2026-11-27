@@ -535,15 +535,59 @@ def tab_mark(kind, x, y, size=10, colour=BLUE, width=2.4):
     return out
 
 
+
+def tabstopp_absatz(phone=False):
+    """a tab stop belongs to the paragraph: set with the cursor in one line,
+    only that line has it; set with all lines selected, all have it"""
+    rows = [('Busfahrt', '48,00 €'), ('Jugendherberge', '156,00 €'), ('Kletterwald', '72,00 €')]
+
+    def panel(x0, selected, title, caption):
+        out = [text(x0, 16, title, 13, TEXT, weight='600')]
+        w = 250
+        out.append(rect(x0, 26, w, 14, '#f3f4f6', '#d1d5db', 1, 2))
+        stop = x0 + w - 16
+        out.append(tab_mark('rechts', stop, 37, 9, BLUE, 2.2))
+        out.append(paper(x0, 46, w, 86))
+        for k, (item, price) in enumerate(rows):
+            y = 68 + k * 22
+            has = selected or k == 0
+            if selected:
+                out.append(rect(x0 + 8, y - 14, w - 16, 19, PBLUE_BG))
+            out.append(text(x0 + 12, y, item, 12.5, INK))
+            end = x0 + 12 + measure(item, 12.5)
+            if has:
+                pw = measure(price, 12.5)
+                n = int((stop - pw - 4 - (end + 6)) / 4.6)
+                out.append(text(end + 5, y, '.' * n, 12.5, INK, extra=" letter-spacing='1'"))
+                out.append(text(stop, y, price, 12.5, INK, 'end'))
+            else:
+                # the next default stop, 1,25 cm (about 20 px here)
+                nxt = x0 + 12 + (int((end - x0 - 12) / 20) + 1) * 20
+                out.append(text(nxt, y, price, 12.5, INK))
+        if not selected:
+            out.append(line(x0 + 12, 56, x0 + 12, 72, PBLUE, 1.6))
+        out.append(line(stop, 42, stop, 136, BLUE, 1.1, " stroke-dasharray='3 3'"))
+        for k, t in enumerate(caption):
+            out.append(text(x0, 154 + k * 16, t, 12, GREY))
+        return out
+
+    left = panel(10, False, 'nur der Cursor in Zeile 1', ['nur diese Zeile bekommt', 'den Tabstopp'])
+    right = panel(290, True, 'alle drei Zeilen markiert', ['alle markierten Zeilen', 'bekommen ihn'])
+    two_ways('tabstopp-absatz', 'lists-and-tabs', (550, 186),
+             'Ein Tabstopp gehört zum Absatz: nur die Zeile mit dem Cursor oder alle markierten Zeilen',
+             [(left, (10, 0, 250, 186)), (right, (290, 0, 250, 186))], gap=10,
+             root_extra=" text-rendering='geometricPrecision'")
+
 def tabstopp_arten(phone=False):
     """the button left of the ruler, the four kinds of tab stop and their marks,
     and what each does with three lines of different length"""
     kinds = [('links', 'links'), ('zentriert', 'zentriert'), ('rechts', 'rechts'), ('dezimal', 'dezimal')]
-    # the button and the ruler
+    # the corner of the window: the button where the rulers meet, marked
     a = []
-    a.append(text(14, 18, 'der Knopf: welche Art', 12.5, BLUE))
+    a.append(text(14, 18, 'der Knopf: oben links in der Ecke', 12.5, AMBER, weight='600'))
     a.append(rect(14, 28, 26, 26, '#ffffff', '#9aa3ae', 1.2, 3))
     a.append(tab_mark('links', 23, 47, 11))
+    a.append(rect(9, 23, 36, 36, 'none', AMBER, 2.2, 6))
     a.append(rect(46, 28, 222, 26, '#f3f4f6', '#d1d5db', 1, 2))
     for c in range(0, 9):
         x = 56 + c * 25
@@ -551,16 +595,23 @@ def tabstopp_arten(phone=False):
         if c and c % 2 == 0:
             a.append(text(x, 43, str(c), 10.5, GREY, 'middle'))
     a.append(tab_mark('links', 181, 52, 10))
-    a.append(text(181, 74, 'Klick ins Lineal: ein Tabstopp', 12.5, BLUE, 'middle'))
-    a.append(text(14, 104, 'jeder Klick auf den Knopf', 12.5, GREY))
-    a.append(text(14, 120, 'zeigt die nächste Art:', 12.5, GREY))
+    # the vertical ruler and the top of the page
+    a.append(rect(14, 60, 26, 62, '#f3f4f6', '#d1d5db', 1, 2))
+    for k in range(3):
+        a.append(line(32, 70 + k * 20, 40, 70 + k * 20, GREY, 1))
+    a.append(rect(46, 60, 222, 62, PAPER, EDGE, 1, 2))
+    for k, wd in enumerate([150, 120, 170]):
+        a.append(bar(56, 78 + k * 16, wd))
+    a.append(text(181, 140, 'Klick ins Lineal: ein Tabstopp', 12.5, BLUE, 'middle'))
+    a.append(text(14, 166, 'jeder Klick auf den Knopf', 12.5, GREY))
+    a.append(text(14, 182, 'zeigt die nächste Art:', 12.5, GREY))
     for i, (kind, name) in enumerate(kinds):
-        x, y = 14 + (i % 2) * 132, 136 + (i // 2) * 40
+        x, y = 14 + (i % 2) * 132, 196 + (i // 2) * 40
         a.append(rect(x, y, 26, 26, '#ffffff', '#9aa3ae', 1.2, 3))
         foot = {'links': x + 9, 'rechts': x + 17}.get(kind, x + 13)
         a.append(tab_mark(kind, foot, y + 19, 11))
         a.append(text(x + 34, y + 18, name, 14, TEXT))
-    panel_a = (a, (0, 0, 280, 220))
+    panel_a = (a, (0, 0, 280, 280))
 
     def mode(x, y, kind, stop, rows, caption):
         out = [tab_mark(kind, x + 8 if kind == 'links' else x + 12 if kind != 'rechts' else x + 14, y + 12, 9),
@@ -592,7 +643,7 @@ def tabstopp_arten(phone=False):
     n = []
     n += mode(290, 130, 'rechts', 108, places, 'Ende am Tabstopp')
     n += mode(425, 130, 'dezimal', 70, ['4,5', '156,00', '12,75'], 'Komma am Tabstopp')
-    two_ways('tabstopp-arten', 'lists-and-tabs', (560, 252),
+    two_ways('tabstopp-arten', 'lists-and-tabs', (560, 284),
              'Der Knopf links am Lineal, die vier Arten von Tabstopps und was jede tut',
              [panel_a, (m, (290, 10, 260, 114)), (n, (290, 130, 260, 114))], gap=10,
              root_extra=" text-rendering='geometricPrecision'")
@@ -1850,12 +1901,12 @@ def karte_tabellen():
     svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
 
 
-DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, tabstopp_arten, zelle, kopfzeile,
+DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, tabstopp_arten, tabstopp_absatz, zelle, kopfzeile,
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, quadrat, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 # the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)
 TWO_WAYS = {adresse, formel, ausfuellen, zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, sortieren, diagrammarten, achse,
-            hervorheben, tabstopp, tabstopp_arten, zelle, vorlage, verzeichnis, fusszeile, punkt}
+            hervorheben, tabstopp, tabstopp_arten, tabstopp_absatz, zelle, vorlage, verzeichnis, fusszeile, punkt}
 
 if __name__ == '__main__':
     for name in sys.argv[1:] or DRAWINGS:

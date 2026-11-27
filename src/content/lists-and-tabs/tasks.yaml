@@ -71,22 +71,22 @@ tasks:
     hint:
       - Die getippten Striche zuerst löschen, dann die sechs Zeilen markieren und die Liste einschalten.
       - Mit Suchen und Ersetzen (Strg+H) findest du zwei Leerzeichen hintereinander. In jeder Zeile der Kosten bleibt nur ein Tab.
-      - Den Tabstopp setzt du für alle fünf Zeilen auf einmal, wenn sie markiert sind.
+      - Ein Tabstopp gehört zum Absatz. Markier zuerst alle fünf Zeilen der Kosten, dann bekommen alle den Tabstopp auf einmal.
     word:
       hint:
         - "Lösch die getippten Striche, markier die sechs Zeilen der Packliste und klick im Register *Start* auf *Aufzählungszeichen*."
         - "Lösch in jeder Zeile der Kosten alle Leerzeichen zwischen Posten und Preis und drück einmal <kbd>Tab</kbd>. Mit <kbd>Strg</kbd>+<kbd>H</kbd> siehst du danach nach, ob noch irgendwo zwei Leerzeichen stehen."
-        - "Markier die fünf Zeilen der Kosten und öffne *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabstopps*: Position 16 cm, Ausrichtung *Rechts*, Füllzeichen *2 .....*."
+        - "Markier zuerst alle fünf Zeilen der Kosten, nicht nur eine: Ein Tabstopp gehört zum Absatz. Dann *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabstopps…*: Position 16 cm, Ausrichtung *Rechts*, Füllzeichen *2 .....*, dann **Festlegen** und *OK*."
     libreoffice:
       hint:
         - "Lösch die getippten Striche, markier die sechs Zeilen der Packliste und wähl *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Aufzählungszeichen und Nummerierung* oder klick in der Leiste auf die Liste mit den Punkten."
         - "Lösch in jeder Zeile der Kosten alle Leerzeichen zwischen Posten und Preis und drück einmal <kbd>Tab</kbd>. Mit <kbd>Strg</kbd>+<kbd>H</kbd> siehst du danach nach, ob noch irgendwo zwei Leerzeichen stehen."
-        - "Markier die fünf Zeilen der Kosten und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 16 cm, Typ *Rechts*, Füllzeichen *.......*."
+        - "Markier zuerst alle fünf Zeilen der Kosten, nicht nur eine: Ein Tabstopp gehört zum Absatz. Dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 16 cm, Typ *Rechts*, Füllzeichen *.......*, dann **Neu** und *OK*."
     nextcloud:
       hint:
         - "Lösch die getippten Striche, markier die sechs Zeilen der Packliste und klick im Register *Start* auf die Liste mit den Punkten."
         - "Lösch in jeder Zeile der Kosten alle Leerzeichen zwischen Posten und Preis und drück einmal <kbd>Tab</kbd>. Mit *Suchen und Ersetzen* siehst du danach nach, ob noch irgendwo zwei Leerzeichen stehen."
-        - "Markier die fünf Zeilen der Kosten und öffne *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 16 cm, Typ *Rechts*, Füllzeichen *.......*."
+        - "Markier zuerst alle fünf Zeilen der Kosten, nicht nur eine: Ein Tabstopp gehört zum Absatz. Dann *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*: Position 16 cm, Typ *Rechts*, Füllzeichen *.......*, dann **Neu** und *OK*."
 
   - id: runde
     title: Noch eine Runde
@@ -107,7 +107,7 @@ tasks:
     hint:
       - Zuerst die getippten Striche weg, dann die fünf Zeilen markieren und die Liste einschalten.
       - In jeder Zeile der Preise bleibt nur ein Tab zwischen dem, was verkauft wird, und dem Preis.
-      - Markier die fünf Zeilen der Preise und setz für alle einen rechtsbündigen Tabstopp bei 16 cm.
+      - Markier zuerst alle fünf Zeilen der Preise, nicht nur eine, und setz dann einen rechtsbündigen Tabstopp bei 16 cm.
 
   - id: handgriffe
     title: Zwei Handgriffe

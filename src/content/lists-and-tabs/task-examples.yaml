@@ -14,6 +14,12 @@ examples:
       # too much selected: the heading after the list a point of it too
       - document: stufen/packliste-zu-viel.docx
         say: auch ein Punkt der Liste geworden
+      # too little selected: the tab stop only in the line with the cursor
+      - document: stufen/packliste-eine-zeile.docx
+        say: Ein Tabstopp gehört zum Absatz
+      # the button still showed »links«: a left tab stop at 16 cm
+      - document: stufen/packliste-links.docx
+        say: In diesen Zeilen steht ein linksbündiger Tabstopp
   runde:
     pass:
       - document: stufen/flohmarkt.docx

@@ -381,6 +381,29 @@ def sport_solution(path, typed_last=False):
     doc.save(path)
 
 
+def stop_first_line_only(path):
+    """the solution with the tab stop only in the first line of the costs:
+    set while the cursor stood there, the other lines not selected"""
+    solution(path)
+    doc = Document(path)
+    costs = [p for p in doc.paragraphs if '\t' in p.text]
+    for p in costs[1:]:
+        p.paragraph_format.tab_stops.clear_all()
+    doc.save(path)
+
+
+def stop_left(path):
+    """the solution with a left tab stop at 16 cm instead of a right one:
+    the button left of the ruler still showed »links«"""
+    solution(path)
+    doc = Document(path)
+    for p in doc.paragraphs:
+        if '\t' in p.text:
+            p.paragraph_format.tab_stops.clear_all()
+            p.paragraph_format.tab_stops.add_tab_stop(Cm(RIGHT_CM), WD_TAB_ALIGNMENT.LEFT, WD_TAB_LEADER.DOTS)
+    doc.save(path)
+
+
 def list_spilled(path):
     """the solution with the heading after the packing list a point of
     the list too (too much selected)"""
@@ -394,6 +417,8 @@ def list_spilled(path):
 def extras():
     os.makedirs(os.path.join(HERE, 'stufen'), exist_ok=True)
     list_spilled(os.path.join(HERE, 'stufen', 'packliste-zu-viel.docx'))
+    stop_first_line_only(os.path.join(HERE, 'stufen', 'packliste-eine-zeile.docx'))
+    stop_left(os.path.join(HERE, 'stufen', 'packliste-links.docx'))
     flea(os.path.join(STATIC, '03 Flohmarkt.docx'))
     flea(os.path.join(HERE, 'stufen', 'flohmarkt.docx'), solved=True)
     hike(os.path.join(STATIC, '03 Wandertag.docx'))

@@ -71,23 +71,11 @@ Zeilen eine Liste mit Aufzählungszeichen.
 ## Tabstopps
 
 Ein **Tab** (die Taste <kbd>Tab</kbd>) springt zum nächsten **Tabstopp**. Ohne eigene Tabstopps gibt es einen alle 1,25 cm.
-Einen eigenen setzt du am Lineal oben, mit einem Klick; er kann links-,
-rechtsbündig, zentriert oder dezimal sein (mehr dazu gleich). Ein **rechtsbündiger** Tabstopp am rechten
-Rand stellt das Ende jedes Preises genau dorthin, in jeder Schrift; ein
-**Füllzeichen** zieht Punkte bis zum Preis.
-
-<!-- language: word -->
-In Word setzt du ihn genau unter *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Tabstopps*: Position 16 cm, Ausrichtung *Rechts*, Füllzeichen *2 .....*.
-<!-- /language -->
-<!-- language: libreoffice -->
-In LibreOffice setzt du ihn genau unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*:
-Position 16 cm, Typ *Rechts*, Füllzeichen *.......*.
-<!-- /language -->
-<!-- language: nextcloud -->
-In Nextcloud Office setzt du ihn unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabulatoren*:
-Position 16 cm, Typ *Rechts*, Füllzeichen *.......*.
-<!-- /language -->
+Einen eigenen Tabstopp setzt du selbst, an die Stelle, an der der Text
+hinter dem Tab stehen soll. Ein **rechtsbündiger** Tabstopp am rechten Rand
+stellt das Ende jedes Preises genau dorthin, in jeder Schrift; ein
+**Füllzeichen** zieht Punkte bis zum Preis. Wie das geht, steht unten in
+Schritten.
 
 _task(tab-zeichen)
 
@@ -96,13 +84,26 @@ _task(tab-zeichen)
 <img class='drawing d-lg-none' style='width: 22.5em' src='tabstopp.svg' alt='Oben das Lineal von 0 bis 16 cm, bei 16 cm das Zeichen eines rechtsbündigen Tabstopps. Darunter zwei Zeilen, »Busfahrt hin und zurück« in einer serifenlosen Schrift und »Jugendherberge« in einer mit Serifen: hinter dem Text je ein blauer Pfeil, dann Punkte bis zum Preis, und beide Preise enden genau unter dem Tabstopp'>
 <!-- /after -->
 
+### Ein Tabstopp gehört zum Absatz
+
+Jede Zeile, die mit <kbd>Enter</kbd> endet, ist ein eigener **Absatz**; die
+Formatierungszeichen zeigen sein Ende als ¶. Ein Tabstopp gehört zu einem
+Absatz, nicht zum ganzen Blatt. Setzt du ihn, während der Cursor nur in einer
+Zeile steht, bekommt ihn nur diese Zeile, und in den anderen bleiben die Preise,
+wo sie waren. Markier darum zuerst alle Zeilen, die ihn bekommen sollen, und
+setz ihn erst dann; alle markierten Zeilen bekommen ihn auf einmal. Das Lineal
+zeigt immer die Tabstopps der Zeile, in der der Cursor steht.
+
+<img class='drawing d-none d-lg-block' style='width: 41em' src='tabstopp-absatz-wide.svg' alt='Zwei Fälle nebeneinander, jeweils ein Lineal mit einem rechtsbündigen Tabstopp am rechten Rand und drei Zeilen der Kosten. Links steht nur der Cursor in der ersten Zeile: Nur bei »Busfahrt« führen Punkte zum Preis am Tabstopp, bei »Jugendherberge« und »Kletterwald« steht der Preis gleich hinter dem Wort. Rechts sind alle drei Zeilen blau markiert: In allen dreien führen Punkte zum Preis, und alle Preise enden am Tabstopp'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='tabstopp-absatz.svg' alt='Zwei Fälle untereinander, jeweils ein Lineal mit einem rechtsbündigen Tabstopp am rechten Rand und drei Zeilen der Kosten. Oben steht nur der Cursor in der ersten Zeile: Nur bei »Busfahrt« führen Punkte zum Preis am Tabstopp, bei »Jugendherberge« und »Kletterwald« steht der Preis gleich hinter dem Wort. Unten sind alle drei Zeilen blau markiert: In allen dreien führen Punkte zum Preis, und alle Preise enden am Tabstopp'>
+
 ### Vier Arten von Tabstopps
 
 <!-- language: word libreoffice -->
-Links neben dem Lineal steht ein kleiner Knopf. Er zeigt das Zeichen der Art,
-die ein Klick ins Lineal setzt, und jeder Klick auf den Knopf zeigt die
-nächste Art. Dasselbe Zeichen steht danach im Lineal, dort, wo der Tabstopp
-sitzt.
+Oben links, ganz am Anfang des Lineals, steht ein kleiner Knopf mit einem
+Zeichen. Er ist leicht zu übersehen. Er zeigt die Art, die ein Klick ins
+Lineal setzt, und jeder Klick auf den Knopf zeigt die nächste Art. Dasselbe
+Zeichen steht danach im Lineal, dort, wo der Tabstopp sitzt.
 <!-- /language -->
 Jede Art stellt den Text hinter dem Tab anders an den Tabstopp:
 
@@ -111,32 +112,65 @@ Jede Art stellt den Text hinter dem Tab anders an den Tabstopp:
 - **rechts** <svg class='tab-mark' viewBox='0 0 14 14' aria-hidden='true'><path d='M2 13H11V2' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='square'/></svg>: Der Text endet am Tabstopp, für Preise und Seitenzahlen.
 - **dezimal** <svg class='tab-mark' viewBox='0 0 14 14' aria-hidden='true'><path d='M2 13H12M7 13V2' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='square'/><circle cx='10.6' cy='7' r='1.5' fill='currentColor' stroke='none'/></svg>: Das Komma steht am Tabstopp, für Zahlen mit verschieden vielen Stellen.
 
-<img class='drawing d-none d-lg-block' style='width: 42em' src='tabstopp-arten-wide.svg' alt='Links: ein Knopf mit dem Zeichen └ vor dem Lineal, im Lineal bei 5 cm dasselbe Zeichen, darunter »Klick ins Lineal: ein Tabstopp«. Jeder Klick auf den Knopf zeigt die nächste Art, vier Knöpfe mit ihren Zeichen: links └, zentriert ┴, rechts ┘, dezimal ┴ mit einem Punkt. Rechts vier kleine Blätter, jedes mit einem Stück Lineal, dem Zeichen und einer gestrichelten Linie am Tabstopp: Bei links beginnen »Ulm«, »Hamburg« und »Oberstdorf« an der Linie, bei zentriert steht ihre Mitte darauf, bei rechts enden sie dort, bei dezimal stehen die Kommas von 4,5, 156,00 und 12,75 genau untereinander auf der Linie'>
-<img class='drawing d-lg-none' style='width: 22.5em' src='tabstopp-arten.svg' alt='Oben ein Knopf mit dem Zeichen └ vor dem Lineal, im Lineal bei 5 cm dasselbe Zeichen, darunter »Klick ins Lineal: ein Tabstopp«. Jeder Klick auf den Knopf zeigt die nächste Art, vier Knöpfe mit ihren Zeichen: links └, zentriert ┴, rechts ┘, dezimal ┴ mit einem Punkt. Darunter vier kleine Blätter, jedes mit einem Stück Lineal, dem Zeichen und einer gestrichelten Linie am Tabstopp: Bei links beginnen »Ulm«, »Hamburg« und »Oberstdorf« an der Linie, bei zentriert steht ihre Mitte darauf, bei rechts enden sie dort, bei dezimal stehen die Kommas von 4,5, 156,00 und 12,75 genau untereinander auf der Linie'>
+<img class='drawing d-none d-lg-block' style='width: 42em' src='tabstopp-arten-wide.svg' alt='Links: die Ecke oben links, wo sich das waagerechte und das senkrechte Lineal treffen; dort ein Knopf mit dem Zeichen └, orange eingekreist, darüber »der Knopf: oben links in der Ecke«. Im Lineal bei 5 cm dasselbe Zeichen, darunter »Klick ins Lineal: ein Tabstopp«. Jeder Klick auf den Knopf zeigt die nächste Art, vier Knöpfe mit ihren Zeichen: links └, zentriert ┴, rechts ┘, dezimal ┴ mit einem Punkt. Rechts vier kleine Blätter, jedes mit einem Stück Lineal, dem Zeichen und einer gestrichelten Linie am Tabstopp: Bei links beginnen »Ulm«, »Hamburg« und »Oberstdorf« an der Linie, bei zentriert steht ihre Mitte darauf, bei rechts enden sie dort, bei dezimal stehen die Kommas von 4,5, 156,00 und 12,75 genau untereinander auf der Linie'>
+<img class='drawing d-lg-none' style='width: 22.5em' src='tabstopp-arten.svg' alt='Oben die Ecke oben links, wo sich das waagerechte und das senkrechte Lineal treffen; dort ein Knopf mit dem Zeichen └, orange eingekreist, darüber »der Knopf: oben links in der Ecke«. Im Lineal bei 5 cm dasselbe Zeichen, darunter »Klick ins Lineal: ein Tabstopp«. Jeder Klick auf den Knopf zeigt die nächste Art, vier Knöpfe mit ihren Zeichen: links └, zentriert ┴, rechts ┘, dezimal ┴ mit einem Punkt. Darunter vier kleine Blätter, jedes mit einem Stück Lineal, dem Zeichen und einer gestrichelten Linie am Tabstopp: Bei links beginnen »Ulm«, »Hamburg« und »Oberstdorf« an der Linie, bei zentriert steht ihre Mitte darauf, bei rechts enden sie dort, bei dezimal stehen die Kommas von 4,5, 156,00 und 12,75 genau untereinander auf der Linie'>
 
 <!-- language: word -->
 In Word ist das Lineal nicht immer zu sehen; du schaltest es unter *Ansicht*
-<i class='bi bi-chevron-right' aria-hidden='true'></i> *Lineal* ein. Der Knopf
-steht links oben, wo sich das waagerechte und das senkrechte Lineal treffen.
-Nach den vier Arten zeigt er noch eine fünfte, die nur einen senkrechten
-Strich in den Text zieht, und zwei Zeichen für Einzüge. Einen Tabstopp im Lineal verschiebst du,
-indem du sein Zeichen ziehst; ziehst du es nach unten aus dem Lineal, ist er
-weg.
+<i class='bi bi-chevron-right' aria-hidden='true'></i> *Lineal* ein. Der Knopf steht dann ganz oben links, in der Ecke,
+wo sich das waagerechte und das senkrechte Lineal treffen. Nach den vier Arten
+zeigt er noch eine fünfte, die nur einen senkrechten Strich in den Text
+zieht, und zwei Zeichen für Einzüge. Siehst du den Knopf nicht, nimm den Weg
+über das Menü unten; der geht immer.
 <!-- /language -->
 <!-- language: libreoffice -->
-In LibreOffice steht der Knopf links am waagerechten Lineal. Einen Tabstopp im
+In LibreOffice steht der Knopf ganz links am waagerechten Lineal. Siehst du
+ihn nicht, nimm den Weg über das Menü unten; der geht immer.
+<!-- /language -->
+<!-- language: nextcloud -->
+In Nextcloud Office wählst du die Art im Menü, wenn du den Tabstopp anlegst
+(unten).
+<!-- /language -->
+
+### Den Tabstopp setzen
+
+<!-- language: word -->
+1. **Alle Zeilen markieren**, die den Tabstopp bekommen sollen, für die Kosten alle fünf.
+2. *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz*: der kleine Pfeil unten rechts in der Gruppe *Absatz*, dann unten im Fenster *Tabstopps…*.
+3. *Tabstoppposition* 16 cm, *Ausrichtung* *Rechts*, *Füllzeichen* *2 .....*.
+4. **Festlegen** klicken, dann *OK*. Ohne *Festlegen* ist der Tabstopp nicht gesetzt.
+
+Schneller am Lineal, wenn die Zeilen markiert sind: den Knopf oben links so oft
+anklicken, bis er das Zeichen für rechts zeigt <svg class='tab-mark' viewBox='0 0 14 14' aria-hidden='true'><path d='M2 13H11V2' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='square'/></svg>, dann ins Lineal bei 16 cm klicken. Ein Doppelklick
+auf das neue Zeichen im Lineal öffnet *Tabstopps*, dort wählst du das
+Füllzeichen und klickst wieder *Festlegen*. Einen Tabstopp im Lineal
+verschiebst du, indem du sein Zeichen ziehst; ziehst du es nach unten aus dem
+Lineal, ist er weg.
+<!-- /language -->
+<!-- language: libreoffice -->
+1. **Alle Zeilen markieren**, die den Tabstopp bekommen sollen, für die Kosten alle fünf.
+2. *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Tabulatoren*.
+3. *Position* 16 cm, *Typ* *Rechts*, *Füllzeichen* *.......*.
+4. **Neu** klicken, dann *OK*. Ohne *Neu* ist der Tabstopp nicht gesetzt.
+
+Schneller am Lineal, wenn die Zeilen markiert sind: den Knopf links am Lineal
+so oft anklicken, bis er das Zeichen für rechts zeigt <svg class='tab-mark' viewBox='0 0 14 14' aria-hidden='true'><path d='M2 13H11V2' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='square'/></svg>, dann ins Lineal bei 16 cm klicken; das
+Füllzeichen wählst du danach wie oben unter *Tabulatoren*. Einen Tabstopp im
 Lineal verschiebst du, indem du sein Zeichen ziehst; ziehst du es nach unten
 aus dem Lineal, ist er weg.
 <!-- /language -->
 <!-- language: nextcloud -->
-In Nextcloud Office wählst du die Art unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Tabulatoren*, wenn du dort einen Tabstopp anlegst.
+1. **Alle Zeilen markieren**, die den Tabstopp bekommen sollen, für die Kosten alle fünf.
+2. *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Tabulatoren*.
+3. *Position* 16 cm, *Typ* *Rechts*, *Füllzeichen* *.......*.
+4. **Neu** klicken, dann *OK*. Ohne *Neu* ist der Tabstopp nicht gesetzt.
 <!-- /language -->
 
 **Jetzt bist du dran:** Ersetz in jeder Zeile der Kosten die Leerzeichen
-zwischen Posten und Preis durch einen einzigen Tab. Markier dann alle fünf
-Zeilen und setz einen rechtsbündigen Tabstopp bei 16 cm, mit Punkten als
-Füllzeichen.
+zwischen Posten und Preis durch einen einzigen Tab. Markier dann **alle fünf
+Zeilen** und setz einen rechtsbündigen Tabstopp bei 16 cm, mit Punkten als
+Füllzeichen. Achte darauf, dass danach in jeder Zeile der Preis am rechten
+Rand endet, nicht nur in einer.
 
 <div class='history' id='history-tabulator'>
 <p><strong>Die Taste für Tabellen</strong>, um 1900. Auf einer Schreibmaschine rückte jeder Anschlag den Wagen mit dem Papier um ein Zeichen weiter. Wer eine Tabelle tippte, drückte für jede Spalte wieder und wieder die Leertaste und die Rücktaste. Um 1900 kamen Schreibmaschinen mit einem Tabulator: kleine Klammern auf einer Schiene, die man von Hand an die Stellen der Spalten steckte, und eine Taste, auf die hin der Wagen bis zur nächsten Klammer sprang. Daher der Name: <em>Tab</em> kommt von <em>tabulate</em>, »in eine Tabelle bringen«. Ein Patent von 1903 sah sogar eigene Tasten für Einer, Zehner und Hunderter vor, damit die Stellen von Zahlen genau untereinander standen.</p>

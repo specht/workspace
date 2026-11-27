@@ -1325,7 +1325,7 @@ module DocumentCheck
         return item if problems.empty?
 
         item.ok = false
-        stop_kind = "#{kinds.map { |k| TAB_ALIGN[k] }.join(' oder ')}en Tabstopp"
+        stop_kind = "#{kinds.map { |k| "#{TAB_ALIGN[k]}en" }.join(' oder ')} Tabstopp"
         said = problems.group_by(&:first).map do |kind, list|
             next list.map(&:last).join(' ') if kind == :missing
             first = short(list.first.last, 2)
@@ -1336,7 +1336,21 @@ module DocumentCheck
             else n == 1 ? "»#{first}« hat keinen #{stop_kind}." : "#{n} Zeilen haben keinen #{stop_kind}, zum Beispiel »#{first}«."
             end
         end
-        item.message = "#{said.join(' ')} " +
+        # the two mistakes of the setting itself: only the line with the
+        # cursor got the stop (it belongs to the paragraph), or a stop of
+        # another kind (the button left of the ruler still showed it)
+        without = problems.select { |kind, _| kind == :stop }.map(&:last)
+        cause = []
+        if !without.empty? && !stops.empty?
+            cause << 'Ein Tabstopp gehört zum Absatz: Er gilt nur für die Zeilen, die markiert waren, als du ihn gesetzt hast. ' \
+                'Markier alle Zeilen und setz ihn noch einmal.'
+        end
+        other = without.flat_map { |p| (p['tabs'] || []).map { |t| t['align'] } }.reject { |a| kinds.include?(a) }.first
+        if other && TAB_ALIGN[other]
+            cause << "#{without.size == 1 ? 'In dieser Zeile' : 'In diesen Zeilen'} steht ein #{TAB_ALIGN[other]}er Tabstopp. " \
+                'Die Art wählst du im Menü oder mit dem Knopf oben links am Lineal, bevor du ins Lineal klickst.'
+        end
+        item.message = "#{(said + cause).join(' ')} " +
             (left ? 'Ein Tab springt zum nächsten Tabstopp; ein eigener linksbündiger Tabstopp lässt jede Zeile der Spalte an derselben Linie beginnen, wie lang das Wort davor auch ist.' :
                 'Ein Tab springt zum nächsten Tabstopp; ein rechtsbündiger Tabstopp am Rand stellt die Preise genau untereinander, in jeder Schrift.')
         item
