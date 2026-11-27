@@ -34,8 +34,10 @@ tasks:
   - id: leere
     title: Leere Absätze zählen
     prompt: |
-      Schalte die Formatierungszeichen ein. Wie viele leere Absätze stehen
-      zwischen dem letzten Satz des Montags und »Dienstag: Kletterwald«?
+      Schalte die Formatierungszeichen ein (Word: im Register *Start* der
+      Knopf **¶**; LibreOffice: <kbd>Strg</kbd>+<kbd>F10</kbd>). Wie viele
+      leere Absätze stehen zwischen dem letzten Satz des Montags und
+      »Dienstag: Kletterwald«?
     check:
       type: number
       expect: 23

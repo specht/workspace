@@ -58,9 +58,19 @@ In LibreOffice steht er auch unter *Einfügen* <i class='bi bi-chevron-right' ar
 In Nextcloud Office steht er auch unter *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenumbruch*.
 <!-- /language -->
 
-**Jetzt bist du dran:** Lösch die leeren Absätze und setz vor jeden Tag einen
-Seitenumbruch. Mach danach den Montag länger und sieh nach, wo der Dienstag
-jetzt steht.
+**Jetzt bist du dran:**
+
+1. Die Formatierungszeichen einschalten (Word: im Register *Start* der Knopf
+   **¶**; LibreOffice: <kbd>Strg</kbd>+<kbd>F10</kbd>). Jeder leere Absatz ist
+   jetzt ein ¶ allein in seiner Zeile.
+2. Die leeren Absätze nach dem Montag löschen: Klick hinter den letzten Satz
+   des Montags, halt <kbd>Shift</kbd> und drück <kbd>↓</kbd>, bis die
+   Markierung genau vor *Dienstag* endet. Dann <kbd>Entf</kbd>. Die
+   Überschrift darf nicht mit markiert sein; sonst <kbd>Strg</kbd>+<kbd>Z</kbd>.
+   Genauso nach den anderen Tagen.
+3. Vor jeden Tag einen Seitenumbruch: Klick direkt vor das erste Wort seiner
+   Überschrift und drück <kbd>Strg</kbd>+<kbd>Enter</kbd>.
+4. Mach den Montag länger und sieh nach, wo der Dienstag jetzt steht.
 
 ## Ein Inhaltsverzeichnis
 
@@ -75,15 +85,22 @@ du es, dann stimmt es wieder.
 <img class='drawing d-lg-none' style='width: 22.5em' src='verzeichnis.svg' alt='Oben die Titelseite »Reisebericht der 7b« mit »Inhalt«: »Montag: Anreise« bis Seite 2, »Dienstag: Kletterwald« 3, »Mittwoch: Wanderung« 4, mit Punkten bis zur Zahl. Unten drei Seiten mit diesen Überschriften oben und ihrer Seitenzahl unten, ein Pfeil von jeder Überschrift zu ihrer Zeile im Inhalt'>
 
 <!-- language: word -->
-In Word löschst du das getippte Verzeichnis, stellst den Cursor an seine
-Stelle und wählst im Register *Referenzen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Inhaltsverzeichnis* eine
-automatische Tabelle. Aktualisieren: Rechtsklick hinein, *Felder aktualisieren*,
-*Gesamtes Verzeichnis aktualisieren*.
+1. Das getippte Verzeichnis markieren und löschen; der Cursor bleibt an
+   seiner Stelle.
+2. Im Register *Referenzen* auf *Inhaltsverzeichnis* klicken und eine
+   *Automatische Tabelle* wählen.
+3. Aktualisieren: mit der rechten Maustaste ins Verzeichnis, *Felder
+   aktualisieren*. Im Fenster ist zuerst *Nur Seitenzahlen aktualisieren*
+   gewählt: Wähl **Gesamtes Verzeichnis aktualisieren**, dann *OK*.
 <!-- /language -->
 <!-- language: libreoffice -->
-In LibreOffice löschst du das getippte Verzeichnis, stellst den Cursor an
-seine Stelle und wählst *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Inhaltsverzeichnis…*.
-Aktualisieren: Rechtsklick hinein, *Verzeichnis aktualisieren*.
+1. Das getippte Verzeichnis markieren und löschen; der Cursor bleibt an
+   seiner Stelle.
+2. *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Verzeichnis* <i class='bi bi-chevron-right' aria-hidden='true'></i> der erste Eintrag, *Inhaltsverzeichnis…*
+   (in neueren Fassungen *Inhaltsverzeichnis, Index oder
+   Literaturverzeichnis…*). Im Fenster *OK*.
+3. Aktualisieren: mit der rechten Maustaste ins Verzeichnis, *Verzeichnis
+   aktualisieren*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office löschst du das getippte Verzeichnis, stellst den Cursor an
@@ -93,8 +110,9 @@ aktualisieren*.
 <!-- /language -->
 
 **Jetzt bist du dran:** Ersetz das getippte Verzeichnis durch ein echtes.
-Benenn danach den Freitag in »Freitag: Heimfahrt« um und aktualisiere das
-Verzeichnis.
+Benenn danach den Freitag in »Freitag: Heimfahrt« um, und zwar in seiner
+Überschrift im Text, nicht im Verzeichnis: Was du ins Verzeichnis tippst, ist
+beim nächsten Aktualisieren wieder weg. Aktualisiere dann das Verzeichnis.
 
 ## Prüfen
 
