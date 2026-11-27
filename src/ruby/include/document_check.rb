@@ -1306,21 +1306,25 @@ module DocumentCheck
                 next
             end
             count = p['text'].to_s.count("\t")
-            stop = (p['tabs'] || []).find { |t| kinds.include?(t['align']) }
+            # every stop of the kind: a line may have more than one (a stray
+            # right stop at 4,75 cm that the tab passes, because the text is
+            # longer, on its way to the one at the margin)
+            fitting = (p['tabs'] || []).select { |t| kinds.include?(t['align']) }.map { |t| t['at'] }
             if count != 1
                 problems << (count.zero? ? [:none, p] : [:many, p])
-            elsif stop.nil?
+            elsif fitting.empty?
                 problems << [:stop, p]
             else
-                stops << [p, stop['at']]
+                stops << [p, fitting]
                 next
             end
             item.marks << para_mark(p).merge(:title => count == 1 ? 'kein Tabstopp' : "#{count} Tabs")
         end
-        # all at the same place
-        if problems.empty? && stops.map { |_, at| at.round }.uniq.size > 1
+        # all at one place: a stop of the kind that every line has, wherever
+        # else a line has one too
+        if problems.empty? && stops.map { |_, at| at.map(&:round) }.reduce(:&).to_a.empty?
             problems << [:missing, 'Die Tabstopps stehen an verschiedenen Stellen, so stehen die Preise nicht untereinander.']
-            item.marks.concat(stops.map { |p, at| para_mark(p).merge(:title => "Tabstopp bei #{(at / 72 * 2.54).round(1).to_s.tr('.', ',')} cm") })
+            item.marks.concat(stops.map { |p, at| para_mark(p).merge(:title => "Tabstopp bei #{at.map { |a| (a / 72 * 2.54).round(1).to_s.tr('.', ',') }.join(' und ')} cm") })
         end
         return item if problems.empty?
 

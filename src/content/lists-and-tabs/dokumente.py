@@ -392,6 +392,18 @@ def stop_first_line_only(path):
     doc.save(path)
 
 
+def stop_extra(path):
+    """the solution with a stray right tab stop at 4,75 cm in the two long
+    lines, which their tab passes on its way to 16 cm (a real student's
+    document, built anew): the check must accept it"""
+    solution(path)
+    doc = Document(path)
+    for p in doc.paragraphs:
+        if '\t' in p.text and len(p.text.split('\t')[0]) > 25:
+            p.paragraph_format.tab_stops.add_tab_stop(Cm(4.75), WD_TAB_ALIGNMENT.RIGHT)
+    doc.save(path)
+
+
 def stop_left(path):
     """the solution with a left tab stop at 16 cm instead of a right one:
     the button left of the ruler still showed »links«"""
@@ -419,6 +431,7 @@ def extras():
     list_spilled(os.path.join(HERE, 'stufen', 'packliste-zu-viel.docx'))
     stop_first_line_only(os.path.join(HERE, 'stufen', 'packliste-eine-zeile.docx'))
     stop_left(os.path.join(HERE, 'stufen', 'packliste-links.docx'))
+    stop_extra(os.path.join(HERE, 'stufen', 'packliste-zweiter-tabstopp.docx'))
     flea(os.path.join(STATIC, '03 Flohmarkt.docx'))
     flea(os.path.join(HERE, 'stufen', 'flohmarkt.docx'), solved=True)
     hike(os.path.join(STATIC, '03 Wandertag.docx'))

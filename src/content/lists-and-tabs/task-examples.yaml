@@ -8,6 +8,9 @@ examples:
   packliste:
     pass:
       - document: stufen/packliste.docx
+      # a stray right stop at 4,75 cm in the long lines, passed by their tab
+      # (a student's document of 27 November 2026, built anew)
+      - document: stufen/packliste-zweiter-tabstopp.docx
     fail:
       - document: ../../static/lists-and-tabs/03 Packliste.docx
         say: Tab
