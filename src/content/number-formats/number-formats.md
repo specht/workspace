@@ -111,7 +111,7 @@ breiter.
 
 **Jetzt bist du dran:** Markiere die Beträge mit der Summe, C4 bis C14:
 Klick in C4 und zieh mit gedrückter Maustaste bis C14, oder klick in C4 und
-dann mit gedrückter <kbd>Umschalt</kbd>-Taste in C14. Pack dabei nicht den
+dann mit gedrückter <kbd>Shift</kbd>-Taste in C14. Pack dabei nicht den
 Rand der Zelle an, sonst verschiebst du die Zellen; <kbd>Strg</kbd>+<kbd>Z</kbd>
 holt sie zurück. Gib den markierten Zellen das Format Währung (in Excel zählt
 auch *Buchhaltung*). Die Ermäßigung in C2 bekommt das Format Prozent. Prozent
