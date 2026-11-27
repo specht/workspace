@@ -48,8 +48,12 @@ bleibt es oben und unten. Hol dir den Bericht:
 _task(getippt)
 
 <!-- language: word -->
-In Word klickst du doppelt in den oberen Rand einer Seite; dann bist du in
-der Kopfzeile. Mit einem Doppelklick in den Text kommst du zurück.
+In Word klickst du doppelt in den oberen Rand einer Seite, über die erste
+Zeile; dann bist du in der Kopfzeile, und oben erscheint das Register *Kopf-
+und Fußzeile*. Das geht in der Ansicht *Drucklayout*, in der Word meist schon
+ist (sonst *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Drucklayout*). Zurück in den Text kommst du mit
+einem Doppelklick in den Text oder mit *Kopf- und Fußzeile schließen* ganz
+rechts im Register.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice schaltest du die Kopfzeile unter *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopf-/Fußzeile* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kopfzeile*
@@ -78,12 +82,15 @@ Das Programm setzt auf jeder Seite ihre eigene Zahl ein.
 <img class='drawing d-lg-none' style='width: 22.5em' src='fusszeile.svg' alt='Zwei Reihen mit je drei Seiten, unten auf jeder die Fußzeile. Oben »getippt«: auf jeder Seite »Seite 1«. Unten »ein Feld«: »Seite 1«, »Seite 2«, »Seite 3«, die Zahl grau hinterlegt wie ein Feld'>
 
 <!-- language: word -->
-In Word klickst du doppelt in die Fußzeile, löschst die getippte 1 und wählst
-im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenzahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Aktuelle Position* eine einfache Zahl.
+In Word klickst du doppelt in die Fußzeile, löschst die getippte 1 (nur die
+Zahl, »Seite« bleibt) und wählst im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenzahl* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Aktuelle Position* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Einfache Zahl*. Nimm nicht *Seitenende*: Das ersetzt
+die ganze Fußzeile, samt »Seite«.
 <!-- /language -->
 <!-- language: libreoffice -->
-In LibreOffice klickst du in die Fußzeile, löschst die getippte 1 und wählst
-*Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitennummer*.
+In LibreOffice klickst du in die Fußzeile, löschst die getippte 1 (nur die
+Zahl, »Seite« bleibt) und wählst *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Seitennummer*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office klickst du in die Fußzeile, löschst die getippte 1 und
@@ -103,19 +110,24 @@ und hilft hier nicht.
 <!-- /after -->
 
 <!-- language: word -->
-In Word wählst du in der Kopfzeile im Register *Einfügen* *Datum und Uhrzeit*,
-nimmst ein Format wie 12.11.2026 und setzt den Haken bei *Automatisch
-aktualisieren*.
+In Word stellst du den Cursor in der Kopfzeile hinter »Stand:« und klickst
+im Register *Kopf- und Fußzeile* auf *Datum und Uhrzeit* (es steht auch im
+Register *Einfügen*, als kleiner Knopf in der Gruppe *Text*). Im Fenster
+nimmst du ein Format wie 12.11.2026 und setzt unten rechts den Haken bei
+**Automatisch aktualisieren**; er ist leicht zu übersehen. Dann *OK*.
 <!-- /language -->
 <!-- language: libreoffice -->
-In LibreOffice wählst du in der Kopfzeile *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Weitere Feldbefehle…*, im Register *Dokument* den Typ *Datum* und darunter
-*Datum*, nicht *Datum (fix)*, dann *Einfügen*.
+In LibreOffice stellst du den Cursor in der Kopfzeile hinter »Stand:« und
+wählst *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Feldbefehle…*, im Register
+*Dokument* den Typ *Datum* und darunter *Datum*, nicht *Datum (fix)*. Klick
+**einmal** auf *Einfügen*, dann auf *Schließen*: Das Fenster bleibt nach
+*Einfügen* offen, und jeder weitere Klick fügt noch ein Datum ein.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office wählst du in der Kopfzeile *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Feldbefehl* <i class='bi bi-chevron-right' aria-hidden='true'></i>
 *Weitere Feldbefehle…*, im Register *Dokument* den Typ *Datum* und darunter
-*Datum*, nicht *Datum (fix)*, dann *Einfügen*.
+*Datum*, nicht *Datum (fix)*. Klick **einmal** auf *Einfügen*, dann auf
+*Schließen*.
 <!-- /language -->
 
 **Jetzt bist du dran:** Mach aus der getippten 1 in der Fußzeile ein Feld.
