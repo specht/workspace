@@ -1065,7 +1065,8 @@ async function findTour() {
     info.textContent = `Die Abstände zwischen ${stops.length} Orten: ${stops.length * (stops.length - 1)} Suchen mit ${SEARCH_NAMES[search]} …`;
     let answer;
     try {
-        const points = stops.map((p) => `${p.lon},${p.lat}`).join(';');
+        // encoded: a proxy in Go (Traefik) drops a parameter with a bare ;
+        const points = encodeURIComponent(stops.map((p) => `${p.lon},${p.lat}`).join(';'));
         answer = await fetchAnswer(`tour?search=${search}&mode=${mode}&method=${method}&stops=${points}`);
     } catch (error) {
         if (ask === asked) info.textContent = `Rundfahrt: ${error.message}. Mehr steht im Terminal.`;
