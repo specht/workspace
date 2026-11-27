@@ -536,6 +536,40 @@ def tab_mark(kind, x, y, size=10, colour=BLUE, width=2.4):
 
 
 
+
+def word_lineal():
+    """Word's ribbon: the tab »Ansicht«, its group »Anzeigen«, the box
+    »Lineal« ticked and marked (where the ruler is switched on)"""
+    w, h = 330, 196
+    body = []
+    # the tabs
+    body.append(rect(10, 10, w - 20, 30, '#f3f4f6', '#d1d5db', 1, 3))
+    x = 22
+    for name in ['Datei', 'Start', 'Einfügen', '…']:
+        body.append(text(x, 30, name, 13, GREY))
+        x += measure(name, 13) + 18
+    tab_w = measure('Ansicht', 13, '600') + 20
+    body.append(rect(x - 8, 14, tab_w, 26, '#ffffff', '#c9ced6', 1, 3))
+    body.append(line(x - 6, 38, x - 8 + tab_w - 2, 38, BLUE, 2.4))
+    body.append(text(x + 2, 31, 'Ansicht', 13, BLUE, weight='600'))
+    # the band with the group »Anzeigen«
+    body.append(rect(10, 40, w - 20, 118, '#ffffff', '#d1d5db', 1, 3))
+    gx, gw = 60, 190
+    body.append(line(gx - 12, 50, gx - 12, 148, '#d1d5db', 1))
+    body.append(line(gx + gw + 12, 50, gx + gw + 12, 148, '#d1d5db', 1))
+    for k, (name, on) in enumerate([('Lineal', True), ('Gitternetzlinien', False), ('Navigationsbereich', False)]):
+        y = 66 + k * 24
+        body.append(rect(gx, y - 11, 13, 13, BLUE if on else '#ffffff', BLUE if on else '#9aa3ae', 1.2, 2))
+        if on:
+            body.append(f"<path d='M {gx + 3} {y - 4.5} L {gx + 5.8} {y - 1.8} L {gx + 10.5} {y - 8}' fill='none' stroke='#ffffff' stroke-width='1.8'/>")
+        body.append(text(gx + 21, y, name, 13, TEXT))
+    body.append(text(gx + gw / 2, 148, 'Anzeigen', 11.5, GREY, 'middle'))
+    # the box marked
+    body.append(rect(gx - 6, 48, measure('Lineal', 13) + 36, 24, 'none', AMBER, 2.2, 5))
+    body.append(text(10, 180, 'Ansicht › Anzeigen › Lineal: das Häkchen setzen', 13, AMBER, weight='600'))
+    svg('word-lineal', 'lists-and-tabs', w, h, body, 'Wo Word das Lineal einschaltet: Ansicht, Anzeigen, Lineal',
+        root_extra=" text-rendering='geometricPrecision'")
+
 def tabstopp_absatz(phone=False):
     """a tab stop belongs to the paragraph: set with the cursor in one line,
     only that line has it; set with all lines selected, all have it"""
@@ -1901,7 +1935,7 @@ def karte_tabellen():
     svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
 
 
-DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, tabstopp_arten, tabstopp_absatz, zelle, kopfzeile,
+DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, tabstopp_arten, tabstopp_absatz, word_lineal, zelle, kopfzeile,
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, quadrat, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 # the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)

@@ -116,8 +116,12 @@ Jede Art stellt den Text hinter dem Tab anders an den Tabstopp:
 <img class='drawing d-lg-none' style='width: 22.5em' src='tabstopp-arten.svg' alt='Oben die Ecke oben links, wo sich das waagerechte und das senkrechte Lineal treffen; dort ein Knopf mit dem Zeichen └, orange eingekreist, darüber »der Knopf: oben links in der Ecke«. Im Lineal bei 5 cm dasselbe Zeichen, darunter »Klick ins Lineal: ein Tabstopp«. Jeder Klick auf den Knopf zeigt die nächste Art, vier Knöpfe mit ihren Zeichen: links └, zentriert ┴, rechts ┘, dezimal ┴ mit einem Punkt. Darunter vier kleine Blätter, jedes mit einem Stück Lineal, dem Zeichen und einer gestrichelten Linie am Tabstopp: Bei links beginnen »Ulm«, »Hamburg« und »Oberstdorf« an der Linie, bei zentriert steht ihre Mitte darauf, bei rechts enden sie dort, bei dezimal stehen die Kommas von 4,5, 156,00 und 12,75 genau untereinander auf der Linie'>
 
 <!-- language: word -->
-In Word ist das Lineal nicht immer zu sehen; du schaltest es unter *Ansicht*
-<i class='bi bi-chevron-right' aria-hidden='true'></i> *Lineal* ein. Der Knopf steht dann ganz oben links, in der Ecke,
+In Word ist das Lineal nicht immer zu sehen. Du schaltest es im Register
+*Ansicht* ein: In der Gruppe *Anzeigen* setzt du das Häkchen bei *Lineal*.
+
+<img class='drawing' style='width: 26em' src='word-lineal.svg' alt='Das Menüband von Word mit den Registern Datei, Start, Einfügen und Ansicht; Ansicht ist gewählt. Darunter die Gruppe Anzeigen mit drei Kästchen: Lineal mit Häkchen und orange eingekreist, Gitternetzlinien und Navigationsbereich ohne. Darunter: »Ansicht › Anzeigen › Lineal: das Häkchen setzen«'>
+
+Der Knopf steht dann ganz oben links, in der Ecke,
 wo sich das waagerechte und das senkrechte Lineal treffen. Nach den vier Arten
 zeigt er noch eine fünfte, die nur einen senkrechten Strich in den Text
 zieht, und zwei Zeichen für Einzüge. Siehst du den Knopf nicht, nimm den Weg
@@ -140,8 +144,8 @@ In Nextcloud Office wählst du die Art im Menü, wenn du den Tabstopp anlegst
 3. *Tabstoppposition* 16 cm, *Ausrichtung* *Rechts*, *Füllzeichen* *2 .....*.
 4. **Festlegen** klicken, dann *OK*. Ohne *Festlegen* ist der Tabstopp nicht gesetzt.
 
-Schneller am Lineal, wenn die Zeilen markiert sind: den Knopf oben links so oft
-anklicken, bis er das Zeichen für rechts zeigt <svg class='tab-mark' viewBox='0 0 14 14' aria-hidden='true'><path d='M2 13H11V2' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='square'/></svg>, dann ins Lineal bei 16 cm klicken. Ein Doppelklick
+Schneller am Lineal (eingeschaltet unter *Ansicht* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Anzeigen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Lineal*, wie
+oben), wenn die Zeilen markiert sind: den Knopf oben links so oft anklicken, bis er das Zeichen für rechts zeigt <svg class='tab-mark' viewBox='0 0 14 14' aria-hidden='true'><path d='M2 13H11V2' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='square'/></svg>, dann ins Lineal bei 16 cm klicken. Ein Doppelklick
 auf das neue Zeichen im Lineal öffnet *Tabstopps*, dort wählst du das
 Füllzeichen und klickst wieder *Festlegen*. Einen Tabstopp im Lineal
 verschiebst du, indem du sein Zeichen ziehst; ziehst du es nach unten aus dem
@@ -215,8 +219,9 @@ ist.
 
 <!-- language: word -->
 In Word setzt du ihn unter *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* (der kleine Pfeil) <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Tabstopps* mit der Ausrichtung *Links*. Schneller geht es am Lineal: Links
-neben dem Lineal steht, welche Art ein Klick setzt; ein L heißt linksbündig.
+*Tabstopps* mit der Ausrichtung *Links*. Schneller geht es am Lineal (*Ansicht*
+<i class='bi bi-chevron-right' aria-hidden='true'></i> *Anzeigen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Lineal*): Der Knopf oben links in der Ecke zeigt, welche Art
+ein Klick setzt; ein L heißt linksbündig.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice setzt du ihn unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz* <i class='bi bi-chevron-right' aria-hidden='true'></i>
