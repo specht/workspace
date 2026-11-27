@@ -56,7 +56,11 @@ def account(calc, path, title, rows, invoices, solution=None, refund=None, total
     »Nachzahlung«"""
     doc = calc.new()
     last = FIRST + len(rows) - 1
-    put(doc, 'A1', [[title], [], ['Einnahmen', None, None, None, None, 'Ausgaben'],
+    # the labels in row 2, row 3 empty: a click into the list for sorting
+    # then takes the list from its header row on; with »Einnahmen« right
+    # above the header, both programs took row 3 as the header and sorted
+    # »Datum, Familie, Betrag« in among the families
+    put(doc, 'A1', [[title], ['Einnahmen', None, None, None, None, 'Ausgaben'], [],
                     ['Datum', 'Familie', 'Betrag', heads[0], None, 'Datum', 'Posten', 'Betrag']])
     for i, (day, family, amount) in enumerate(rows):
         r = FIRST + i
@@ -82,7 +86,7 @@ def account(calc, path, title, rows, invoices, solution=None, refund=None, total
         entries.addNew((prop('Operator', uno.Enum('com.sun.star.sheet.ConditionOperator', 'EQUAL')),
                         prop('Formula1', '"Nachzahlung"'), prop('StyleName', 'Bad')))
         sh.getCellRangeByName('G19').ConditionalFormat = entries
-    bold(doc, 'A1, A3, F3, A4:H4, F12, F19:G19')
+    bold(doc, 'A1, A2, F2, A4:H4, F12, F19:G19')
     widths(doc, [2.8, 3.4, 2.6, 2.4, 0.8, 5.2, 3.6, 2.6])
     if chart_title:
         chart(doc, 'Ausgaben', f'G4:H{spent}', 'pie', chart_title, where=(17500, 9500, 11000, 7500))

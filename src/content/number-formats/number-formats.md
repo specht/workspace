@@ -109,9 +109,14 @@ Zeigt eine Zelle danach nur `###`, ist ihre Spalte zu schmal für die Zahl im
 neuen Format. Zieh die Spalte an der Linie rechts neben ihrem Buchstaben
 breiter.
 
-**Jetzt bist du dran:** Markiere die Beträge mit der Summe, C4 bis C14, und
-gib ihnen das Format Währung. Die Ermäßigung in C2 bekommt das Format Prozent.
-Prozent heißt Hundertstel: 0,05 sind 5 %.
+**Jetzt bist du dran:** Markiere die Beträge mit der Summe, C4 bis C14:
+Klick in C4 und zieh mit gedrückter Maustaste bis C14, oder klick in C4 und
+dann mit gedrückter <kbd>Umschalt</kbd>-Taste in C14. Pack dabei nicht den
+Rand der Zelle an, sonst verschiebst du die Zellen; <kbd>Strg</kbd>+<kbd>Z</kbd>
+holt sie zurück. Gib den markierten Zellen das Format Währung (in Excel zählt
+auch *Buchhaltung*). Die Ermäßigung in C2 bekommt das Format Prozent. Prozent
+heißt Hundertstel: 0,05 sind 5 %. Lass die 0,05 dabei stehen; tippst du 5,
+sind es 500 %.
 
 ## Ein Datum ist eine Zahl
 

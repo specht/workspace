@@ -80,8 +80,8 @@
 <line x1='0' y1='430.0' x2='691.4' y2='430.0' stroke='#d0d5db' stroke-width='0.5'/>
 <text x='14.0' y='439.8' font-family="'Liberation Sans', Arial, sans-serif" font-size='8' fill='#555' text-anchor='middle'>31</text>
 <text x='30.5' y='26.4' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Abrechnung der Klassenfahrt der 7b</text>
-<text x='30.5' y='54.0' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Einnahmen</text>
-<text x='370.7' y='54.0' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Ausgaben</text>
+<text x='30.5' y='40.2' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Einnahmen</text>
+<text x='370.7' y='40.2' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Ausgaben</text>
 <text x='30.5' y='67.8' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Datum</text>
 <text x='109.8' y='67.8' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Familie</text>
 <text x='206.2' y='67.8' font-family="'Liberation Sans', Arial, sans-serif" font-size='11.0' font-weight='700' fill='#1b1f24' text-anchor='start'>Betrag</text>

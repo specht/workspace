@@ -105,10 +105,10 @@ Seite passt, stellst du die Seite quer und lässt das Programm die Tabelle auf
 eine Seite verkleinern.
 
 <!-- language: libreoffice -->
-In LibreOffice: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…*, im Register *Seite* das *Querformat*, im Register *Tabelle* unter *Skalierungsmodus* »Druckbereich(e) auf Breite/Höhe verkleinern« mit *Breite in Seiten* 1 und *Höhe in Seiten* 1. Exportieren: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*
+In LibreOffice: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…*, im Register *Seite* das *Querformat*, im Register *Tabelle* unter *Skalierungsmodus* »Druckbereich(e) auf Breite/Höhe verkleinern« mit *Breite in Seiten* 1 und *Höhe in Seiten* 1. Exportieren: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*, im Fenster *Exportieren*, dann einen Namen wählen und *Speichern*.
 <!-- /language -->
 <!-- language: word -->
-In Excel: Register *Seitenlayout*, *Ausrichtung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Querformat*, und in der Gruppe *An Format anpassen* *Breite* und *Höhe* je »1 Seite«. Exportieren: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen*.
+In Excel: Register *Seitenlayout*, *Ausrichtung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Querformat*, und in der Gruppe *An Format anpassen* *Breite* und *Höhe* je »1 Seite«. Exportieren: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen*, dann noch einmal den Knopf *PDF/XPS-Dokument erstellen* und im Fenster *Veröffentlichen*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office: *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…*, wie in LibreOffice: *Querformat* und die Tabelle auf eine Seite verkleinert. Herunterladen: *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Herunterladen als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF-Dokument (.pdf)*.

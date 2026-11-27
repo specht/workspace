@@ -36,6 +36,14 @@ def serial(day):
     return (datetime.date(YEAR, 3, day) - datetime.date(1899, 12, 30)).days
 
 
+def standard(doc, cell):
+    """the number format »Standard« for a cell whose text was typed in: the
+    text stays text, but a number typed over it becomes a number. Without
+    this the .xlsx keeps the format »Text« (@) there, and a student who
+    types 245 over »245 €« gets the text 245 again, which SUMME leaves out"""
+    sheet_of(doc).getCellRangeByName(cell).NumberFormat = 0
+
+
 def table(calc, path, amounts='mixed', formats=False):
     doc = calc.new()
     put(doc, 'A1', [['Einzahlungen für die Klassenfahrt'],
@@ -45,6 +53,8 @@ def table(calc, path, amounts='mixed', formats=False):
         r = 4 + i
         value = typed if amounts == 'mixed' and typed else amount
         put(doc, f'A{r}', [[serial(day), family, value]])
+        if isinstance(value, str):
+            standard(doc, f'C{r}')
     last = 3 + len(PAYMENTS)
     put(doc, f'A{last + 1}', [[None, 'Zusammen', f'=SUM(C4:C{last})']])
     bold(doc, f'A1, A3:C3, B{last + 1}:C{last + 1}')
@@ -70,6 +80,8 @@ def ledger(calc, path, title, rate_label, rate, rows, head='Familie', typed=True
     put(doc, 'A1', [[title], [rate_label, None, rate], ['Datum', head, 'Betrag']])
     for i, (date, name, amount, text) in enumerate(rows):
         put(doc, f'A{4 + i}', [[date, name, text if typed and text else amount]])
+        if typed and text:
+            standard(doc, f'C{4 + i}')
     last = 3 + len(rows)
     put(doc, f'A{last + 1}', [[None, 'Zusammen', total or f'=SUM(C4:C{last})']])
     bold(doc, f'A1, A3:C3, B{last + 1}:C{last + 1}')

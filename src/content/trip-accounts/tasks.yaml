@@ -83,18 +83,18 @@ tasks:
       - Jeder Punkt hat ein Blatt der Reihe, auf dem er erklärt ist. Die Links stehen oben auf dieser Seite.
     libreoffice:
       hint:
-        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`."
-        - "In D5 `=$G$17` und bis D31 ausfüllen; sortieren über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, nachdem du in die Liste geklickt hast."
+        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`, in G18 `=G15-G16*G17`, in G19 `=WENN(G15>=0;\"Rückzahlung\";\"Nachzahlung\")`."
+        - "In D5 `=$G$17` und bis D31 ausfüllen; zum Sortieren in eine Zelle der Liste klicken, etwa B5, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*; im Register *Optionen* muss *Bereich enthält Spaltenbeschriftungen* angehakt sein, damit die Zeile *Datum, Familie …* oben bleibt."
         - "Das Diagramm: H5 bis H9 mit den Posten daneben markieren, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, *Kreisdiagramm*, unter *Diagrammelemente* der *Titel*."
     word:
       hint:
-        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`."
-        - "In D5 `=$G$17` (<kbd>F4</kbd>) und bis D31 ausfüllen; sortieren über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*, nachdem du in die Liste geklickt hast."
+        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`, in G18 `=G15-G16*G17`, in G19 `=WENN(G15>=0;\"Rückzahlung\";\"Nachzahlung\")`."
+        - "In D5 `=$G$17` (<kbd>F4</kbd>) und bis D31 ausfüllen; zum Sortieren in eine Zelle der Liste klicken, etwa B5, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren*; oben rechts im Fenster muss *Daten haben Überschriften* angehakt sein, damit die Zeile *Datum, Familie …* oben bleibt."
         - "Das Diagramm: G4 bis H9 markieren, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kreis- oder Ringdiagramm einfügen*, dann den *Diagrammtitel* schreiben."
     nextcloud:
       hint:
-        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`."
-        - "In D5 `=$G$17` und bis D31 ausfüllen; sortieren über *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*, nachdem du in die Liste geklickt hast."
+        - "In G13 `=SUMME(C5:C31)`, in G14 die SUMME der Ausgaben, in G15 `=G13-G14`, in G16 `=ANZAHL(C5:C31)`, in G17 `=ABRUNDEN(G15/G16;2)`, in G18 `=G15-G16*G17`, in G19 `=WENN(G15>=0;\"Rückzahlung\";\"Nachzahlung\")`."
+        - "In D5 `=$G$17` und bis D31 ausfüllen; zum Sortieren in eine Zelle der Liste klicken, etwa B5, dann *Daten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sortieren…*; im Register *Optionen* muss *Bereich enthält Spaltenbeschriftungen* angehakt sein, damit die Zeile *Datum, Familie …* oben bleibt."
         - "Das Diagramm: G4 bis H9 markieren, *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…*, *Kreisdiagramm*, mit *Titel*."
 
   - id: pdf
