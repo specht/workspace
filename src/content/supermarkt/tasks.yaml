@@ -67,6 +67,7 @@ tasks:
       Schreib in `supermarket.rb` die Klasse `Customer`: Der Konstruktor bekommt
       die Zahl der Artikel und die Ankunftszeit, `items` und `arrival` geben sie
       zurück.
+      Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: supermarkt/supermarket.rb
@@ -94,6 +95,7 @@ tasks:
         Schreib in `supermarket.py` die Klasse `Customer`: Der Konstruktor bekommt
         die Zahl der Artikel und die Ankunftszeit, die Properties `items` und
         `arrival` geben sie zurück.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: supermarkt/supermarket.py
@@ -125,6 +127,7 @@ tasks:
         Schreib in `supermarket.js` die Klasse `Customer`: Der Konstruktor bekommt
         die Zahl der Artikel und die Ankunftszeit, die Getter `items` und `arrival`
         geben sie zurück.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: supermarkt/supermarket.js
@@ -161,6 +164,7 @@ tasks:
         Schreib in `supermarket.dart` die Klasse `Customer`: Der Konstruktor
         bekommt die Zahl der Artikel und die Ankunftszeit, die Getter `items` und
         `arrival` geben sie zurück.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: supermarkt/supermarket.dart
@@ -189,6 +193,7 @@ tasks:
         Schreib in `Customer.java` die Klasse `Customer`: Der Konstruktor bekommt
         die Zahl der Artikel und die Ankunftszeit, `getItems()` und `getArrival()`
         geben sie zurück.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: supermarkt/Customer.java
@@ -297,6 +302,7 @@ tasks:
       Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
       und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
       für jeden Fall eine neue Kasse an.
+      Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: supermarkt/supermarket.rb
@@ -352,6 +358,7 @@ tasks:
         Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
         und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
         für jeden Fall eine neue Kasse an.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: supermarkt/supermarket.py
@@ -405,6 +412,7 @@ tasks:
         Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
         und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
         für jeden Fall eine neue Kasse an.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: supermarkt/supermarket.js
@@ -460,6 +468,7 @@ tasks:
         Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
         und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
         für jeden Fall eine neue Kasse an.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: supermarkt/supermarket.dart
@@ -511,6 +520,7 @@ tasks:
         Kasse frei und die Kundin da ist, merkt sich, wann die Kasse danach frei ist,
         und gibt zurück, wie viele Sekunden die Kundin gewartet hat. Die Prüfung legt
         für jeden Fall eine neue Kasse an.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: supermarkt/Checkout.java
@@ -711,6 +721,7 @@ tasks:
       frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
       gibt ihre Wartezeit zurück. `average_wait()` gibt die mittlere Wartezeit aller
       zurück, die bisher kamen, als Kommazahl.
+      Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: supermarkt/supermarket.rb
@@ -767,6 +778,7 @@ tasks:
         frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
         gibt ihre Wartezeit zurück. `average_wait()` gibt die mittlere Wartezeit aller
         zurück, die bisher kamen, als Kommazahl.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: supermarkt/supermarket.py
@@ -819,6 +831,7 @@ tasks:
         frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
         gibt ihre Wartezeit zurück. `averageWait()` gibt die mittlere Wartezeit aller
         zurück, die bisher kamen, als Kommazahl.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: supermarkt/supermarket.js
@@ -879,6 +892,7 @@ tasks:
         frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
         gibt ihre Wartezeit zurück. `averageWait()` gibt die mittlere Wartezeit aller
         zurück, die bisher kamen, als Kommazahl.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: supermarkt/supermarket.dart
@@ -935,6 +949,7 @@ tasks:
         frei ist, bei Gleichstand an die erste in der Liste, lässt sie bedienen und
         gibt ihre Wartezeit zurück. `averageWait()` gibt die mittlere Wartezeit aller
         zurück, die bisher kamen, als Kommazahl.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: supermarkt/Supermarket.java
@@ -1178,6 +1193,7 @@ tasks:
       nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
       braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
       Kasse, die sie nimmt.
+      Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: supermarkt/supermarket.rb
@@ -1229,6 +1245,7 @@ tasks:
         nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
         braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
         Kasse, die sie nimmt.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: supermarkt/supermarket.py
@@ -1277,6 +1294,7 @@ tasks:
         nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
         braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
         Kasse, die sie nimmt.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: javascript
         file: supermarkt/supermarket.js
@@ -1328,6 +1346,7 @@ tasks:
         nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
         braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
         Kasse, die sie nimmt.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: supermarkt/supermarket.dart
@@ -1377,6 +1396,7 @@ tasks:
         nimmt, und `SelfCheckout`, bei der eine Kundin 30 Sekunden und 6 je Artikel
         braucht; beide erben von `Checkout`. `arrive` schickt eine Kundin nur an eine
         Kasse, die sie nimmt.
+        Alles über deine Klassen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: supermarkt/ExpressCheckout.java

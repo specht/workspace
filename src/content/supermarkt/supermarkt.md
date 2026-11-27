@@ -1578,3 +1578,191 @@ Antwort ändern könnte.
   wenigsten stehen. Kommt dasselbe heraus?
 - Jede neue Idee beginnt wieder im Diagramm: Welche Klasse ändert sich, welche
   kommt dazu?
+
+<!-- side-panel: auf-einen-blick Auf einen Blick -->
+
+Was deine Klassen bekommen und zurückgeben, zum Nachschlagen beim
+Programmieren, mit kleinen Beispielen. Wie sie es tun, steht oben auf der Seite.
+
+<!-- language: ruby -->
+Alle Klassen stehen in `supermarket.rb`.
+
+<!-- page-code: own -->
+```ruby
+# 4 Artikel, kommt in Sekunde 10
+customer = Customer.new(4, 10)
+customer.items     # => 4
+customer.arrival   # => 10
+
+checkout = Checkout.new
+checkout.free_at   # => 0
+# 60 + 3 je Artikel
+checkout.service_time(customer) # => 72
+# bedient sie und gibt zurück, wie
+# viele Sekunden sie gewartet hat
+checkout.serve(customer)  # => 0
+checkout.accepts?(customer) # => true
+
+market = Supermarket.new(
+  [Checkout.new, Checkout.new])
+# ihre Wartezeit in Sekunden
+market.arrive(customer)
+# die mittlere Wartezeit aller,
+# eine Kommazahl
+market.average_wait
+
+# beide erben von Checkout
+express = ExpressCheckout.new
+big = Customer.new(12, 0)
+express.accepts?(big)     # => false
+self_checkout = SelfCheckout.new
+# 30 + 6 je Artikel, hier 54
+self_checkout.service_time(customer)
+```
+<!-- /language -->
+<!-- language: python -->
+Alle Klassen stehen in `supermarket.py`; `items`, `arrival` und `free_at` sind Properties, ohne Klammern.
+
+<!-- page-code: own -->
+```python
+# 4 Artikel, kommt in Sekunde 10
+customer = Customer(4, 10)
+customer.items     # 4
+customer.arrival   # 10
+
+checkout = Checkout()
+checkout.free_at   # 0
+# 60 + 3 je Artikel
+checkout.service_time(customer)  # 72
+# bedient sie und gibt zurück, wie
+# viele Sekunden sie gewartet hat
+checkout.serve(customer)    # 0
+checkout.accepts(customer)  # True
+
+market = Supermarket(
+    [Checkout(), Checkout()])
+# ihre Wartezeit in Sekunden
+market.arrive(customer)
+# die mittlere Wartezeit aller,
+# eine Kommazahl
+market.average_wait()
+
+# beide erben von Checkout
+express = ExpressCheckout()
+big = Customer(12, 0)
+express.accepts(big)    # False
+self_checkout = SelfCheckout()
+# 30 + 6 je Artikel, hier 54
+self_checkout.service_time(customer)
+```
+<!-- /language -->
+<!-- language: javascript -->
+Alle Klassen stehen in `supermarket.js`; `items`, `arrival` und `freeAt` sind Getter, ohne Klammern.
+
+<!-- page-code: own -->
+```javascript
+// 4 Artikel, kommt in Sekunde 10
+const customer = new Customer(4, 10);
+customer.items;     // 4
+customer.arrival;   // 10
+
+const checkout = new Checkout();
+checkout.freeAt;    // 0
+// 60 + 3 je Artikel
+checkout.serviceTime(customer);  // 72
+// bedient sie und gibt zurück, wie
+// viele Sekunden sie gewartet hat
+checkout.serve(customer);    // 0
+checkout.accepts(customer);  // true
+
+const market = new Supermarket(
+  [new Checkout(), new Checkout()]);
+// ihre Wartezeit in Sekunden
+market.arrive(customer);
+// die mittlere Wartezeit aller
+market.averageWait();
+
+// beide erben von Checkout
+const express = new ExpressCheckout();
+const big = new Customer(12, 0);
+express.accepts(big);    // false
+const selfCheckout = new SelfCheckout();
+// 30 + 6 je Artikel, hier 54
+selfCheckout.serviceTime(customer);
+```
+<!-- /language -->
+<!-- language: dart -->
+Alle Klassen stehen in `supermarket.dart`; `items`, `arrival` und `freeAt` sind Getter, ohne Klammern.
+
+<!-- page-code: own -->
+```dart
+// 4 Artikel, kommt in Sekunde 10
+Customer customer = Customer(4, 10);
+customer.items;     // 4
+customer.arrival;   // 10
+
+Checkout checkout = Checkout();
+checkout.freeAt;    // 0
+// 60 + 3 je Artikel
+checkout.serviceTime(customer);  // 72
+// bedient sie und gibt zurück, wie
+// viele Sekunden sie gewartet hat
+checkout.serve(customer);    // 0
+checkout.accepts(customer);  // true
+
+Supermarket market =
+    Supermarket([Checkout(), Checkout()]);
+// ihre Wartezeit in Sekunden (int)
+market.arrive(customer);
+// die mittlere Wartezeit aller (double)
+market.averageWait();
+
+// beide erben von Checkout
+Checkout express = ExpressCheckout();
+Customer big = Customer(12, 0);
+express.accepts(big);    // false
+Checkout selfCheckout = SelfCheckout();
+// 30 + 6 je Artikel, hier 54
+selfCheckout.serviceTime(customer);
+```
+<!-- /language -->
+<!-- language: java -->
+Jede Klasse steht in einer eigenen Datei: `Customer.java`, `Checkout.java` und so weiter.
+
+<!-- page-code: own -->
+```java
+// 4 Artikel, kommt in Sekunde 10
+Customer customer = new Customer(4, 10);
+customer.getItems();     // 4
+customer.getArrival();   // 10
+
+Checkout checkout = new Checkout();
+checkout.getFreeAt();    // 0
+// 60 + 3 je Artikel
+checkout.serviceTime(customer);  // 72
+// bedient sie und gibt zurück, wie
+// viele Sekunden sie gewartet hat
+checkout.serve(customer);    // 0
+checkout.accepts(customer);  // true
+
+Supermarket market = new Supermarket(
+    List.of(new Checkout(),
+        new Checkout()));
+// ihre Wartezeit in Sekunden (int)
+market.arrive(customer);
+// die mittlere Wartezeit aller (double)
+market.averageWait();
+
+// beide erben von Checkout
+Checkout express = new ExpressCheckout();
+Customer big = new Customer(12, 0);
+express.accepts(big);    // false
+Checkout selfCheckout = new SelfCheckout();
+// 30 + 6 je Artikel, hier 54
+selfCheckout.serviceTime(customer);
+```
+<!-- /language -->
+
+Zeiten sind Sekunden nach neun Uhr.
+
+<!-- /side-panel -->
