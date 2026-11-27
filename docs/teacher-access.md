@@ -713,6 +713,7 @@ wird neu gefragt), »Nicht jetzt« und »Nicht mehr fragen« fallen weg
 | Auf der Startseite am Fuß jeder Aktivität: wie oft ihre Aufgaben gelöst wurden (ein Band mit einem Feld je Aufgabe, dazu Lösungen und Personen), ohne Lehrkräfte, Admins und Testkonten; gezählt höchstens alle 10 Minuten (`activity_usage`) | | | | ✓ |
 | Anmelde-Codes der eigenen Gruppen (Klassenseite) | | | ✓ | ✓ |
 | Workspace öffnen, Nachahmen | | | ✓ eigene Gruppen | ✓ alle |
+| Gespeicherte Abgaben ansehen und herunterladen (`/abgabe/dokument/…`, das Dokument wie zuletzt geprüft, mit seinen markierten Seiten): Schickt eine Lehrkraft den Link, weil die Prüfung annimmt, was falsch ist, oder ablehnt, was richtig aussieht, öffnet ihn die Administration auch für Gruppen, die sie nicht selbst betreut (`submission_owner_for` mit `class_groups`, das für die Administration alle Gruppen enthält). Die nächste Prüfung ersetzt die gespeicherte Fassung; wer sie behalten will, lädt sie herunter | eigene | | ✓ eigene Gruppen | ✓ alle |
 | Leistungsüberprüfungen | | | ✓ eigene Gruppen | ✓ |
 | Verwaltungsseite `/admin` (Server, alle Workspaces) | | | | ✓ |
 | Rückmeldung zu einer Aktivität geben und ändern (Klassenseite, »Fortschritt«) | | | ✓ eigene Gruppen | ✓ selbst betreute Gruppen |

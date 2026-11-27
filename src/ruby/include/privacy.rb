@@ -329,8 +329,8 @@ module Privacy
             {
                 :data => 'Abgaben: eine Kopie der Dateien, die bei einer Aufgabe abgegeben werden, die zuletzt geprüfte Fassung eines Dokuments aus LibreOffice, Word oder Nextcloud Office (zum Weiterarbeiten, auch zu Hause) oder eines daraus exportierten PDFs, bei einem Dokument aus der Nextcloud der Schule auch der Link zum Teilen, über den die Prüfung es dort holt, oder der Code einer gelösten Kata, den die Person selbst einreicht (bei einem Bild der Turtle-Grafik mit seinem Namen und dem Bild, das der Server aus dem Programm gezeichnet hat)',
                 :categories => [:content],
-                :purpose => 'Abgabe an die Lehrkraft; eingereichte Katas zum Besprechen im Unterricht, ohne Namen gezeigt',
-                :who => 'die Person selbst, Lehrkräfte der Gruppe',
+                :purpose => 'Abgabe an die Lehrkraft; eingereichte Katas zum Besprechen im Unterricht, ohne Namen gezeigt; nimmt die Prüfung eine Abgabe nicht an, die richtig aussieht, sieht die Administration sie sich an, um die Prüfung zu verbessern',
+                :who => 'die Person selbst, Lehrkräfte der Gruppe, die Administration',
                 :how_long => 'bis die Person sie löscht oder neu abgibt, sonst ' + ACCOUNT_END,
             },
             {

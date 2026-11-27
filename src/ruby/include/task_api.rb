@@ -326,6 +326,9 @@ class Main < Sinatra::Base
         email = @session_user[:email]
         if params['email'] && params['email'] != email
             Main.load_invitations()
+            # teachers of a group of the student; administrators of every
+            # group (class_groups), also to look at a hand-in a teacher sends
+            # them when a check does not accept what looks right
             allowed = class_groups.any? { |g| (@@group_members[g] || []).include?(params['email']) }
             halt 403 unless allowed
             email = params['email']
