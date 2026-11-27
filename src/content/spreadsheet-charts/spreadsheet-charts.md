@@ -58,10 +58,10 @@ aber nicht die Zeile »Zusammen«: Sie ist kein Teil des Ganzen, sondern das
 Ganze, und wäre im Kreis ein zweites, gleich großes Stück.
 
 <!-- language: libreoffice -->
-In LibreOffice fügst du ein Diagramm über *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…* ein. Der *Diagramm-Assistent* führt in Schritten durch: zuerst der *Diagrammtyp*, dann die Daten, zuletzt die *Diagrammelemente* mit dem *Titel*. Ein Doppelklick auf ein fertiges Diagramm öffnet es wieder zum Bearbeiten.
+In LibreOffice fügst du ein Diagramm über *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…* ein. Der *Diagramm-Assistent* führt in Schritten durch: zuerst der *Diagrammtyp*, dann die Daten, zuletzt die *Diagrammelemente* mit dem *Titel* und den Achsentiteln (*X-Achse*, *Y-Achse*), dann *Fertigstellen*. Ein Doppelklick auf ein fertiges Diagramm öffnet es wieder zum Bearbeiten; mit <kbd>Esc</kbd> oder einem Klick neben das Diagramm kommst du wieder heraus.
 <!-- /language -->
 <!-- language: word -->
-In Excel fügst du ein Diagramm im Register *Einfügen* ein, in der Gruppe *Diagramme*; für einen Kreis über *Kreis- oder Ringdiagramm einfügen*. Den Titel schreibst du in das Feld *Diagrammtitel* im Diagramm, weitere Teile fügt das Plus neben dem markierten Diagramm hinzu, *Diagrammelemente*.
+In Excel fügst du ein Diagramm im Register *Einfügen* ein, in der Gruppe *Diagramme*. Die Knöpfe dort sind kleine Bilder ohne Namen; zeigst du mit der Maus auf einen, erscheint sein Name. Für einen Kreis ist es *Kreis- oder Ringdiagramm einfügen* (ein kleiner Kreis mit einem Stück); findest du ihn nicht, nimm *Empfohlene Diagramme* <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Alle Diagramme* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Kreis*. Den Titel setzt Excel selbst ein, meist den Namen der Spalte: Klick ihn an und überschreib ihn. Weitere Teile wie die Achsentitel fügt das **Plus** hinzu, das rechts neben dem Diagramm erscheint, aber nur, solange das Diagramm angeklickt ist.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office fügst du ein Diagramm über *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Diagramm…* ein. Ein Fenster führt in Schritten durch: zuerst der *Diagrammtyp*, dann die Daten, zuletzt die *Diagrammelemente* mit dem *Titel*.
@@ -83,8 +83,15 @@ Achse bedeuten: Euro? Sterne? Prozent?
 
 **Jetzt bist du dran:** Mach aus A14 bis B18 ein Säulendiagramm mit dem
 Titel »Wie hat es gefallen?« und den Achsentiteln »Programmpunkt« und
-»Sterne im Mittel«. Schieb die beiden Diagramme neben die Tabelle, sodass
-sie keine Zahlen verdecken.
+»Sterne im Mittel«. In Excel: Klick ins Diagramm, dann auf das Plus daneben,
+Haken bei *Achsentitel*; im Diagramm stehen jetzt zwei Platzhalter
+*Achsentitel*, die du anklickst und überschreibst.
+
+Schieb dann die beiden Diagramme neben die Tabelle, sodass sie keine Zahlen
+verdecken. Pack ein Diagramm dazu an seinem weißen Rand, nicht an den kleinen
+Kreisen oder Quadraten an den Ecken und Seiten (die ändern seine Größe) und
+nicht an einem Stück des Kreises (das zieht Excel aus dem Kreis heraus).
+Ist etwas verrutscht, macht <kbd>Strg</kbd>+<kbd>Z</kbd> es rückgängig.
 
 ## Achsen, die täuschen
 
