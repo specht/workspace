@@ -122,9 +122,12 @@ html[data-bs-theme="dark"] {
         border-radius: 0.5em;
         box-shadow: 0 0 1em rgba(0,0,0,1);
     }
+    /* light enough for the tinted boxes too (feedback, hints): at least
+       5 : 1 there, 7.4 : 1 on the page; the light mode's pink (#e5185d)
+       reached only 2.3 : 1 on a feedback box */
     code {
-        color: #e5185d;
-        background-color: rgba(243, 132, 175, 0.08);
+        color: #ff8fb5;
+        background-color: rgba(243, 132, 175, 0.1);
     }
     /* code that is the content of a card, not a word in a sentence: the
        lines of a Parsons puzzle, the given cells of a trace table */
