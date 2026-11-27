@@ -39,6 +39,7 @@ Lernende setzen einen Aushang neu, auf dem jemand sieben Schriften, viele Größ
 - **Nach dem Löschen der Formatierung ist auch die Überschrift klein:** Sie war mitmarkiert. Strg+Z, und nur die vier Absätze markieren.
 - **»vor der Mensa« ist fett, der Punkt bleibt trotzdem offen:** Oft ist ein Leerzeichen oder ein Buchstabe nicht mitmarkiert. Die Markierung zeigt die Stelle.
 - **Eine achte Schrift taucht auf:** Beim Einfügen aus einer anderen Datei kommt deren Schrift mit. Formatierung löschen hilft auch hier.
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.
 
 #### Die Aufgaben
 

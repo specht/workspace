@@ -37,6 +37,7 @@ Lernende wandeln ein Programm, das mit Tabstopps in Spalten steht, in eine Tabel
 
 - **Die Tabelle hat eine Spalte zu viel:** Eine Zeile hatte einen Tab mehr, oft am Ende. Spalte löschen oder vorher den Tab.
 - **Die Kopfzeile wiederholt sich nicht:** Der Haken wurde gesetzt, als der Cursor nicht in der ersten Zeile stand.
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.
 
 #### Die Aufgaben
 

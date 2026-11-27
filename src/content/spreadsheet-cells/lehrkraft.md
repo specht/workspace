@@ -38,6 +38,10 @@ Lernende ersetzen in einer Tabelle der Kosten der Klassenfahrt getippte Ergebnis
 </ul></td></tr>
 </table>
 
+#### Was schiefgeht
+
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Excel oder LibreOffice klicken, dann speichern.
+
 #### Extras für Schnelle und zum Üben
 
 Am Ende der Seite stehen drei Extras; sie zählen bei niemandem mit. Wer die

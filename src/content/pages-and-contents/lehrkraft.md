@@ -40,6 +40,7 @@ Lernende ersetzen leere Absätze durch Seitenumbrüche und ein getipptes Inhalts
 - **Das Inhaltsverzeichnis steht auf einer eigenen Seite:** Der Seitenumbruch steht in der Formatvorlage »Überschrift 1«, und Word baut die Überschrift des Verzeichnisses auf »Überschrift 1« auf. Den Umbruch besser vor jeden Tag setzen.
 - **Das Verzeichnis ist leer:** Die Überschriften haben keine Formatvorlage (das letzte Blatt).
 - **Das Verzeichnis nennt den alten Namen:** Es wurde nach dem Umbenennen nicht aktualisiert.
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.
 
 #### Extras für Schnelle und zum Üben
 

@@ -42,6 +42,7 @@ Lernende bringen ein verzerrtes Foto in seine Form zurück, stellen es mit Textu
 - **Die Beschriftung steht weit weg vom Foto:** Word legt die Beschriftung eines Bildes mit Textumbruch in ein eigenes Textfeld. Wird das Foto danach verschoben, wandert das Textfeld nicht unbedingt mit. Beide zusammen verschieben oder die Beschriftung erst einfügen, wenn das Foto steht.
 - **In LibreOffice bleibt *Parallel* grau:** Das Foto ist noch als Zeichen verankert. Erst *Verankerung* auf *Am Absatz* stellen.
 - **Die Nummern stimmen nicht:** Die Felder sind noch nicht aktualisiert (LibreOffice: <kbd>F9</kbd>; Word: <kbd>Strg</kbd>+<kbd>A</kbd>, <kbd>F9</kbd>).
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.
 
 #### Die Aufgaben
 

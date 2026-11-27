@@ -39,6 +39,7 @@ Lernende bauen eine Packliste mit getippten Strichen zu einer echten Liste um un
 - **Der Preis springt nur ein Stück nach rechts:** Es fehlt der eigene Tabstopp, der Tab springt zum nächsten Standard-Tabstopp. Die Prüfung sagt »keinen rechtsbündigen Tabstopp«.
 - **Zwei Zeilen stehen anders:** Der Tabstopp wurde nur für eine Zeile gesetzt. Alle fünf markieren und neu setzen.
 - **Die Liste hat zwei Zeichen:** Der getippte Strich ist noch da; die Formatierungszeichen zeigen ihn.
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.
 
 #### Die Aufgaben
 

@@ -52,6 +52,7 @@ Lernende reparieren eine Einladung, die nur ausgedruckt ordentlich aussieht: zen
 - **Ein Punkt bleibt offen, obwohl die Seite richtig aussieht:** genau das Thema. Die Markierung zeigt die Stelle; oft ist es ein einzelnes Leerzeichen am Ende einer Zeile oder ein leerer Absatz ganz unten.
 - **»Aus der Vorlage fehlen Wörter«:** Beim Löschen der Leerzeichen ist ein Wort mitgegangen. Die Meldung nennt es.
 - **Abstand fehlt, obwohl er eingestellt ist:** In Word ist für den Absatz »Keinen Abstand zwischen Absätzen gleicher Formatierung einfügen« gesetzt; dann zählt der Abstand nicht.
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.
 
 #### Die Aufgaben
 

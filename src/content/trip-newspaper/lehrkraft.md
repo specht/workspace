@@ -37,3 +37,4 @@ Lernende schreiben einen eigenen Artikel und bauen ihn mit allem, was die Reihe 
 
 - **Kein Bild zur Hand:** Fotos mit freier Lizenz gibt es bei Wikimedia Commons; die Seite verlangt die Quelle in der Bildunterschrift.
 - **Zwischenüberschriften fett statt mit Formatvorlage:** Die Prüfung nennt eine Zeile, die aussieht wie eine Überschrift.
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.

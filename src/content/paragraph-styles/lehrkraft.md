@@ -42,6 +42,7 @@ Lernende ersetzen Überschriften, die von Hand fett, groß und blau gemacht sind
 - **Eine Überschrift bleibt blau, obwohl die Vorlage grün ist:** Sie hat noch Farbe von Hand. Markieren, Formatierung löschen (Word: <kbd>Strg</kbd>+<kbd>Leertaste</kbd>, LibreOffice: <kbd>Strg</kbd>+<kbd>M</kbd>).
 - **Die Übersicht zeigt die Teile neben den Tagen statt darunter:** Sie haben »Überschrift 1« statt »Überschrift 2«.
 - **Die Vorlage wurde geändert, aber nur eine Überschrift sieht anders aus:** Die Farbe wurde an der markierten Überschrift eingestellt, nicht in der Vorlage.
+- **<kbd>Strg</kbd>+<kbd>S</kbd> im Browser statt im Programm:** Wer nach einer Änderung auf die Seite geschaut hat, drückt <kbd>Strg</kbd>+<kbd>S</kbd> oft noch im Browser. Der bietet dann an, die Webseite zu speichern; das Dokument bleibt ungespeichert, und die Karte prüft nicht neu: Die Zeit, zu der die Datei zuletzt gespeichert wurde, bleibt die alte. Den Dialog abbrechen, ins Fenster von Word oder LibreOffice klicken, dann speichern.
 
 #### Die Aufgaben
 
