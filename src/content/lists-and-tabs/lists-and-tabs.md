@@ -170,6 +170,17 @@ aus dem Lineal, ist er weg.
 4. **Neu** klicken, dann *OK*. Ohne *Neu* ist der Tabstopp nicht gesetzt.
 <!-- /language -->
 
+<!-- language: word libreoffice -->
+**Vorsicht am Lineal:** An seinen Enden liegen der Rand (grau) und die
+Einzüge (die kleinen Dreiecke). Ziehst du an einem davon, entsteht kein
+Tabstopp, sondern Text verschiebt sich: am Rand der ganze Text der Seite, an
+einem Dreieck die markierten Zeilen. Klick für einen Tabstopp ins Weiße unter
+die Zahlen, nicht an die Enden. Ist doch etwas verrutscht, macht
+<kbd>Strg</kbd>+<kbd>Z</kbd> es rückgängig.
+
+<img class='drawing' style='width: 26em' src='lineal-vorsicht.svg' alt='Das Lineal: An beiden Enden ein grauer Bereich, der Rand, und an seinem Übergang kleine Dreiecke, die Einzüge, beide Enden orange eingekreist; darüber »graue Enden: der Rand, Dreiecke: die Einzüge, beides nicht ziehen«. In der Mitte, im weißen Teil unter den Zahlen, ein Tabstopp, darunter »ins Weiße klicken: ein Tabstopp«. Unten: »Verrutscht? Strg+Z macht es rückgängig.«'>
+<!-- /language -->
+
 **Jetzt bist du dran:** Ersetz in jeder Zeile der Kosten die Leerzeichen
 zwischen Posten und Preis durch einen einzigen Tab. Markier dann **alle fünf
 Zeilen** und setz einen rechtsbündigen Tabstopp bei 16 cm, mit Punkten als

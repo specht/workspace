@@ -537,6 +537,48 @@ def tab_mark(kind, x, y, size=10, colour=BLUE, width=2.4):
 
 
 
+
+def lineal_vorsicht():
+    """the ruler and what not to drag: the margins at both ends (grey) and
+    the indents (the triangles); a tab stop is a click into the white part"""
+    w, h = 360, 192
+    body = []
+    x0, x1, y0, y1 = 16, 344, 74, 102
+    left, right = 52, 308          # the margins end here
+    # in the colours of paper: light in both modes, as the programs show it
+    body.append(rect(x0, y0, x1 - x0, y1 - y0, FIELD, BAR, 1, 2))
+    body.append(rect(left, y0, right - left, y1 - y0, PAPER, BAR, 1, 0))
+    cm = (right - left) / 12
+    for c in range(1, 12):
+        x = left + c * cm
+        body.append(line(x, y1 - 7, x, y1, BAR, 1))
+        if c % 2 == 0:
+            body.append(text(x, y1 - 10, str(c), 10.5, INK, 'middle'))
+    # the indents: first line (top, down), hanging and left (below), right
+    tri = lambda x, y, down: f"<path d='M {x - 5} {y} L {x + 5} {y} L {x} {y + (6 if down else -6)} Z' fill='{PAPER}' stroke='{INK}' stroke-width='1.2'/>"
+    body.append(tri(left, y0, True))
+    body.append(tri(left, y1 - 4, False))
+    body.append(rect(left - 5, y1 - 4, 10, 5, PAPER, INK, 1.2))
+    body.append(tri(right, y1, False))
+    # a tab stop in the white part
+    body.append(tab_mark('links', left + 7 * cm, y1 - 3, 8, PBLUE, 2.2))
+    # what not to touch
+    body.append(rect(x0 - 3, y0 - 5, left - x0 + 11, y1 - y0 + 10, 'none', AMBER, 2, 5))
+    body.append(rect(right - 8, y0 - 5, x1 - right + 11, y1 - y0 + 10, 'none', AMBER, 2, 5))
+    body.append(text(x0 - 3, 22, 'graue Enden: der Rand', 12.5, AMBER, weight='600'))
+    body.append(text(x0 - 3, 38, 'Dreiecke: die Einzüge', 12.5, AMBER, weight='600'))
+    body.append(text(x0 - 3, 56, 'beides nicht ziehen', 12.5, AMBER))
+    body.append(line(left, 60, left, y0 - 6, AMBER, 1.4))
+    body.append(line(right, 60, right, y0 - 6, AMBER, 1.4))
+    body.append(line(left, 60, right, 60, AMBER, 1.4))
+    # where to click
+    tx = left + 7 * cm
+    body.append(line(tx, y1 + 6, tx, y1 + 22, BLUE, 1.4))
+    body.append(text(tx, y1 + 38, 'ins Weiße klicken: ein Tabstopp', 12.5, BLUE, 'middle'))
+    body.append(text(x0 - 3, 176, 'Verrutscht? Strg+Z macht es rückgängig.', 12.5, GREY))
+    svg('lineal-vorsicht', 'lists-and-tabs', w, h, body, 'Das Lineal: Ränder und Einzüge nicht ziehen, ins Weiße klicken',
+        root_extra=" text-rendering='geometricPrecision'")
+
 def word_lineal():
     """Word's ribbon: the tab »Ansicht«, its group »Anzeigen«, the box
     »Lineal« ticked and marked (where the ruler is switched on)"""
@@ -1935,7 +1977,7 @@ def karte_tabellen():
     svg('karte', 'spreadsheet-cells', w, h, body, 'Die Karte der Reihe: drei Blätter, eine Tabelle mit Formel, ein Kreisdiagramm, ein Säulendiagramm')
 
 
-DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, tabstopp_arten, tabstopp_absatz, word_lineal, zelle, kopfzeile,
+DRAWINGS = {f.__name__: f for f in [abstand, serifen, bildschirm, hervorheben, liste, tabstopp, tabstopp_arten, tabstopp_absatz, word_lineal, lineal_vorsicht, zelle, kopfzeile,
                                       seitenverhaeltnis, umbruch, vorlage, verzeichnis, fusszeile, seite, punkt, ausrichtung, ebenen, spalten, satz, karte, adresse, formel, quadrat, ausfuellen,
                                       zahltext, formate, tage, ohne_dollar, mit_dollar, leer_null, wenn, sortieren, diagrammarten, achse, karte_tabellen]}
 # the drawings with a phone arrangement too (docs/checkliste.md, »Auf dem Handy«)
