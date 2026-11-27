@@ -64,8 +64,9 @@ Hol dir die Umfrage und öffne sie:
 
 **Jetzt bist du dran:** Schreib unter den Antworten zum Kletterwald die vier
 Funktionen: in B32 `=ANZAHL(B4:B30)`, in B33 den Mittelwert, in B34 den besten
-und in B35 den schlechtesten Wert. Markiere dann B32 bis B35 und zieh sie am
-kleinen Quadrat nach rechts bis Spalte E. Die Bezüge wandern mit, wie im
+und in B35 den schlechtesten Wert. Markiere dann B32 bis B35 (von B32 nach
+unten ziehen) und zieh am kleinen Quadrat unten rechts an B35, wenn der Zeiger
+ein dünnes schwarzes **+** ist, nach rechts bis Spalte E. Die Bezüge wandern mit, wie im
 letzten Blatt, und jede Spalte rechnet mit ihren eigenen Antworten.
 
 <!-- language: libreoffice -->
@@ -89,7 +90,10 @@ _task(anzahl)
 
 Die Mittelwerte haben viele Nachkommastellen: 4,423076923… Für eine Umfrage
 mit Sternen genügt eine. **Jetzt bist du dran:** Gib B33 bis E33 ein
-Zahlenformat mit einer Nachkommastelle.
+Zahlenformat mit einer Nachkommastelle: Markier B33 bis E33, dann
+<kbd>Strg</kbd>+<kbd>1</kbd> (das Fenster *Zellen formatieren*), Register
+*Zahlen*, die Kategorie *Zahl* und bei den Nachkommastellen (Excel:
+*Dezimalstellen*) 1, dann *OK*.
 
 ## WENN
 

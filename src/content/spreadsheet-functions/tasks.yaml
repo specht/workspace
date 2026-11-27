@@ -39,7 +39,7 @@ tasks:
     feedback:
       - when: { between: [27, 27] }
         say: So viele Antworten gibt es. Manche haben die Frage zum Moormuseum aber ausgelassen.
-    hint: ANZAHL zählt die Zellen, in denen eine Zahl steht. Schreib die Formel in eine freie Zelle unter der Tabelle.
+    hint: ANZAHL zählt die Zellen, in denen eine Zahl steht. Sieh nach, was in D32 steht, wenn du die vier Formeln nach rechts gezogen hast.
     solution: |
       24: Drei Kinder haben beim Moormuseum nichts eingetragen.
 
