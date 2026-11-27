@@ -1065,6 +1065,9 @@ class Main < Sinatra::Base
                             :sid => key, :email => email, :today => today)
                         @session_user[:last_seen] = today
                     end
+                    # when the person last did anything here, in memory only:
+                    # who is in the room for the projector (projector_present)
+                    Main.note_activity(email) if @impersonated_by.nil?
 
                     expires = session_cookie_expiry
                     if DEVELOPMENT || request.cookies.include?('hs_sid')
@@ -2540,7 +2543,9 @@ class Main < Sinatra::Base
         ws = Faye::WebSocket.new(request.env)
         id = ws.object_id
         ws.on(:open) do |_|
-            @@meeting_ws_mutex.synchronize { @@meeting_ws[id] = { :ws => ws, :activities => activities, :groups => groups, :teacher => teacher } }
+            # the email: an open page counts as in the room (projector_present)
+            email = @impersonated_by.nil? ? @session_user[:email] : nil
+            @@meeting_ws_mutex.synchronize { @@meeting_ws[id] = { :ws => ws, :activities => activities, :groups => groups, :teacher => teacher, :email => email } }
             # what is set now: a page that lost its connection catches up
             ws.send({ :action => 'points', :points => meeting_points(groups, activity) }.to_json) rescue nil
         end

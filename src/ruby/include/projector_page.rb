@@ -23,7 +23,7 @@ class Main < Sinatra::Base
         members = class_members(group)
         board = ClassBoard.build(members, tasks, class_board_states(members.map { |m| m[:email] }, key))
         short = ClassBoard.short_names(members)
-        present = projector_present(members)
+        present = projector_present(members, [board])
         meeting = meeting_points([group], key)[group]
         {
             :group => group, :activity => key, :title => title, :unit => 'Aufgabe', :watch => [key],
@@ -37,17 +37,33 @@ class Main < Sinatra::Base
         }
     end
 
-    # Who of the members has been on the site today (User.last_seen, written
-    # on the first page of the day, not while a teacher looks in): the
-    # others are not in the room, the projector leaves them out.
-    def projector_present(members)
-        neo4j_query(<<~END_OF_QUERY, :emails => members.map { |m| m[:email] }, :today => Date.today.to_s).map { |row| row['email'] }.to_set
-            MATCH (u:User) WHERE u.email IN $emails AND u.last_seen = $today
-            RETURN u.email AS email;
-        END_OF_QUERY
+    # Who of the members is in the room now: with a page of the site open
+    # (its /ws_meeting, which pings every half minute), or active in the
+    # last PRESENT_MINUTES (a page of the site, Main.note_activity, or a task
+    # checked, the boards' cells). Not »on the site today«: a class taught
+    # in two halves one after the other, or two lessons a day, would show
+    # the first half in the second. The others are left out; a student
+    # appears as soon as they open a page and goes some minutes after
+    # leaving. Kept in memory: after a restart of the server, open pages
+    # connect again and the others count from their next page.
+    PRESENT_MINUTES = 20
+    @@last_active = {}
+    @@last_active_mutex = Mutex.new
+
+    def self.note_activity(email)
+        @@last_active_mutex.synchronize { @@last_active[email] = Time.now.to_i }
     end
 
-    # The students for the page: only who is here today, in each column in
+    def projector_present(members, boards = [])
+        emails = members.map { |m| m[:email] }
+        since = Time.now.to_i - PRESENT_MINUTES * 60
+        open = @@meeting_ws_mutex.synchronize { @@meeting_ws.values.map { |e| e[:email] } }
+        seen = @@last_active_mutex.synchronize { emails.select { |e| @@last_active[e].to_i >= since } }
+        worked = boards.flat_map { |b| b[:rows] }.select { |r| ClassBoard.last_active(r).to_i >= since }.map { |r| r[:email] }
+        (emails & (open + seen + worked)).to_set
+    end
+
+    # The students for the page: only who is in the room, in each column in
     # the order they got there, the first at the bottom (projector.js keeps
     # the order). The times stay here: the page shows no ranking. extras:
     # how many Extras each solved, shown on the dot.
@@ -68,7 +84,7 @@ class Main < Sinatra::Base
         emails = members.map { |m| m[:email] }
         boards = sheets.map { |sheet_key, _, tasks, _| ClassBoard.build(members, tasks, class_board_states(emails, sheet_key)) }
         short = ClassBoard.short_names(members)
-        present = projector_present(members)
+        present = projector_present(members, boards)
         {
             :group => group, :activity => key, :title => title, :unit => 'Blatt',
             :watch => sheets.map(&:first),

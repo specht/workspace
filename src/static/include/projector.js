@@ -104,12 +104,13 @@
             parts.push("<span><i class='bi bi-flag-fill' aria-hidden='true'></i>Treffpunkt nach Aufgabe " + (data.meeting + 1) +
                 ': <strong>' + there + ' von ' + n + '</strong> da</span>');
         }
-        // not on the site today (left out by the server), and marked absent on the class page
+        // not in the room (left out by the server: no page open, nothing done
+        // for a while, projector_present), and marked absent on the class page
         const stars = present.filter(function (s) { return s.extras; }).length;
         if (stars) parts.push("<span><i class='bi bi-stars' aria-hidden='true'></i>" + stars +
             ' mit Extras</span>');
         const gone = data.absent + data.students.length - n;
-        if (gone) parts.push('<span>' + gone + ' heute nicht da</span>');
+        if (gone) parts.push('<span>' + gone + ' nicht da</span>');
         total.innerHTML = parts.join('');
 
         note.textContent = (data.unit === 'Blatt' ? 'Jede Person steht beim ersten Blatt, das sie noch nicht fertig hat (alle Aufgaben außer den Extras)' :
