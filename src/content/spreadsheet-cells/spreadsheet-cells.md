@@ -82,7 +82,8 @@ Welche Formel in einer Zelle steht, zeigt LibreOffice in der **Eingabezeile**
 <!-- language: word -->
 Welche Formel in einer Zelle steht, zeigt Excel in der **Bearbeitungsleiste**
 über der Tabelle, sobald du die Zelle anklickst. Dort kannst du sie auch
-ändern.
+ändern. Fehlt die Leiste, schaltest du sie im Register *Ansicht*, Gruppe
+*Anzeigen*, mit dem Haken bei *Bearbeitungsleiste* ein.
 <!-- /language -->
 <!-- language: nextcloud -->
 Welche Formel in einer Zelle steht, zeigt Nextcloud Office in der Zeile über
@@ -90,7 +91,8 @@ der Tabelle, sobald du die Zelle anklickst. Dort kannst du sie auch ändern.
 <!-- /language -->
 
 **Jetzt bist du dran:** Schreib in D4 die Formel für den Bus, `=B4*C4`, und
-in D5 die für die Jugendherberge. Ändere dann den Preis der Jugendherberge in
+drück <kbd>Enter</kbd>: Erst dann rechnet die Zelle, und der Cursor springt
+eine Zeile tiefer. Schreib in D5 die Formel für die Jugendherberge. Ändere dann den Preis der Jugendherberge in
 C5 auf 150 und sieh nach, was in D5 passiert. Setz ihn danach wieder auf 148.
 
 ## Nach unten ausfüllen
@@ -113,7 +115,15 @@ Die Formel merkt sich nicht die Adressen B4 und C4, sondern den Weg dorthin:
 führt dieser Weg zu den Zahlen dieser Zeile.
 <!-- /after -->
 
-**Jetzt bist du dran:** Füll die Formel aus D4 nach unten aus, bis D8.
+**Jetzt bist du dran:** Füll die Formel aus D4 nach unten aus, bis D8:
+
+1. Klick auf D4; nach <kbd>Enter</kbd> steht der Cursor eine Zeile tiefer.
+2. Zeig mit der Maus auf das kleine Quadrat unten rechts an D4, bis der Zeiger
+   ein dünnes schwarzes **+** ist. Ein Pfeil mit vier Spitzen heißt dagegen:
+   Du würdest die Zelle verschieben, statt die Formel auszufüllen.
+3. Zieh mit gedrückter Maustaste bis D8 und lass los, nicht weiter.
+
+Ist etwas verrutscht, macht <kbd>Strg</kbd>+<kbd>Z</kbd> es rückgängig.
 
 ## Die Summe
 
@@ -125,16 +135,19 @@ wächst der Bereich mit.
 <!-- language: libreoffice -->
 In LibreOffice tippst du die Formel selbst, oder du stellst dich in D9 und
 klickst über der Tabelle auf **Σ** (*Funktion auswählen*) und dann *Summe*:
-LibreOffice schlägt den Bereich darüber vor.
+LibreOffice schlägt den Bereich darüber vor. Sieh nach, ob er D4 bis D8 ist,
+und drück <kbd>Enter</kbd>.
 <!-- /language -->
 <!-- language: word -->
 In Excel tippst du die Formel selbst, oder du stellst dich in D9 und klickst im
 Register *Start* auf **Σ** *AutoSumme*: Excel schlägt den Bereich darüber vor.
+Sieh nach, ob er D4 bis D8 ist, und drück <kbd>Enter</kbd>.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office tippst du die Formel selbst, oder du stellst dich in D9
 und klickst über der Tabelle auf **Σ** und dann *Summe*: Das Programm schlägt
-den Bereich darüber vor.
+den Bereich darüber vor. Sieh nach, ob er D4 bis D8 ist, und drück
+<kbd>Enter</kbd>.
 <!-- /language -->
 
 **Jetzt bist du dran:** Schreib in D9 den Gesamtbetrag mit SUMME.
