@@ -19912,3 +19912,14 @@ form.phone-manage-dirty {
     max-height: 16em;
     overflow: auto;
 }
+
+/* Under a download of a starting document, for Word and Excel only
+   (DocumentStarterNote): »Geschützte Ansicht« */
+.document-starter-note {
+    margin: 0.4em 0 0.8em;
+    font-size: 0.92em;
+    color: var(--bs-secondary-color);
+}
+.document-starter-note .bi {
+    margin-right: 0.35em;
+}

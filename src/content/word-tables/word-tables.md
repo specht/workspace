@@ -47,26 +47,37 @@ länger, wächst seine Zeile nach unten, und alles bleibt in seiner Spalte.
 <img class='drawing d-lg-none' style='width: 22.5em' src='zelle.svg' alt='Eine Tabelle mit den Spalten Tag, Zeit und Programm. Die Zelle mit »Wanderung um den See, mit Picknick am Aussichtsturm« ist eingerahmt: Der Eintrag geht über zwei Zeilen, und die ganze Zeile ist höher. Die Zeile des Donnerstags ist blau hinterlegt, »eine Zeile«; die Spalte Zeit gelb, »eine Spalte«'>
 
 Aus Text mit Tabs macht das Programm eine Tabelle auf einmal: Jeder Tab wird eine
-neue Spalte, jeder Absatz eine Zeile.
+neue Spalte, jeder Absatz eine Zeile. So geht es:
 
 <!-- language: word -->
-In Word markierst du die sieben Zeilen und wählst im Register *Einfügen*
-<i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle umwandeln*, getrennt durch *Tabstopps*.
+1. **Genau die sieben Zeilen markieren:** die Kopfzeile *Tag, Zeit, Programm*
+   und die sechs Zeilen darunter. Nicht die Überschrift *Programm der
+   Klassenfahrt* darüber, sonst wird auch sie eine Zeile der Tabelle.
+2. Im Register *Einfügen* auf *Tabelle* klicken (den Knopf mit dem kleinen
+   Pfeil), dann unten *Text in Tabelle umwandeln…*.
+3. Im Fenster bei *Text trennen bei* den Punkt *Tabstopps* wählen. Oben bei
+   *Spaltenanzahl* muss jetzt **3** stehen. Dann *OK*.
+4. **Nachsehen:** drei Spalten, die Überschrift über der Tabelle, nicht in
+   ihr. Stimmt etwas nicht, macht <kbd>Strg</kbd>+<kbd>Z</kbd> die Tabelle
+   wieder zu Text, und du markierst noch einmal.
 <!-- /language -->
-<!-- language: libreoffice -->
-In LibreOffice markierst du die sieben Zeilen und wählst *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Umwandeln* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle*, Text trennen bei *Tabulatoren*.
-<!-- /language -->
-<!-- language: nextcloud -->
-In Nextcloud Office markierst du die sieben Zeilen und wählst *Tabelle*
-<i class='bi bi-chevron-right' aria-hidden='true'></i> *Umwandeln* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle*, Text trennen bei *Tabulatoren*.
+<!-- language: libreoffice nextcloud -->
+1. **Genau die sieben Zeilen markieren:** die Kopfzeile *Tag, Zeit, Programm*
+   und die sechs Zeilen darunter. Nicht die Überschrift *Programm der
+   Klassenfahrt* darüber, sonst wird auch sie eine Zeile der Tabelle.
+2. *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Umwandeln* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle*.
+3. Im Fenster bei *Text trennen bei* den Punkt *Tabulatoren* wählen, dann *OK*.
+4. **Nachsehen:** drei Spalten, die Überschrift über der Tabelle, nicht in
+   ihr. Stimmt etwas nicht, macht <kbd>Strg</kbd>+<kbd>Z</kbd> die Tabelle
+   wieder zu Text, und du markierst noch einmal.
 <!-- /language -->
 
 _task(spalten)
 
-**Jetzt bist du dran:** Mach aus dem Programm eine Tabelle mit drei Spalten.
-Mach den Mittwoch dann länger, mit dem Picknick am Aussichtsturm, und sieh
-nach, was mit dem Donnerstag passiert.
+**Jetzt bist du dran:** Mach aus dem Programm eine Tabelle mit drei Spalten,
+Schritt für Schritt wie oben. Klick dann hinter den Eintrag des Mittwochs und
+schreib dazu: », mit Picknick am Aussichtsturm«. Sieh nach, was mit dem
+Donnerstag passiert.
 
 ## Die Kopfzeile
 
@@ -76,18 +87,27 @@ Wird eine Tabelle länger als eine Seite, soll sie auf jeder Seite oben stehen.
 <img class='drawing d-none d-lg-block' style='width: 35em' src='kopfzeile-wide.svg' alt='Zwei Seiten nebeneinander. Auf der ersten beginnt unten eine Tabelle mit der Kopfzeile »Tag, Programm«, dann Montag bis Mittwoch. Die zweite Seite beginnt oben wieder mit der Kopfzeile, eingerahmt, dann Donnerstag und Freitag'>
 <img class='drawing d-lg-none' style='width: 15.88em' src='kopfzeile.svg' alt='Zwei Seiten untereinander. Auf der ersten beginnt unten eine Tabelle mit der Kopfzeile »Tag, Programm«, dann Montag bis Mittwoch. Die zweite Seite beginnt oben wieder mit der Kopfzeile, eingerahmt, dann Donnerstag und Freitag'>
 
+Eine Tabelle merkt sich das, wenn du es ihr sagst:
+
 <!-- language: word -->
-In Word stellst du den Cursor in die erste Zeile und klickst im Register
-*Tabellenlayout* auf *Überschriften wiederholen*.
+1. **In eine Zelle der ersten Zeile klicken**, etwa in *Tag*. Es muss die
+   erste Zeile sein: Word wiederholt die Zeile, in der der Cursor steht.
+2. Erst jetzt, mit dem Cursor in der Tabelle, erscheinen rechts im Menüband
+   zwei Register nur für Tabellen: *Tabellenentwurf* und *Layout* (in manchen
+   Word-Versionen *Tabellenlayout*). Steht der Cursor außerhalb der Tabelle,
+   sind sie wieder weg.
+3. Im Register *Layout* der Tabelle, dem ganz rechts, nicht dem *Layout* der
+   Seite weiter links, in der Gruppe *Daten* auf *Überschriften wiederholen*
+   klicken. Der Knopf ist danach hervorgehoben.
 <!-- /language -->
-<!-- language: libreoffice -->
-In LibreOffice stellst du den Cursor in die Tabelle und wählst *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Eigenschaften* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Textfluss*, Haken bei *Überschrift wiederholen*.
+<!-- language: libreoffice nextcloud -->
+1. **In eine Zelle der Tabelle klicken**; der Cursor muss in der Tabelle stehen.
+2. *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften* <i class='bi bi-chevron-right' aria-hidden='true'></i> Register *Textfluss*.
+3. Den Haken bei *Überschrift wiederholen* setzen, dann *OK*.
 <!-- /language -->
-<!-- language: nextcloud -->
-In Nextcloud Office stellst du den Cursor in die Tabelle und wählst *Tabelle*
-<i class='bi bi-chevron-right' aria-hidden='true'></i> *Eigenschaften* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Textfluss*, Haken bei *Überschrift wiederholen*.
-<!-- /language -->
+
+Auf einer Seite siehst du davon nichts; erst wenn die Tabelle über eine
+Seite hinausgeht, steht die Kopfzeile oben auf der nächsten.
 
 ## Prüfen
 

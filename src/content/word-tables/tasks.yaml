@@ -64,8 +64,8 @@ tasks:
       - Die Kopfzeile wiederholt sich, wenn der Haken bei »Überschriften wiederholen« gesetzt ist, mit dem Cursor in der ersten Zeile.
     word:
       hint:
-        - "Markier die Kopfzeile und die sechs Zeilen darunter und wähl im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle umwandeln*, getrennt durch *Tabstopps*."
-        - "Stell den Cursor in die erste Zeile der Tabelle und klick im Register *Tabellenlayout* auf *Überschriften wiederholen*."
+        - "Markier die Kopfzeile und die sechs Zeilen darunter, nicht die Überschrift, und wähl im Register *Einfügen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Tabelle* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Text in Tabelle umwandeln*, getrennt durch *Tabstopps*; bei *Spaltenanzahl* muss 3 stehen."
+        - "Klick in eine Zelle der ersten Zeile. Dann erscheint ganz rechts im Menüband das Register *Layout* der Tabelle (in manchen Versionen *Tabellenlayout*); dort klickst du in der Gruppe *Daten* auf *Überschriften wiederholen*."
         - "Schalte die Formatierungszeichen ein: In den Zellen darf kein Tab (→) mehr stehen."
     libreoffice:
       hint:

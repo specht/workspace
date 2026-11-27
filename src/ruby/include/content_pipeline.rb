@@ -749,6 +749,7 @@ class Main < Sinatra::Base
                     SidePanel.wrap(root, :warn => lambda { |message| STDERR.puts "#{path}: #{message}" })
                     CodeLanguages.pair(root) if page_languages.empty?
                     insert_task_cards(root, task_slots, page_tasks, redcarpet, path, page_languages) unless task_slots.empty?
+                    DocumentStarterNote.add(root) if page_languages.include?('word')
                     ExternalLinks.mark(root)    # also the links in the task cards
                     StageCode.insert(root, stage_points) unless stage_points.empty?
                     ClassRepos.mark_browse(root) if variant == ClassRepos::LOCAL_KEYS
