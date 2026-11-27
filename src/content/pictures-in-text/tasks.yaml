@@ -100,8 +100,8 @@ tasks:
       - Lösch die getippten Unterschriften erst, wenn die eingefügten darunter stehen. Den Text hinter der Nummer schreibst du wieder dazu.
     word:
       hint:
-        - "Fang beim Foto an: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größe und Position…*, Haken bei *Seitenverhältnis sperren*, *Zurücksetzen*, dann die Breite 7,5 cm."
-        - "Klick auf das Foto und dann auf den Knopf *Layoutoptionen* daneben, *Quadrat*. Schieb das Foto an den rechten Rand neben den ersten Absatz."
+        - "Fang beim Foto an: Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Größe und Position…*, Haken bei *Seitenverhältnis sperren*, *Zurücksetzen*, dann bei *Breite* *Absolut* 7,5 cm und *OK*."
+        - "Klick auf das Foto und dann auf den Knopf *Layoutoptionen* oben rechts daneben, *Quadrat* (oder *Bildformat* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Textumbruch* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Quadrat*). Schieb das Foto, in der Mitte gepackt, an den rechten Rand neben den ersten Absatz."
         - "Rechtsklick auf jedes Bild <i class='bi bi-chevron-right' aria-hidden='true'></i> *Beschriftung einfügen…*, Bezeichnung *Abbildung*, und lösch danach die getippte Unterschrift. Den Alternativtext schreibst du über Rechtsklick <i class='bi bi-chevron-right' aria-hidden='true'></i> *Alternativtext*."
     libreoffice:
       hint:

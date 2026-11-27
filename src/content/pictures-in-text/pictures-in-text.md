@@ -55,25 +55,20 @@ Richtungen gleich.
 <img class='drawing d-lg-none' style='width: 12.75em' src='seitenverhaeltnis.svg' alt='Drei Fassungen desselben Bilds, eine Landschaft mit runder Sonne, mit acht Anfassern am Rahmen. Oben das Bild im Verhältnis 3 zu 2. Darunter am Anfasser der rechten Seite gezogen: nur breiter, die Sonne ist ein liegendes Oval. Unten an der Ecke oben rechts gezogen: größer, dieselbe Form, die Sonne bleibt rund'>
 
 <!-- language: word -->
-In Word klickst du mit der rechten Maustaste auf das Foto und wählst *Größe
-und Position…*. Im Register *Größe* setzt du den Haken bei
-*Seitenverhältnis sperren* und klickst auf *Zurücksetzen*: Dann hat das Foto
-wieder seine eigene Form. Gibst du danach eine Breite ein, rechnet Word die
-Höhe selbst aus.
+1. Mit der rechten Maustaste auf das Foto klicken, *Größe und Position…*.
+2. Im Register *Größe* den Haken bei *Seitenverhältnis sperren* setzen und
+   unten auf *Zurücksetzen* klicken: Das Foto hat wieder seine eigene Form.
+3. Oben bei *Breite* in das Feld *Absolut* die Breite tippen, etwa 7,5 cm.
+   Die Höhe rechnet Word selbst aus.
+4. *OK*.
 <!-- /language -->
-<!-- language: libreoffice -->
-In LibreOffice klickst du mit der rechten Maustaste auf das Foto und wählst
-*Eigenschaften…*. Im Register *Typ* schaltest du *Verhältnis beibehalten*
-ein und klickst auf *Originalgröße*: Dann hat das Foto wieder seine eigene
-Form. Gibst du danach eine Breite ein, rechnet LibreOffice die Höhe selbst
-aus.
-<!-- /language -->
-<!-- language: nextcloud -->
-In Nextcloud Office klickst du mit der rechten Maustaste auf das Foto und
-wählst *Eigenschaften…*. Im Register *Typ* schaltest du *Verhältnis
-beibehalten* ein und klickst auf *Originalgröße*: Dann hat das Foto wieder
-seine eigene Form. Gibst du danach eine Breite ein, rechnet Nextcloud Office
-die Höhe selbst aus.
+<!-- language: libreoffice nextcloud -->
+1. Mit der rechten Maustaste auf das Foto klicken, *Eigenschaften…*.
+2. Im Register *Typ* den Haken bei *Verhältnis beibehalten* setzen und auf
+   *Originalgröße* klicken: Das Foto hat wieder seine eigene Form.
+3. Bei *Breite* die Breite tippen, etwa 7,5 cm. Die Höhe rechnet das
+   Programm selbst aus.
+4. *OK*.
 <!-- /language -->
 
 _task(hoehe)
@@ -93,22 +88,24 @@ und du kannst das Bild an den Rand schieben.
 <img class='drawing d-lg-none' style='width: 16.5em' src='umbruch.svg' alt='Zwei Blätter. Oben »in der Zeile«: Das Bild steht in einer Zeile wie ein großer Buchstabe, daneben nur ein kurzes Wort auf der Höhe seiner Unterkante, rechts davon eine leere Fläche. Unten »Text fließt herum«: Das Bild steht am rechten Rand, die Zeilen daneben sind kürzer und gehen darunter wieder über die ganze Breite'>
 
 <!-- language: word -->
-In Word klickst du auf das Foto und dann auf den Knopf *Layoutoptionen*, der
-rechts daneben erscheint. Wähl *Quadrat*. Schieb das Foto danach an den
-rechten Rand, neben den ersten Absatz.
+1. Auf das Foto klicken. Erst wenn es ausgewählt ist, erscheint oben rechts
+   neben ihm ein kleiner Knopf *Layoutoptionen* und oben im Menüband das
+   Register *Bildformat*.
+2. Im Knopf *Layoutoptionen* *Quadrat* wählen. Findest du den Knopf nicht:
+   *Bildformat* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Textumbruch* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Quadrat*.
+3. Das Foto an den rechten Rand schieben, neben den ersten Absatz.
 <!-- /language -->
-<!-- language: libreoffice -->
-In LibreOffice klickst du mit der rechten Maustaste auf das Foto und wählst
-*Verankerung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Am Absatz*: Jetzt hängt es am Absatz statt in der Zeile.
-Dann wählst du *Umlauf* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Parallel*. Schieb das Foto danach an den
-rechten Rand, neben den ersten Absatz.
+<!-- language: libreoffice nextcloud -->
+1. Mit der rechten Maustaste auf das Foto klicken, *Verankerung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Am
+   Absatz*: Jetzt hängt es am Absatz statt in der Zeile.
+2. Noch einmal mit der rechten Maustaste, *Umlauf* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Parallel*.
+3. Das Foto an den rechten Rand schieben, neben den ersten Absatz.
 <!-- /language -->
-<!-- language: nextcloud -->
-In Nextcloud Office klickst du mit der rechten Maustaste auf das Foto und
-wählst *Verankerung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Am Absatz*: Jetzt hängt es am Absatz statt in
-der Zeile. Dann wählst du *Umlauf* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Parallel*. Schieb das Foto danach
-an den rechten Rand, neben den ersten Absatz.
-<!-- /language -->
+
+Zum Schieben packst du das Foto in der Mitte, nicht an den kleinen Kreisen
+oder Quadraten am Rand: Die an den Seiten verzerren es wieder, die an den
+Ecken ändern seine Größe. Ist etwas verrutscht, macht
+<kbd>Strg</kbd>+<kbd>Z</kbd> es rückgängig.
 
 **Jetzt bist du dran:** Stell das Foto rechts neben den ersten Absatz.
 
@@ -125,23 +122,27 @@ dazu oder wandert eins nach oben, stimmen die Nummern wieder, sobald die
 Felder aktualisiert sind.
 
 <!-- language: word -->
-In Word klickst du mit der rechten Maustaste auf das Foto und wählst
-*Beschriftung einfügen…*. Als Bezeichnung wählst du *Abbildung*. Hinter die
-Nummer schreibst du den Text der alten Unterschrift, dann löschst du die
-getippte. Mit <kbd>Strg</kbd>+<kbd>A</kbd> und <kbd>F9</kbd> aktualisierst du alle
-Felder.
+1. Mit der rechten Maustaste auf das Foto klicken, *Beschriftung einfügen…*.
+2. Bei *Bezeichnung* *Abbildung* wählen. Oben im Feld *Beschriftung* steht
+   jetzt *Abbildung 1*: Klick dahinter und schreib den Text der alten
+   Unterschrift dazu, beim Foto *: Ein Kranich in einer Wiese in der Uckermark*. Dann *OK*.
+3. Die alte, getippte Unterschrift löschen.
+4. Alle Felder aktualisieren: <kbd>Strg</kbd>+<kbd>A</kbd>, dann <kbd>F9</kbd>
+   (auf manchen Laptops <kbd>Fn</kbd>+<kbd>F9</kbd>).
 <!-- /language -->
 <!-- language: libreoffice -->
-In LibreOffice klickst du mit der rechten Maustaste auf das Foto und wählst
-*Beschriftung einfügen…*. Als Kategorie wählst du *Abbildung*. Hinter die
-Nummer schreibst du den Text der alten Unterschrift, dann löschst du die
-getippte. Mit <kbd>F9</kbd> aktualisierst du die Felder.
+1. Mit der rechten Maustaste auf das Foto klicken, *Beschriftung einfügen…*.
+2. Bei *Kategorie* *Abbildung* wählen, im Feld *Beschriftung* den Text der
+   alten Unterschrift schreiben. Dann *Einfügen*.
+3. Die alte, getippte Unterschrift löschen.
+4. Die Felder aktualisieren: <kbd>F9</kbd> (auf manchen Laptops
+   <kbd>Fn</kbd>+<kbd>F9</kbd>).
 <!-- /language -->
 <!-- language: nextcloud -->
-In Nextcloud Office klickst du mit der rechten Maustaste auf das Foto und
-wählst *Beschriftung einfügen…*. Als Kategorie wählst du *Abbildung*. Hinter
-die Nummer schreibst du den Text der alten Unterschrift, dann löschst du die
-getippte.
+1. Mit der rechten Maustaste auf das Foto klicken, *Beschriftung einfügen…*.
+2. Bei *Kategorie* *Abbildung* wählen, im Feld *Beschriftung* den Text der
+   alten Unterschrift schreiben. Dann *Einfügen*.
+3. Die alte, getippte Unterschrift löschen.
 <!-- /language -->
 
 **Jetzt bist du dran:** Gib beiden Bildern eine Beschriftung und lösch die
@@ -161,7 +162,8 @@ _task(alternativtext)
 
 <!-- language: word -->
 In Word klickst du mit der rechten Maustaste auf das Bild und wählst den
-Eintrag mit *Alternativtext*. Schreib den Satz in das Feld.
+Eintrag mit *Alternativtext*. Rechts öffnet sich ein Bereich mit einem Feld;
+steht dort schon ein geratener Satz, lösch ihn zuerst und schreib dann deinen.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice klickst du mit der rechten Maustaste auf das Bild und wählst
