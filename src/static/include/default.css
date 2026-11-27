@@ -19923,13 +19923,3 @@ form.phone-manage-dirty {
 .document-starter-note .bi {
     margin-right: 0.35em;
 }
-
-/* Class board: a click on a cell offers »Für die Entwicklung sichern«
-   (class_board.js, cases_page.rb); a saved one is marked */
-.class-board td.cb-cell {
-    cursor: pointer;
-}
-.class-board td.cb-cell.cb-case-saved {
-    outline: 2px dashed var(--bs-primary);
-    outline-offset: -3px;
-}

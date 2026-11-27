@@ -19,8 +19,6 @@ require './include/stage_code.rb'
 require './include/command_redaction.rb'
 require './include/person_sources.rb'
 require './include/picture_rights.rb'
-require './include/case_store.rb'
-require './include/cases_page.rb'
 require './include/curriculum_overview.rb'
 require './include/curriculum_graph.rb'
 require './include/task_store.rb'
@@ -895,12 +893,6 @@ class Main < Sinatra::Base
                     Main.new!.phone_games_take_out(crashed) unless crashed.empty?
                 rescue => e
                     STDERR.puts "Collecting the calls failed: #{e.class}: #{e.message}"
-                end
-                # cases for the development older than CaseStore::KEEP_DAYS
-                begin
-                    CaseStore.purge
-                rescue => e
-                    STDERR.puts "Deleting old cases failed: #{e.class}: #{e.message}"
                 end
                 # labels of the Tag der offenen Tür past their time (with a
                 # photo: two hours unprinted), include/label_printer_api.rb
@@ -4076,7 +4068,7 @@ class Main < Sinatra::Base
             # Tag der offenen Tür (label_printer_api.rb) and,
             # in development only, the sources of the person boxes
             item = ->(p, icon, label) { "<li><a class=\"dropdown-item #{active.(p)}\" href='#{p}'#{here.(p)}><i class='bi bi-#{icon} me-2'></i>#{label}</a></li>" }
-            open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen', '/faelle', '/statistik', '/telefon-freigabe', '/etiketten-station'].include?(request.path)
+            open = ['/admin', '/gruppen', '/personen', '/picture-rights', '/person-sources', '/rueckmeldungen', '/statistik', '/telefon-freigabe', '/etiketten-station'].include?(request.path)
             io << "<div class='btn-group'>"
             io << "<button type='button' class=\"btn btn-menu dropdown-toggle #{open ? 'active' : ''}\" data-bs-toggle='dropdown' aria-expanded='false'><i class='bi bi-wrench-adjustable'></i><span class='btn-menu-label'>Administration</span></button>"
             io << "<ul class='dropdown-menu'>"
@@ -4086,7 +4078,6 @@ class Main < Sinatra::Base
             io << "<li><hr class='dropdown-divider'></li><li><h6 class='dropdown-header'>Inhalte</h6></li>"
             io << item.('/picture-rights', 'image', 'Bildrechte')
             io << item.('/rueckmeldungen', 'chat-square-text', 'Rückmeldungen')
-            io << item.('/faelle', 'clipboard-check', 'Fälle für die Entwicklung')
             io << item.('/telefon-freigabe', 'telephone', 'Telefonspiele')
             io << item.('/statistik', 'bar-chart-line', 'Nutzung')
             io << item.('/etiketten-station', 'printer', 'Etikettendrucker')
@@ -4909,13 +4900,6 @@ class Main < Sinatra::Base
         # A submitted Telefonspiel with the buttons to publish or reject it
         # (phone_games_api.rb): administrators only.
         if path == '/telefon-freigabe'
-            this_is_a_page_for_logged_in_users!
-            Main.load_invitations()
-            halt_forbidden_page! unless admin_logged_in?
-        end
-        # Cases for the development, saved by teachers from the class board
-        # (cases_page.rb): administrators only.
-        if path == '/faelle'
             this_is_a_page_for_logged_in_users!
             Main.load_invitations()
             halt_forbidden_page! unless admin_logged_in?

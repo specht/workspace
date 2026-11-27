@@ -703,31 +703,6 @@ wird die Gruppe gelöscht, bleibt eine beantwortete unter `former_group`
 wird neu gefragt), »Nicht jetzt« und »Nicht mehr fragen« fallen weg
 (`GroupData`).
 
-## Für die Entwicklung sichern
-
-Sieht die Lösung von Lernenden richtig aus, und der Workspace nimmt sie
-trotzdem nicht an, klickt die Lehrkraft auf der Klassenseite im Reiter
-»Fortschritt« in die Zelle der Person bei dieser Aufgabe und sichert sie mit
-einer Notiz (`class_board.js`, `/api/class/save_case`, `cases_page.rb`).
-Gesichert wird, was die Prüfung liest: der Ordner der geprüften Datei im
-Workspace der Person, für jede Sprachfassung der Aufgabe (nur gewöhnliche
-Dateien, keine Verknüpfungen, höchstens 300 Dateien, je 2 MB, zusammen
-10 MB), die gespeicherte Abgabe (ein Dokument, wie zuletzt geprüft, der Code
-einer Kata) und das gespeicherte Ergebnis mit der letzten und der ersten
-Antwort, dazu die Aufgabe selbst mit ihrer Version damals und jetzt
-(`CaseStore`, `/internal/cases`). Name und Adresse der Person stehen nicht
-darin, nur ein Hash der Adresse, mit dem die Fälle mit dem Konto gelöscht
-werden; die Dateien selbst können einen Namen enthalten.
-
-Die Administration findet die Fälle unter `/faelle` (Menü Administration,
-»Fälle für die Entwicklung«), lädt jeden als `.tar.gz` herunter und löscht
-ihn; nach 180 Tagen löscht der Server sie selbst (die Schleife alle fünf
-Minuten in `main.rb`). Die Lehrkraft sieht einen gesicherten Fall danach
-nicht mehr. So entschieden (27. November 2026): die Zelle der Klassenseite
-statt eines Knopfs beim »Nachahmen«, damit es auch nach der Stunde geht;
-ohne Namen, nur für die Administration. Ende zu Ende:
-`e2e/tests/cases.browser.spec.ts`.
-
 ## Wer was sieht
 
 | | Lernende | Lehrkraft (`*`) | Lehrkraft (`+`) | Admin |

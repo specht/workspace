@@ -1,7 +1,6 @@
 require 'cgi'
 require 'date'
 require_relative 'authentication'
-require_relative 'case_store'
 require_relative 'school_transition'
 
 # The Impressum and the Datenschutzerklärung (/impressum) and the documents
@@ -333,13 +332,6 @@ module Privacy
                 :purpose => 'Abgabe an die Lehrkraft; eingereichte Katas zum Besprechen im Unterricht, ohne Namen gezeigt',
                 :who => 'die Person selbst, Lehrkräfte der Gruppe',
                 :how_long => 'bis die Person sie löscht oder neu abgibt, sonst ' + ACCOUNT_END,
-            },
-            {
-                :data => 'Fälle für die Entwicklung: Nimmt der Workspace eine Lösung nicht an, die richtig aussieht, kann die Lehrkraft sie auf der Klassenseite sichern: eine Kopie dessen, was die Prüfung liest (die Dateien der Aufgabe im Workspace, die gespeicherte Abgabe oder die Antwort), das gespeicherte Ergebnis, die Aufgabe und eine Notiz der Lehrkraft, ohne Namen und E-Mail-Adresse der Person; die Dateien selbst können einen Namen enthalten (etwa ein Dokument)',
-                :categories => [:content],
-                :purpose => 'die Prüfungen des Workspace verbessern, wo sie eine richtige Lösung nicht annehmen',
-                :who => 'die Administration; die Lehrkraft, die den Fall gesichert hat, sieht ihn danach nicht mehr',
-                :how_long => "#{CaseStore::KEEP_DAYS} Tage, bis die Administration den Fall löscht oder bis zur Löschung des Kontos der Person",
             },
             {
                 :data => 'Leistungsüberprüfungen: ein eigener Workspace und eigene Datenbanken für die Dauer einer Leistungsüberprüfung, mit allem, was darin entsteht; bei einem Probelauf, ob die Person gerade auf der normalen Seite ist',
