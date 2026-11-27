@@ -81,12 +81,15 @@ in der die Formel steht.
 Die Dollarzeichen kannst du tippen. Schneller geht es in der **Eingabezeile**:
 Setz den Cursor in den Bezug, etwa hinter B2, und drück
 <kbd>Shift</kbd>+<kbd>F4</kbd>. Jedes Drücken wechselt zwischen `$B$2`,
-`B$2`, `$B2` und `B2`.
+`B$2`, `$B2` und `B2`. Auf manchen Laptops brauchst du dazu noch die Taste
+<kbd>Fn</kbd>; passiert gar nichts, tipp die Dollarzeichen selbst.
 <!-- /language -->
 <!-- language: word -->
 Die Dollarzeichen kannst du tippen. Schneller geht es in der
 **Bearbeitungsleiste**: Setz den Cursor in den Bezug, etwa hinter B2, und drück
 <kbd>F4</kbd>. Jedes Drücken wechselt zwischen `$B$2`, `B$2`, `$B2` und `B2`.
+Auf manchen Laptops brauchst du dazu noch die Taste <kbd>Fn</kbd>; passiert
+gar nichts, tipp die Dollarzeichen selbst.
 <!-- /language -->
 <!-- language: nextcloud -->
 Die Dollarzeichen tippst du in Nextcloud Office selbst: Klick in die Zelle, in
@@ -96,8 +99,9 @@ der Zeile über der Tabelle vor das B und vor die 2.
 Ziehst du eine Formel nur nach unten, genügt `B$2`: Die Spalte ändert sich
 dabei ohnehin nicht. `$B$2` hält beides fest und ist auf der sicheren Seite.
 
-**Jetzt bist du dran:** Schreib in C6 `=B6/$B$2` und füll die Formel nach
-unten aus, bis C10. In C11 kommt die SUMME der Anteile. Ändere B2 auf 26 und
+**Jetzt bist du dran:** Schreib in C6 `=B6/$B$2` und drück <kbd>Enter</kbd>.
+Klick dann wieder auf C6 (der Cursor ist eine Zeile tiefer gesprungen) und
+füll die Formel am kleinen Quadrat nach unten aus, bis C10. In C11 kommt die SUMME der Anteile. Ändere B2 auf 26 und
 sieh nach, ob alle Anteile mitrechnen; setz B2 danach wieder auf 27.
 
 _task(rechts)
@@ -116,7 +120,8 @@ Ermäßigung in einer Zelle und nicht in jeder Formel, ändert sie sich an einer
 einzigen Stelle, wenn der Förderverein der Schule nächstes Jahr mehr gibt.
 
 **Jetzt bist du dran:** Schreib in D6 den Anteil mit Ermäßigung,
-`=C6*(1-$B$3)`, und füll ihn nach unten aus, bis D10. In D11 kommt die
+`=C6*(1-$B$3)`, und drück <kbd>Enter</kbd>. Klick wieder auf D6 und füll
+die Formel nach unten aus, bis D10. In D11 kommt die
 SUMME. Gib C6 bis D11 das Format Währung.
 
 <div class='history' id='history-r1c1'>
