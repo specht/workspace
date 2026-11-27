@@ -4,7 +4,7 @@
     /* .unit, .server-stats and .health-*: in default.css. */
     #running_here td.num, #running_here th.num { text-align: right; font-variant-numeric: tabular-nums; }
     #running_count { font-size: 1rem; vertical-align: middle; }
-    #running_here tr > td { --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0)); }
+    #running_here tr > td { --bs-table-bg-state: rgba(255, 200, 0, calc(var(--ws-activity, 0) * var(--ws-activity-strength))); }
     /* the mark of a heavy Workspace at the row's left, the name a little away from it */
     #running_here tr > :first-child { padding-left: 0.75rem; }
     #running_here tr.running-heavy > td:first-child { box-shadow: inset 4px 0 0 var(--health-warn); }

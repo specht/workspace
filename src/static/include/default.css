@@ -4205,6 +4205,16 @@ body:not(.autotoc-primary-visible) .autotoc-secondary-up {
 .code-language-switch-office .code-language-option[aria-pressed='true'] {
     color: var(--office-tint);
 }
+/* lighter on a dark page, where the document colours are too dark to read */
+[data-bs-theme='dark'] .code-language-switch-office {
+    --office-tint: #7aa7f0;
+}
+[data-bs-theme='dark'] .code-language-switch-office[data-office-kind='sheet'] {
+    --office-tint: #5fc48c;
+}
+[data-bs-theme='dark'] .code-language-switch-office[data-office-kind='slides'] {
+    --office-tint: #f0915e;
+}
 
 /* the name as wide as the wider of its regular and its bold form (in
    some fonts the bold one is narrower), so that nothing moves when it
@@ -5665,11 +5675,21 @@ body.cl-dragging-page * {
     }
 }
 
+/* The yellow of a Workspace that works (admin page, class page): on a
+   dark page at most a third as strong, so that its text and buttons stay
+   readable at full load. */
+:root {
+    --ws-activity-strength: 1;
+}
+[data-bs-theme='dark'] {
+    --ws-activity-strength: 0.35;
+}
+
 /* The class page's tab »Lernende«: the group's card without the frame of
    /gruppen; each row with its Workspace, yellow while it works (as the
    table of Workspaces; class_board.js sets --ws-activity). */
 .class-group-manage tr > td {
-    --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0));
+    --bs-table-bg-state: rgba(255, 200, 0, calc(var(--ws-activity, 0) * var(--ws-activity-strength)));
 }
 
 .class-group-manage .class-ws-usage {
@@ -6238,7 +6258,7 @@ body.cl-dragging-page * {
 /* A Workspace that works lights its row up yellow, as on the admin page
    (class_board.js sets --ws-activity to its CPU load, 0 to 1). */
 .class-people-table tr > td {
-    --bs-table-bg-state: rgba(255, 200, 0, var(--ws-activity, 0));
+    --bs-table-bg-state: rgba(255, 200, 0, calc(var(--ws-activity, 0) * var(--ws-activity-strength)));
     transition: box-shadow 0.8s ease;
 }
 
