@@ -45,19 +45,25 @@ weiterlaufen. Damit die Spalten nicht zu schmal werden, bekommt die Seite
 schmalere **Seitenränder**: 1,5 cm statt 2,5 cm.
 
 <!-- language: libreoffice -->
-In LibreOffice wählst du *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*, stellst 2 Spalten ein und einen
-Abstand von 0,8 cm. Die Ränder stellst du unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…* im
-Register *Seite* ein.
+In LibreOffice klickst du irgendwo in den Text, ohne etwas zu markieren, und
+wählst *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*: 2 Spalten, ein Abstand von 0,8 cm, bei
+*Anwenden auf* die Seitenvorlage (*Standard*), dann *OK*. Die Ränder stellst
+du unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…* im Register *Seite* ein, alle vier
+auf 1,5 cm, dann *OK*.
 <!-- /language -->
 <!-- language: nextcloud -->
-In Nextcloud Office wählst du *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*, stellst 2 Spalten ein und
-einen Abstand von 0,8 cm. Die Ränder stellst du unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Seitenvorlage…* im Register *Seite* ein.
+In Nextcloud Office klickst du irgendwo in den Text, ohne etwas zu markieren,
+und wählst *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten…*: 2 Spalten, ein Abstand von 0,8 cm, dann
+*OK*. Die Ränder stellst du unter *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenvorlage…* im Register
+*Seite* ein, alle vier auf 1,5 cm, dann *OK*.
 <!-- /language -->
 <!-- language: word -->
-In Word wählst du im Register *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Spalten…*, 2 Spalten mit
-einem Abstand von 0,8 cm. Die Ränder stellst du unter *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenränder*
-<i class='bi bi-chevron-right' aria-hidden='true'></i> *Benutzerdefinierte Seitenränder…* ein.
+In Word klickst du irgendwo in den Text, ohne etwas zu markieren, und wählst
+im Register *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Spalten* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Weitere Spalten…*: 2 Spalten mit einem
+Abstand von 0,8 cm, unten bei *Übernehmen für* *Gesamtes Dokument*, dann *OK*.
+Die Ränder stellst du unter *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Seitenränder* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Benutzerdefinierte Seitenränder…* ein: *Oben*, *Unten*, *Links* und *Rechts*
+auf 1,5 cm, dann *OK*.
 <!-- /language -->
 
 _task(spalte)
@@ -67,7 +73,9 @@ _task(spalte)
 <!-- /after -->
 
 **Jetzt bist du dran:** Stell die Seite auf zwei Spalten mit 0,8 cm Abstand
-und alle vier Ränder auf 1,5 cm.
+und alle vier Ränder auf 1,5 cm. Markier dafür nichts: Ist Text markiert,
+bekommt nur er die Spalten, als eigener Bereich, und nicht die Seite. Ist das
+passiert, macht <kbd>Strg</kbd>+<kbd>Z</kbd> es rückgängig.
 
 ## Blocksatz
 
@@ -108,23 +116,25 @@ In LibreOffice öffnest du die Seitenleiste mit den Vorlagen (<kbd>F11</kbd>),
 klickst mit der rechten Maustaste auf *Standard* und wählst *Vorlage
 bearbeiten…*. Im Register *Ausrichtung* wählst du *Blocksatz*, im Register
 *Textfluss* bei *Silbentrennung* *Automatisch*. Im Register *Einzüge und
-Abstände* stellst du *Erste Zeile* auf 0,5 cm, *Unter dem Absatz* auf 0 cm und
-den *Zeilenabstand* auf *Einzeilig*.
+Abstände* stellst du *Erste Zeile* auf 0,5 cm, den Abstand unter dem Absatz
+auf 0 cm und den *Zeilenabstand* auf *Einzeilig*. Dann *OK*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office öffnest du die Seitenleiste mit den Vorlagen, klickst
 mit der rechten Maustaste auf *Standard* und wählst *Vorlage bearbeiten…*.
 Im Register *Ausrichtung* wählst du *Blocksatz*, im Register *Textfluss* bei
 *Silbentrennung* *Automatisch*. Im Register *Einzüge und Abstände* stellst du
-*Erste Zeile* auf 0,5 cm, *Unter dem Absatz* auf 0 cm und den *Zeilenabstand*
-auf *Einzeilig*.
+*Erste Zeile* auf 0,5 cm, den Abstand unter dem Absatz auf 0 cm und den
+*Zeilenabstand* auf *Einzeilig*. Dann *OK*.
 <!-- /language -->
 <!-- language: word -->
-In Word klickst du mit der rechten Maustaste in der Liste der Formatvorlagen
-auf *Standard*, wählst *Ändern…* und dort *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Absatz…*: *Ausrichtung*
-*Blocksatz*, unter *Sondereinzug* *Erste Zeile* mit 0,5 cm, *Abstand Nach* 0 pt,
-*Zeilenabstand* *Einfach*. Die Silbentrennung gilt in Word für das ganze
-Dokument: Register *Layout* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Silbentrennung* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Automatisch*.
+In Word klickst du mit der rechten Maustaste in der Gruppe *Formatvorlagen*
+auf *Standard*, wählst *Ändern…* und dort links unten *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i>
+*Absatz…*: *Ausrichtung* *Blocksatz*, unter *Sondereinzug* *Erste Zeile* mit
+0,5 cm, *Abstand Nach* 0 pt, *Zeilenabstand* *Einfach*. Dann *OK* und im
+ersten Fenster noch einmal *OK*: Es sind zwei Fenster. Die Silbentrennung gilt
+in Word für das ganze Dokument: Register *Layout*, der kleine Knopf
+*Silbentrennung* in der Gruppe *Seite einrichten*, *Automatisch*.
 <!-- /language -->
 
 **Jetzt bist du dran:** Stell »Standard« so ein, dass der Artikel aussieht wie
