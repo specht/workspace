@@ -79,13 +79,17 @@ Wort hinzufügst, gehört zu deinem Programm auf diesem Computer.
 <!-- language: word -->
 In Word markierst du das Wort und wählst im Register *Überprüfen* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sprache* <i class='bi bi-chevron-right' aria-hidden='true'></i>
 *Sprache für die Korrekturhilfen festlegen…*, dann setzt du das Häkchen bei
-*Rechtschreibung und Grammatik nicht prüfen*. Word hat ein anderes Wörterbuch
+*Rechtschreibung und Grammatik nicht prüfen* und klickst *OK*. Das gilt nur
+für die Stelle, die markiert war: Steht ein Name dreimal im Text, machst du
+es an allen drei Stellen. Word hat ein anderes Wörterbuch
 als die Prüfung: Markiert sie ein Wort, das Word kennt, und es ist richtig,
 nimmst du es genauso aus.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice markierst du das Wort und wählst *Extras* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Sprache* <i class='bi bi-chevron-right' aria-hidden='true'></i>
-*Für Auswahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Keine (Rechtschreibung nicht prüfen)*.
+*Für Auswahl* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Keine (Rechtschreibung nicht prüfen)*. Das gilt nur für
+die Stelle, die markiert war: Steht ein Name dreimal im Text, machst du es an
+allen drei Stellen.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office markierst du das Wort und wählst wie in LibreOffice
@@ -117,8 +121,9 @@ noch: Wer weiterschreibt, schreibt im Dokument weiter und exportiert danach ein
 neues PDF.
 
 <!-- language: word -->
-In Word wählst du *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen* und
-speicherst das PDF neben deinem Artikel.
+In Word wählst du *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren* <i class='bi bi-chevron-right' aria-hidden='true'></i> *PDF/XPS-Dokument erstellen*,
+klickst rechts noch einmal auf den Knopf *PDF/XPS-Dokument erstellen*, wählst
+den Ordner neben deinem Artikel und klickst *Veröffentlichen*.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice wählst du *Datei* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Exportieren als* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Als PDF exportieren…*, dann
@@ -164,14 +169,18 @@ zu den Absätzen wie ihr Einzug und ihr Abstand. Haben Absätze nebeneinander
 denselben Rahmen, zeichnet das Programm einen Kasten um alle zusammen.
 
 <!-- language: word -->
-In Word markierst du die Absätze und öffnest *Start* <i class='bi bi-chevron-right' aria-hidden='true'></i> den Pfeil neben
-*Rahmenlinien* <i class='bi bi-chevron-right' aria-hidden='true'></i> *Rahmen und Schattierung…*: im Register *Rahmen*
-*Kontur*, im Register *Schattierung* eine *Füllung*.
+In Word markierst du die Absätze und öffnest im Register *Start*, Gruppe
+*Absatz*, den kleinen Pfeil rechts neben dem Knopf *Rahmenlinien* (ein
+Quadrat aus gestrichelten Linien), ganz unten *Rahmen und Schattierung…*. Im
+Register *Rahmen* wählst du *Kontur*, im Register *Schattierung* eine
+*Füllung*. Unten rechts muss in beiden Registern bei *Übernehmen für*
+*Absatz* stehen, nicht *Text*; sonst bekommt jede Zeile ihren eigenen Rahmen.
+Dann *OK*.
 <!-- /language -->
 <!-- language: libreoffice -->
 In LibreOffice markierst du die Absätze und öffnest *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i>
 *Absatz…*: im Register *Umrandung* die Linien an allen vier Seiten, im
-Register *Fläche* eine *Farbe*.
+Register *Fläche* eine *Farbe*, dann *OK*.
 <!-- /language -->
 <!-- language: nextcloud -->
 In Nextcloud Office markierst du die Absätze und öffnest *Format* <i class='bi bi-chevron-right' aria-hidden='true'></i>
