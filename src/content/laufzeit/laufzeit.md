@@ -628,6 +628,177 @@ kein Programm für alle Programme. Warum, zeigt das Halteproblem in
 - [Ein Routenplaner für Berlin](/routenplaner): Wege und Rundfahrten auf
   den echten Straßen.
 
+<!-- side-panel: auf-einen-blick Auf einen Blick -->
+
+Was deine Funktionen bekommen und zurückgeben, zum Nachschlagen beim
+Programmieren, mit kleinen Beispielen. Wie sie es tun, steht oben auf der Seite.
+
+<!-- language: ruby -->
+Alles steht in `laufzeit.rb`; oben in der Datei steht `require 'set'`.
+
+<!-- page-code: own -->
+```ruby
+# names: ein Array von Strings
+names = ['Linden', 'Birken', 'Linden']
+
+# die Zahl der verschiedenen Namen
+distinct_list(names)    # => 2
+distinct_sorted(names)  # => 2
+distinct_set(names)     # => 2
+
+# die Fibonacci-Zahl Nummer 10
+fib_memo(10)            # => 55
+
+# zwei Zahlen an verschiedenen Indizes
+# mit der Summe 13? 9 + 4
+pair_with_sum?([3, 9, 4], 13) # => true
+# 3 + 3 zählt nicht
+pair_with_sum?([3, 9, 4], 6)  # => false
+
+# ein Ort: Name, Länge, Breite
+place = ['Brandenburger Tor',
+         13.377705, 52.516276]
+# Kilometer Luftlinie (gegeben)
+distance(a, b)
+
+# Kilometer von 0 nach 2 nach 1
+# und zurück nach 0
+tour_length([0, 2, 1], places)
+
+# alle Nummern, die 0 vorn,
+# etwa [0, 2, 1, 3]
+best_tour(places)
+nearest_tour(places)
+```
+<!-- /language -->
+<!-- language: python -->
+Alles steht in `laufzeit.py`; oben in der Datei steht `import math`.
+
+<!-- page-code: own -->
+```python
+# names: eine Liste von Strings
+names = ['Linden', 'Birken', 'Linden']
+
+# die Zahl der verschiedenen Namen
+distinct_list(names)    # 2
+distinct_sorted(names)  # 2
+distinct_set(names)     # 2
+
+# die Fibonacci-Zahl Nummer 10
+fib_memo(10)            # 55
+
+# zwei Zahlen an verschiedenen Indizes
+# mit der Summe 13? 9 + 4
+has_pair_with_sum([3, 9, 4], 13) # True
+# 3 + 3 zählt nicht
+has_pair_with_sum([3, 9, 4], 6)  # False
+
+# ein Ort: Name, Länge, Breite
+place = ['Brandenburger Tor',
+         13.377705, 52.516276]
+# Kilometer Luftlinie (gegeben)
+distance(a, b)
+
+# Kilometer von 0 nach 2 nach 1
+# und zurück nach 0
+tour_length([0, 2, 1], places)
+
+# alle Nummern, die 0 vorn,
+# etwa [0, 2, 1, 3]
+best_tour(places)
+nearest_tour(places)
+```
+<!-- /language -->
+<!-- language: dart -->
+Alles steht in `laufzeit.dart`; oben in der Datei steht `import 'dart:math';`.
+
+<!-- page-code: own -->
+```dart
+List<String> names =
+    ['Linden', 'Birken', 'Linden'];
+
+// die Zahl der verschiedenen Namen (int)
+distinctList(names);    // 2
+distinctSorted(names);  // 2
+distinctSet(names);     // 2
+
+// die Fibonacci-Zahl Nummer 10 (int)
+fibMemo(10);            // 55
+
+// zwei Zahlen an verschiedenen Indizes
+// mit der Summe 13? 9 + 4
+pairWithSum([3, 9, 4], 13); // true
+// 3 + 3 zählt nicht
+pairWithSum([3, 9, 4], 6);  // false
+
+// ein Ort: ein Record
+typedef Place =
+    ({String name, double lon, double lat});
+Place place = (name: 'Brandenburger Tor',
+    lon: 13.377705, lat: 52.516276);
+place.lat;              // 52.516276
+// Kilometer Luftlinie (double, gegeben)
+distance(a, b);
+
+// Kilometer von 0 nach 2 nach 1
+// und zurück nach 0
+tourLength([0, 2, 1], places);
+
+// alle Nummern, die 0 vorn (List<int>),
+// etwa [0, 2, 1, 3]
+bestTour(places);
+nearestTour(places);
+```
+<!-- /language -->
+<!-- language: java -->
+Alles steht in der Klasse `Laufzeit` in `Laufzeit.java`, jede Funktion
+`public static`.
+
+<!-- page-code: own -->
+```java
+List<String> names =
+    List.of("Linden", "Birken", "Linden");
+
+// die Zahl der verschiedenen Namen (int)
+distinctList(names);    // 2
+distinctSorted(names);  // 2
+distinctSet(names);     // 2
+
+// die Fibonacci-Zahl Nummer 10 (long)
+fibMemo(10);            // 55
+
+// zwei Zahlen an verschiedenen Indizes
+// mit der Summe 13? 9 + 4
+pairWithSum(List.of(3, 9, 4), 13); // true
+// 3 + 3 zählt nicht
+pairWithSum(List.of(3, 9, 4), 6);  // false
+
+// ein Ort: ein Record
+public record Place(String name,
+    double lon, double lat) {}
+Place place = new Place("Brandenburger Tor",
+    13.377705, 52.516276);
+// mit Klammern wie bei jedem Record
+place.lat();            // 52.516276
+// Kilometer Luftlinie (double, gegeben)
+distance(a, b);
+
+// Kilometer von 0 nach 2 nach 1
+// und zurück nach 0
+tourLength(List.of(0, 2, 1), places);
+
+// alle Nummern, die 0 vorn
+// (List<Integer>), etwa [0, 2, 1, 3]
+bestTour(places);
+nearestTour(places);
+```
+<!-- /language -->
+
+Eine Rundfahrt hat jede Nummer genau einmal und fängt mit 0 an: Mit drei
+Orten sind `[0, 1, 2]` und `[0, 2, 1]` die beiden Möglichkeiten.
+
+<!-- /side-panel -->
+
 <!-- tutorial-scope -->
 <!-- tutorial-screenshot
 # Bild für die Karte der Aktivität: messen.rb im Terminal, in 16:9; dabei

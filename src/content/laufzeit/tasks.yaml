@@ -6,6 +6,7 @@ tasks:
     title: Mit einer Liste
     prompt: |
       Schreib in `laufzeit.rb` eine Funktion `distinct_list(names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -34,6 +35,7 @@ tasks:
     python:
       prompt: |
         Schreib in `laufzeit.py` eine Funktion `distinct_list(names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -61,6 +63,7 @@ tasks:
     dart:
       prompt: |
         Schreib in `laufzeit.dart` eine Funktion `int distinctList(List<String> names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -87,6 +90,7 @@ tasks:
     java:
       prompt: |
         Schreib in `Laufzeit.java`, in der Klasse `Laufzeit`, eine Methode `public static int distinctList(List<String> names)`, die zählt, wie viele verschiedene Namen in der Liste `names` stehen. Sie merkt sich in einer zweiten Liste, welche Namen sie schon gesehen hat, und fragt diese Liste bei jedem Namen, ob er schon darin steht.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
@@ -119,6 +123,7 @@ tasks:
     title: Erst sortieren
     prompt: |
       Schreib `distinct_sorted(names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -150,6 +155,7 @@ tasks:
     python:
       prompt: |
         Schreib `distinct_sorted(names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -180,6 +186,7 @@ tasks:
     dart:
       prompt: |
         Schreib `int distinctSorted(List<String> names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -209,6 +216,7 @@ tasks:
     java:
       prompt: |
         Schreib `public static int distinctSorted(List<String> names)`, die dasselbe zählt, aber anders: Sie sortiert die Namen zuerst. Dann stehen gleiche Namen nebeneinander, und ein neuer Name beginnt dort, wo einer anders ist als der davor.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
@@ -242,6 +250,7 @@ tasks:
     title: Mit einer Menge
     prompt: |
       Schreib `distinct_set(names)`, die die Namen in eine Menge legt, ein `Set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -270,6 +279,7 @@ tasks:
     python:
       prompt: |
         Schreib `distinct_set(names)`, die die Namen in eine Menge legt, ein `set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -296,6 +306,7 @@ tasks:
     dart:
       prompt: |
         Schreib `int distinctSet(List<String> names)`, die die Namen in eine Menge legt, ein `Set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -321,6 +332,7 @@ tasks:
     java:
       prompt: |
         Schreib `public static int distinctSet(List<String> names)`, die die Namen in eine Menge legt, ein `Set`. Eine Menge enthält jeden Namen nur einmal, und ob sie einen schon hat, weiß sie, ohne zu suchen. Die Zahl der verschiedenen Namen ist dann ihre Größe.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
@@ -470,6 +482,7 @@ tasks:
     title: Fibonacci mit Gedächtnis
     prompt: |
       Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `fib_memo(n)`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fib_memo(90)` sofort fertig ist.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -493,6 +506,7 @@ tasks:
     python:
       prompt: |
         Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `fib_memo(n)`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fib_memo(90)` sofort fertig ist.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -520,6 +534,7 @@ tasks:
     dart:
       prompt: |
         Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `int fibMemo(int n, [Map<int, int>? memo])`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fibMemo(90)` sofort fertig ist. `[…]` macht `memo` zu einem Parameter, den man weglassen darf.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -544,6 +559,7 @@ tasks:
     java:
       prompt: |
         Die Fibonacci-Zahlen aus den Katas zur Rekursion: `fib(0)` ist 0, `fib(1)` ist 1, jede weitere ist die Summe der beiden davor. Rekursiv geschrieben ruft `fib(n)` `fib(n - 1)` und `fib(n - 2)` auf, und die rechnen dieselben Zahlen immer wieder aus. Schreib `public static long fibMemo(int n)`, die sich jede Zahl merkt, sobald sie ausgerechnet ist, so dass `fibMemo(90)` sofort fertig ist. Sie gibt `long` zurück, denn `fib(90)` passt nicht in ein `int`.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
@@ -576,6 +592,7 @@ tasks:
     title: Zwei, die zusammenpassen
     prompt: |
       Schreib `pair_with_sum?(numbers, target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Funktion 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -612,6 +629,7 @@ tasks:
     python:
       prompt: |
         Schreib `has_pair_with_sum(numbers, target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Funktion 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -647,6 +665,7 @@ tasks:
     dart:
       prompt: |
         Schreib `bool pairWithSum(List<int> numbers, int target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Funktion 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -678,6 +697,7 @@ tasks:
     java:
       prompt: |
         Schreib `public static boolean pairWithSum(List<Integer> numbers, int target)`: Gibt es in der Liste zwei Zahlen an verschiedenen Stellen, die zusammen `target` ergeben? Mit zwei Schleifen ineinander ginge es, aber die Prüfung gibt deiner Methode 200 000 Zahlen. Geh die Liste einmal durch und merk dir in einer Menge, welche Zahlen du schon gesehen hast.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
@@ -711,6 +731,7 @@ tasks:
     title: Wie lang ist eine Rundfahrt?
     prompt: |
       Ein Ort ist eine Liste aus Namen, Länge und Breite, `["Brandenburger Tor", 13.377705, 52.516276]`, und eine Rundfahrt eine Liste der Nummern der Orte, `[0, 2, 1]`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier die Funktion `distance(a, b)` von oben in `laufzeit.rb` und schreib `tour_length(tour, places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -740,6 +761,7 @@ tasks:
     python:
       prompt: |
         Ein Ort ist eine Liste aus Namen, Länge und Breite, `["Brandenburger Tor", 13.377705, 52.516276]`, und eine Rundfahrt eine Liste der Nummern der Orte, `[0, 2, 1]`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier die Funktion `distance(a, b)` von oben in `laufzeit.py` und schreib `tour_length(tour, places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -767,6 +789,7 @@ tasks:
     dart:
       prompt: |
         Ein Ort ist ein Record aus Namen, Länge und Breite, `(name: 'Brandenburger Tor', lon: 13.377705, lat: 52.516276)`, vom Typ `Place`, und eine Rundfahrt eine Liste der Nummern der Orte, `[0, 2, 1]`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier `Place` und die Funktion `distance(a, b)` von oben in `laufzeit.dart` und schreib `double tourLength(List<int> tour, List<Place> places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -797,6 +820,7 @@ tasks:
     java:
       prompt: |
         Ein Ort ist ein `Place` aus Namen, Länge und Breite, `new Place("Brandenburger Tor", 13.377705, 52.516276)`, und eine Rundfahrt eine Liste der Nummern der Orte, `List.of(0, 2, 1)`: vom Ort 0 zum Ort 2, von dort zum Ort 1 und zurück zum Ort 0. Kopier `Place` und die Methode `distance(a, b)` von oben in die Klasse `Laufzeit` und schreib `public static double tourLength(List<Integer> tour, List<Place> places)`, die die Länge einer Rundfahrt in Kilometern ausrechnet.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
@@ -829,6 +853,7 @@ tasks:
     title: Alle Reihenfolgen
     prompt: |
       Schreib `best_tour(places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -852,6 +877,7 @@ tasks:
     python:
       prompt: |
         Schreib `best_tour(places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -877,6 +903,7 @@ tasks:
     dart:
       prompt: |
         Schreib `List<int> bestTour(List<Place> places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -922,6 +949,7 @@ tasks:
     java:
       prompt: |
         Schreib `public static List<Integer> bestTour(List<Place> places)`, die die kürzeste Rundfahrt findet, indem sie alle ausprobiert. Der erste Ort bleibt vorn; die anderen kommen in jeder Reihenfolge dahinter.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
@@ -1001,6 +1029,7 @@ tasks:
     title: Immer zum nächsten Ort
     prompt: |
       Schreib `nearest_tour(places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+      Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
     check:
       type: ruby
       file: laufzeit/laufzeit.rb
@@ -1031,6 +1060,7 @@ tasks:
     python:
       prompt: |
         Schreib `nearest_tour(places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: python
         file: laufzeit/laufzeit.py
@@ -1059,6 +1089,7 @@ tasks:
     dart:
       prompt: |
         Schreib `List<int> nearestTour(List<Place> places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: dart
         file: laufzeit/laufzeit.dart
@@ -1093,6 +1124,7 @@ tasks:
     java:
       prompt: |
         Schreib `public static List<Integer> nearestTour(List<Place> places)`: Vom ersten Ort aus geht die Rundfahrt immer zu dem Ort, der am nächsten liegt und an dem sie noch nicht war. Sie probiert nichts aus und ist darum schnell, aber nicht immer die kürzeste.
+        Alles über die Daten deiner Funktionen [auf einen Blick](#auf-einen-blick).
       check:
         type: java
         file: laufzeit/Laufzeit.java
